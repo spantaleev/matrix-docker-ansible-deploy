@@ -51,13 +51,22 @@ This section details what you can expect when switching to the Matrix Authentica
 
 - ❌ Certain **tools like [synapse-admin](./configuring-playbook-synapse-admin.md) do not have full compatibility with MAS yet**. synapse-admin already supports [login with access token](https://github.com/etkecc/synapse-admin/pull/58), browsing users (which Synapse will internally fetch from MAS) and updating user avatars. However, editing users (passwords, etc.) now needs to happen directly against MAS using the [MAS Admin API](https://element-hq.github.io/matrix-authentication-service/api/index.html), which synapse-admin cannot interact with yet.
 
-- ❌ **Some services** (e.g. [Postmoogle](./configuring-playbook-bridge-postmoogle.md), but possibly others - the list is yet to be determined) appear to **experience issues when authenticating via MAS**. We're still investigating what breaks and why.
+- ❌ **Some services experience issues when authenticating via MAS**:
+
+  - [Postmoogle](./configuring-playbook-bridge-postmoogle.md) works the first time around, but it consistently fails after restarting:
+
+    > cannot initialize matrix bot error="olm account is marked as shared, keys seem to have disappeared from the server"
+
+  - [matrix-reminder-bot](./configuring-playbook-bot-matrix-reminder-bot.md) fails to start (see [element-hq/matrix-authentication-service#3439](https://github.com/element-hq/matrix-authentication-service/issues/3439))
+  - Other services may be similarly affected. This list is not exhaustive.
 
 - ❌ **Encrypted appservices** do not work yet (related to [MSC4190](https://github.com/matrix-org/matrix-spec-proposals/pull/4190) and [PR 17705 for Synapse](https://github.com/element-hq/synapse/pull/17705)), so all bridges/bots that rely on encryption will fail to start (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3658) for Hookshot). You can use these bridges/bots only if you **keep end-to-bridge encryption disabled** (which is the default setting).
 
 - ⚠ **You will need to have email sending configured** (see [Adjusting email-sending settings](./configuring-playbook-email.md)), because **Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user** going through the new SSO-based login flow. It's also possible to [work around email deliverability issues](#working-around-email-deliverability-issues) if your email configuration is not working.
 
 - ⚠ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) is **possible**, but requires **some playbook-assisted manual work**. Migration is **reversible with no or minor issues if done quickly enough**, but as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
+
+- ⚠ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) does not currently seem to preserve the "admin" flag for users (as found in the Synapse database). All users are imported as non-admin - see [element-hq/matrix-authentication-service#3440](https://github.com/element-hq/matrix-authentication-service/issues/3440). You may need update the Matrix Authentication Service's database manually and adjust the `can_request_admin` column in the `users` table to `true` for users that need to be administrators (e.g. `UPDATE users SET can_request_admin = true WHERE username = 'someone';`)
 
 - ⚠ Delegating user authentication to MAS causes **your Synapse server to be completely dependant on one more service** for its operations. MAS is quick & lightweight and should be stable enough already, but this is something to keep in mind when making the switch.
 
