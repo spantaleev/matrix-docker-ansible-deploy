@@ -8,6 +8,14 @@
     - matrix_client_cinny_default_hs_url
     - matrix_client_cinny_container_network
 
+- name: Fail if matrix_client_cinny_path_prefix is not /
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_client_cinny_path_prefix` is set to `{{ matrix_client_cinny_path_prefix }}` in your configuration, but Cinny no longer supports hosting under a path prefix without an application rebuild.
+      Consider removing your `matrix_client_cinny_path_prefix` override and adjusting the Cinny hostname via `matrix_server_fqn_cinny` or `matrix_client_cinny_hostname`.
+      See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701
+  when: "matrix_client_cinny_path_prefix != '/'"
+
 - when: matrix_client_cinny_container_labels_traefik_enabled | bool
   block:
     - name: Fail if required matrix-client-cinny Traefik settings not defined
