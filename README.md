@@ -113,6 +113,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mautrix-signal](https://github.com/mautrix/signal) | x | Bridge to [Signal](https://www.signal.org/) | [Link](docs/configuring-playbook-bridge-mautrix-signal.md) |
 | [beeper-linkedin](https://github.com/beeper/linkedin) | x | Bridge to [LinkedIn](https://www.linkedin.com/) | [Link](docs/configuring-playbook-bridge-beeper-linkedin.md) |
 | [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) | x | Bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-appservice-irc.md) |
+| [matrix-appservice-kakaotalk](https://src.miscworks.net/fair/matrix-appservice-kakaotalk) | x | Bridge to [Kakaotalk](https://www.kakaocorp.com/page/service/service/KakaoTalk?lang=ENG) | [Link](docs/configuring-playbook-bridge-appservice-kakaotalk.md) |
 | [matrix-appservice-discord](https://github.com/matrix-org/matrix-appservice-discord) | x | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-appservice-discord.md) |
 | [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) | x | Bridge to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-appservice-slack.md) |
 | [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) | x | Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.) | [Link](docs/configuring-playbook-bridge-appservice-webhooks.md) |
@@ -144,7 +145,7 @@ Bots provide various additional functionality to your installation.
 | [Honoroit](https://github.com/etkecc/honoroit) | x | A helpdesk bot | [Link](docs/configuring-playbook-bot-honoroit.md) |
 | [Go-NEB](https://github.com/matrix-org/go-neb) | x | A multi functional bot written in Go | [Link](docs/configuring-playbook-bot-go-neb.md) |
 | [Mjolnir](https://github.com/matrix-org/mjolnir) | x | A moderation tool for Matrix | [Link](docs/configuring-playbook-bot-mjolnir.md) |
-| [Draupnir](https://github.com/the-draupnir-project/Draupnir) | x | A moderation tool for Matrix (Fork of Mjolnir) | [Link](docs/configuring-playbook-bot-draupnir.md) |
+| [Draupnir](https://github.com/the-draupnir-project/Draupnir) | x | A moderation tool for Matrix (Fork of Mjolnir) | [Link](docs/configuring-playbook-bot-draupnir.md) (for [appservice mode](docs/configuring-playbook-appservice-draupnir-for-all.md))|
 | [Buscarron](https://github.com/etkecc/buscarron) | x | Web forms (HTTP POST) to Matrix | [Link](docs/configuring-playbook-bot-buscarron.md) |
 | [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) | x | ChatGPT from Matrix | [Link](docs/configuring-playbook-bot-chatgpt.md) |
 
@@ -158,7 +159,7 @@ Services that help you in administrating and monitoring your Matrix installation
 | [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) | x | Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) client | [Link](docs/configuring-playbook-alertmanager-receiver.md) |
 | [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service/) | x | OAuth 2.0 and OpenID Provider server | [Link](docs/configuring-playbook-matrix-authentication-service.md) |
 | [synapse-admin](https://github.com/etkecc/synapse-admin) | x | A web UI tool for administrating users and rooms on your Matrix server | [Link](docs/configuring-playbook-synapse-admin.md) |
-| Metrics and Graphs | x | Consists of the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI | [Link](docs/configuring-playbook-prometheus-grafana.md) |
+| Metrics and Graphs | x | Consists of the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI, with [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) being available too | [Link](docs/configuring-playbook-prometheus-grafana.md) (for [prometheus-nginxlog-exporter](docs/configuring-playbook-prometheus-nginxlog.md)) |
 | [Borg](https://borgbackup.org) | x | Backups | [Link](docs/configuring-playbook-backup-borg.md) |
 | [rageshake](https://github.com/matrix-org/rageshake) | x | Bug report server | [Link](docs/configuring-playbook-rageshake.md) |
 | [synapse-usage-exporter](https://github.com/loelkes/synapse-usage-exporter) | x | Export the usage statistics of a Synapse homeserver to be scraped by Prometheus. | [Link](docs/configuring-playbook-synapse-usage-exporter.md) |
