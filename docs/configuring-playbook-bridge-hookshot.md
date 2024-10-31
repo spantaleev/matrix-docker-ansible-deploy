@@ -6,7 +6,7 @@ Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from softw
 
 See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/latest/hookshot.html) to learn what it does in detail and why it might be useful to you.
 
-**Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however is soon to be archived by its author and to be replaced by hookshot.
+**Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however was deprecated by its author.
 
 
 ## Setup Instructions
