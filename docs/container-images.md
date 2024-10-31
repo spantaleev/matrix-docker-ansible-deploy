@@ -50,6 +50,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [mautrix/whatsapp](https://mau.dev/mautrix/whatsapp/container_registry) - the [mautrix-whatsapp](https://github.com/mautrix/whatsapp) bridge to [Whatsapp](https://www.whatsapp.com/) (optional)
 
+- [mautrix/wsproxy](https://mau.dev/mautrix/wsproxy/container_registry) - the [mautrix-wsproxy](https://github.com/mautrix/wsproxy) bridge to Android SMS or Apple iMessage (optional)
+
 - [mautrix/facebook](https://mau.dev/mautrix/facebook/container_registry) - the [mautrix-facebook](https://github.com/mautrix/facebook) bridge to [Facebook](https://facebook.com/) (optional)
 
 - [mautrix/twitter](https://mau.dev/mautrix/twitter/container_registry) - the [mautrix-twitter](https://github.com/mautrix/twitter) bridge to [Twitter](https://twitter.com/) (optional)
@@ -59,6 +61,8 @@ These services are not part of our default installation, but can be enabled by [
 - [mautrix/googlechat](https://mau.dev/mautrix/googlechat/container_registry) - the [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) (optional)
 
 - [mautrix/instagram](https://mau.dev/mautrix/instagram/container_registry) - the [mautrix-instagram](https://github.com/mautrix/instagram) bridge to [Instagram](https://instagram.com/) (optional)
+
+- [mautrix/meta](https://mau.dev/mautrix/meta/container_registry) - the [mautrix-meta](https://github.com/mautrix/meta) bridge to [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) (optional)
 
 - [mautrix/signal](https://mau.dev/mautrix/signal/container_registry) - the [mautrix-signal](https://github.com/mautrix/signal) bridge to [Signal](https://www.signal.org/) (optional)
 
@@ -71,6 +75,8 @@ These services are not part of our default installation, but can be enabled by [
 - [turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks) - the [Appservice Webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge (optional)
 
 - [folivonet/matrix-sms-bridge](https://hub.docker.com/repository/docker/folivonet/matrix-sms-bridge) - the [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) (optional)
+
+- [lxduo/matrix-wechat](https://hub.docker.com/r/lxduo/matrix-wechat) - the [matrix-wechat](https://github.com/duo/matrix-wechat) bridge to WeChat (optional)
 
 - [mx-puppet/discord/mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord/container_registry) - the [mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) bridge to [Discord](https://discordapp.com) (optional)
 
@@ -109,6 +115,10 @@ These services are not part of our default installation, but can be enabled by [
 - [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) - the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot (optional)
 
 - [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) - the [Draupnir](https://github.com/the-draupnir-project/Draupnir/) moderation bot (optional)
+
+- [metio/matrix-alertmanager-receiver](https://hub.docker.com/r/metio/matrix-alertmanager-receiver) - the [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) client for Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) (optional)
+
+- [element-hq/matrix-authentication-service](https://ghcr.io/element-hq/matrix-authentication-service) - [matrix-authentication-service](https://github.com/element-hq/matrix-authentication-service) (MAS) OAuth 2.0 and OpenID Provider server (optional)
 
 - [etke.cc/synapse-admin](https://ghcr.io/etkecc/synapse-admin) - the [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) web UI tool for administrating users and rooms on your Matrix server (optional)
 
