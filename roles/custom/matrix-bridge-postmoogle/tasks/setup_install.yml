@@ -1,4 +1,29 @@
 ---
+
+# Check and remove the legacy systemd service (`matrix-bot-postmoogle.service`).
+# This role uses `matrix-postmoogle.service` now.
+# Related to: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3698
+
+- name: Check if matrix-bot-postmoogle.service exists
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-postmoogle.service"
+  register: matrix_bot_postmoogle_service_stat
+
+- name: Stop and remove legacy matrix-bot-postmoogle systemd service
+  when: matrix_bot_postmoogle_service_stat.stat.exists | bool
+  block:
+    - name: Ensure legacy matrix-bot-postmoogle service is stopped
+      ansible.builtin.service:
+        name: matrix-bot-postmoogle
+        state: stopped
+        enabled: false
+      failed_when: false
+
+    - name: Remove legacy matrix-bot-postmoogle service file
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-postmoogle.service"
+        state: absent
+
 - when: "matrix_postmoogle_database_engine == 'postgres'"
   block:
     - name: Check if an SQLite database already exists
