@@ -80,6 +80,7 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) (advanced) | x | LDAP Auth password provider module | [Link](docs/configuring-playbook-ldap-auth.md) |
 | [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) (advanced) | x | A proxy that handles Matrix registration requests and forwards them to LDAP. | [Link](docs/configuring-playbook-matrix-ldap-registration-proxy.md) |
 | [matrix-registration](https://github.com/ZerataX/matrix-registration) | x | A simple python application to have a token based Matrix registration | [Link](docs/configuring-playbook-matrix-registration.md) |
+| [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (UVS) | x | Service to verify details of a user based on an Open ID token | [Link](docs/configuring-playbook-user-verification-service.md) |
 
 
 ### File Storage

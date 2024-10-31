@@ -44,6 +44,8 @@ These services are not part of our default installation, but can be enabled by [
 
 - [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) - [matrix-registration](https://github.com/ZerataX/matrix-registration): a simple python application to have a token based Matrix registration (optional)
 
+- [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/matrixdotorg/matrix-user-verification-service) - [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) for verifying details of a user based on an Open ID token (optional)
+
 - [mautrix/telegram](https://mau.dev/mautrix/telegram/container_registry) - the [mautrix-telegram](https://github.com/mautrix/telegram) bridge to [Telegram](https://telegram.org/) (optional)
 
 - [mautrix/gmessages](https://mau.dev/mautrix/gmessages/container_registry) - the [mautrix-gmessages](https://github.com/mautrix/gmessages) bridge to [Google Messages](https://messages.google.com/) (optional)
