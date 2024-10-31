@@ -37,8 +37,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Etherpad](configuring-playbook-etherpad.md) (optional)
 
-- [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md) (optional)
-
 - [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) (optional)
 
 - [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md) (optional)
@@ -80,6 +78,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Controlling Matrix federation](configuring-playbook-federation.md) (optional)
 
 - [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
+
+- [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md) (optional)
 
 - [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight Matrix client with legacy and mobile browser support (optional)
 
