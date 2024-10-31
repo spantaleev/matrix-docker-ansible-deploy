@@ -293,8 +293,6 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-bot-draupnir.service', 'priority': 4000, 'groups': ['matrix', 'bots', 'draupnir', 'bot-draupnir']}] if matrix_bot_draupnir_enabled else [])
     +
-    ([{'name': 'matrix-bot-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'postmoogle', 'bot-postmoogle']}] if matrix_bot_postmoogle_enabled else [])
-    +
     ([{'name': 'matrix-bot-chatgpt.service', 'priority': 2200, 'groups': ['matrix', 'bots', 'chatgpt', 'bot-chatgpt']}] if matrix_bot_chatgpt_enabled else [])
     +
     ([{'name': 'matrix-appservice-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'appservice-discord']}] if matrix_appservice_discord_enabled else [])
@@ -364,6 +362,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-mx-puppet-steam.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-steam']}] if matrix_mx_puppet_steam_enabled else [])
     +
     ([{'name': 'matrix-mx-puppet-twitter.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-twitter']}] if matrix_mx_puppet_twitter_enabled else [])
+    +
+    ([{'name': 'matrix-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bridges', 'postmoogle']}] if matrix_postmoogle_enabled else [])
     +
     ([{'name': 'matrix-sms-bridge.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'sms']}] if matrix_sms_bridge_enabled else [])
     +
@@ -2571,6 +2571,81 @@ matrix_mx_puppet_groupme_database_password: "{{ '%s' | format(matrix_homeserver_
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-bridge-postmoogle
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_postmoogle_enabled: false
+
+matrix_postmoogle_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+matrix_postmoogle_ssl_path: |-
+  {{
+    {
+      'playbook-managed-traefik': (traefik_certs_dumper_dumped_certificates_dir_path if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (traefik_certs_dumper_dumped_certificates_dir_path if traefik_certs_dumper_enabled else ''),
+      'none': '',
+    }[matrix_playbook_reverse_proxy_type]
+  }}
+
+matrix_playbook_bridge_postmoogle_traefik_tls_cert: "{% for domain in matrix_postmoogle_domains %}/ssl/{{ domain }}/certificate.crt {% endfor %}"
+matrix_playbook_bridge_postmoogle_traefik_key: "{% for domain in matrix_postmoogle_domains %}/ssl/{{ domain }}/privatekey.key {% endfor %}"
+
+matrix_postmoogle_tls_cert: |-
+  {{
+    {
+      'playbook-managed-traefik': (matrix_playbook_bridge_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (matrix_playbook_bridge_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
+      'none': '',
+    }[matrix_playbook_reverse_proxy_type]
+  }}
+
+matrix_postmoogle_tls_key: |-
+  {{
+    {
+      'playbook-managed-traefik': (matrix_playbook_bridge_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (matrix_playbook_bridge_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
+      'none': '',
+    }[matrix_playbook_reverse_proxy_type]
+  }}
+
+matrix_playbook_bridge_postmoogle_traefik_certs_dumper_waiter_services: "{% for domain in matrix_postmoogle_domains %}{{ traefik_certs_dumper_identifier }}-wait-for-domain@{{ domain }}.service {% endfor %}"
+
+matrix_postmoogle_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+    +
+    ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_postmoogle_database_hostname == matrix_postmoogle_database_hostname else [])
+    +
+    (matrix_playbook_bridge_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled else [])
+  }}
+
+# Postgres is the default, except if not using internal Postgres server
+matrix_postmoogle_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
+matrix_postmoogle_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'postmoogle.db', rounds=655555) | to_uuid }}"
+
+matrix_postmoogle_homeserver: "{{ matrix_addons_homeserver_client_api_url }}"
+
+matrix_postmoogle_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_postmoogle_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([postgres_container_network] if postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == postgres_connection_hostname else [])
+    ) | unique
+  }}
+
+######################################################################
+#
+# /matrix-bridge-postmoogle
+#
+######################################################################
 
 ######################################################################
 #
@@ -2854,84 +2929,6 @@ matrix_bot_baibot_container_additional_networks_auto: |-
 # /matrix-bot-baibot
 #
 ######################################################################
-
-
-######################################################################
-#
-# matrix-bot-postmoogle
-#
-######################################################################
-
-# We don't enable bots by default.
-matrix_bot_postmoogle_enabled: false
-
-matrix_bot_postmoogle_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
-
-matrix_bot_postmoogle_ssl_path: |-
-  {{
-    {
-      'playbook-managed-traefik': (traefik_certs_dumper_dumped_certificates_dir_path if traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (traefik_certs_dumper_dumped_certificates_dir_path if traefik_certs_dumper_enabled else ''),
-      'none': '',
-    }[matrix_playbook_reverse_proxy_type]
-  }}
-
-matrix_playbook_bot_postmoogle_traefik_tls_cert: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/{{ domain }}/certificate.crt {% endfor %}"
-matrix_playbook_bot_postmoogle_traefik_key: "{% for domain in matrix_bot_postmoogle_domains %}/ssl/{{ domain }}/privatekey.key {% endfor %}"
-
-matrix_bot_postmoogle_tls_cert: |-
-  {{
-    {
-      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_tls_cert if traefik_certs_dumper_enabled else ''),
-      'none': '',
-    }[matrix_playbook_reverse_proxy_type]
-  }}
-
-matrix_bot_postmoogle_tls_key: |-
-  {{
-    {
-      'playbook-managed-traefik': (matrix_playbook_bot_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (matrix_playbook_bot_postmoogle_traefik_key if traefik_certs_dumper_enabled else ''),
-      'none': '',
-    }[matrix_playbook_reverse_proxy_type]
-  }}
-
-matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services: "{% for domain in matrix_bot_postmoogle_domains %}{{ traefik_certs_dumper_identifier }}-wait-for-domain@{{ domain }}.service {% endfor %}"
-
-matrix_bot_postmoogle_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_bot_postmoogle_database_hostname == matrix_bot_postmoogle_database_hostname else [])
-    +
-    (matrix_playbook_bot_postmoogle_traefik_certs_dumper_waiter_services | trim | split(' ') if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled else [])
-  }}
-
-# Postgres is the default, except if not using internal Postgres server
-matrix_bot_postmoogle_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
-matrix_bot_postmoogle_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_bot_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'postmoogle.db', rounds=655555) | to_uuid }}"
-
-matrix_bot_postmoogle_homeserver: "{{ matrix_addons_homeserver_client_api_url }}"
-
-matrix_bot_postmoogle_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_bot_postmoogle_container_additional_networks_auto: |-
-  {{
-    (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([postgres_container_network] if postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == postgres_connection_hostname else [])
-    ) | unique
-  }}
-
-######################################################################
-#
-# /matrix-bot-postmoogle
-#
-######################################################################
-
 
 ######################################################################
 #
@@ -4054,10 +4051,10 @@ postgres_managed_databases_auto: |
     }] if (matrix_bot_honoroit_enabled and matrix_bot_honoroit_database_engine == 'postgres' and matrix_bot_honoroit_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_bot_postmoogle_database_name,
-      'username': matrix_bot_postmoogle_database_username,
-      'password': matrix_bot_postmoogle_database_password,
-    }] if (matrix_bot_postmoogle_enabled and matrix_bot_postmoogle_database_engine == 'postgres' and matrix_bot_postmoogle_database_hostname == postgres_connection_hostname) else [])
+      'name': matrix_postmoogle_database_name,
+      'username': matrix_postmoogle_database_username,
+      'password': matrix_postmoogle_database_password,
+    }] if (matrix_postmoogle_enabled and matrix_postmoogle_database_engine == 'postgres' and matrix_postmoogle_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
       'name': matrix_bot_maubot_database_name,
@@ -4950,8 +4947,8 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     ] if matrix_bot_maubot_enabled else [])
     +
     ([
-      '^@'+(matrix_bot_postmoogle_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_bot_postmoogle_enabled else [])
+      '^@'+(matrix_postmoogle_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_postmoogle_enabled else [])
     +
     ([
       '^@_discord_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
@@ -5775,10 +5772,10 @@ matrix_user_creator_users_auto: |
     }] if matrix_bot_honoroit_enabled else [])
     +
     ([{
-      'username': matrix_bot_postmoogle_login,
-      'initial_password': matrix_bot_postmoogle_password,
+      'username': matrix_postmoogle_login,
+      'initial_password': matrix_postmoogle_password,
       'initial_type': 'bot',
-    }] if matrix_bot_postmoogle_enabled else [])
+    }] if matrix_postmoogle_enabled else [])
     +
     ([{
       'username': matrix_bot_buscarron_login,

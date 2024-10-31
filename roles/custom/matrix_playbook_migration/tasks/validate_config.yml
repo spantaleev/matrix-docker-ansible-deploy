@@ -223,6 +223,20 @@
           We found usage of the following variables: {{ matrix_playbook_migration_jitsi_migration_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_jitsi_migration_vars | length > 0"
 
+- when: matrix_playbook_migration_matrix_postmoogle_migration_validation_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_postmoogle_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_postmoogle_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_bot_postmoogle variables
+      ansible.builtin.fail:
+        msg: >-
+          Your configuration contains a variable, which now has a different name.
+          Please change your configuration (vars.yml) to rename all variables (`matrix_bot_postmoogle_` -> `matrix_postmoogle_`).
+          We found usage of the following variables: {{ matrix_playbook_migration_postmoogle_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_postmoogle_migration_vars | length > 0"
+
 - when: matrix_playbook_migration_matrix_nginx_proxy_elimination_variable_transition_checks_enabled | bool
   block:
     - name: (Deprecation) Catch and report transitioned playbook settings during the matrix-nginx-proxy elimination
