@@ -56,7 +56,9 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md) (optional)
 
-- [Storing Matrix media files on Amazon S3](configuring-playbook-s3.md) (optional)
+- [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md) (optional)
+
+- [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md) (optional)
 
 - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) (optional)
 
