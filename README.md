@@ -24,10 +24,11 @@ If you like the [FOSS](https://en.wikipedia.org/wiki/Free_and_open-source_softwa
 
 Using this playbook, you can get the following list of services configured on your server. Basically, this playbook aims to get you up-and-running with all the necessities around Matrix, without you having to do anything else.
 
-**Note**: the list below is exhaustive. It includes optional or even some advanced components that you will most likely not need.
-Sticking with the defaults (which install a subset of the above components) is the best choice, especially for a new installation.
-You can always re-run the playbook later to add or remove components.
+**Notes**:
 
+- The list below is exhaustive. It includes optional or even some advanced components that you will most likely not need. Sticking with the defaults (which install a subset of the above components) is the best choice, especially for a new installation. You can always re-run the playbook later to add or remove components.
+
+- Deprecated or unmaintained services are not listed. You can find documentations for them [here](docs/configuring-playbook.md#deprecated--unmaintained--removed-services).
 
 ### Homeserver
 
@@ -64,7 +65,6 @@ Services that run on the server to make the various parts of your installation w
 | [Let's Encrypt](https://letsencrypt.org/) | ✓ | Free SSL certificate, which secures the connection to all components | [Link](docs/configuring-playbook-ssl-certificates.md) |
 | [ma1sd](https://github.com/ma1uta/ma1sd) | x | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
 | [Exim](https://www.exim.org/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
-| [Dimension](https://github.com/turt2live/matrix-dimension) | x | An open source integration manager for Matrix clients | [Link](docs/configuring-playbook-dimension.md) |
 | [ddclient](https://github.com/linuxserver/docker-ddclient) | x | Dynamic DNS | [Link](docs/configuring-playbook-dynamic-dns.md) |
 | [Sygnal](https://github.com/matrix-org/sygnal) | x | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | x | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
@@ -106,11 +106,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mautrix-gmessages](https://github.com/mautrix/gmessages) | x | Bridge to [Google Messages](https://messages.google.com/) | [Link](docs/configuring-playbook-bridge-mautrix-gmessages.md) |
 | [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | x | Bridge to [WhatsApp](https://www.whatsapp.com/) | [Link](docs/configuring-playbook-bridge-mautrix-whatsapp.md) |
 | [mautrix-wsproxy](https://github.com/mautrix/wsproxy) | x | Bridge to Android SMS or Apple iMessage | [Link](docs/configuring-playbook-bridge-mautrix-wsproxy.md) |
-| [mautrix-facebook](https://github.com/mautrix/facebook) | x | Bridge to [Facebook](https://facebook.com/) | [Link](docs/configuring-playbook-bridge-mautrix-facebook.md) |
 | [mautrix-twitter](https://github.com/mautrix/twitter) | x | Bridge to [Twitter](https://twitter.com/) | [Link](docs/configuring-playbook-bridge-mautrix-twitter.md) |
-| [mautrix-hangouts](https://github.com/mautrix/hangouts) | x | Bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) | [Link](docs/configuring-playbook-bridge-mautrix-hangouts.md) |
 | [mautrix-googlechat](https://github.com/mautrix/googlechat) | x | Bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) | [Link](docs/configuring-playbook-bridge-mautrix-googlechat.md) |
-| [mautrix-instagram](https://github.com/mautrix/instagram) | x | Bridge to [Instagram](https://instagram.com/) | [Link](docs/configuring-playbook-bridge-mautrix-instagram.md) |
 | [mautrix-meta](https://github.com/mautrix/instagram) | x | Bridge to [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) | Link for [Messenger](docs/configuring-playbook-bridge-mautrix-meta-messenger.md) / [Instagram](docs/configuring-playbook-bridge-mautrix-meta-instagram.md) |
 | [mautrix-signal](https://github.com/mautrix/signal) | x | Bridge to [Signal](https://www.signal.org/) | [Link](docs/configuring-playbook-bridge-mautrix-signal.md) |
 | [beeper-linkedin](https://github.com/beeper/linkedin) | x | Bridge to [LinkedIn](https://www.linkedin.com/) | [Link](docs/configuring-playbook-bridge-beeper-linkedin.md) |
@@ -118,7 +115,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [matrix-appservice-kakaotalk](https://src.miscworks.net/fair/matrix-appservice-kakaotalk) | x | Bridge to [Kakaotalk](https://www.kakaocorp.com/page/service/service/KakaoTalk?lang=ENG) | [Link](docs/configuring-playbook-bridge-appservice-kakaotalk.md) |
 | [matrix-appservice-discord](https://github.com/matrix-org/matrix-appservice-discord) | x | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-appservice-discord.md) |
 | [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) | x | Bridge to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-appservice-slack.md) |
-| [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) | x | Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.) | [Link](docs/configuring-playbook-bridge-appservice-webhooks.md) |
 | [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) | x | Bridge for generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular | [Link](docs/configuring-playbook-bridge-hookshot.md) |
 | [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) | x | Bridge to SMS | [Link](docs/configuring-playbook-bridge-matrix-bridge-sms.md) |
 | [matrix-wechat](https://github.com/duo/matrix-wechat) | x | Bridge to [WeChat](https://www.wechat.com/) | [Link](docs/configuring-playbook-bridge-wechat.md) |
@@ -145,11 +141,9 @@ Bots provide various additional functionality to your installation.
 | [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) | x | Bot for invitations by creating and managing registration tokens | [Link](docs/configuring-playbook-bot-matrix-registration-bot.md) |
 | [maubot](https://github.com/maubot/maubot) | x | A plugin-based Matrix bot system | [Link](docs/configuring-playbook-bot-maubot.md) |
 | [Honoroit](https://github.com/etkecc/honoroit) | x | A helpdesk bot | [Link](docs/configuring-playbook-bot-honoroit.md) |
-| [Go-NEB](https://github.com/matrix-org/go-neb) | x | A multi functional bot written in Go | [Link](docs/configuring-playbook-bot-go-neb.md) |
 | [Mjolnir](https://github.com/matrix-org/mjolnir) | x | A moderation tool for Matrix | [Link](docs/configuring-playbook-bot-mjolnir.md) |
 | [Draupnir](https://github.com/the-draupnir-project/Draupnir) | x | A moderation tool for Matrix (Fork of Mjolnir) | [Link](docs/configuring-playbook-bot-draupnir.md) (for [appservice mode](docs/configuring-playbook-appservice-draupnir-for-all.md))|
 | [Buscarron](https://github.com/etkecc/buscarron) | x | Web forms (HTTP POST) to Matrix | [Link](docs/configuring-playbook-bot-buscarron.md) |
-| [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) | x | ChatGPT from Matrix | [Link](docs/configuring-playbook-bot-chatgpt.md) |
 
 ### Administration
 
