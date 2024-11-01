@@ -2,7 +2,7 @@
 name: I need help
 about: Get support from our community
 title: ''
-labels: ''
+labels: question
 assignees: ''
 
 ---
