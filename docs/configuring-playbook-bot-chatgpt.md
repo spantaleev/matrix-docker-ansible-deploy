@@ -1,4 +1,4 @@
-# Setting up matrix-bot-chatgpt (optional)
+# Setting up matrix-bot-chatgpt (optional, unmaintained)
 
 **Note**: [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) is now an archived (**unmaintained**) project. Talking to ChatGPT (and many other LLM providers) can happen via the much more featureful [baibot](https://github.com/etkecc/baibot), which can be installed using [this playbook](configuring-playbook-bot-baibot.md). Consider using that bot instead of this one.
 

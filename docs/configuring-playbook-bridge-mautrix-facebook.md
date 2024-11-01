@@ -1,4 +1,4 @@
-# Setting up Mautrix Facebook bridging (optional)
+# Setting up Mautrix Facebook bridging (optional, deprecated)
 
 **Note**: This bridge has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, which can be installed using [this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md). Consider using that bridge instead of this one.
 
