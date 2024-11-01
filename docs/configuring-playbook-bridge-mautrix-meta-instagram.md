@@ -14,9 +14,7 @@ If you've been using the [mautrix-instagram](./configuring-playbook-bridge-mautr
 - both trying to use `@instagrambot:example.com` as their username. This conflict may be resolved by adjusting `matrix_mautrix_instagram_appservice_bot_username` or `matrix_mautrix_meta_instagram_appservice_username`
 - both trying to bridge the same DMs
 
-To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@instagrambot:example.com`).
-
-This would give you a list of portals and groups of portals you may purge. Proceed with sending commands like `clean recommended`, etc.
+To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@instagrambot:example.com`). It gives you a list of portals and groups of portals you may purge. Proceed with sending commands like `clean recommended`, etc.
 
 Then, consider disabling the old bridge in your configuration, so it won't recreate the portals when you receive new messages.
 

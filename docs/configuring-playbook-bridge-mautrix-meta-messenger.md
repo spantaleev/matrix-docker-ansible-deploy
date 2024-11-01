@@ -11,11 +11,11 @@ This documentation page only deals with the bridge's ability to bridge to Facebo
 
 If you've been using the [mautrix-facebook](./configuring-playbook-bridge-mautrix-facebook.md) bridge, it's possible to migrate the database using [instructions from the bridge documentation](https://docs.mau.fi/bridges/go/meta/facebook-migration.html) (advanced).
 
-Then you may wish to get rid of the Facebook bridge. To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@facebookbot:example.com`).
-
-This would give you a list of portals and groups of portals you may purge. Proceed with sending commands like `clean recommended`, etc.
+Then you may wish to get rid of the Facebook bridge. To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@facebookbot:example.com`). It gives you a list of portals and groups of portals you may purge. Proceed with sending commands like `clean recommended`, etc.
 
 Then, consider disabling the old bridge in your configuration, so it won't recreate the portals when you receive new messages.
+
+**Note**: the user ID of the new bridge bot is `@messengerbot:example.com`, not `@facebookbot:example.com`. After disabling the old bridge, its bot user will stop responding to a command.
 
 ## Adjusting the playbook configuration
 
@@ -102,7 +102,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-You then need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`.
 
 You then need to send a `login` command and follow the bridge bot's instructions.
 
