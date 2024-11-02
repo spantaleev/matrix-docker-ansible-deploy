@@ -106,4 +106,4 @@ To set up Synapse to store files in S3, follow the instructions for the method o
 
 - using [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md) (recommended)
 - using [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md)
-- using [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/configuration/s3-datastore.html)
+- using [matrix-media-repo](configuring-playbook-matrix-media-repo.md)
