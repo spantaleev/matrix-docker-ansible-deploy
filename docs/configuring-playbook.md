@@ -40,8 +40,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
   - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation
 
-- [Configuring Element](configuring-playbook-client-element.md)
-
 - [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
 - [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
@@ -59,6 +57,16 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Using your own webserver, instead of this playbook's Traefik reverse-proxy](configuring-playbook-own-webserver.md) (advanced)
 
 - [Adjusting TURN server configuration](configuring-playbook-turn.md) (advanced)
+
+### Clients
+
+- [Configuring Element](configuring-playbook-client-element.md), if you're going with the default/recommended client
+
+- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md), if you've enabled [Hydrogen](https://github.com/element-hq/hydrogen-web), a lightweight Matrix client with legacy and mobile browser support
+
+- [Setting up Cinny](configuring-playbook-client-cinny.md), if you've enabled [Cinny](https://github.com/ajbura/cinny), a web client focusing primarily on simple, elegant and secure interface
+
+- [Setting up SchildiChat](configuring-playbook-client-schildichat.md), if you've enabled [SchildiChat](https://schildi.chat/), a web client based on [Element](https://element.io/) with some extras and tweaks
 
 ### Additional useful services
 
@@ -81,13 +89,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Adjusting email-sending settings](configuring-playbook-email.md)
 
 - [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md)
-
-- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight Matrix client with legacy and mobile browser support
-
-- [Setting up Cinny](configuring-playbook-client-cinny.md) - a web client focusing primarily on simple, elegant and secure interface
-
-- [Setting up SchildiChat](configuring-playbook-client-schildichat.md) - a web client based on [Element](https://element.io/) with some extras and tweaks
-
 
 ### Authentication and user-related
 
