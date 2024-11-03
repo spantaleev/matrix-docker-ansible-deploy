@@ -108,19 +108,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
-
-### Additional useful services
-
-- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
-
-- [Setting up Etherpad](configuring-playbook-etherpad.md)
-
-- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
-
-- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
-
-- [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
-
 ### Bridging other networks
 
 - [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md)
@@ -202,6 +189,17 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
 
+### Additional useful services
+
+- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
+
+- [Setting up Etherpad](configuring-playbook-etherpad.md)
+
+- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
+
+- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
+
+- [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
 
 ### Backups
 
