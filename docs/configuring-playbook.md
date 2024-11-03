@@ -62,12 +62,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
   - [Controlling Matrix federation](configuring-playbook-federation.md)
 
-- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
-
-- [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
-
-- [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md)
-
 - [Serving the base domain](configuring-playbook-base-domain-serving.md)
 
 ### Clients
@@ -105,6 +99,15 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up Matrix User Verification Service](configuring-playbook-user-verification-service.md) (advanced)
 
 - [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (advanced)
+
+### File Storage
+
+- [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md)
+
+- [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
+
+- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
+
 
 ### Additional useful services
 
