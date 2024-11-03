@@ -189,26 +189,28 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
 
-### Additional useful services
+### Administration
 
-- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
-
-- [Setting up Etherpad](configuring-playbook-etherpad.md)
+- [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md)
 
 - [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
 
 - [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
 
+- [Setting up the rageshake bug report server](configuring-playbook-rageshake.md)
+
 - [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
 
-### Backups
+- Backups:
+  - [Setting up BorgBackup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database
 
-- [Setting up BorgBackup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database
-
-- [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files)
-
+  - [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files)
 
 ### Other specialized services
+
+- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
+
+- [Setting up Etherpad](configuring-playbook-etherpad.md)
 
 - [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
 
@@ -221,10 +223,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md)
 
 - [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix
-
-- [Setting up the rageshake bug report server](configuring-playbook-rageshake.md)
-
-- [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md)
 
 ### Deprecated / unmaintained / removed services
 
