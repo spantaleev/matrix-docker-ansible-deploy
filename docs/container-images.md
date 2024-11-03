@@ -50,6 +50,7 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) | [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) | x | A proxy that handles Matrix registration requests and forwards them to LDAP. |
 | [matrix-registration](configuring-playbook-matrix-registration.md) | [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) | x | A simple python application to have a token based Matrix registration |
 | [Matrix User Verification Service](configuring-playbook-user-verification-service.md) (UVS) | [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/atrixdotorg/matrix-user-verification-service) | x | Service to verify details of a user based on an Open ID token |
+| [synapse-simple-antispam](configuring-playbook-synapse-simple-antispam.md) (advanced) | (N/A) | x | A spam checker module |
 
 ## File Storage
 
@@ -137,7 +138,6 @@ Various services that don't fit any other categories.
 | [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | x | Sliding Sync support for clients which require it (e.g. Element X) |
 | [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | x | A Synapse module to automatically accept invites. |
 | [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | x | A cli tool that automatically compresses `state_groups` database table in background. |
-| [synapse-simple-antispam](configuring-playbook-synapse-simple-antispam.md) (advanced) | (N/A) | x | A spam checker module |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | x | Reconciliator and gateway for a managed Matrix server |
 | [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | x | An open source collaborative text editor |
 | [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | x | the [Jitsi](https://jitsi.org/) web UI |
