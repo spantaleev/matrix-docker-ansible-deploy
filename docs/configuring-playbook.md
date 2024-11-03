@@ -57,6 +57,11 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
   - [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md)
 
+- Server connectivity:
+  - [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md)
+
+  - [Controlling Matrix federation](configuring-playbook-federation.md)
+
 - [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
 - [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
@@ -86,12 +91,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
 
 - [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
-
-### Server connectivity
-
-- [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md)
-
-- [Controlling Matrix federation](configuring-playbook-federation.md)
 
 ### Authentication and user-related
 
