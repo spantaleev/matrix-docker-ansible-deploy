@@ -66,8 +66,6 @@ Services that run on the server to make the various parts of your installation w
 | [ma1sd](https://github.com/ma1uta/ma1sd) | x | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
 | [Exim](https://www.exim.org/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
 | [ddclient](https://github.com/linuxserver/docker-ddclient) | x | Dynamic DNS | [Link](docs/configuring-playbook-dynamic-dns.md) |
-| [Sygnal](https://github.com/matrix-org/sygnal) | x | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
-| [ntfy](https://ntfy.sh) | x | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
 
 
 ### Authentication
@@ -162,7 +160,7 @@ Services that help you in administrating and monitoring your Matrix installation
 
 ### Misc
 
-Various services that don't fit any other category.
+Various services that don't fit any other categories.
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
@@ -175,6 +173,8 @@ Various services that don't fit any other category.
 | [Jitsi](https://jitsi.org/) | x | An open source video-conferencing platform | [Link](docs/configuring-playbook-jitsi.md) |
 | [Cactus Comments](https://cactus.chat) | x | A federated comment system built on Matrix | [Link](docs/configuring-playbook-cactus-comments.md) |
 | [Pantalaimon](https://github.com/matrix-org/pantalaimon) | x | An E2EE aware proxy daemon | [Link](docs/configuring-playbook-pantalaimon.md) |
+| [Sygnal](https://github.com/matrix-org/sygnal) | x | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
+| [ntfy](https://ntfy.sh) | x | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
 
 
 ## Installation

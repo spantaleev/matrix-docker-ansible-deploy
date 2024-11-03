@@ -31,18 +31,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ## Other configuration options
 
-### Additional useful services
-
-- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
-
-- [Setting up Etherpad](configuring-playbook-etherpad.md)
-
-- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
-
-- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
-
-- [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
-
 ### Core service adjustments
 
 - Homeserver configuration:
@@ -52,51 +40,49 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
   - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation
 
-- [Configuring Element](configuring-playbook-client-element.md)
+- Server components:
+  - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md)
 
-- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
+  - [Adjusting TURN server configuration](configuring-playbook-turn.md) (advanced)
 
-- [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
+  - [Configuring the Traefik reverse-proxy](configuring-playbook-traefik.md) (advanced)
 
-- [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md)
+  - [Using your own webserver, instead of this playbook's Traefik reverse-proxy](configuring-playbook-own-webserver.md) (advanced)
 
-- [Using an external PostgreSQL server](configuring-playbook-external-postgres.md)
+  - [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (advanced)
 
-- [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (advanced)
+  - [Adjusting email-sending settings](configuring-playbook-email.md)
+
+  - [Setting up ma1sd Identity Server](configuring-playbook-ma1sd.md)
+
+  - [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md)
+
+- Server connectivity:
+  - [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md)
+
+  - [Controlling Matrix federation](configuring-playbook-federation.md)
 
 - [Serving the base domain](configuring-playbook-base-domain-serving.md)
 
-- [Configuring the Traefik reverse-proxy](configuring-playbook-traefik.md) (advanced)
+### Clients
 
-- [Using your own webserver, instead of this playbook's Traefik reverse-proxy](configuring-playbook-own-webserver.md) (advanced)
+Web clients for Matrix that you can host on your own domains.
 
-- [Adjusting TURN server configuration](configuring-playbook-turn.md) (advanced)
+- [Configuring Element](configuring-playbook-client-element.md), if you're going with the default/recommended client
 
+- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md), if you've enabled [Hydrogen](https://github.com/element-hq/hydrogen-web), a lightweight Matrix client with legacy and mobile browser support
 
-### Server connectivity
+- [Setting up Cinny](configuring-playbook-client-cinny.md), if you've enabled [Cinny](https://github.com/ajbura/cinny), a web client focusing primarily on simple, elegant and secure interface
 
-- [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md)
-
-- [Controlling Matrix federation](configuring-playbook-federation.md)
-
-- [Adjusting email-sending settings](configuring-playbook-email.md)
-
-- [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md)
-
-- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight Matrix client with legacy and mobile browser support
-
-- [Setting up Cinny](configuring-playbook-client-cinny.md) - a web client focusing primarily on simple, elegant and secure interface
-
-- [Setting up SchildiChat](configuring-playbook-client-schildichat.md) - a web client based on [Element](https://element.io/) with some extras and tweaks
-
+- [Setting up SchildiChat](configuring-playbook-client-schildichat.md), if you've enabled [SchildiChat](https://schildi.chat/), a web client based on [Element](https://element.io/) with some extras and tweaks
 
 ### Authentication and user-related
+
+Extend and modify how users are authenticated on your homeserver.
 
 - [Setting up Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (Next-generation auth for Matrix, based on OAuth 2.0/OIDC)
 
 - [Setting up Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md)
-
-- [Setting up ma1sd Identity Server](configuring-playbook-ma1sd.md)
 
 - [Setting up Synapse Admin](configuring-playbook-synapse-admin.md)
 
@@ -112,14 +98,21 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md) (advanced)
 
-- [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced)
-
 - [Setting up Matrix User Verification Service](configuring-playbook-user-verification-service.md) (advanced)
 
-- [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (advanced)
+### File Storage
 
+Use alternative file storage to the default `media_store` folder.
+
+- [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md)
+
+- [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
+
+- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
 ### Bridging other networks
+
+Bridges can be used to connect your Matrix installation with third-party communication networks.
 
 - [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md)
 
@@ -182,6 +175,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Bots
 
+Bots provide various additional functionality to your installation.
+
 - [Setting up baibot](configuring-playbook-bot-baibot.md) - a bot through which you can talk to various [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) services ([OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) and [others](https://github.com/etkecc/baibot/blob/main/docs/providers.md))
 
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff
@@ -200,31 +195,48 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
 
+### Administration
 
-### Backups
+Services that help you in administrating and monitoring your Matrix installation.
 
-- [Setting up BorgBackup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database
+- [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md)
 
-- [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files)
+- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
 
+- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
+
+- [Setting up the rageshake bug report server](configuring-playbook-rageshake.md)
+
+- [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
+
+- Backups:
+  - [Setting up BorgBackup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database
+
+  - [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files)
 
 ### Other specialized services
 
-- [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
+Various services that don't fit any other categories.
+
+- [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X)
 
 - [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md)
 
-- [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X)
+- [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
+
+- [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced)
+
+- [Setting up Etherpad](configuring-playbook-etherpad.md)
+
+- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
+
+- [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix
+
+- [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (advanced)
 
 - [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md)
 
 - [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md)
-
-- [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix
-
-- [Setting up the rageshake bug report server](configuring-playbook-rageshake.md)
-
-- [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md)
 
 ### Deprecated / unmaintained / removed services
 

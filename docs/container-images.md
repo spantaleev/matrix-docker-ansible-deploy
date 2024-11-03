@@ -15,6 +15,8 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## Clients
 
+Web clients for Matrix that you can host on your own domains.
+
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [Element](configuring-playbook-client-element.md) | [vectorim/element-web](https://hub.docker.com/r/vectorim/element-web/) | ✓ | Web UI, which is configured to connect to your own Synapse server by default |
@@ -23,6 +25,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [SchildiChat](configuring-playbook-client-schildichat.md) | [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) | x | Based on Element, with a more traditional instant messaging experience |
 
 ## Server Components
+
+Services that run on the server to make the various parts of your installation work.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
@@ -33,10 +37,10 @@ We try to stick to official images (provided by their respective projects) as mu
 | [ma1sd](configuring-playbook-ma1sd.md) | [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) | x | Matrix Identity Server |
 | [Exim](configuring-playbook-email.md) | [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) |
 | [ddclient](configuring-playbook-dynamic-dns.md) | [linuxserver/ddclient](https://hub.docker.com/r/linuxserver/ddclient) | x | Update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider |
-| [Sygnal](configuring-playbook-sygnal.md) | [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) | x | Reference Push Gateway for Matrix |
-| [ntfy](configuring-playbook-ntfy.md) | [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) | x | Self-hosted, UnifiedPush-compatible push notifications server |
 
 ## Authentication
+
+Extend and modify how users are authenticated on your homeserver.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
@@ -49,6 +53,8 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## File Storage
 
+Use alternative file storage to the default `media_store` folder.
+
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [Goofys](configuring-playbook-s3-goofys.md) | [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) | x | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files |
@@ -56,6 +62,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [matrix-media-repo](configuring-playbook-matrix-media-repo.md) | [t2bot/matrix-media-repo](https://ghcr.io/t2bot/matrix-media-repo) | x | matrix-media-repo is a highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification. |
 
 # Bridges
+
+Bridges can be used to connect your Matrix installation with third-party communication networks.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
@@ -90,6 +98,8 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## Bots
 
+Bots provide various additional functionality to your installation.
+
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [baibot](configuring-playbook-bot-baibot.md) | [etke.cc/baibot](https://ghcr.io/etkecc/baibot) | x | A bot that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you |
@@ -102,6 +112,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Buscarron](configuring-playbook-bot-buscarron.md) | [etke.cc/buscarron](https://ghcr.io/etkecc/buscarron) | x | Web forms (HTTP POST) to Matrix |
 
 ## Administration
+
+Services that help you in administrating and monitoring your Matrix installation.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
@@ -118,6 +130,8 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## Misc
 
+Various services that don't fit any other categories.
+
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | x | Sliding Sync support for clients which require it (e.g. Element X) |
@@ -133,6 +147,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Cactus Comments](configuring-playbook-cactus-comments.md) | [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) | x | A federated comment system built on Matrix |
 | [Cactus Comments](configuring-playbook-cactus-comments.md) | [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) | x | A federated comment system built on Matrix |
 | [Pantalaimon](configuring-playbook-pantalaimon.md) | [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) | x | An E2EE aware proxy daemon |
+| [Sygnal](configuring-playbook-sygnal.md) | [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) | x | Reference Push Gateway for Matrix |
+| [ntfy](configuring-playbook-ntfy.md) | [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) | x | Self-hosted, UnifiedPush-compatible push notifications server |
 
 ## Container images of deprecated / unmaintained services
 
