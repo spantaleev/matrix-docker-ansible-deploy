@@ -80,18 +80,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up SchildiChat](configuring-playbook-client-schildichat.md), if you've enabled [SchildiChat](https://schildi.chat/), a web client based on [Element](https://element.io/) with some extras and tweaks
 
-### Additional useful services
-
-- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
-
-- [Setting up Etherpad](configuring-playbook-etherpad.md)
-
-- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
-
-- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
-
-- [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
-
 ### Authentication and user-related
 
 - [Setting up Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (Next-generation auth for Matrix, based on OAuth 2.0/OIDC)
@@ -118,6 +106,17 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (advanced)
 
+### Additional useful services
+
+- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
+
+- [Setting up Etherpad](configuring-playbook-etherpad.md)
+
+- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
+
+- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
+
+- [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
 
 ### Bridging other networks
 
