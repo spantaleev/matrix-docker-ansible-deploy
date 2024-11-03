@@ -1,6 +1,6 @@
-# Setting up draupnir (optional)
+# Setting up Draupnir (optional)
 
-The playbook can install and configure the [draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.
+The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.
 
 See the project's [documentation](https://github.com/the-draupnir-project/Draupnir) to learn what it does and why it might be useful to you.
 
@@ -23,7 +23,7 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.draupnir password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-If you would like draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ([see below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
+If you would like Draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ([see below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
 
 
 ## 2. Get an access token
@@ -33,7 +33,7 @@ Refer to the documentation on [how to obtain an access token](obtaining-access-t
 
 ## 3. Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
+You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
 
 If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](/docs/configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
 
@@ -195,7 +195,7 @@ To **disable a given protection**, send a command like this: `!draupnir disable 
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
-For example to change draupnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
+For example to change Draupnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
 
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |

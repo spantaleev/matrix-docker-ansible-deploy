@@ -13,7 +13,7 @@ Draupnir for all is the way to go if you need more than 1 Draupnir instance, but
 
 Draupnir for all in the playbook is rate-limit-exempt automatically as its appservice configuration file does not specify any rate limits.
 
-Normal Draupnir does come with the benefit of access to Synapse Admin features. You are also able to more easily customise your normal Draupnir than D4A as D4A even on the branch with the Avatar command (To be Upstreamed to Mainline Draupnir) that command is clunky as it requires the use of things like Element devtools. In normal draupnir this is a quick operation where you login to Draupnir with a normal client and set Avatar and Display name normally.
+Normal Draupnir does come with the benefit of access to Synapse Admin features. You are also able to more easily customise your normal Draupnir than D4A as D4A even on the branch with the Avatar command (To be Upstreamed to Mainline Draupnir) that command is clunky as it requires the use of things like Element devtools. In normal Draupnir this is a quick operation where you login to Draupnir with a normal client and set Avatar and Display name normally.
 
 Draupnir for all does not support external tooling like [MRU](https://mru.rory.gay) as it can't access Draupnir's user account.
 
@@ -78,13 +78,13 @@ Congratulations if you made it all the way here because you now have a fully wor
 
 ### Configuration of D4A
 
-You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for more configuration documentation. Please note that the playbook ships a full copy of the example config that does transfer to provisioned draupnirs in the production-bots.yaml.j2 file in the template directory of the role.
+You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for more configuration documentation. Please note that the playbook ships a full copy of the example config that does transfer to provisioned Draupnirs in the production-bots.yaml.j2 file in the template directory of the role.
 
 Please note that Config extension does not affect the appservices config as this config is not extensible in current Draupnir anyways. Config extension instead touches the config passed to the Draupnirs that your Appservice creates. So for example below makes all provisioned Draupnirs protect all joined rooms.
 
 You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
-For example to change draupnir's `protectAllJoinedRooms` option to `true` you would add the following to your `vars.yml` file.
+For example to change Draupnir's `protectAllJoinedRooms` option to `true` you would add the following to your `vars.yml` file.
 
 ```yaml
 matrix_appservice_draupnir_for_all_extension_yaml: |
