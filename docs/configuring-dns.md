@@ -93,8 +93,9 @@ This is an optional feature for the optionally-installed [ma1sd service](configu
 
 **Note**: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
 
-When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
-
 ## `_dmarc`, `postmoogle._domainkey` TXT and `matrix` MX records setup
 
 To make the [postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge enable its email sending features, you need to configure SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records
+
+---
+When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
