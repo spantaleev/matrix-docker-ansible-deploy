@@ -23,8 +23,8 @@ docker exec -it matrix-synapse /usr/local/bin/hash_password -c /data/homeserver.
 
 and then connecting to the postgres server and executing:
 
-```
-UPDATE users SET password_hash = '<password-hash>' WHERE name = '@someone:example.com'
+```sql
+UPDATE users SET password_hash = '<password-hash>' WHERE name = '@someone:example.com';
 ```
 
 where `<password-hash>` is the hash returned by the docker command above.
