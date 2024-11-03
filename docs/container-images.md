@@ -15,6 +15,8 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## Clients
 
+Web clients for Matrix that you can host on your own domains.
+
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [Element](configuring-playbook-client-element.md) | [vectorim/element-web](https://hub.docker.com/r/vectorim/element-web/) | ✓ | Web UI, which is configured to connect to your own Synapse server by default |
@@ -23,6 +25,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [SchildiChat](configuring-playbook-client-schildichat.md) | [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) | x | Based on Element, with a more traditional instant messaging experience |
 
 ## Server Components
+
+Services that run on the server to make the various parts of your installation work.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
@@ -36,6 +40,8 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## Authentication
 
+Extend and modify how users are authenticated on your homeserver.
+
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [matrix-synapse-rest-auth](configuring-playbook-rest-auth.md) | (N/A) | x | REST authentication password provider module |
@@ -47,6 +53,8 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## File Storage
 
+Use alternative file storage to the default `media_store` folder.
+
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [Goofys](configuring-playbook-s3-goofys.md) | [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) | x | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files |
@@ -54,6 +62,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [matrix-media-repo](configuring-playbook-matrix-media-repo.md) | [t2bot/matrix-media-repo](https://ghcr.io/t2bot/matrix-media-repo) | x | matrix-media-repo is a highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification. |
 
 # Bridges
+
+Bridges can be used to connect your Matrix installation with third-party communication networks.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
@@ -88,6 +98,8 @@ We try to stick to official images (provided by their respective projects) as mu
 
 ## Bots
 
+Bots provide various additional functionality to your installation.
+
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [baibot](configuring-playbook-bot-baibot.md) | [etke.cc/baibot](https://ghcr.io/etkecc/baibot) | x | A bot that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you |
@@ -100,6 +112,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Buscarron](configuring-playbook-bot-buscarron.md) | [etke.cc/buscarron](https://ghcr.io/etkecc/buscarron) | x | Web forms (HTTP POST) to Matrix |
 
 ## Administration
+
+Services that help you in administrating and monitoring your Matrix installation.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
@@ -115,6 +129,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [synapse-usage-exporter](configuring-playbook-synapse-usage-exporter.md) | Self-building | x | Export the usage statistics of a Synapse homeserver to be scraped by Prometheus. |
 
 ## Misc
+
+Various services that don't fit any other categories.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |

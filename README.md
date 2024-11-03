@@ -160,7 +160,7 @@ Services that help you in administrating and monitoring your Matrix installation
 
 ### Misc
 
-Various services that don't fit any other category.
+Various services that don't fit any other categories.
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |

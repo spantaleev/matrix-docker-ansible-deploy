@@ -66,6 +66,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Clients
 
+Web clients for Matrix that you can host on your own domains.
+
 - [Configuring Element](configuring-playbook-client-element.md), if you're going with the default/recommended client
 
 - [Setting up Hydrogen](configuring-playbook-client-hydrogen.md), if you've enabled [Hydrogen](https://github.com/element-hq/hydrogen-web), a lightweight Matrix client with legacy and mobile browser support
@@ -75,6 +77,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Setting up SchildiChat](configuring-playbook-client-schildichat.md), if you've enabled [SchildiChat](https://schildi.chat/), a web client based on [Element](https://element.io/) with some extras and tweaks
 
 ### Authentication and user-related
+
+Extend and modify how users are authenticated on your homeserver.
 
 - [Setting up Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (Next-generation auth for Matrix, based on OAuth 2.0/OIDC)
 
@@ -98,6 +102,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### File Storage
 
+Use alternative file storage to the default `media_store` folder.
+
 - [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md)
 
 - [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
@@ -105,6 +111,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 - [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
 ### Bridging other networks
+
+Bridges can be used to connect your Matrix installation with third-party communication networks.
 
 - [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md)
 
@@ -167,6 +175,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Bots
 
+Bots provide various additional functionality to your installation.
+
 - [Setting up baibot](configuring-playbook-bot-baibot.md) - a bot through which you can talk to various [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) services ([OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) and [others](https://github.com/etkecc/baibot/blob/main/docs/providers.md))
 
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff
@@ -187,6 +197,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Administration
 
+Services that help you in administrating and monitoring your Matrix installation.
+
 - [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md)
 
 - [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
@@ -203,6 +215,8 @@ When you're done with all the configuration you'd like to do, continue with [Ins
   - [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files)
 
 ### Other specialized services
+
+Various services that don't fit any other categories.
 
 - [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X)
 
