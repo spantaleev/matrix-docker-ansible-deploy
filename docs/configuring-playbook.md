@@ -94,11 +94,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md) (advanced)
 
-- [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced)
-
 - [Setting up Matrix User Verification Service](configuring-playbook-user-verification-service.md) (advanced)
-
-- [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (advanced)
 
 ### File Storage
 
@@ -208,21 +204,25 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Other specialized services
 
-- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
-
-- [Setting up Etherpad](configuring-playbook-etherpad.md)
-
-- [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
+- [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X)
 
 - [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md)
 
-- [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X)
+- [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
+
+- [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced)
+
+- [Setting up Etherpad](configuring-playbook-etherpad.md)
+
+- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
+
+- [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix
+
+- [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (advanced)
 
 - [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md)
 
 - [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md)
-
-- [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix
 
 ### Deprecated / unmaintained / removed services
 
