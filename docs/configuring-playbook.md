@@ -40,23 +40,30 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
   - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation
 
+- Server components:
+  - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md)
+
+  - [Adjusting TURN server configuration](configuring-playbook-turn.md) (advanced)
+
+  - [Configuring the Traefik reverse-proxy](configuring-playbook-traefik.md) (advanced)
+
+  - [Using your own webserver, instead of this playbook's Traefik reverse-proxy](configuring-playbook-own-webserver.md) (advanced)
+
+  - [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (advanced)
+
+  - [Adjusting email-sending settings](configuring-playbook-email.md)
+
+  - [Setting up ma1sd Identity Server](configuring-playbook-ma1sd.md)
+
+  - [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md)
+
 - [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
 - [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
 
 - [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md)
 
-- [Using an external PostgreSQL server](configuring-playbook-external-postgres.md)
-
-- [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (advanced)
-
 - [Serving the base domain](configuring-playbook-base-domain-serving.md)
-
-- [Configuring the Traefik reverse-proxy](configuring-playbook-traefik.md) (advanced)
-
-- [Using your own webserver, instead of this playbook's Traefik reverse-proxy](configuring-playbook-own-webserver.md) (advanced)
-
-- [Adjusting TURN server configuration](configuring-playbook-turn.md) (advanced)
 
 ### Clients
 
@@ -86,17 +93,11 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 - [Controlling Matrix federation](configuring-playbook-federation.md)
 
-- [Adjusting email-sending settings](configuring-playbook-email.md)
-
-- [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md)
-
 ### Authentication and user-related
 
 - [Setting up Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (Next-generation auth for Matrix, based on OAuth 2.0/OIDC)
 
 - [Setting up Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md)
-
-- [Setting up ma1sd Identity Server](configuring-playbook-ma1sd.md)
 
 - [Setting up Synapse Admin](configuring-playbook-synapse-admin.md)
 

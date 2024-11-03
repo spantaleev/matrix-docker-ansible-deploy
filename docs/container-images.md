@@ -33,8 +33,6 @@ We try to stick to official images (provided by their respective projects) as mu
 | [ma1sd](configuring-playbook-ma1sd.md) | [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) | x | Matrix Identity Server |
 | [Exim](configuring-playbook-email.md) | [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) | ✓ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) |
 | [ddclient](configuring-playbook-dynamic-dns.md) | [linuxserver/ddclient](https://hub.docker.com/r/linuxserver/ddclient) | x | Update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider |
-| [Sygnal](configuring-playbook-sygnal.md) | [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) | x | Reference Push Gateway for Matrix |
-| [ntfy](configuring-playbook-ntfy.md) | [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) | x | Self-hosted, UnifiedPush-compatible push notifications server |
 
 ## Authentication
 
@@ -133,6 +131,8 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Cactus Comments](configuring-playbook-cactus-comments.md) | [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) | x | A federated comment system built on Matrix |
 | [Cactus Comments](configuring-playbook-cactus-comments.md) | [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) | x | A federated comment system built on Matrix |
 | [Pantalaimon](configuring-playbook-pantalaimon.md) | [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) | x | An E2EE aware proxy daemon |
+| [Sygnal](configuring-playbook-sygnal.md) | [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) | x | Reference Push Gateway for Matrix |
+| [ntfy](configuring-playbook-ntfy.md) | [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) | x | Self-hosted, UnifiedPush-compatible push notifications server |
 
 ## Container images of deprecated / unmaintained services
 
