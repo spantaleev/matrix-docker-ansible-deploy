@@ -33,198 +33,198 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 ### Additional useful services
 
-- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md) (optional)
+- [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
 
-- [Setting up Etherpad](configuring-playbook-etherpad.md) (optional)
+- [Setting up Etherpad](configuring-playbook-etherpad.md)
 
-- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) (optional)
+- [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
 
-- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md) (optional)
+- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
 
-- [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md) (optional)
+- [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
 
 ### Core service adjustments
 
 - Homeserver configuration:
-  - [Configuring Synapse](configuring-playbook-synapse.md), if you're going with the default/recommended homeserver implementation (optional)
+  - [Configuring Synapse](configuring-playbook-synapse.md), if you're going with the default/recommended homeserver implementation
 
-  - [Configuring Conduit](configuring-playbook-conduit.md), if you've switched to the [Conduit](https://conduit.rs) homeserver implementation (optional)
+  - [Configuring Conduit](configuring-playbook-conduit.md), if you've switched to the [Conduit](https://conduit.rs) homeserver implementation
 
-  - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation (optional)
+  - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation
 
-- [Configuring Element](configuring-playbook-client-element.md) (optional)
+- [Configuring Element](configuring-playbook-client-element.md)
 
-- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md) (optional)
+- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
-- [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md) (optional)
+- [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
 
-- [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md) (optional)
+- [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md)
 
-- [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) (optional)
+- [Using an external PostgreSQL server](configuring-playbook-external-postgres.md)
 
-- [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (optional, advanced)
+- [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) (advanced)
 
-- [Serving the base domain](configuring-playbook-base-domain-serving.md) (optional)
+- [Serving the base domain](configuring-playbook-base-domain-serving.md)
 
-- [Configuring the Traefik reverse-proxy](configuring-playbook-traefik.md) (optional, advanced)
+- [Configuring the Traefik reverse-proxy](configuring-playbook-traefik.md) (advanced)
 
-- [Using your own webserver, instead of this playbook's Traefik reverse-proxy](configuring-playbook-own-webserver.md) (optional, advanced)
+- [Using your own webserver, instead of this playbook's Traefik reverse-proxy](configuring-playbook-own-webserver.md) (advanced)
 
-- [Adjusting TURN server configuration](configuring-playbook-turn.md) (optional, advanced)
+- [Adjusting TURN server configuration](configuring-playbook-turn.md) (advanced)
 
 
 ### Server connectivity
 
-- [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md) (optional)
+- [Enabling Telemetry for your Matrix server](configuring-playbook-telemetry.md)
 
-- [Controlling Matrix federation](configuring-playbook-federation.md) (optional)
+- [Controlling Matrix federation](configuring-playbook-federation.md)
 
-- [Adjusting email-sending settings](configuring-playbook-email.md) (optional)
+- [Adjusting email-sending settings](configuring-playbook-email.md)
 
-- [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md) (optional)
+- [Setting up Dynamic DNS](configuring-playbook-dynamic-dns.md)
 
-- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight Matrix client with legacy and mobile browser support (optional)
+- [Setting up Hydrogen](configuring-playbook-client-hydrogen.md) - a new lightweight Matrix client with legacy and mobile browser support
 
-- [Setting up Cinny](configuring-playbook-client-cinny.md) - a web client focusing primarily on simple, elegant and secure interface (optional)
+- [Setting up Cinny](configuring-playbook-client-cinny.md) - a web client focusing primarily on simple, elegant and secure interface
 
-- [Setting up SchildiChat](configuring-playbook-client-schildichat.md) - a web client based on [Element](https://element.io/) with some extras and tweaks (optional)
+- [Setting up SchildiChat](configuring-playbook-client-schildichat.md) - a web client based on [Element](https://element.io/) with some extras and tweaks
 
 
 ### Authentication and user-related
 
-- [Setting up Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (Next-generation auth for Matrix, based on OAuth 2.0/OIDC) (optional)
+- [Setting up Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (Next-generation auth for Matrix, based on OAuth 2.0/OIDC)
 
-- [Setting up Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) (optional)
+- [Setting up Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md)
 
-- [Setting up ma1sd Identity Server](configuring-playbook-ma1sd.md) (optional)
+- [Setting up ma1sd Identity Server](configuring-playbook-ma1sd.md)
 
-- [Setting up Synapse Admin](configuring-playbook-synapse-admin.md) (optional)
+- [Setting up Synapse Admin](configuring-playbook-synapse-admin.md)
 
-- [Setting up matrix-registration](configuring-playbook-matrix-registration.md) (optional)
+- [Setting up matrix-registration](configuring-playbook-matrix-registration.md)
 
-- [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (optional, advanced)
+- [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (advanced)
 
-- [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (optional, advanced)
+- [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (advanced)
 
-- [Setting up the LDAP authentication password provider module](configuring-playbook-ldap-auth.md) (optional, advanced)
+- [Setting up the LDAP authentication password provider module](configuring-playbook-ldap-auth.md) (advanced)
 
-- [Setting up matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) (optional, advanced)
+- [Setting up matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) (advanced)
 
-- [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md) (optional, advanced)
+- [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md) (advanced)
 
-- [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (optional, advanced)
+- [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced)
 
-- [Setting up Matrix User Verification Service](configuring-playbook-user-verification-service.md) (optional, advanced)
+- [Setting up Matrix User Verification Service](configuring-playbook-user-verification-service.md) (advanced)
 
-- [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (optional, advanced)
+- [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (advanced)
 
 
 ### Bridging other networks
 
-- [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md) (optional)
+- [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md)
 
-- [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md) (optional)
+- [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md)
 
-- [Setting up Mautrix Slack bridging](configuring-playbook-bridge-mautrix-slack.md) (optional)
+- [Setting up Mautrix Slack bridging](configuring-playbook-bridge-mautrix-slack.md)
 
-- [Setting up Mautrix Google Messages bridging](configuring-playbook-bridge-mautrix-gmessages.md) (optional)
+- [Setting up Mautrix Google Messages bridging](configuring-playbook-bridge-mautrix-gmessages.md)
 
-- [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md) (optional)
+- [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md)
 
-- [Setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md) (optional)
+- [Setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md)
 
-- [Setting up Messenger bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-messenger.md) (optional)
+- [Setting up Messenger bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-messenger.md)
 
-- [Setting up Mautrix Google Chat bridging](configuring-playbook-bridge-mautrix-googlechat.md) (optional)
+- [Setting up Mautrix Google Chat bridging](configuring-playbook-bridge-mautrix-googlechat.md)
 
-- [Setting up Mautrix Twitter bridging](configuring-playbook-bridge-mautrix-twitter.md) (optional)
+- [Setting up Mautrix Twitter bridging](configuring-playbook-bridge-mautrix-twitter.md)
 
-- [Setting up Mautrix Signal bridging](configuring-playbook-bridge-mautrix-signal.md) (optional)
+- [Setting up Mautrix Signal bridging](configuring-playbook-bridge-mautrix-signal.md)
 
-- [Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage](configuring-playbook-bridge-mautrix-wsproxy.md) (optional)
+- [Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage](configuring-playbook-bridge-mautrix-wsproxy.md)
 
-- [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md) (optional)
+- [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md)
 
-- [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md) (optional)
+- [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md)
 
-- [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md) (optional)
+- [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md)
 
-- [Setting up Appservice Kakaotalk bridging](configuring-playbook-bridge-appservice-kakaotalk.md) (optional)
+- [Setting up Appservice Kakaotalk bridging](configuring-playbook-bridge-appservice-kakaotalk.md)
 
-- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (optional)
+- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md)
 
-- [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) - a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira). (optional)
+- [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) - a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira).
 
-- [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md) (optional)
+- [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md)
 
-- [Setting up MX Puppet Instagram bridging](configuring-playbook-bridge-mx-puppet-instagram.md) (optional)
+- [Setting up MX Puppet Instagram bridging](configuring-playbook-bridge-mx-puppet-instagram.md)
 
-- [Setting up MX Puppet Twitter bridging](configuring-playbook-bridge-mx-puppet-twitter.md) (optional)
+- [Setting up MX Puppet Twitter bridging](configuring-playbook-bridge-mx-puppet-twitter.md)
 
-- [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md) (optional)
+- [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md)
 
-- [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md) (optional)
+- [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md)
 
-- [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md) (optional)
+- [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md)
 
-- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md) (optional)
+- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md)
 
-- [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (optional)
+- [Setting up Email2Matrix](configuring-playbook-email2matrix.md)
 
-- [Setting up Postmoogle email bridging](configuring-playbook-bridge-postmoogle.md) (optional)
+- [Setting up Postmoogle email bridging](configuring-playbook-bridge-postmoogle.md)
 
-- [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md) (optional)
+- [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md)
 
-- [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md) (optional)
+- [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md)
 
-- [Setting up WeChat bridging](configuring-playbook-bridge-wechat.md) (optional)
+- [Setting up WeChat bridging](configuring-playbook-bridge-wechat.md)
 
 
 ### Bots
 
-- [Setting up baibot](configuring-playbook-bot-baibot.md) - a bot through which you can talk to various [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) services ([OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) and [others](https://github.com/etkecc/baibot/blob/main/docs/providers.md)) (optional)
+- [Setting up baibot](configuring-playbook-bot-baibot.md) - a bot through which you can talk to various [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) services ([OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) and [others](https://github.com/etkecc/baibot/blob/main/docs/providers.md))
 
-- [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff (optional)
+- [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff
 
-- [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users (optional)
+- [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users
 
-- [Setting up maubot](configuring-playbook-bot-maubot.md) - a plugin-based Matrix bot system (optional)
+- [Setting up maubot](configuring-playbook-bot-maubot.md) - a plugin-based Matrix bot system
 
-- [Setting up Honoroit](configuring-playbook-bot-honoroit.md) - a helpdesk bot (optional)
+- [Setting up Honoroit](configuring-playbook-bot-honoroit.md) - a helpdesk bot
 
-- [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot (optional)
+- [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot
 
-- [Setting up Draupnir](configuring-playbook-bot-draupnir.md) - a moderation tool/bot, forked from Mjolnir and maintained by its former leader developer (optional)
+- [Setting up Draupnir](configuring-playbook-bot-draupnir.md) - a moderation tool/bot, forked from Mjolnir and maintained by its former leader developer
 
-- [Setting up Draupnir for all/D4A](configuring-playbook-appservice-draupnir-for-all.md) - like the [Draupnir bot](configuring-playbook-bot-draupnir.md) mentioned above, but running in appservice mode and supporting multiple instances (optional)
+- [Setting up Draupnir for all/D4A](configuring-playbook-appservice-draupnir-for-all.md) - like the [Draupnir bot](configuring-playbook-bot-draupnir.md) mentioned above, but running in appservice mode and supporting multiple instances
 
-- [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room (optional)
+- [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
 
 
 ### Backups
 
-- [Setting up BorgBackup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database (optional)
+- [Setting up BorgBackup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database
 
-- [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files) (optional)
+- [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files)
 
 
 ### Other specialized services
 
-- [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers (optional)
+- [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
 
-- [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md) (optional)
+- [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md)
 
-- [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X) (optional)
+- [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like Element X)
 
-- [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md) (optional)
+- [Setting up the Sygnal push gateway](configuring-playbook-sygnal.md)
 
-- [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md) (optional)
+- [Setting up the ntfy push notifications server](configuring-playbook-ntfy.md)
 
-- [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix (optional)
+- [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix
 
-- [Setting up the rageshake bug report server](configuring-playbook-rageshake.md) (optional)
+- [Setting up the rageshake bug report server](configuring-playbook-rageshake.md)
 
-- [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md) (optional)
+- [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md)
 
 ### Deprecated / unmaintained / removed services
 
