@@ -58,11 +58,13 @@ Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-t
 
 If you will be importing data into your newly created Matrix server, install it, but **do not** start its services just yet. Starting its services or messing with its database now will affect your data import later on.
 
-To do the installation **without** starting services, run only the `install-all` tag:
+To do the installation **without** starting services, run `ansible-playbook` with the `install-all` tag only:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all
 ```
+
+**Note**: do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution.
 
 When this command completes, services won't be running yet.
 
