@@ -24,8 +24,6 @@ Be mindful as to how long it will take for the DNS records to propagate.
 
 If you are using Cloudflare DNS, make sure to disable the proxy and set all records to `DNS only`. Otherwise, fetching certificates will fail.
 
-When you're done configuring DNS, proceed to [Configuring the playbook](configuring-playbook.md).
-
 ## DNS settings for optional services/features
 
 | Used by component                                                                                                          | Type  | Host                           | Priority | Weight | Port | Target                      |
