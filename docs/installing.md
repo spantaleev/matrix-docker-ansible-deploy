@@ -4,7 +4,7 @@ If you've [configured your DNS](configuring-dns.md) and have [configured the pla
 
 **Before installing** and each time you update the playbook in the future, you will need to update the Ansible roles in this playbook by running `just roles`. `just roles` is a shortcut (a `roles` target defined in [`justfile`](../justfile) and executed by the [`just`](https://github.com/casey/just) utility) which ultimately runs [agru](https://github.com/etkecc/agru) or [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) (depending on what is available in your system) to download Ansible roles. If you don't have `just`, you can also manually run the `roles` commands seen in the `justfile`.
 
-There's another shortcut (`just update`) which updates the playbook (`git pull`) and updates roles (`just update`) at the same time.
+There's another shortcut (`just update`) which updates the playbook (`git pull`) and updates roles (`just roles`) at the same time.
 
 
 ## Playbook tags introduction
