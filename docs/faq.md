@@ -11,13 +11,13 @@ Also, we encourage you to not dig yourself into a hole by reading way too much. 
 
 ## Introductory
 
-## Where do I find more questions and answers about Matrix?
+### Where do I find more questions and answers about Matrix?
 
 This is a Frequently Asked Questions page focused on this [Ansible](https://www.ansible.com/) playbook ([What is Ansible? How does it work?](#what-is-ansible-how-does-it-work)) for deploying a [Matrix](https://matrix.org/) server.
 
 For a lot more generic questions and answers, see the [matrix.org FAQ](https://matrix.org/faq/).
 
-## What is Matrix? What is Element? What is Synapse? Why are you confusing me with so many terms?
+### What is Matrix? What is Element? What is Synapse? Why are you confusing me with so many terms?
 
 [Matrix](https://matrix.org/) is a new type of realtime communication (chat) network, the closest analogy to which is probably "email".
 
@@ -39,7 +39,7 @@ In short:
 
 This FAQ here mostly focuses on installing various Matrix services using the Ansible automation tool. You can learn much more about Matrix in the [matrix.org FAQ](https://matrix.org/faq/).
 
-## People I wish to talk to are not on Matrix. Can I talk to them?
+### People I wish to talk to are not on Matrix. Can I talk to them?
 
 You most likely can. Besides Matrix-native chats, Matrix also supports the concept of "bridging", which allows you to plug other networks into it.
 
@@ -47,7 +47,7 @@ This Ansible playbook can help you install [tens of bridges for various networks
 
 Besides setting up your own bridges (preferable), you can also use some [public bridges hosted by others](https://publiclist.anchel.nl/#bridges).
 
-## How do I get started with Matrix?
+### How do I get started with Matrix?
 
 One of [Matrix](https://matrix.org/)'s distinguishing strengths (compared to other chat networks) is its decentralized nature. There's not just one entity (company, organization) controlling the servers. Rather there's thousands of servers operated by different people - one server being insecure, slow or disrespective toward its users does not affect the rest of the network. To participate in that decentralization in its fullest, consider hosting your own server or using some public server other than the largest/default one (`matrix.org`).
 
