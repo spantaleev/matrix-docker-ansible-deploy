@@ -109,7 +109,7 @@ matrix_synapse_enable_registration: true
 For Dendrite:
 
 ```yaml
-matrix_dendrite_client_api_registration_disabled: true
+matrix_dendrite_client_api_registration_disabled: false
 ```
 
 After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
