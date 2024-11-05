@@ -165,7 +165,7 @@ Various services that don't fit any other categories.
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
-| [sliding-sync](https://github.com/matrix-org/sliding-sync)| x | Sliding Sync support for clients which require it (e.g. Element X) | [Link](docs/configuring-playbook-sliding-sync-proxy.md) |
+| [sliding-sync](https://github.com/matrix-org/sliding-sync)| x | (Superseded by Simplified Sliding Sync integrated into Synapse > `1.114` and Conduit > `0.6.0`) Sliding Sync support for clients which require it (e.g. old Element X versions before Simplified Sliding Sync was developed) | [Link](docs/configuring-playbook-sliding-sync-proxy.md) |
 | [synapse_auto_accept_invite](https://github.com/matrix-org/synapse-auto-accept-invite) | x | A Synapse module to automatically accept invites. | [Link](docs/configuring-playbook-synapse-auto-accept-invite.md) |
 | [synapse_auto_compressor](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) | x | A cli tool that automatically compresses `state_groups` database table in background. | [Link](docs/configuring-playbook-synapse-auto-compressor.md) |
 | [Matrix Corporal](https://github.com/devture/matrix-corporal) (advanced) | x | Reconciliator and gateway for a managed Matrix server | [Link](docs/configuring-playbook-matrix-corporal.md) |

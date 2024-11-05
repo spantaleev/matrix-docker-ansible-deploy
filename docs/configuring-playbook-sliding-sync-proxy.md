@@ -10,7 +10,7 @@ Element X iOS is [available on TestFlight](https://testflight.apple.com/join/uZb
 
 Element X Android is [available on the Github Releases page](https://github.com/element-hq/element-x-android/releases).
 
-**Note**: The sliding-sync proxy is **not required** when using the **Conduit homeserver**. Starting from version `0.6.0` Conduit has native support for some sliding sync features. If there are issues with the native implementation, you might have a better experience when enabling the sliding-sync proxy anyway.
+**Note**: The sliding-sync proxy is **not required** anymore as it's been replaced with a different method (called Simplified Sliding Sync) which is integrated into newer homeservers by default (**Conduit** homeserver from version `0.6.0` or **Synapse** from version `1.114`).
 
 ## Adjusting the playbook configuration
 
