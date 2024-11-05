@@ -97,5 +97,6 @@ This is an optional feature for the optionally-installed [ma1sd service](configu
 
 To make the [postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge enable its email sending features, you need to configure SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records
 
----
+---------------------------------------------
+
 When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
