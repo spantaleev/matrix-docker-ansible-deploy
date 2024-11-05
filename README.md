@@ -8,17 +8,24 @@ This [Ansible](https://www.ansible.com/) playbook is meant to help you run your 
 
 That is, it lets you join the Matrix network using your own `@<username>:example.com` identifier, all hosted on your own server (see [prerequisites](docs/prerequisites.md)).
 
-We run all services in [Docker](https://www.docker.com/) containers (see [the container images we use](docs/container-images.md)), which lets us have a predictable and up-to-date setup, across multiple supported distros (see [prerequisites](docs/prerequisites.md)) and [architectures](docs/alternative-architectures.md) (x86/amd64 being recommended).
+We run all [supported services](#supported-services) in [Docker](https://www.docker.com/) containers (see [the container images we use](docs/container-images.md)), which lets us have a predictable and up-to-date setup, across multiple supported distros (see [prerequisites](docs/prerequisites.md)) and [architectures](docs/alternative-architectures.md) (x86/amd64 being recommended).
 
-[Installation](docs/README.md) (upgrades) and some maintenance tasks are automated using [Ansible](https://www.ansible.com/) (see [our Ansible guide](docs/ansible.md)).
-
+Installation (upgrades) and some maintenance tasks are automated using [Ansible](https://www.ansible.com/) (see [our Ansible guide](docs/ansible.md)).
 
 ## Self-hosting or Managed / SaaS
 
-This Ansible playbook tries to make self-hosting and maintaining a Matrix server fairly easy. Still, running any service smoothly requires knowledge, time and effort.
+This Ansible playbook tries to make self-hosting and maintaining a Matrix server fairly easy (see [Getting started](#getting-started)). Still, running any service smoothly requires knowledge, time and effort.
 
 If you like the [FOSS](https://en.wikipedia.org/wiki/Free_and_open-source_software) spirit of this Ansible playbook, but prefer to put the responsibility on someone else, you can also [get a managed Matrix server from etke.cc](https://etke.cc?utm_source=github&utm_medium=readme&utm_campaign=mdad) (both hosting and on-premises) - a service built on top of this Ansible playbook but with [additional components](https://etke.cc/help/extras/?utm_source=github&utm_medium=readme&utm_campaign=mdad) and [services](https://etke.cc/services/?utm_source=github&utm_medium=readme&utm_campaign=mdad) which all help you run a Matrix server with ease. Be advised that etke.cc operates on a subscription-based approach and there is no "just set up my server once and be done with it" option.
 
+## Getting started
+
+We have detailed documentation in the [docs/](./docs) directory - see the Table of Contents in the [documentation README](./docs/README.md).
+
+While the [list of supported services](#supported-services) and documentation is very extensive, you don't need to read through everything. We recommend:
+
+- Starting with the basics. You can always add/remove or tweak services later on.
+- Following our guided installation, starting with the [Prerequisites](./docs/prerequisites.md) documentation page
 
 ## Supported services
 
