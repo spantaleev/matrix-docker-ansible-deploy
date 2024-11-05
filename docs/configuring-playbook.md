@@ -1,6 +1,8 @@
-# Configuring the Ansible playbook
+# Configuring the playbook
 
-To configure the playbook, you need to have done the following things:
+<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > [Configuring your DNS server](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > Configuring the playbook > [Installing](installing.md) </sup>
+
+To configure the Ansible playbook, you need to have done the following things:
 
 - have a server where Matrix services will run
 - [configured your DNS records](configuring-dns.md)

@@ -1,5 +1,7 @@
 # Prerequisites
 
+<sup>⚡️[Quick start](README.md) | Prerequisites > [Configuring your DNS server](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md) </sup>
+
 To install Matrix services using this Ansible playbook, you need:
 
 - (Recommended) An **x86** server ([What kind of server specs do I need?](faq.md#what-kind-of-server-specs-do-i-need)) running one of these operating systems that make use of [systemd](https://systemd.io/):
