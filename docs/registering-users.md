@@ -100,8 +100,16 @@ If you'd rather **keep your server private** (public registration closed, as is 
 
 To **open up user registration publicly** (usually **not recommended**), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
+For Synapse:
+
 ```yaml
 matrix_synapse_enable_registration: true
+```
+
+For Dendrite:
+
+```yaml
+matrix_dendrite_client_api_registration_disabled: false
 ```
 
 After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
