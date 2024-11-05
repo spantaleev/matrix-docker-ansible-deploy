@@ -135,7 +135,7 @@ Various services that don't fit any other categories.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
-| [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | x | Sliding Sync support for clients which require it (e.g. Element X) |
+| [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | x | Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync) |
 | [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | x | A Synapse module to automatically accept invites. |
 | [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | x | A cli tool that automatically compresses `state_groups` database table in background. |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | x | Reconciliator and gateway for a managed Matrix server |
