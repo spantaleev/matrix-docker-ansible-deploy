@@ -155,7 +155,6 @@ Bots provide various additional functionality to your installation.
 
 Services that help you in administrating and monitoring your Matrix installation.
 
-
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
 | [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) | x | Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) client | [Link](docs/configuring-playbook-alertmanager-receiver.md) |
@@ -182,11 +181,6 @@ Various services that don't fit any other categories.
 | [Pantalaimon](https://github.com/matrix-org/pantalaimon) | x | An E2EE aware proxy daemon | [Link](docs/configuring-playbook-pantalaimon.md) |
 | [Sygnal](https://github.com/matrix-org/sygnal) | x | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | x | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
-
-
-## Installation
-
-To configure and install Matrix on your own server, follow the [README in the docs/ directory](docs/README.md).
 
 
 ## Changes
