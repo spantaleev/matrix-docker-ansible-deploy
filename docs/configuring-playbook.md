@@ -76,7 +76,7 @@ Web clients for Matrix that you can host on your own domains.
 
 - [Setting up Cinny](configuring-playbook-client-cinny.md), if you've enabled [Cinny](https://github.com/ajbura/cinny), a web client focusing primarily on simple, elegant and secure interface
 
-- [Setting up SchildiChat](configuring-playbook-client-schildichat.md), if you've enabled [SchildiChat](https://schildi.chat/), a web client based on [Element Web](https://element.io/) with some extras and tweaks
+- [Setting up SchildiChat Web](configuring-playbook-client-schildichat.md), if you've enabled [SchildiChat Web](https://schildi.chat/), a web client based on [Element Web](https://element.io/) with some extras and tweaks
 
 ### Authentication and user-related
 
