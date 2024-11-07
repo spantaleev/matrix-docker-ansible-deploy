@@ -1,6 +1,6 @@
 # Setting up the Jitsi video-conferencing platform (optional)
 
-The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with [Element](configuring-playbook-client-element.md).
+The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS).
 
 Jitsi installation is **not enabled by default**, because it's not a core component of Matrix services.
 
@@ -257,7 +257,7 @@ traefik_provider_configuration_extension_yaml: |
 
 ## (Optional) Enable Gravatar
 
-In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since element already sends the url of configured Matrix avatars to Jitsi, we disabled gravatar.
+In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since Element clients already send the url of configured Matrix avatars to Jitsi, we disabled gravatar.
 
 To enable Gravatar set:
 
@@ -279,7 +279,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 You can use the self-hosted Jitsi server in multiple ways:
 
-- **by adding a widget to a room via Element** (the one configured by the playbook at `https://element.example.com`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
+- **by adding a widget to a room via Element Web** (the one configured by the playbook at `https://element.example.com`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
 
 - **by adding a widget to a room via the Dimension integration manager**. You'll have to point the widget to your own Jitsi server manually. See our [Dimension integration manager](./configuring-playbook-dimension.md) documentation page for more details. Naturally, Dimension would need to be installed first (the playbook doesn't install it by default).
 

@@ -19,10 +19,10 @@ Web clients for Matrix that you can host on your own domains.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
-| [Element](configuring-playbook-client-element.md) | [vectorim/element-web](https://hub.docker.com/r/vectorim/element-web/) | ✓ | Web UI, which is configured to connect to your own Synapse server by default |
+| [Element Web](configuring-playbook-client-element-web.md) | [vectorim/element-web](https://hub.docker.com/r/vectorim/element-web/) | ✓ | Default Matrix web client, configured to connect to your own Synapse server |
 | [Hydrogen](configuring-playbook-client-hydrogen.md) | [element-hq/hydrogen-web](https://ghcr.io/element-hq/hydrogen-web) | x | Lightweight Matrix client with legacy and mobile browser support |
 | [Cinny](configuring-playbook-client-cinny.md) | [ajbura/cinny](https://hub.docker.com/r/ajbura/cinny) | x | Simple, elegant and secure web client |
-| [SchildiChat](configuring-playbook-client-schildichat.md) | [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) | x | Based on Element, with a more traditional instant messaging experience |
+| [SchildiChat Web](configuring-playbook-client-schildichat-web.md) | [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) | x | Based on Element Web, with a more traditional instant messaging experience |
 
 ## Server Components
 

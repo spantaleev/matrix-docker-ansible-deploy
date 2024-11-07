@@ -70,13 +70,13 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 Web clients for Matrix that you can host on your own domains.
 
-- [Configuring Element](configuring-playbook-client-element.md), if you're going with the default/recommended client
+- [Configuring Element Web](configuring-playbook-client-element-web.md), if you're going with the default/recommended client
 
 - [Setting up Hydrogen](configuring-playbook-client-hydrogen.md), if you've enabled [Hydrogen](https://github.com/element-hq/hydrogen-web), a lightweight Matrix client with legacy and mobile browser support
 
 - [Setting up Cinny](configuring-playbook-client-cinny.md), if you've enabled [Cinny](https://github.com/ajbura/cinny), a web client focusing primarily on simple, elegant and secure interface
 
-- [Setting up SchildiChat](configuring-playbook-client-schildichat.md), if you've enabled [SchildiChat](https://schildi.chat/), a web client based on [Element](https://element.io/) with some extras and tweaks
+- [Setting up SchildiChat Web](configuring-playbook-client-schildichat-web.md), if you've enabled [SchildiChat Web](https://schildi.chat/), a web client based on [Element Web](https://element.io/) with some extras and tweaks
 
 ### Authentication and user-related
 

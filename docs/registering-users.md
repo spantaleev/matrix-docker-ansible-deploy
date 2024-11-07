@@ -16,7 +16,7 @@ Table of contents:
 
 **Note**: in the commands below, `<your-username>` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
 
-After registering a user (using one of the methods below), **you can log in with that user** via the [Element](configuring-playbook-client-element.md) service that this playbook has installed for you at a URL like this: `https://element.example.com/`.
+After registering a user (using one of the methods below), **you can log in with that user** via the [Element Web](configuring-playbook-client-element-web.md) service that this playbook has installed for you at a URL like this: `https://element.example.com/`.
 
 ### Registering users via the Ansible playbook
 

@@ -1,6 +1,6 @@
 ---
 
-- name: Ensure Element paths exists
+- name: Ensure Element Web paths exists
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -12,7 +12,7 @@
     - {path: "{{ matrix_client_element_docker_src_files_path }}", when: "{{ matrix_client_element_container_image_self_build }}"}
   when: "item.when | bool"
 
-- name: Ensure Element Docker image is pulled
+- name: Ensure Element Web Docker image is pulled
   community.docker.docker_image:
     name: "{{ matrix_client_element_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -24,7 +24,7 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
-- name: Ensure Element repository is present on self-build
+- name: Ensure Element Web repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_client_element_container_image_self_build_repo }}"
     dest: "{{ matrix_client_element_docker_src_files_path }}"
@@ -49,7 +49,7 @@
     mode: '0644'
   when: "matrix_client_element_container_image_self_build | bool and matrix_client_element_container_image_self_build_low_memory_system_patch_enabled | bool"
 
-- name: Ensure Element Docker image is built
+- name: Ensure Element Web Docker image is built
   ansible.builtin.command:
     cmd: |-
       {{ devture_systemd_docker_base_host_command_docker }} buildx build
@@ -59,7 +59,7 @@
   changed_when: true
   when: matrix_client_element_container_image_self_build | bool
 
-- name: Ensure Element configuration installed
+- name: Ensure Element Web configuration installed
   ansible.builtin.copy:
     content: "{{ matrix_client_element_configuration | to_nice_json }}"
     dest: "{{ matrix_client_element_data_path }}/config.json"
@@ -76,7 +76,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure Element config files installed
+- name: Ensure Element Web config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ matrix_client_element_data_path }}/{{ item.name }}"
@@ -90,7 +90,7 @@
     - {src: "{{ matrix_client_element_embedded_pages_home_path }}", name: "home.html"}
   when: "item.src is not none"
 
-- name: Ensure Element config files removed
+- name: Ensure Element Web config files removed
   ansible.builtin.file:
     path: "{{ matrix_client_element_data_path }}/{{ item.name }}"
     state: absent
@@ -98,7 +98,7 @@
     - {src: "{{ matrix_client_element_embedded_pages_home_path }}", name: "home.html"}
   when: "item.src is none"
 
-- name: Ensure Element container network is created
+- name: Ensure Element Web container network is created
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_client_element_container_network }}"

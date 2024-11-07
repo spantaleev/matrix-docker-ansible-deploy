@@ -731,7 +731,7 @@ Here are **actions you may wish to take** as a result of this change:
 
 - (recommended) embrace the new default. If your Matrix server is federating, your public rooms have always been joinable across federation anyway. Exposing the list of public rooms does no harm and more-so does good by contributing to the usefulness of the Matrix network by facilitating room discovery.
 
-- (switch to a better way of doings things on your semi-private server) The problem that the Synapse team appears to have solved by flipping the `allow_public_rooms_over_federation` default in Synapse v1.7.0 seems to for "mostly private" servers, which federate and have a bunch of rooms made public (and published in their room directory) in an effort to allow people on the same homeserver to easily find and join them (self-onboarding). With the introduction of Matrix Spaces, you can reorganize your flow around spaces - you can auto-join your users to a Matrix Space (via Synapse's `auto_join_rooms` setting - controlled by our `matrix_synapse_auto_join_rooms` variable), then add a bunch of rooms to the space and make them joinable by people belonging to the space. That is to say, do not make rooms public and do not publish them to the room directory unless they are really public. Instead, use other mechanisms for semi-public rooms or private rooms. One alternative is to stick to what you're doing (public rooms published to your rooms directory) but having a `m.federate: true` flag set during creation (clients like Element have a nice UI checkbox for this) to explicitly disable federation for them.
+- (switch to a better way of doings things on your semi-private server) The problem that the Synapse team appears to have solved by flipping the `allow_public_rooms_over_federation` default in Synapse v1.7.0 seems to for "mostly private" servers, which federate and have a bunch of rooms made public (and published in their room directory) in an effort to allow people on the same homeserver to easily find and join them (self-onboarding). With the introduction of Matrix Spaces, you can reorganize your flow around spaces - you can auto-join your users to a Matrix Space (via Synapse's `auto_join_rooms` setting - controlled by our `matrix_synapse_auto_join_rooms` variable), then add a bunch of rooms to the space and make them joinable by people belonging to the space. That is to say, do not make rooms public and do not publish them to the room directory unless they are really public. Instead, use other mechanisms for semi-public rooms or private rooms. One alternative is to stick to what you're doing (public rooms published to your rooms directory) but having a `m.federate: true` flag set during creation (clients like Element Web have a nice UI checkbox for this) to explicitly disable federation for them.
 
 - (keeping the old behavior) if you wish to keep doing what you're doing (keeping your Matrix server federating, but hiding its public rooms list), add `matrix_synapse_allow_public_rooms_over_federation: false` to your `vars.yml` configuration. This restores the old behavior. You may also consider [disabling federation](docs/configuring-playbook-federation.md#disabling-federation) completely instead of relying on security-by-obscurity measures.
 
@@ -751,11 +751,11 @@ People who [enable load-balancing with Synapse workers](docs/configuring-playboo
 
 # 2023-08-31
 
-## SchildiChat support
+## SchildiChat Web support
 
-Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) client.
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the [SchildiChat Web](https://github.com/SchildiChat/schildichat-desktop) client.
 
-See our [Configuring SchildiChat](docs/configuring-playbook-client-schildichat.md) documentation to get started.
+See our [Configuring SchildiChat Web](docs/configuring-playbook-client-schildichat-web.md) documentation to get started.
 
 
 # 2023-08-23
@@ -1826,9 +1826,9 @@ The playbook *could* correct these permissions automatically, but that requires 
 
 The playbook no longer installs the [ma1sd](https://github.com/ma1uta/ma1sd) identity server by default. The next time you run the playbook, ma1sd will be uninstalled from your server, unless you explicitly enable the ma1sd service (see how below).
 
-The main reason we used to install ma1sd by default in the past was to prevent Element from talking to the `matrix.org` / `vector.im` identity servers, by forcing it to talk to our own self-hosted (but otherwise useless) identity server instead, thus preventing contact list leaks.
+The main reason we used to install ma1sd by default in the past was to prevent Element clients from talking to the `matrix.org` / `vector.im` identity servers, by forcing it to talk to our own self-hosted (but otherwise useless) identity server instead, thus preventing contact list leaks.
 
-Since Element no longer defaults to using a public identity server if another one is not provided, we can stop installing ma1sd.
+Since Element clients no longer default to using a public identity server if another one is not provided, we can stop installing ma1sd.
 
 If you need to install the ma1sd identity server for some reason, you can explicitly enable it by adding this to your `vars.yml` file:
 
@@ -1917,7 +1917,7 @@ See our [Setting up Honoroit](docs/configuring-playbook-bot-honoroit.md) documen
 
 Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook now supports [Cinny](https://cinny.in/) - a new simple, elegant and secure Matrix client.
 
-By default, we still install Element. Still, people who'd like to try Cinny out can now install it via the playbook.
+By default, we still install Element Web. Still, people who'd like to try Cinny out can now install it via the playbook.
 
 Additional details are available in [Setting up Cinny](docs/configuring-playbook-client-cinny.md).
 
@@ -1989,7 +1989,7 @@ If you need to downgrade to the previous version, changing `matrix_sygnal_versio
 
 Thanks to [Aaron Raimist](https://github.com/aaronraimist), the playbook now supports [Hydrogen](https://github.com/vector-im/hydrogen-web) - a new lightweight Matrix client with legacy and mobile browser support.
 
-By default, we still install Element, as Hydrogen is still not fully-featured. Still, people who'd like to try Hydrogen out can now install it via the playbook.
+By default, we still install Element Web, as Hydrogen is still not fully-featured. Still, people who'd like to try Hydrogen out can now install it via the playbook.
 
 Additional details are available in [Setting up Hydrogen](docs/configuring-playbook-client-hydrogen.md).
 
@@ -2427,9 +2427,9 @@ To learn more, follow our [Dynamic DNS docs page](docs/configuring-playbook-dyna
 
 Until now, we used to serve a static page coming from Synapse at `https://matrix.example.com/`. This page was not very useful to anyone.
 
-Since `matrix.example.com` may be accessed by regular users in certain conditions, it's probably better to redirect them to a better place (e.g. to the [Element](docs/configuring-playbook-client-element.md) client).
+Since `matrix.example.com` may be accessed by regular users in certain conditions, it's probably better to redirect them to a better place (e.g. to [Element Web](docs/configuring-playbook-client-element-web.md)).
 
-If Element is installed (`matrix_client_element_enabled: true`, which it is by default), we now redirect people to it, instead of showing them a Synapse static page.
+If Element Web is installed (`matrix_client_element_enabled: true`, which it is by default), we now redirect people to it, instead of showing them a Synapse static page.
 
 If you'd like to control where the redirect goes, use the `matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain` variable.
 To restore the old behavior of not redirecting anywhere and serving the Synapse static page, set it to an empty value (`matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""`).
@@ -2514,7 +2514,7 @@ As per the official announcement, [Riot has been rebraned to Element](https://el
 
 The playbook follows suit. Existing installations have a few options for how to handle this.
 
-See our [Migrating to Element](docs/configuring-playbook-riot-web.md#migrating-to-element) documentation page for more details.
+See our [Migrating to Element Web](docs/configuring-playbook-riot-web.md#migrating-to-element) documentation page for more details.
 
 
 # 2020-07-03

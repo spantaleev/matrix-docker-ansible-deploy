@@ -62,7 +62,7 @@ Then from the plugin manager page (`https://etherpad.example.com/admin/plugins`,
 
 ### How to use Etherpad widgets without an integration manager (like Dimension)
 
-This is how it works in Element, it might work quite similar with other clients:
+This is how it works in Element Web, it might work quite similar with other clients:
 
 To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.example.com`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
 
@@ -71,7 +71,7 @@ To integrate a standalone Etherpad in a room, create your pad by visiting `https
 
 If you decided to install [Dimension integration manager](configuring-playbook-dimension.md) alongside Etherpad, the Dimension administrator users can configure the default URL template.
 
-The Dimension configuration menu can be accessed with the sprocket icon as you begin to add a widget to a room in Element. There you will find the Etherpad Widget Configuration action beneath the _Widgets_ tab.
+The Dimension configuration menu can be accessed with the sprocket icon as you begin to add a widget to a room in Element Web. There you will find the Etherpad Widget Configuration action beneath the _Widgets_ tab.
 
 
 #### Removing the integrated Etherpad chat

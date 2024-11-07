@@ -22,7 +22,7 @@ Since it is difficult to create the first user account on Conduit (see [famedly/
 
 1. Add `matrix_conduit_allow_registration: true` to your `vars.yml` the first time around, temporarily
 2. Run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start` - see [Installing](installing.md))
-3. Create your first user via Element or any other client which supports creating users
+3. Create your first user via Element Web or any other client which supports creating users
 4. Get rid of `matrix_conduit_allow_registration: true` from your `vars.yml`
 5. Run the playbook again (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-conduit,start` would be enough this time)
 6. You can now use your server safely. Additional users can be created by messaging the internal Conduit bot

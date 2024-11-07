@@ -76,9 +76,9 @@ This section details what you can expect when switching to the Matrix Authentica
 
 - ✅ Your **existing login sessions will continue to work** (you won't get logged out). Migration will require a bit of manual work and minutes of downtime, but it's not too bad.
 
-- ✅ Various clients ([Cinny](./configuring-playbook-client-cinny.md), [Element-web](./configuring-playbook-client-element.md), Element X, FluffyChat) will be able to use the **new SSO-based login flow** provided by Matrix Authentication Service
+- ✅ Various clients ([Cinny](./configuring-playbook-client-cinny.md), [Element Web](./configuring-playbook-client-element-web.md), Element X, FluffyChat) will be able to use the **new SSO-based login flow** provided by Matrix Authentication Service
 
-- ✅ The **old login flow** (called `m.login.password`) **will still continue to work**, so clients (old Element, etc.) and bridges/bots that don't support the new OIDC-based login flow will still work. Going through the old login flow does not require users to have a verified email address, as [is the case](https://github.com/element-hq/matrix-authentication-service/issues/1505) for the new SSO-based login flow.
+- ✅ The **old login flow** (called `m.login.password`) **will still continue to work**, so clients (old Element Web, etc.) and bridges/bots that don't support the new OIDC-based login flow will still work. Going through the old login flow does not require users to have a verified email address, as [is the case](https://github.com/element-hq/matrix-authentication-service/issues/1505) for the new SSO-based login flow.
 
 - ✅ [Registering users](./registering-users.md) via **the playbook's `register-user` tag remains unchanged**. The playbook automatically does the right thing regardless of homeserver implementation (Synapse, Dendrite, etc.) and whether MAS is enabled or not. When MAS is enabled, the playbook will forward user-registration requests to MAS. Registering users via the command-line is no longer done via the `/matrix/synapse/bin/register` script, but via `/matrix/matrix-authentication-service/bin/register-user`.
 

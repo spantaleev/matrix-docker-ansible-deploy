@@ -124,14 +124,14 @@ matrix_client_schildichat_floc_optout_enabled: true
 matrix_client_schildichat_hsts_preload_enabled: false
 
 matrix_client_schildichat_scheme: https
-# The hostname at which SchildiChat is served.
+# The hostname at which SchildiChat Web is served.
 matrix_client_schildichat_hostname: "{{ matrix_server_fqn_schildichat }}"
 
-# The path at which SchildiChat is exposed.
+# The path at which SchildiChat Web is exposed.
 # This value must either be `/` or not end with a slash (e.g. `/schildichat`).
 matrix_client_schildichat_path_prefix: /
 
-# SchildiChat config.json customizations
+# SchildiChat Web config.json customizations
 matrix_client_schildichat_default_server_name: "{{ matrix_domain }}"
 matrix_client_schildichat_default_hs_url: ""
 matrix_client_schildichat_default_is_url: ~
@@ -145,9 +145,9 @@ matrix_client_schildichat_integrations_jitsi_widget_url: "https://scalar.vector.
 matrix_client_schildichat_permalink_prefix: "https://matrix.to"  # noqa var-naming
 matrix_client_schildichat_bug_report_endpoint_url: "https://element.io/bugreports/submit"
 matrix_client_schildichat_show_lab_settings: true  # noqa var-naming
-# SchildiChat public room directory server(s)
+# SchildiChat Web public room directory server(s)
 matrix_client_schildichat_room_directory_servers: ['matrix.org']
-# Branding of SchildiChat
+# Branding of SchildiChat Web
 matrix_client_schildichat_brand: "schildichat"
 
 # URL to Logo on welcome page
@@ -171,7 +171,7 @@ matrix_client_schildichat_branding_welcome_background_url: ~  # noqa var-naming
 
 matrix_client_schildichat_page_template_welcome_path: "{{ role_path }}/templates/welcome.html.j2"
 
-# By default, there's no SchildiChat homepage (when logged in). If you wish to have one,
+# By default, there's no SchildiChat Web homepage (when logged in). If you wish to have one,
 # point this to a `home.html` template file on your local filesystem.
 matrix_client_schildichat_embedded_pages_home_path: ~
 
@@ -189,7 +189,7 @@ matrix_client_schildichat_default_country_code: "GB"
 # Controls whether presence will be enabled
 matrix_client_schildichat_enable_presence_by_hs_url: ~
 
-# Controls whether custom SchildiChat themes will be installed.
+# Controls whether custom SchildiChat Web themes will be installed.
 # When enabled, all themes found in the `matrix_client_schildichat_themes_repository_url` repository
 # will be installed and enabled automatically.
 matrix_client_schildichat_themes_enabled: false
@@ -199,16 +199,16 @@ matrix_client_schildichat_themes_repository_version: master
 # Controls the default theme
 matrix_client_schildichat_default_theme: 'light'
 
-# Controls the `setting_defaults.custom_themes` setting of the SchildiChat configuration.
+# Controls the `setting_defaults.custom_themes` setting of the SchildiChat Web configuration.
 # You can use this setting to define custom themes.
 #
 # Also, look at `matrix_client_schildichat_themes_enabled` for a way to pull in a bunch of custom themes automatically.
 # If you define your own themes here and set `matrix_client_schildichat_themes_enabled: true`, your themes will be preserved as well.
 #
-# Note that for a custom theme to work well, all SchildiChat instances that you use must have the same theme installed.
+# Note that for a custom theme to work well, all SchildiChat Web instances that you use must have the same theme installed.
 matrix_client_schildichat_setting_defaults_custom_themes: []  # noqa var-naming
 
-# Default SchildiChat configuration template which covers the generic use case.
+# Default SchildiChat Web configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
 # For a more advanced customization, you can extend the default (see `matrix_client_schildichat_configuration_extension_json`)
@@ -218,7 +218,7 @@ matrix_client_schildichat_setting_defaults_custom_themes: []  # noqa var-naming
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
 matrix_client_schildichat_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
 
-# Your custom JSON configuration for SchildiChat should go to `matrix_client_schildichat_configuration_extension_json`.
+# Your custom JSON configuration for SchildiChat Web should go to `matrix_client_schildichat_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_schildichat_configuration_default`).
 #
 # You can override individual variables from the default configuration, or introduce new ones.
@@ -237,7 +237,7 @@ matrix_client_schildichat_configuration_extension_json: '{}'
 
 matrix_client_schildichat_configuration_extension: "{{ matrix_client_schildichat_configuration_extension_json | from_json if matrix_client_schildichat_configuration_extension_json | from_json is mapping else {} }}"
 
-# Holds the final SchildiChat configuration (a combination of the default and its extension).
+# Holds the final SchildiChat Web configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_client_schildichat_configuration_default`.
 matrix_client_schildichat_configuration: "{{ matrix_client_schildichat_configuration_default | combine(matrix_client_schildichat_configuration_extension, recursive=True) }}"
 

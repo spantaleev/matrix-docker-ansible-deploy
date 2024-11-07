@@ -13,7 +13,7 @@ Draupnir for all is the way to go if you need more than 1 Draupnir instance, but
 
 Draupnir for all in the playbook is rate-limit-exempt automatically as its appservice configuration file does not specify any rate limits.
 
-Normal Draupnir does come with the benefit of access to Synapse Admin features. You are also able to more easily customise your normal Draupnir than D4A as D4A even on the branch with the Avatar command (To be Upstreamed to Mainline Draupnir) that command is clunky as it requires the use of things like Element devtools. In normal Draupnir this is a quick operation where you login to Draupnir with a normal client and set Avatar and Display name normally.
+Normal Draupnir does come with the benefit of access to Synapse Admin features. You are also able to more easily customise your normal Draupnir than D4A as D4A even on the branch with the Avatar command (To be Upstreamed to Mainline Draupnir) that command is clunky as it requires the use of things like Element Web devtools. In normal Draupnir this is a quick operation where you login to Draupnir with a normal client and set Avatar and Display name normally.
 
 Draupnir for all does not support external tooling like [MRU](https://mru.rory.gay) as it can't access Draupnir's user account.
 
@@ -26,7 +26,7 @@ The playbook does not create a management room for your Main Draupnir. This task
 
 The management room has to be given an alias and be public when you are setting up the bot for the first time as the bot does not differentiate between invites and invites to the management room.
 
-This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element calls this powerlevel.
+This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel.
 
 As noted in the Draupnir install instructions the control room is sensitive. The following is said about the control room in the Draupnir install instructions.
 >Anyone in this room can control the bot so it is important that you only invite trusted users to this room. The room must be unencrypted since the playbook does not support installing Pantalaimon yet.
@@ -72,7 +72,7 @@ To allow users or whole homeservers you type /plain @draupnir-main:example.com a
 
 ### 2. How to provision a D4A once you are allowed to.
 
-Open a DM with @draupnir-main:example.com and if using Element send a message into this DM to finalise creating it. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
+Open a DM with @draupnir-main:example.com and if using an Element client send a message into this DM to finalise creating it. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
 
 Congratulations if you made it all the way here because you now have a fully working Draupnir for all deployment.
 
