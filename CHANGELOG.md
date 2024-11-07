@@ -755,7 +755,7 @@ People who [enable load-balancing with Synapse workers](docs/configuring-playboo
 
 Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the [SchildiChat Web](https://github.com/SchildiChat/schildichat-desktop) client.
 
-See our [Configuring SchildiChat Web](docs/configuring-playbook-client-schildichat.md) documentation to get started.
+See our [Configuring SchildiChat Web](docs/configuring-playbook-client-schildichat-web.md) documentation to get started.
 
 
 # 2023-08-23
