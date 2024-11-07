@@ -70,7 +70,7 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
 Web clients for Matrix that you can host on your own domains.
 
-- [Configuring Element Web](configuring-playbook-client-element.md), if you're going with the default/recommended client
+- [Configuring Element Web](configuring-playbook-client-element-web.md), if you're going with the default/recommended client
 
 - [Setting up Hydrogen](configuring-playbook-client-hydrogen.md), if you've enabled [Hydrogen](https://github.com/element-hq/hydrogen-web), a lightweight Matrix client with legacy and mobile browser support
 

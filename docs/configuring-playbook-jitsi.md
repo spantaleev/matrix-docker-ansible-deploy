@@ -1,6 +1,6 @@
 # Setting up the Jitsi video-conferencing platform (optional)
 
-The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with Element clients ([Element Web](configuring-playbook-client-element.md)/Desktop, Android and iOS).
+The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS).
 
 Jitsi installation is **not enabled by default**, because it's not a core component of Matrix services.
 

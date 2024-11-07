@@ -53,7 +53,7 @@ Web clients for Matrix that you can host on your own domains.
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
-| [Element Web](https://github.com/element-hq/element-web) | ✅ | Default Matrix web client, configured to connect to your own Synapse server | [Link](docs/configuring-playbook-client-element.md) |
+| [Element Web](https://github.com/element-hq/element-web) | ✅ | Default Matrix web client, configured to connect to your own Synapse server | [Link](docs/configuring-playbook-client-element-web.md) |
 | [Hydrogen](https://github.com/element-hq/hydrogen-web) | ❌ | Lightweight Matrix client with legacy and mobile browser support | [Link](docs/configuring-playbook-client-hydrogen.md) |
 | [Cinny](https://github.com/ajbura/cinny) |  ❌ | Simple, elegant and secure web client | [Link](docs/configuring-playbook-client-cinny.md) |
 | [SchildiChat Web](https://schildi.chat/) | ❌ | Based on Element Web, with a more traditional instant messaging experience | [Link](docs/configuring-playbook-client-schildichat-web.md) |

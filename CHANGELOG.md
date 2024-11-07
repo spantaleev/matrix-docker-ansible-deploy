@@ -2427,7 +2427,7 @@ To learn more, follow our [Dynamic DNS docs page](docs/configuring-playbook-dyna
 
 Until now, we used to serve a static page coming from Synapse at `https://matrix.example.com/`. This page was not very useful to anyone.
 
-Since `matrix.example.com` may be accessed by regular users in certain conditions, it's probably better to redirect them to a better place (e.g. to [Element Web](docs/configuring-playbook-client-element.md)).
+Since `matrix.example.com` may be accessed by regular users in certain conditions, it's probably better to redirect them to a better place (e.g. to [Element Web](docs/configuring-playbook-client-element-web.md)).
 
 If Element Web is installed (`matrix_client_element_enabled: true`, which it is by default), we now redirect people to it, instead of showing them a Synapse static page.
 

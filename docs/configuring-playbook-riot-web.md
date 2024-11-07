@@ -4,7 +4,7 @@ By default, this playbook **used to install** the [Riot-web](https://github.com/
 
 Riot has since been [renamed to Element](https://element.io/blog/welcome-to-element/).
 
-- to learn more about Element Web and its configuration, see our dedicated [Configuring Element Web](configuring-playbook-client-element.md) documentation page
+- to learn more about Element Web and its configuration, see our dedicated [Configuring Element Web](configuring-playbook-client-element-web.md) documentation page
 - to learn how to migrate from Riot to Element Web, see [Migrating to Element Web](#migrating-to-element-web) below
 
 
