@@ -2,9 +2,9 @@
 
 This playbook can install the [SchildiChat](https://github.com/SchildiChat/schildichat-desktop) Matrix web client for you.
 
-SchildiChat is a feature-rich messenger for Matrix based on Element with some extras and tweaks. It can be installed alongside or instead of Element.
+SchildiChat is a feature-rich messenger for Matrix based on Element Web with some extras and tweaks. It can be installed alongside or instead of Element Web.
 
-**WARNING**: SchildiChat Web is based on Element-web, but its releases are lagging behind. As an example (from 2024-02-26), SchildiChat Web is 22 releases behind (it being based on element-web `v1.11.36`, while element-web is now on `v1.11.58`). Element-web frequently suffers from security issues, so running something based on an ancient Element-web release is **dangerous**. Use SchildiChat Web at your own risk!
+**WARNING**: SchildiChat Web is based on Element Web, but its releases are lagging behind. As an example (from 2024-02-26), SchildiChat Web is 22 releases behind (it being based on Element Web `v1.11.36`, while Element Web is now on `v1.11.58`). Element Web frequently suffers from security issues, so running something based on an ancient Element Web release is **dangerous**. Use SchildiChat Web at your own risk!
 
 ## Adjusting the playbook configuration
 

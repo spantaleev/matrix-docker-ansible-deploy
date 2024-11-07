@@ -55,7 +55,7 @@ When setting up a SRV record, if you are asked for a service and protocol instea
 
 As the table above illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your new server's IP address (DNS `A` record or `CNAME` record is fine).
 
-The `element.example.com` subdomain may be necessary, because this playbook installs the [Element](https://github.com/element-hq/element-web) web client for you. If you'd rather instruct the playbook not to install Element (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
+The `element.example.com` subdomain may be necessary, because this playbook installs the [Element Web](https://github.com/element-hq/element-web) client for you. If you'd rather instruct the playbook not to install Element Web (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
 
 The `dimension.example.com` subdomain may be necessary, because this playbook could install the [Dimension integration manager](http://dimension.t2bot.io/) for you. The installation of Dimension is disabled by default, because it's only possible to install it after the other Matrix services are working (see [Setting up Dimension integration manager](configuring-playbook-dimension.md) later). If you do not wish to set up Dimension, feel free to skip the `dimension.example.com` DNS record.
 

@@ -23,11 +23,11 @@ For a lot more generic questions and answers, see the [matrix.org FAQ](https://m
 
 You don't just use the "email" protocols (SMTP, POP3, IMAP) directly though. There's a *server* somewhere which stores your data (`@gmail.com`, `@yahoo.com`, `@hotmail.com`, `@your-company.com`) and you access it by using these "email" protocols via some *client* program (Outlook, Thunderbird, some website, etc).
 
-In the world of the Matrix chat protocol, there are various client programs. The first and currently most full-featured one is called [Element](https://element.io/) (used to be called Riot.im and Vector.im in the past). There are [many other clients](https://matrix.org/clients/). You can switch clients as much as you want until you find the one that is right for you on a given platform (you may use Element on your desktop, but Fluffychat on your phone, etc).
+In the world of the Matrix chat protocol, there are various client programs. The first and currently most full-featured one is called [Element](https://element.io/) (used to be called Riot.im and Vector.im in the past). There are [many other clients](https://matrix.org/clients/). You can switch clients as much as you want until you find the one that is right for you on a given platform (you may use Element Desktop on your desktop, but Fluffychat on your phone, etc).
 
 Matrix is also like email due to the fact that there are many servers around the world which can all talk to each other (you can send email from `@gmail.com` addresses to `@yahoo.com` and `@hotmail.com` addresses). It's the same with Matrix (`@bob:example.com` can talk to `@alice:example.org`).
 
-If someone else is hosting your Matrix server (you being `@user:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element.
+If someone else is hosting your Matrix server (you being `@user:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element Web or Element X Android.
 
 If you'd like to host your own server (you being `@user:example.com`), you'd need to set up a Matrix server program, like Synapse.
 
@@ -53,9 +53,9 @@ One of [Matrix](https://matrix.org/)'s distinguishing strengths (compared to oth
 
 There are 3 ways to get into Matrix, depending on your technical ability and needs:
 
-- **using the existing default server** - the easiest way is to use an existing server. The largest public Matrix server is `matrix.org` and it's configured as a default server in clients such as [Element](https://element.io) and many others. Just use Element on the browser via that link (or download the Element app on a smartphone), create an account and start chatting.
+- **using the existing default server** - the easiest way is to use an existing server. The largest public Matrix server is `matrix.org` and it's configured as a default server in clients such as [Element Web](https://app.element.io) and many others. Just use Element Web on the browser via that link (or [download client apps for your Desktop or smartphone](https://element.io/app-for-productivity)), create an account and start chatting.
 
-- **using some other server** - instead of using the largest public server (`matrix.org`), you can use another public one. Here's a [list of public Matrix servers](https://joinmatrix.org/servers/) to choose from. Again, you download [Element](https://element.io) or [some other client](https://matrix.org/clients/) of your choosing and adjust the homeserver URL during login.
+- **using some other server** - instead of using the largest public server (`matrix.org`), you can use another public one. Here's a [list of public Matrix servers](https://joinmatrix.org/servers/) to choose from. Go to [Element Web](https://app.element.io) or download [some other client](https://matrix.org/clients/) of your choosing and adjust the homeserver URL during login.
 
 - **using your own server** - running your own server puts you in ultimate control of your data. It also lets you have your own user identifiers (e.g. `@bob:example.com`). See [How do I set up my own Matrix server](#how-do-i-set-up-my-own-matrix-server).
 
@@ -251,7 +251,7 @@ matrix_domain: "matrix.example.com"
 # This is where Matrix services
 matrix_server_fqn_matrix: "matrix.example.com"
 
-# This is where you access the Element web UI from (if enabled via `matrix_client_element_enabled: true`; enabled by default).
+# This is where you access the Element Web from (if enabled via `matrix_client_element_enabled: true`; enabled by default).
 # This and the Matrix FQN (see above) are expected to be on the same server.
 #
 # Feel free to use `element.matrix.example.com`, if you'd prefer that.

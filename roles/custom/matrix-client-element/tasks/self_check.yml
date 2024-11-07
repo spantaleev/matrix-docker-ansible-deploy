@@ -3,7 +3,7 @@
 - ansible.builtin.set_fact:
     matrix_client_element_url_endpoint_public: "{{ matrix_client_element_scheme }}://{{ matrix_client_element_hostname }}/config.json"
 
-- name: Check Element
+- name: Check Element Web
   ansible.builtin.uri:
     url: "{{ matrix_client_element_url_endpoint_public }}"
     follow_redirects: none
@@ -14,11 +14,11 @@
   delegate_to: 127.0.0.1
   become: false
 
-- name: Fail if Element not working
+- name: Fail if Element Web not working
   ansible.builtin.fail:
-    msg: "Failed checking Element is up at `{{ matrix_server_fqn_element }}` (checked endpoint: `{{ matrix_client_element_url_endpoint_public }}`). Is Element running? Is port 443 open in your firewall? Full error: {{ matrix_client_element_self_check_result }}"
+    msg: "Failed checking Element Web is up at `{{ matrix_server_fqn_element }}` (checked endpoint: `{{ matrix_client_element_url_endpoint_public }}`). Is Element Web running? Is port 443 open in your firewall? Full error: {{ matrix_client_element_self_check_result }}"
   when: "matrix_client_element_self_check_result.failed or 'json' not in matrix_client_element_self_check_result"
 
-- name: Report working Element
+- name: Report working Element Web
   ansible.builtin.debug:
-    msg: "Element at `{{ matrix_server_fqn_element }}` is working (checked endpoint: `{{ matrix_client_element_url_endpoint_public }}`)"
+    msg: "Element Web at `{{ matrix_server_fqn_element }}` is working (checked endpoint: `{{ matrix_client_element_url_endpoint_public }}`)"

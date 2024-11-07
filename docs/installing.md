@@ -111,6 +111,6 @@ After you have started the services and **finalized the installation process** (
 - or learn how to [upgrade services when new versions are released](maintenance-upgrading-services.md)
 - or learn how to [maintain your server](faq.md#maintenance)
 - or join some Matrix rooms:
-  * via the *Explore rooms* feature in Element or some other client, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
+  * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
   * or come say Hi in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))

@@ -10,5 +10,5 @@ To get started, first follow the [front the integrated reverse-proxy webserver w
 
 `matrix-domain.conf` contains configuration for the Matrix domain, which handles both the Client-Server API (port `443`) and the Matrix Federation API (port `8448`).
 
-`matrix-client-element.conf` is an example for when you're hosting Element at `element.example.com`.
+`matrix-client-element.conf` is an example for when you're hosting Element Web at `element.example.com`.
 This configuration can also be used as an example for handling other domains, depending on the services you enable with the playbook (e.g. `dimension.example.com`, etc).
