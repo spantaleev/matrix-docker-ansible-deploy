@@ -4,13 +4,7 @@
 
 The playbook can install and configure [sliding-sync](https://github.com/matrix-org/sliding-sync) proxy for you.
 
-Sliding Sync is an implementation of [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/sync-v3/proposals/3575-sync.md) and a prerequisite for running the new (**still beta**) Element X clients ([Element X iOS](https://github.com/element-hq/element-x-ios) and [Element X Android](https://github.com/element-hq/element-x-android)).
-
-See the project's [documentation](https://github.com/matrix-org/sliding-sync) to learn more.
-
-Element X iOS is [available on TestFlight](https://testflight.apple.com/join/uZbeZCOi).
-
-Element X Android is [available on the Github Releases page](https://github.com/element-hq/element-x-android/releases).
+Sliding Sync is an implementation of [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/sync-v3/proposals/3575-sync.md) and a prerequisite for running Element X clients ([Element X iOS](https://github.com/element-hq/element-x-ios) and [Element X Android](https://github.com/element-hq/element-x-android)). See the project's [documentation](https://github.com/matrix-org/sliding-sync) to learn more.
 
 
 ## Adjusting the playbook configuration
