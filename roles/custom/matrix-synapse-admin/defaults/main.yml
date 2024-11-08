@@ -146,7 +146,11 @@ matrix_synapse_admin_path_prefix: /synapse-admin
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_synapse_admin_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+matrix_synapse_admin_configuration_default:
+  restrictBaseUrl: "{{ matrix_synapse_admin_config_restrictBaseUrl }}"
+  asManagedUsers: "{{ matrix_synapse_admin_config_asManagedUsers }}"
+  supportURL: "{{ matrix_synapse_admin_config_supportURL }}"
+  menu: "{{ matrix_synapse_admin_config_menu }}"
 
 # Your custom JSON configuration for synapse-admin should go to `matrix_synapse_admin_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_synapse_admin_configuration_default`).
