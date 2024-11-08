@@ -34,6 +34,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-u
 
 This will do a full installation and start all Matrix services.
 
+**Note**: if the command does not work as expected, make sure that you have properly installed and configured software required to run the playbook, as described on [Prerequisites](prerequisites.md).
+
 ### Installing a server into which you'll import old data
 
 If you will be importing data into your newly created Matrix server, install it, but **do not** start its services just yet. Starting its services or messing with its database now will affect your data import later on.
