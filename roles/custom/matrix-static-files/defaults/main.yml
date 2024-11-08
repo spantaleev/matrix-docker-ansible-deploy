@@ -193,6 +193,16 @@ matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_se
 # See: https://github.com/element-hq/element-web/blob/develop/docs/e2ee.md
 matrix_static_files_file_matrix_client_property_io_element_e2ee_force_disable: false
 
+# Controls whether `cc.etke.synapse-admin`-related entries should be added to the client well-known.
+# By default, if there are entries in `matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin`, we show them (by enabling this).
+matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_enabled: "{{ matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin | default({}) | dict2items | length > 0 }}"
+
+# Controls the cc.etke.synapse-admin property in the /.well-known/matrix/client file.
+# See `matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_entries_enabled`
+matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin: "{{ matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto | combine(matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_custom, recursive=True) }}"
+matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: {}
+matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_custom: {}
+
 # Default /.well-known/matrix/client configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
