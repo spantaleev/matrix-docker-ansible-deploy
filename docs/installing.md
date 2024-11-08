@@ -86,16 +86,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=start
 
 Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-the-future) and [Finalize the installation](#3-finalize-the-installation)
 
-
-## 2. Maintaining your setup in the future
-
-Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match.
-
-Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [Playbook tags introduction](#playbook-tags-introduction)
-
-A way to invoke these `ansible-playbook` commands with less typing in the future is to use [just](https://github.com/casey/just) to run them: `just install-all` or `just setup-all`. See [our `justfile`](../justfile) for more information.
-
-
 ## 3. Finalize the installation
 
 Now that services are running, you need to **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md).
@@ -125,3 +115,11 @@ After finilizing the installation, you can:
   * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
   * or come say Hi in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
+
+### Maintaining your setup in the future
+
+Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match.
+
+Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [Playbook tags introduction](#playbook-tags-introduction)
+
+A way to invoke these `ansible-playbook` commands with less typing in the future is to use [just](https://github.com/casey/just) to run them: `just install-all` or `just setup-all`. See [our `justfile`](../justfile) for more information.
