@@ -100,10 +100,21 @@ A way to invoke these `ansible-playbook` commands with less typing in the future
 
 Now that services are running, you need to **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md).
 
+If you need the base domain for anything else (such as hosting a website), you have to configure it manually, following the procedure described on the linked documentation.
+
+However, if you do not need the base domain (`example.com`) for anything else, the easiest way of configuring it is to [serve the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
+
+To configure Service Discovery in this way, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_static_files_container_labels_base_domain_enabled: true
+```
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## 4. Things to do next
 
-After you have started the services and **finalized the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md), you can:
+After finilizing the installation, you can:
 
 - [check if services work](maintenance-checking-services.md)
 - or [create your first Matrix user account](registering-users.md)
