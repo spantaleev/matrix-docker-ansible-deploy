@@ -13,4 +13,4 @@ To get started, first follow the [front the integrated reverse-proxy webserver w
 You can either just use the [Caddyfile](Caddyfile) directly or append its content to your own Caddyfile.
 In both cases make sure to replace all the `example.com` domains with your own domain.
 
-This example does not include additional services like element, but you should be able copy the first block and replace the `matrix` subdomain with the additional services subdomain. I have not tested this though.
+This example does not include additional services like Element, but you should be able copy the first block and replace the `matrix` subdomain with the additional services subdomain. I have not tested this though.
