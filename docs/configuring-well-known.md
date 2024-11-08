@@ -34,9 +34,9 @@ However, this playbook installs your Matrix server on another domain (e.g. `matr
 
 ### (Optional) Support Service Discovery
 
-[MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
+[MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929), which was added to [Matrix Specification version v1.10](https://spec.matrix.org/v1.10/client-server-api/#getwell-knownmatrixsupport), specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
-The two playbook variables that you could look for, if you're interested in being an early adopter, are: `matrix_static_files_file_matrix_support_property_m_contacts` and `matrix_static_files_file_matrix_support_property_m_support_page`.
+The two playbook variables that you could look for are: `matrix_static_files_file_matrix_support_property_m_contacts` and `matrix_static_files_file_matrix_support_property_m_support_page`.
 
 Example snippet for `vars.yml`:
 
