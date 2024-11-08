@@ -61,18 +61,27 @@ matrix_static_files_file_matrix_support_property_m_support_page: "https://exampl
 
 To implement the service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver.
 
-If you don't have a server for your base domain at all, you can use the Matrix server for this. See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up. If you decide to go this route, you don't need to read ahead in this document. When **Serving the base domain**, the playbook takes care to serve the appropriate well-known files automatically.
+### Serving the base domain from the Matrix server via the playbook
+
+If you don't have a server for your base domain at all, you can use the Matrix server for this. If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it.
+
+**This is the easiest way to set up well-known serving** -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.) and take care to serve the appropriate well-known files automatically.
+
+If you decide to go this route, you don't need to read ahead in this document. Instead, go to [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
+
+However, if you need to use the base domain for other things, this method is less suitable than the one explained below.
+
+### Manually installing well-known files on the base domain's server
 
 If you're managing the base domain by yourself somehow, you'll need to set up serving of some `/.well-known/matrix/*` files from it via HTTPS.
 
 To make things easy for you to set up, this playbook generates and hosts 2 well-known files on the Matrix domain's server. The files are generated at `/matrix/static-files/.well-known/matrix/` and hosted at `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`, even though this is the wrong place to host them.
 
-You have 3 options when it comes to installing the files on the base domain's server:
+You have two options when it comes to installing the files on the base domain's server:
 
+#### (Option 1): **Copying the files manually** to your base domain's server
 
-### (Option 1): **Copying the files manually** to your base domain's server
-
-**Hint**: Option 2 and 3 (below) are generally a better way to do this. Make sure to go with them, if possible.
+**Hint**: Option 2 is generally a better way to do this. Make sure to go with it, if possible.
 
 All you need to do is:
 
@@ -82,17 +91,7 @@ All you need to do is:
 
 This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server. It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again.
 
-
-### (Option 2): **Serving the base domain** from the Matrix server via the playbook
-
-If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it.
-
-This is the easiest way to set up well-known serving -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.). However, if you need to use the base domain for other things (such as hosting some website, etc.), going with Option 1 or Option 3 might be more suitable.
-
-See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
-
-
-### (Option 3): **Setting up reverse-proxying** of the well-known files from the base domain's server to the Matrix server
+#### (Option 2): **Setting up reverse-proxying** of the well-known files from the base domain's server to the Matrix server
 
 This option is less fragile and generally better.
 
