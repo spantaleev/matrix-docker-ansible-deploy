@@ -12,7 +12,7 @@ Before installing, you need to update the Ansible roles in this playbook by runn
 
 There's another shortcut (`just update`) which updates the playbook (`git pull`) and updates roles (`just roles`) at the same time.
 
-## Install Matrix
+## Install Matrix server and services
 
 The Ansible playbook's tasks are tagged, so that certain parts of the Ansible playbook can be run without running all other tasks.
 
