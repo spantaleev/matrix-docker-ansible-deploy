@@ -185,13 +185,13 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom:
   # trustedIPs: ['IP-ADDRESS-OF-YOUR-REVERSE-PROXY']
 ```
 
-Such a configuration would expose all services on a local port `81` and Matrix Federation on a local port `8449`.
+Such a configuration would expose all services on a local port `81` and Matrix Federation on a local port `8449`. Your reverse-proxy configuration needs to send traffic to these ports. [`examples/reverse-proxies`](../examples/reverse-proxies/) contains examples for various webservers such as Apache2, Caddy, HAproxy, nginx and Nginx Proxy Manager.
 
-Your reverse-proxy configuration needs to send traffic to these ports. The [`examples/reverse-proxies` directory](../examples/reverse-proxies/) contains sample configuration for various webservers (Apache2, Caddy, HAproxy, nginx, Nginx Proxy Manager).
+It's important that these webservers proxy-pass requests to the correct `ip:port` and also set the `Host` HTTP header appropriately. If you don't pass the `Host` header correctly, Traefik will return a `404 - not found` error.
 
-It's important that these webservers proxy-pass requests to the correct place and also set the `Host` HTTP header appropriately. If you don't pass the `Host` header correctly, you would get a 404 not found error from Traefik.
-
-To put it another way, `curl http://127.0.0.1:81` would give you a 404, but `curl -H 'Host: matrix.example.com' http://127.0.0.1:81` should work.
+To put it another way:
+- `curl http://127.0.0.1:81` will result in a `404 - not found` error
+- but `curl -H 'Host: matrix.example.com' http://127.0.0.1:81` should work.
 
 
 ### Using no reverse-proxy on the Matrix side at all
