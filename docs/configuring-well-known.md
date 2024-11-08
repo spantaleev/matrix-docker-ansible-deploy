@@ -1,15 +1,14 @@
 # Configuring Service Discovery via .well-known
 
-Service discovery is a way for the Matrix network to discover where a Matrix server is.
+Service discovery is a way for the Matrix network to discover where a Matrix server is. This is necessary for federation to work.
 
 There are 2 types of well-known service discovery that Matrix makes use of:
 
-- (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. Without a proper configuration, your server will effectively not be part of the Matrix network. Learn more in [Introduction to Federation Server Discovery](#introduction-to-federation-server-discovery)
+- (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. Without a proper configuration, your server will effectively not be part of the Matrix network.
 
-- (not that important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses. Learn more in [Introduction to Client Server Discovery](#introduction-to-client-server-discovery)
+- (not that important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
 
-
-## Introduction to Federation Server Discovery
+## Federation Server Discovery
 
 All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`).
 
@@ -19,10 +18,7 @@ Server delegation can be configured using DNS SRV records or by setting up a `/.
 
 Both methods have their place and will continue to do so. You only need to use just one of these delegation methods. For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
 
-To learn how to set up `/.well-known/matrix/server`, read the Installing section below.
-
-
-## Introduction to Client Server Discovery
+## Client Server Discovery
 
 Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@username:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
 
@@ -32,10 +28,7 @@ As [per the Client-Server specification](https://matrix.org/docs/spec/client_ser
 
 However, this playbook installs your Matrix server on another domain (e.g. `matrix.example.com`) and not on the base domain (e.g. `example.com`), so it takes a little extra manual effort to set up the file.
 
-To learn how to set it up, read the Installing section below.
-
-
-## (Optional) Introduction to Homeserver Admin Contact and Support page
+## (Optional) Homeserver Admin Contact and Support page
 
 [MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
@@ -61,9 +54,6 @@ matrix_static_files_file_matrix_support_property_m_contacts:
 # Your organization's support page on the base (or another) domain, if any
 matrix_static_files_file_matrix_support_property_m_support_page: "https://example.com/support"
 ```
-
-To learn how to set up `/.well-known/matrix/support` for the base domain, read the Installing section below.
-
 
 ## Installing well-known files on the base domain's server
 
