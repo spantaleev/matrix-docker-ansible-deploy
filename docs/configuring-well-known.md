@@ -2,11 +2,13 @@
 
 Service discovery is a way for the Matrix network to discover where a Matrix server is. This is necessary for federation to work.
 
-There are 2 types of well-known service discovery that Matrix makes use of:
+There are 3 types of well-known service discovery that Matrix makes use of:
 
 - (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. Without a proper configuration, your server will effectively not be part of the Matrix network.
 
 - (not that important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
+
+- (optional) **Support service discovery** (`/.well-known/matrix/support`) -- gets server admin contact and support page of the domain.
 
 ## Federation Server Discovery
 
@@ -28,7 +30,7 @@ As [per the Client-Server specification](https://matrix.org/docs/spec/client_ser
 
 However, this playbook installs your Matrix server on another domain (e.g. `matrix.example.com`) and not on the base domain (e.g. `example.com`), so it takes a little extra manual effort to set up the file.
 
-## (Optional) Homeserver Admin Contact and Support page
+## (Optional) Support Service Discovery
 
 [MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
@@ -36,7 +38,7 @@ The two playbook variables that you could look for, if you're interested in bein
 
 Example snippet for `vars.yml`:
 
-```
+```yaml
 # Enable generation of `/.well-known/matrix/support`.
 matrix_static_files_file_matrix_support_enabled: true
 
@@ -57,7 +59,7 @@ matrix_static_files_file_matrix_support_property_m_support_page: "https://exampl
 
 ## Installing well-known files on the base domain's server
 
-To implement the two service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver.
+To implement the service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver.
 
 If you don't have a server for your base domain at all, you can use the Matrix server for this. See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up. If you decide to go this route, you don't need to read ahead in this document. When **Serving the base domain**, the playbook takes care to serve the appropriate well-known files automatically.
 
