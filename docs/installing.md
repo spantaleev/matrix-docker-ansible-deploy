@@ -34,7 +34,7 @@ Here are some playbook tags that you should be familiar with:
 `setup-*` tags and `install-*` tags **do not start services** automatically, because you may wish to do things before starting services, such as importing a database dump, restoring data from another server, etc.
 
 
-## 1. Installing Matrix
+## Install Matrix
 
 If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the all Ansible commands
 
@@ -52,9 +52,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-u
 ```
 
 This will do a full installation and start all Matrix services.
-
-Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-the-future) and [Finalize the installation](#3-finalize-the-installation)
-
 
 ### Installing a server into which you'll import old data
 
@@ -84,9 +81,7 @@ You can now:
 ansible-playbook -i inventory/hosts setup.yml --tags=start
 ```
 
-Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-the-future) and [Finalize the installation](#3-finalize-the-installation)
-
-## 3. Finalize the installation
+## Finalize the installation
 
 Now that services are running, you need to **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md).
 
@@ -102,7 +97,7 @@ matrix_static_files_container_labels_base_domain_enabled: true
 
 After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
-## 4. Things to do next
+## Things to do next
 
 After finilizing the installation, you can:
 
