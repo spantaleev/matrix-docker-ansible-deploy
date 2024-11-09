@@ -1,3 +1,14 @@
+# 2024-11-08
+
+## Support for synapse-admin auto-configuration via /.well-known/matrix/client
+
+You can administrate your Synapse-powered homeserver using synapse-admin hosted externally (e.g. [admin.etke.cc](https://admin.etke.cc/)) and the synapse-admin instance would still auto-configure itself correctly for your server by [reading its `/.well-known/matrix/client` file](https://github.com/etkecc/synapse-admin/pull/126).
+
+The playbook now configures the `/.well-known/matrix/client` file for this by default, injecting into it a `cc.etke.synapse-admin` section that contains the full synapse-admin configuration. This is done even if you don't enable the synapse-admin service in your configuration. The reason for always doing it is to allow users to skip the (small) overhead of self-hosting the non-core synapse-admin service, yet still be able to use it from elsewhere when needed.
+
+If you don't ever plan on using synapse-admin from other servers (besides your own due to [self-hosting synapse-admin](./docs/configuring-playbook-synapse-admin.md)), you **can disable this** `/.well-known/matrix/client` configuration via `matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_enabled: false`
+
+
 # 2024-10-28
 
 ## (BC Break) Postmoogle's variable names need adjustments
