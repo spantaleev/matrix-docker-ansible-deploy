@@ -48,4 +48,4 @@ To install Matrix services using this Ansible playbook, you need:
 
 ---------------------------------------------
 
-When ready to proceed, continue with [Configuring DNS](configuring-dns.md).
+[▶️](configuring-dns.md) When ready to proceed, continue with [Configuring DNS](configuring-dns.md).

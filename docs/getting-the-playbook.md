@@ -37,4 +37,4 @@ You can extract this archive anywhere. You'll get a directory called `matrix-doc
 
 ---------------------------------------------
 
-No matter which method you've used to download the playbook, you can proceed by [Configuring the playbook](configuring-playbook.md).
+[▶️](configuring-playbook.md) No matter which method you've used to download the playbook, you can proceed by [Configuring the playbook](configuring-playbook.md).

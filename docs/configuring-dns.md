@@ -105,4 +105,4 @@ To make the [postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge
 
 ---------------------------------------------
 
-When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
+[▶️](getting-the-playbook.md) When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).

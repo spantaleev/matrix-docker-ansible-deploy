@@ -28,7 +28,7 @@ For a basic Matrix installation, that's all you need.
 
 For a more custom setup, see the [Other configuration options](#other-configuration-options) below.
 
-When you're done with all the configuration you'd like to do, continue with [Installing](installing.md).
+[▶️](installing.md) When you're done with all the configuration you'd like to do, continue with [Installing](installing.md).
 
 
 ## Other configuration options
