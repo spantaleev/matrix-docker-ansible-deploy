@@ -44,7 +44,6 @@ For other services which may need subdomain settings, see the table below and co
 
 | Used by component                                                                                                          | Type  | Host                           | Priority | Weight | Port | Target                      |
 | -------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------ | -------- | ------ | ---- | ----------------------------|
-| [ma1sd](configuring-playbook-ma1sd.md) identity server                                                                     | SRV   | `_matrix-identity._tcp`        | 10       | 0      | 443  | `matrix.example.com`        |
 | [Dimension](configuring-playbook-dimension.md) integration server                                                          | CNAME | `dimension`                    | -        | -      | -    | `matrix.example.com`        |
 | [Jitsi](configuring-playbook-jitsi.md) video-conferencing platform                                                         | CNAME | `jitsi`                        | -        | -      | -    | `matrix.example.com`        |
 | [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) monitoring system                                         | CNAME | `stats`                        | -        | -      | -    | `matrix.example.com`        |
@@ -58,6 +57,7 @@ For other services which may need subdomain settings, see the table below and co
 | [wsproxy](configuring-playbook-bridge-mautrix-wsproxy.md) sms bridge                                                       | CNAME | `wsproxy`                      | -        | -      | -    | `matrix.example.com`        |
 | [Buscarron](configuring-playbook-bot-buscarron.md) helpdesk bot                                                            | CNAME | `buscarron`                    | -        | -      | -    | `matrix.example.com`        |
 | [rageshake](docs/configuring-playbook-rageshake.md) bug report server                                                      | CNAME | `rageshake`                    | -        | -      | -    | `matrix.example.com`        |
+| [ma1sd](configuring-playbook-ma1sd.md) identity server                                                                     | SRV   | `_matrix-identity._tcp`        | 10       | 0      | 443  | `matrix.example.com`        |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges | MX    | `matrix`                       | 10       | 0      | -    | `matrix.example.com`        |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:<your-ip> -all` |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   |
