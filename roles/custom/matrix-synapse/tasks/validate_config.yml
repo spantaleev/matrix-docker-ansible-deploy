@@ -154,3 +154,8 @@
   ansible.builtin.fail:
     msg: "When Synapse is delegating authentication to Matrix Authentication Service, it doesn't make sense to enable the password config (`matrix_synapse_password_config_enabled: true`), because it is not Synapse that is handling authentication. Please remove your `matrix_synapse_password_config_enabled: true` setting before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
   when: matrix_synapse_experimental_features_msc3861_enabled and matrix_synapse_password_config_enabled
+
+- name: Fail if QR code login (MSC4108) is enabled while Next-Gen Auth (MSC3861) is not
+  ansible.builtin.fail:
+    msg: "When Synapse QR code login is enabled (MSC4108 via `matrix_synapse_experimental_features_msc4108_enabled`), Next-Gen auth (MSC3861 via `matrix_synapse_experimental_features_msc3861_enabled`) must also be enabled."
+  when: matrix_synapse_experimental_features_msc4108_enabled and not matrix_synapse_experimental_features_msc3861_enabled
