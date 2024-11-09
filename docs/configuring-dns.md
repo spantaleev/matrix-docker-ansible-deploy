@@ -32,7 +32,7 @@ To serve the base domain (`example.com`) and [Element Web](configuring-playbook-
 
 As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IP address (DNS `A` record or `CNAME` record is fine).
 
-The `element.example.com` subdomain may be necessary, because this playbook installs the [Element Web](https://github.com/element-hq/element-web) client for you. If you'd rather instruct the playbook not to install Element Web (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
+The `element.example.com` subdomain is necessary, because this playbook installs the [Element Web](https://github.com/element-hq/element-web) client for you by default. If you'd rather instruct the playbook not to install Element Web (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
 
 Be mindful as to how long it will take for the DNS records to propagate.
 
