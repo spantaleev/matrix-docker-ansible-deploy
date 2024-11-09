@@ -24,6 +24,8 @@ If you **do** use SSH keys for authentication, **and** use a non-root user to *b
 
 There 2 ways to start the installation process - depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
 
+**Note**: if you are migrating from an old server to a new one, take a look at [this guide](maintenance-migrating.md) instead. This is an easier and more straightforward way than installing a server and importing old data into it.
+
 ### Installing a brand new server (without importing data)
 
 If this is **a brand new** Matrix server and you **won't be importing old data into it**, run all these tags:
