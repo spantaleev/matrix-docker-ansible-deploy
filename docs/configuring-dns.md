@@ -57,7 +57,9 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`   |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`      |
 
-When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
+### SRV record for ma1sd
+
+To make the ma1sd Identity Server (which this playbook may optionally install for you) enable its federation features, you need to set up a SRV record. When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
 
 ## Subdomains setup
 
@@ -90,16 +92,6 @@ The `wsproxy.example.com` subdomain may be necessary, because this playbook coul
 The `buscarron.example.com` subdomain may be necessary, because this playbook could install the [Buscarron](https://github.com/etkecc/buscarron) bot. The installation of Buscarron is disabled by default, it is not a core required component. To learn how to install it, see our [configuring Buscarron guide](configuring-playbook-bot-buscarron.md). If you do not wish to set up Buscarron, feel free to skip the `buscarron.example.com` DNS record.
 
 The `rageshake.example.com` subdomain may be necessary, because this playbook could install the [rageshake](https://github.com/matrix-org/rageshake) bug report server. The installation of rageshake is disabled by default, it is not a core required component. To learn how to install it, see our [configuring rageshake guide](configuring-playbook-rageshake.md). If you do not wish to set up rageshake, feel free to skip the `rageshake.example.com` DNS record.
-
-## `_matrix-identity._tcp` SRV record setup
-
-To make the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server (which this playbook may optionally install for you) enable its federation features, set up an SRV record that looks like this:
-- Name: `_matrix-identity._tcp` (use this text as-is)
-- Content: `10 0 443 matrix.example.com` (replace `example.com` with your own)
-
-This is an optional feature for the optionally-installed [ma1sd service](configuring-playbook-ma1sd.md). See [ma1sd's documentation](https://github.com/ma1uta/ma1sd/wiki/mxisd-and-your-privacy#choices-are-never-easy) for information on the privacy implications of setting up this SRV record.
-
-**Note**: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
 
 ## `_dmarc`, `postmoogle._domainkey` TXT and `matrix` MX records setup
 
