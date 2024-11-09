@@ -78,7 +78,11 @@ To configure Service Discovery in this way, add the following configuration to y
 matrix_static_files_container_labels_base_domain_enabled: true
 ```
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook, run the [installation](installing.md) command:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 ## Things to do next
 
