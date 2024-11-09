@@ -65,7 +65,9 @@ For other services which may need subdomain settings, see the table below and co
 
 ### SRV record for ma1sd
 
-To make the ma1sd Identity Server (which this playbook may optionally install for you) enable its federation features, you need to set up a SRV record. When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
+To make the ma1sd Identity Server (which this playbook may optionally install for you) enable its federation features, you need to set up a `_matrix-identity._tcp` SRV record. Don't confuse this with the `_matrix._tcp` SRV record for server delegation, described above.
+
+When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
 
 ### `_dmarc`, `postmoogle._domainkey` TXT and `matrix` MX records setup
 
