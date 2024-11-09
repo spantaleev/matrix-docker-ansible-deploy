@@ -81,7 +81,7 @@ matrix_static_files_container_labels_base_domain_enabled: true
 After configuring the playbook, run the installation command:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 ```
 
 ## Things to do next
