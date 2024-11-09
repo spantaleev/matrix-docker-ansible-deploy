@@ -2,7 +2,12 @@
 
 This playbook can install the [Cinny](https://github.com/ajbura/cinny) Matrix web client for you.
 
-Cinny is a web client focusing primarily on simple, elegant and secure interface. It can be installed alongside or instead of Element Web.
+Cinny is a web client focusing primarily on simple, elegant and secure interface. It can be installed alongside or instead of [Element Web](./configuring-playbook-client-element-web.md).
+
+💡 **Note**: the latest version of Cinny is also available on the web, hosted by 3rd parties. If you trust giving your credentials to the following 3rd party Single Page Applications, you can consider using it from there and avoiding the (small) overhead of self-hosting:
+
+- [app.cinny.in](https://app.cinny.in), hosted by the [Cinny](https://cinny.in/) developers
+
 
 ## Adjusting the playbook configuration
 

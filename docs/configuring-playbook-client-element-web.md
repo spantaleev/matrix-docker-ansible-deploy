@@ -2,6 +2,11 @@
 
 By default, this playbook installs the [Element Web](https://github.com/element-hq/element-web) Matrix client for you. If that's okay, you can skip this document.
 
+💡 **Note**: the latest version of Element Web is also available on the web, hosted by 3rd parties. If you trust giving your credentials to the following 3rd party Single Page Applications, you can consider using it from there and avoiding the (small) overhead of self-hosting (by [disabling Element Web](#disabling-element-web)):
+
+- [app.element.io](https://app.element.io/), hosted by [Element](https://element.io/)
+- [app.etke.cc](https://app.etke.cc/), hosted by [etke.cc](https://etke.cc/)
+
 
 ## Disabling Element Web
 
