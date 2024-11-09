@@ -23,6 +23,8 @@ On the other hand, if you choose this method (setting up a DNS SRV record), you 
 
 ## DNS settings for services enabled by default
 
+To serve the base domain (`example.com`) and [Element Web](configuring-playbook-client-element-web.md) with the default subdomain, adjust DNS records as below.
+
 | Type  | Host                         | Priority | Weight | Port | Target                 |
 | ----- | ---------------------------- | -------- | ------ | ---- | ---------------------- |
 | A     | `matrix`                     | -        | -      | -    | `matrix-server-IP`     |
