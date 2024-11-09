@@ -30,11 +30,17 @@ To serve the base domain (`example.com`) and [Element Web](configuring-playbook-
 | A     | `matrix`                     | -        | -      | -    | `matrix-server-IP`     |
 | CNAME | `element`                    | -        | -      | -    | `matrix.example.com` |
 
+As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IP address (DNS `A` record or `CNAME` record is fine).
+
+The `element.example.com` subdomain may be necessary, because this playbook installs the [Element Web](https://github.com/element-hq/element-web) client for you. If you'd rather instruct the playbook not to install Element Web (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
+
 Be mindful as to how long it will take for the DNS records to propagate.
 
 If you are using Cloudflare DNS, make sure to disable the proxy and set all records to `DNS only`. Otherwise, fetching certificates will fail.
 
 ## DNS settings for optional services/features
+
+For other services which may need subdomain settings, see the table below and configure the DNS (`CNAME`) records accordingly.
 
 | Used by component                                                                                                          | Type  | Host                           | Priority | Weight | Port | Target                      |
 | -------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------ | -------- | ------ | ---- | --------------------------- |
@@ -60,14 +66,6 @@ If you are using Cloudflare DNS, make sure to disable the proxy and set all reco
 ### SRV record for ma1sd
 
 To make the ma1sd Identity Server (which this playbook may optionally install for you) enable its federation features, you need to set up a SRV record. When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
-
-## Subdomains setup
-
-As the table above illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your new server's IP address (DNS `A` record or `CNAME` record is fine).
-
-The `element.example.com` subdomain may be necessary, because this playbook installs the [Element Web](https://github.com/element-hq/element-web) client for you. If you'd rather instruct the playbook not to install Element Web (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
-
-For other services which may need subdomain settings, see the table above and configure the DNS records accordingly.
 
 ## `_dmarc`, `postmoogle._domainkey` TXT and `matrix` MX records setup
 
