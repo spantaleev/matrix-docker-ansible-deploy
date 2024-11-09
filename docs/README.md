@@ -12,6 +12,8 @@
 
 - [Installing](installing.md)
 
+- [Playbook tags](playbook-tags.md)
+
 - **Importing data from another server installation**
 
   - [Importing an existing SQLite database (from another Synapse installation)](importing-synapse-sqlite.md) (optional)

@@ -4,44 +4,25 @@
 
 If you've [configured your DNS](configuring-dns.md) and have [configured the playbook](configuring-playbook.md), you can start the installation procedure.
 
-**Before installing** and each time you update the playbook in the future, you will need to update the Ansible roles in this playbook by running `just roles`. `just roles` is a shortcut (a `roles` target defined in [`justfile`](../justfile) and executed by the [`just`](https://github.com/casey/just) utility) which ultimately runs [agru](https://github.com/etkecc/agru) or [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) (depending on what is available in your system) to download Ansible roles. If you don't have `just`, you can also manually run the `roles` commands seen in the `justfile`.
+## Update Ansible roles
+
+Before installing, you need to update the Ansible roles in this playbook by running `just roles`.
+
+`just roles` is a shortcut (a `roles` target defined in [`justfile`](../justfile) and executed by the [`just`](https://github.com/casey/just) utility) which ultimately runs [agru](https://github.com/etkecc/agru) or [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) (depending on what is available in your system) to download Ansible roles. If you don't have `just`, you can also manually run the `roles` commands seen in the `justfile`.
 
 There's another shortcut (`just update`) which updates the playbook (`git pull`) and updates roles (`just roles`) at the same time.
 
-
-## Playbook tags introduction
+## Install Matrix server and services
 
 The Ansible playbook's tasks are tagged, so that certain parts of the Ansible playbook can be run without running all other tasks.
 
-The general command syntax is: `ansible-playbook -i inventory/hosts setup.yml --tags=COMMA_SEPARATED_TAGS_GO_HERE`
+The general command syntax for installation (and also maintenance) is: `ansible-playbook -i inventory/hosts setup.yml --tags=COMMA_SEPARATED_TAGS_GO_HERE`. It is recommended to get yourself familiar with the [playbook tags](playbook-tags.md) before proceeding.
 
-Here are some playbook tags that you should be familiar with:
+If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the all Ansible commands.
 
-- `setup-all` - runs all setup tasks (installation and uninstallation) for all components, but does not start/restart services
-
-- `install-all` - like `setup-all`, but skips uninstallation tasks. Useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove components, you'd need to run `setup-all` though, or these components will still remain installed
-
-- `setup-SERVICE` (e.g. `setup-postmoogle`) - runs the setup tasks only for a given role, but does not start/restart services. You can discover these additional tags in each role (`roles/**/tasks/main.yml`). Running per-component setup tasks is **not recommended**, as components sometimes depend on each other and running just the setup tasks for a given component may not be enough. For example, setting up the [mautrix-telegram bridge](configuring-playbook-bridge-mautrix-telegram.md), in addition to the `setup-mautrix-telegram` tag, requires database changes (the `setup-postgres` tag) as well as reverse-proxy changes (the `setup-nginx-proxy` tag).
-
-- `install-SERVICE` (e.g. `install-postmoogle`) - like `setup-SERVICE`, but skips uninstallation tasks. See `install-all` above for additional information.
-
-- `start` - starts all systemd services and makes them start automatically in the future
-
-- `stop` - stops all systemd services
-
-- `ensure-matrix-users-created` - a special tag which ensures that all special users needed by the playbook (for bots, etc.) are created
-
-`setup-*` tags and `install-*` tags **do not start services** automatically, because you may wish to do things before starting services, such as importing a database dump, restoring data from another server, etc.
-
-
-## 1. Installing Matrix
-
-If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the all Ansible commands
-
-If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands
+If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands.
 
 There 2 ways to start the installation process - depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
-
 
 ### Installing a brand new server (without importing data)
 
@@ -53,8 +34,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-u
 
 This will do a full installation and start all Matrix services.
 
-Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-the-future) and [Finalize the installation](#3-finalize-the-installation)
-
+**Note**: if the command does not work as expected, make sure that you have properly installed and configured software required to run the playbook, as described on [Prerequisites](prerequisites.md).
 
 ### Installing a server into which you'll import old data
 
@@ -81,29 +61,32 @@ You can now:
 .. and then proceed to starting all services:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=start
+ansible-playbook -i inventory/hosts setup.yml --tags=ensure-matrix-users-created,start
 ```
 
-Proceed to [Maintaining your setup in the future](#2-maintaining-your-setup-in-the-future) and [Finalize the installation](#3-finalize-the-installation)
-
-
-## 2. Maintaining your setup in the future
-
-Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match.
-
-Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [Playbook tags introduction](#playbook-tags-introduction)
-
-A way to invoke these `ansible-playbook` commands with less typing in the future is to use [just](https://github.com/casey/just) to run them: `just install-all` or `just setup-all`. See [our `justfile`](../justfile) for more information.
-
-
-## 3. Finalize the installation
+## Finalize the installation
 
 Now that services are running, you need to **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md).
 
+If you need the base domain (`example.com`) for anything else such as hosting a website, you have to configure it manually, following the procedure described on the linked documentation.
 
-## 4. Things to do next
+However, if you do not need the base domain for anything else, the easiest way of configuring it is to [serve the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
 
-After you have started the services and **finalized the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md), you can:
+To configure Service Discovery in this way, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_static_files_container_labels_base_domain_enabled: true
+```
+
+After configuring the playbook, run the installation command:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
+```
+
+## Things to do next
+
+After finilizing the installation, you can:
 
 - [check if services work](maintenance-checking-services.md)
 - or [create your first Matrix user account](registering-users.md)
@@ -114,3 +97,11 @@ After you have started the services and **finalized the installation process** (
   * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
   * or come say Hi in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
+
+### Maintaining your setup in the future
+
+Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match. To update the playbook and the Ansible roles in the playbook, simply run `just roles`.
+
+Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [this page on the playbook tags](playbook-tags.md) for more information.
+
+A way to invoke these `ansible-playbook` commands with less typing in the future is to use [just](https://github.com/casey/just) to run the "recipe": `just install-all` or `just setup-all`. See [our `justfile`](../justfile) for more information.
