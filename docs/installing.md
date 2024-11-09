@@ -61,7 +61,7 @@ You can now:
 .. and then proceed to starting all services:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=start
+ansible-playbook -i inventory/hosts setup.yml --tags=ensure-matrix-users-created,start
 ```
 
 ## Finalize the installation
