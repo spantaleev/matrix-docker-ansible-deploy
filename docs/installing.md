@@ -68,9 +68,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=start
 
 Now that services are running, you need to **finalize the installation process** (required for federation to work!) by [Configuring Service Discovery via .well-known](configuring-well-known.md).
 
-If you need the base domain for anything else (such as hosting a website), you have to configure it manually, following the procedure described on the linked documentation.
+If you need the base domain (`example.com`) for anything else such as hosting a website, you have to configure it manually, following the procedure described on the linked documentation.
 
-However, if you do not need the base domain (`example.com`) for anything else, the easiest way of configuring it is to [serve the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
+However, if you do not need the base domain for anything else, the easiest way of configuring it is to [serve the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
 
 To configure Service Discovery in this way, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
