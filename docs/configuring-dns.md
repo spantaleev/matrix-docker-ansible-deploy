@@ -69,9 +69,9 @@ To make the ma1sd Identity Server (which this playbook may optionally install fo
 
 When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
 
-### TXT and MX records for Postmoogle
+### MX and TXT records for Postmoogle
 
-To make the [postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge enable its email sending features, you need to configure SPF (TXT), DMARC (TXT), DKIM (TXT) and MX records. See the table above for values which need to be specified.
+To make the [postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge enable its email sending features, you need to configure MX, SPF (TXT), DMARC (TXT) and DKIM (TXT) records. See the table above for values which need to be specified.
 
 ---------------------------------------------
 
