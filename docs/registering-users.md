@@ -42,7 +42,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 
 ### Registering users manually for Synapse
 
-If you're using the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default), you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
+If you're using the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default), you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](installing.md#install-matrix-server-and-services)):
 
 ```sh
 /matrix/synapse/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
@@ -52,7 +52,7 @@ If you're using the [Synapse](configuring-playbook-synapse.md) homeserver implem
 
 ### Registering users manually for Dendrite
 
-If you're using the [Dendrite](./configuring-playbook-dendrite.md) homeserver implementation, you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
+If you're using the [Dendrite](./configuring-playbook-dendrite.md) homeserver implementation, you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](installing.md#install-matrix-server-and-services)):
 
 ```sh
 /matrix/dendrite/bin/create-account <your-username> <your-password> <admin access: 0 or 1>
@@ -62,7 +62,7 @@ If you're using the [Dendrite](./configuring-playbook-dendrite.md) homeserver im
 
 ### Registering users manually for Matrix Authentication Service
 
-If you're using the [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) and your existing homeserver (most likely [Synapse](./configuring-playbook-synapse.md)) is delegating authentication to it, you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
+If you're using the [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) and your existing homeserver (most likely [Synapse](./configuring-playbook-synapse.md)) is delegating authentication to it, you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](installing.md#install-matrix-server-and-services)):
 
 ```sh
 /matrix/matrix-authentication-service/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
