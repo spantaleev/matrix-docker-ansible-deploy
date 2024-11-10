@@ -121,14 +121,14 @@ To make use of your Fluffygate installation:
 If you need to troubleshoot issues:
 
 1. Enable debug logs by setting:
-```yaml
-matrix_fluffygate_debug_logs: true
-```
+    ```yaml
+    matrix_fluffygate_debug_logs: true
+    ```
 
 2. Check the container logs:
-```bash
-docker logs matrix-fluffygate
-```
+    ```bash
+    docker logs matrix-fluffygate
+    ```
 
 ## Uninstalling
 
