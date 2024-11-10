@@ -8,38 +8,37 @@ The playbook can install and configure [matrix-appservice-discord](https://githu
 
 See the project's [documentation](https://github.com/matrix-org/matrix-appservice-discord/blob/master/README.md) to learn what it does and why it might be useful to you.
 
+## Prerequisites
 
-## Setup Instructions
+Create a Discord Application [here](https://discordapp.com/developers/applications). Then retrieve Client ID, and create a bot from the Bot tab and retrieve the Bot token.
 
-Instructions loosely based on [this](https://github.com/matrix-org/matrix-appservice-discord#setting-up).
+## Adjusting the playbook configuration
 
-1. Create a Discord Application [here](https://discordapp.com/developers/applications).
-2. Retrieve Client ID.
-3. Create a bot from the Bot tab and retrieve the Bot token.
-4. Enable the bridge with the following configuration in your `vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-    ```yaml
-    matrix_appservice_discord_enabled: true
-    matrix_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
-    matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
-    ```
+```yaml
+matrix_appservice_discord_enabled: true
+matrix_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
+matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
 
-5. As of Synapse 1.90.0, you will need to add the following to `matrix_synapse_configuration_extension_yaml` to enable the [backwards compatibility](https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs:
+# As of Synapse 1.90.0, uncomment to enable the backwards compatibility (https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs.
+# Note: This deprecated method is considered insecure.
+#
+# matrix_synapse_configuration_extension_yaml: |
+#   use_appservice_legacy_authorization: true
+```
 
-    ```yaml
-    matrix_synapse_configuration_extension_yaml: |
-      use_appservice_legacy_authorization: true
-    ```
+## Installing
 
-    **Note**: This deprecated method is considered insecure.
+After configuring the playbook, run the [installation](installing.md) command:
 
-6. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
-
-Other configuration options are available via the `matrix_appservice_discord_configuration_extension_yaml` variable.
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 ## Self-Service Bridging (Manual)
 
-Self-service bridging allows you to bridge specific and existing Matrix rooms to specific Discord rooms. This is disabled by default, so it must be enabled by adding this to your `vars.yml`:
+Self-service bridging allows you to bridge specific and existing Matrix rooms to specific Discord rooms. To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_appservice_discord_bridge_enableSelfServiceBridging: true
@@ -47,14 +46,17 @@ matrix_appservice_discord_bridge_enableSelfServiceBridging: true
 
 **Note**: If self-service bridging is not enabled, `!discord help` commands will return no results.
 
-Once self-service is enabled:
+### Usage
 
-1. Start a chat with `@_discord_bot:example.com` and say `!discord help bridge`.
-2. Follow the instructions in the help output message. If the bot is not already in the Discord server, follow the provided invite link. This may require you to be a administrator of the Discord server.
+Once self-service is enabled, start a chat with `@_discord_bot:example.com` and say `!discord help bridge`.
 
-**Note**: Encrypted Matrix rooms are not supported as of writing.
+Then, follow the instructions in the help output message.
+
+If the bot is not already in the Discord server, follow the provided invite link. This may require you to be a administrator of the Discord server.
 
 On the Discord side, you can say `!matrix help` to get a list of available commands to manage the bridge and Matrix users.
+
+**Note**: Encrypted Matrix rooms are not supported as of writing.
 
 ## Portal Bridging (Automatic)
 
@@ -62,11 +64,13 @@ Through portal bridging, Matrix rooms will automatically be created by the bot a
 
 All Matrix rooms created this way are **listed publicly** by default, and you will not have admin permissions to change this. To get more control, [make yourself a room Administrator](#getting-administrator-access-in-a-portal-bridged-room). You can then unlist the room from the directory and change the join rules.
 
-If you want to disable portal bridging, set the following in `vars.yml`:
+To disable portal bridging, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_appservice_discord_bridge_disablePortalBridging: true
 ```
+
+### Usage
 
 To get started with Portal Bridging:
 
