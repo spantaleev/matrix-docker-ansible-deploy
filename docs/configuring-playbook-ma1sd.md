@@ -1,12 +1,10 @@
 # Setting up ma1sd Identity Server (optional)
 
-The playbook can configure the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server for you.
+The playbook can configure the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server for you. It is a fork of [mxisd](https://github.com/kamax-io/mxisd) which was pronounced end of life 2019-06-21.
 
-ma1sd, being an Identity Server, is not strictly needed. It is only used for 3PIDs (3rd party identifiers like E-mail and phone numbers) and some [enhanced features](https://github.com/ma1uta/ma1sd/#features).
+ma1sd is used for 3PIDs (3rd party identifiers like E-mail and phone numbers) and some [enhanced features](https://github.com/ma1uta/ma1sd/#features). It is private by default, potentially at the expense of user discoverability.
 
-This server is private by default, potentially at the expense of user discoverability.
-
-*ma1sd is a fork of [mxisd](https://github.com/kamax-io/mxisd) which was pronounced end of life 2019-06-21.*
+See the project's [documentation](https://github.com/ma1uta/ma1sd) to learn what it does and why it might be useful to you.
 
 **Note**: enabling ma1sd, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
 
