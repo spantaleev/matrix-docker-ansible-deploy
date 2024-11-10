@@ -462,12 +462,10 @@ We haven't documented this properly yet, but the general advice is to:
 
 - back up all `/matrix` files, except for `/matrix/postgres/data` (you already have a dump) and `/matrix/postgres/data-auto-upgrade-backup` (this directory may exist and contain your old data if you've [performed a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql)).
 
-You can later restore these roughly like this:
+You can later restore these by:
 
-- restore the `/matrix` directory and files on the new server manually
-- run the playbook again (see [Installing](installing.md)), but **don't** start services yet (**don't run** `... --tags=start`). This step will fix any file permission mismatches and will also set up additional software (Docker, etc.) and files on the server (systemd service, etc.).
-- perform a Postgres database import (see [Importing Postgres](importing-postgres.md)) to restore your database backup
-- start services (see [Finalize the installation](installing.md#finalize-the-installation))
+- Restoring the `/matrix` directory and files on the new server manually
+- Following the instruction described on [Installing a server into which you'll import old data](installing.md#installing-a-server-into-which-youll-import-old-data)
 
 If your server's IP address has changed, you may need to [set up DNS](configuring-dns.md) again.
 
