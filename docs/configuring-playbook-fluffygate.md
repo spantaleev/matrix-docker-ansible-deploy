@@ -126,9 +126,9 @@ If you need to troubleshoot issues:
     ```
 
 2. Check the container logs:
-```bash
-docker logs matrix-fluffygate
-```
+    ```bash
+    docker logs matrix-fluffygate
+    ```
 
 ## Uninstalling
 
