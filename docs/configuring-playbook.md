@@ -1,6 +1,6 @@
 # Configuring the playbook
 
-<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > [Configuring your DNS server](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > Configuring the playbook > [Installing](installing.md) </sup>
+<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > [Configuring your DNS server](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > Configuring the playbook > [Installing](installing.md)</sup>
 
 To configure the Ansible playbook, you need to have done the following things:
 

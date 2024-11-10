@@ -1,6 +1,6 @@
 # Prerequisites
 
-<sup>⚡️[Quick start](README.md) | Prerequisites > [Configuring your DNS server](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md) </sup>
+<sup>⚡️[Quick start](README.md) | Prerequisites > [Configuring your DNS server](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 To install Matrix services using this Ansible playbook, you need:
 

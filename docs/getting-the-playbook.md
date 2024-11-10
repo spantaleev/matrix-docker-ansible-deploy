@@ -1,6 +1,6 @@
 # Getting the playbook
 
-<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > [Configuring your DNS server](configuring-dns.md) > Getting the playbook > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md) </sup>
+<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > [Configuring your DNS server](configuring-dns.md) > Getting the playbook > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 This Ansible playbook is meant to be executed on your own computer (not the Matrix server).
 
