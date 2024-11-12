@@ -7,7 +7,7 @@ The playbook can install and configure [matrix-appservice-kakaotalk](https://src
 See the project's [documentation](https://src.miscworks.net/fair/matrix-appservice-kakaotalk) to learn what it does and why it might be useful to you.
 
 
-## Installing
+## Adjusting the playbook configuration
 
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
