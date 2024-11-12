@@ -60,7 +60,7 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 | widgets | `/hookshot/widgetapi/` | `matrix_hookshot_widgets_endpoint` | Widgets |
 | metrics | `/metrics/hookshot` | `matrix_hookshot_metrics_enabled` and exposure enabled via `matrix_hookshot_metrics_proxying_enabled` or `matrix_metrics_exposure_enabled`. Read more in the [Metrics section](#metrics) below. | Prometheus |
 
-Also see the various `matrix_hookshot_container_labels_*` variables in [default/main.yml](/roles/custom/matrix-bridge-hookshot/default/main.yml), which expose URLs publicly.
+Also see the various `matrix_hookshot_container_labels_*` variables in [main.yml](/roles/custom/matrix-bridge-hookshot/defaults/main.yml), which expose URLs publicly.
 
 The different listeners are also reachable *internally* in the docker-network via the container's name (configured by `matrix_hookshot_container_url`) and on different ports (e.g. `matrix_hookshot_appservice_port`). Read [main.yml](/roles/custom/matrix-bridge-hookshot/defaults/main.yml) in detail for more info.
 
