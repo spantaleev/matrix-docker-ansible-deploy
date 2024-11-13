@@ -91,9 +91,6 @@ server {
 	server_tokens off;
 	root /dev/null;
 
-	gzip on;
-	gzip_types text/plain application/json;
-
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
 		# Client-server overrides -- These locations must go to the main Synapse process
 		location ~ {{ matrix_synapse_reverse_proxy_companion_client_server_main_override_locations_regex }} {
@@ -251,9 +248,6 @@ server {
 	server_tokens off;
 
 	root /dev/null;
-
-	gzip on;
-	gzip_types text/plain application/json;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
 		# Federation overrides -- These locations must go to the main Synapse process
