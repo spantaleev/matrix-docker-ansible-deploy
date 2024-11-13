@@ -2,7 +2,9 @@
 
 Service discovery is a way for the Matrix network to discover where a Matrix server is. This is necessary for federation to work.
 
-There are 3 types of well-known service discovery that Matrix makes use of:
+## Types of well-known service discovery mechanism
+
+There are 3 types of well-known service discovery mechanism that Matrix makes use of:
 
 - (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. Without a proper configuration, your server will effectively not be part of the Matrix network.
 
@@ -10,7 +12,7 @@ There are 3 types of well-known service discovery that Matrix makes use of:
 
 - (optional) **Support service discovery** (`/.well-known/matrix/support`) -- gets server admin contact and support page of the domain.
 
-## Federation Server Discovery
+### Federation Server Discovery
 
 All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`).
 
@@ -20,7 +22,7 @@ Server delegation can be configured using DNS SRV records or by setting up a `/.
 
 Both methods have their place and will continue to do so. You only need to use just one of these delegation methods. For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
 
-## Client Server Discovery
+### Client Server Discovery
 
 Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@username:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
 
@@ -30,7 +32,7 @@ As [per the Client-Server specification](https://matrix.org/docs/spec/client_ser
 
 However, this playbook installs your Matrix server on another domain (e.g. `matrix.example.com`) and not on the base domain (e.g. `example.com`), so it takes a little extra manual effort to set up the file.
 
-## (Optional) Support Service Discovery
+### (Optional) Support Service Discovery
 
 [MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
