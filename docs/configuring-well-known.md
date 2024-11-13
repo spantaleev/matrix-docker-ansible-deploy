@@ -1,16 +1,16 @@
 # Configuring Service Discovery via .well-known
 
-Service discovery is a way for the Matrix network to discover where a Matrix server is. This is necessary for federation to work.
+Service discovery is a way for the Matrix network to discover where a Matrix server is.
 
 ## Types of well-known service discovery mechanism
 
 There are 3 types of well-known service discovery mechanism that Matrix makes use of:
 
-- (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. Without a proper configuration, your server will effectively not be part of the Matrix network.
+- (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. **This is necessary for federation to work.** Without a proper configuration, your server will effectively not be part of the Matrix network.
 
-- (not that important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
+- (less important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
 
-- (optional) **Support service discovery** (`/.well-known/matrix/support`) -- gets server admin contact and support page of the domain.
+- (optional) **Support service discovery** (`/.well-known/matrix/support`) -- returns server admin contact and support page of the domain.
 
 ### Federation Server Discovery
 
@@ -36,9 +36,7 @@ However, this playbook installs your Matrix server on another domain (e.g. `matr
 
 [MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929), which was added to [Matrix Specification version v1.10](https://spec.matrix.org/v1.10/client-server-api/#getwell-knownmatrixsupport), specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
-The two playbook variables that you could look for are: `matrix_static_files_file_matrix_support_property_m_contacts` and `matrix_static_files_file_matrix_support_property_m_support_page`.
-
-Example snippet for `vars.yml`:
+To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 # Enable generation of `/.well-known/matrix/support`.
