@@ -75,7 +75,7 @@ However, if you need to use the base domain for other things, this method is les
 
 If you're managing the base domain by yourself somehow, you'll need to set up serving of some `/.well-known/matrix/*` files from it via HTTPS.
 
-To make things easy for you to set up, this playbook generates and hosts 2 well-known files on the Matrix domain's server. The files are generated at `/matrix/static-files/.well-known/matrix/` and hosted at `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`, even though this is the wrong place to host them.
+To make things easy for you to set up, this playbook generates and hosts a few well-known files on the Matrix domain's server. The files are generated at the `/matrix/static-files/public/.well-known/matrix/` path on the server and hosted at URLs like `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`, even though this is the wrong place to host them.
 
 You have two options when it comes to installing the files on the base domain's server:
 
