@@ -1,8 +1,15 @@
 # Serving the base domain (optional)
 
-This playbook sets up services on your Matrix server (`matrix.example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up [Server Delegation](howto-server-delegation.md). This is normally done by [configuring well-known](configuring-well-known.md) files on the base domain.
+By default, this playbook sets up services on your Matrix server (`matrix.example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up server delegation / redirection.
 
-People who don't have a separate server to dedicate to the base domain have trouble arranging this.
+As we discuss in [Server Delegation](howto-server-delegation.md), server delegation / redirection can be configured in either way:
+
+- Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)
+- Setting up a `_matrix._tcp` DNS SRV record
+
+For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file.
+
+However, those who don't have a separate server to dedicate to the base domain have trouble arranging this.
 
 Usually, there are 2 options:
 
