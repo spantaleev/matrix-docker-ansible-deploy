@@ -267,11 +267,38 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port_u
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default | combine (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto)) | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: true
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port }}"  # noqa var-naming
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_readTimeout: "{{ traefik_config_entrypoint_web_secure_transport_respondingTimeouts_readTimeout }}"  # noqa var-naming
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_writeTimeout: "{{ traefik_config_entrypoint_web_secure_transport_respondingTimeouts_writeTimeout }}"  # noqa var-naming
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_idleTimeout: "{{ traefik_config_entrypoint_web_secure_transport_respondingTimeouts_idleTimeout }}"  # noqa var-naming
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default: |
   {{
-    ({'http3': {'advertisedPort': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort | int}})
-    if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled
-    else {}
+    {}
+
+    | combine(
+      (
+        (
+          {
+            'http3': {
+              'advertisedPort': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort | int
+            }
+          }
+        )
+        if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled
+        else {}
+      )
+    )
+
+    | combine(
+      {
+        'transport': {
+          'respondingTimeouts': {
+            'readTimeout': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_readTimeout,
+            'writeTimeout': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_writeTimeout,
+            'idleTimeout': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_idleTimeout,
+          }
+        }
+      }
+    )
   }}
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto: {}
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom: {}

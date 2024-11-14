@@ -5942,6 +5942,10 @@ traefik_base_path: "{{ matrix_base_data_path }}/traefik"
 traefik_uid: "{{ matrix_user_uid }}"
 traefik_gid: "{{ matrix_user_gid }}"
 
+# It's common for setups to deal with large file uploads which may take longer than the default readTimeout (60s).
+# This override (for the `web` entrypoint) also cascades to overriding the `web-secure` entrypoint and the `matrix-federation` entrypoint.
+traefik_config_entrypoint_web_transport_respondingTimeouts_readTimeout: 300s
+
 traefik_additional_entrypoints_auto: |
   {{
     ([matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition] if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled else [])
