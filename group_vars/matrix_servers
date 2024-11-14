@@ -35,6 +35,9 @@ matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type i
 matrix_playbook_reverse_proxy_container_network: "{{ traefik_container_network if traefik_enabled else 'traefik' }}"
 matrix_playbook_reverse_proxy_hostname: "{{ traefik_identifier if traefik_enabled else 'traefik' }}"
 
+matrix_playbook_reverse_proxy_traefik_middleware_compession_enabled: "{{ traefik_config_http_middlewares_compression_enabled if (traefik_enabled and traefik_config_http_middlewares_compression_enabled) else false }}"
+matrix_playbook_reverse_proxy_traefik_middleware_compession_name: "{{ (traefik_config_http_middlewares_compression_middleware_name + '@file') if traefik_enabled else '' }}"
+
 # A separate Matrix Federation entrypoint is always enabled, unless the federation port matches one of the ports for existing (default) entrypoints
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled: "{{ matrix_federation_public_port not in [traefik_config_entrypoint_web_port, traefik_config_entrypoint_web_secure_port] }}"
 
