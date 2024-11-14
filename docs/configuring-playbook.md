@@ -64,8 +64,6 @@ When you're done with all the configuration you'd like to do, continue with [Ins
 
   - [Controlling Matrix federation](configuring-playbook-federation.md)
 
-- [Serving the base domain](configuring-playbook-base-domain-serving.md)
-
 ### Clients
 
 Web clients for Matrix that you can host on your own domains.
