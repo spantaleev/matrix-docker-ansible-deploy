@@ -43,6 +43,11 @@ matrix_client_hydrogen_container_labels_traefik_entrypoints: web-secure
 matrix_client_hydrogen_container_labels_traefik_tls: "{{ matrix_client_hydrogen_container_labels_traefik_entrypoints != 'web' }}"
 matrix_client_hydrogen_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
+# Controls whether a compression middleware will be injected into the middlewares list.
+# This compression middleware is supposed to be defined elsewhere (using labels or a File provider, etc.) and is merely referenced by this router.
+matrix_client_hydrogen_container_labels_traefik_compression_middleware_enabled: false
+matrix_client_hydrogen_container_labels_traefik_compression_middleware_name: ""
+
 # Controls which additional headers to attach to all HTTP responses.
 # To add your own headers, use `matrix_client_hydrogen_container_labels_traefik_additional_response_headers_custom`
 matrix_client_hydrogen_container_labels_traefik_additional_response_headers: "{{ matrix_client_hydrogen_container_labels_traefik_additional_response_headers_auto | combine(matrix_client_hydrogen_container_labels_traefik_additional_response_headers_custom) }}"
