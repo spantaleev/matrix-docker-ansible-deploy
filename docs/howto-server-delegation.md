@@ -50,7 +50,7 @@ To use DNS SRV record validation, you need to:
 
 - ensure that you are serving the Matrix Federation API (tcp/8448) with a certificate for `example.com` (not `matrix.example.com`!). Getting this certificate to the `matrix.example.com` server may be complicated. The playbook's automatic SSL obtaining/renewal flow will likely not work and you'll need to copy certificates around manually. See below.
 
-For more details on [how to configure the playbook to work with SRV delegation](howto-srv-server-delegation.md)
+For more details on how to configure the playbook to work with SRV delegation, take a look at this documentation: [Server Delegation via a DNS SRV record (advanced)](howto-srv-server-delegation.md)
 
 ### Obtaining certificates
 
