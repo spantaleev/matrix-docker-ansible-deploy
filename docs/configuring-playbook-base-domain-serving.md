@@ -22,7 +22,7 @@ Doing this, the playbook will:
 
 - obtain an SSL certificate for the base domain, just like it does for all other domains (see [how we handle SSL certificates](configuring-playbook-ssl-certificates.md))
 
-- serve the `/.well-known/matrix/*` files which are necessary for [Federation Server Discovery](configuring-well-known.md#introduction-to-client-server-discovery) (also see [Server Delegation](howto-server-delegation.md)) and [Client-Server discovery](configuring-well-known.md#introduction-to-client-server-discovery)
+- serve the `/.well-known/matrix/*` files which are necessary for [Federation Server Discovery](configuring-well-known.md#federation-server-discovery) (also see [Server Delegation](howto-server-delegation.md)) and [Client-Server discovery](configuring-well-known.md#client-server-discovery)
 
 - serve a simple homepage at `https://example.com` with content `Hello from example.com` (configurable via the `matrix_static_files_file_index_html_template` variable). You can also [serve a more complicated static website](#serving-a-static-website-at-the-base-domain).
 

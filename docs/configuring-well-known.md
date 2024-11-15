@@ -2,48 +2,54 @@
 
 Service discovery is a way for the Matrix network to discover where a Matrix server is.
 
-There are 2 types of well-known service discovery that Matrix makes use of:
+## Types of well-known service discovery mechanism
 
-- (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. Without a proper configuration, your server will effectively not be part of the Matrix network. Learn more in [Introduction to Federation Server Discovery](#introduction-to-federation-server-discovery)
+There are 3 types of well-known service discovery mechanism that Matrix makes use of:
 
-- (not that important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses. Learn more in [Introduction to Client Server Discovery](#introduction-to-client-server-discovery)
+- (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. With the default playbook configuration specified on the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), this is necessary for federation to work. Without a proper configuration, your server will effectively not be part of the Matrix network.
 
+- (less important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
 
-## Introduction to Federation Server Discovery
+- (optional) **Support service discovery** (`/.well-known/matrix/support`) -- returns server admin contact and support page of the domain.
 
-All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`).
+### Federation Server Discovery
 
-As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`, the Matrix network needs to be instructed of such delegation/redirection.
+All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`), instead of the base domain (`example.com`).
 
-Server delegation can be configured using DNS SRV records or by setting up a `/.well-known/matrix/server` file on the base domain (`example.com`).
+As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a short Matrix user identifier like `@user:example.com` while hosting services on a subdomain such as `matrix.example.com`, the Matrix network needs to be instructed of such delegation/redirection.
 
-Both methods have their place and will continue to do so. You only need to use just one of these delegation methods. For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that.
+As the playbook recommends in the sample `vars.yml` (`examples/vars.yml`) to use a short user identifier, you would need to configure the delegation so that your server will be federated with other Matrix servers.
 
-To learn how to set up `/.well-known/matrix/server`, read the Installing section below.
+Server delegation can be configured by:
 
+- Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)
+- Setting up a DNS SRV record
 
-## Introduction to Client Server Discovery
+Both methods have their place and will continue to do so. You only need to use just one of these delegation methods.
+
+For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that. If you need to use the other method, you can check this documentation: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
+
+**Note**: it is optionally possible to install the server on `matrix.example.com` directly instead. This should be helpful if you are not in control of anything on the base domain. On this case, you would not need to configure the server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
+
+### Client Server Discovery
 
 Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@username:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
 
 This lets you (and your users) easily connect to your Matrix server without having to customize connection URLs. When using client programs that support it, you won't need to point them to `https://matrix.example.com` in Custom Server options manually anymore. The connection URL would be discovered automatically from your full username.
 
+Without /.well-known/matrix/client, the client will make the wrong "homeserver URL" assumption (it will default to using https://example.com, and users will need to notice and adjust it manually (changing it to https://matrix.example.com).
+
 As [per the Client-Server specification](https://matrix.org/docs/spec/client_server/r0.4.0.html#server-discovery) Matrix does Client Server service discovery using a `/.well-known/matrix/client` file hosted on the base domain (e.g. `example.com`).
 
 However, this playbook installs your Matrix server on another domain (e.g. `matrix.example.com`) and not on the base domain (e.g. `example.com`), so it takes a little extra manual effort to set up the file.
 
-To learn how to set it up, read the Installing section below.
+### (Optional) Support Service Discovery
 
+[MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929), which was added to [Matrix Specification version v1.10](https://spec.matrix.org/v1.10/client-server-api/#getwell-knownmatrixsupport), specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
-## (Optional) Introduction to Homeserver Admin Contact and Support page
+To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-[MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929) specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
-
-The two playbook variables that you could look for, if you're interested in being an early adopter, are: `matrix_static_files_file_matrix_support_property_m_contacts` and `matrix_static_files_file_matrix_support_property_m_support_page`.
-
-Example snippet for `vars.yml`:
-
-```
+```yaml
 # Enable generation of `/.well-known/matrix/support`.
 matrix_static_files_file_matrix_support_enabled: true
 
@@ -62,25 +68,31 @@ matrix_static_files_file_matrix_support_property_m_contacts:
 matrix_static_files_file_matrix_support_property_m_support_page: "https://example.com/support"
 ```
 
-To learn how to set up `/.well-known/matrix/support` for the base domain, read the Installing section below.
-
-
 ## Installing well-known files on the base domain's server
 
-To implement the two service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver.
+To implement the service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver.
 
-If you don't have a server for your base domain at all, you can use the Matrix server for this. See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up. If you decide to go this route, you don't need to read ahead in this document. When **Serving the base domain**, the playbook takes care to serve the appropriate well-known files automatically.
+### Serving the base domain from the Matrix server via the playbook
+
+If you don't have a server for your base domain at all, you can use the Matrix server for this. If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it.
+
+**This is the easiest way to set up well-known serving** -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.) and take care to serve the appropriate well-known files automatically.
+
+If you decide to go this route, you don't need to read ahead in this document. Instead, go to [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
+
+However, if you need to use the base domain for other things, this method is less suitable than the one explained below.
+
+### Manually installing well-known files on the base domain's server
 
 If you're managing the base domain by yourself somehow, you'll need to set up serving of some `/.well-known/matrix/*` files from it via HTTPS.
 
-To make things easy for you to set up, this playbook generates and hosts 2 well-known files on the Matrix domain's server. The files are generated at `/matrix/static-files/.well-known/matrix/` and hosted at `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`, even though this is the wrong place to host them.
+To make things easy for you to set up, this playbook generates and hosts a few well-known files on the Matrix domain's server. The files are generated at the `/matrix/static-files/public/.well-known/matrix/` path on the server and hosted at URLs like `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`, even though this is the wrong place to host them.
 
-You have 3 options when it comes to installing the files on the base domain's server:
+You have two options when it comes to installing the files on the base domain's server:
 
+#### (Option 1): **Copying the files manually** to your base domain's server
 
-### (Option 1): **Copying the files manually** to your base domain's server
-
-**Hint**: Option 2 and 3 (below) are generally a better way to do this. Make sure to go with them, if possible.
+**Hint**: Option 2 is generally a better way to do this. Make sure to go with it, if possible.
 
 All you need to do is:
 
@@ -90,17 +102,7 @@ All you need to do is:
 
 This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server. It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again.
 
-
-### (Option 2): **Serving the base domain** from the Matrix server via the playbook
-
-If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it.
-
-This is the easiest way to set up well-known serving -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.). However, if you need to use the base domain for other things (such as hosting some website, etc.), going with Option 1 or Option 3 might be more suitable.
-
-See [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
-
-
-### (Option 3): **Setting up reverse-proxying** of the well-known files from the base domain's server to the Matrix server
+#### (Option 2): **Setting up reverse-proxying** of the well-known files from the base domain's server to the Matrix server
 
 This option is less fragile and generally better.
 
