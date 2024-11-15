@@ -29,7 +29,7 @@ Both methods have their place and will continue to do so. You only need to use j
 
 For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that. If you need to use the other method, you can check this documentation: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
 
-**Note**: it is optionally possible to install the server on `matrix.example.com` directly instead. This should be helpful if you are not in control of anything on the base domain. On this case, you would not need to configure the server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
+**Note**: as an alternative, it is possible to install the server such that it uses only the `matrix.example.com` domain (instead of identifying as the shorter base domain - `example.com`). This should be helpful if you are not in control of anything on the base domain (`example.com`). In this case, you would not need to configure server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
 
 ### Client Server Discovery
 
@@ -120,7 +120,7 @@ server {
 	location /.well-known/matrix {
 		proxy_pass https://matrix.example.com/.well-known/matrix;
 		proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_ssl_server_name on;
+		proxy_ssl_server_name on;
 	}
 
 	# other configuration
