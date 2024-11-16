@@ -10,16 +10,16 @@ In the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recom
 
 To use such an identifier, you don't need to install anything on the actual `example.com` server. Instead, you need to instruct the Matrix network that Matrix services for `example.com` are redirected over to `matrix.example.com`. This redirection is also known as "delegation".
 
-As we discuss in [Server Delegation](howto-server-delegation.md), server delegation can be configured in either way:
+As we discuss in [Server Delegation](howto-server-delegation.md), server delegation can be configured in either of these ways:
 
 - Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)
 - Setting up a `_matrix._tcp` DNS SRV record
 
 For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file, instead of using a DNS SRV record.
 
-If you choose the recommended method, you do not need to configure the DNS record to enable server delegation. You will need to add a necessary configuration later, when you [finalize the installation](installing.md#finalize-the-installation) after installing and starting Matrix services.
+If you choose the recommended method (file-based delegation), you do not need to configure the DNS record to enable server delegation. You will need to add a necessary configuration later, when you [finalize the installation](installing.md#finalize-the-installation) after installing and starting Matrix services.
 
-On the other hand, if you choose the other method (setting the DNS SRV record), you need to configure the additional DNS record. Take a look at this documentation for more information: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
+On the other hand, if you choose this method (setting up a DNS SRV record), you need to configure the additional DNS record as well as adjust SSL certificate handling. Take a look at this documentation for more information: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
 
 ## DNS settings for services enabled by default
 
