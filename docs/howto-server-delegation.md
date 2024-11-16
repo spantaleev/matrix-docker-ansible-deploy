@@ -2,7 +2,7 @@
 
 By default, this playbook sets up services on your Matrix server (`matrix.example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up server delegation / redirection.
 
-Server delegation can be configured in either way:
+Server delegation can be configured in either of these ways:
 
 - [Setting up a `/.well-known/matrix/server` file](#server-delegation-via-a-well-known-file) on the base domain (`example.com`)
 - [Setting up a `_matrix._tcp` DNS SRV record](#server-delegation-via-a-dns-srv-record-advanced)
@@ -36,7 +36,7 @@ Otherwise, you can decide to go against the default for this playbook, and inste
 
 ## Server Delegation via a DNS SRV record (advanced)
 
-**Note**: doing Server Delegation via a DNS SRV record is a more **advanced** way to do it and is not the default for this playbook. This is usually **much more complicated** to set up, so **we don't recommend it**. If you're not an experience sysadmin, you'd better stay away from this.
+**Note**: doing Server Delegation via a DNS SRV record is a more **advanced** way to do it and is not the default for this playbook. This is usually **much more complicated** to set up, so **we don't recommend it**. If you're not an experienced sysadmin, you'd better stay away from this.
 
 As per the [Server-Server spec](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), it's possible to do Server Delegation using only a SRV record (without a `/.well-known/matrix/server` file).
 
