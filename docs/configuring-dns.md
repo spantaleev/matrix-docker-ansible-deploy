@@ -4,16 +4,22 @@
 
 To set up Matrix on your domain, you'd need to do some DNS configuration.
 
-To use an identifier like `@<username>:example.com`, you don't actually need to install anything on the actual `example.com` server.
+## DNS setting for server delegation (optional)
 
-You do, however, need to instruct the Matrix network that Matrix services for `example.com` are delegated over to `matrix.example.com`.
+In the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user identifier like `@<username>:example.com`.
 
-As we discuss in [Server Delegation](howto-server-delegation.md), there are 2 different ways to set up such delegation:
+To use such an identifier, you don't need to install anything on the actual `example.com` server. Instead, you need to instruct the Matrix network that Matrix services for `example.com` are redirected over to `matrix.example.com`. This redirection is also known as "delegation".
 
-- either by serving a `https://example.com/.well-known/matrix/server` file (from the base domain!)
-- or by using a `_matrix._tcp` DNS SRV record (don't confuse this with the `_matrix-identity._tcp` SRV record described below)
+As we discuss in [Server Delegation](howto-server-delegation.md), server delegation can be configured in either of these ways:
 
-This playbook mostly discusses the well-known file method, because it's easier to manage with regard to certificates. If you decide to go with the alternative method ([Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)), please be aware that the general flow that this playbook guides you through may not match what you need to do.
+- Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)
+- Setting up a `_matrix._tcp` DNS SRV record
+
+For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file, instead of using a DNS SRV record.
+
+If you choose the recommended method (file-based delegation), you do not need to configure the DNS record to enable server delegation. You will need to add a necessary configuration later, when you [finalize the installation](installing.md#finalize-the-installation) after installing and starting Matrix services.
+
+On the other hand, if you choose this method (setting up a DNS SRV record), you need to configure the additional DNS record as well as adjust SSL certificate handling. Take a look at this documentation for more information: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
 
 ## DNS settings for services enabled by default
 

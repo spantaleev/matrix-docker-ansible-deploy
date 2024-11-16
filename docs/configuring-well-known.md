@@ -1,6 +1,6 @@
 # Configuring Service Discovery via .well-known
 
-Service discovery is a way for the Matrix network to discover where a Matrix server is.
+This documentation page explains how to configure Service discovery via `/.well-known/` files. Service discovery is a way for the Matrix network to discover where a Matrix server is.
 
 ## Types of well-known service discovery mechanism
 
@@ -16,20 +16,11 @@ There are 3 types of well-known service discovery mechanism that Matrix makes us
 
 All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`), instead of the base domain (`example.com`).
 
-As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a short Matrix user identifier like `@user:example.com` while hosting services on a subdomain such as `matrix.example.com`, the Matrix network needs to be instructed of such delegation/redirection.
+As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a short Matrix user identifier like `@user:example.com` while hosting services on a subdomain such as `matrix.example.com`, the Matrix network needs to be instructed of [server delegation](howto-server-delegation.md) / redirection.
 
-As the playbook recommends in the sample `vars.yml` (`examples/vars.yml`) to use a short user identifier, you would need to configure the delegation so that your server will be federated with other Matrix servers.
+For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file.
 
-Server delegation can be configured by:
-
-- Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)
-- Setting up a DNS SRV record
-
-Both methods have their place and will continue to do so. You only need to use just one of these delegation methods.
-
-For simplicity reasons, our setup advocates for the `/.well-known/matrix/server` method and guides you into using that. If you need to use the other method, you can check this documentation: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
-
-**Note**: as an alternative, it is possible to install the server such that it uses only the `matrix.example.com` domain (instead of identifying as the shorter base domain - `example.com`). This should be helpful if you are not in control of anything on the base domain (`example.com`). In this case, you would not need to configure server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
+If you set up the DNS SRV record for server delegation instead, take a look at this documentation for more information: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
 
 ### Client Server Discovery
 
