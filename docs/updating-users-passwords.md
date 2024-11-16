@@ -2,10 +2,10 @@
 
 ## Option 1 (if you are using the integrated Postgres database):
 
-You can reset a user's password via the Ansible playbook (make sure to edit the `YOUR_USERNAME_HERE` and `<your-password>` part below):
+You can reset a user's password via the Ansible playbook (make sure to edit the `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE` part below):
 
 ```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=<your-password>' --tags=update-user-password
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE' --tags=update-user-password
 ```
 
 **Note**: `YOUR_USERNAME_HERE` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
