@@ -108,11 +108,11 @@ As you have configured your brand new server and the client, you need to **creat
 To register a user via this Ansible playbook, run the command below on your local computer.
 
 **Notes**:
-- Before running it, make sure to edit `<your-username>` and `<your-password>`
-- In the command below, `<your-username>` is just a plain username (like `john`), not your full `@user:example.com` identifier
+- Before running it, make sure to edit `YOUR_USERNAME_HERE` and `<your-password>`
+- In the command below, `YOUR_USERNAME_HERE` is just a plain username (like `john`), not your full `@user:example.com` identifier
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-username> password=<your-password> admin=<yes|no>' --tags=register-user
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=<your-password> admin=<yes|no>' --tags=register-user
 
 # Example: `ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user`
 ```

@@ -14,7 +14,7 @@ Table of contents:
 
 ## Registering users manually
 
-**Note**: in the commands below, `<your-username>` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
+**Note**: in the commands below, `YOUR_USERNAME_HERE` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
 
 After registering a user (using one of the methods below), **you can log in with that user** via the [Element Web](configuring-playbook-client-element-web.md) service that this playbook has installed for you at a URL like this: `https://element.example.com/`.
 
@@ -22,10 +22,10 @@ After registering a user (using one of the methods below), **you can log in with
 
 It's best to register users via the Ansible playbook, because it works regardless of homeserver implementation (Synapse, Dendrite, etc) or usage of [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (MAS).
 
-To register a user via this Ansible playbook (make sure to edit the `<your-username>` and `<your-password>` part below):
+To register a user via this Ansible playbook (make sure to edit the `YOUR_USERNAME_HERE` and `<your-password>` part below):
 
 ```sh
-just register-user <your-username> <your-password> <admin access: yes or no>
+just register-user YOUR_USERNAME_HERE <your-password> <admin access: yes or no>
 
 # Example: `just register-user john secret-password yes`
 ```
@@ -33,7 +33,7 @@ just register-user <your-username> <your-password> <admin access: yes or no>
 **or** by invoking `ansible-playbook` manually:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-username> password=<your-password> admin=<yes|no>' --tags=register-user
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=<your-password> admin=<yes|no>' --tags=register-user
 
 # Example: `ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user`
 ```
@@ -45,7 +45,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=<your-usern
 If you're using the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default), you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 ```sh
-/matrix/synapse/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
+/matrix/synapse/bin/register-user YOUR_USERNAME_HERE <your-password> <admin access: 0 or 1>
 
 # Example: `/matrix/synapse/bin/register-user john secret-password 1`
 ```
@@ -55,7 +55,7 @@ If you're using the [Synapse](configuring-playbook-synapse.md) homeserver implem
 If you're using the [Dendrite](./configuring-playbook-dendrite.md) homeserver implementation, you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 ```sh
-/matrix/dendrite/bin/create-account <your-username> <your-password> <admin access: 0 or 1>
+/matrix/dendrite/bin/create-account YOUR_USERNAME_HERE <your-password> <admin access: 0 or 1>
 
 # Example: `/matrix/dendrite/bin/create-account john secret-password 1`
 ```
@@ -65,7 +65,7 @@ If you're using the [Dendrite](./configuring-playbook-dendrite.md) homeserver im
 If you're using the [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) and your existing homeserver (most likely [Synapse](./configuring-playbook-synapse.md)) is delegating authentication to it, you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 ```sh
-/matrix/matrix-authentication-service/bin/register-user <your-username> <your-password> <admin access: 0 or 1>
+/matrix/matrix-authentication-service/bin/register-user YOUR_USERNAME_HERE <your-password> <admin access: 0 or 1>
 
 # Example: `/matrix/matrix-authentication-service/bin/register-user john secret-password 1`
 ```
