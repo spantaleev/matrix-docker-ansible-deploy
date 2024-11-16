@@ -67,27 +67,9 @@ Regardless of which method for obtaining certificates you've used, once you've m
 
 Based on your setup, you have different ways to go about it:
 
-- [Server Delegation](#server-delegation)
-	- [Server Delegation via a well-known file](#server-delegation-via-a-well-known-file)
-		- [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation)
-	- [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-srv-record-advanced)
-		- [Obtaining certificates](#obtaining-certificates)
-		- [Serving the Federation API with your certificates](#serving-the-federation-api-with-your-certificates)
-		- [Serving the Federation API with your certificates and another webserver](#serving-the-federation-api-with-your-certificates-and-another-webserver)
-		- [Serving the Federation API with your certificates and Synapse handling Federation](#serving-the-federation-api-with-your-certificates-and-synapse-handling-federation)
+#### Serving the Federation API with your certificates and Synapse handling Federation
 
-
-
-
-### Serving the Federation API with your certificates and another webserver
-
-**If you are using some other webserver**, you can set up reverse-proxying for the `tcp/8448` port by yourself. Make sure to use the proper certificates for `example.com` (not for `matrix.example.com`) when serving the `tcp/8448` port.
-
-As recommended in our [Fronting the integrated reverse-proxy webserver with another reverse-proxy](./configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) documentation section, we recommend you to expose the Matrix Federation entrypoint from traffic at a local port (e.g. `127.0.0.1:8449`), so your reverese-proxy should send traffic there.
-
-### Serving the Federation API with your certificates and Synapse handling Federation
-
-**Alternatively**, you can let Synapse handle Federation by itself.
+You can let Synapse handle Federation by itself.
 
 To do that, make sure the certificate files are mounted into the Synapse container:
 
@@ -105,3 +87,9 @@ matrix_synapse_tls_private_key_path: /some/path/inside/the/container/private.key
 ```
 
 Make sure to reload Synapse once in a while (`systemctl reload matrix-synapse`), so that newer certificates can kick in. Reloading doesn't cause any downtime.
+
+#### Serving the Federation API with your certificates and another webserver
+
+**Alternatively**, if you are using another webserver, you can set up reverse-proxying for the `tcp/8448` port by yourself. Make sure to use the proper certificates for `example.com` (not for `matrix.example.com`) when serving the `tcp/8448` port.
+
+As recommended in our [Fronting the integrated reverse-proxy webserver with another reverse-proxy](./configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) documentation section, we recommend you to expose the Matrix Federation entrypoint from traffic at a local port (e.g. `127.0.0.1:8449`), so your reverese-proxy should send traffic there.
