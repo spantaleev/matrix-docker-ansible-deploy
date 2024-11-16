@@ -1,6 +1,6 @@
 # Configuring your DNS server
 
-<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > Configuring your DNS server > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md) </sup>
+<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > Configuring your DNS server > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 To set up Matrix on your domain, you'd need to do some DNS configuration.
 
@@ -105,4 +105,4 @@ To make the [postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge
 
 ---------------------------------------------
 
-When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
+[▶️](getting-the-playbook.md) When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
