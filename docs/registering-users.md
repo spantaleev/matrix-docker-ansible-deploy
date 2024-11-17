@@ -9,7 +9,7 @@ Table of contents:
 	- [Managing users via a Web UI](#managing-users-via-a-web-ui)
 	- [Letting certain users register on your private server](#letting-certain-users-register-on-your-private-server)
 	- [Enabling public user registration](#enabling-public-user-registration)
-	- [Adding/Removing Administrator privileges to an existing Synapse user](#addingremoving-administrator-privileges-to-an-existing-synapse-user)
+	- [Adding/Removing Administrator privileges to an existing user](#addingremoving-administrator-privileges-to-an-existing-user)
 
 
 ## Registering users manually

@@ -95,7 +95,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mx-puppet-groupme](configuring-playbook-bridge-mx-puppet-groupme.md) | [xangelix/mx-puppet-groupme](https://hub.docker.com/r/xangelix/mx-puppet-groupme) | ❌ | Bridge to [GroupMe](https://groupme.com/) |
 | [mx-puppet-steam](configuring-playbook-bridge-mx-puppet-steam.md) | [icewind1991/mx-puppet-steam](https://hub.docker.com/r/icewind1991/mx-puppet-steam) | ❌ | Bridge to [Steam](https://steamapp.com/) |
 | [Email2Matrix](configuring-playbook-email2matrix.md) | [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) | ❌ | Bridge for relaying emails to Matrix rooms |
-| [Postmoogle](docs/configuring-playbook-bridge-postmoogle.md) | [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) | ❌ | Email to Matrix bridge |
+| [Postmoogle](configuring-playbook-bridge-postmoogle.md) | [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) | ❌ | Email to Matrix bridge |
 
 ## Bots
 

@@ -226,15 +226,15 @@ Using a separate domain name is easier to manage (although it's a little hard to
 
 We allow `matrix.example.com` to be the Matrix server handling Matrix stuff for `example.com` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
 
-If you'd really like to install Matrix services directly on the base domain, see [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain)
+If you'd really like to install Matrix services directly on the base domain, see [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
 ### I don't control anything on the base domain and can't set up delegation to matrix.example.com. What do I do?
 
-If you're not in control of your base domain (or the server handling it) at all, you can take a look at [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain)
+If you're not in control of your base domain (or the server handling it) at all, you can take a look at [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
 ### I can't set up HTTPS on the base domain. How will I get Matrix federating?
 
-If you really can't obtain an HTTPS certificate for your base domain, you can take a look at [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain)
+If you really can't obtain an HTTPS certificate for your base domain, you can take a look at [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
 ### How do I install on matrix.example.com without involving the base domain?
 
@@ -371,7 +371,7 @@ Yes, you can.
 
 You generally need to do a playbook installation (start at the [Prerequisites](prerequisites.md) page), followed by importing your existing data into it.
 
-This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain)
+This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
 After configuring the playbook and installing and **before starting** services (done with `ansible-playbook ... --tags=start`) you'd import [your SQLite](importing-synapse-sqlite.md) (or [Postgres](importing-postgres.md)) database and also [import your media store](importing-synapse-media-store.md).
 
@@ -451,7 +451,7 @@ You can later restore these roughly like this:
 - restore the `/matrix` directory and files on the new server manually
 - run the playbook again (see [Installing](installing.md)), but **don't** start services yet (**don't run** `... --tags=start`). This step will fix any file permission mismatches and will also set up additional software (Docker, etc.) and files on the server (systemd service, etc.).
 - perform a Postgres database import (see [Importing Postgres](importing-postgres.md)) to restore your database backup
-- start services (see [Starting the services](installing.md#starting-the-services))
+- start services (see [Finalize the installation](installing.md#finalize-the-installation))
 
 If your server's IP address has changed, you may need to [set up DNS](configuring-dns.md) again.
 

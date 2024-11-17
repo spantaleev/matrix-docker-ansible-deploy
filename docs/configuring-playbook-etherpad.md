@@ -50,7 +50,7 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 
 The Etherpad UI should be available at `https://etherpad.example.com`, while the admin UI (if enabled) should then be available at `https://etherpad.example.com/admin`.
 
-If you've [decided on another hostname or path-prefix](#decide-on-a-domain-and-path) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before usage.
+If you've [decided on another hostname or path-prefix](#adjusting-the-etherpad-url) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before usage.
 
 
 ### Managing / Deleting old pads
