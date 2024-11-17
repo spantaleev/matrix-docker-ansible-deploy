@@ -90,7 +90,7 @@ For more information, see the documentation for [registering users](registering-
 
 ## Finalize the installation
 
-Now you've configured Matrix services and your user account, you need to **finalize the installation process** by [delegating (redirecting) the server](howto-server-delegation.md) to your base domain (`example.com`).
+Now you've configured Matrix services and your user account, you need to **finalize the installation process** by  [setting up Matrix delegation (redirection)](howto-server-delegation.md), so that your Matrix server (`matrix.example.com`) can present itself as the base domain (`example.com`) in the Matrix network.
 
 This is required for federation to work! Without a proper configuration, your server will effectively not be part of the Matrix network.
 
