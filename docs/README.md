@@ -4,7 +4,7 @@
 
 - [Prerequisites](prerequisites.md) - go here to a guided installation using this Ansible playbook
 
-- [Configuring your DNS server](configuring-dns.md)
+- [Configuring your DNS settings](configuring-dns.md)
 
 - [Getting this playbook's source code](getting-the-playbook.md)
 
