@@ -370,6 +370,27 @@ matrix_synapse_media_retention_remote_media_lifetime:
 # Controls the list of additional oembed providers to be added to the homeserver.
 matrix_synapse_oembed_additional_providers: []
 
+# Controls message retention policies
+matrix_synapse_retention_enabled: false
+# "A single var to control them all" - applied to all retention period vars, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_period: ""
+# The default min lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_default_policy_min_lifetime: "{{ matrix_synapse_retention_period }}"
+# The default max lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_default_policy_max_lifetime: "{{ matrix_synapse_retention_period }}"
+# The allowed min lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_allowed_lifetime_min: "{{ matrix_synapse_retention_period }}"
+# The allowed max lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_allowed_lifetime_max: "{{ matrix_synapse_retention_period }}"
+# The list of the purge jobs, structure (all fields are optional, example below contains all available variants):
+# - longest_max_lifetime: "1d"
+#   shortest_max_lifetime: "1d"
+#   interval: "12h"
+# - longest_max_lifetime: "1d"
+# - shortest_max_lifetime: "1d"
+# - interval: "12h"
+matrix_synapse_retention_purge_jobs: []
+
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50 }}"
 

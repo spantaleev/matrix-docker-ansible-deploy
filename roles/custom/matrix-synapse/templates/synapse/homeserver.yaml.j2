@@ -590,26 +590,37 @@ templates:
 # purged are ignored and not stored again.
 #
 retention:
+  {% if matrix_synapse_retention_enabled %}
   # The message retention policies feature is disabled by default. Uncomment the
   # following line to enable it.
   #
-  #enabled: true
+  enabled: {{ matrix_synapse_retention_enabled|to_json }}
 
   # Default retention policy. If set, Synapse will apply it to rooms that lack the
   # 'm.room.retention' state event. Currently, the value of 'min_lifetime' doesn't
   # matter much because Synapse doesn't take it into account yet.
   #
-  #default_policy:
-  #  min_lifetime: 1d
-  #  max_lifetime: 1y
+  {% if matrix_synapse_retention_default_policy_min_lifetime | length > 0 or matrix_synapse_retention_default_policy_max_lifetime | length > 0 %}
+  default_policy:
+  {% if matrix_synapse_retention_default_policy_min_lifetime | length > 0 %}
+    min_lifetime: {{ matrix_synapse_retention_default_policy_min_lifetime|to_json }}
+  {% endif %}
+  {% if matrix_synapse_retention_default_policy_max_lifetime | length > 0 %}
+    max_lifetime: {{ matrix_synapse_retention_default_policy_max_lifetime|to_json }}
+  {% endif %}
+  {% endif %}
 
   # Retention policy limits. If set, and the state of a room contains a
   # 'm.room.retention' event in its state which contains a 'min_lifetime' or a
   # 'max_lifetime' that's out of these bounds, Synapse will cap the room's policy
   # to these limits when running purge jobs.
   #
-  #allowed_lifetime_min: 1d
-  #allowed_lifetime_max: 1y
+  {% if matrix_synapse_retention_allowed_lifetime_min | length > 0 %}
+  allowed_lifetime_min: {{ matrix_synapse_retention_allowed_lifetime_min|to_json }}
+  {% endif %}
+  {% if matrix_synapse_retention_allowed_lifetime_max | length > 0 %}
+  allowed_lifetime_max: {{ matrix_synapse_retention_allowed_lifetime_max|to_json }}
+  {% endif %}
 
   # Server admins can define the settings of the background jobs purging the
   # events which lifetime has expired under the 'purge_jobs' section.
@@ -640,12 +651,15 @@ retention:
   # room's policy to these values is done after the policies are retrieved from
   # Synapse's database (which is done using the range specified in a purge job's
   # configuration).
-  #
-  #purge_jobs:
-  #  - longest_max_lifetime: 3d
-  #    interval: 12h
-  #  - shortest_max_lifetime: 3d
-  #    interval: 1d
+  {% if matrix_synapse_retention_purge_jobs is not none %}
+  purge_jobs:
+    {% for job in matrix_synapse_retention_purge_jobs %}
+    - {% if job.longest_max_lifetime is defined %}longest_max_lifetime: {{ job.longest_max_lifetime|to_json }}{% endif %}
+      {% if job.shortest_max_lifetime is defined %}shortest_max_lifetime: {{ job.shortest_max_lifetime|to_json }}{% endif %}
+      {% if job.interval is defined %}interval: {{ job.interval|to_json }}{% endif %}
+    {% endfor %}
+  {% endif %}
+  {% endif %}
 
 
 ## TLS ##
