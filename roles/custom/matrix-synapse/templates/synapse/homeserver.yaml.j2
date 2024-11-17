@@ -651,7 +651,7 @@ retention:
   # room's policy to these values is done after the policies are retrieved from
   # Synapse's database (which is done using the range specified in a purge job's
   # configuration).
-  {% if matrix_synapse_retention_purge_jobs is not none %}
+  {% if matrix_synapse_retention_purge_jobs | length > 0 %}
   purge_jobs:
     {% for job in matrix_synapse_retention_purge_jobs %}
     - {% if job.longest_max_lifetime is defined %}longest_max_lifetime: {{ job.longest_max_lifetime|to_json }}{% endif %}
