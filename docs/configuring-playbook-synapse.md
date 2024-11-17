@@ -104,7 +104,7 @@ matrix_synapse_oidc_enabled: true
 matrix_synapse_oidc_providers:
   - idp_id: keycloak
     idp_name: "My KeyCloak server"
-    issuer: "https://url.ix/auth/realms/{realm_name}"
+    issuer: "https://url.ix/realms/{realm_name}"
     client_id: "matrix"
     client_secret: "{{ vault_synapse_keycloak }}"
     scopes: ["openid", "profile"]
