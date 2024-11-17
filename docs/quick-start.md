@@ -158,3 +158,21 @@ Come say Hi👋 in our support room - [#matrix-docker-ansible-deploy:devture.com
 Once you get familiar with the playbook, you might probably want to set up additional services such as a bridge on your server.
 
 As this page intends to be a quick start guide which explains how to start the core Matrix services, it does not cover a topic like how to set them up. Take a look at the list of [things to do next](installing.md#things-to-do-next) to learn more.
+
+### ⚠️Keep the playbook and services up-to-date
+
+<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Upgrading the Matrix services](maintenance-upgrading-services.md)</sup>
+
+While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**.
+
+Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
+
+Before updating the playbook and the Ansible roles in the playbook, take a look at [the changelog](../CHANGELOG.md) to see if there have been any backward-incompatible changes that you need to take care of.
+
+If it looks good to you, go to the `matrix-docker-ansible-deploy` directory and run `just update`.
+
+Then, re-run the setup command as below:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
