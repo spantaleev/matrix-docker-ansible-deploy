@@ -2,6 +2,8 @@
 
 - [FAQ](faq.md) - lots of questions and answers. Jump to [Prerequisites](prerequisites.md) to avoid reading too much and to just start a guided installation.
 
+- [Quick start](quick-start.md) - follow the guide to set up minimum core services on your server
+
 - [Prerequisites](prerequisites.md) - go here to a guided installation using this Ansible playbook
 
 - [Configuring your DNS settings](configuring-dns.md)
