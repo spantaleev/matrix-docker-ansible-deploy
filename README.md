@@ -27,6 +27,8 @@ While the [list of supported services](#-supported-services) and documentation i
 - Starting with the basics. You can always add/remove or tweak services later on.
 - Following our guided installation, starting with the [Prerequisites](./docs/prerequisites.md) documentation page
 
+If you have never configured Matrix services, follow the [**quick start**](./docs/quick-start.md) guide to set up minimum core services on your server.
+
 ## ✔ Supported services
 
 Using this playbook, you can get the following list of services configured on your server. Basically, this playbook aims to get you up-and-running with all the necessities around Matrix, without you having to do anything else.
