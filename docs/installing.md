@@ -66,9 +66,31 @@ You can now:
 ansible-playbook -i inventory/hosts setup.yml --tags=ensure-matrix-users-created,start
 ```
 
+## Create your user account
+
+ℹ️ *You can skip this step if you have installed a server and imported old data to it.*
+
+As you have configured your brand new server and the client, you need to **create your user account** on your Matrix server.
+
+After creating the user account, you can log in to it with [Element Web](configuring-playbook-client-element-web.md) that this playbook has installed for you at this URL: `https://element.example.com/`.
+
+To register a user via this Ansible playbook, run the command below on your local computer.
+
+**Notes**:
+- Before running it, make sure to edit `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
+- In the command below, `YOUR_USERNAME_HERE` is just a plain username (like `john`), not your full `@user:example.com` identifier
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=<yes|no>' --tags=register-user
+
+# Example: `ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user`
+```
+
+For more information, see the documentation for [registering users](registering-users.md).
+
 ## Finalize the installation
 
-Now that services are running, you need to **finalize the installation process** by [delegating (redirecting) the server](howto-server-delegation.md) to your base domain (`example.com`).
+Now you've configured Matrix services and your user account, you need to **finalize the installation process** by [setting up Matrix delegation (redirection)](howto-server-delegation.md), so that your Matrix server (`matrix.example.com`) can present itself as the base domain (`example.com`) in the Matrix network.
 
 This is required for federation to work! Without a proper configuration, your server will effectively not be part of the Matrix network.
 
@@ -93,7 +115,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 After finilizing the installation, you can:
 
 - [check if services work](maintenance-checking-services.md)
-- or [create your first Matrix user account](registering-users.md)
 - or [set up additional services](configuring-playbook.md#other-configuration-options) (bridges to other chat networks, bots, etc.)
 - or learn how to [upgrade services when new versions are released](maintenance-upgrading-services.md)
 - or learn how to [maintain your server](faq.md#maintenance)
