@@ -46,7 +46,7 @@ By default, you will need to create a CNAME record for `jitsi`. See [Configuring
 
 By default the Jitsi Meet instance does not require any kind of login and is open to use for anyone without registration.
 
-If you're fine with such an open Jitsi instance, please skip to [Apply changes](#apply-changes).
+If you're fine with such an open Jitsi instance, please skip to [Installing](#installing).
 
 If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow the following steps to enable Jitsi's authentication and optionally guests mode.
 

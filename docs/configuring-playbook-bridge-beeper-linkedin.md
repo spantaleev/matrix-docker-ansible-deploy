@@ -54,7 +54,7 @@ Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging fo
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
-After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting), if you haven't already done so.
+After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting-by-enabling-appservice-double-puppet-or-shared-secret-auth), if you haven't already done so.
 
 
 ## Troubleshooting

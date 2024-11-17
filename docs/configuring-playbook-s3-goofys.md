@@ -32,7 +32,7 @@ If you have local media store files and wish to migrate to Backblaze B2 subseque
 
 ## Migrating from local filesystem storage to S3
 
-It's a good idea to [make a complete server backup](faq.md#how-do-i-backup-the-data-on-my-server) before migrating your local media store to an S3-backed one.
+It's a good idea to [make a complete server backup](faq.md#how-do-i-back-up-the-data-on-my-server) before migrating your local media store to an S3-backed one.
 
 After making the backup, follow one of the guides below for a migration path from a locally-stored media store to one stored on S3-compatible storage:
 

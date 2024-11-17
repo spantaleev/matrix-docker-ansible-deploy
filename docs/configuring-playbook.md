@@ -98,7 +98,7 @@ Extend and modify how users are authenticated on your homeserver.
 
 Use alternative file storage to the default `media_store` folder.
 
-- [Storing Matrix media files on Amazon S3 with Goofys](docs/configuring-playbook-s3-goofys.md)
+- [Storing Matrix media files on Amazon S3 with Goofys](configuring-playbook-s3-goofys.md)
 
 - [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
 
@@ -197,7 +197,7 @@ Services that help you in administrating and monitoring your Matrix installation
 
 - [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
 
-- [Enabling metrics and graphs for NginX logs](docs/configuring-playbook-prometheus-nginxlog.md)
+- [Enabling metrics and graphs for NginX logs](configuring-playbook-prometheus-nginxlog.md)
 
 - [Setting up the rageshake bug report server](configuring-playbook-rageshake.md)
 
