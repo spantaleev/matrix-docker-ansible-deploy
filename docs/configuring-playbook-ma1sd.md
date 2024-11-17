@@ -34,6 +34,16 @@ matrix_ma1sd_matrixorg_forwarding_enabled: true
 
 If you'd like to change the default email templates used by ma1sd, take a look at the `matrix_ma1sd_threepid_medium_email_custom_` variables (in the `roles/custom/matrix-ma1sd/defaults/main.yml` file.
 
+## Adjusting DNS records
+
+To make the ma1sd Identity Server enable its federation features, set up an SRV record that looks like this:
+- Name: `_matrix-identity._tcp` (use this text as-is)
+- Content: `10 0 443 matrix.example.com` (replace `example.com` with your own)
+
+See [ma1sd's documentation](https://github.com/ma1uta/ma1sd/wiki/mxisd-and-your-privacy#choices-are-never-easy) for information on the privacy implications of setting up this SRV record.
+
+**Note**: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
+
 ## Installing
 
 After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
