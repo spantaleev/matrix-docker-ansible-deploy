@@ -81,8 +81,9 @@ This `register-user` script actually invokes the `mas-cli manage register-user` 
 
 ## Things to do after registering users
 
-If you've just installed Matrix and created some users, **to finalize the installation process** it's best if you proceed with [Configuring service discovery via .well-known](configuring-well-known.md)
+If you've just installed Matrix and created some users, you mostly need to **finalize the installation process** by [setting up Matrix delegation (redirection)](howto-server-delegation.md), so that your Matrix server (`matrix.example.com`) can present itself as the base domain (`example.com`) in the Matrix network.
 
+This is required for federation to work! Without a proper configuration, your server will effectively not be part of the Matrix network.
 
 ## Managing users via a Web UI
 
