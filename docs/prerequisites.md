@@ -6,11 +6,11 @@ To install Matrix services using this Ansible playbook, you need:
 
 ## Your local computer
 
-- The [Ansible](http://ansible.com/) program. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for more information, as well as [version requirements](ansible.md#supported-ansible-versions) and alternative ways to run Ansible.
+- [Ansible](http://ansible.com/) program. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for more information, as well as [version requirements](ansible.md#supported-ansible-versions) and alternative ways to run Ansible.
 
-- the [passlib](https://passlib.readthedocs.io/en/stable/index.html) Python library. On most distros, you need to install some `python-passlib` or `py3-passlib` package, etc.
+- [passlib](https://passlib.readthedocs.io/en/stable/index.html) Python library. On most distros, you need to install some `python-passlib` or `py3-passlib` package, etc.
 
-- [`git`](https://git-scm.com/) is the recommended way to download the playbook. `git` may also be required on the server if you will be [self-building](self-building.md) components.
+- [`git`](https://git-scm.com/) as the recommended way to download the playbook. `git` may also be required on the server if you will be [self-building](self-building.md) components.
 
 - [`just`](https://github.com/casey/just) for running `just roles`, `just update`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually
 
