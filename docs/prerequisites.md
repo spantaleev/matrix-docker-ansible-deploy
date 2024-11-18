@@ -8,7 +8,7 @@ To install Matrix services using this Ansible playbook, you need to prepare seve
 
 - [Ansible](http://ansible.com/) program. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for more information, as well as [version requirements](ansible.md#supported-ansible-versions) and alternative ways to run Ansible.
 
-- [passlib](https://passlib.readthedocs.io/en/stable/index.html) Python library. On most distros, you need to install some `python-passlib` or `py3-passlib` package, etc.
+- [passlib](https://passlib.readthedocs.io/en/stable/index.html) Python library. See [this official documentation](https://passlib.readthedocs.io/en/stable/install.html#installation-instructions) for an instruction to install it. On most distros, you need to install some `python-passlib` or `py3-passlib` package, etc.
 
 - [`git`](https://git-scm.com/) as the recommended way to download the playbook. `git` may also be required on the server if you will be [self-building](self-building.md) components.
 
