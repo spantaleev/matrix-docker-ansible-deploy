@@ -4,6 +4,8 @@
 
 To install Matrix services using this Ansible playbook, you need:
 
+## Server
+
 - (Recommended) An **x86** server ([What kind of server specs do I need?](faq.md#what-kind-of-server-specs-do-i-need)) running one of these operating systems that make use of [systemd](https://systemd.io/):
   - **Archlinux**
   - **CentOS**, **Rocky Linux**, **AlmaLinux**, or possibly other RHEL alternatives (although your mileage may vary)
@@ -22,16 +24,6 @@ To install Matrix services using this Ansible playbook, you need:
 
 - [sudo](https://www.sudo.ws/) being installed on the server, even when you've configured Ansible to log in as `root`. Some distributions, like a minimal Debian net install, do not include the `sudo` package by default.
 
-- The [Ansible](http://ansible.com/) program being installed on your own computer. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for more information, as well as [version requirements](ansible.md#supported-ansible-versions) and alternative ways to run Ansible.
-
-- the [passlib](https://passlib.readthedocs.io/en/stable/index.html) Python library installed on the computer you run Ansible. On most distros, you need to install some `python-passlib` or `py3-passlib` package, etc.
-
-- [`git`](https://git-scm.com/) is the recommended way to download the playbook to your computer. `git` may also be required on the server if you will be [self-building](self-building.md) components.
-
-- [`just`](https://github.com/casey/just) for running `just roles`, `just update`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually
-
-- Strong password (random strings) generator on your own computer. The playbook often requires you to create a strong password and use it for settings on `vars.yml`, components, etc. As any tools should be fine, this playbook has adopted [`pwgen`](https://linux.die.net/man/1/pwgen) (running `pwgen -s 64 1`). [Password Tech](https://pwgen-win.sourceforge.io/), formerly known as "PWGen for Windows", is available as free and open source password generator for Windows. Generally, using a random generator available on the internet is not recommended.
-
 - An HTTPS-capable web server at the base domain name (`example.com`) which is capable of serving static files. Unless you decide to [Serve the base domain from the Matrix server](configuring-playbook-base-domain-serving.md) or alternatively, to use DNS SRV records for [Server Delegation](howto-server-delegation.md).
 
 - Properly configured DNS records for `example.com` (details in [Configuring DNS](configuring-dns.md)).
@@ -47,6 +39,18 @@ To install Matrix services using this Ansible playbook, you need:
   - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. In some cases, this **may necessary even with federation disabled**. Integration Servers (like Dimension) and Identity Servers (like ma1sd) may need to access `openid` APIs on the federation port.
   - the range `49152-49172/udp`: TURN over UDP
   - potentially some other ports, depending on the additional (non-default) services that you enable in the **configuring the playbook** step (later on). Consult each service's documentation page in `docs/` for that.
+
+## Your local computer
+
+- The [Ansible](http://ansible.com/) program being installed on your own computer. It's used to run this playbook and configures your server for you. Take a look at [our guide about Ansible](ansible.md) for more information, as well as [version requirements](ansible.md#supported-ansible-versions) and alternative ways to run Ansible.
+
+- the [passlib](https://passlib.readthedocs.io/en/stable/index.html) Python library installed on the computer you run Ansible. On most distros, you need to install some `python-passlib` or `py3-passlib` package, etc.
+
+- [`git`](https://git-scm.com/) is the recommended way to download the playbook to your computer. `git` may also be required on the server if you will be [self-building](self-building.md) components.
+
+- [`just`](https://github.com/casey/just) for running `just roles`, `just update`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually
+
+- Strong password (random strings) generator on your own computer. The playbook often requires you to create a strong password and use it for settings on `vars.yml`, components, etc. As any tools should be fine, this playbook has adopted [`pwgen`](https://linux.die.net/man/1/pwgen) (running `pwgen -s 64 1`). [Password Tech](https://pwgen-win.sourceforge.io/), formerly known as "PWGen for Windows", is available as free and open source password generator for Windows. Generally, using a random generator available on the internet is not recommended.
 
 ---------------------------------------------
 
