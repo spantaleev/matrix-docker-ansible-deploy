@@ -79,12 +79,6 @@ This `register-user` script actually invokes the `mas-cli manage register-user` 
 ⚠ **Warning**: Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user. Upon a user's first login, they will be asked to confirm their email address. This requires that email sending is [configured](./configuring-playbook-email.md). You can also consult the [Working around email deliverability issues](./configuring-playbook-matrix-authentication-service.md#working-around-email-deliverability-issues) section for more information.
 
 
-## Things to do after registering users
-
-If you've just installed Matrix and created some users, you mostly need to **finalize the installation process** by [setting up Matrix delegation (redirection)](howto-server-delegation.md), so that your Matrix server (`matrix.example.com`) can present itself as the base domain (`example.com`) in the Matrix network.
-
-This is required for federation to work! Without a proper configuration, your server will effectively not be part of the Matrix network.
-
 ## Managing users via a Web UI
 
 To manage users more easily (via a web user-interace), you can install [Synapse Admin](configuring-playbook-synapse-admin.md).
