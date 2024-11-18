@@ -22,7 +22,7 @@ To ensure maximum discovery, you can make your identity server also forward look
 
 Enabling this is discouraged and you'd better [learn more](https://github.com/ma1uta/ma1sd/blob/master/docs/features/identity.md#lookups) before proceeding.
 
-Enabling matrix.org forwarding can happen with the following configuration:
+To enable matrix.org forwarding, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_ma1sd_matrixorg_forwarding_enabled: true
@@ -65,7 +65,9 @@ To use the [Registration](https://github.com/ma1uta/ma1sd/blob/master/docs/featu
 
 ## Authentication
 
-[Authentication](https://github.com/ma1uta/ma1sd/blob/master/docs/features/authentication.md) provides the possibility to use your own [Identity Stores](https://github.com/ma1uta/ma1sd/blob/master/docs/stores/README.md) (for example LDAP) to authenticate users on your Homeserver. The following configuration can be used to authenticate against an LDAP server:
+[Authentication](https://github.com/ma1uta/ma1sd/blob/master/docs/features/authentication.md) provides the possibility to use your own [Identity Stores](https://github.com/ma1uta/ma1sd/blob/master/docs/stores/README.md) (for example LDAP) to authenticate users on your Homeserver.
+
+To enable authentication against an LDAP server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_ext_password_provider_rest_auth_enabled: true
@@ -133,7 +135,7 @@ If email address validation emails sent by ma1sd are not reaching you, you shoul
 
 If you'd like additional logging information, temporarily enable verbose logging for ma1sd.
 
-Example configuration (`inventory/host_vars/matrix.example.com/vars.yml`):
+To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_ma1sd_verbose_logging: true
