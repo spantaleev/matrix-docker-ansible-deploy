@@ -2,7 +2,9 @@
 
 This page explains how to use this Ansible book in order to install Matrix services on your server with minimum core services.
 
-By following the instruction on this page, you will set up **your own Matrix server**, **your user account** like `@user:example.com` (where `example.com` is the "base domain") on the server, and **self-hosted Matrix client**, [Element Web](configuring-playbook-client-element-web.md) with the default subdomain at `element.example.com`.
+By following the instruction on this page, you will set up **your own Matrix server**, **your user account** like `@user:example.com` on the server, and **self-hosted Matrix client**, [Element Web](configuring-playbook-client-element-web.md) with the default subdomain at `element.example.com`.
+
+We will be using `example.com` as the "base domain" in the following instruction. Please remember to replace it with your own domain before running any commands.
 
 ## Prerequisites
 
