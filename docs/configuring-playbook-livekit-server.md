@@ -1,4 +1,4 @@
-# Setting up Livekit (optional)
+# Setting up LiveKit (optional)
 
 The playbook can install and configure [Livekit](https://github.com/livekit/livekit) for you.
 
