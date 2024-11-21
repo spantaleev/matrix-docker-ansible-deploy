@@ -1,34 +1,38 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
-Description=Matrix LiveKit Server
+Description=LiveKit Server
 After=docker.service
 Requires=docker.service
 
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-livekit-server 2>/dev/null || true'
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-livekit-server 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ livekit_server_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ livekit_server_identifier }} 2>/dev/null || true'
 
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
-    --rm \
-    --name=matrix-livekit-server \
-    --log-driver=none \
-    --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
-    --cap-drop=ALL \
-    --network=host \
-    --mount type=bind,src={{ livekit_server_base_path }}/livekit.yaml,dst=/etc/livekit.yaml,ro \
+	--rm \
+	--name={{ livekit_server_identifier }} \
+	--log-driver=none \
+	--user={{ livekit_server_uid }}:{{ livekit_server_gid }} \
+	--cap-drop=ALL \
+	--network={{ livekit_server_container_network }} \
+	--mount type=bind,src={{ livekit_server_config_path }}/config.yaml,dst=/livekit-config.yaml,ro \
 	--label-file={{ livekit_server_base_path }}/labels \
-    {{ livekit_server_container_image }} \
-    --dev --config /etc/livekit.yaml
+	{{ livekit_server_container_image }} \
+	--dev --config /livekit-config.yaml
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-livekit-server
+{% for network in livekit_server_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ livekit_server_identifier }}
+{% endfor %}
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-livekit-server 2>/dev/null || true'
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-livekit-server 2>/dev/null || true'
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ livekit_server_identifier }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ livekit_server_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ livekit_server_identifier }} 2>/dev/null || true'
 Restart=always
 RestartSec=30
-SyslogIdentifier=matrix-livekit-server
+SyslogIdentifier={{ livekit_server_identifier }}
 
 [Install]
 WantedBy=multi-user.target

@@ -6,7 +6,11 @@ livekit_server_enabled: false
 
 livekit_server_identifier: livekit-server
 
+livekit_server_uid: ''
+livekit_server_gid: ''
+
 livekit_server_base_path: "/{{ livekit_server_identifier }}"
+livekit_server_config_path: "{{ livekit_server_base_path }}/config"
 
 # renovate: datasource=docker depName=livekit/livekit-server
 livekit_server_version: v1.8.0
@@ -124,4 +128,22 @@ livekit_server_floc_optout_enabled: false
 # See: `livekit_server_http_header_strict_transport_security`
 livekit_server_hsts_preload_enabled: true
 
-livekit_server_config_keys_devkey: ""
+# Controls the `port` configuration property.
+livekit_server_config_port: 7880
+
+# Controls the `rtc.tcp_port` configuration property
+livekit_server_config_rtc_tcp_port: 7881
+
+# Controls the `rtc.port_range_start` configuration property
+livekit_server_config_rtc_port_range_start: 50100
+
+# Controls the `rtc.port_range_end` configuration property
+livekit_server_config_rtc_port_range_end: 50200
+
+# Controls the `rtc.use_external_ip` configuration property
+livekit_server_config_rtc_use_external_ip: true
+
+# Controls the `keys` configuration property.
+livekit_server_config_keys: "{{ livekit_server_config_keys_auto | combine(livekit_server_config_keys_custom, recursive=True) }}"
+livekit_server_config_keys_auto: {}
+livekit_server_config_keys_custom: {}

@@ -6,11 +6,10 @@ traefik.enable=true
 traefik.docker.network={{ livekit_server_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.matrix-livekit-server.loadbalancer.server.port=7880
+traefik.http.services.matrix-livekit-server.loadbalancer.server.port={{ livekit_server_config_port }}
 
 {% set middlewares = [] %}
 
-# Path prefix handling for Livekit
 {% if livekit_server_container_labels_traefik_path_prefix != '/' %}
 traefik.http.middlewares.matrix-livekit-server-slashless-redirect.redirectregex.regex=({{ livekit_server_container_labels_traefik_path_prefix | quote }})$
 traefik.http.middlewares.matrix-livekit-server-slashless-redirect.redirectregex.replacement=${1}/

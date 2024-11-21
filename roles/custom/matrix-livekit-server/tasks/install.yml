@@ -5,34 +5,37 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ livekit_server_uid }}"
+    group: "{{ livekit_server_gid }}"
   with_items:
-    - path: "{{ livekit_server_base_path }}"
+    - {path: "{{ livekit_server_base_path }}", when: true}
+    - {path: "{{ livekit_server_config_path }}", when: true}
+    - {path: "{{ livekit_server_container_src_files_path }}", when: "{{ livekit_server_container_image_self_build }}"}
+  when: "item.when | bool"
 
-- name: Ensure LiveKit Server livekit.yaml is in place
+- name: Ensure LiveKit Server configuration is in place
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/livekit.yaml.j2"
-    dest: "{{ livekit_server_base_path }}/livekit.yaml"
+    src: "{{ role_path }}/templates/config.yaml.j2"
+    dest: "{{ livekit_server_config_path }}/config.yaml"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ livekit_server_uid }}"
+    group: "{{ livekit_server_gid }}"
 
 - name: Ensure LiveKit Server labels file is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ livekit_server_base_path }}/labels"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ livekit_server_uid }}"
+    group: "{{ livekit_server_gid }}"
 
 - name: Ensure LiveKit Server container image is pulled
   community.docker.docker_image:
     name: "{{ livekit_server_container_image }}"
     source: pull
   register: livekit_image_result
-  retries: 3
-  delay: 10
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: livekit_image_result is not failed
 
 - name: Ensure LiveKit Server systemd service is installed

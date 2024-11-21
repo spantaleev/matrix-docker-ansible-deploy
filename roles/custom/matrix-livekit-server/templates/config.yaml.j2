@@ -1,0 +1,21 @@
+port: {{ livekit_server_config_port | int | to_json }}
+
+bind_addresses:
+  - "0.0.0.0"
+
+rtc:
+  tcp_port: {{ livekit_server_config_rtc_tcp_port | int | to_json }}
+  port_range_start: {{ livekit_server_config_rtc_port_range_start | int | to_json }}
+  port_range_end: {{ livekit_server_config_rtc_port_range_end | int | to_json }}
+  use_external_ip: {{ livekit_server_config_rtc_use_external_ip | to_json }}
+
+turn:
+  enabled: false
+  domain: localhost
+  cert_file: ""
+  key_file: ""
+  tls_port: 5349
+  udp_port: 443
+  external_tls: true
+
+keys: {{ livekit_server_config_keys | to_json }}
