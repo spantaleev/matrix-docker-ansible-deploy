@@ -27,6 +27,7 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 
 ```yaml
 matrix_jwt_service_enabled: true
+
 # Set a secure key for LiveKit authentication
 matrix_element_call_livekit_dev_key: 'your-secure-livekit-key'
 ```
