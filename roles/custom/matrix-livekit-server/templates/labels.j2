@@ -1,43 +1,47 @@
 {% if livekit_server_container_labels_traefik_enabled %}
 traefik.enable=true
 
-# Network configuration for Traefik
 {% if livekit_server_container_labels_traefik_docker_network %}
 traefik.docker.network={{ livekit_server_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.matrix-livekit-server.loadbalancer.server.port={{ livekit_server_config_port }}
+traefik.http.services.{{ livekit_server_identifier }}.loadbalancer.server.port={{ livekit_server_config_port }}
 
 {% set middlewares = [] %}
 
 {% if livekit_server_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.matrix-livekit-server-slashless-redirect.redirectregex.regex=({{ livekit_server_container_labels_traefik_path_prefix | quote }})$
-traefik.http.middlewares.matrix-livekit-server-slashless-redirect.redirectregex.replacement=${1}/
-{% set middlewares = middlewares + ['matrix-livekit-server-slashless-redirect'] %}
+traefik.http.middlewares.{{ livekit_server_identifier }}-slashless-redirect.redirectregex.regex=({{ livekit_server_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.{{ livekit_server_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + [livekit_server_identifier + '-server-slashless-redirect'] %}
 
-traefik.http.middlewares.matrix-livekit-server-strip-prefix.stripprefix.prefixes={{ livekit_server_container_labels_traefik_path_prefix }}
-{% set middlewares = middlewares + ['matrix-livekit-server-strip-prefix'] %}
+traefik.http.middlewares.{{ livekit_server_identifier }}-strip-prefix.stripprefix.prefixes={{ livekit_server_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + [livekit_server_identifier + '-strip-prefix'] %}
 {% endif %}
 
 {% if livekit_server_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
 {% for name, value in livekit_server_container_labels_traefik_additional_response_headers.items() %}
-traefik.http.middlewares.matrix-livekit-server-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+traefik.http.middlewares.{{ livekit_server_identifier }}-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
 {% endfor %}
-{% set middlewares = middlewares + ['matrix-livekit-server-add-headers'] %}
+{% set middlewares = middlewares + [livekit_server_identifier + '-add-headers'] %}
 {% endif %}
 
-traefik.http.routers.matrix-livekit-server.rule={{ livekit_server_container_labels_traefik_rule }}
+traefik.http.routers.{{ livekit_server_identifier }}.rule={{ livekit_server_container_labels_traefik_rule }}
+
 {% if livekit_server_container_labels_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-livekit-server.priority={{ livekit_server_container_labels_traefik_priority }}
+traefik.http.routers.{{ livekit_server_identifier }}.priority={{ livekit_server_container_labels_traefik_priority }}
 {% endif %}
-traefik.http.routers.matrix-livekit-server.service=matrix-livekit-server
+
+traefik.http.routers.{{ livekit_server_identifier }}.service={{ livekit_server_identifier }}
+
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-livekit-server.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.{{ livekit_server_identifier }}.middlewares={{ middlewares | join(',') }}
 {% endif %}
-traefik.http.routers.matrix-livekit-server.entrypoints={{ livekit_server_container_labels_traefik_entrypoints }}
-traefik.http.routers.matrix-livekit-server.tls={{ livekit_server_container_labels_traefik_tls | to_json }}
+
+traefik.http.routers.{{ livekit_server_identifier }}.entrypoints={{ livekit_server_container_labels_traefik_entrypoints }}
+
+traefik.http.routers.{{ livekit_server_identifier }}.tls={{ livekit_server_container_labels_traefik_tls | to_json }}
 {% if livekit_server_container_labels_traefik_tls %}
-traefik.http.routers.matrix-livekit-server.tls.certResolver={{ livekit_server_container_labels_traefik_tls_certResolver }}
+traefik.http.routers.{{ livekit_server_identifier }}.tls.certResolver={{ livekit_server_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
