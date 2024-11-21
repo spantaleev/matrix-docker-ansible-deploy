@@ -6064,14 +6064,10 @@ matrix_element_call_container_labels_traefik_tls_certResolver: "{{ traefik_certR
 
 livekit_server_enabled: "{{ matrix_element_call_enabled }}"
 
-livekit_server_scheme: "https"
-livekit_server_hostname: "sfu.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different
-livekit_server_path_prefix: "/"
-livekit_server_base_path: "{{ matrix_base_data_path }}/livekit-server"
-livekit_server_container_image: "livekit/livekit-server:{{ livekit_server_version }}"
-livekit_server_container_image_force_pull: true
+livekit_server_hostname: "sfu.{{ matrix_domain }}"
 
-# Docker network configuration for Livekit
+livekit_server_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+
 livekit_server_container_network: "{{ matrix_addons_container_network }}"
 livekit_server_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (livekit_server_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
 
@@ -6081,8 +6077,6 @@ matrix_livekit_container_labels_traefik_docker_network: "{{ matrix_playbook_reve
 livekit_server_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 livekit_server_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-# LiveKit Service Configuration
-livekit_server_livekit_dev_key: "{{ livekit_server_dev_key }}"  # LiveKit dev key
 
 ########################################################################
 #                                                                      #
