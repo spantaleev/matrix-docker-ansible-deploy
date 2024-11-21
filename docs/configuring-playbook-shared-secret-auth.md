@@ -4,15 +4,16 @@ The playbook can install and configure [matrix-synapse-shared-secret-auth](https
 
 See that project's documentation to learn what it does and why it might be useful to you.
 
-If you decide that you'd like to let this playbook install it for you, you need some configuration (`inventory/host_vars/matrix.<your-domain>/vars.yml`) like this:
+## Adjusting the playbook configuration
+
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_ext_password_provider_shared_secret_auth_enabled: true
+
+# Generate a strong shared secret here. Consider generating it with `pwgen -s 64 1`
 matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret: YOUR_SHARED_SECRET_GOES_HERE
 ```
-
-You can generate a strong shared secret with a command like this: `pwgen -s 64 1`
-
 
 ## Authenticating only using a password provider
 
@@ -21,3 +22,7 @@ If you wish for users to **authenticate only against configured password provide
 ```yaml
 matrix_synapse_password_config_localdb_enabled: false
 ```
+
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`

@@ -1,0 +1,12 @@
+---
+
+- name: Prepare Matrix Authentication Service private key file path ({{ private_key_definition.key_file }})
+  ansible.builtin.set_fact:
+    matrix_authentication_service_private_key_file_path: "{{ matrix_authentication_service_data_keys_path }}/{{ private_key_definition.key_file }}"
+
+- name: Prepare Matrix Authentication Service private key file ({{ private_key_definition.key_file }})
+  ansible.builtin.command:
+    cmd: "{{ private_key_definition.generation_command | replace('__KEY_FILE_PATH__', matrix_authentication_service_private_key_file_path) }}"
+    creates: "{{ matrix_authentication_service_private_key_file_path }}"
+  become: true
+  become_user: "{{ matrix_user_username }}"

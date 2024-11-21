@@ -1,8 +1,12 @@
-# Setting up Beeper Linkedin (optional)
+# Setting up Beeper Linkedin bridging (optional)
 
 The playbook can install and configure [beeper-linkedin](https://github.com/beeper/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) Messaging. This bridge is based on the mautrix-python framework and can be configured in a similar way to the other mautrix bridges
 
 See the project's [documentation](https://github.com/beeper/linkedin/blob/master/README.md) to learn what it does and why it might be useful to you.
+
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_beeper_linkedin_enabled: true
@@ -24,11 +28,14 @@ If you would like to be able to administrate the bridge from your account it can
 matrix_beeper_linkedin_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:YOUR_DOMAIN': admin
+      '@YOUR_USERNAME:example.com': admin
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting by enabling Appservice Double Puppet or Shared Secret Auth
 
@@ -41,13 +48,13 @@ Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playb
 
 ## Usage
 
-You then need to start a chat with `@linkedinbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@linkedinbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging for your LinkedIn account.
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
-After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting), if you haven't already done so.
+After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting-by-enabling-appservice-double-puppet-or-shared-secret-auth), if you haven't already done so.
 
 
 ## Troubleshooting

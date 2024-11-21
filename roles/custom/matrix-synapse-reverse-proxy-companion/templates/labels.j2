@@ -16,7 +16,17 @@ traefik.http.services.matrix-synapse-reverse-proxy-companion-federation-api.load
 #                                                          #
 ############################################################
 
+{% set client_api_middlewares = [] %}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_enabled %}
+{% set client_api_middlewares = client_api_middlewares + [matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_name] %}
+{% endif %}
+
 traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-api.rule={{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_api_traefik_rule }}
+
+{% if client_api_middlewares | length > 0 %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-api.middlewares={{ client_api_middlewares | join(',') }}
+{% endif %}
 
 {% if matrix_synapse_reverse_proxy_companion_container_labels_public_client_api_traefik_priority | int > 0 %}
 traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-api.priority={{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_api_traefik_priority }}
@@ -69,7 +79,17 @@ traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-api.
 #                                                          #
 ############################################################
 
+{% set synapse_client_api_middlewares = [] %}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_enabled %}
+{% set synapse_client_api_middlewares = synapse_client_api_middlewares + [matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_name] %}
+{% endif %}
+
 traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synapse-client-api.rule={{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_traefik_rule }}
+
+{% if synapse_client_api_middlewares | length > 0 %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synapse-client-api.middlewares={{ synapse_client_api_middlewares | join(',') }}
+{% endif %}
 
 {% if matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_traefik_priority | int > 0 %}
 traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synapse-client-api.priority={{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_traefik_priority }}
@@ -98,7 +118,17 @@ traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synaps
 #                                                          #
 ############################################################
 
+{% set synapse_admin_api_middlewares = [] %}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_enabled %}
+{% set synapse_admin_api_middlewares = synapse_admin_api_middlewares + [matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_name] %}
+{% endif %}
+
 traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synapse-admin-api.rule={{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_rule }}
+
+{% if synapse_admin_api_middlewares | length > 0 %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synapse-admin-api.middlewares={{ synapse_admin_api_middlewares | join(',') }}
+{% endif %}
 
 {% if matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_priority | int > 0 %}
 traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synapse-admin-api.priority={{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_priority }}
@@ -127,7 +157,17 @@ traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synaps
 #                                                          #
 ############################################################
 
+{% set federation_api_middlewares = [] %}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_enabled %}
+{% set federation_api_middlewares = federation_api_middlewares + [matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_name] %}
+{% endif %}
+
 traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-federation-api.rule={{ matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_rule }}
+
+{% if federation_api_middlewares | length > 0 %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-federation-api.middlewares={{ federation_api_middlewares | join(',') }}
+{% endif %}
 
 {% if matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_priority | int > 0 %}
 traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-federation-api.priority={{ matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_priority }}

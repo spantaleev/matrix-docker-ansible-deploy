@@ -1,7 +1,6 @@
 # Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider (optional)
 
-If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service),
-you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse.
+If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse.
 
 An alternative (which has worse performance) is to use [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md).
 
@@ -26,7 +25,7 @@ While you will need some local disk space around, it's only to accommodate usage
 
 ## Installing
 
-After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure `s3-storage-provider` in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`):
+After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure `s3-storage-provider` in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 matrix_synapse_ext_synapse_s3_storage_provider_enabled: true
@@ -36,7 +35,7 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_region_name: some-region-n
 matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url: https://s3.REGION_NAME.amazonaws.com # adjust this
 matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # or STANDARD_IA, etc.
 
-# Authentication Method 1 - (access key id + secret)
+# Authentication Method 1 - (access key ID + secret)
 # This works on all providers (AWS and other compatible systems).
 # Uncomment the variables below to use it.
 # matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-goes-here
@@ -77,8 +76,8 @@ This launches a Synapse container, which has access to the local media store, Po
 Then use the following commands (`$` values come from environment variables - they're **not placeholders** that you need to substitute):
 
 1. `s3_media_upload update-db $UPDATE_DB_DURATION` - create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
-  - `$UPDATE_DB_DURATION` is influenced by the `matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count` variable (defaults to `0`)
-  - `$UPDATE_DB_DURATION` defaults to `0d` (0 days), which means **include files which haven't been accessed for more than 0 days** (that is, **all files will be included**).
+    - `$UPDATE_DB_DURATION` is influenced by the `matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count` variable (defaults to `0`)
+    - `$UPDATE_DB_DURATION` defaults to `0d` (0 days), which means **include files which haven't been accessed for more than 0 days** (that is, **all files will be included**).
 2. `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
 3. `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
 

@@ -1,4 +1,4 @@
-# Setting up pantalaimon (optional)
+# Setting up Pantalaimon (E2EE aware proxy daemon) (optional)
 
 The playbook can install and configure the [pantalaimon](https://github.com/matrix-org/pantalaimon) E2EE aware proxy daemon for you.
 
@@ -8,7 +8,7 @@ This role exposes Pantalaimon's API only within the container network, so bots a
 
 ## 1. Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_pantalaimon_enabled: true
@@ -18,4 +18,4 @@ The default configuration should suffice. For advanced configuration, you can ov
 
 ## 2. Installing
 
-After configuring the playbook, run the [installation](installing.md) command.
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`

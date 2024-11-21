@@ -1,0 +1,19 @@
+---
+
+- name: Ensure Matrix Authentication Service user registered - {{ user.username | quote }}
+  ansible.builtin.command:
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} exec matrix-authentication-service
+      mas-cli manage register-user
+      -p {{ user.initial_password | quote }}
+      --yes
+      --ignore-password-complexity
+      {% if user.initial_type == 'admin' %}
+        --admin
+      {% else %}
+        --no-admin
+      {% endif %}
+      {{ user.username | quote }}
+  register: matrix_authentication_service_register_user_result
+  changed_when: "matrix_authentication_service_register_user_result.rc == 0 and 'Error: User already exists' not in matrix_authentication_service_register_user_result.stderr"
+  failed_when: "matrix_authentication_service_register_user_result.rc != 0 and 'Error: User already exists' not in matrix_authentication_service_register_user_result.stderr"

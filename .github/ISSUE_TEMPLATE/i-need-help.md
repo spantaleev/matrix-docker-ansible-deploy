@@ -2,13 +2,15 @@
 name: I need help
 about: Get support from our community
 title: ''
-labels: ''
+labels: question
 assignees: ''
 
 ---
 
 <!--
-NOTE: you can usually get more timely support and from more people by joining our Matrix room (also bridged to IRC). See the [Support section of our README](https://github.com/spantaleev/matrix-docker-ansible-deploy#support)
+NOTE: our FAQ page is available at https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/faq.md. It contains a list of questions and answers about configuration, installation, troubleshooting, etc. Before creating a new issue, you are encouraged to have a look at it.
+
+Also you can usually get more timely support and from more people by joining our Matrix room (also bridged to IRC). See the support section of our README.
 -->
 
 **Playbook Configuration**:

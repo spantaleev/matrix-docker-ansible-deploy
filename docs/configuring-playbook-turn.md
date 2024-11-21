@@ -1,4 +1,4 @@
-# TURN server
+# Adjusting TURN server configuration (optional, advanced)
 
 The playbook installs a [Coturn](https://github.com/coturn/coturn) TURN server by default, so that clients can make audio/video calls even from [NAT](https://en.wikipedia.org/wiki/Network_address_translation)-ed networks.
 
@@ -7,7 +7,7 @@ By default, the Synapse chat server is configured, so that it points to the Cotu
 
 ## Disabling Coturn
 
-If, for some reason, you'd like to prevent the playbook from installing Coturn, you can use the following configuration:
+If, for some reason, you'd like to prevent the playbook from installing Coturn, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_coturn_enabled: false
@@ -65,8 +65,7 @@ matrix_synapse_turn_uris:
 - turn:HOSTNAME_OR_IP?transport=tcp
 ```
 
-If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might want to enable the TURN server there too.
-If you do not do it, Jitsi will fall back to an upstream service.
+If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might want to enable the TURN server there too. If you do not do it, Jitsi will fall back to an upstream service.
 
 ```yaml
 jitsi_web_stun_servers:

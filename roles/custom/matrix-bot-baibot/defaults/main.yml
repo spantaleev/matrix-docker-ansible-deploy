@@ -11,7 +11,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v1.2.0
+matrix_bot_baibot_version: v1.4.0
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_name_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_name_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else 'ghcr.io/' }}"
 matrix_bot_baibot_container_image_force_pull: "{{ matrix_bot_baibot_container_image.endswith(':latest') }}"
@@ -93,7 +93,7 @@ matrix_bot_baibot_config_command_prefix: "!bai"
 # Example:
 # matrix_bot_baibot_config_access_admin_patterns:
 #   - "@*:example.com"
-#   - "@admin:another.com"
+#   - "@admin:example.net"
 matrix_bot_baibot_config_access_admin_patterns: "{{ [matrix_admin] if matrix_admin else [] }}"
 
 # Controls the `persistence.data_dir_path` configuration setting.
@@ -155,7 +155,7 @@ matrix_bot_baibot_config_agents_static_definitions_auto: |-
   }}
 matrix_bot_baibot_config_agents_static_definitions_custom: []
 
-matrix_bot_baibot_config_agents_static_definitions_prompt: "{% raw %}You are a brief, but helpful bot called {{ baibot_name }} powered by the {{ baibot_model_id }} model. The date/time now is: {{ baibot_now_utc }}.{% endraw %}"
+matrix_bot_baibot_config_agents_static_definitions_prompt: "{% raw %}You are a brief, but helpful bot called {{ baibot_name }} powered by the {{ baibot_model_id }} model. The date/time of this conversation's start is: {{ baibot_conversation_start_time_utc }}.{% endraw %}"
 
 ########################################################################################
 #                                                                                      #
@@ -356,7 +356,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: ""
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_enabled: true
 # For valid model choices, see: https://platform.openai.com/docs/models
-matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o-2024-08-06
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"

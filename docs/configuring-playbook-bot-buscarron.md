@@ -1,36 +1,12 @@
 # Setting up Buscarron (optional)
 
-The playbook can install and configure [buscarron](https://github.com/etkecc/buscarron) for you.
+The playbook can install and configure [Buscarron](https://github.com/etkecc/buscarron) for you.
 
 Buscarron is bot that receives HTTP POST submissions of web forms and forwards them to a Matrix room.
 
-
-## Decide on a domain and path
-
-By default, Buscarron is configured to use its own dedicated domain (`buscarron.DOMAIN`) and requires you to [adjust your DNS records](#adjusting-dns-records).
-
-You can override the domain and path like this:
-
-```yaml
-# Switch to the domain used for Matrix services (`matrix.DOMAIN`),
-# so we won't need to add additional DNS records for Buscarron.
-matrix_bot_buscarron_hostname: "{{ matrix_server_fqn_matrix }}"
-
-# Expose under the /buscarron subpath
-matrix_bot_buscarron_path_prefix: /buscarron
-```
-
-
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Buscarron domain to the Matrix server.
-
-If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
-
-
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable Buscarron, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_buscarron_enabled: true
@@ -43,9 +19,9 @@ matrix_bot_buscarron_password: PASSWORD_FOR_THE_BOT
 
 # Adjust accepted forms
 matrix_bot_buscarron_forms:
-  - name: contact # (mandatory) Your form name, will be used as endpoint, eg: buscarron.DOMAIN/contact
-    room: "!yourRoomID:DOMAIN" # (mandatory) Room ID where form submission will be posted
-    redirect: https://DOMAIN # (mandatory) To what page user will be redirected after the form submission
+  - name: contact # (mandatory) Your form name, will be used as endpoint, eg: buscarron.example.com/contact
+    room: "!qporfwt:{{ matrix_domain }}" # (mandatory) Room ID where form submission will be posted
+    redirect: https://example.com # (mandatory) To what page user will be redirected after the form submission
     ratelimit: 1r/m # (optional) rate limit of the form, format: <max requests>r/<interval:s,m>, eg: 1r/s or 54r/m
     hasemail: 1 # (optional) form has "email" field that should be validated
     extensions: [] # (optional) list of form extensions (not used yet)
@@ -53,10 +29,34 @@ matrix_bot_buscarron_forms:
 matrix_bot_buscarron_spamlist: [] # (optional) list of emails/domains/hosts (with wildcards support) that should be rejected automatically
 ```
 
+### Adjusting the Buscarron URL
+
+By default, this playbook installs Buscarron on the `buscarron.` subdomain (`buscarron.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+
+By tweaking the `matrix_bot_buscarron_hostname` and `matrix_bot_buscarron_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Switch to the domain used for Matrix services (`matrix.example.com`),
+# so we won't need to add additional DNS records for Buscarron.
+matrix_bot_buscarron_hostname: "{{ matrix_server_fqn_matrix }}"
+
+# Expose under the /buscarron subpath
+matrix_bot_buscarron_path_prefix: /buscarron
+```
+
+## Adjusting DNS records
+
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Buscarron domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `buscarron`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
@@ -71,15 +71,15 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@bot.buscarron:DOMAIN` to the room you specified in a config, after that any point your form to the form url, example for the `contact` form:
+To use the bot, invite the `@bot.buscarron:example.com` to the room you specified in a config, after that any point your form to the form url, example for the `contact` form:
 
 ```html
-<form method="POST" action="https://buscarron.DOMAIN/contact">
+<form method="POST" action="https://buscarron.example.com/contact">
 <!--your fields-->
 </form>
 ```
 
-**NOTE**: to fight against spam, Buscarron is **very aggressive when it comes to banning** and will ban you if:
+**Note**: to fight against spam, Buscarron is **very aggressive when it comes to banning** and will ban you if:
 
 - if you hit the homepage (HTTP `GET` request to `/`)
 - if you submit a form to the wrong URL (`POST` request to `/non-existing-form`)

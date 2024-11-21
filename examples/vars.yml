@@ -1,20 +1,22 @@
 ---
 # The bare domain name which represents your Matrix identity.
-# Matrix user ids for your server will be of the form (`@user:<matrix-domain>`).
+# Matrix user IDs for your server will be of the form (`@user:example.com`).
 #
 # Note: this playbook does not touch the server referenced here.
-# Installation happens on another server ("matrix.<matrix-domain>").
+# Installation happens on another server ("matrix.example.com", see `matrix_server_fqn_matrix`).
 #
 # If you've deployed using the wrong domain, you'll have to run the Uninstalling step,
 # because you can't change the Domain after deployment.
-#
-# Example value: example.com
-matrix_domain: YOUR_BARE_DOMAIN_NAME_HERE
+matrix_domain: example.com
 
 # The Matrix homeserver software to install.
 # See:
 #  - `roles/custom/matrix-base/defaults/main.yml` for valid options
 # - the `docs/configuring-playbook-IMPLEMENTATION_NAME.md` documentation page, if one is available for your implementation choice
+#
+# By default, we use Synapse, because it's the only full-featured Matrix server at the moment.
+#
+# Note that the homeserver implementation of a server will not be able to be changed without data loss.
 matrix_homeserver_implementation: synapse
 
 # A secret used as a base, for generating various other secrets.

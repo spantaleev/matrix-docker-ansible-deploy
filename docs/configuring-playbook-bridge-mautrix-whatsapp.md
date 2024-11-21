@@ -1,28 +1,36 @@
-# Setting up Mautrix Whatsapp (optional)
+# Setting up Mautrix Whatsapp bridging (optional)
 
 The playbook can install and configure [mautrix-whatsapp](https://github.com/mautrix/whatsapp) for you.
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/whatsapp/index.html) to learn what it does and why it might be useful to you.
 
-Use the following playbook configuration:
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_whatsapp_enabled: true
 ```
+
 Whatsapp multidevice beta is required, now it is enough if Whatsapp is connected to the Internet every 2 weeks.
 
 The relay bot functionality is off by default. If you would like to enable the relay bot, add the following to your `vars.yml` file:
+
 ```yaml
 matrix_mautrix_whatsapp_bridge_relay_enabled: true
 ```
 
 By default, only admins are allowed to set themselves as relay users. To allow anyone on your homeserver to set themselves as relay users add this to your `vars.yml` file:
+
 ```yaml
 matrix_mautrix_whatsapp_bridge_relay_admin_only: false
 ```
 
-If you want to activate the relay bot in a room, use `!wa set-relay`.
-Use `!wa unset-relay` to deactivate.
+If you want to activate the relay bot in a room, send `!wa set-relay`. To deactivate, send `!wa unset-relay`.
+
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting
 
@@ -51,4 +59,4 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-You then need to start a chat with `@whatsappbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@whatsappbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).

@@ -1,0 +1,17 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+	echo "Usage: "$0" <username> <password> <admin access: 0 or 1>"
+	exit 1
+fi
+
+user=$1
+password=$2
+admin=$3
+
+if [ "$admin" -eq "1" ]; then
+	{{ devture_systemd_docker_base_host_command_docker }} exec matrix-authentication-service mas-cli manage register-user --yes -p "$password" --admin "$user"
+else
+	{{ devture_systemd_docker_base_host_command_docker }} exec matrix-authentication-service mas-cli manage register-user --yes -p "$password" --no-admin "$user"
+fi

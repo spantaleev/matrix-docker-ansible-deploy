@@ -1,4 +1,4 @@
-# Setting up Appservice IRC (optional)
+# Setting up Appservice IRC bridging (optional)
 
 **Note**: bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) can also happen via the [Heisenbridge](configuring-playbook-bridge-heisenbridge.md) bridge supported by the playbook.
 
@@ -6,7 +6,9 @@ The playbook can install and configure the [matrix-appservice-irc](https://githu
 
 See the project's [documentation](https://github.com/matrix-org/matrix-appservice-irc/blob/master/HOWTO.md) to learn what it does and why it might be useful to you.
 
-You'll need to use the following playbook configuration:
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_appservice_irc_enabled: true
@@ -58,4 +60,10 @@ matrix_appservice_irc_ircService_servers:
       lineLimit: 3
 ```
 
-You then need to start a chat with `@irc_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+
+## Usage
+
+You then need to start a chat with `@irc_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).

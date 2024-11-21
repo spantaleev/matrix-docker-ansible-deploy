@@ -8,22 +8,48 @@
   # Suppress logging to avoid dumping the credentials to the shell
   no_log: true
 
-- name: Ensure homeserver is started before creating Matrix users
-  ansible.builtin.service:
-    name: "matrix-{{ matrix_homeserver_implementation }}.service"
-    state: started
-    daemon_reload: true
-  register: matrix_user_registrator_homeserver_start_result
+- when: not matrix_authentication_service_enabled | bool
+  block:
+    - name: Ensure homeserver is started before creating Matrix users
+      ansible.builtin.service:
+        name: "matrix-{{ matrix_homeserver_implementation }}.service"
+        state: started
+        daemon_reload: true
+      register: matrix_user_registrator_homeserver_start_result
 
-- name: Wait a while, so that the homeserver can manage to start before creating Matrix users
-  ansible.builtin.pause:
-    seconds: "{{ matrix_user_creator_homeserver_start_wait_time_seconds }}"
-  when: matrix_user_registrator_homeserver_start_result.changed | bool
+    - name: Wait a while, so that the homeserver can manage to start before creating Matrix users
+      ansible.builtin.pause:
+        seconds: "{{ matrix_user_creator_homeserver_start_wait_time_seconds }}"
+      when: matrix_user_registrator_homeserver_start_result.changed | bool
 
-- name: Ensure Matrix users are created
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_user_registered_{{ matrix_homeserver_implementation }}.yml"
-  with_items: "{{ matrix_user_creator_users }}"
-  loop_control:
-    loop_var: user
-  # Suppress logging to avoid dumping the credentials to the shell
-  no_log: true
+    - name: Ensure Matrix users are created for homeservers
+      when: not matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_user_registered_{{ matrix_homeserver_implementation }}.yml"
+      with_items: "{{ matrix_user_creator_users }}"
+      loop_control:
+        loop_var: user
+      # Suppress logging to avoid dumping the credentials to the shell
+      no_log: true
+
+- when: matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress
+  block:
+    - name: Ensure Matrix Authentication Service is started before creating Matrix users
+      ansible.builtin.service:
+        name: "matrix-authentication-service.service"
+        state: started
+        daemon_reload: true
+      register: matrix_user_registrator_mas_start_result
+
+    - name: Wait a while, so that the Matrix Authentication Service can manage to start before creating Matrix users
+      ansible.builtin.pause:
+        seconds: "{{ matrix_user_creator_homeserver_start_wait_time_seconds }}"
+      when: matrix_user_registrator_mas_start_result.changed | bool
+
+    - name: Ensure Matrix users are created for Matrix Authentication Service
+      when: matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_user_registered_matrix_authentication_service.yml"
+      with_items: "{{ matrix_user_creator_users }}"
+      loop_control:
+        loop_var: user
+      # Suppress logging to avoid dumping the credentials to the shell
+      no_log: true

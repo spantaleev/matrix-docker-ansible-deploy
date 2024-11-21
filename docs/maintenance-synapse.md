@@ -39,8 +39,7 @@ To ask the playbook to run rust-synapse-compress-state, execute:
 ansible-playbook -i inventory/hosts setup.yml --tags=rust-synapse-compress-state
 ```
 
-By default, all rooms with more than `100000` state group rows will be compressed.
-If you need to adjust this, pass: `--extra-vars='matrix_synapse_rust_synapse_compress_state_min_state_groups_required=SOME_NUMBER_HERE'` to the command above.
+By default, all rooms with more than `100000` state group rows will be compressed. If you need to adjust this, pass: `--extra-vars='matrix_synapse_rust_synapse_compress_state_min_state_groups_required=SOME_NUMBER_HERE'` to the command above.
 
 After state compression, you may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
 
@@ -51,11 +50,11 @@ When the [Synapse Admin API](https://github.com/element-hq/synapse/tree/master/d
 
 Editing the database manually is not recommended or supported by the Synapse developers. If you are going to do so you should [make a database backup](./maintenance-postgres.md#backing-up-postgresql).
 
-First, set up an SSH tunnel to your matrix server (skip if it is your local machine):
+First, set up an SSH tunnel to your Matrix server (skip if it is your local machine):
 
 ```
 # you may replace 1799 with an arbitrary port unbound on both machines
-ssh -L 1799:localhost:1799 matrix.DOMAIN
+ssh -L 1799:localhost:1799 matrix.example.com
 ```
 
 Then start up an ephemeral [adminer](https://www.adminer.org/) container on the Matrix server, connecting it to the `matrix` network and linking the postgresql container:

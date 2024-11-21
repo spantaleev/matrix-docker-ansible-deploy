@@ -1,0 +1,602 @@
+---
+
+# matrix-authentication-service (MAS) is an OAuth 2.0 and OpenID Provider server for Matrix.
+# Project source code URL: https://github.com/element-hq/matrix-authentication-service
+
+matrix_authentication_service_enabled: true
+
+matrix_authentication_service_hostname: ''
+
+# Controls the path prefix for the authentication service.
+# This value must either be `/` or not end with a slash (e.g. `/auth`).
+matrix_authentication_service_path_prefix: /
+
+matrix_authentication_service_container_image_self_build: false
+matrix_authentication_service_container_repo: "https://github.com/element-hq/matrix-authentication-service.git"
+matrix_authentication_service_container_repo_version: "{{ 'main' if matrix_authentication_service_version == 'latest' else ('v' + matrix_authentication_service_version) }}"
+matrix_authentication_service_container_src_files_path: "{{ matrix_base_data_path }}/matrix-authentication-service/container-src"
+
+# renovate: datasource=docker depName=ghcr.io/element-hq/matrix-authentication-service
+matrix_authentication_service_version: 0.12.0
+matrix_authentication_service_container_image: "{{ matrix_authentication_service_container_image_name_prefix }}element-hq/matrix-authentication-service:{{ matrix_authentication_service_version }}"
+matrix_authentication_service_container_image_name_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else 'ghcr.io/' }}"
+matrix_authentication_service_container_image_force_pull: "{{ matrix_authentication_service_container_image.endswith(':latest') }}"
+
+matrix_authentication_service_base_path: "{{ matrix_base_data_path }}/matrix-authentication-service"
+matrix_authentication_service_bin_path: "{{ matrix_authentication_service_base_path }}/bin"
+matrix_authentication_service_config_path: "{{ matrix_authentication_service_base_path }}/config"
+matrix_authentication_service_data_path: "{{ matrix_authentication_service_base_path }}/data"
+matrix_authentication_service_data_keys_path: "{{ matrix_authentication_service_data_path }}/keys"
+
+matrix_authentication_service_uid: "{{ matrix_user_uid }}"
+matrix_authentication_service_gid: "{{ matrix_user_gid }}"
+
+matrix_authentication_service_container_network: ""
+
+matrix_authentication_service_container_additional_networks: "{{ matrix_authentication_service_container_additional_networks_auto + matrix_authentication_service_container_additional_networks_custom }}"
+matrix_authentication_service_container_additional_networks_auto: []
+matrix_authentication_service_container_additional_networks_custom: []
+
+# A list of extra arguments to pass to the container
+matrix_authentication_service_container_extra_arguments: []
+
+# List of systemd services that matrix-authentication-service.service depends on
+matrix_authentication_service_systemd_required_services_list: "{{ matrix_authentication_service_systemd_required_services_list_default + matrix_authentication_service_systemd_required_services_list_auto + matrix_authentication_service_systemd_required_services_list_custom }}"
+matrix_authentication_service_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_authentication_service_systemd_required_services_list_auto: []
+matrix_authentication_service_systemd_required_services_list_custom: []
+
+# List of systemd services that matrix-authentication-service.service wants
+matrix_authentication_service_systemd_wanted_services_list: "{{ matrix_authentication_service_systemd_wanted_services_list_auto + matrix_authentication_service_systemd_wanted_services_list_custom }}"
+matrix_authentication_service_systemd_wanted_services_list_auto: []
+matrix_authentication_service_systemd_wanted_services_list_custom: []
+
+########################################################################################
+#                                                                                      #
+# Key management                                                                       #
+#                                                                                      #
+########################################################################################
+
+# Controls whether the playbook will manage the secrets keys for you.
+#
+# See:
+# - matrix_authentication_service_config_secrets_keys
+# - matrix_authentication_service_key_management_*
+matrix_authentication_service_key_management_enabled: true
+
+matrix_authentication_service_key_management_list: "{{ matrix_authentication_service_key_management_list_default + matrix_authentication_service_key_management_list_custom }}"
+matrix_authentication_service_key_management_list_default: |-
+  {{
+    (
+      ([
+        {
+          "config": {
+            "kid": matrix_authentication_service_key_management_rsa_2048_key_id,
+            "key_file": ("/keys/" + matrix_authentication_service_key_management_rsa_2048_key_file),
+          },
+          "key_file": matrix_authentication_service_key_management_rsa_2048_key_file,
+          "generation_command": matrix_authentication_service_key_management_rsa_2048_generation_command,
+        }
+      ] if matrix_authentication_service_key_management_rsa_2048_enabled else [])
+      +
+      ([
+        {
+          "config": {
+            "kid": matrix_authentication_service_key_management_ecdsa_p256_key_id,
+            "key_file": ("/keys/" + matrix_authentication_service_key_management_ecdsa_p256_key_file),
+          },
+          "key_file": matrix_authentication_service_key_management_ecdsa_p256_key_file,
+          "generation_command": matrix_authentication_service_key_management_ecdsa_p256_generation_command,
+        }
+      ] if matrix_authentication_service_key_management_ecdsa_p256_enabled else [])
+      +
+      ([
+        {
+          "config": {
+            "kid": matrix_authentication_service_key_management_ecdsa_p384_key_id,
+            "key_file": ("/keys/" + matrix_authentication_service_key_management_ecdsa_p384_key_file),
+          },
+          "key_file": matrix_authentication_service_key_management_ecdsa_p384_key_file,
+          "generation_command": matrix_authentication_service_key_management_ecdsa_p384_generation_command,
+        }
+      ] if matrix_authentication_service_key_management_ecdsa_p384_enabled else [])
+      +
+      ([
+        {
+          "config": {
+            "kid": matrix_authentication_service_key_management_ecdsa_k256_key_id,
+            "key_file": ("/keys/" + matrix_authentication_service_key_management_ecdsa_k256_key_file),
+          },
+          "key_file": matrix_authentication_service_key_management_ecdsa_k256_key_file,
+          "generation_command": matrix_authentication_service_key_management_ecdsa_k256_generation_command,
+        }
+      ] if matrix_authentication_service_key_management_ecdsa_k256_enabled else [])
+    )
+    if matrix_authentication_service_key_management_enabled
+    else []
+  }}
+matrix_authentication_service_key_management_list_custom: []
+
+matrix_authentication_service_key_management_rsa_2048_enabled: true
+matrix_authentication_service_key_management_rsa_2048_key_id: default-rsa
+matrix_authentication_service_key_management_rsa_2048_key_file: rsa-2048.priv.pem
+matrix_authentication_service_key_management_rsa_2048_generation_command: "openssl genpkey -algorithm RSA -out __KEY_FILE_PATH__ -pkeyopt rsa_keygen_bits:2048"
+
+matrix_authentication_service_key_management_ecdsa_p256_enabled: true
+matrix_authentication_service_key_management_ecdsa_p256_key_id: default-ecdsa-p256
+matrix_authentication_service_key_management_ecdsa_p256_key_file: ecdsa-p256.priv.pem
+matrix_authentication_service_key_management_ecdsa_p256_generation_command: "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:prime256v1 -out __KEY_FILE_PATH__ -outform PEM"
+matrix_authentication_service_key_management_ecdsa_p384_enabled: true
+matrix_authentication_service_key_management_ecdsa_p384_key_id: default-ecdsa-p384
+matrix_authentication_service_key_management_ecdsa_p384_key_file: ecdsa-p384.priv.pem
+matrix_authentication_service_key_management_ecdsa_p384_generation_command: "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:secp384r1 -out __KEY_FILE_PATH__ -outform PEM"
+
+matrix_authentication_service_key_management_ecdsa_k256_enabled: true
+matrix_authentication_service_key_management_ecdsa_k256_key_id: default-ecdsa-k256
+matrix_authentication_service_key_management_ecdsa_k256_key_file: ecdsa-k256.priv.pem
+matrix_authentication_service_key_management_ecdsa_k256_generation_command: "openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:secp256k1 -out __KEY_FILE_PATH__ -outform PEM"
+
+########################################################################################
+#                                                                                      #
+# /Key management                                                                      #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Email configuration                                                                  #
+#                                                                                      #
+########################################################################################
+
+# Controls the `email.from` configuration setting.
+matrix_authentication_service_config_email_from: '"{{ matrix_authentication_service_config_email_from_name }}" <{{ matrix_authentication_service_config_email_from_address }}>'
+matrix_authentication_service_config_email_from_name: 'Matrix Authentication Service'
+matrix_authentication_service_config_email_from_address: "matrix@{{ matrix_domain }}"
+
+# Controls the `email.reply_to` configuration setting.
+matrix_authentication_service_config_email_reply_to: '"{{ matrix_authentication_service_config_email_reply_to_name }}" <{{ matrix_authentication_service_config_email_reply_to_address }}>'
+matrix_authentication_service_config_email_reply_to_name: "{{ matrix_authentication_service_config_email_from_name }}"
+matrix_authentication_service_config_email_reply_to_address: "{{ matrix_authentication_service_config_email_from_address }}"
+
+# Controls the `email.transport` configuration setting.
+#
+# Valid options are: blackhole, smtp, aws_ses
+# Upstream reports that `sendmail` is supported as well,
+# but this is not true when running it in a container image due to the `sendmail` binary not being included.
+matrix_authentication_service_config_email_transport: blackhole
+
+# Controls the `email.mode` configuration setting for SMTP.
+# Options are 'plain', 'tls', or 'starttls'.
+matrix_authentication_service_config_email_mode: plain
+
+# Controls the `email.hostname` configuration setting for SMTP.
+matrix_authentication_service_config_email_hostname: ""
+
+# Controls the `email.port` configuration setting for SMTP.
+matrix_authentication_service_config_email_port: 587
+
+# Controls the `email.username` configuration setting for SMTP.
+matrix_authentication_service_config_email_username: ""
+
+# Controls the `email.password` configuration setting for SMTP.
+matrix_authentication_service_config_email_password: ""
+
+########################################################################################
+#                                                                                      #
+# /Email configuration                                                                 #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Account configuration                                                                #
+#                                                                                      #
+########################################################################################
+
+# Controls the `account.email_change_allowed` configuration setting.
+#
+# Whether users are allowed to change their email addresses.
+matrix_authentication_service_config_account_email_change_allowed: true
+
+# Controls the `account.displayname_change_allowed` configuration setting.
+#
+# Whether users are allowed to change their display names.
+# This should be in sync with the policy in the homeserver configuration.
+matrix_authentication_service_config_account_displayname_change_allowed: true
+
+# Controls the `account.password_registration_enabled` configuration setting.
+#
+# Whether to enable self-service password registration.
+# This has no effect if password login is disabled.
+matrix_authentication_service_config_account_password_registration_enabled: false
+
+# Controls the `account.password_change_allowed` configuration setting.
+#
+# Whether users are allowed to change their passwords.
+# This has no effect if password login is disabled.
+matrix_authentication_service_config_account_password_change_allowed: true
+
+# Controls the `account.password_recovery_enabled` configuration setting.
+#
+# Whether email-based password recovery is enabled
+# This has no effect if password login is disabled.
+matrix_authentication_service_config_account_password_recovery_enabled: false
+
+########################################################################################
+#                                                                                      #
+# /Account configuration                                                               #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Database configuration                                                               #
+#                                                                                      #
+########################################################################################
+
+# Controls the `database.username` configuration setting.
+matrix_authentication_service_config_database_username: 'matrix_authentication_service'
+
+# Controls the `database.password` configuration setting.
+matrix_authentication_service_config_database_password: ''
+
+# Controls the `database.host` configuration setting.
+matrix_authentication_service_config_database_host: ''
+
+# Controls the `database.port` configuration setting.
+matrix_authentication_service_config_database_port: 5432
+
+# Controls the `database.database` configuration setting.
+matrix_authentication_service_config_database_database: 'matrix_authentication_service'
+
+# Controls the `database.ssl_mode` configuration setting.
+matrix_authentication_service_config_database_ssl_mode: disable
+
+# Controls the `database.max_connections` configuration setting.
+matrix_authentication_service_config_database_max_connections: 10
+
+# Controls the `database.min_connections` configuration setting.
+matrix_authentication_service_config_database_min_connections: 0
+
+# Controls the `database.connect_timeout` configuration setting.
+matrix_authentication_service_config_database_connect_timeout: 30
+
+# Controls the `database.idle_timeout` configuration setting.
+matrix_authentication_service_config_database_idle_timeout: 600
+
+# Controls the `database.max_lifetime` configuration setting.
+matrix_authentication_service_config_database_max_lifetime: 1800
+
+########################################################################################
+#                                                                                      #
+# /Database configuration                                                              #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Secrets configuration                                                                #
+#                                                                                      #
+########################################################################################
+
+# Controls the `secrets.encryption` configuration setting.
+matrix_authentication_service_config_secrets_encryption: ''
+
+# Controls the `secrets.keys` configuration setting.
+matrix_authentication_service_config_secrets_keys: |-
+  {{
+    matrix_authentication_service_key_management_list | map(attribute='config') | list
+    if matrix_authentication_service_key_management_enabled
+    else []
+  }}
+
+########################################################################################
+#                                                                                      #
+# /Secrets configuration                                                               #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# HTTP configuration                                                                 #
+#                                                                                      #
+########################################################################################
+
+# Controls the `http.public_base` configuration setting.
+matrix_authentication_service_config_http_public_base: "https://{{ matrix_authentication_service_hostname }}{{ '/' if matrix_authentication_service_path_prefix == '/' else (matrix_authentication_service_path_prefix + '/') }}"
+
+# Controls the `http.issuer` configuration setting.
+matrix_authentication_service_config_http_issuer: "{{ matrix_authentication_service_config_http_public_base }}"
+
+# Controls the `http.trusted_proxies` configuration setting.
+matrix_authentication_service_config_http_trusted_proxies:
+  - 192.168.0.0/16
+  - 172.16.0.0/12
+  - 10.0.0.0/10
+  - 127.0.0.1/8
+  - fd00::/8
+  - ::1/128
+
+########################################################################################
+#                                                                                      #
+# /HTTP configuration                                                                  #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Matrix configuration                                                                 #
+#                                                                                      #
+########################################################################################
+
+# Controls the `matrix.homeserver` configuration setting.
+# The homeserver name, as per the `server_name` in the Synapse configuration file.
+matrix_authentication_service_config_matrix_homeserver: ""
+
+# Controls the `matrix.endpoint` configuration setting.
+# URL to which the homeserver is accessible from the service
+matrix_authentication_service_config_matrix_endpoint: ""
+
+# Controls the `matrix.secret` configuration setting.
+matrix_authentication_service_config_matrix_secret: ""
+
+########################################################################################
+#                                                                                      #
+# /Matrix configuration                                                                #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Passwords configuration                                                              #
+#                                                                                      #
+########################################################################################
+
+# Controls the `passwords.enabled` configuration setting.
+# Whether to enable the password database.
+# If disabled, users will only be able to log in using upstream OIDC providers
+matrix_authentication_service_config_passwords_enabled: true
+
+# Controls the `passwords.schemes` configuration setting.
+# List of password hashing schemes being used.
+# Only change this if you know what you're doing
+matrix_authentication_service_config_passwords_schemes:
+  - version: 1
+    algorithm: argon2id
+
+# Controls the `passwords.minimum_complexity` configuration setting.
+# Minimum complexity required for passwords, estimated by the zxcvbn algorithm
+# Must be between 0 and 4, default is 3
+# See https://github.com/dropbox/zxcvbn#usage for more information
+matrix_authentication_service_config_passwords_minimum_complexity: 3
+
+########################################################################################
+#                                                                                      #
+# /Passwords configuration                                                             #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Clients configuration                                                                #
+#                                                                                      #
+########################################################################################
+
+# Controls the `clients` configuration setting.
+# List of clients to be used by the authentication service.
+#
+# See:
+# - https://element-hq.github.io/matrix-authentication-service/reference/configuration.html#clients
+# - https://element-hq.github.io/matrix-authentication-service/setup/homeserver.html#provision-a-client-for-the-homeserver-to-use
+#
+# To define your own, use `matrix_authentication_service_config_clients_custom`.
+matrix_authentication_service_config_clients: "{{ matrix_authentication_service_config_clients_auto + matrix_authentication_service_config_clients_custom }}"
+matrix_authentication_service_config_clients_auto: []
+matrix_authentication_service_config_clients_custom: []
+
+########################################################################################
+#                                                                                      #
+# /Clients configuration                                                               #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Upstream OAuth2 configuration                                                        #
+#                                                                                      #
+########################################################################################
+
+# Controls the `upstream_oauth2.providers` configuration setting.
+# See:
+# - https://element-hq.github.io/matrix-authentication-service/reference/configuration.html#upstream_oauth2providers
+matrix_authentication_service_config_upstream_oauth2_providers: []
+
+########################################################################################
+#                                                                                      #
+# /Upstream OAuth2 configuration                                                       #
+#                                                                                      #
+########################################################################################
+
+
+# Holds the final Matrix Authentication Service configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_authentication_service_configuration_yaml` or `matrix_authentication_service_configuration_extension_yaml`.
+matrix_authentication_service_configuration: "{{ matrix_authentication_service_configuration_yaml | from_yaml | combine(matrix_authentication_service_configuration_extension, recursive=True) }}"
+
+# Default Matrix Authentication Service configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_authentication_service_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_authentication_service_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_authentication_service_configuration_extension_yaml: |
+  # Your custom YAML configuration for Matrix Authentication Service goes here.
+  # This configuration extends the default starting configuration (`matrix_authentication_service_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_authentication_service_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # user:
+  #   password: something
+
+matrix_authentication_service_configuration_extension: "{{ matrix_authentication_service_configuration_extension_yaml | from_yaml if matrix_authentication_service_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Additional environment variables to pass to the Matrix Authentication Service container.
+#
+# Environment variables take priority over settings in the configuration file.
+#
+# Example:
+# matrix_authentication_service_environment_variables_extension: |
+#   KEY=value
+matrix_authentication_service_environment_variables_extension: ''
+
+
+########################################################################################
+#                                                                                      #
+# Labels                                                                               #
+#                                                                                      #
+########################################################################################
+
+# matrix_authentication_service_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_authentication_service_container_labels_additional_labels`.
+matrix_authentication_service_container_labels_traefik_enabled: true
+matrix_authentication_service_container_labels_traefik_docker_network: "{{ matrix_authentication_service_container_network }}"
+matrix_authentication_service_container_labels_traefik_entrypoints: web-secure
+matrix_authentication_service_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+matrix_authentication_service_container_labels_public_main_hostname: "{{ matrix_authentication_service_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/auth`).
+matrix_authentication_service_container_labels_public_main_path_prefix: "{{ matrix_authentication_service_path_prefix }}"
+matrix_authentication_service_container_labels_public_main_rule: "Host(`{{ matrix_authentication_service_container_labels_public_main_hostname }}`){% if matrix_authentication_service_container_labels_public_main_path_prefix != '/' %} && PathPrefix(`{{ matrix_authentication_service_container_labels_public_main_path_prefix }}`){% endif %}"
+matrix_authentication_service_container_labels_public_main_priority: 0
+matrix_authentication_service_container_labels_public_main_entrypoints: "{{ matrix_authentication_service_container_labels_traefik_entrypoints }}"
+matrix_authentication_service_container_labels_public_main_tls: "{{ matrix_authentication_service_container_labels_public_main_entrypoints != 'web' }}"
+matrix_authentication_service_container_labels_public_main_tls_certResolver: "{{ matrix_authentication_service_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added to expose the compatibility layer publicly.
+#
+# The service exposes a compatibility layer to allow legacy clients to authenticate using the service.
+# This works by exposing a few Matrix endpoints that should be proxied to the service.
+# The following Matrix Client-Server API endpoints need to be handled by the authentication service:
+# - /_matrix/client/*/login
+# - /_matrix/client/*/logout
+# - /_matrix/client/*/refresh
+#
+# See:
+# - https://element-hq.github.io/matrix-authentication-service/setup/homeserver.html#set-up-the-compatibility-layer
+# - https://element-hq.github.io/matrix-authentication-service/setup/reverse-proxy.html#compatibility-layer
+#
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_authentication_service_container_labels_traefik_enabled`
+matrix_authentication_service_container_labels_public_compatibility_layer_enabled: false
+matrix_authentication_service_container_labels_public_compatibility_layer_hostname: ""
+matrix_authentication_service_container_labels_public_compatibility_layer_path_regexp: "^/_matrix/client/(?P<version>([^/]+))/(?P<endpoint>(login|logout|refresh))"
+matrix_authentication_service_container_labels_public_compatibility_layer_rule: "Host(`{{ matrix_authentication_service_container_labels_public_compatibility_layer_hostname }}`) && PathRegexp(`{{ matrix_authentication_service_container_labels_public_compatibility_layer_path_regexp }}`)"
+matrix_authentication_service_container_labels_public_compatibility_layer_priority: 0
+matrix_authentication_service_container_labels_public_compatibility_layer_entrypoints: "{{ matrix_authentication_service_container_labels_traefik_entrypoints }}"
+matrix_authentication_service_container_labels_public_compatibility_layer_tls: "{{ matrix_authentication_service_container_labels_public_compatibility_layer_entrypoints != 'web' }}"
+matrix_authentication_service_container_labels_public_compatibility_layer_tls_certResolver: "{{ matrix_authentication_service_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added to expose the compatibility layer on the internal Traefik entrypoint.
+# This is similar to `matrix_authentication_service_container_labels_public_compatibility_layer_enabled`, but the entrypoint and intent is different.
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+# See `matrix_authentication_service_container_labels_traefik_enabled`
+matrix_authentication_service_container_labels_internal_compatibility_layer_enabled: false
+matrix_authentication_service_container_labels_internal_compatibility_layer_path_regexp: "{{ matrix_authentication_service_container_labels_public_compatibility_layer_path_regexp }}"
+matrix_authentication_service_container_labels_internal_compatibility_layer_rule: "PathRegexp(`{{ matrix_authentication_service_container_labels_internal_compatibility_layer_path_regexp }}`)"
+matrix_authentication_service_container_labels_internal_compatibility_layer_priority: 0
+matrix_authentication_service_container_labels_internal_compatibility_layer_entrypoints: ""
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_authentication_service_container_labels_traefik_additional_response_headers_custom`
+matrix_authentication_service_container_labels_traefik_additional_response_headers: "{{ matrix_authentication_service_container_labels_traefik_additional_response_headers_auto | combine(matrix_authentication_service_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_authentication_service_container_labels_traefik_additional_response_headers_auto: {}
+matrix_authentication_service_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_authentication_service_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_authentication_service_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_authentication_service_container_labels_additional_labels: ''
+
+########################################################################################
+#                                                                                      #
+# /Labels                                                                              #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# syn2mas configuration                                                                #
+#                                                                                      #
+########################################################################################
+
+matrix_authentication_service_syn2mas_start_wait_time_seconds: 5
+
+matrix_authentication_service_syn2mas_dry_run: false
+
+# renovate: datasource=docker depName=ghcr.io/element-hq/matrix-authentication-service/syn2mas
+matrix_authentication_service_syn2mas_version: 0.12.0
+matrix_authentication_service_syn2mas_container_image: "{{ matrix_authentication_service_container_image_name_prefix }}element-hq/matrix-authentication-service/syn2mas:{{ matrix_authentication_service_syn2mas_version }}"
+matrix_authentication_service_syn2mas_container_image_name_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else 'ghcr.io/' }}"
+matrix_authentication_service_syn2mas_container_image_force_pull: "{{ matrix_authentication_service_syn2mas_container_image.endswith(':latest') }}"
+
+matrix_authentication_service_syn2mas_container_image_self_build: "{{ matrix_authentication_service_container_image_self_build }}"
+
+matrix_authentication_service_syn2mas_container_network: "{{ matrix_authentication_service_container_network }}"
+
+# Path to Synapse's homeserver.yaml configuration file.
+matrix_authentication_service_syn2mas_synapse_homeserver_config_path: ""
+
+# Additional arguments passed to the syn2mas process.
+#
+# Example:
+# matrix_authentication_service_syn2mas_process_extra_arguments:
+#   - "--upstreamProviderMapping oidc-keycloak:01H8PKNWKKRPCBW4YGH1RWV279"
+matrix_authentication_service_syn2mas_process_extra_arguments: []
+
+########################################################################################
+#                                                                                      #
+# /syn2mas configuration                                                               #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Misc                                                                                 #
+#                                                                                      #
+########################################################################################
+
+# Controls whether a migration from a homeserver user database to Matrix Authentication Service is in progress.
+#
+# When this is set to `true`, the playbook will:
+#
+# - disable the integration between the homeserver and Matrix Authentication Service
+# - avoid setting up the "compatibility layer" (that is, avoid installing container labels that capture login endpoints like `/_matrix/client/*/login`, etc.)
+matrix_authentication_service_migration_in_progress: false
+
+########################################################################################
+#                                                                                      #
+# /Misc                                                                                #
+#                                                                                      #
+########################################################################################

@@ -1,13 +1,12 @@
 # Configuring Synapse (optional)
 
-By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case.
-If that's enough for you, you can skip this document.
+By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case. If that's okay, you can skip this document.
 
 The playbook provides lots of customization variables you could use to change Synapse's settings.
 
 Their defaults are defined in [`roles/custom/matrix-synapse/defaults/main.yml`](../roles/custom/matrix-synapse/defaults/main.yml) and they ultimately end up in the generated `/matrix/synapse/config/homeserver.yaml` file (on the server). This file is generated from the [`roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2`](../roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2) template.
 
-**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.<your-domain>/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
+**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
 
 Alternatively, **if there is no pre-defined variable** for a Synapse setting you wish to change:
 
@@ -22,7 +21,7 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 
 To have Synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found in the [official Synapse workers documentation](https://github.com/element-hq/synapse/blob/master/docs/workers.md) and [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html).
 
-To enable Synapse worker support, update your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+To enable Synapse worker support, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_workers_enabled: true
@@ -79,7 +78,7 @@ When Synapse workers are enabled, the integrated [Postgres database is tuned](ma
 
 A separate Ansible role (`matrix-synapse-reverse-proxy-companion`) and component handles load-balancing for workers. This role/component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly.
 
-In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/matrix-org/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
+In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/element-hq/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
 
 
 ## Synapse Admin
@@ -88,6 +87,8 @@ Certain Synapse administration tasks (managing users and rooms, etc.) can be per
 
 
 ## Synapse + OpenID Connect for Single-Sign-On
+
+💡 An alternative to setting up OIDC in Synapse is to use [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS). Newer clients (like Element X) only support SSO-based authentication via MAS and not via the legacy Synapse OIDC setup described below. That said, MAS is still a new experimental service which comes with its own downsides. Consult its documentation to learn if it will be a good fit for your deployment.
 
 If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional configuration.
 
@@ -103,7 +104,7 @@ matrix_synapse_oidc_enabled: true
 matrix_synapse_oidc_providers:
   - idp_id: keycloak
     idp_name: "My KeyCloak server"
-    issuer: "https://url.ix/auth/realms/{realm_name}"
+    issuer: "https://url.ix/realms/{realm_name}"
     client_id: "matrix"
     client_secret: "{{ vault_synapse_keycloak }}"
     scopes: ["openid", "profile"]
@@ -127,7 +128,7 @@ If template customization is enabled, the playbook will build a custom container
 
 Your custom templates need to live in a public or private git repository. This repository will be cloned during Synapse image customization (during the playbook run).
 
-To enable template customizations, use a configuration (`inventory/host_vars/matrix.DOMAIN/vars.yml`) like this:
+To enable template customizations, use a configuration (`inventory/host_vars/matrix.example.com/vars.yml`) like this:
 
 ```yaml
 # If you'd like to ensure that the customized image is built each time the playbook runs, enable this.
@@ -153,8 +154,7 @@ matrix_synapse_container_image_customizations_templates_git_repository_ssh_priva
   -----END OPENSSH PRIVATE KEY-----
 ```
 
-As mentioned in Synapse's Templates documentation, Synapse will fall back to its own templates if a template is not found in that directory.
-Due to this, it's recommended to only store and maintain template files in your repository if you need to make custom changes. Other files (which you don't need to change), should not be duplicated, so that you don't need to worry about getting out-of-sync with the original Synapse templates.
+As mentioned in Synapse's Templates documentation, Synapse will fall back to its own templates if a template is not found in that directory. Due to this, it's recommended to only store and maintain template files in your repository if you need to make custom changes. Other files (which you don't need to change), should not be duplicated, so that you don't need to worry about getting out-of-sync with the original Synapse templates.
 
 
 ## Monitoring Synapse Metrics with Prometheus and Grafana

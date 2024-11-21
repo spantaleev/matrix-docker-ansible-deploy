@@ -2,7 +2,7 @@
 
 - name: Fail if Postgres not enabled
   ansible.builtin.fail:
-    msg: "Postgres via the com.devture.ansible.role.postgres role is not enabled (`postgres_enabled`). Cannot migrate."
+    msg: "Postgres via ansible-role-postgres role is not enabled (`postgres_enabled`). Cannot migrate."
   when: "not postgres_enabled | bool"
 
 # Defaults
@@ -69,6 +69,6 @@
         devture_playbook_runtime_messages_list | default([])
         +
         [
-          "NOTE: Your appservice-slack database files have been imported into Postgres. The original database files have been moved from `{{ matrix_appservice_slack_data_path }}/*.db` to `{{ matrix_appservice_slack_data_path }}/*.db.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete these files."
+          "Note: Your appservice-slack database files have been imported into Postgres. The original database files have been moved from `{{ matrix_appservice_slack_data_path }}/*.db` to `{{ matrix_appservice_slack_data_path }}/*.db.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete these files."
         ]
       }}

@@ -1,6 +1,6 @@
-# Setting up draupnir (optional)
+# Setting up Draupnir (optional)
 
-The playbook can install and configure the [draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.
+The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.
 
 See the project's [documentation](https://github.com/the-draupnir-project/Draupnir) to learn what it does and why it might be useful to you.
 
@@ -23,7 +23,7 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.draupnir password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-If you would like draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ([see below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
+If you would like Draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ([see below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
 
 
 ## 2. Get an access token
@@ -33,11 +33,11 @@ Refer to the documentation on [how to obtain an access token](obtaining-access-t
 
 ## 3. Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
+You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
 
-If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](/docs/configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
+If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
 
-The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir it self. If you made Draupnir Admin you can just use the Draupnir token.
+The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir itself. If you made Draupnir Admin you can just use the Draupnir token.
 
 
 
@@ -47,9 +47,9 @@ Using your own account, create a new invite only room that you will use to manag
 
 If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see below).
 
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element you can do this by going to the room's settings, clicking Advanced, and then coping the internal room ID. The room ID will look something like `!QvgVuKq0ha8glOLGMG:DOMAIN`.
+Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element Web you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
 
-Finally invite the `@bot.draupnir:DOMAIN` account you created earlier into the room.
+Finally invite the `@bot.draupnir:example.com` account you created earlier into the room.
 
 
 ## 5. Adjusting the playbook configuration
@@ -60,7 +60,7 @@ Decide whether you want Draupnir to be capable of operating in end-to-end encryp
 
 When using Pantalaimon, Draupnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 # Enable Pantalaimon. See docs/configuring-playbook-pantalaimon.md
@@ -82,7 +82,7 @@ matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 The playbook's `group_vars` will configure other required settings. If using this role separately without the playbook, you also need to configure the two URLs that Draupnir uses to reach the homeserver, one through Pantalaimon and one "raw". This example is taken from the playbook's `group_vars`:
 
 ```yaml
-# Endpoint URL that Draupnir uses to interact with the matrix homeserver (client-server API).
+# Endpoint URL that Draupnir uses to interact with the Matrix homeserver (client-server API).
 # Set this to the pantalaimon URL if you're using that.
 matrix_bot_draupnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matrix_bot_draupnir_pantalaimon_use else matrix_addons_homeserver_client_api_url }}"
 
@@ -95,7 +95,7 @@ matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_
 
 When NOT using Pantalaimon, Draupnir does not log in by itself and you must give it an access token for its bot account.
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file (adapt to your needs):
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_4_GOES_HERE` with the your own values.
 
@@ -109,7 +109,8 @@ matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 
 ### 5c. Migrating from Mjolnir (Only required if migrating.)
 
-Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable mjolnir if you're doing migration.
+Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
+
 That is all you need to do due to that Draupnir can complete migration on its own.
 
 ## 6. Installing
@@ -135,10 +136,9 @@ Draupnir can be told to self-join public rooms, but it's better to follow this f
 
 2. [Give the bot permissions to do its job](#giving-draupnir-permissions-to-do-its-job)
 
-3. Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !ROOM_ID:DOMAIN`
+3. Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !qporfwt:example.com`
 
-To have Draupnir provide useful room protection, you need do to a bit more work (at least the first time around).
-You may wish to [Subscribe to a public policy list](#subscribing-to-a-public-policy-list), [Create your own own policy and rules](#creating-your-own-policy-lists-and-rules) and [Enabling built-in protections](#enabling-built-in-protections).
+To have Draupnir provide useful room protection, you need do to a bit more work (at least the first time around). You may wish to [Subscribe to a public policy list](#subscribing-to-a-public-policy-list), [Create your own own policy and rules](#creating-your-own-policy-lists-and-rules) and [Enabling built-in protections](#enabling-built-in-protections).
 
 ### Giving Draupnir permissions to do its job
 
@@ -158,7 +158,7 @@ You can tell Draupnir to subscribe to it by sending the following command to the
 
 We also recommend **creating your own policy lists** with the [list create](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-list-create-command-to-create-a-policy-room) command.
 
-You can do so by sending the following command to the Management Room: `!draupnir list create my-bans my-bans-bl`. This will create a policy list having a name (shortcode) of `my-bans` and stored in a public `#my-bans-bl:DOMAIN` room on your server. As soon as you run this command, the bot will invite you to the policy list room.
+You can do so by sending the following command to the Management Room: `!draupnir list create my-bans my-bans-bl`. This will create a policy list having a name (shortcode) of `my-bans` and stored in a public `#my-bans-bl:example.com` room on your server. As soon as you run this command, the bot will invite you to the policy list room.
 
 A policy list does nothing by itself, so the next step is **adding some rules to your policy list**. Policies target a so-called `entity` (one of: `user`, `room` or `server`). These entities are mentioned on the [policy lists](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists) documentation page and in the Matrix Spec [here](https://spec.matrix.org/v1.11/client-server-api/#mban-recommendation).
 
@@ -171,7 +171,7 @@ To create rules, you run commands in the Management Room (**not** in the policy 
 
 As a result of running these commands, you may observe:
 
-- Draupnir creating `m.policy.rule.user` state events in the `#my-bans-bl:DOMAIN` room on your server
+- Draupnir creating `m.policy.rule.user` state events in the `#my-bans-bl:example.com` room on your server
 - applying these rules against all rooms that Draupnir is an Administrator in
 
 You can undo bans with the [unban command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#the-unban-command).
@@ -193,9 +193,9 @@ To **disable a given protection**, send a command like this: `!draupnir disable 
 
 ## Extending the configuration
 
-You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file.
+You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
-For example to change draupnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
+For example to change Draupnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
 
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |
@@ -213,14 +213,14 @@ matrix_bot_draupnir_configuration_extension_yaml: |
 
 Draupnir supports two methods to receive reports in the management room.
 
-The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver.
-If you are using traefik, this playbook can set this up for you:
+The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using traefik, this playbook can set this up for you:
+
 ```yaml
 matrix_bot_draupnir_abuse_reporting_enabled: true
 ```
 
-The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user (see step 1).
-To enable it, set `pollReports: true` in Draupnir's config:
+The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user (see step 1). To enable it, set `pollReports: true` in Draupnir's config:
+
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |
   pollReports: true

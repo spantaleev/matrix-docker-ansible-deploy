@@ -4,10 +4,11 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) to use Hydrogen.
-  when: "(vars[item] == '' or vars[item] is none) and matrix_client_hydrogen_container_image_self_build | bool"
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - matrix_client_hydrogen_default_hs_url
-    - matrix_client_hydrogen_container_network
+    - {'name': 'matrix_client_hydrogen_default_hs_url', when: "{{ matrix_client_hydrogen_container_image_self_build }}"}
+    - {'name': 'matrix_client_hydrogen_container_network', when: true}
+    - {'name': 'matrix_client_hydrogen_container_labels_traefik_compression_middleware_name', when: "{{ matrix_client_hydrogen_container_labels_traefik_compression_middleware_enabled }}"}
 
 - when: matrix_client_hydrogen_container_labels_traefik_enabled | bool
   block:

@@ -1,4 +1,4 @@
-# Setting up matrix-media-repo (optional)
+# Storing Matrix media files using matrix-media-repo (optional)
 
 [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated "MMR") is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
 
@@ -14,7 +14,7 @@ For a simpler alternative (which allows you to offload your media repository sto
 
 ## Quickstart
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file and [re-run the installation process](./installing.md) for the playbook:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file and [re-run the installation process](./installing.md) for the playbook:
 
 ```yaml
 matrix_media_repo_enabled: true
@@ -105,7 +105,7 @@ If you wish to manually generate the signing key and merge it with your homeserv
 
 ### Key backup and revoking
 
-Since your homeserver signing key file is modified by the playbook, a backup will be created in `HOMESERVER_DIR/config/DOMAIN.signing.key.backup`. If you need to remove/revoke old keys, you can restore from this backup or remove the MMR key id from your `DOMAIN.signing.key` file.
+Since your homeserver signing key file is modified by the playbook, a backup will be created in `HOMESERVER_DIR/config/example.com.signing.key.backup`. If you need to remove/revoke old keys, you can restore from this backup or remove the MMR key ID from your `example.com.signing.key` file.
 
 Additionally, its recommended after revoking a signing key to update your homeserver config file (`old_signing_keys` field for Synapse and `old_private_keys` for Dendrite). See your homeserver config file for further documentation on how to populate the field.
 

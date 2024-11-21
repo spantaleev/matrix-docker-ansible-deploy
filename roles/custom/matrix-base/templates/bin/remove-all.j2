@@ -14,7 +14,7 @@ if [ "$sure" != "Yes, I really want to remove everything!" ]; then
 	echo "Good thing I asked, exiting"
 	exit 0
 else
-	echo "Stop and remove matrix services"
+	echo "Stop and remove Matrix services"
 
 	for s in $(find {{ devture_systemd_docker_base_systemd_path }}/ -type f -name "matrix-*" -printf "%f\n"); do
 		systemctl disable --now $s
@@ -32,4 +32,3 @@ else
 	rm -fr "{{ matrix_base_data_path }}"
 	exit 0
 fi
-

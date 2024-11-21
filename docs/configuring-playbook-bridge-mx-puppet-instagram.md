@@ -1,24 +1,24 @@
-# Setting up mx-puppet-instagram (optional)
+# Setting up MX Puppet Instagram bridging (optional)
 
-The playbook can install and configure
-[mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) for you.
+The playbook can install and configure [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) for you.
 
 This allows you to bridge Instagram DirectMessages into Matrix.
 
-To enable the [Instagram](https://www.instagram.com/) bridge just use the following
-playbook configuration:
+## Adjusting the playbook configuration
 
+To enable the [Instagram](https://www.instagram.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mx_puppet_instagram_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 
-Once the bot is enabled, you need to start a chat with `Instagram Puppet Bridge` with
-the handle `@_instagrampuppet_bot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base
-domain, not the `matrix.` domain).
+Once the bot is enabled, you need to start a chat with `Instagram Puppet Bridge` with the handle `@_instagrampuppet_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `link <username> <password>` to the bridge bot to link your instagram account.
 
@@ -33,4 +33,3 @@ For double-puppeting, you probably want to issue these commands:
 If you are linking only one Instagram account, your `$puppetId` is probably 1, but use the `list` command find out.
 
 The `help` command shows which commands are available, though at the time of writing, not every command is fully implemented.
-

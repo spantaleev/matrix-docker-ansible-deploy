@@ -1,0 +1,32 @@
+---
+
+- name: Ensure Matrix Authentication Service is started
+  ansible.builtin.service:
+    name: matrix-authentication-service
+    state: started
+    daemon_reload: true
+  register: matrix_authentication_service_mas_ensure_started_result
+
+- name: Wait a bit, so that Matrix Authentication Service can start
+  when: matrix_authentication_service_mas_ensure_started_result.changed | bool
+  ansible.builtin.wait_for:
+    timeout: "{{ matrix_authentication_service_syn2mas_start_wait_time_seconds }}"
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Generate mas-cli doctor command
+  ansible.builtin.set_fact:
+    matrix_authentication_service_mas_cli_doctor_command: >-
+      {{ matrix_authentication_service_bin_path }}/mas-cli doctor
+  tags:
+    - skip_ansible_lint
+
+- name: Run mas-cli doctor
+  ansible.builtin.command:
+    cmd: "{{ matrix_authentication_service_mas_cli_doctor_command }}"
+  register: matrix_authentication_service_mas_cli_doctor_command_result
+  changed_when: matrix_authentication_service_mas_cli_doctor_command_result.rc == 0
+
+- name: Print mas-cli doctor command result
+  ansible.builtin.debug:
+    var: matrix_authentication_service_mas_cli_doctor_command_result

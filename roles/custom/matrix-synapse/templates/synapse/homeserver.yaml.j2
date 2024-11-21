@@ -32,7 +32,7 @@ modules: {{ matrix_synapse_modules|to_json }}
 # created on this server. For example if the server_name was example.com,
 # usernames on this server would be in the format @user:example.com
 #
-# In most cases you should avoid using a matrix specific subdomain such as
+# In most cases you should avoid using a Matrix specific subdomain such as
 # matrix.example.com or synapse.example.com as the server_name for the same
 # reasons you wouldn't use user@email.example.com as your email address.
 # See https://matrix-org.github.io/synapse/latest/delegate.html
@@ -293,7 +293,7 @@ listeners:
 {% endif %}
 
 {% if matrix_synapse_federation_port_enabled and matrix_synapse_tls_federation_listener_enabled %}
-  # TLS-enabled listener: for when matrix traffic is sent directly to synapse.
+  # TLS-enabled listener: for when Matrix traffic is sent directly to synapse.
   - port: {{ matrix_synapse_container_federation_api_tls_port|to_json }}
     tls: true
     bind_addresses: ['::']
@@ -305,7 +305,7 @@ listeners:
         compress: false
 {% endif %}
 
-  # Unsecure HTTP listener (Client API): for when matrix traffic passes through a reverse proxy
+  # Unsecure HTTP listener (Client API): for when Matrix traffic passes through a reverse proxy
   # that unwraps TLS.
   - port: {{ matrix_synapse_container_client_api_port|to_json }}
     tls: false
@@ -318,7 +318,7 @@ listeners:
         compress: false
 
 {% if matrix_synapse_federation_port_enabled %}
-  # Unsecure HTTP listener (Federation API): for when matrix traffic passes through a reverse proxy
+  # Unsecure HTTP listener (Federation API): for when Matrix traffic passes through a reverse proxy
   # that unwraps TLS.
   - port: {{ matrix_synapse_container_federation_api_plain_port|to_json }}
     tls: false
@@ -391,7 +391,7 @@ manhole_settings:
 
 # How to reach the server admin, used in ResourceLimitError
 #
-#admin_contact: 'mailto:admin@server.com'
+#admin_contact: 'mailto:admin@example.com'
 
 # Global blocking
 #
@@ -575,7 +575,7 @@ templates:
 # By default, no room is excluded.
 #
 #exclude_rooms_from_sync:
-#    - !foo:example.com
+#    - !qporfwt:example.com
 
 
 # Message retention policy at the server level.
@@ -590,26 +590,37 @@ templates:
 # purged are ignored and not stored again.
 #
 retention:
+  {% if matrix_synapse_retention_enabled %}
   # The message retention policies feature is disabled by default. Uncomment the
   # following line to enable it.
   #
-  #enabled: true
+  enabled: {{ matrix_synapse_retention_enabled|to_json }}
 
   # Default retention policy. If set, Synapse will apply it to rooms that lack the
   # 'm.room.retention' state event. Currently, the value of 'min_lifetime' doesn't
   # matter much because Synapse doesn't take it into account yet.
   #
-  #default_policy:
-  #  min_lifetime: 1d
-  #  max_lifetime: 1y
+  {% if matrix_synapse_retention_default_policy_min_lifetime | length > 0 or matrix_synapse_retention_default_policy_max_lifetime | length > 0 %}
+  default_policy:
+  {% if matrix_synapse_retention_default_policy_min_lifetime | length > 0 %}
+    min_lifetime: {{ matrix_synapse_retention_default_policy_min_lifetime|to_json }}
+  {% endif %}
+  {% if matrix_synapse_retention_default_policy_max_lifetime | length > 0 %}
+    max_lifetime: {{ matrix_synapse_retention_default_policy_max_lifetime|to_json }}
+  {% endif %}
+  {% endif %}
 
   # Retention policy limits. If set, and the state of a room contains a
   # 'm.room.retention' event in its state which contains a 'min_lifetime' or a
   # 'max_lifetime' that's out of these bounds, Synapse will cap the room's policy
   # to these limits when running purge jobs.
   #
-  #allowed_lifetime_min: 1d
-  #allowed_lifetime_max: 1y
+  {% if matrix_synapse_retention_allowed_lifetime_min | length > 0 %}
+  allowed_lifetime_min: {{ matrix_synapse_retention_allowed_lifetime_min|to_json }}
+  {% endif %}
+  {% if matrix_synapse_retention_allowed_lifetime_max | length > 0 %}
+  allowed_lifetime_max: {{ matrix_synapse_retention_allowed_lifetime_max|to_json }}
+  {% endif %}
 
   # Server admins can define the settings of the background jobs purging the
   # events which lifetime has expired under the 'purge_jobs' section.
@@ -640,12 +651,8 @@ retention:
   # room's policy to these values is done after the policies are retrieved from
   # Synapse's database (which is done using the range specified in a purge job's
   # configuration).
-  #
-  #purge_jobs:
-  #  - longest_max_lifetime: 3d
-  #    interval: 12h
-  #  - shortest_max_lifetime: 3d
-  #    interval: 1d
+  purge_jobs: {{ matrix_synapse_retention_purge_jobs | to_json }}
+  {% endif %}
 
 
 ## TLS ##
@@ -691,7 +698,7 @@ tls_private_key_path: {{ matrix_synapse_tls_private_key_path|to_json }}
 #
 #federation_certificate_verification_whitelist:
 #  - lon.example.com
-#  - "*.domain.com"
+#  - "*.example.com"
 #  - "*.onion"
 
 # List of custom certificate authorities for federation traffic.
@@ -1235,6 +1242,7 @@ oembed:
   #
   #additional_providers:
   #  - oembed/my_providers.json
+  additional_providers: {{ matrix_synapse_oembed_additional_providers|to_json }}
 
 
 ## Captcha ##
@@ -1531,11 +1539,11 @@ autocreate_auto_join_rooms: {{ matrix_synapse_autocreate_auto_join_rooms|to_json
 #
 #autocreate_auto_join_room_preset: private_chat
 
-# The local part of the user id which is used to create auto_join_rooms if
+# The local part of the user ID which is used to create auto_join_rooms if
 # autocreate_auto_join_rooms is true. If this is not provided then the
 # initial user account that registers will be used to create the rooms.
 #
-# The user id is also used to invite new users to any auto-join rooms which
+# The user ID is also used to invite new users to any auto-join rooms which
 # are set to invite-only.
 #
 # It *must* be configured if autocreate_auto_join_room_preset is set to
@@ -1581,7 +1589,7 @@ auto_accept_invites:
 enable_metrics: {{ matrix_synapse_metrics_enabled|to_json }}
 
 # Enable sentry integration
-# NOTE: While attempts are made to ensure that the logs don't contain
+# Note: While attempts are made to ensure that the logs don't contain
 # any sensitive information, this cannot be guaranteed. By enabling
 # this option the sentry server may therefore receive sensitive
 # information, and it in turn may then diseminate sensitive information
@@ -1728,7 +1736,7 @@ old_signing_keys:
 #
 #    server_name: the name of the server. required.
 #
-#    verify_keys: an optional map from key id to base64-encoded public key.
+#    verify_keys: an optional map from key ID to base64-encoded public key.
 #       If specified, we will check that the response is signed by at least
 #       one of the given keys.
 #
@@ -1873,7 +1881,7 @@ saml2_config:
   #saml_session_lifetime: 5m
 
   # An external module can be provided here as a custom solution to
-  # mapping attributes returned from a saml provider onto a matrix user.
+  # mapping attributes returned from a saml provider onto a Matrix user.
   #
   user_mapping_provider:
     # The custom module's class. Uncomment to use a custom module.
@@ -1896,7 +1904,7 @@ saml2_config:
       #mxid_source_attribute: displayName
 
       # The mapping system to use for mapping the saml attribute onto a
-      # matrix ID.
+      # Matrix ID.
       #
       # Options include:
       #  * 'hexencode' (which maps unpermitted characters to '=xx')
@@ -1962,7 +1970,7 @@ saml2_config:
 #
 #   idp_icon: An optional icon for this identity provider, which is presented
 #       by clients and Synapse's own IdP picker page. If given, must be an
-#       MXC URI of the format mxc://<server-name>/<media-id>. (An easy way to
+#       MXC URI of the format mxc://example.com/<media-id>. (An easy way to
 #       obtain such an MXC URI is to upload an image to an (unencrypted) room
 #       and then copy the "url" from the source of the event.)
 #
@@ -1976,7 +1984,7 @@ saml2_config:
 #   issuer: Required. The OIDC issuer. Used to validate tokens and (if discovery
 #       is enabled) to discover the provider's endpoints.
 #
-#   client_id: Required. oauth2 client id to use.
+#   client_id: Required. oauth2 client ID to use.
 #
 #   client_secret: oauth2 client secret to use. May be omitted if
 #        client_secret_jwt_key is given, or if client_auth_method is 'none'.
@@ -2037,7 +2045,7 @@ saml2_config:
 #       switching from password logins to OIDC. Defaults to false.
 #
 #   user_mapping_provider: Configuration for how attributes returned from a OIDC
-#       provider are mapped onto a matrix user. This setting has the following
+#       provider are mapped onto a Matrix user. This setting has the following
 #       sub-properties:
 #
 #       module: The class name of a custom mapping module. Default is
@@ -2720,10 +2728,10 @@ stats:
 #
 # Uncomment this section to enable a room which can be used to send notices
 # from the server to users. It is a special room which cannot be left; notices
-# come from a special "notices" user id.
+# come from a special "notices" user ID.
 #
 # If you uncomment this section, you *must* define the system_mxid_localpart
-# setting, which defines the id of the user which will be used to send the
+# setting, which defines the ID of the user which will be used to send the
 # notices.
 #
 # It's also possible to override the room name, the display name of the
@@ -2732,7 +2740,7 @@ stats:
 #server_notices:
 #  system_mxid_localpart: notices
 #  system_mxid_display_name: "Server Notices"
-#  system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
+#  system_mxid_avatar_url: "mxc://example.com/oumMVlgDnLYFaPVkExemNVVZ"
 #  room_name: "Server Notices"
 
 
@@ -2831,7 +2839,7 @@ opentracing:
     #homeserver_whitelist:
     #  - ".*"
 
-    # A list of the matrix IDs of users whose requests will always be traced,
+    # A list of the Matrix IDs of users whose requests will always be traced,
     # even if the tracing system would otherwise drop the traces due to
     # probabilistic sampling.
     #
@@ -2974,5 +2982,20 @@ background_updates:
     #
     #default_batch_size: 50
 
+experimental_features:
+  {% if matrix_synapse_experimental_features_msc3861_enabled %}
+  msc3861:
+    enabled: true
+    issuer: {{ matrix_synapse_experimental_features_msc3861_issuer | to_json }}
+    introspection_endpoint: {{ matrix_synapse_experimental_features_msc3861_introspection_endpoint | to_json }}
+    client_id: {{ matrix_synapse_experimental_features_msc3861_client_id | to_json }}
+    client_auth_method: {{ matrix_synapse_experimental_features_msc3861_client_auth_method | to_json }}
+    client_secret: {{ matrix_synapse_experimental_features_msc3861_client_secret | to_json }}
+    admin_token: {{ matrix_synapse_experimental_features_msc3861_admin_token | to_json }}
+    account_management_url: {{ matrix_synapse_experimental_features_msc3861_account_management_url | to_json }}
+  {% endif %}
+  {% if matrix_synapse_experimental_features_msc4108_enabled %}
+  msc4108_enabled: true
+  {% endif %}
 
 # vim:ft=yaml

@@ -33,7 +33,7 @@ Depending on your current `vars.yml` file and desired configuration, **you may r
 
 ### Base configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_baibot_enabled: true
@@ -46,7 +46,7 @@ matrix_bot_baibot_enabled: true
 matrix_bot_baibot_config_user_password: 'PASSWORD_FOR_THE_BOT'
 
 # An optional passphrase to use for backing up and recovering the bot's encryption keys.
-# You can use any string here. Consider generating it with `pwgen -s 64 1`.
+# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
 #
 # If set to null, the recovery module will not be used and losing your session/database
 # will mean you lose access to old messages in encrypted room.
@@ -82,18 +82,18 @@ To specify who is considered a bot [👮‍♂️ Administrator](https://github.
 
 If `matrix_admin` is already configured in your `vars.yml` configuration, you can skip this section.
 
-**If necessary**, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+**If necessary**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yml
 # Uncomment to add one or more admins to this bridge:
 #
 # matrix_bot_baibot_config_access_admin_patterns:
 #   - "@*:example.com"
-#   - "@admin:another.com"
+#   - "@admin:example.net"
 #
 # .. unless you've made yourself an admin of all bots/bridges like this:
 #
-# matrix_admin: '@yourAdminAccount:domain.com'
+# matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```
 
 ### 👥 Initial users configuration
@@ -111,7 +111,7 @@ Configuring `matrix_bot_baibot_config_initial_global_config_user_patterns` is op
 
 **Note**: Once initially configured, the allowed users list **cannot be managed via Ansible anymore**. It can only be managed subsequently via bot commands.
 
-**If necessary**, add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+**If necessary**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yml
 # Uncomment and adjust the bot users if necessary:
@@ -186,7 +186,7 @@ matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_m
 # or you can adjust it below only for the Groq agent.
 # matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 
-# Uncomment and adjust if you're not happy with these speech-to-text defaults:
+# Uncomment and adjust this part if you're not happy with these speech-to-text defaults:
 #
 # matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_enabled: true
 # matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_model_id: whisper-large-v3
@@ -217,7 +217,7 @@ matrix_bot_baibot_config_agents_static_definitions_mistral_config_api_key: "YOUR
 # or you can adjust it below only for the Mistral agent.
 # matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 
-# Uncomment and adjust if you're not happy with these defaults:
+# Uncomment and adjust this part if you're not happy with these defaults:
 # matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_model_id: mistral-large-latest
 
 # See `defaults/main.yml` in the baibot role for more configuration options.
@@ -249,7 +249,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: "YOUR_
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 
 # If you'd like to use another text-generation agent, uncomment and adjust:
-# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o-2024-08-06
+# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o
 
 # See `defaults/main.yml` in the baibot role for more configuration options.
 ```
@@ -357,7 +357,7 @@ You can configure the **initial values** for these via Ansible, via the `matrix_
 Example **additional** `vars.yml` configuration:
 
 ```yml
-# NOTE: these are initial defaults for the bot's global configuration.
+# Note: these are initial defaults for the bot's global configuration.
 # As such, changing any of these values subsequently has no effect on the bot's behavior.
 # Once initially configured, the global configuration is managed via bot commands, not via Ansible.
 
@@ -376,7 +376,7 @@ matrix_bot_baibot_config_initial_global_config_handler_image_generation: null
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again:
+After configuring the playbook, run the [installation](installing.md) command:
 
 ```sh
 just run-tags install-all,ensure-matrix-users-created,start
@@ -391,7 +391,7 @@ just run-tags install-all,ensure-matrix-users-created,start
 
 ## Usage
 
-To use the bot, invite the `@baibot:DOMAIN` bot user into a room.
+To use the bot, invite the `@baibot:example.com` bot user into a room.
 
 If you're an allowed bot [👥 user](https://github.com/etkecc/baibot/blob/main/docs/access.md#user) (see [👥 Initial users configuration](#-initial-users-configuration)), the bot will accept your invitation and join the room.
 

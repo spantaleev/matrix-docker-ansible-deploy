@@ -1,28 +1,26 @@
 # Setting up a Generic Mautrix Bridge (optional)
 
-The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, facebook, instagram, signal, hangouts, googlechat, etc.), as well as many other (non-mautrix) bridges.
-This is a common guide for configuring mautrix bridges.
+The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, facebook, instagram, signal, hangouts, googlechat, etc.), as well as many other (non-mautrix) bridges. This is a common guide for configuring mautrix bridges.
 
 You can see each bridge's features at in the `ROADMAP.md` file in its corresponding [mautrix](https://github.com/mautrix) repository.
 
-To enable a bridge add:
+## Adjusting the playbook configuration
 
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 # Replace SERVICENAME with one of: twitter, facebook, instagram, ..
 matrix_mautrix_SERVICENAME_enabled: true
 ```
 
-to your `vars.yml`
-
 There are some additional things you may wish to configure about the bridge before you continue. Each bridge may have additional requirements besides `_enabled: true`. For example, the mautrix-telegram bridge (our documentation page about it is [here](configuring-playbook-bridge-mautrix-telegram.md)) requires the `matrix_mautrix_telegram_api_id` and `matrix_mautrix_telegram_api_hash` variables to be defined. Refer to each bridge's individual documentation page for details about enabling bridges.
 
-You can add
+To **configure a user as an administrator for all bridges**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_admin: "@YOUR_USERNAME:{{ matrix_domain }}"
 ```
-to `vars.yml` to **configure a user as an administrator for all bridges**.
+
 **Alternatively** (more verbose, but allows multiple admins to be configured), you can do the same on a per-bridge basis with:
 
 ```yaml
@@ -34,7 +32,7 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
 
 ## encryption
 
-Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
+Encryption support is off by default. If you would like to enable encryption, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 **for all bridges with encryption support**:
 
@@ -52,7 +50,7 @@ matrix_mautrix_SERVICENAME_bridge_encryption_default: true
 
 ## relay mode
 
-Relay mode is off by default. If you would like to enable relay mode, add the following to your `vars.yml` file:
+Relay mode is off by default. If you would like to enable relay mode, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 **for all bridges with relay mode support**:
 
@@ -93,6 +91,9 @@ Can be used to set the username for the bridge.
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` to find other things you would like to configure.
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting
 
@@ -119,9 +120,9 @@ If you have issues with a service, and are requesting support, the higher levels
 
 ## Usage
 
-You then need to start a chat with `@SERVICENAMEbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@SERVICENAMEbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Send `login ` to the bridge bot to get started You can learn more here about authentication from the bridge's official documentation on Authentication https://docs.mau.fi/bridges/python/SERVICENAME/authentication.html  .
+Send `login` to the bridge bot to get started. You can learn more here about authentication from the bridge's official documentation on Authentication: https://docs.mau.fi/bridges/python/SERVICENAME/authentication.html
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
@@ -130,4 +131,5 @@ If you run into trouble, check the [Troubleshooting](#troubleshooting) section b
 ## Troubleshooting
 
 For troubleshooting information with a specific bridge, please see the playbook documentation about it (some other document in in `docs/`) and the upstream ([mautrix](https://github.com/mautrix)) bridge documentation for that specific bridge.
+
 Reporting bridge bugs should happen upstream, in the corresponding mautrix repository, not to us.

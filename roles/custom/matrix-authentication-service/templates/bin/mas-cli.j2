@@ -1,0 +1,16 @@
+#jinja2: lstrip_blocks: "True"
+#!/bin/bash
+
+args=$@
+
+if [ $# -eq 0 ]; then
+    args="help"
+fi
+
+if [ -t 0 ]; then
+    tty_option="-it"
+else
+    tty_option=""
+fi
+
+{{ devture_systemd_docker_base_host_command_docker }} exec $tty_option matrix-authentication-service mas-cli $args

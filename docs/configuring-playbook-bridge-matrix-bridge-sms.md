@@ -1,4 +1,4 @@
-# Setting up matrix-sms-bridge (optional)
+# Setting up Matrix SMS bridging (optional)
 
 The playbook can install and configure [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for you.
 
@@ -6,15 +6,15 @@ See the project page to learn what it does and why it might be useful to you.
 
 **The bridge uses [android-sms-gateway-server](https://github.com/RebekkaMa/android-sms-gateway-server). You need to configure it first.**
 
-To enable the bridge just use the following
-playbook configuration:
+## Adjusting the playbook configuration
 
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_sms_bridge_enabled: true
 
-# (optional but recommended) a room id to a default room
-matrix_sms_bridge_default_room: "" 
+# (optional but recommended) a room ID to a default room
+matrix_sms_bridge_default_room: ""
 
 # (optional but recommended) configure your server location
 matrix_sms_bridge_default_region: DE
@@ -31,6 +31,9 @@ matrix_sms_bridge_provider_android_truststore_password: 123
 
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 

@@ -199,9 +199,9 @@ matrix_dendrite_systemd_service_post_start_delay_seconds: 3
 
 # Specifies which template files to use when configuring Dendrite.
 # If you'd like to have your own different configuration, feel free to copy and paste
-# the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
+# the original files into your inventory (e.g. in `inventory/host_vars/matrix.example.com/`)
 # and then change the specific host's `vars.yml` file like this:
-# matrix_dendrite_template_dendrite_config: "{{ playbook_dir }}/inventory/host_vars/<host>/dendrite.yaml.j2"
+# matrix_dendrite_template_dendrite_config: "{{ playbook_dir }}/inventory/host_vars/matrix.example.com/dendrite.yaml.j2"
 matrix_dendrite_template_dendrite_config: "{{ role_path }}/templates/dendrite.yaml.j2"
 
 matrix_dendrite_client_api_registration_shared_secret: ""
@@ -321,7 +321,7 @@ matrix_dendrite_configuration_extension_yaml: |
   # server_notices:
   #   system_mxid_localpart: notices
   #   system_mxid_display_name: "Server Notices"
-  #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
+  #   system_mxid_avatar_url: "mxc://example.com/oumMVlgDnLYFaPVkExemNVVZ"
   #   room_name: "Server Notices"
 
 matrix_dendrite_configuration_extension: "{{ matrix_dendrite_configuration_extension_yaml | from_yaml if matrix_dendrite_configuration_extension_yaml | from_yaml is mapping else {} }}"

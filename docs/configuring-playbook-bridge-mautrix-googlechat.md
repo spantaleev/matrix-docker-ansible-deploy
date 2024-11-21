@@ -1,16 +1,20 @@
-# Setting up Mautrix Google Chat (optional)
+# Setting up Mautrix Google Chat bridging (optional)
 
 The playbook can install and configure [mautrix-googlechat](https://github.com/mautrix/googlechat) for you.
 
 See the project's [documentation](https://docs.mau.fi/bridges/python/googlechat/index.html) to learn what it does and why it might be useful to you.
 
-To enable the [Google Chat](https://chat.google.com/) bridge just use the following playbook configuration:
+## Adjusting the playbook configuration
 
+To enable the [Google Chat](https://chat.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_googlechat_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting
 
@@ -40,7 +44,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-Once the bot is enabled you need to start a chat with `googlechat bridge bot` with handle `@googlechatbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+Once the bot is enabled you need to start a chat with `googlechat bridge bot` with handle `@googlechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `login` to the bridge bot to receive a link to the portal from which you can enable the bridging. Open the link sent by the bot and follow the instructions.
 
@@ -51,4 +55,3 @@ Once logged in, recent chats should show up as new conversations automatically. 
 You can learn more about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/googlechat/authentication.html).
 
 After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting), if you haven't already done so.
-

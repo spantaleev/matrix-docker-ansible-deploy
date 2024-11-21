@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.116.0
+matrix_synapse_version: v1.119.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -186,6 +186,11 @@ matrix_synapse_container_labels_traefik_entrypoints: web-secure
 matrix_synapse_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 matrix_synapse_container_labels_traefik_hostname: ''
 
+# Controls whether a compression middleware will be injected into the middlewares list.
+# This compression middleware is supposed to be defined elsewhere (using labels or a File provider, etc.) and is merely referenced by this router.
+matrix_synapse_container_labels_traefik_compression_middleware_enabled: false
+matrix_synapse_container_labels_traefik_compression_middleware_name: ""
+
 # Controls whether Matrix-related labels will be added.
 #
 # When set to false, variables like the following take no effect:
@@ -335,13 +340,13 @@ matrix_synapse_goofys_systemd_required_services_list_custom: []
 # This can be set to 0 to remove the delay.
 matrix_synapse_systemd_service_post_start_delay_seconds: 10
 
-matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.11/site-packages"
+matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.12/site-packages"
 
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
-# the original files into your inventory (e.g. in `inventory/host_vars/<host>/`)
+# the original files into your inventory (e.g. in `inventory/host_vars/matrix.example.com/`)
 # and then change the specific host's `vars.yml` file like this:
-# matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/<host>/homeserver.yaml.j2"
+# matrix_synapse_template_synapse_homeserver: "{{ playbook_dir }}/inventory/host_vars/matrix.example.com/homeserver.yaml.j2"
 matrix_synapse_template_synapse_homeserver: "{{ role_path }}/templates/synapse/homeserver.yaml.j2"
 matrix_synapse_template_synapse_log: "{{ role_path }}/templates/synapse/synapse.log.config.j2"
 
@@ -361,6 +366,30 @@ matrix_synapse_media_retention_local_media_lifetime:
 # should be removed under certain conditions, typically for the purpose of saving space.
 # should be empty to disable
 matrix_synapse_media_retention_remote_media_lifetime:
+
+# Controls the list of additional oembed providers to be added to the homeserver.
+matrix_synapse_oembed_additional_providers: []
+
+# Controls message retention policies
+matrix_synapse_retention_enabled: false
+# "A single var to control them all" - applied to all retention period vars, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_period: ""
+# The default min lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_default_policy_min_lifetime: "{{ matrix_synapse_retention_period }}"
+# The default max lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_default_policy_max_lifetime: "{{ matrix_synapse_retention_period }}"
+# The allowed min lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_allowed_lifetime_min: "{{ matrix_synapse_retention_period }}"
+# The allowed max lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_allowed_lifetime_max: "{{ matrix_synapse_retention_period }}"
+# The list of the purge jobs, structure (all fields are optional, example below contains all available variants):
+# - longest_max_lifetime: "1d"
+#   shortest_max_lifetime: "1d"
+#   interval: "12h"
+# - longest_max_lifetime: "1d"
+# - shortest_max_lifetime: "1d"
+# - interval: "12h"
+matrix_synapse_retention_purge_jobs: []
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50 }}"
@@ -547,9 +576,9 @@ matrix_synapse_auto_join_rooms: []
 # automatically if they don't already exist.
 matrix_synapse_autocreate_auto_join_rooms: true
 
-# The local part of the user id which is used to create auto-join rooms if `matrix_synapse_autocreate_auto_join_rooms` is true.
+# The local part of the user ID which is used to create auto-join rooms if `matrix_synapse_autocreate_auto_join_rooms` is true.
 # Defaults to the initial user account that registers.
-# The user id is also used to invite new users to any auto-join rooms which are set to invite-only.
+# The user ID is also used to invite new users to any auto-join rooms which are set to invite-only.
 matrix_synapse_auto_join_mxid_localpart: ''
 
 # Controls whether room invites will be accepted on behalf of users.
@@ -733,8 +762,8 @@ matrix_synapse_grafana_dashboard_urls:
   - https://raw.githubusercontent.com/element-hq/synapse/master/contrib/grafana/synapse.json
 
 # Controls whether Synapse metrics should be proxied (exposed) on:
-# - `matrix.DOMAIN/metrics/synapse/main-process` for the main process
-# - `matrix.DOMAIN/metrics/synapse/worker/{type}-{id}` for each worker process
+# - `matrix.example.com/metrics/synapse/main-process` for the main process
+# - `matrix.example.com/metrics/synapse/worker/{type}-{id}` for each worker process
 matrix_synapse_metrics_proxying_enabled: false
 matrix_synapse_metrics_proxying_hostname: ''
 matrix_synapse_metrics_proxying_path_prefix: /metrics/synapse
@@ -832,7 +861,7 @@ matrix_synapse_worker_container_labels_traefik_hostname: "{{ matrix_synapse_cont
 
 # Controls whether labels will be added that expose metrics (see `matrix_synapse_metrics_proxying_enabled`)
 matrix_synapse_worker_container_labels_public_metrics_enabled: "{{ matrix_synapse_metrics_enabled and matrix_synapse_metrics_proxying_enabled }}"
-# The `__WORKER_ID__` placeholder will be replaced with the actual worker id during label-file generation (see `../templates/worker-labels.j2`).
+# The `__WORKER_ID__` placeholder will be replaced with the actual worker ID during label-file generation (see `../templates/worker-labels.j2`).
 matrix_synapse_worker_container_labels_public_metrics_traefik_path: "{{ matrix_synapse_metrics_proxying_path_prefix }}/worker/__WORKER_ID__"
 matrix_synapse_worker_container_labels_public_metrics_traefik_rule: "Host(`{{ matrix_synapse_metrics_proxying_hostname }}`) && Path(`{{ matrix_synapse_worker_container_labels_public_metrics_traefik_path }}`)"
 matrix_synapse_worker_container_labels_public_metrics_traefik_priority: 0
@@ -1129,6 +1158,65 @@ matrix_synapse_email_client_base_url: "{{ 'https' if matrix_playbook_ssl_enabled
 matrix_synapse_email_invite_client_location: "https://app.element.io"
 
 
+################################################################################
+#
+# Next-generation auth for Matrix, based on OAuth 2.0/OIDC
+#
+################################################################################
+
+# Controls whether to enable the "Next-generation auth for Matrix, based on OAuth 2.0/OIDC" experimental feature.
+#
+# See:
+# - https://matrix.org/blog/2023/09/better-auth/
+# - https://github.com/matrix-org/matrix-spec-proposals/pull/3861
+matrix_synapse_experimental_features_msc3861_enabled: false
+
+# Specifies the issuer URL for the OAuth 2.0/OIDC authentication provider.
+#
+# This can be set to a private (container) URL.
+#
+# Example: https://matrix.example.com/auth/
+matrix_synapse_experimental_features_msc3861_issuer: ''
+
+# Specifies the introspection endpoint URL for the OAuth 2.0/OIDC authentication provider.
+#
+# This can be set to a private (container) URL.
+#
+# If this is left empty, `{issuer}/.well-known/openid-configuration` will be fetched and the `introspection_endpoint` will be extracted from there.
+# We define it explicitly, because this allows us to override it and use an internal (container network) URL instead of using the public one.
+# Avoiding public addresses is an optimization that decreases overhead due to public networking and SSL termination.
+#
+# Example: https://matrix.example.com/auth/oauth2/introspect
+matrix_synapse_experimental_features_msc3861_introspection_endpoint: "{{ matrix_synapse_experimental_features_msc3861_issuer + 'oauth2/introspect' }}"
+
+# A unique identifier for the client.
+#
+# It must be a valid ULID (https://github.com/ulid/spec),
+# and it happens that 0000000000000000000SYNAPSE is a valid ULID.
+matrix_synapse_experimental_features_msc3861_client_id: '0000000000000000000SYNAPSE'
+
+matrix_synapse_experimental_features_msc3861_client_auth_method: client_secret_basic
+
+matrix_synapse_experimental_features_msc3861_client_secret: ''
+
+# A token that can be used to make admin API calls.
+# Matches `matrix.secret` in the matrix-authentication-service config
+matrix_synapse_experimental_features_msc3861_admin_token: ''
+
+# URL to advertise to clients where users can self-manage their account.
+matrix_synapse_experimental_features_msc3861_account_management_url: ''
+
+# Controls whether to enable the "QR code login" experimental feature.
+# Enabling this requires that MSC3861 (see `matrix_synapse_experimental_features_msc3861_enabled`) is also enabled.
+matrix_synapse_experimental_features_msc4108_enabled: false
+
+################################################################################
+#
+# /Next-generation auth for Matrix, based on OAuth 2.0/OIDC
+#
+################################################################################
+
+
 # Enable this to activate the REST auth password provider module.
 # See: https://github.com/ma1uta/matrix-synapse-rest-password-provider
 matrix_synapse_ext_password_provider_rest_auth_enabled: false
@@ -1153,7 +1241,7 @@ matrix_synapse_ext_password_provider_shared_secret_config_yaml: |
 
 # Enable this to activate LDAP password provider
 matrix_synapse_ext_password_provider_ldap_enabled: false
-matrix_synapse_ext_password_provider_ldap_uri: "ldap://ldap.mydomain.tld:389"
+matrix_synapse_ext_password_provider_ldap_uri: "ldap://ldap.example.com:389"
 matrix_synapse_ext_password_provider_ldap_start_tls: true
 matrix_synapse_ext_password_provider_ldap_mode: "search"
 matrix_synapse_ext_password_provider_ldap_base: ""
@@ -1183,14 +1271,14 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
 # this means that spammy messages will appear as empty to users. Default
 # false.
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages: false
-# Remove users from the user directory search by filtering matrix IDs and
+# Remove users from the user directory search by filtering Matrix IDs and
 # display names by the entries in the user ban list. Default false.
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
 # The room IDs of the ban lists to honour. Unlike other parts of Mjolnir,
 # this list cannot be room aliases or permalinks. This server is expected
 # to already be joined to the room - Mjolnir will not automatically join
 # these rooms.
-# ["!roomid:example.org"]
+# ["!qporfwt:example.com"]
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 # A dictionary with various fields controlling max length.
 # See https://github.com/matrix-org/mjolnir/blob/main/docs/synapse_module.md for details.
@@ -1210,7 +1298,7 @@ matrix_synapse_ext_encryption_disabler_download_url: "https://raw.githubusercont
 # A list of server domain names for which to deny encryption if the event sender's domain matches the domain in the list.
 # By default, with the configuration below, we prevent all homeserver users from initiating encryption in ANY room.
 matrix_synapse_ext_encryption_disabler_deny_encryption_for_users_of: ["{{ matrix_domain }}"]
-# A list of server domain names for which to deny encryption if the destination room id's domain matches the domain in the list.
+# A list of server domain names for which to deny encryption if the destination room ID's domain matches the domain in the list.
 # By default, with the configuration below, we prevent locally-created encryption events by ANY user encrypt rooms on the homeserver.
 # Note: foreign users with enough room privileges will still be able to send an encryption event to your rooms and encrypt them.
 matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of: ["{{ matrix_domain }}"]
@@ -1398,7 +1486,7 @@ matrix_synapse_configuration_extension_yaml: |
   # server_notices:
   #   system_mxid_localpart: notices
   #   system_mxid_display_name: "Server Notices"
-  #   system_mxid_avatar_url: "mxc://server.com/oumMVlgDnLYFaPVkExemNVVZ"
+  #   system_mxid_avatar_url: "mxc://example.com/oumMVlgDnLYFaPVkExemNVVZ"
   #   room_name: "Server Notices"
 
 matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extension_yaml | from_yaml if matrix_synapse_configuration_extension_yaml | from_yaml is mapping else {} }}"
@@ -1406,3 +1494,8 @@ matrix_synapse_configuration_extension: "{{ matrix_synapse_configuration_extensi
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_configuration_yaml`.
 matrix_synapse_configuration: "{{ matrix_synapse_configuration_yaml | from_yaml | combine(matrix_synapse_configuration_extension, recursive=True) }}"
+
+# Holds the path to the register-user script provided by the Matrix Authentication Service.
+# When the Matrix Authentication Service is enabled, the register-user script from this role cannot be used
+# and users will be pointed to the one provided by Matrix Authentication Service.
+matrix_synapse_register_user_script_matrix_authentication_service_path: ""

@@ -3,10 +3,19 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) to use Cinny.
-  when: "vars[item] == '' or vars[item] is none"
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - matrix_client_cinny_default_hs_url
-    - matrix_client_cinny_container_network
+    - {'name': 'matrix_client_cinny_default_hs_url', when: true}
+    - {'name': 'matrix_client_cinny_container_network', when: true}
+    - {'name': 'matrix_client_cinny_container_labels_traefik_compression_middleware_name', when: "{{ matrix_client_cinny_container_labels_traefik_compression_middleware_enabled }}"}
+
+- name: Fail if matrix_client_cinny_path_prefix is not /
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_client_cinny_path_prefix` is set to `{{ matrix_client_cinny_path_prefix }}` in your configuration, but Cinny no longer supports hosting under a path prefix without an application rebuild.
+      Consider removing your `matrix_client_cinny_path_prefix` override and adjusting the Cinny hostname via `matrix_server_fqn_cinny` or `matrix_client_cinny_hostname`.
+      See https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701
+  when: "matrix_client_cinny_path_prefix != '/'"
 
 - when: matrix_client_cinny_container_labels_traefik_enabled | bool
   block:

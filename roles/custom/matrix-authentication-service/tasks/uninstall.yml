@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of matrix-authentication-service service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-authentication-service.service"
+  register: matrix_authentication_service_service_stat
+
+- when: matrix_authentication_service_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-authentication-service is stopped
+      ansible.builtin.service:
+        name: matrix-authentication-service
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-authentication-service.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-authentication-service.service"
+        state: absent
+
+    - name: Ensure Matrix Authentication Service paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_authentication_service_base_path }}"
+        state: absent

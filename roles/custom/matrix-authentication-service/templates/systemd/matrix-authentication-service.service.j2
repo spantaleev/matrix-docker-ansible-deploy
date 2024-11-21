@@ -1,0 +1,49 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix Authentication Service
+{% for service in matrix_authentication_service_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_authentication_service_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-authentication-service 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-authentication-service 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-authentication-service \
+			--log-driver=none \
+			--user={{ matrix_authentication_service_uid }}:{{ matrix_authentication_service_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_authentication_service_container_network }} \
+			--env-file={{ matrix_authentication_service_config_path }}/env \
+			--label-file={{ matrix_authentication_service_config_path }}/labels \
+			--mount type=bind,src={{ matrix_authentication_service_config_path }}/config.yaml,dst=/config.yaml,ro \
+			--mount type=bind,src={{ matrix_authentication_service_data_keys_path }},dst=/keys,ro \
+			{% for arg in matrix_authentication_service_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_authentication_service_container_image }}
+
+{% for network in matrix_authentication_service_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-authentication-service
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-authentication-service
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-authentication-service 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-authentication-service 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-authentication-service
+
+[Install]
+WantedBy=multi-user.target

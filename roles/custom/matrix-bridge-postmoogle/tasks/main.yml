@@ -2,19 +2,19 @@
 
 - tags:
     - setup-all
-    - setup-bot-postmoogle
+    - setup-postmoogle
     - install-all
-    - install-bot-postmoogle
+    - install-postmoogle
   block:
-    - when: matrix_bot_postmoogle_enabled | bool
+    - when: matrix_postmoogle_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-    - when: matrix_bot_postmoogle_enabled | bool
+    - when: matrix_postmoogle_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
 - tags:
     - setup-all
-    - setup-bot-postmoogle
+    - setup-postmoogle
   block:
-    - when: not matrix_bot_postmoogle_enabled | bool
+    - when: not matrix_postmoogle_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

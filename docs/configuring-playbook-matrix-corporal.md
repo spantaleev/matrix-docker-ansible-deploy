@@ -8,17 +8,16 @@
 
 The playbook can install and configure [matrix-corporal](https://github.com/devture/matrix-corporal) for you.
 
-In short, it's a sort of automation and firewalling service, which is helpful if you're instaling Matrix services in a controlled corporate environment.
-See that project's documentation to learn what it does and why it might be useful to you.
+In short, it's a sort of automation and firewalling service, which is helpful if you're instaling Matrix services in a controlled corporate environment. See that project's documentation to learn what it does and why it might be useful to you.
 
 If you decide that you'd like to let this playbook install it for you, you'd need to also:
 - (required) [set up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md)
 - (optional, but encouraged) [set up the REST authentication password provider module](configuring-playbook-rest-auth.md)
 
 
-## Playbook configuration
+## Adjusting the playbook configuration
 
-You would then need some configuration like this:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
 ```yaml
 # The Shared Secret Auth password provider module is required for Corporal to work.
@@ -52,7 +51,7 @@ matrix_corporal_policy_provider_config: |
 matrix_corporal_http_api_enabled: true
 matrix_corporal_http_api_auth_token: "AUTH_TOKEN_HERE"
 
-# If you need to change matrix-corporal's user id from the default (matrix-corporal).
+# If you need to change matrix-corporal's user ID from the default (matrix-corporal).
 # In any case, you need to make sure this Matrix user is created on your server.
 matrix_corporal_corporal_user_id_local_part: "matrix-corporal"
 
@@ -71,9 +70,9 @@ matrix_synapse_rc_login:
     burst_count: 3
 ```
 
-Matrix Corporal operates with a specific Matrix user on your server.
-By default, it's `matrix-corporal` (controllable by the `matrix_corporal_reconciliation_user_id_local_part` setting, see above).
-No matter what Matrix user id you configure to run it with, make sure that:
+Matrix Corporal operates with a specific Matrix user on your server. By default, it's `matrix-corporal` (controllable by the `matrix_corporal_reconciliation_user_id_local_part` setting, see above).
+
+No matter what Matrix user ID you configure to run it with, make sure that:
 
 - the Matrix Corporal user is created by [registering it](registering-users.md) **with administrator privileges**. Use a password you remember, as you'll need to log in from time to time to create or join rooms
 
@@ -115,7 +114,9 @@ aux_file_definitions:
 
 To learn more about what the policy configuration, see the matrix-corporal documentation on [policy](https://github.com/devture/matrix-corporal/blob/master/docs/policy.md).
 
-Each time you update the policy in your `vars.yml` file, you'd need to re-run the playbook and restart matrix-corporal (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
 
 
 ## Matrix Corporal files

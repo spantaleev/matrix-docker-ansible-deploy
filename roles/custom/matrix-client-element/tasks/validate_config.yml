@@ -1,13 +1,14 @@
 ---
 
-- name: Fail if required Element settings not defined
+- name: Fail if required Element Web settings not defined
   ansible.builtin.fail:
     msg: >
-      You need to define a required configuration setting (`{{ item }}`) for using Element.
-  when: "vars[item] == ''"
+      You need to define a required configuration setting (`{{ item }}`) for using Element Web.
+  when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - matrix_client_element_default_hs_url
-    - matrix_client_element_container_network
+    - {'name': 'matrix_client_element_default_hs_url', when: true}
+    - {'name': 'matrix_client_element_container_network', when: true}
+    - {'name': 'matrix_client_element_container_labels_traefik_compression_middleware_name', when: "{{ matrix_client_element_container_labels_traefik_compression_middleware_enabled }}"}
 
 - name: Fail if Element location sharing enabled, but no tile server defined
   ansible.builtin.fail:

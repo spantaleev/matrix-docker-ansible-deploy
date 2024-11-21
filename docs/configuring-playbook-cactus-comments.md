@@ -4,8 +4,7 @@ The playbook can install and configure the [Cactus Comments](https://cactus.chat
 
 Cactus Comments is a **federated comment system** built on Matrix. It respects your privacy, and puts you in control.
 
-See the project's [documentation](https://cactus.chat/docs/getting-started/introduction/) to learn what it
-does and why it might be useful to you.
+See the project's [documentation](https://cactus.chat/docs/getting-started/introduction/) to learn what it does and why it might be useful to you.
 
 The playbook contains 2 roles for configuring different pieces of the Cactus Comments system:
 
@@ -17,11 +16,11 @@ You can enable whichever component you need (typically both).
 
 ## Configuration
 
-Add the following block to your `vars.yaml` and make sure to exchange the tokens to randomly generated values.
+To enable Cactus Comments, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 #################
-## Cactus Chat ##
+## Cactus Comments ##
 #################
 
 # This enables the backend (appservice)
@@ -33,45 +32,82 @@ matrix_cactus_comments_enabled: true
 # matrix_synapse_allow_guest_access: true
 # matrix_dendrite_allow_guest_access: true
 
-# This enables client assets static files serving on `https://matrix.DOMAIN/cactus-comments`.
+# This enables client assets static files serving on `https://matrix.example.com/cactus-comments`.
 # When the backend (appservice) is enabled, this is also enabled automatically,
 # but we explicitly enable it here.
 matrix_cactus_comments_client_enabled: true
-
-# Uncomment and adjust if you'd like to host the client assets at a different location.
-# These variables are only make used if (`matrix_cactus_comments_client_enabled: true`)
-# matrix_cactus_comments_client_hostname: "{{ matrix_server_fqn_matrix }}"
-# matrix_cactus_comments_client_path_prefix: /cactus-comments
 ```
+
+### Adjusting the Cactus Comments' client URL
+
+By default, this playbook installs Cactus Comments' client on the `matrix.` subdomain, at the `/cactus-comments` path (https://matrix.example.com/cactus-comments). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+By tweaking the `matrix_cactus_comments_client_hostname` and `matrix_cactus_comments_client_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Change the default hostname and path prefix to host the client assets at a different location
+# These variables are used only if (`matrix_cactus_comments_client_enabled: true`)
+matrix_cactus_comments_client_hostname: cactus.example.com
+matrix_cactus_comments_client_path_prefix: /
+```
+
+## Adjusting DNS records
+
+If you've changed the default hostname, **you may need to adjust your DNS** records to point the Cactus Comments' client domain to the Matrix server.
+
+See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command again.
-
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 
 Upon starting Cactus Comments, a `bot.cactusbot` user account is created automatically.
 
-To get started, send a `help` message to the `@bot.cactusbot:your-homeserver.com` bot to confirm it's working.
-Then, register a site by typing: `register <sitename>`. You will then be invited into a moderation room.
-Now you are good to go and can include the comment section on your website!
+To get started, send a `help` message to the `@bot.cactusbot:example.com` bot to confirm it's working.
 
-**Careful:** To really make use of self-hosting you need change a few things in comparison to the official docs!
+Then, register a site by sending `register <YourSiteName>` (where `<YourSiteName>` is a unique identifier you choose. It does not have to match your domain). You will then be invited into a moderation room.
 
-Insert the following snippet into you page and make sure to replace `example.com` with your base domain!
+Now you are good to go and can embed the comment section on your website!
+
+## Embed Cactus Comments
+
+The official [documentation](https://cactus.chat/docs/getting-started/quick-start/) provides a useful guide to embed Cactus Comments on your website.
+
+After including the JavaScript and CSS asset files, insert a `<div>` where you'd like to display the comment section:
+
+````html
+<div id="comment-section"></div>
+````
+
+Then, you need to initialize the comment section. Make sure to replace `example.com` with your base domain and `<YourSiteName>` with the one that has been registered above:
 
 ```html
-<script type="text/javascript" src="https://matrix.example.com/cactus-comments/cactus.js"></script>
-<link rel="stylesheet" href="https://matrix.example.com/cactus-comments/style.css" type="text/css">
-<div id="comment-section"></div>
 <script>
 initComments({
   node: document.getElementById("comment-section"),
   defaultHomeserverUrl: "https://matrix.example.com:8448",
   serverName: "example.com",
-  siteName: "YourSiteName",
+  siteName: "<YourSiteName>",
   commentSectionId: "1"
 })
 </script>
 ```
+
+### Adjust the domain name for self-hosting
+
+To have the assets served from your homeserver (not from `cactus.chat`), you need to adjust the domain name on the official documentation.
+
+Make sure to replace `example.com` with your base domain before you include the following lines, instead of the one provided by the official documentation:
+
+```html
+<script type="text/javascript" src="https://matrix.example.com/cactus-comments/cactus.js"></script>
+<link rel="stylesheet" href="https://matrix.example.com/cactus-comments/style.css" type="text/css">
+```
+
+**Note**: if the `matrix_cactus_comments_client_hostname` and `matrix_cactus_comments_client_path_prefix` variables are tweaked, you would need to adjust the URLs of the assets accordingly.

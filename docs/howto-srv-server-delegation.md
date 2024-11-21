@@ -16,7 +16,7 @@ The up-to-date list can be accessed on [traefik's documentation](https://doc.tra
 
 ## The changes
 
-**NOTE**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
+**Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
 
 - if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md) or [Dendrite](./configuring-playbook-dendrite.md))
 - if you're using [Synapse with workers enabled](./configuring-playbook-synapse.md#load-balancing-with-workers) (`matrix_synapse_workers_enabled: true`). In that case, it's actually the `matrix-synapse-reverse-proxy-companion` service which has Traefik labels attached
@@ -36,7 +36,7 @@ This is because with SRV federation, some servers / tools (one of which being th
 
 Now that the federation endpoint is not bound to a domain anymore we need to explicitely tell Traefik to use a wildcard certificate in addition to one containing the base name.
 
-This is because the matrix specification expects the federation endpoint to be served using a certificate compatible with the base domain, however, the other resources on the endpoint still need a valid certificate to work.
+This is because the Matrix specification expects the federation endpoint to be served using a certificate compatible with the base domain, however, the other resources on the endpoint still need a valid certificate to work.
 
 ```yaml
 # To let Traefik know which domains' certificates to serve
@@ -73,7 +73,7 @@ traefik_configuration_extension_yaml: |
         storage: {{ traefik_config_certificatesResolvers_acme_storage | to_json }}
 
 # 2. Configure the environment variables needed by Rraefik to automate the ACME DNS Challenge (example for Cloudflare)
-traefik_environment_variables: |
+traefik_environment_variables_additional_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
@@ -153,7 +153,7 @@ traefik_configuration_extension_yaml: |
 traefik_certResolver_primary: "dns"
 
 # Configure the environment variables needed by Traefik to automate the ACME DNS Challenge (example for Cloudflare)
-traefik_environment_variables: |
+traefik_environment_variables_additional_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted

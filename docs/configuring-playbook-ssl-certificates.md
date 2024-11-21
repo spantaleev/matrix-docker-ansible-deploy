@@ -1,6 +1,6 @@
 # Adjusting SSL certificate retrieval (optional, advanced)
 
-By default, this playbook retrieves and auto-renews free SSL certificates from [Let's Encrypt](https://letsencrypt.org/) for the domains it needs (e.g. `matrix.<your-domain>` and others)
+By default, this playbook retrieves and auto-renews free SSL certificates from [Let's Encrypt](https://letsencrypt.org/) for the domains it needs (e.g. `matrix.example.com` and others)
 
 This guide is about using the integrated Traefik server and doesn't apply if you're using [your own webserver](configuring-playbook-own-webserver.md).
 
@@ -9,7 +9,7 @@ This guide is about using the integrated Traefik server and doesn't apply if you
 
 For testing purposes, you may wish to use staging certificates provide by Let's Encrypt.
 
-You can do this with the following configuration:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 traefik_config_certificatesResolvers_acme_use_staging: true
@@ -20,7 +20,7 @@ traefik_config_certificatesResolvers_acme_use_staging: true
 
 For testing or other purposes, you may wish to install services without SSL termination and have services exposed to `http://` instead of `https://`.
 
-You can do this with the following configuration:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 traefik_config_entrypoint_web_secure_enabled: false
@@ -52,14 +52,19 @@ traefik_config_certificatesResolvers_acme_enabled: false
 # Force-enable it here, because we'll add our certificate files there.
 traefik_ssl_dir_enabled: true
 
-# Tell Traefik to load our custom configuration file (certificates.yml).
-# The file is created below, in `aux_file_definitions`.
-# The `/config/..` path is an in-container path, not a path on the host (like `/matrix/traefik/config`). Do not change it!
-traefik_configuration_extension_yaml: |
-  providers:
-    file:
-      filename: /config/certificates.yml
-      watch: true
+# Tell Traefik to load our custom ssl key pair by extending provider configuration.
+# The key pair files are created below, in `aux_file_definitions`.
+# The `/ssl/..` path is an in-container path, not a path on the host (like `/matrix/traefik/ssl`). Do not change it!
+traefik_provider_configuration_extension_yaml:
+  tls:
+    certificates:
+      - certFile: /ssl/cert.pem
+        keyFile: /ssl/privkey.pem
+    stores:
+      default:
+        defaultCertificate:
+          certFile: /ssl/cert.pem
+          keyFile: /ssl/privkey.pem
 
 # Use the aux role to create our custom files on the server.
 # If you'd like to do this manually, you remove this `aux_file_definitions` variable.
@@ -83,20 +88,6 @@ aux_file_definitions:
     # content: |
     #   FILE CONTENT
     #   HERE
-
-  # Create the custom Traefik configuration.
-  # The `/ssl/..` paths below are in-container paths, not paths on the host (/`matrix/traefik/ssl/..`). Do not change them!
-  - dest: "{{ traefik_config_dir_path }}/certificates.yml"
-    content: |
-      tls:
-        certificates:
-          - certFile: /ssl/cert.pem
-            keyFile: /ssl/privkey.pem
-        stores:
-          default:
-            defaultCertificate:
-              certFile: /ssl/cert.pem
-              keyFile: /ssl/privkey.pem
 ```
 
 ## Using a DNS-01 ACME challenge type, instead of HTTP-01

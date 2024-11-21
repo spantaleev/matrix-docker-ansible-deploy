@@ -1,0 +1,31 @@
+---
+
+- name: Fail if required matrix-authentication-service settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] | length == 0"
+  with_items:
+    - {'name': 'matrix_authentication_service_hostname', when: true}
+    - {'name': 'matrix_authentication_service_config_database_username', when: true}
+    - {'name': 'matrix_authentication_service_config_database_password', when: true}
+    - {'name': 'matrix_authentication_service_config_database_host', when: true}
+    - {'name': 'matrix_authentication_service_config_database_database', when: true}
+    - {'name': 'matrix_authentication_service_config_secrets_encryption', when: true}
+    - {'name': 'matrix_authentication_service_config_matrix_homeserver', when: true}
+    - {'name': 'matrix_authentication_service_config_matrix_secret', when: true}
+    - {'name': 'matrix_authentication_service_config_matrix_endpoint', when: true}
+    - {'name': 'matrix_authentication_service_container_labels_public_main_hostname', when: "{{ matrix_authentication_service_container_labels_traefik_enabled }}"}
+    - {'name': 'matrix_authentication_service_container_labels_public_compatibility_layer_hostname', when: "{{ matrix_authentication_service_container_labels_public_compatibility_layer_enabled }}"}
+    - {'name': 'matrix_authentication_service_container_labels_internal_compatibility_layer_entrypoints', when: "{{ matrix_authentication_service_container_labels_internal_compatibility_layer_enabled }}"}
+    - {'name': 'matrix_authentication_service_config_email_hostname', when: "{{ matrix_authentication_service_config_email_transport == 'smtp' }}"}
+
+- name: Fail if matrix_authentication_service_config_secrets_encryption is not 64 characters long
+  ansible.builtin.fail:
+    msg: "matrix_authentication_service_config_secrets_encryption must be exactly 64 characters long (preferably generated via `openssl rand -hex 32`)"
+  when: "matrix_authentication_service_config_secrets_encryption | length != 64"
+
+- name: Fail if matrix_authentication_service_config_email_transport is invalid
+  ansible.builtin.fail:
+    msg: "matrix_authentication_service_config_email_transport must be one of: blackhole, smtp, or aws_ses"
+  when: "matrix_authentication_service_config_email_transport not in ['blackhole', 'smtp', 'aws_ses']"

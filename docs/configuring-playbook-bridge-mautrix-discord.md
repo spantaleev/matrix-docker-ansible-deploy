@@ -1,4 +1,4 @@
-# Setting up Mautrix Discord (optional)
+# Setting up Mautrix Discord bridging (optional)
 
 **Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) bridges supported by the playbook.
 - For using as a Bot we recommend the [Appservice Discord](configuring-playbook-bridge-appservice-discord.md), because it supports plumbing.
@@ -15,9 +15,9 @@ There are 2 ways to login to discord using this bridge, either by [scanning a QR
 
 If this is a dealbreaker for you, consider using one of the other Discord bridges supported by the playbook: [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) or [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md). These come with their own complexity and limitations, however, so we recommend that you proceed with this one if possible.
 
-## Installing
+## Adjusting the playbook configuration
 
-To enable the bridge, add this to your `vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_discord_enabled: true
@@ -25,7 +25,13 @@ matrix_mautrix_discord_enabled: true
 
 You may optionally wish to add some [Additional configuration](#additional-configuration), or to [prepare for double-puppeting](#set-up-double-puppeting) before the initial installation.
 
-After adjusting your `vars.yml` file, re-run the playbook and restart all services: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 To make use of the bridge, see [Usage](#usage) below.
 
@@ -81,13 +87,13 @@ To acquire the token, open Discord in a private browser window. Then open the de
 
 ### Bridging
 
-1. Start a chat with `@discordbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+1. Start a chat with `@discordbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 2. If you would like to login to Discord using a token, send `login-token` command, otherwise, send `login-qr` command.
 3. You'll see a QR code which you need to scan with the Discord app on your phone. You can scan it with the camera app too, which will open Discord, which will then instruct you to scan it a 2nd time in the Discord app.
 4. After confirming (in the Discord app) that you'd like to allow this login, the bot should respond with "Succcessfully authenticated as ..."
 5. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to
 6. Some Direct Messages from Discord should start syncing automatically
 7. If you'd like to bridge guilds:
-- send `guilds status` to see the list of guilds
-- for each guild that you'd like bridged, send `guilds bridge GUILD_ID --entire`
+    - send `guilds status` to see the list of guilds
+    - for each guild that you'd like bridged, send `guilds bridge GUILD_ID --entire`
 8. You may wish to uninstall the Discord app from your phone now. It's not needed for the bridge to function.

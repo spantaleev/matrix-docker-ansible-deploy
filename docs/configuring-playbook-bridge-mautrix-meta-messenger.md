@@ -11,16 +11,15 @@ This documentation page only deals with the bridge's ability to bridge to Facebo
 
 If you've been using the [mautrix-facebook](./configuring-playbook-bridge-mautrix-facebook.md) bridge, it's possible to migrate the database using [instructions from the bridge documentation](https://docs.mau.fi/bridges/go/meta/facebook-migration.html) (advanced).
 
-Then you may wish to get rid of the Facebook bridge. To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@facebookbot:YOUR_DOMAIN`).
-
-This would give you a list of portals and groups of portals you may purge. Proceed with sending commands like `clean recommended`, etc.
+Then you may wish to get rid of the Facebook bridge. To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@facebookbot:example.com`). It gives you a list of portals and groups of portals you may purge. Proceed with sending commands like `clean recommended`, etc.
 
 Then, consider disabling the old bridge in your configuration, so it won't recreate the portals when you receive new messages.
 
+**Note**: the user ID of the new bridge bot is `@messengerbot:example.com`, not `@facebookbot:example.com`. After disabling the old bridge, its bot user will stop responding to a command.
 
-## Configuration
+## Adjusting the playbook configuration
 
-Most simply, you can enable the bridge with the following playbook configuration:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_meta_messenger_enabled: true
@@ -31,6 +30,7 @@ Before proceeding to [re-running the playbook](./installing.md), you may wish to
 ### Bridge mode
 
 As mentioned above, the [mautrix-meta](https://github.com/mautrix/meta) bridge supports multiple modes of operation.
+
 The bridge can pull your Messenger messages via 3 different methods:
 
 - (`facebook`) Facebook via `facebook.com`
@@ -58,20 +58,24 @@ The default permissions are set via `matrix_mautrix_meta_messenger_bridge_permis
 ```yaml
 matrix_mautrix_meta_messenger_bridge_permissions_default:
   '*': relay
-  YOUR_DOMAIN: user
+  example.com: user
   '{{ matrix_admin }}': admin
 ```
 
-If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @user:YOUR_DOMAIN`), then there's no admin by default.
+If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @user:example.com`), then there's no admin by default.
 
 You may redefine `matrix_mautrix_meta_messenger_bridge_permissions_default` any way you see fit, or add extra permissions using `matrix_mautrix_meta_messenger_bridge_permissions_custom` like this:
 
 ```yaml
 matrix_mautrix_meta_messenger_bridge_permissions_custom:
-  '@YOUR_USERNAME:YOUR_DOMAIN': admin
+  '@YOUR_USERNAME:example.com': admin
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
+
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting
 
@@ -98,7 +102,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-You then need to start a chat with `@messengerbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+You then need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`.
 
 You then need to send a `login` command and follow the bridge bot's instructions.
 

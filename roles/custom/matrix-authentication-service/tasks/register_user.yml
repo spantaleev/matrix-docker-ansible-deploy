@@ -1,0 +1,34 @@
+---
+
+- name: Fail if playbook called incorrectly
+  ansible.builtin.fail:
+    msg: "The `username` variable needs to be provided to this playbook, via --extra-vars"
+  when: "username is not defined or username == '<your-username>'"
+
+- name: Fail if playbook called incorrectly
+  ansible.builtin.fail:
+    msg: "The `password` variable needs to be provided to this playbook, via --extra-vars"
+  when: "password is not defined or password == '<your-password>'"
+
+- name: Fail if playbook called incorrectly
+  ansible.builtin.fail:
+    msg: "The `admin` variable needs to be provided to this playbook, via --extra-vars"
+  when: "admin is not defined or admin not in ['yes', 'no']"
+
+- name: Ensure Matrix Authentication Service is started
+  ansible.builtin.service:
+    name: matrix-authentication-service
+    state: started
+    daemon_reload: true
+  register: matrix_authentication_service_start_result
+
+- name: Wait a while, so that Matrix Authentication Service can start
+  ansible.builtin.pause:
+    seconds: 7
+  when: matrix_authentication_service_start_result.changed | bool
+
+- name: Register user
+  ansible.builtin.command:
+    cmd: "{{ matrix_authentication_service_bin_path }}/register-user {{ username | quote }} {{ password | quote }} {{ '1' if admin == 'yes' else '0' }}"
+  register: matrix_authentication_service_register_user_result
+  changed_when: matrix_authentication_service_register_user_result.rc == 0

@@ -1,15 +1,15 @@
-# Setting up Appservice Kakaotalk (optional)
+# Setting up Appservice Kakaotalk bridging (optional)
 
 The playbook can install and configure [matrix-appservice-kakaotalk](https://src.miscworks.net/fair/matrix-appservice-kakaotalk) for you. `matrix-appservice-kakaotalk` is a bridge to [Kakaotalk](https://www.kakaocorp.com/page/service/service/KakaoTalk?lang=ENG) based on [node-kakao](https://github.com/storycraft/node-kakao) (now unmaintained) and some [mautrix-facebook](https://github.com/mautrix/facebook) code.
 
-**NOTE**: there have been recent reports (~2022-09-16) that **using this bridge may get your account banned**.
+**Note**: there have been recent reports (~2022-09-16) that **using this bridge may get your account banned**.
 
 See the project's [documentation](https://src.miscworks.net/fair/matrix-appservice-kakaotalk) to learn what it does and why it might be useful to you.
 
 
 ## Installing
 
-To enable the bridge, add this to your `vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_appservice_kakaotalk_enabled: true
@@ -17,7 +17,13 @@ matrix_appservice_kakaotalk_enabled: true
 
 You may optionally wish to add some [Additional configuration](#additional-configuration), or to [prepare for double-puppeting](#set-up-double-puppeting) before the initial installation.
 
-After adjusting your `vars.yml` file, re-run the playbook and restart all services: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 To make use of the Kakaotalk bridge, see [Usage](#usage) below.
 
@@ -57,7 +63,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 ## Usage
 
-Start a chat with `@kakaotalkbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+Start a chat with `@kakaotalkbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `login --save EMAIL_OR_PHONE_NUMBER` to the bridge bot to enable bridging for your Kakaotalk account. The `--save` flag may be omitted, if you'd rather not save your password.
 

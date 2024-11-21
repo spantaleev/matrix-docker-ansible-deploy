@@ -6,14 +6,11 @@ Run this if you'd like to import your database from a previous installation.
 
 ## Prerequisites
 
-For this to work, **the database name in Postgres must match** what this playbook uses.
-This playbook uses a Postgres database name of `synapse` by default (controlled by the `matrix_synapse_database_database` variable).
-If your database name differs, be sure to change `matrix_synapse_database_database` to your desired name and to re-run the playbook before proceeding.
+For this to work, **the database name in Postgres must match** what this playbook uses. This playbook uses a Postgres database name of `synapse` by default (controlled by the `matrix_synapse_database_database` variable). If your database name differs, be sure to change `matrix_synapse_database_database` to your desired name and to re-run the playbook before proceeding.
 
-The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`).
+The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`). Importing multiple databases (as dumped by `pg_dumpall`) is also supported.
 
-Importing multiple databases (as dumped by `pg_dumpall`) is also supported.
-But the migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, ...)
+The migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, ...)
 
 Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay).
 
@@ -94,6 +91,7 @@ If not, you probably get this error. `synapse` is the correct table owner, but t
 ```
 
 Once the database is clear and the ownership of the tables has been fixed in the SQL file, the import task should succeed.
+
 Check, if `--dbname` is set to `synapse` (not `matrix`) and replace paths (or even better, copy this line from your terminal)
 
 ```

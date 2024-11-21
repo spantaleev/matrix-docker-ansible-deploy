@@ -1,4 +1,4 @@
-# Setting up Mautrix Twitter (optional)
+# Setting up Mautrix Twitter bridging (optional)
 
 **Note**: bridging to [Twitter](https://twitter.com/) can also happen via the [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) bridge supported by the playbook.
 
@@ -6,10 +6,17 @@ The playbook can install and configure [mautrix-twitter](https://github.com/maut
 
 See the project's [documentation](https://github.com/mautrix/twitter) to learn what it does and why it might be useful to you.
 
+## Adjusting the playbook configuration
+
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
 ```yaml
 matrix_mautrix_twitter_enabled: true
 ```
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Set up Double Puppeting
 
@@ -29,7 +36,7 @@ This method is currently not available for the Mautrix-Twitter bridge, but is on
 
 ## Usage
 
-1. You then need to start a chat with `@twitterbot:YOUR_DOMAIN` (where `YOUR_DOMAIN` is your base domain, not the `matrix.` domain).
+1. You then need to start a chat with `@twitterbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 2. Send login-cookie to start the login. The bot should respond with instructions on how to proceed.
 
 You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/twitter/authentication.html).
