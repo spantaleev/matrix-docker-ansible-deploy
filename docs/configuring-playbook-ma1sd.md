@@ -12,7 +12,8 @@ See the project's [documentation](https://github.com/ma1uta/ma1sd) to learn what
 
 ## Adjusting DNS records
 
-To make the ma1sd Identity Server enable its federation features, set up an SRV record that looks like this:
+To make the ma1sd Identity Server enable its federation features, set up a SRV record that looks like this:
+
 - Name: `_matrix-identity._tcp` (use this text as-is)
 - Content: `10 0 443 matrix.example.com` (replace `example.com` with your own)
 
