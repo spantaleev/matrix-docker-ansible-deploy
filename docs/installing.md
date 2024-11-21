@@ -95,11 +95,12 @@ Now you've configured Matrix services and your user account, you need to **final
 
 This is required for federation to work! Without a proper configuration, your server will effectively not be part of the Matrix network.
 
-If you need the base domain for anything else such as hosting a website, you have to configure it manually, following the procedure described on the linked documentation.
+To configure the delegation, you have these two options. Choose one of them according to your situation.
 
-However, if you do not need the base domain for anything else, the easiest way of configuring it is to [serve the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
+- If you can afford to point the base domain at the Matrix server, follow the instructions below which guide you into [serving the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
+- Alternatively, if you're using the base domain for other purposes and cannot point it to the Matrix server (and thus cannot "serve the base domain" from it), you most likely need to [manually install well-known files on the base domain's server](configuring-well-known.md#manually-installing-well-known-files-on-the-base-domains-server), but feel free to familiarize yourself with all [server delegation (redirection) options]((howto-server-delegation.md).
 
-To configure server delegation in this way, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To have the base domain served from the integrated web server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_static_files_container_labels_base_domain_enabled: true

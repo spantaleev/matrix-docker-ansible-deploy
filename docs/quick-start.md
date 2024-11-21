@@ -135,9 +135,12 @@ Now that you've configured Matrix services and your user account, you need to **
 
 **This is required for federation to work!** Without a proper configuration, your server will effectively not be part of the Matrix network.
 
-There are several ways to configure the delegation, but the easiest one is to [serve the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server.
+To configure the delegation, you have these two options. Choose one of them according to your situation.
 
-To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+- If you can afford to point the base domain at the Matrix server, follow the instruction below which guides you into [serving the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server.
+- Alternatively, if you're using the base domain for other purposes and cannot point it to the Matrix server (and thus cannot "serve the base domain" from it), you most likely need to [manually install well-known files on the base domain's server](configuring-well-known.md#manually-installing-well-known-files-on-the-base-domains-server).
+
+To have the base domain served from the integrated web server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_static_files_container_labels_base_domain_enabled: true
