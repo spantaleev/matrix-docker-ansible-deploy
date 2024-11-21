@@ -33,10 +33,8 @@ matrix_element_call_livekit_dev_key: 'your-secure-livekit-key'
 ```
 
 ## Installing
-After potentially adjusting DNS records and configuring the playbook, run the installation command again:
-```yaml
-ansible-playbook -i inventory setup.yml
-```
+
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 
