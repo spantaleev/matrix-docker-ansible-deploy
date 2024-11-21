@@ -77,12 +77,3 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   when: matrix_element_call_enabled | bool
-
-# Create .well-known/element/element.json for Element Call
-- name: Create the well-known element.json file
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/well_known_element.json.j2"
-    dest: "{{ matrix_base_data_path }}/static-files/public/.well-known/element/element.json"
-    mode: '0644'
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"

@@ -5930,6 +5930,8 @@ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto
 
 matrix_static_files_file_matrix_server_property_m_server: "{{ matrix_server_fqn_matrix_federation }}:{{ matrix_federation_public_port }}"
 
+matrix_static_files_file_element_element_json_property_call_widget_url: "{{ matrix_element_call_public_url if matrix_element_call_enabled else '' }}"
+
 matrix_static_files_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
 matrix_static_files_self_check_hostname_matrix: "{{ matrix_server_fqn_matrix }}"
@@ -6044,10 +6046,12 @@ traefik_certs_dumper_ssl_dir_path: "{{ traefik_ssl_dir_path if traefik_enabled e
 #                                                                      #
 ########################################################################
 
-# Matrix Element Call Configuration
-matrix_element_call_enabled: false  # Default is false; should be enabled in host_vars as needed
+matrix_element_call_enabled: false
+
+matrix_element_call_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
 matrix_element_call_version: "latest"  # Default version; can be overridden in host_vars
-matrix_element_call_scheme: "https"  # Scheme for Element Call (e.g., https)
+
 matrix_element_call_hostname: "call.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different
 matrix_element_call_path_prefix: "/"  # Path prefix for Element Call
 matrix_element_call_base_path: "{{ matrix_base_data_path }}/element-call"  # Base path for storing Element Call-related files
