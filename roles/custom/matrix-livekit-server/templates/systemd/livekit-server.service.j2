@@ -17,6 +17,12 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 	--user={{ livekit_server_uid }}:{{ livekit_server_gid }} \
 	--cap-drop=ALL \
 	--network={{ livekit_server_container_network }} \
+	{% if livekit_server_container_rtc_tcp_host_bind_port != '' %}
+	-p {{ livekit_server_container_rtc_tcp_host_bind_port }}:{{ livekit_server_config_rtc_tcp_port }} \
+	{% endif %}
+	{% if livekit_server_container_rtc_range_listen_interface is not in [none, 'none'] %}
+	-p {{ livekit_server_container_rtc_range_listen_interface }}{{ ':' if livekit_server_container_rtc_range_listen_interface else '' }}{{ livekit_server_config_rtc_port_range_start }}-{{ livekit_server_config_rtc_port_range_end }}:{{ livekit_server_config_rtc_port_range_start }}-{{ livekit_server_config_rtc_port_range_end }}/udp \
+	{% endif %}
 	--mount type=bind,src={{ livekit_server_config_path }}/config.yaml,dst=/livekit-config.yaml,ro \
 	--label-file={{ livekit_server_base_path }}/labels \
 	{{ livekit_server_container_image }} \

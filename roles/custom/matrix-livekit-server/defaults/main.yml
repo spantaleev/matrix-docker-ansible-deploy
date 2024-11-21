@@ -24,6 +24,19 @@ livekit_server_container_additional_networks: "{{ livekit_server_container_addit
 livekit_server_container_additional_networks_auto: []
 livekit_server_container_additional_networks_custom: []
 
+# Controls whether the LiveKit Server container exposes its RCT TCP port (`livekit_server_config_rtc_tcp_port`)
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:5349"), or empty string to not expose.
+livekit_server_container_rtc_tcp_host_bind_port: "{{ livekit_server_config_rtc_tcp_port if livekit_server_container_network != 'host' else '' }}"
+
+# Controls whether the LiveKit Server container exposes its RTC UDP port range and which interface to do it on.
+#
+# Takes an interface "<ip address>" (e.g. "127.0.0.1"), or empty string to listen on all interfaces.
+# Takes a null/none value (`~`) or 'none' (as a string) to prevent listening.
+#
+# The UDP port-range itself is specified using `livekit_server_config_rtc_port_range_start` and `livekit_server_config_rtc_port_range_end`.
+livekit_server_container_rtc_range_listen_interface: "{{ '' if livekit_server_container_network != 'host' else 'none' }}"
+
 livekit_server_container_image_self_build: false
 livekit_server_container_repo: "https://github.com/livekit/livekit.git"
 livekit_server_container_repo_version: "{{ 'main' if livekit_server_version == 'latest' else livekit_server_version }}"
