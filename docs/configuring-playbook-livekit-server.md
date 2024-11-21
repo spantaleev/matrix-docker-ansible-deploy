@@ -1,6 +1,6 @@
-# Setting up Livekit (optional)
+# Setting up LiveKit (optional)
 
-The playbook can install and configure [Livekit](https://github.com/livekit/livekit) for you.
+The playbook can install and configure [LiveKit](https://github.com/livekit/livekit) for you.
 
 LiveKit is an open source project that provides scalable, multi-user conferencing based on WebRTC. It's designed to provide everything you need to build real-time video audio data capabilities in your applications.
 
@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/livekit/livekit) to learn m
 
 ## Decide on a domain and path
 
-By default, Livekit is configured to be served on the Matrix domain (`sfu.DOMAIN`, controlled by the `livekit_server_hostname` variable).
+By default, LiveKit is configured to be served on the Matrix domain (`sfu.example.com`, controlled by the `livekit_server_hostname` variable).
 
 This makes it easy to set it up, **without** having to adjust your DNS records manually.
 
@@ -19,23 +19,22 @@ If you'd like to run Livekit on another hostname or path, use the `livekit_serve
 If you've changed the default hostname, **you may need to adjust your DNS** records accordingly to point to the correct server.
 
 Ensure that the following DNS names have a public IP/FQDN:
-- `sfu.DOMAIN`
+- `sfu.example.com`
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 livekit_server_enabled: true
+
 # Set a secure key for LiveKit authentication
-matrix_element_call_livekit_dev_key: 'your-secure-livekit-key'
+livekit_server_dev_key: 'your-secure-livekit-key'
 ```
 
 ## Installing
-After potentially adjusting DNS records and configuring the playbook, run the installation command again:
-```yaml
-ansible-playbook -i inventory setup.yml
-```
+
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 Once installed, and in conjunction with Element Call and JWT Service, Livekit will become the WebRTC backend for all Element client calls.

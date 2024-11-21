@@ -1,17 +1,31 @@
 ---
-# Enable or disable matrix-livekit-server deployment
+
+# Project source code URL: https://github.com/livekit/livekit
+
 livekit_server_enabled: false
 
 # Base path configuration
 livekit_server_base_path: "{{ matrix_base_data_path }}/livekit-server"
 
+# renovate: datasource=docker depName=livekit/livekit-server
+livekit_server_version: v1.8.0
+
 # Docker network configuration
 livekit_server_container_network: ''
 livekit_server_container_http_host_bind_port: ''
-livekit_server_container_additional_networks: []  # No additional networks by default
 
-# Docker images
+livekit_server_container_additional_networks: "{{ livekit_server_container_additional_networks_auto + livekit_server_container_additional_networks_custom }}"
+livekit_server_container_additional_networks_auto: []
+livekit_server_container_additional_networks_custom: []
+
+livekit_server_container_image_self_build: false
+livekit_server_container_repo: "https://github.com/livekit/livekit.git"
+livekit_server_container_repo_version: "{{ 'main' if livekit_server_version == 'latest' else livekit_server_version }}"
+livekit_server_container_src_files_path: "{{ livekit_server_base_path }}/container-src"
+
 livekit_server_container_image: "livekit/livekit-server:latest"
+livekit_server_container_image_name_prefix: "{{ 'localhost/' if livekit_server_container_image_self_build else 'docker.io/' }}"
+livekit_server_container_image_force_pull: "{{ livekit_server_container_image.endswith(':latest') }}"
 
 # LiveKit configuration
 livekit_server_livekit_server_dev_key: "{{ livekit_server_dev_key }}"  # Must be defined in host_vars

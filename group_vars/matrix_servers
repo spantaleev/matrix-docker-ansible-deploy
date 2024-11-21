@@ -4424,7 +4424,7 @@ redis_base_path: "{{ matrix_base_data_path }}/redis"
 #
 ######################################################################
 
-keydb_enabled: "{{ matrix_synapse_workers_enabled or (matrix_hookshot_enabled and matrix_hookshot_experimental_encryption_enabled) }}"
+keydb_enabled: "{{ matrix_synapse_workers_enabled or (matrix_hookshot_enabled and matrix_hookshot_experimental_encryption_enabled) or matrix_element_call_enabled }}"
 
 keydb_identifier: matrix-keydb
 
@@ -6058,13 +6058,12 @@ matrix_element_call_container_labels_traefik_tls_certResolver: "{{ traefik_certR
 
 ########################################################################
 #                                                                      #
-# matrix-livekit-server                                                #
+# livekit-server                                                       #
 #                                                                      #
 ########################################################################
 
-# Matrix Livekit Server Configuration
-livekit_server_enabled: false  # Default is false; should be enabled in host_vars as needed
-livekit_server_version: "latest"  # Default version; can be overridden in host_vars
+livekit_server_enabled: "{{ matrix_element_call_enabled }}"
+
 livekit_server_scheme: "https"
 livekit_server_hostname: "sfu.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different
 livekit_server_path_prefix: "/"
@@ -6074,7 +6073,7 @@ livekit_server_container_image_force_pull: true
 
 # Docker network configuration for Livekit
 livekit_server_container_network: "{{ matrix_addons_container_network }}"
-livekit_server_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (livekit_server_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+livekit_server_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (livekit_server_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
 
 # Traefik Configuration for Livekit
 matrix_livekit_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
@@ -6087,7 +6086,7 @@ livekit_server_livekit_dev_key: "{{ livekit_server_dev_key }}"  # LiveKit dev ke
 
 ########################################################################
 #                                                                      #
-# /matrix-livekit-server                                               #
+# /livekit-server                                                      #
 #                                                                      #
 ########################################################################
 
@@ -6097,8 +6096,8 @@ livekit_server_livekit_dev_key: "{{ livekit_server_dev_key }}"  # LiveKit dev ke
 #                                                                      #
 ########################################################################
 
-# Matrix JWT Service Configuration
-matrix_jwt_service_enabled: false  # Default is false; should be enabled in host_vars as needed
+matrix_jwt_service_enabled: "{{ matrix_element_call_enabled }}"
+
 matrix_jwt_service_version: "latest-ci"  # Default version; can be overridden in host_vars
 matrix_jwt_service_scheme: "https"  # Scheme for Element Call (e.g., https)
 matrix_jwt_service_hostname: "sfu-jwt.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different

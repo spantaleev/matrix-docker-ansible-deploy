@@ -19,9 +19,9 @@ If you'd like to run Element Call on another hostname or path, use the `matrix_e
 If you've changed the default hostname, **you may need to adjust your DNS** records accordingly to point to the correct server.
 
 Ensure that the following DNS names have a public IP/FQDN:
-- `call.DOMAIN`
-- `sfu.DOMAIN`
-- `sfu-jwt.DOMAIN`
+- `call.example.com`
+- `sfu.example.com`
+- `sfu-jwt.example.com`
 
 ## Adjusting the playbook configuration
 
@@ -31,25 +31,21 @@ NOTE: Element call is dependent on two other services for it to function as inte
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
-# Enable dependent services
-keydb_enabled: true
 matrix_element_call_enabled: true
-livekit_server_enabled: true
-matrix_jwt_service_enabled: true
+
 # Set a secure key for LiveKit authentication
 livekit_server_dev_key: 'your-secure-livekit-key'
 ```
 
 ## Installing
-After potentially adjusting DNS records and configuring the playbook, run the installation command again:
-```yaml
-ansible-playbook -i inventory setup.yml
-```
+
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
-Once installed, Element Call integrates seamlessly with Matrix clients like Element Web. When the Element Call service is installed, the `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc4143.rtc_foci` section is added to point to your JWT service URL (e.g., `https://sfu-jwt.DOMAIN`).
 
-Additionally, the `/.well-known/element/element.json` file is created to help Element clients discover the Element Call URL (e.g., `https://call.DOMAIN`).
+Once installed, Element Call integrates seamlessly with Matrix clients like Element Web. When the Element Call service is installed, the `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc4143.rtc_foci` section is added to point to your JWT service URL (e.g., `https://sfu-jwt.example.com`).
+
+Additionally, the `/.well-known/element/element.json` file is created to help Element clients discover the Element Call URL (e.g., `https://call.example.com`).
 
 ## Required Firewall and Port Forwarding Rules
 
