@@ -23,7 +23,7 @@ Ensure that the following DNS names have a public IP/FQDN:
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_livekit_server_enabled: true
