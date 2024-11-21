@@ -141,6 +141,33 @@ livekit_server_floc_optout_enabled: false
 # See: `livekit_server_http_header_strict_transport_security`
 livekit_server_hsts_preload_enabled: true
 
+# Holds the final LiveKit Server configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `livekit_server_configuration_yaml` or `livekit_server_configuration_extension_yaml`.
+livekit_server_configuration: "{{ livekit_server_configuration_yaml | from_yaml | combine(livekit_server_configuration_extension, recursive=True) }}"
+
+# Default LiveKit Server configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `livekit_server_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+livekit_server_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+livekit_server_configuration_extension_yaml: |
+  # Your custom YAML configuration for baibot goes here.
+  # This configuration extends the default starting configuration (`livekit_server_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `livekit_server_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # logging:
+  #   level: debug
+
+livekit_server_configuration_extension: "{{ livekit_server_configuration_extension_yaml | from_yaml if livekit_server_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
 # Controls the `port` configuration property.
 livekit_server_config_port: 7880
 
@@ -153,7 +180,9 @@ livekit_server_config_rtc_port_range_start: 50100
 # Controls the `rtc.port_range_end` configuration property
 livekit_server_config_rtc_port_range_end: 50120
 
-# Controls the `rtc.use_external_ip` configuration property
+# Controls the `rtc.use_external_ip` configuration property.
+# When set to true, attempts to discover the host's public IP via STUN.
+# This is useful for cloud environments such as AWS & Google where hosts have an internal IP that maps to an external one.
 livekit_server_config_rtc_use_external_ip: true
 
 # Controls the `keys` configuration property.

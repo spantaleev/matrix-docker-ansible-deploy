@@ -13,15 +13,15 @@
     - {path: "{{ livekit_server_container_src_files_path }}", when: "{{ livekit_server_container_image_self_build }}"}
   when: "item.when | bool"
 
-- name: Ensure LiveKit Server configuration is in place
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/config.yaml.j2"
+- name: Ensure LiveKit Server configuration installed
+  ansible.builtin.copy:
+    content: "{{ livekit_server_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ livekit_server_config_path }}/config.yaml"
     mode: 0640
     owner: "{{ livekit_server_uid }}"
     group: "{{ livekit_server_gid }}"
 
-- name: Ensure LiveKit Server labels file is in place
+- name: Ensure LiveKit Server labels file installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ livekit_server_base_path }}/labels"
