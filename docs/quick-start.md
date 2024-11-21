@@ -2,15 +2,22 @@
 
 This page explains how to use this Ansible book in order to install Matrix services on your server with minimum core services.
 
-By following the instruction on this page, you will set up **your own Matrix server**, **your user account** like `@user:example.com` on the server, and **self-hosted Matrix client**, [Element Web](configuring-playbook-client-element-web.md) with the default subdomain at `element.example.com`.
+We will be using `example.com` as the "base domain" in the following instruction.
 
-We will be using `example.com` as the "base domain" in the following instruction. Please remember to replace it with your own domain before running any commands.
+By following the instruction on this page, you will set up:
+
+- **your own Matrix server** on a `matrix.example.com` server, which is configured to present itself as `example.com`
+- **your user account** like `@user:example.com` on the server
+- a **self-hosted Matrix client**, [Element Web](configuring-playbook-client-element-web.md) with the default subdomain at `element.example.com`
+- Matrix delegation, so that your `matrix.example.com` server (presenting itself as `example.com`) can join the Matrix Federation and will be to talk to any other server in the Matrix network
+
+Please remember to replace `example.com` with your own domain before running any commands.
 
 ## Prerequisites
 
 <sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Prerequisites](prerequisites.md)</sup>
 
-At first, **check prerequisites** and prepare for installation by setting up programs on your own computer and your server. You also need `root` access to your server (a user that could elevate to `root` via `sudo` also works).
+At first, **check prerequisites** and prepare for installation by setting up programs [on your own computer](prerequisites.md#your-local-computer) and [your server](prerequisites.md#server). You also need `root` access on your server (a user that could elevate to `root` via `sudo` also works).
 
 <!--
 TODO: Add one liners (or instructions, a script, etc.) for easy and consistent installation of required software. See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3757
@@ -53,7 +60,7 @@ To get the playbook with git, install git on your computer, go to a directory, a
 git clone https://github.com/spantaleev/matrix-docker-ansible-deploy.git
 ```
 
-It will download the playbook to `matrix-docker-ansible-deploy` inside the directory you are on.
+It will download the playbook to a new `matrix-docker-ansible-deploy` directory underneath the directory you are currently in.
 
 ## Configure the playbook
 
@@ -65,7 +72,7 @@ In order to run Matrix services with this playbook, you would at least need thes
 
 For your convenience, we have prepared example files of them. You can copy and edit them for quick start.
 
-To configure them, move to `matrix-docker-ansible-deploy`, and follow the procedure below:
+To configure them, go into the `matrix-docker-ansible-deploy` directory and follow the instructions below:
 
 1. Create a directory to hold your configuration: `mkdir -p inventory/host_vars/matrix.example.com` where `example.com` is your "base domain"
 2. Copy the sample configuration file: `cp examples/vars.yml inventory/host_vars/matrix.example.com/vars.yml`
@@ -79,7 +86,7 @@ Before editing those two files, make sure to read explanations on them to unders
 
 **Notes:**
 - If you are not in control of anything on the base domain, you would need to set additional configuration on `vars.yml`. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
-- When you edit `vars.yml`, make sure to pick a correct domain, because you can't change the domain after deployment. If you pick a wrong one, you'll have to run the Uninstalling step.
+- When you edit `vars.yml`, make sure to pick a correct domain, because you can't change the domain after deployment. If you pick the wrong one, you'll have to run the Uninstalling step.
 
 ## Install
 
@@ -123,7 +130,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNA
 
 <sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Server Delegation](howto-server-delegation.md)</sup>
 
-Now you've configured Matrix services and your user account, you need to **finalize the installation process** by [setting up Matrix delegation (redirection)](howto-server-delegation.md), so that your Matrix server (`matrix.example.com`) can present itself as the base domain (`example.com`) in the Matrix network.
+Now that you've configured Matrix services and your user account, you need to **finalize the installation process** by [setting up Matrix delegation (redirection)](howto-server-delegation.md), so that your Matrix server (`matrix.example.com`) can present itself as the base domain (`example.com`) in the Matrix network.
 
 **This is required for federation to work!** Without a proper configuration, your server will effectively not be part of the Matrix network.
 
@@ -149,9 +156,9 @@ If you think something is off with the server configuration, feel free to re-run
 
 Finally, let's make sure that you can log in to the created account with the specified password.
 
-You should be able to log in to it with your own Element Web client which you have set up at `element.example.com` by running the playbook. Open the URL (`https://element.example.com`) on a web browser, and enter the credentials to log in.
+You should be able to log in to it with your own [Element Web](configuring-playbook-client-element-web.md) client which you have set up at `element.example.com` by running the playbook. Open the URL (`https://element.example.com`) in a web browser and enter your credentials to log in.
 
-**If you successfully logged in to your account, installing and configuring procedure is complete**🎉
+**If you successfully logged in to your account, installing and configuring is complete**🎉
 
 Come say Hi👋 in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 
