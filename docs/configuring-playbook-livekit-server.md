@@ -1,6 +1,6 @@
 # Setting up LiveKit (optional)
 
-The playbook can install and configure [Livekit](https://github.com/livekit/livekit) for you.
+The playbook can install and configure [LiveKit](https://github.com/livekit/livekit) for you.
 
 LiveKit is an open source project that provides scalable, multi-user conferencing based on WebRTC. It's designed to provide everything you need to build real-time video audio data capabilities in your applications.
 
