@@ -1,21 +1,25 @@
 ---
-# Uninstall tasks for matrix-livekit-server
 
-- name: Stop and remove LiveKit container
-  community.docker.docker_container:
-    name: "matrix-livekit-server"
-    state: absent
+- name: Check existence of LiveKit Server service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ livekit_server_identifier }}.service"
+  register: livekit_server_service_stat
 
-- name: Remove LiveKit systemd service
-  ansible.builtin.file:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-livekit-server.service"
-    state: absent
+- when: livekit_server_service_stat.stat.exists | bool
+  block:
+    - name: Ensure LiveKit Server is stopped
+      ansible.builtin.service:
+        name: "{{ livekit_server_identifier }}"
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Remove matrix-livekit-server configuration files
-  ansible.builtin.file:
-    path: "{{ matrix_livekit_serverbase_path }}"
-    state: absent
+    - name: Ensure LiveKit Server systemd service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ livekit_server_identifier }}.service"
+        state: absent
 
-- name: Reload systemd daemon
-  ansible.builtin.systemd:
-    daemon_reload: true
+    - name: Ensure LiveKit Server paths don't exist
+      ansible.builtin.file:
+        path: "{{ livekit_server_base_path }}"
+        state: absent

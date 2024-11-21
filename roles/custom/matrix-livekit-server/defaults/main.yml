@@ -4,18 +4,17 @@
 
 livekit_server_enabled: false
 
-# Base path configuration
-livekit_server_base_path: "{{ matrix_base_data_path }}/livekit-server"
+livekit_server_identifier: livekit-server
+
+livekit_server_base_path: "/{{ livekit_server_identifier }}"
 
 # renovate: datasource=docker depName=livekit/livekit-server
 livekit_server_version: v1.8.0
 
 livekit_server_hostname: ""
-livekit_server_path_prefix: "/"
+livekit_server_path_prefix: /
 
-# Docker network configuration
-livekit_server_container_network: ''
-livekit_server_container_http_host_bind_port: ''
+livekit_server_container_network: "{{ livekit_server_identifier }}"
 
 livekit_server_container_additional_networks: "{{ livekit_server_container_additional_networks_auto + livekit_server_container_additional_networks_custom }}"
 livekit_server_container_additional_networks_auto: []
@@ -30,12 +29,6 @@ livekit_server_container_image: "{{ livekit_server_container_image_name_prefix }
 livekit_server_container_image_name_prefix: "{{ 'localhost/' if livekit_server_container_image_self_build else 'docker.io/' }}"
 livekit_server_container_image_force_pull: "{{ livekit_server_container_image.endswith(':latest') }}"
 
-# LiveKit configuration
-livekit_server_livekit_server_dev_key: "{{ livekit_server_dev_key }}"  # Must be defined in host_vars
-livekit_server_jwt_secret:  "{{ matrix_element_call_jwt_secret }}"  # Must be defined in host_vars
-livekit_server_hostname: "sfu.{{ matrix_domain }}"
-
-# Traefik Configuration for Element Call
 livekit_server_container_labels_traefik_enabled: true
 livekit_server_container_labels_traefik_docker_network: "{{ livekit_server_container_network }}"
 livekit_server_container_labels_traefik_hostname: "{{ livekit_server_hostname }}"
@@ -130,3 +123,5 @@ livekit_server_floc_optout_enabled: false
 # - https://hstspreload.org/#opt-in
 # See: `livekit_server_http_header_strict_transport_security`
 livekit_server_hsts_preload_enabled: true
+
+livekit_server_config_keys_devkey: ""

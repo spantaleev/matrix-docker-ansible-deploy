@@ -1,8 +1,6 @@
 ---
-# roles/custom/matrix-livekit-server/tasks/install.yml
 
-# Ensure Required Directories Exist
-- name: Ensure matrix-livekit-server paths exist
+- name: Ensure LiveKit Server paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -12,8 +10,7 @@
   with_items:
     - path: "{{ livekit_server_base_path }}"
 
-# Ensure Configuration Files are in Place
-- name: Ensure LiveKit livekit.yaml is in place
+- name: Ensure LiveKit Server livekit.yaml is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/livekit.yaml.j2"
     dest: "{{ livekit_server_base_path }}/livekit.yaml"
@@ -21,7 +18,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure LiveKit labels file is in place
+- name: Ensure LiveKit Server labels file is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ livekit_server_base_path }}/labels"
@@ -29,8 +26,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-# Ensure Docker Images are Pulled
-- name: Ensure LiveKit Docker image is pulled
+- name: Ensure LiveKit Server container image is pulled
   community.docker.docker_image:
     name: "{{ livekit_server_container_image }}"
     source: pull
@@ -39,9 +35,8 @@
   delay: 10
   until: livekit_image_result is not failed
 
-# Systemd Services for LiveKit
-- name: Ensure LiveKit systemd service is installed
+- name: Ensure LiveKit Server systemd service is installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrix-livekit-server.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-livekit-server.service"
+    src: "{{ role_path }}/templates/systemd/livekit-server.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ livekit_server_identifier }}.service"
     mode: 0644

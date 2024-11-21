@@ -34,7 +34,7 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 matrix_element_call_enabled: true
 
 # Set a secure key for LiveKit authentication
-livekit_server_dev_key: 'your-secure-livekit-key'
+livekit_server_config_keys_devkey: 'your-secure-livekit-key'
 ```
 
 ## Installing

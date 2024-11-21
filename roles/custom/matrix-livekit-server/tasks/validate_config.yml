@@ -1,14 +1,13 @@
 ---
-# Validate configuration for matrix-livekit-server
 
-- name: Fail if required matrix-livekit-server settings are not defined
+- name: Fail if required LiveKit Server settings are not defined
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and vars[item.name] | length == 0"
   with_items:
     - {'name': 'livekit_server_hostname', when: true}
     - {'name': 'livekit_server_base_path', when: true}
     - {'name': 'livekit_server_container_network', when: true}
     - {'name': 'livekit_server_container_image', when: true}
-    - {'name': 'livekit_server_container_image', when: true}
+    - {'name': 'livekit_server_config_keys_devkey', when: true}
