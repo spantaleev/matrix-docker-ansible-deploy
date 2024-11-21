@@ -1,7 +1,5 @@
 # Quick start
 
-<sup>⚡️Quick start | [Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
-
 This page explains how to use this Ansible book in order to install Matrix services on your server with minimum core services.
 
 We will be using `example.com` as the "base domain" in the following instruction.
