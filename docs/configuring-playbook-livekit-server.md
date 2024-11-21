@@ -19,7 +19,7 @@ If you'd like to run Livekit on another hostname or path, use the `matrix_liveki
 If you've changed the default hostname, **you may need to adjust your DNS** records accordingly to point to the correct server.
 
 Ensure that the following DNS names have a public IP/FQDN:
-- `sfu.DOMAIN`
+- `sfu.example.com`
 
 ## Adjusting the playbook configuration
 
