@@ -78,12 +78,6 @@
     group: "{{ matrix_user_groupname }}"
   when: matrix_element_call_enabled | bool
 
-# Update the well-known client file for Element Call (adding RTC FOCI)
-- name: Update the well-known client file for Element Call
-  ansible.builtin.include_tasks: "tasks/update_well_known_client.yml"
-  when: matrix_element_call_enabled | bool
-
-
 # Create .well-known/element/element.json for Element Call
 - name: Create the well-known element.json file
   ansible.builtin.template:

@@ -203,6 +203,16 @@ matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin: "{{ matri
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: {}
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_custom: {}
 
+# Controls whether `org.matrix.msc4143.rtc_foci`-related entries should be added to the client well-known.
+# By default, if there are entries in `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci`, we show them (by enabling this).
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci | default({}) | dict2items | length > 0 }}"
+
+# Controls the org.matrix.msc4143.rtc_foci property in the /.well-known/matrix/client file.
+# See `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled`
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto | combine(matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom, recursive=True) }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: {}
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom: {}
+
 # Default /.well-known/matrix/client configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #

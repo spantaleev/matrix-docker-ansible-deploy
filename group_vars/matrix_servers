@@ -5912,6 +5912,14 @@ matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: "{{
 # See: https://github.com/etkecc/synapse-admin/pull/126
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: "{{ matrix_synapse_admin_configuration if matrix_homeserver_implementation == 'synapse' else {} }}"
 
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_element_call_enabled }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: |-
+  {{
+    (
+      [{'type': 'livekit', 'livekit_service_url': matrix_jwt_service_url}] if matrix_jwt_service_enabled else []
+    )
+  }}
+
 matrix_static_files_file_matrix_server_property_m_server: "{{ matrix_server_fqn_matrix_federation }}:{{ matrix_federation_public_port }}"
 
 matrix_static_files_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
