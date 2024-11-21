@@ -83,7 +83,7 @@ To register a user via this Ansible playbook, run the command below on your loca
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=<yes|no>' --tags=register-user
 
-# Example: `ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user`
+# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
 ```
 
 For more information, see the documentation for [registering users](registering-users.md).

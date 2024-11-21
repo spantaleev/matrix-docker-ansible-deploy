@@ -35,7 +35,7 @@ just register-user YOUR_USERNAME_HERE YOUR_PASSWORD_HERE <admin access: yes or n
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=<yes|no>' --tags=register-user
 
-# Example: `ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user`
+# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
 ```
 
 ⚠ **Warning**: If you're registering users against Matrix Authentication Service, do note that it [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user. Upon a user's first login, they will be asked to confirm their email address. This requires that email sending is [configured](./configuring-playbook-email.md). You can also consult the [Working around email deliverability issues](./configuring-playbook-matrix-authentication-service.md#working-around-email-deliverability-issues) section for more information.
