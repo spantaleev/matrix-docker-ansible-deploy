@@ -19,9 +19,9 @@ If you'd like to run Element Call on another hostname or path, use the `matrix_e
 If you've changed the default hostname, **you may need to adjust your DNS** records accordingly to point to the correct server.
 
 Ensure that the following DNS names have a public IP/FQDN:
-- `call.DOMAIN`
-- `sfu.DOMAIN`
-- `sfu-jwt.DOMAIN`
+- `call.example.com`
+- `sfu.example.com`
+- `sfu-jwt.example.com`
 
 ## Adjusting the playbook configuration
 
