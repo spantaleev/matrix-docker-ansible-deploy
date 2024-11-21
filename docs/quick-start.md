@@ -189,5 +189,7 @@ If it looks good to you, go to the `matrix-docker-ansible-deploy` directory and 
 Then, re-run the setup command as below:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 ```
+
+Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`.
