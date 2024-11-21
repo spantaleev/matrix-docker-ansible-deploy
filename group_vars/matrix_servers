@@ -442,7 +442,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-jwt-service.service', 'priority': 3000, 'groups': ['matrix', 'jwt-service']}] if matrix_jwt_service_enabled else [])
     +
-    ([{'name': 'matrix-livekit-server.service', 'priority': 3000, 'groups': ['matrix', 'livekit-server']}] if matrix_livekit_server_enabled else [])
+    ([{'name': 'matrix-livekit-server.service', 'priority': 3000, 'groups': ['matrix', 'livekit-server']}] if livekit_server_enabled else [])
     +
     ([{'name': 'matrix-registration.service', 'priority': 4000, 'groups': ['matrix', 'registration', 'matrix-registration']}] if matrix_registration_enabled else [])
     +
@@ -6063,27 +6063,27 @@ matrix_element_call_container_labels_traefik_tls_certResolver: "{{ traefik_certR
 ########################################################################
 
 # Matrix Livekit Server Configuration
-matrix_livekit_server_enabled: false  # Default is false; should be enabled in host_vars as needed
-matrix_livekit_server_version: "latest"  # Default version; can be overridden in host_vars
-matrix_livekit_server_scheme: "https"
-matrix_livekit_server_hostname: "sfu.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different
-matrix_livekit_server_path_prefix: "/"
-matrix_livekit_server_base_path: "{{ matrix_base_data_path }}/livekit-server"
-matrix_livekit_server_container_image: "livekit/livekit-server:{{ matrix_livekit_server_version }}"
-matrix_livekit_server_container_image_force_pull: true
+livekit_server_enabled: false  # Default is false; should be enabled in host_vars as needed
+livekit_server_version: "latest"  # Default version; can be overridden in host_vars
+livekit_server_scheme: "https"
+livekit_server_hostname: "sfu.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different
+livekit_server_path_prefix: "/"
+livekit_server_base_path: "{{ matrix_base_data_path }}/livekit-server"
+livekit_server_container_image: "livekit/livekit-server:{{ livekit_server_version }}"
+livekit_server_container_image_force_pull: true
 
 # Docker network configuration for Livekit
-matrix_livekit_server_container_network: "{{ matrix_addons_container_network }}"
-matrix_livekit_server_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_livekit_server_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+livekit_server_container_network: "{{ matrix_addons_container_network }}"
+livekit_server_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (livekit_server_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
 
 # Traefik Configuration for Livekit
 matrix_livekit_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_livekit_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_livekit_server_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_livekit_server_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+livekit_server_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+livekit_server_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 # LiveKit Service Configuration
-matrix_livekit_server_livekit_dev_key: "{{ matrix_livekit_server_dev_key }}"  # LiveKit dev key
+livekit_server_livekit_dev_key: "{{ livekit_server_dev_key }}"  # LiveKit dev key
 
 ########################################################################
 #                                                                      #

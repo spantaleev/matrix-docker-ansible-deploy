@@ -10,13 +10,13 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - path: "{{ matrix_livekit_server_base_path }}"
+    - path: "{{ livekit_server_base_path }}"
 
 # Ensure Configuration Files are in Place
 - name: Ensure LiveKit livekit.yaml is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/livekit.yaml.j2"
-    dest: "{{ matrix_livekit_server_base_path }}/livekit.yaml"
+    dest: "{{ livekit_server_base_path }}/livekit.yaml"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -24,7 +24,7 @@
 - name: Ensure LiveKit labels file is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
-    dest: "{{ matrix_livekit_server_base_path }}/labels"
+    dest: "{{ livekit_server_base_path }}/labels"
     mode: 0640
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
@@ -32,7 +32,7 @@
 # Ensure Docker Images are Pulled
 - name: Ensure LiveKit Docker image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_livekit_server_image }}"
+    name: "{{ livekit_server_image }}"
     source: pull
   register: livekit_image_result
   retries: 3

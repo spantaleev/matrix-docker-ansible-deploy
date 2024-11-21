@@ -17,9 +17,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
     --cap-drop=ALL \
     --network=host \
-    --mount type=bind,src={{ matrix_livekit_server_base_path }}/livekit.yaml,dst=/etc/livekit.yaml,ro \
-	--label-file={{ matrix_livekit_server_base_path }}/labels \
-    {{ matrix_livekit_server_image }} \
+    --mount type=bind,src={{ livekit_server_base_path }}/livekit.yaml,dst=/etc/livekit.yaml,ro \
+	--label-file={{ livekit_server_base_path }}/labels \
+    {{ livekit_server_image }} \
     --dev --config /etc/livekit.yaml
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-livekit-server

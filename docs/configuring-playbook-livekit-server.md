@@ -8,11 +8,11 @@ See the project's [documentation](https://github.com/livekit/livekit) to learn m
 
 ## Decide on a domain and path
 
-By default, Livekit is configured to be served on the Matrix domain (`sfu.DOMAIN`, controlled by the `matrix_livekit_server_hostname` variable).
+By default, Livekit is configured to be served on the Matrix domain (`sfu.DOMAIN`, controlled by the `livekit_server_hostname` variable).
 
 This makes it easy to set it up, **without** having to adjust your DNS records manually.
 
-If you'd like to run Livekit on another hostname or path, use the `matrix_livekit_server_hostname` variable.
+If you'd like to run Livekit on another hostname or path, use the `livekit_server_hostname` variable.
 
 ## Adjusting DNS records
 
@@ -26,7 +26,7 @@ Ensure that the following DNS names have a public IP/FQDN:
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
-matrix_livekit_server_enabled: true
+livekit_server_enabled: true
 # Set a secure key for LiveKit authentication
 matrix_element_call_livekit_dev_key: 'your-secure-livekit-key'
 ```

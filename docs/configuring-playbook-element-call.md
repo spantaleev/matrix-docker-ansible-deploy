@@ -34,10 +34,10 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 # Enable dependent services
 keydb_enabled: true
 matrix_element_call_enabled: true
-matrix_livekit_server_enabled: true
+livekit_server_enabled: true
 matrix_jwt_service_enabled: true
 # Set a secure key for LiveKit authentication
-matrix_livekit_server_dev_key: 'your-secure-livekit-key'
+livekit_server_dev_key: 'your-secure-livekit-key'
 ```
 
 ## Installing
