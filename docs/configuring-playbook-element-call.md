@@ -42,10 +42,8 @@ matrix_livekit_server_dev_key: 'your-secure-livekit-key'
 ```
 
 ## Installing
-After potentially adjusting DNS records and configuring the playbook, run the installation command again:
-```yaml
-ansible-playbook -i inventory setup.yml
-```
+
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 Once installed, Element Call integrates seamlessly with Matrix clients like Element Web. When the Element Call service is installed, the `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc4143.rtc_foci` section is added to point to your JWT service URL (e.g., `https://sfu-jwt.DOMAIN`).
