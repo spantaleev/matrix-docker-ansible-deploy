@@ -39,7 +39,8 @@ ansible-playbook -i inventory setup.yml
 ```
 
 ## Usage
-Once installed, a new `org.matrix.msc4143.rtc_foci` section is added to the element web client to point to your JWT service URL (e.g., `https://sfu-jwt.DOMAIN`).
+
+Once installed, a new `org.matrix.msc4143.rtc_foci` section is added to the element web client to point to your JWT service URL (e.g., `https://sfu-jwt.example.com`).
 
 ## Additional Information
 
