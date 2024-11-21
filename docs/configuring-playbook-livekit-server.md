@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/livekit/livekit) to learn m
 
 ## Decide on a domain and path
 
-By default, Livekit is configured to be served on the Matrix domain (`sfu.DOMAIN`, controlled by the `matrix_livekit_server_hostname` variable).
+By default, LiveKit is configured to be served on the Matrix domain (`sfu.example.com`, controlled by the `matrix_livekit_server_hostname` variable).
 
 This makes it easy to set it up, **without** having to adjust your DNS records manually.
 
