@@ -10,6 +10,16 @@ See the project's [documentation](https://github.com/ma1uta/ma1sd) to learn what
 
 **Note**: enabling ma1sd, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
 
+## Adjusting DNS records
+
+To make the ma1sd Identity Server enable its federation features, set up an SRV record that looks like this:
+- Name: `_matrix-identity._tcp` (use this text as-is)
+- Content: `10 0 443 matrix.example.com` (replace `example.com` with your own)
+
+See [ma1sd's documentation](https://github.com/ma1uta/ma1sd/wiki/mxisd-and-your-privacy#choices-are-never-easy) for information on the privacy implications of setting up this SRV record.
+
+**Note**: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
+
 ## Adjusting the playbook configuration
 
 To enable ma1sd, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -117,16 +127,6 @@ matrix_ma1sd_configuration_extension_yaml: |
             blacklist: ~
             whitelist: ~
 ```
-
-## Adjusting DNS records
-
-To make the ma1sd Identity Server enable its federation features, set up an SRV record that looks like this:
-- Name: `_matrix-identity._tcp` (use this text as-is)
-- Content: `10 0 443 matrix.example.com` (replace `example.com` with your own)
-
-See [ma1sd's documentation](https://github.com/ma1uta/ma1sd/wiki/mxisd-and-your-privacy#choices-are-never-easy) for information on the privacy implications of setting up this SRV record.
-
-**Note**: This `_matrix-identity._tcp` SRV record for the identity server is different from the `_matrix._tcp` that can be used for Synapse delegation. See [howto-server-delegation.md](howto-server-delegation.md) for more information about delegation.
 
 ## Installing
 
