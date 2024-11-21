@@ -2,10 +2,12 @@
 # Enable or disable matrix-element-call deployment
 matrix_element_call_enabled: false
 
+matrix_element_call_scheme: https
+matrix_element_call_hostname: "call.{{ matrix_domain }}"
+
 # Base path configuration
 matrix_element_call_base_path: "{{ matrix_base_data_path }}/element-call"
 matrix_homeserver_config_path: "{{ matrix_base_data_path }}/synapse/config/homeserver.yaml"
-element_web_config_path: "{{ matrix_base_data_path }}/client-element/config.json"
 
 # Docker network configuration
 matrix_element_call_container_network: ''
@@ -18,16 +20,10 @@ matrix_element_call_image: "ghcr.io/element-hq/element-call:latest"
 # Ports
 matrix_element_call_port: "8093"
 
-# Well-known paths and domains (derived from matrix_domain)
-matrix_element_call_domain: "call.{{ matrix_domain }}"
-matrix_element_call_well_known_client_path: "{{ matrix_base_data_path }}/static-files/public/.well-known/matrix/client"
-matrix_element_call_well_known_element_path: "{{ matrix_base_data_path }}/static-files/public/.well-known/element/element.json"
-matrix_element_call_base_url: "https://{{ matrix_element_call_domain }}"
-
 # Traefik Configuration for Element Call
 matrix_element_call_container_labels_traefik_enabled: true
 matrix_element_call_container_labels_traefik_docker_network: "{{ matrix_element_call_container_network }}"
-matrix_element_call_container_labels_traefik_hostname: "{{ matrix_element_call_domain }}"
+matrix_element_call_container_labels_traefik_hostname: "{{ matrix_element_call_hostname }}"
 # The path prefix must either be `/` or not end with a slash (e.g. `/element`).
 matrix_element_call_container_labels_traefik_path_prefix: "{{ matrix_element_call_path_prefix }}"
 matrix_element_call_container_labels_traefik_rule: "Host(`{{ matrix_element_call_container_labels_traefik_hostname }}`){% if matrix_element_call_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_element_call_container_labels_traefik_path_prefix }}`){% endif %}"
