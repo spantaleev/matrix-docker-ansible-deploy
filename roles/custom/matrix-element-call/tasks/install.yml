@@ -47,33 +47,3 @@
     src: "{{ role_path }}/templates/systemd/matrix-element-call.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
     mode: 0644
-
-# Update homeserver.yaml for Element Call
-- name: Add listeners section for Element Call to homeserver.yaml
-  ansible.builtin.blockinfile:
-    path: "{{ matrix_homeserver_config_path }}"
-    block: |
-      listeners:
-        - port: 8008
-          tls: false
-          type: http
-          x_forwarded: true
-          resources:
-            - names: [client, federation, openid]
-              compress: false
-    marker: "# ANSIBLE MANAGED BLOCK - Element Call listeners"
-    mode: '0644'
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-  when: matrix_element_call_enabled | bool
-
-- name: Ensure serve_server_wellknown is enabled in homeserver.yaml
-  ansible.builtin.lineinfile:
-    path: "{{ matrix_homeserver_config_path }}"
-    line: "serve_server_wellknown: true"
-    insertafter: EOF
-    state: present
-    mode: '0644'
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
-  when: matrix_element_call_enabled | bool
