@@ -94,7 +94,11 @@ Before editing those two files, make sure to read explanations on them to unders
 
 After editing `vars.yml` and `hosts` files, let's start the **installation** procedure.
 
+### Update Ansible roles
+
 Before installing, you need to update the Ansible roles in this playbook. To update them, run `just roles` on your local computer.
+
+### Run installation command
 
 Then, run the command below to start installation:
 
