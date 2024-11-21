@@ -2,6 +2,8 @@
 
 The playbook can configure the [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server for you. It is a fork of [mxisd](https://github.com/kamax-io/mxisd) which was pronounced end of life 2019-06-21.
 
+ma1sd itself has also been unmaintained for years (the latest commit and release being from 2021). The role of identity servers in the Matrix specification also has an uncertain future. **We recommend not using ma1sd unless it's the only way you can do what you need to do**. For example, certain things like LDAP integration can also be implemented via [the LDAP provider module for Synapse](./configuring-playbook-ldap-auth.md).
+
 ma1sd is used for 3PIDs (3rd party identifiers like E-mail and phone numbers) and some [enhanced features](https://github.com/ma1uta/ma1sd/#features). It is private by default, potentially at the expense of user discoverability.
 
 See the project's [documentation](https://github.com/ma1uta/ma1sd) to learn what it does and why it might be useful to you.
