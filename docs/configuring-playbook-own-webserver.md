@@ -47,8 +47,8 @@ traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/directory"
 # For this to work, you will need to define a compress middleware (https://doc.traefik.io/traefik/middlewares/http/compress/) for your Traefik instance
 # using a file (https://doc.traefik.io/traefik/providers/file/) or Docker (https://doc.traefik.io/traefik/providers/docker/) configuration provider.
 #
-# matrix_playbook_reverse_proxy_traefik_middleware_compession_enabled: true
-# matrix_playbook_reverse_proxy_traefik_middleware_compession_name: my-compression-middleware@file
+# matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled: true
+# matrix_playbook_reverse_proxy_traefik_middleware_compression_name: my-compression-middleware@file
 ```
 
 In this mode all roles will still have Traefik labels attached. You will, however, need to configure your Traefik instance and its entrypoints.
