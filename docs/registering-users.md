@@ -14,7 +14,10 @@ Table of contents:
 
 ## Registering users manually
 
-**Note**: in the commands below, `YOUR_USERNAME_HERE` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
+**Notes**:
+- Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
+- For `YOUR_USERNAME_HERE`, use a plain username like `john`, not your full identifier (`@user:example.com`)
+- Use `admin=yes` or `admin=no` depending on whether you wish to make the user an administrator of the Matrix server
 
 After registering a user (using one of the methods below), **you can log in with that user** via the [Element Web](configuring-playbook-client-element-web.md) service that this playbook has installed for you at a URL like this: `https://element.example.com/`.
 
@@ -22,7 +25,7 @@ After registering a user (using one of the methods below), **you can log in with
 
 It's best to register users via the Ansible playbook, because it works regardless of homeserver implementation (Synapse, Dendrite, etc) or usage of [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) (MAS).
 
-To register a user via this Ansible playbook (make sure to edit the `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE` part below):
+To register a user via this Ansible playbook:
 
 ```sh
 just register-user YOUR_USERNAME_HERE YOUR_PASSWORD_HERE <admin access: yes or no>
