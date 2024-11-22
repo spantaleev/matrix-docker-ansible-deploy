@@ -119,7 +119,7 @@ Wait until the command completes. If it's all green, everything should be runnin
 
 As you have configured your brand new server and the client, you need to **create your user account** on your Matrix server.
 
-To register a user via this Ansible playbook, run the command below on your local computer.
+To create your user account via this Ansible playbook, run the command below on your local computer.
 
 **Notes**:
 - Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
