@@ -14,27 +14,37 @@ If you want to be notified when new versions of Synapse are released, you should
 
 ## Steps to upgrade the Matrix services
 
+### Check the changelog
+
 Before updating the playbook and the Ansible roles in the playbook, take a look at [the changelog](../CHANGELOG.md) to see if there have been any backward-incompatible changes that you need to take care of.
 
-If it looks good to you, go to the `matrix-docker-ansible-deploy` directory, then:
+### Update the playbook and the Ansible roles
 
-- update your playbook directory and all upstream Ansible roles (defined in the `requirements.yml` file) using:
+If it looks good to you, go to the `matrix-docker-ansible-deploy` directory, update your playbook directory and all upstream Ansible roles (defined in the `requirements.yml` file) by running:
 
-  - either: `just update`
-  - or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)
+- either: `just update`
+- or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)
 
-  If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
+If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
-  For details about `just` commands, take a look at: [Running `just` commands](just.md).
+**Note**: for details about `just` commands, take a look at: [Running `just` commands](just.md).
 
-- re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:
+### Re-run the playbook setup
 
-  ```sh
-  ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
-  ```
+After updating the Ansible roles, then re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:
 
-Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [this page on the playbook tags](playbook-tags.md) for more information.
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
+```
 
-A way to invoke these `ansible-playbook` commands with less typing is to run the `just` "recipe": `just install-all` or `just setup-all`.
+If you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [this page on the playbook tags](playbook-tags.md) for more information.
 
-**Note**: major version upgrades to the internal PostgreSQL database are not done automatically. To upgrade it, refer to the [upgrading PostgreSQL guide](maintenance-postgres.md#upgrading-postgresql).
+#### Run `just` to execute shortcut command
+
+If you want to invoke the `ansible-playbook` command with less typing, you can run `just` to execute the shortcut command: `just install-all` (or `just setup-all`). Note that it restarts all services automatically.
+
+## PostgreSQL major version upgrade
+
+Major version upgrades to the internal PostgreSQL database are not done automatically. Upgrades must be performed manually.
+
+For details about upgrading it, refer to the [upgrading PostgreSQL guide](maintenance-postgres.md#upgrading-postgresql).
