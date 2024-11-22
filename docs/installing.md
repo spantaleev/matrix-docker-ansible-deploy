@@ -80,15 +80,17 @@ After creating the user account, you can log in to it with [Element Web](configu
 To create your user account via this Ansible playbook, run the command below on your local computer.
 
 **Notes**:
-- Make sure to edit `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
-- To `YOUR_USERNAME_HERE`, set a plain username like `john`, not your full `@user:example.com` identifier
-- Set `admin=yes` to make the user an administrator of the Matrix server
+- Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
+- For `YOUR_USERNAME_HERE`, use a plain username like `john`, not your full identifier (`@user:example.com`)
+- Use `admin=yes` to make your user account an administrator of the Matrix server
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=<yes|no>' --tags=register-user
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=yes' --tags=register-user
 
 # Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
 ```
+
+Feel free to create as many accounts (for friends, family, etc.) as you want. Still, perhaps you should grant full administrative access to your account only (with `admin=yes`), and others should be created with `admin=no`.
 
 For more information, see the documentation for [registering users](registering-users.md).
 
