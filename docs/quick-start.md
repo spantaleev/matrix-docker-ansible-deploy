@@ -1,6 +1,6 @@
 # Quick start
 
-This page explains how to use this Ansible book in order to install Matrix services on your server with minimum core services.
+This page explains how to use this Ansible playbook to install Matrix services on your server with a minimal set of core services.
 
 We will be using `example.com` as the "base domain" in the following instruction.
 
@@ -9,7 +9,7 @@ By following the instruction on this page, you will set up:
 - **your own Matrix server** on a `matrix.example.com` server, which is configured to present itself as `example.com`
 - **your user account** like `@user:example.com` on the server
 - a **self-hosted Matrix client**, [Element Web](configuring-playbook-client-element-web.md) with the default subdomain at `element.example.com`
-- Matrix delegation, so that your `matrix.example.com` server (presenting itself as `example.com`) can join the Matrix Federation and will be to talk to any other server in the Matrix network
+- Matrix delegation, so that your `matrix.example.com` server (presenting itself as `example.com`) can join the Matrix Federation and communicate with any other server in the Matrix network
 
 Please remember to replace `example.com` with your own domain before running any commands.
 
@@ -42,9 +42,9 @@ To configure Matrix services in the default settings, go to your DNS service pro
 
 As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IP address (DNS `A` record or `CNAME` record is fine).
 
-Per settings on the DNS provider it might take some time for the DNS records to propagate.
+It might take some time for the DNS records to propagate after creation.
 
-**Note**: if you are using Cloudflare DNS, make sure to disable the proxy and set all records to `DNS only`.
+**Note**: if you are using Cloudflare DNS, make sure to disable the proxy and set all records to "DNS only"
 
 ## Get the playbook
 
@@ -60,19 +60,19 @@ To get the playbook with git, install git on your computer, go to a directory, a
 git clone https://github.com/spantaleev/matrix-docker-ansible-deploy.git
 ```
 
-It will download the playbook to a new `matrix-docker-ansible-deploy` directory underneath the directory you are currently in.
+It will fetch the playbook to a new `matrix-docker-ansible-deploy` directory underneath the directory you are currently in.
 
 ## Configure the playbook
 
 <sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Configuring the playbook](configuring-playbook.md)</sup>
 
-Now that the playbook was retreived, it is time to **configure** it per your needs.
+Now that the playbook was fetched, it is time to **configure** it per your needs.
 
-In order to run Matrix services with this playbook, you would at least need these two files: [`vars.yml`](../examples/vars.yml) and [`hosts`](../examples/hosts). They are the core of the playbook.
+To install Matrix services with this playbook, you would at least need 2 configuration files.
 
-For your convenience, we have prepared example files of them. You can copy and edit them for quick start.
+For your convenience, we have prepared example files of them ([`vars.yml`](../examples/vars.yml) and [`hosts`](../examples/hosts)).
 
-To configure them, go into the `matrix-docker-ansible-deploy` directory and follow the instructions below:
+To start quickly based on these example files, go into the `matrix-docker-ansible-deploy` directory and follow the instructions below:
 
 1. Create a directory to hold your configuration: `mkdir -p inventory/host_vars/matrix.example.com` where `example.com` is your "base domain"
 2. Copy the sample configuration file: `cp examples/vars.yml inventory/host_vars/matrix.example.com/vars.yml`
@@ -80,13 +80,12 @@ To configure them, go into the `matrix-docker-ansible-deploy` directory and foll
 4. Edit the configuration file (`inventory/host_vars/matrix.example.com/vars.yml`)
 5. Edit the inventory hosts file (`inventory/hosts`)
 
-Before editing those two files, make sure to read explanations on them to understand what needs to be configured.
+Before editing these 2 files, make sure to read explanations on them to understand what needs to be configured.
 
-**💡Recommendation**: instead of configuring a lot of things all at once, we recommend starting with the basic (default) settings in order to get yourself familiar with how the playbook works. After making sure that everything works as expected, you can add (and remove) advanced settings / features and run the playbook as many times as you wish.
-
-**Notes:**
+**💡 Tips:**
 - If you are not in control of anything on the base domain, you would need to set additional configuration on `vars.yml`. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
-- When you edit `vars.yml`, make sure to pick a correct domain, because you can't change the domain after deployment. If you pick the wrong one, you'll have to run the Uninstalling step.
+- Certain configuration decisions (like the base domain configured in `matrix_domain` and homeserver implementation configured in `matrix_homeserver_implementation`) are final. If you make the wrong choice and wish to change it, you'll have to run the Uninstalling step and start over.
+- Instead of configuring a lot of things all at once, we recommend starting with the basic (default) settings in order to get yourself familiar with how the playbook works. After making sure that everything works as expected, you can add (and remove) advanced settings / features and run the playbook as many times as you wish.
 
 ## Install
 
@@ -96,7 +95,7 @@ After editing `vars.yml` and `hosts` files, let's start the **installation** pro
 
 ### Update Ansible roles
 
-Before installing, you need to update the Ansible roles in this playbook. To update them, run `just roles` on your local computer.
+Before installing, you need to update the Ansible roles that this playbook uses and fetches from outside. To update them, run `just roles` on your local computer.
 
 ### Run installation command
 
