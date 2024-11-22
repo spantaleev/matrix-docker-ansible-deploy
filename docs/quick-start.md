@@ -1,5 +1,10 @@
 # Quick start
 
+<!--
+NOTE:
+- Because this documentation is intended to be referred by those who have not configured a Matrix server and services by using the playbook, from the educational point of view it intentionally avoids instructions based on just program's "recipes" in favor of ansible-playbook commands in most cases.
+-->
+
 This page explains how to use this Ansible playbook to install Matrix services on your server with a minimal set of core services.
 
 We will be using `example.com` as the "base domain" in the following instruction.
@@ -95,9 +100,11 @@ After editing `vars.yml` and `hosts` files, let's start the **installation** pro
 
 ### Update Ansible roles
 
-Before installing, you need to update the Ansible roles that this playbook uses and fetches from outside. To update them, run `just roles` on your local computer.
+Before installing, you need to update the Ansible roles that this playbook uses and fetches from outside.
 
-If you don't have the `just` tool, you can use the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
+To update them, run `just roles` (or `make roles` if you have `make` program on your computer instead of `just`).
+
+If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
 ### Run installation command
 
