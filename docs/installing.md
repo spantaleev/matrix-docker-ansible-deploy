@@ -8,11 +8,10 @@ If you've configured your DNS records and the playbook, you can start the instal
 
 Before installing, you need to update the Ansible roles that this playbook uses and fetches from outside.
 
-To update them, run `just roles` (or `make roles` if you have `make` program on your computer instead of `just`).
+To update your playbook directory and all upstream Ansible roles (defined in the `requirements.yml` file), run:
 
-`just roles` is a shortcut (a `roles` target defined in [`justfile`](../justfile) and executed by the [`just`](https://github.com/casey/just) utility) which ultimately runs [agru](https://github.com/etkecc/agru) or [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) (depending on what is available in your system) to download Ansible roles. If you don't have `just`, you can also manually run the `roles` commands seen in the `justfile`.
-
-**Note**: there's another shortcut (`just update`) which updates the playbook (`git pull`) and updates roles (`just roles`) at the same time.
+- either: `just update`
+- or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)
 
 If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
