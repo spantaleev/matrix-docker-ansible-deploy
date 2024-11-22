@@ -2,6 +2,7 @@
 
 <!--
 NOTE:
+- Let's keep it as tidy and simple as possible.
 - Because this documentation is intended to be referred by those who have not configured a Matrix server and services by using the playbook, from the educational point of view it intentionally avoids instructions based on just program's "recipes" in favor of ansible-playbook commands in most cases.
 -->
 
