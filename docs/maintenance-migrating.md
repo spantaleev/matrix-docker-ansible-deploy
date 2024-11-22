@@ -1,10 +1,10 @@
-> **Note**: This migration guide is applicable if you migrate from one server to another server having the same CPU architecture (e.g. both servers being `amd64`).
->
-> If you're trying to migrate between different architectures (e.g. `amd64` --> `arm64`), simply copying the complete `/matrix` directory is not possible as it would move the raw PostgreSQL data (`/matrix/postgres/data`) between different architectures. In this specific case, you can use the guide below as a reference, but you would also need to avoid syncing `/matrix/postgres/data` to the new host, and also dump the database on your current server and import it properly on the new server. See our [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql) docs for help with PostgreSQL backup/restore.
-
 # Migrating to new server
 
 This documentation explains how to migrate your Matrix services (server, client, bridges, etc.) from an old server to a new server.
+
+> **Note**: This migration guide is applicable if you migrate from one server to another server having the same CPU architecture (e.g. both servers being `amd64`).
+>
+> If you're trying to migrate between different architectures (e.g. `amd64` --> `arm64`), simply copying the complete `/matrix` directory is not possible as it would move the raw PostgreSQL data (`/matrix/postgres/data`) between different architectures. In this specific case, you can use the guide below as a reference, but you would also need to avoid syncing `/matrix/postgres/data` to the new host, and also dump the database on your current server and import it properly on the new server. See our [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql) docs for help with PostgreSQL backup/restore.
 
 ## Lower DNS TTL
 
