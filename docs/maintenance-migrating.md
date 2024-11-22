@@ -1,6 +1,6 @@
 # Migrating to new server
 
-This documentation explains how to migrate your Matrix services (server, client, bridges, etc.) from an old server to a new server.
+This documentation explains how to migrate your Matrix services (server, client, bridges, etc.) and data from an old server to a new server.
 
 > **Note**: This migration guide is applicable if you migrate from one server to another server having the same CPU architecture (e.g. both servers being `amd64`).
 >
@@ -26,7 +26,7 @@ Alternatively, you can log in to the old server and run the command (you might h
 systemctl disable --now matrix*
 ```
 
-## Copy data directory from the old to the new server
+## Copy data directory to the new server
 
 Then, copy directory `/matrix` from the old server to the new server. When copying, make sure to preserve ownership and permissions (use `cp -p` or `rsync -ar`)!
 
@@ -36,7 +36,9 @@ Make sure your DNS records are adjusted to point to the new server's IP address.
 
 ## Update `hosts` file
 
-Having adjusted DNS records, remove old server from the `inventory/hosts` file, and add new server to it.
+Having adjusted DNS records, replace the old server's external IP address on the `inventory/hosts` file with that of the new server.
+
+**Note**: you can't change the domain after the initial deployment.
 
 ## Create `matrix` user and group on the new server
 
@@ -57,5 +59,5 @@ chown -R matrix:matrix /matrix
 Finally, run the command below to finish the installation and start all services:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 ```
