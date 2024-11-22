@@ -1,6 +1,6 @@
 # Registering users
 
-This documentation page tells you how to create user account on your Matrix server.
+This documentation page tells you how to create user accounts on your Matrix server.
 
 Table of contents:
 
@@ -15,8 +15,8 @@ Table of contents:
 ## Registering users manually
 
 **Notes**:
-- Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
-- For `YOUR_USERNAME_HERE`, use a plain username like `john`, not your full identifier (`@user:example.com`)
+- Make sure to adjust `USERNAME_HERE` and `PASSWORD_HERE`
+- For `USERNAME_HERE`, use a plain username like `john`, not a full identifier (`@user:example.com`)
 - Use `admin=yes` or `admin=no` depending on whether you wish to make the user an administrator of the Matrix server
 
 After registering a user (using one of the methods below), **you can log in with that user** via the [Element Web](configuring-playbook-client-element-web.md) service that this playbook has installed for you at a URL like this: `https://element.example.com/`.
@@ -28,7 +28,7 @@ It's best to register users via the Ansible playbook, because it works regardles
 To register a user via this Ansible playbook:
 
 ```sh
-just register-user YOUR_USERNAME_HERE YOUR_PASSWORD_HERE <admin access: yes or no>
+just register-user USERNAME_HERE PASSWORD_HERE <admin access: yes or no>
 
 # Example: `just register-user john secret-password yes`
 ```
@@ -36,7 +36,7 @@ just register-user YOUR_USERNAME_HERE YOUR_PASSWORD_HERE <admin access: yes or n
 **or** by invoking `ansible-playbook` manually:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=<yes|no>' --tags=register-user
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=USERNAME_HERE password=PASSWORD_HERE admin=<yes|no>' --tags=register-user
 
 # Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
 ```
@@ -48,7 +48,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNA
 If you're using the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default), you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 ```sh
-/matrix/synapse/bin/register-user YOUR_USERNAME_HERE YOUR_PASSWORD_HERE <admin access: 0 or 1>
+/matrix/synapse/bin/register-user USERNAME_HERE PASSWORD_HERE <admin access: 0 or 1>
 
 # Example: `/matrix/synapse/bin/register-user john secret-password 1`
 ```
@@ -58,7 +58,7 @@ If you're using the [Synapse](configuring-playbook-synapse.md) homeserver implem
 If you're using the [Dendrite](./configuring-playbook-dendrite.md) homeserver implementation, you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 ```sh
-/matrix/dendrite/bin/create-account YOUR_USERNAME_HERE YOUR_PASSWORD_HERE <admin access: 0 or 1>
+/matrix/dendrite/bin/create-account USERNAME_HERE PASSWORD_HERE <admin access: 0 or 1>
 
 # Example: `/matrix/dendrite/bin/create-account john secret-password 1`
 ```
@@ -68,7 +68,7 @@ If you're using the [Dendrite](./configuring-playbook-dendrite.md) homeserver im
 If you're using the [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) and your existing homeserver (most likely [Synapse](./configuring-playbook-synapse.md)) is delegating authentication to it, you can register users via the command-line after **SSH**-ing to your server (requires that [all services have been started](#starting-the-services)):
 
 ```sh
-/matrix/matrix-authentication-service/bin/register-user YOUR_USERNAME_HERE YOUR_PASSWORD_HERE <admin access: 0 or 1>
+/matrix/matrix-authentication-service/bin/register-user USERNAME_HERE PASSWORD_HERE <admin access: 0 or 1>
 
 # Example: `/matrix/matrix-authentication-service/bin/register-user john secret-password 1`
 ```

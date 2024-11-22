@@ -2,13 +2,15 @@
 
 ## Option 1 (if you are using the integrated Postgres database):
 
-You can reset a user's password via the Ansible playbook (make sure to edit the `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE` part below):
+**Notes**:
+- Make sure to adjust `USERNAME_HERE` and `PASSWORD_HERE`
+- For `USERNAME_HERE`, use a plain username like `john`, not a full identifier (`@user:example.com`)
+
+You can reset a user's password via the Ansible playbook:
 
 ```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE' --tags=update-user-password
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=USERNAME_HERE password=PASSWORD_HERE' --tags=update-user-password
 ```
-
-**Note**: `YOUR_USERNAME_HERE` is just a plain username (like `john`), not your full `@<username>:example.com` identifier.
 
 **You can then log in with that user** via Element Web that this playbook has created for you at a URL like this: `https://element.example.com/`.
 
