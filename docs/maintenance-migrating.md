@@ -61,3 +61,9 @@ Finally, run the command below to finish the installation and start all services
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 ```
+
+### Checking if services work
+
+After starting the services, you can ensure that you've migrated things correctly and that services are running. For details, see: [check if services work](maintenance-checking-services.md)
+
+Having make sure that both services and federation work as expected, you can safely shutdown the old server.
