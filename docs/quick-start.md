@@ -192,20 +192,8 @@ As this page intends to be a quick start guide which explains how to start the c
 
 ### ⚠️Keep the playbook and services up-to-date
 
-<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Upgrading the Matrix services](maintenance-upgrading-services.md)</sup>
-
 While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**.
 
 Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
 
-Before updating the playbook and the Ansible roles in the playbook, take a look at [the changelog](../CHANGELOG.md) to see if there have been any backward-incompatible changes that you need to take care of.
-
-If it looks good to you, go to the `matrix-docker-ansible-deploy` directory and run `just update`.
-
-Then, re-run the setup command as below:
-
-```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
-```
-
-Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`.
+For more information about upgrading or maintaining services with the playbook, take at look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
