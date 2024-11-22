@@ -132,6 +132,8 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNA
 # Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
 ```
 
+ℹ️ *For an instruction to add other user accounts than yours, see [Registering users](registering-users.md).*
+
 ## Finalize server installation
 
 <sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Server Delegation](howto-server-delegation.md)</sup>
