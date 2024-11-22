@@ -129,18 +129,21 @@ Wait until the command completes. If it's all green, everything should be runnin
 
 As you have configured your brand new server and the client, you need to **create your user account** on your Matrix server.
 
-To create your user account via this Ansible playbook, run the command below on your local computer.
+To create your user account (as an administrator of the server) via this Ansible playbook, run the command below on your local computer.
 
 **Notes**:
 - Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
 - For `YOUR_USERNAME_HERE`, use a plain username like `john`, not your full identifier (`@user:example.com`)
-- Use `admin=yes` to make your user account an administrator of the Matrix server
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=yes' --tags=register-user
 
 # Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
 ```
+
+<!--
+NOTE: detailed instruction to add users can be found on docs/registering-users.md and installing.md, which include a note about usage of admin=yes and admin=no variables. In order to keep this guide as reasonably short as possible, let's not repeat the same instruction here.
+-->
 
 ## Finalize server installation
 

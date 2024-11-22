@@ -77,7 +77,7 @@ As you have configured your brand new server and the client, you need to **creat
 
 After creating the user account, you can log in to it with [Element Web](configuring-playbook-client-element-web.md) that this playbook has installed for you at this URL: `https://element.example.com/`.
 
-To create your user account via this Ansible playbook, run the command below on your local computer.
+To create your user account (as an administrator of the server) via this Ansible playbook, run the command below on your local computer.
 
 **Notes**:
 - Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
