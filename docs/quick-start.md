@@ -97,6 +97,8 @@ After editing `vars.yml` and `hosts` files, let's start the **installation** pro
 
 Before installing, you need to update the Ansible roles that this playbook uses and fetches from outside. To update them, run `just roles` on your local computer.
 
+If you don't have the `just` tool, you can use the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
+
 ### Run installation command
 
 Then, run the command below to start installation:
