@@ -3,6 +3,7 @@
 # Matrix (An open network for secure, decentralized communication) server setup using Ansible and Docker
 
 ## 🎯 Purpose
+## BY Mudassir Alam
 
 This [Ansible](https://www.ansible.com/) playbook is meant to help you run your own [Matrix](http://matrix.org/) homeserver, along with the [various services](#supported-services) related to that.
 
