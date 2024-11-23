@@ -1,8 +1,10 @@
 # Prerequisites
 
-<sup>⚡️[Quick start](README.md) | Prerequisites > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
+<sup>⚡️[Quick start](quick-start.md) | Prerequisites > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 To install Matrix services using this Ansible playbook, you need to prepare several requirements both on your local computer (where you will run the playbook to configure the server) and the server (where the playbook will install the Matrix services for you). **These requirements need to be set up manually** before proceeding to the next step.
+
+We will be using `example.com` as the domain in the following instruction. Please remember to replace it with your own domain before running any commands.
 
 ## Your local computer
 
@@ -12,7 +14,7 @@ To install Matrix services using this Ansible playbook, you need to prepare seve
 
 - [`git`](https://git-scm.com/) as the recommended way to download the playbook. `git` may also be required on the server if you will be [self-building](self-building.md) components.
 
-- [`just`](https://github.com/casey/just) for running `just roles`, `just update`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually
+- [`just`](https://github.com/casey/just) for running `just roles`, `just update`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually. Take at look at this documentation for more information: [Running `just` commands](just.md).
 
 - Strong password (random strings) generator. The playbook often requires you to create a strong password and use it for settings on `vars.yml`, components, etc. As any tools should be fine, this playbook has adopted [`pwgen`](https://linux.die.net/man/1/pwgen) (running `pwgen -s 64 1`). [Password Tech](https://pwgen-win.sourceforge.io/), formerly known as "PWGen for Windows", is available as free and open source password generator for Windows. Generally, using a random generator available on the internet is not recommended.
 

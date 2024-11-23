@@ -20,4 +20,6 @@ Here are some playbook tags that you should be familiar with:
 
 - `ensure-matrix-users-created` - a special tag which ensures that all special users needed by the playbook (for bots, etc.) are created
 
-`setup-*` tags and `install-*` tags **do not start services** automatically, because you may wish to do things before starting services, such as importing a database dump, restoring data from another server, etc.
+**Notes**:
+- `setup-*` tags and `install-*` tags **do not start services** automatically, because you may wish to do things before starting services, such as importing a database dump, restoring data from another server, etc.
+- Please be careful not to confuse the playbook tags with the `just` shortcut commands ("recipes"). For details about `just` commands, see: [Running `just` commands](just.md)
