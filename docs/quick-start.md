@@ -50,7 +50,7 @@ As the table illustrates, you need to create 2 subdomains (`matrix.example.com` 
 
 It might take some time for the DNS records to propagate after creation.
 
-**Note**: if you are using Cloudflare DNS, make sure to disable the proxy and set all records to "DNS only"
+**💡 Note**: if you are using Cloudflare DNS, make sure to disable the proxy and set all records to "DNS only"
 
 ## Get the playbook
 
@@ -88,7 +88,7 @@ To start quickly based on these example files, go into the `matrix-docker-ansibl
 
 Before editing these 2 files, make sure to read explanations on them to understand what needs to be configured.
 
-**💡 Tips:**
+**💡 Notes:**
 - If you are not in control of anything on the base domain, you would need to set additional configuration on `vars.yml`. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
 - Certain configuration decisions (like the base domain configured in `matrix_domain` and homeserver implementation configured in `matrix_homeserver_implementation`) are final. If you make the wrong choice and wish to change it, you'll have to run the Uninstalling step and start over.
 - Instead of configuring a lot of things all at once, we recommend starting with the basic (default) settings in order to get yourself familiar with how the playbook works. After making sure that everything works as expected, you can add (and remove) advanced settings / features and run the playbook as many times as you wish.
@@ -132,7 +132,7 @@ As you have configured your brand new server and the client, you need to **creat
 
 To create your user account (as an administrator of the server) via this Ansible playbook, run the command below on your local computer.
 
-**Notes**:
+**💡 Notes**:
 - Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
 - For `YOUR_USERNAME_HERE`, use a plain username like `john`, not your full identifier (`@user:example.com`)
 
@@ -171,9 +171,11 @@ After configuring the playbook, run the command below and wait until it finishes
 ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
+💡 Running the `install-matrix-static-files` playbook tag (as done here) is an optimized version of running [the full setup command](#run-the-installation-command).
+
 After the command finishes, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain.
 
-If you think something is off with the server configuration, feel free to re-run the setup command any time.
+If you think something is off with the server configuration, feel free to [re-run the full setup command](#run-the-installation-command) any time.
 
 ## Log in to your user account
 
