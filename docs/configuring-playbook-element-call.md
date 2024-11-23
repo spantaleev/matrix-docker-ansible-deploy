@@ -55,7 +55,7 @@ LiveKit:
 
 Element Call:
 
-	•	Forward TCP port 443 to the server running Traefik (for Element Call).
+- Forward TCP port 443 to the server running Traefik (for Element Call).
 
 Ensure these ports are open and forwarded appropriately to allow traffic to flow correctly between the services.
 
