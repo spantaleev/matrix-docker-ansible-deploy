@@ -65,7 +65,7 @@ docker run --rm --publish 1799:8080 --link matrix-postgres --net matrix adminer
 
 You should then be able to browse the adminer database administration GUI at http://localhost:1799/ after entering your DB credentials (found in the `host_vars` or on the server in `{{matrix_synapse_config_dir_path}}/homeserver.yaml` under `database.args`)
 
-⚠️ Be **very careful** with this, there is **no undo** for impromptu DB operations.
+⚠️️ Be **very careful** with this, there is **no undo** for impromptu DB operations.
 
 ## Make Synapse faster
 

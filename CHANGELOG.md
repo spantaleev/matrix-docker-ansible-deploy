@@ -15,8 +15,8 @@ This middleware's configuration can be configured via variables in the Traefik r
 If you're using your own Traefik reverse-proxy server ([Traefik managed by you](./docs/configuring-playbook-own-webserver.md#traefik-managed-by-you)) instead of the playbook's integrated Traefik service, you can benefit from the same by:
 
 - defining a [compress](https://doc.traefik.io/traefik/middlewares/http/compress/) middleware (via the [file](https://doc.traefik.io/traefik/providers/file/) or [Docker](https://doc.traefik.io/traefik/providers/docker/) providers)
-- setting `matrix_playbook_reverse_proxy_traefik_middleware_compession_enabled` to `true`
-- specifying the middleware's name in `matrix_playbook_reverse_proxy_traefik_middleware_compession_name` (e.g. `matrix_playbook_reverse_proxy_traefik_middleware_compession_name: my-compression-middleware@file`)
+- setting `matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled` to `true`
+- specifying the middleware's name in `matrix_playbook_reverse_proxy_traefik_middleware_compression_name` (e.g. `matrix_playbook_reverse_proxy_traefik_middleware_compression_name: my-compression-middleware@file`)
 
 ## Timeout adjustments for Traefik-based setups
 
