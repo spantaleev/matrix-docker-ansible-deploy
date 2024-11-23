@@ -1,3 +1,45 @@
+# 2024-11-23
+
+## (Backward Compatibility Break) The playbook now defaults to Valkey, instead of KeyDB
+
+**TLDR**: if the playbook installed KeyDB (or Redis) as a dependency for you before, it will now replace it with [Valkey](https://valkey.io/) (a drop-in alternative). We [previously switched from Redis to KeyDB](#backward-compatibility-break-the-playbook-now-defaults-to-keydb-instead-of-redis), but Valkey is a better alternative, so we're switching again.
+
+The playbook used to install Redis or KeyDB if services have a need for a Redis-compatible implementation ([enabling worker support for Synapse](docs/configuring-playbook-synapse.md#load-balancing-with-workers), [enabling Hookshot encryption](docs/configuring-playbook-bridge-hookshot.md#end-to-bridge-encryption), etc.).
+
+Earlier this year, we switched from Redis to KeyDB - see [(Backward Compatibility Break) The playbook now defaults to KeyDB, instead of Redis](#backward-compatibility-break-the-playbook-now-defaults-to-keydb-instead-of-redis).
+
+Because Valkey seems to be a better successor to Redis (than KeyDB) and likely doesn't suffer from [issues like this one](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3544), we now replace KeyDB with Valkey.
+
+Valkey (like KeyDB and Redis in the past) is an implicitly enabled dependency - you don't need custom configuration in `vars.yml` to enable it.
+
+Next time your run the playbook (via the `setup-all` tag), **KeyDB will be automatically uninstalled and replaced with Valkey**. Some Synapse downtime may occur while the switch happens.
+
+Users on `arm32` should be aware that there's **neither a prebuilt `arm32` container image for Valkey**, nor the Valkey role supports self-building yet. Users on this architecture likely don't run Synapse with workers, etc., so they're likely in no need of Valkey (or Redis/KeyDB). If Redis is necessary in an `arm32` deployment, disabling Valkey and making the playbook fall back to Redis is possible (see below).
+
+**The playbook still supports Redis** and you can keep using Redis (for now) if you'd like, by adding this additional configuration to your `vars.yml` file:
+
+```yml
+# Explicitly disable both Valkey and KeyDB.
+#
+# Redis will be auto-enabled if necessary,
+# because there's no other Redis-compatible implementation being enabled.
+valkey_enabled: false
+keydb_enabled: false
+```
+
+**The playbook still supports KeyDB** and you can keep using KeyDB (for now) if you'd like, by adding this additional configuration to your `vars.yml` file:
+
+```yml
+# Explicitly disable Valkey  enable KeyDB.
+#
+# Redis will not be auto-enabled beandcause a Redis-compatible implementation (KeyDB) is enabled.
+valkey_enabled: false
+keydb_enabled: true
+```
+
+At some point in time in the future, we'll remove both KeyDB and Redis from the playbook, so we recommend that you migrate to Valkey earlier anyway.
+
+
 # 2024-11-14
 
 ## HTTP-compression support for Traefik-based setups
