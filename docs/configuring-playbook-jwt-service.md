@@ -33,7 +33,7 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 
 ## Usage
 
-Once installed, a new `org.matrix.msc4143.rtc_foci` section is added to the Element web client to point to your JWT service URL (e.g., `https://matrix.example.com/lk-jwt-service`).
+Once installed, a new `org.matrix.msc4143.rtc_foci` section is added to the Element Web client to point to your JWT service URL (e.g., `https://matrix.example.com/lk-jwt-service`).
 
 ## Additional Information
 
