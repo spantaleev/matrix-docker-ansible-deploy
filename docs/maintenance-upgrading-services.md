@@ -23,8 +23,6 @@ If it looks good to you, go to the `matrix-docker-ansible-deploy` directory, the
   - either: `just update`
   - or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)
 
-  `just update` and `just roles` are shortcuts (their targets are defined in [`justfile`](../justfile) and executed by the [`just`](https://github.com/casey/just) utility) which ultimately run [agru](https://github.com/etkecc/agru) or [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) (depending on what is available in your system) to download Ansible roles, after upgrading the playbook (in case of `just update`).
-
   If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
 - re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:

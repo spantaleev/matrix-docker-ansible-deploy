@@ -80,6 +80,14 @@ Alternatively, you can download Ansible and the playbook itself directly on the 
 
 To learn more, see our [dedicated Ansible documentation page](ansible.md).
 
+### What is `just`?
+
+[`just`](https://github.com/casey/just) is a modern command-runner alternative to `make`. It can be used to invoke `ansible-playbook` commands with less typing.
+
+The `just` utility executes shortcut commands (called as "recipes"), which ultimately run `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru) (depending on what is available in your system). The targets of the recipes are defined in [`justfile`](../justfile). It defines commands, most of which are not available on our `Makefile`.
+
+For details about `just` commands, take a look at: [Running `just` commands](just.md).
+
 ### Why use this playbook and not install Synapse and other things manually?
 
 There are various guides telling you how easy it is to install [Synapse](https://github.com/element-hq/synapse).
