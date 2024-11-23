@@ -1,8 +1,10 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
 Description=LiveKit Server
-After=docker.service
-Requires=docker.service
+{% for service in livekit_server_systemd_required_services_list %}
+After={{ service }}
+Requires={{ service }}
+{% endfor %}
 
 [Service]
 Type=simple

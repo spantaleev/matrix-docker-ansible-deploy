@@ -442,7 +442,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-element-call.service', 'priority': 4000, 'groups': ['matrix', 'element-call']}] if matrix_element_call_enabled else [])
     +
-    ([{'name': 'matrix-jwt-service.service', 'priority': 3000, 'groups': ['matrix', 'jwt-service']}] if matrix_jwt_service_enabled else [])
+    ([{'name': 'matrix-livekit-jwt-service.service', 'priority': 3500, 'groups': ['matrix', 'livekit-jwt-service']}] if matrix_livekit_jwt_service_enabled else [])
     +
     ([{'name': (livekit_server_identifier + '.service'), 'priority': 3000, 'groups': ['matrix', 'livekit-server']}] if livekit_server_enabled else [])
     +
@@ -5959,7 +5959,7 @@ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enab
 matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: |-
   {{
     (
-      [{'type': 'livekit', 'livekit_service_url': matrix_jwt_service_url}] if matrix_jwt_service_enabled else []
+      [{'type': 'livekit', 'livekit_service_url': matrix_livekit_jwt_service_public_url}] if matrix_livekit_jwt_service_enabled else []
     )
   }}
 
@@ -6138,45 +6138,61 @@ livekit_server_container_labels_traefik_docker_network: "{{ matrix_playbook_reve
 livekit_server_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 livekit_server_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
+livekit_server_config_keys_auto: |-
+  {{
+    {}
+    | combine(
+      {matrix_livekit_jwt_service_environment_variable_livekit_key: matrix_livekit_jwt_service_environment_variable_livekit_secret}
+      if matrix_livekit_jwt_service_enabled else {}
+    )
+  }}
+
 ########################################################################
 #                                                                      #
 # /livekit-server                                                      #
 #                                                                      #
 ########################################################################
 
-########################################################################
-#                                                                      #
-# matrix-jwt-service                                                   #
-#                                                                      #
-########################################################################
-
-matrix_jwt_service_enabled: "{{ matrix_element_call_enabled }}"
-
-matrix_jwt_service_version: "latest-ci"  # Default version; can be overridden in host_vars
-matrix_jwt_service_scheme: "https"  # Scheme for Element Call (e.g., https)
-matrix_jwt_service_hostname: "sfu-jwt.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different
-matrix_jwt_service_path_prefix: "/"  # Path prefix for Element Call
-matrix_jwt_service_base_path: "{{ matrix_base_data_path }}/matrix-jwt-service"  # Base path for storing Element Call-related files
-matrix_jwt_service_container_image: "ghcr.io/element-hq/lk-jwt-service:{{ matrix_jwt_service_version }}"
-matrix_jwt_service_container_image_name_prefix: ghcr.io/
-matrix_jwt_service_container_image_registry_prefix: ghcr.io/
-matrix_jwt_service_container_image_force_pull: true
-
-# Docker network configuration for JWT Service
-matrix_jwt_service_container_network: "{{ matrix_addons_container_network }}"
-matrix_jwt_service_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_jwt_service_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
-
-# Traefik Configuration for JWT Service
-matrix_jwt_service_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_jwt_service_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_jwt_service_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_jwt_service_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
-# JWT Service Configuration
-matrix_jwt_service_url: "https://sfu-jwt.{{ matrix_domain }}"  # Default JWT service URL; adjust as needed
 
 ########################################################################
 #                                                                      #
-# /matrix-jwt-service                                                  #
+# matrix-livekit-jwt-service                                           #
+#                                                                      #
+########################################################################
+
+matrix_livekit_jwt_service_enabled: "{{ matrix_element_call_enabled and livekit_server_enabled }}"
+
+matrix_livekit_jwt_service_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+matrix_livekit_jwt_service_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_livekit_jwt_service_path_prefix: "/lk-jwt-service"
+
+matrix_livekit_jwt_service_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+matrix_livekit_jwt_service_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_livekit_jwt_service_container_additional_networks_auto: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_livekit_jwt_service_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [])
+      +
+      ([livekit_server_container_network] if livekit_server_enabled and (matrix_livekit_jwt_service_environment_variable_livekit_url == livekit_server_websocket_container_url and livekit_server_container_network != matrix_livekit_jwt_service_container_network) else [])
+    ) | unique
+  }}
+
+matrix_livekit_jwt_service_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_livekit_jwt_service_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_livekit_jwt_service_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_livekit_jwt_service_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_livekit_jwt_service_environment_variable_livekit_url: "{{ livekit_server_websocket_container_url }}"
+
+matrix_livekit_jwt_service_environment_variable_livekit_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'lk.key', rounds=655555) | to_uuid }}"
+
+matrix_livekit_jwt_service_environment_variable_livekit_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'lk.secret', rounds=655555) | to_uuid }}"
+
+########################################################################
+#                                                                      #
+# /matrix-livekit-jwt-service                                          #
 #                                                                      #
 ########################################################################

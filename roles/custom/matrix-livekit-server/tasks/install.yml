@@ -32,11 +32,43 @@
 - name: Ensure LiveKit Server container image is pulled
   community.docker.docker_image:
     name: "{{ livekit_server_container_image }}"
-    source: pull
-  register: livekit_image_result
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ livekit_server_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else livekit_server_container_image_force_pull }}"
+  when: "not livekit_server_container_image_self_build | bool"
+  register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: livekit_image_result is not failed
+  until: result is not failed
+
+- when: "livekit_server_container_image_self_build | bool"
+  block:
+    - name: Ensure LiveKit Server repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ livekit_server_container_repo }}"
+        version: "{{ livekit_server_container_repo_version }}"
+        dest: "{{ livekit_server_container_src_files_path }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: livekit_server_git_pull_results
+
+    - name: Ensure LiveKit Server container image is built
+      community.docker.docker_image:
+        name: "{{ livekit_server_container_image }}"
+        source: build
+        force_source: "{{ livekit_server_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else livekit_server_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ livekit_server_container_src_files_path }}"
+          pull: true
+
+- name: Ensure LiveKit Server container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ livekit_server_container_network }}"
+    driver: bridge
 
 - name: Ensure LiveKit Server systemd service is installed
   ansible.builtin.template:

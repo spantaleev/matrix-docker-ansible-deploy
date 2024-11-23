@@ -25,16 +25,13 @@ Ensure that the following DNS names have a public IP/FQDN:
 
 ## Adjusting the playbook configuration
 
-NOTE: Element call is dependent on two other services for it to function as intended. In orter to utilise Element Call you need to also enable the [JWT Service](configuring-playbook-jwt-service.md) and [Livekit Server](configuring-playbook-livekit-server.md).
+NOTE: Enabling Element Call will automatically enable the [LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) and Livekit Server services.
 
 
 Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
 
 ```yaml
 matrix_element_call_enabled: true
-
-# Set a secure key for LiveKit authentication
-livekit_server_config_keys_devkey: 'your-secure-livekit-key'
 ```
 
 ## Installing
@@ -43,7 +40,7 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 
 ## Usage
 
-Once installed, Element Call integrates seamlessly with Matrix clients like Element Web. When the Element Call service is installed, the `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc4143.rtc_foci` section is added to point to your JWT service URL (e.g., `https://sfu-jwt.example.com`).
+Once installed, Element Call integrates seamlessly with Matrix clients like [Element Web](configuring-playbook-client-element-web.md). When the Element Call service is installed, the `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc4143.rtc_foci` section is added to point to your LiveKit JWT service URL (e.g., `https://matrix.example.com/lk-jwt-service`).
 
 Additionally, the `/.well-known/element/element.json` file is created to help Element clients discover the Element Call URL (e.g., `https://call.example.com`).
 
@@ -53,7 +50,7 @@ To ensure the services function correctly, the following firewall rules and port
 
 LiveKit:
 
-	•	Forward UDP ports 50100:50200 to the Docker instance running LiveKit.
+	•	Forward UDP ports 50100:50120 to the Docker instance running LiveKit.
 	•	Forward TCP port 7881 to the Docker instance running LiveKit.
 
 Element Call:

@@ -214,7 +214,7 @@ Various services that don't fit any other categories.
 
 - [Setting up the Element Call server](configuring-playbook-element-call.md) (optional)
 
-- [Setting up the JWT Service](configuring-playbook-jwt-service.md) (optional)
+- [Setting up the LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) (optional)
 
 - [Setting up the Livekit server](configuring-playbook-livekit-server.md) (optional)
 
