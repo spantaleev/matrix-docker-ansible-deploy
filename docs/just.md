@@ -4,7 +4,7 @@ We have previously used [make](https://www.gnu.org/software/make/) for easily ru
 
 In addition, we have added support for running commands via [`just`](https://github.com/casey/just) - a more modern command-runner alternative to `make`. It can be used to invoke `ansible-playbook` commands with less typing.
 
-The `just` utility executes shortcut commands (called as "recipes"), which ultimately run `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru). The targets of the recipes are defined in [`justfile`](../justfile). It defines commands, most of which are not available on our `Makefile`.
+The `just` utility executes shortcut commands (called as "recipes"), which ultimately run `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru) (depending on what is available in your system). The targets of the recipes are defined in [`justfile`](../justfile). It defines commands, most of which are not available on our `Makefile`.
 
 For some recipes such as `just update`, our `justfile` recommends to install `agru` to speed up the process.
 
