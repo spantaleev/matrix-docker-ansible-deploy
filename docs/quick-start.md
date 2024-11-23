@@ -171,7 +171,7 @@ After configuring the playbook, run the installation command and wait until it f
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 ```
 
-After the command finishes, you can also check whether your server federates with the Matrix network, by using the [Federation Tester](https://federationtester.matrix.org/).
+After the command finishes, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain.
 
 If you think something is off with the server configuration, feel free to re-run the setup command any time.
 
