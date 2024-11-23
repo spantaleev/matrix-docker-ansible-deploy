@@ -4,9 +4,9 @@ We have previously used [make](https://www.gnu.org/software/make/) for easily ru
 
 In addition, we have added support for running commands via [`just`](https://github.com/casey/just) - a more modern command-runner alternative to `make`. It can be used to invoke `ansible-playbook` commands with less typing.
 
-The `just` utility executes shortcut commands (called as "recipes"), which ultimately run `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru) (depending on what is available in your system). The targets of the recipes are defined in [`justfile`](../justfile). It defines commands, most of which are not available on our `Makefile`.
+The `just` utility executes shortcut commands (called as "recipes"), which invoke `ansible-playbook`, `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru) (depending on what is available in your system). The targets of the recipes are defined in [`justfile`](../justfile). Most of the just recipes have no corresponding `Makefile` targets.
 
-For some recipes such as `just update`, our `justfile` recommends to install `agru` to speed up the process.
+For some recipes such as `just update`, our `justfile` recommends installing [`agru`](https://github.com/etkecc/agru) (a faster alternative to `ansible-galaxy`) to speed up the process.
 
 Here are some examples of shortcuts:
 
@@ -26,7 +26,7 @@ While [our documentation on prerequisites](prerequisites.md) lists `just` as one
 
 ## Difference between playbook tags and shortcuts
 
-It is worth noting that `just` "recipes" are different from [playbook tags](playbook-tags.md) themselves. The recipes are shortcuts of commands defined in `justfile` and can be executed by the `just` program only, while the playbook tags are available for the raw `ansible-playbook` commands as well. Please be careful not to confuse them.
+It is worth noting that `just` "recipes" are different from [playbook tags](playbook-tags.md). The recipes are shortcuts of commands defined in `justfile` and can be executed by the `just` program only, while the playbook tags are available for the raw `ansible-playbook` commands as well. Please be careful not to confuse them.
 
 For example, these two commands are different:
 - `just install-all`
@@ -34,4 +34,4 @@ For example, these two commands are different:
 
 The just recipe runs `ensure-matrix-users-created` and `start` tags after `install-all`, while the latter runs only `install-all` tag. The correct shortcut of the latter is `just run-tags install-all`.
 
-Such kind of difference sometimes matters. For example, when you install a Matrix server, into which you will import old data (see [here](installing.md#installing-a-server-into-which-youll-import-old-data)), you are not supposed to run `just install-all` or `just setup-all`, because these commands start services soon after installing components, and will affect your data which will be manually imported later.
+Such kind of difference sometimes matters. For example, when you install a Matrix server into which you will import old data (see [here](installing.md#installing-a-server-into-which-youll-import-old-data)), you are not supposed to run `just install-all` or `just setup-all`, because these commands start services immediately after installing components which may prevent your from importing old data.
