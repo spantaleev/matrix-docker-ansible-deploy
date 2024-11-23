@@ -165,10 +165,10 @@ To have the base domain served from the integrated web server, add the following
 matrix_static_files_container_labels_base_domain_enabled: true
 ```
 
-After configuring the playbook, run the installation command and wait until it finishes:
+After configuring the playbook, run the command below and wait until it finishes:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
 After the command finishes, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain.

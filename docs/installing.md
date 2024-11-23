@@ -111,10 +111,10 @@ To have the base domain served from the integrated web server, add the following
 matrix_static_files_container_labels_base_domain_enabled: true
 ```
 
-After configuring the playbook, run the installation command:
+After configuring the playbook, run the command below:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
 ## Things to do next
