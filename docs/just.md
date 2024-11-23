@@ -18,6 +18,7 @@ Here are some examples of shortcuts:
 | `just setup-all`                              | Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start`         |
 | `just install-all --ask-vault-pass`           | Run commands with additional arguments (`--ask-vault-pass` will be appended to the above installation command) |
 | `just run-tags install-mautrix-slack,start`   | Run specific playbook tags (here `install-mautrix-slack` and `start`)                                          |
+| `just install-service mautrix-slack`          | Run `just run-tags install-mautrix-slack,start` with even less typing                                          |
 | `just start-all`                              | (Re-)starts all services                                                                                       |
 | `just stop-group postgres`                    | Stop only the Postgres service                                                                                 |
 | `just register-user john secret-password yes` | Registers a `john` user with the `secret-password` password and admin access (admin = `yes`)                   |
