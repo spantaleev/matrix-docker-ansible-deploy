@@ -25,6 +25,8 @@ If it looks good to you, go to the `matrix-docker-ansible-deploy` directory, the
 
   If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
+  For details about `just` commands, take a look at: [Running `just` commands](just.md).
+
 - re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:
 
   ```sh
@@ -33,6 +35,6 @@ If it looks good to you, go to the `matrix-docker-ansible-deploy` directory, the
 
 Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [this page on the playbook tags](playbook-tags.md) for more information.
 
-A way to invoke these `ansible-playbook` commands with less typing is to use [just](https://github.com/casey/just) to run the "recipe": `just install-all` or `just setup-all`. See [our `justfile`](../justfile) for more information. If you don't have `just`, you can also manually run the commands seen in the `justfile`.
+A way to invoke these `ansible-playbook` commands with less typing is to run the `just` "recipe": `just install-all` or `just setup-all`.
 
 **Note**: major version upgrades to the internal PostgreSQL database are not done automatically. To upgrade it, refer to the [upgrading PostgreSQL guide](maintenance-postgres.md#upgrading-postgresql).

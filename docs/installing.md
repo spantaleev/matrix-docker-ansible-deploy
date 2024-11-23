@@ -15,6 +15,8 @@ To update your playbook directory and all upstream Ansible roles (defined in the
 
 If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
+For details about `just` commands, take a look at: [Running `just` commands](just.md).
+
 ## Install Matrix server and services
 
 The Ansible playbook's tasks are tagged, so that certain parts of the Ansible playbook can be run without running all other tasks.
@@ -51,7 +53,7 @@ To do the installation **without** starting services, run `ansible-playbook` wit
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all
 ```
 
-**Note**: do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution.
+**Note**: do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution. See: [Difference between playbook tags and shortcuts](just.md#difference-between-playbook-tags-and-shortcuts)
 
 When this command completes, services won't be running yet.
 
