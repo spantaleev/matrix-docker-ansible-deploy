@@ -10,10 +10,10 @@ For some recipes such as `just update`, our `justfile` recommends to install [ag
 
 Here are some examples of shortcuts:
 
-| Shortcut                                      | Effect                                                                                                         |
+| Shortcut                                      | Result                                                                                                         |
 |-----------------------------------------------|----------------------------------------------------------------------------------------------------------------|
-| `just roles`                                  | Run `make roles` to install the necessary Ansible roles pinned in [`requirements.yml`](../requirements.yml)    |
-| `just update`                                 | Run `git pull` (to update the playbook) and `just roles`                                                       |
+| `just roles`                                  | Install the necessary Ansible roles pinned in [`requirements.yml`](../requirements.yml)                        |
+| `just update`                                 | Run `git pull` (to update the playbook) and install the Ansible roles                                          |
 | `just install-all`                            | Run `ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-users-created,start`       |
 | `just setup-all`                              | Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start`         |
 | `just install-all --ask-vault-pass`           | Run commands with additional arguments (`--ask-vault-pass` will be appended to the above installation command) |
