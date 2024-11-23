@@ -10,15 +10,17 @@ For some recipes such as `just update`, our `justfile` recommends to install [ag
 
 Here are some examples of shortcuts:
 
-- `just roles` - trigger `make roles` to install the necessary Ansible roles pinned in [`requirements.yml`](../requirements.yml)
-- `just update` - run `git pull` to update the playbook and `just roles`
-- `just install-all` - run `ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-users-created,start`
-    - `just install-all --ask-vault-pass` - commands also support additional arguments (`--ask-vault-pass` will be appended to the above installation command)
-- `just setup-all` - run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start`
-- `just run-tags install-mautrix-slack,start` - run specific playbook tags
-- `just start-all` - (re-)starts all services
-- `just stop-group postgres` - stop only the Postgres service
-- `just register-user john secret-password yes` - registers a `john` user with the `secret-password` password and admin access (admin = `yes`)
+| Shortcut                                      | Effect                                                                                                         |
+|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| `just roles`                                  | Run `make roles` to install the necessary Ansible roles pinned in [`requirements.yml`](../requirements.yml)    |
+| `just update`                                 | Run `git pull` (to update the playbook) and `just roles`                                                       |
+| `just install-all`                            | Run `ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-users-created,start`       |
+| `just setup-all`                              | Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start`         |
+| `just install-all --ask-vault-pass`           | Run commands with additional arguments (`--ask-vault-pass` will be appended to the above installation command) |
+| `just run-tags install-mautrix-slack,start`   | Run specific playbook tags (here `install-mautrix-slack` and `start`)                                          |
+| `just start-all`                              | (Re-)starts all services                                                                                       |
+| `just stop-group postgres`                    | Stop only the Postgres service                                                                                 |
+| `just register-user john secret-password yes` | Registers a `john` user with the `secret-password` password and admin access (admin = `yes`)                   |
 
 While [our documentation on prerequisites](prerequisites.md) lists `just` as one of the requirements for installation, using `just` is optional. If you find it difficult to install it, do not find it useful, or want to prefer raw `ansible-playbook` commands for some reason, feel free to run all commands manually. For example, you can run `ansible-galaxy` directly to install the Ansible roles: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`.
 
