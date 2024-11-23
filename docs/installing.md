@@ -1,16 +1,19 @@
 # Installing
 
-<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
+<sup>⚡️[Quick start](quick-start.md) | [Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
 
 If you've configured your DNS records and the playbook, you can start the installation procedure.
 
 ## Update Ansible roles
 
-Before installing, you need to update the Ansible roles in this playbook by running `just roles`.
+Before installing, you need to update the Ansible roles that this playbook uses and fetches from outside.
 
-`just roles` is a shortcut (a `roles` target defined in [`justfile`](../justfile) and executed by the [`just`](https://github.com/casey/just) utility) which ultimately runs [agru](https://github.com/etkecc/agru) or [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) (depending on what is available in your system) to download Ansible roles. If you don't have `just`, you can also manually run the `roles` commands seen in the `justfile`.
+To update your playbook directory and all upstream Ansible roles (defined in the `requirements.yml` file), run:
 
-There's another shortcut (`just update`) which updates the playbook (`git pull`) and updates roles (`just roles`) at the same time.
+- either: `just update`
+- or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)
+
+If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
 ## Install Matrix server and services
 
@@ -74,17 +77,20 @@ As you have configured your brand new server and the client, you need to **creat
 
 After creating the user account, you can log in to it with [Element Web](configuring-playbook-client-element-web.md) that this playbook has installed for you at this URL: `https://element.example.com/`.
 
-To register a user via this Ansible playbook, run the command below on your local computer.
+To create your user account (as an administrator of the server) via this Ansible playbook, run the command below on your local computer.
 
 **Notes**:
-- Before running it, make sure to edit `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
-- In the command below, `YOUR_USERNAME_HERE` is just a plain username (like `john`), not your full `@user:example.com` identifier
+- Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
+- For `YOUR_USERNAME_HERE`, use a plain username like `john`, not your full identifier (`@user:example.com`)
+- Use `admin=yes` to make your user account an administrator of the Matrix server
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=<yes|no>' --tags=register-user
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=yes' --tags=register-user
 
-# Example: `ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user`
+# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
 ```
+
+Feel free to create as many accounts (for friends, family, etc.) as you want. Still, perhaps you should grant full administrative access to your account only (with `admin=yes`), and others should be created with `admin=no`.
 
 For more information, see the documentation for [registering users](registering-users.md).
 
@@ -94,20 +100,21 @@ Now you've configured Matrix services and your user account, you need to **final
 
 This is required for federation to work! Without a proper configuration, your server will effectively not be part of the Matrix network.
 
-If you need the base domain for anything else such as hosting a website, you have to configure it manually, following the procedure described on the linked documentation.
+To configure the delegation, you have these two options. Choose one of them according to your situation.
 
-However, if you do not need the base domain for anything else, the easiest way of configuring it is to [serve the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
+- If you can afford to point the base domain at the Matrix server, follow the instructions below which guide you into [serving the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
+- Alternatively, if you're using the base domain for other purposes and cannot point it to the Matrix server (and thus cannot "serve the base domain" from it), you most likely need to [manually install well-known files on the base domain's server](configuring-well-known.md#manually-installing-well-known-files-on-the-base-domains-server), but feel free to familiarize yourself with all [server delegation (redirection) options](howto-server-delegation.md).
 
-To configure server delegation in this way, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To have the base domain served from the integrated web server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_static_files_container_labels_base_domain_enabled: true
 ```
 
-After configuring the playbook, run the installation command:
+After configuring the playbook, run the command below:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
 ## Things to do next
@@ -125,8 +132,12 @@ After finilizing the installation, you can:
 
 ### Maintaining your setup in the future
 
-Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match. To update the playbook and the Ansible roles in the playbook, simply run `just roles`.
+While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**.
 
-Note that if you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [this page on the playbook tags](playbook-tags.md) for more information.
+The upstream projects, which this playbook makes use of, occasionally if not often suffer from security vulnerabilities.
 
-A way to invoke these `ansible-playbook` commands with less typing in the future is to use [just](https://github.com/casey/just) to run the "recipe": `just install-all` or `just setup-all`. See [our `justfile`](../justfile) for more information.
+Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
+
+For more information about upgrading or maintaining services with the playbook, take at look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
+
+Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match.

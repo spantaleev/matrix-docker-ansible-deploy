@@ -1,6 +1,6 @@
 # Configuring your DNS settings
 
-<sup>⚡️[Quick start](README.md) | [Prerequisites](prerequisites.md) > Configuring your DNS settings > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
+<sup>⚡️[Quick start](quick-start.md) | [Prerequisites](prerequisites.md) > Configuring your DNS settings > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 To set up Matrix on your domain, you'd need to do some DNS configuration.
 
@@ -36,7 +36,7 @@ The `element.example.com` subdomain is necessary, because this playbook installs
 
 Be mindful as to how long it will take for the DNS records to propagate.
 
-If you are using Cloudflare DNS, make sure to disable the proxy and set all records to `DNS only`. Otherwise, fetching certificates will fail.
+If you are using Cloudflare DNS, make sure to disable the proxy and set all records to "DNS only". Otherwise, fetching certificates will fail.
 
 ## DNS settings for optional services/features
 
