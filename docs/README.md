@@ -1,34 +1,26 @@
 # Table of Contents
 
-- [FAQ](faq.md) - lots of questions and answers. Jump to [Prerequisites](prerequisites.md) to avoid reading too much and to just start a guided installation.
+- [FAQ](faq.md) - lots of questions and answers. Follow installation guides to avoid reading too much and to just start a guided installation.
 
-- [Quick start](quick-start.md) - follow the guide to set up minimum core services on your server
+## ⬇️ Installaton guides <!-- NOTE: the 🚀 emoji is used by "Getting started" on README.md -->
 
-- [Prerequisites](prerequisites.md) - go here to a guided installation using this Ansible playbook
+There are two installation guides available for beginners and advanced users.
 
-- [Configuring your DNS settings](configuring-dns.md)
+- ⚡ **[Quick start](quick-start.md) (for beginners)**: this is recommended for those who do not have an existing Matrix server and want to start quickly with "opinionated defaults".
 
-- [Getting this playbook's source code](getting-the-playbook.md)
+- **Full installation guide (for advanced users)**: if you need to import an existing Matrix server's data into the new server or want to learn more while setting up the server, follow this guide.
 
-- [Configuring the playbook](configuring-playbook.md)
+    - [Prerequisites](prerequisites.md)
 
-- [Installing](installing.md)
+    - [Configuring your DNS settings](configuring-dns.md)
 
-  - **Importing data from another server installation**
+    - [Getting this playbook's source code](getting-the-playbook.md)
 
-    - [Importing an existing SQLite database (from another Synapse installation)](importing-synapse-sqlite.md) (optional)
+    - [Configuring the playbook](configuring-playbook.md)
 
-    - [Importing an existing Postgres database (from another installation)](importing-postgres.md) (optional)
+    - [Installing](installing.md)
 
-    - [Importing `media_store` data files from an existing Synapse installation](importing-synapse-media-store.md) (optional)
-
-  - [Server Delegation](howto-server-delegation.md)
-
-    - Server Delegation via a well-known file (recommended): [Installing well-known files on the base domain's server](configuring-well-known.md#installing-well-known-files-on-the-base-domain-s-server)
-
-      - [Serving the base domain](configuring-playbook-base-domain-serving.md)
-
-    - [Server Delegation via a DNS SRV record (advanced)](howto-srv-server-delegation.md)
+## Other documentations <!-- NOTE: this header's title and the section below need optimization -->
 
 - [Playbook tags](playbook-tags.md)
 
