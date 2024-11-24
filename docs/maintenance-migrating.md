@@ -36,7 +36,7 @@ Then, copy directory `/matrix` from the old server to the new server. When copyi
 
 Make sure your DNS records are adjusted to point to the new server's IP address.
 
-## Update `hosts` file
+## Update `inventory/hosts` file
 
 Having adjusted DNS records, replace the old server's external IP address on the `inventory/hosts` file with that of the new server.
 
