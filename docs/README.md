@@ -18,7 +18,21 @@ There are two installation guides available for beginners and advanced users.
 
     - [Installing](installing.md)
 
-## Other documentations <!-- NOTE: this header's title and the section below need optimization -->
+## 👨‍🔧 Maintenance
+
+If your server and services experience issues, feel free to come to [our support room](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) and ask for help.
+
+- [Checking if services work](maintenance-checking-services.md)
+
+- [Upgrading services](maintenance-upgrading-services.md)
+
+- [Synapse maintenance](maintenance-synapse.md)
+
+- [PostgreSQL maintenance](maintenance-postgres.md)
+
+- [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
+
+## Other documentation pages <!-- NOTE: this header's title and the section below need optimization -->
 
 - [FAQ](faq.md) - lots of questions and answers. Follow installation guides to avoid reading too much and to just start a guided installation.
 
@@ -27,15 +41,5 @@ There are two installation guides available for beginners and advanced users.
 - [Registering users](registering-users.md)
 
 - [Updating users passwords](updating-users-passwords.md)
-
-- [Maintenance / checking if services work](maintenance-checking-services.md)
-
-- [Maintenance / upgrading services](maintenance-upgrading-services.md)
-
-- [Maintenance / Synapse](maintenance-synapse.md)
-
-- [Maintenance / PostgreSQL](maintenance-postgres.md)
-
-- [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
 
 - [Uninstalling](uninstalling.md)
