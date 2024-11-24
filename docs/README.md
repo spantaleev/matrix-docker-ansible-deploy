@@ -67,9 +67,19 @@ If your server and services experience issues, feel free to come to [our support
 
 <!-- NOTE: sort list items under faq.md alphabetically -->
 
+- [Alternative architectures](alternative-architectures.md)
+
+- [Container images used by the playbook](container-images.md)
+
+- [Obtaining an Access Token](obtaining-access-tokens.md)
+
 - [Playbook tags](playbook-tags.md)
 
 - [Registering users](registering-users.md)
+
+- [Running `just` commands](just.md)
+
+- [Self-building](self-building.md)
 
 - [Uninstalling](uninstalling.md)
 
