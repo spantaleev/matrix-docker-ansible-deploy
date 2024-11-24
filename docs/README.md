@@ -1,7 +1,5 @@
 # Table of Contents
 
-- [FAQ](faq.md) - lots of questions and answers. Follow installation guides to avoid reading too much and to just start a guided installation.
-
 ## ⬇️ Installaton guides <!-- NOTE: the 🚀 emoji is used by "Getting started" on README.md -->
 
 There are two installation guides available for beginners and advanced users.
@@ -21,6 +19,8 @@ There are two installation guides available for beginners and advanced users.
     - [Installing](installing.md)
 
 ## Other documentations <!-- NOTE: this header's title and the section below need optimization -->
+
+- [FAQ](faq.md) - lots of questions and answers. Follow installation guides to avoid reading too much and to just start a guided installation.
 
 - [Playbook tags](playbook-tags.md)
 
