@@ -25,6 +25,8 @@ Please remember to replace `example.com` with your own domain before running any
 
 At first, **check prerequisites** and prepare for installation by setting up programs [on your own computer](prerequisites.md#your-local-computer) and [your server](prerequisites.md#server). You also need `root` access on your server (a user that could elevate to `root` via `sudo` also works).
 
+When preparing your server, make sure to check [the server specs you need](faq.md#what-kind-of-server-specs-do-i-need). We recommend starting with a server having at least 2GB of memory.
+
 <!--
 TODO: Add one liners (or instructions, a script, etc.) for easy and consistent installation of required software. See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3757
 -->
