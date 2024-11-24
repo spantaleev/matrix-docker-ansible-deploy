@@ -173,7 +173,7 @@ After configuring the playbook, run the command below and wait until it finishes
 ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
-💡 Running the `install-matrix-static-files` playbook tag (as done here) is an optimized version of running [the full setup command](#run-the-installation-command).
+💡 Running the `install-matrix-static-files` playbook tag (as done here) is an optimized version of running [the full setup command](#run-installation-command).
 
 After the command finishes, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain.
 
