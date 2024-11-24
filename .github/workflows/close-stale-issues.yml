@@ -1,11 +1,14 @@
 ---
-name: 'Close stale issues'
+name: 'Close stale issues and PRs'
 on:  # yamllint disable-line rule:truthy
+  # Use this to do a dry run from a pull request
+  # pull_request:
   schedule:
     - cron: '30 1 * * *'
 
 permissions:
   issues: write
+  pull-requests: write
 
 jobs:
   stale:
@@ -14,14 +17,36 @@ jobs:
     steps:
       - uses: actions/stale@v9
         with:
-          # Don't process pull requests at all
-          days-before-pr-stale: -1
+          ######################################################################
+          # Issues/PRs
+          ######################################################################
+          exempt-assignees: 'spantaleev,aine-etke'
+          operations-per-run: 100
+          # An allow-list of label(s) to only process the issues/PRs which contain one of these label(s).
+          any-of-labels: 'needs-info'
+          # Use this to do a dry run from a pull request
+          # debug-only: true
+          ######################################################################
+          # Issues
+          ######################################################################
           stale-issue-message: 'This issue is stale because it has been open 60 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
           close-issue-message: 'This issue was closed because it has been stalled for 7 days with no activity. If this issue is still reproduced, feel free to provide the issue with up-to-date information.'
           stale-issue-label: 'stale'
           # Add this label to exempt the issue from being marked as stale due to inactivity
           exempt-issue-labels: 'confirmed'
           # An allow-list of label(s) to only process the issues which contain one of these label(s).
-          any-of-issue-labels: 'question,needs-info'
-          # Use this to do a dry run from a pull request
-          # debug-only: true
+          any-of-issue-labels: 'question'
+          ######################################################################
+          # PRs
+          ######################################################################
+          days-before-pr-stale: '365'
+          days-before-pr-close: '30'
+          stale-pr-message: 'This PR is stale because it has been open a year with no activity. Remove stale label or this will be closed in 30 days.'
+          close-pr-message: 'This PR was closed because it has been stalled for 30 days with no activity.'
+          stale-pr-label: 'stale'
+          # Add this label to exempt the PR from being marked as stale due to inactivity
+          exempt-pr-labels: 'confirmed'
+          # An allow-list of label(s) to only process the PRs which contain one of these label(s).
+          any-of-pr-labels: 'needs-rebase'
+          # Use this to ignore updates such as comments (only to keep the PR alive by bumping)
+          ignore-pr-updates: true
