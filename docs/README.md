@@ -63,7 +63,7 @@ If your server and services experience issues, feel free to come to [our support
 
 ## Other documentation pages <!-- NOTE: this header's title and the section below need optimization -->
 
-- ℹ️ **[FAQ](faq.md)** - lots of questions and answers. Follow installation guides to avoid reading too much and to just start a guided installation.
+- ℹ️ **[FAQ](faq.md)** - various Frequently Asked Questions about Matrix, with a focus on this Ansible playbook
 
 <!-- NOTE: sort list items under faq.md alphabetically -->
 
