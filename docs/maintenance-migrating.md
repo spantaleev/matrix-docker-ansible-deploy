@@ -44,7 +44,7 @@ Having adjusted DNS records, replace the old server's external IP address on the
 
 ## Create `matrix` user and group on the new server
 
-After updating `inventory/hosts` file, run the command below to create the `matrix` user and group on the new server:
+After updating `inventory/hosts` file, run the command below on your local computer to create the `matrix` user and group on the new server:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-system-user
@@ -58,7 +58,7 @@ chown -R matrix:matrix /matrix
 
 ## Start all services on the new server
 
-Finally, run the command below to finish the installation and start all services:
+Finally, run the command below on your local computer to finish the installation and start all services:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
