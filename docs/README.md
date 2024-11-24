@@ -49,24 +49,28 @@ You can check useful documentation for configuring components here: [Configuring
 
 If your server and services experience issues, feel free to come to [our support room](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) and ask for help.
 
+<!-- NOTE: sort list items alphabetically -->
+
 - [Checking if services work](maintenance-checking-services.md)
 
-- [Upgrading services](maintenance-upgrading-services.md)
-
-- [Synapse maintenance](maintenance-synapse.md)
+- [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
 
 - [PostgreSQL maintenance](maintenance-postgres.md)
 
-- [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
+- [Synapse maintenance](maintenance-synapse.md)
+
+- [Upgrading services](maintenance-upgrading-services.md)
 
 ## Other documentation pages <!-- NOTE: this header's title and the section below need optimization -->
 
 - [FAQ](faq.md) - lots of questions and answers. Follow installation guides to avoid reading too much and to just start a guided installation.
 
+<!-- NOTE: sort list items under faq.md alphabetically -->
+
 - [Playbook tags](playbook-tags.md)
 
 - [Registering users](registering-users.md)
 
-- [Updating users passwords](updating-users-passwords.md)
-
 - [Uninstalling](uninstalling.md)
+
+- [Updating users passwords](updating-users-passwords.md)
