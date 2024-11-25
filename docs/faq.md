@@ -72,7 +72,7 @@ To get started with the playbook, start at the [Prerequisites](prerequisites.md)
 
 [Ansible](https://www.ansible.com/) is an automation program. This "playbook" is a collection of tasks/scripts that will set up a [Matrix](https://matrix.org/) server for you, so you don't have to perform these tasks manually.
 
-We have written these automated tasks for you and all you need to do is execute them using the Ansible program.
+We have written these automated tasks for you and all you need to do is execute them using the Ansible program. Note that running the playbook requires both `ansible-core` and `ansible`.
 
 You can install Ansible and this playbook code repository on your own computer and tell it to install Matrix services at the server living at `matrix.example.com`. We recommend installing Ansible on your own computer.
 
