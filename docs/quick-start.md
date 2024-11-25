@@ -25,6 +25,8 @@ Please remember to replace `example.com` with your own domain before running any
 
 At first, **check prerequisites** and prepare for installation by setting up programs [on your own computer](prerequisites.md#your-local-computer) and [your server](prerequisites.md#server). You also need `root` access on your server (a user that could elevate to `root` via `sudo` also works).
 
+When preparing your server, make sure to check [the server specs you need](faq.md#what-kind-of-server-specs-do-i-need). We recommend starting with a server having at least 2GB of memory.
+
 <!--
 TODO: Add one liners (or instructions, a script, etc.) for easy and consistent installation of required software. See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3757
 -->
@@ -171,7 +173,7 @@ After configuring the playbook, run the command below and wait until it finishes
 ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
-💡 Running the `install-matrix-static-files` playbook tag (as done here) is an optimized version of running [the full setup command](#run-the-installation-command).
+💡 Running the `install-matrix-static-files` playbook tag (as done here) is an optimized version of running [the full setup command](#run-installation-command).
 
 After the command finishes, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain.
 
