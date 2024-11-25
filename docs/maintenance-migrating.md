@@ -56,7 +56,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-system-user
 chown -R matrix:matrix /matrix
 ```
 
-## Start all services on the new server
+## Install and start all services on the new server
 
 Finally, run the command below on your local computer to finish the installation and start all services:
 
