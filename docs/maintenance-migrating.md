@@ -6,31 +6,27 @@ This documentation explains how to migrate your Matrix services (server, client,
 - This migration guide is applicable if you migrate from one server to another server having the same CPU architecture (e.g. both servers being `amd64`).
 
   If you're trying to migrate between different architectures (e.g. `amd64` --> `arm64`), simply copying the complete `/matrix` directory is **not** possible as it would move the raw PostgreSQL data (`/matrix/postgres/data`) between different architectures. In this specific case, you can use the guide below as a reference, but you would also need to avoid syncing `/matrix/postgres/data` to the new host, and also dump the database on your current server and import it properly on the new server. See our [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql) docs for help with PostgreSQL backup/restore.
-- If you have any questions about migration or encountered an issue during migration, do not hesitate to ask for help on [our Matrix room](https://matrix.to/#/%23matrix-docker-ansible-deploy:devture.com).
+- If you have any questions about migration or encountered an issue during migration, do not hesitate to ask for help on [our Matrix room](https://matrix.to/#/%23matrix-docker-ansible-deploy:devture.com). You probably might want to prepare a temporary/sub account on another Matrix server in case it becomes impossible to use your server due to migration failure by any chance.
 
 ## Lower DNS TTL
 
 Prepare by lowering DNS TTL for your domains (`matrix.example.com`, etc.), so that DNS record changes would happen faster, leading to less downtime.
 
-## Stop services on the old server
+## Stop services on the old server completely
 
 Before migrating, you need to stop all services on the old server and make sure they won't be starting again.
 
-To stop the services, go to the `matrix-docker-ansible-deploy` directory on your local computer, and run the command:
+To do so, it is recommended to run the `systemctl` command on the server. Running the playbook with `stop` tag does also stop the services, but just once; they will start again if you reboot the server.
+
+Log in to the old server and run the command as `root` (or a user that can run it with `sudo`):
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=stop
-```
-
-Alternatively, you can log in to the old server and run the command (you might have to `cd` to `/etc/systemd/system/` first):
-
-```sh
-systemctl disable --now matrix*
+cd /etc/systemd/system/ && systemctl disable --now matrix*
 ```
 
 ## Copy data directory to the new server
 
-Then, copy directory `/matrix` from the old server to the new server. When copying, make sure to preserve ownership and permissions (use `cp -p` or `rsync -ar`)!
+After you confirmed that all services were stopped, copy directory `/matrix` from the old server to the new server. When copying, make sure to preserve ownership and permissions (use `cp -p` or `rsync -ar`)!
 
 ## Adjust DNS records
 
@@ -44,7 +40,7 @@ Having adjusted DNS records, replace the old server's external IP address on the
 
 ## Create `matrix` user and group on the new server
 
-After updating `inventory/hosts` file, run the command below on your local computer to create the `matrix` user and group on the new server:
+Then, run the command below on your local computer to create the `matrix` user and group on the new server:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-system-user
