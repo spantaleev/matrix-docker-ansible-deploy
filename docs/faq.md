@@ -66,7 +66,7 @@ There are [many guides about installing Synapse](https://matrix.org/docs/guides/
 
 Naturally, we're biased, so our usual recommendation is to go with this [Ansible](https://www.ansible.com/) playbook, instead of installing Synapse (and many many other things around it) manually.
 
-To get started with the playbook, check out the [Quick start](quick-start.md) (or [Prerequisites](prerequisites.md)) page.
+To get started with the playbook, check out the [Quick start](quick-start.md) or full installation guide (starting at the [Prerequisites](prerequisites.md) page).
 
 ### What is Ansible? How does it work?
 
@@ -385,7 +385,7 @@ There are two guides available:
 
 Yes, you can.
 
-You generally need to do a playbook installation (start at the [Quick start](quick-start.md) or [Prerequisites](prerequisites.md) page), followed by importing your existing data into it.
+You generally need to do a playbook installation. It's recommended to follow the full installation guide (starting at the [Prerequisites](prerequisites.md) page), not the [Quick start](quick-start.md) guide. The full installation guide will tell you when it's time to import your existing data into the newly-prepared server.
 
 This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
