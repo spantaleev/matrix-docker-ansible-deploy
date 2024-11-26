@@ -25,9 +25,12 @@ We have detailed documentation in the [docs/](./docs) directory - see the Table 
 While the [list of supported services](#-supported-services) and documentation is very extensive, you don't need to read through everything. We recommend:
 
 - Starting with the basics. You can always add/remove or tweak services later on.
-- Following our guided installation, starting with the [Prerequisites](./docs/prerequisites.md) documentation page
 
-If you have never configured Matrix services, follow the [**quick start**](./docs/quick-start.md) guide to set up minimum core services on your server.
+- Following our installation guide. There are two guides available for beginners and advanced users:
+
+    - ⚡ **[Quick start](./docs/quick-start.md) (for beginners)**: this is recommended for those who do not have an existing Matrix server and want to start quickly with "opinionated defaults".
+
+    - **Full installation guide (for advanced users)**: if you need to import an existing Matrix server's data into the new server or want to learn more while setting up the server, follow this guide by starting with the **[Prerequisites](./docs/prerequisites.md)** documentation page.
 
 ## ✔ Supported services
 
