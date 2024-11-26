@@ -1,10 +1,12 @@
 # Prerequisites
 
-<sup>⚡️[Quick start](quick-start.md) | Prerequisites > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
+<sup>Prerequisites > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 To install Matrix services using this Ansible playbook, you need to prepare several requirements both on your local computer (where you will run the playbook to configure the server) and the server (where the playbook will install the Matrix services for you). **These requirements need to be set up manually** before proceeding to the next step.
 
 We will be using `example.com` as the domain in the following instruction. Please remember to replace it with your own domain before running any commands.
+
+**Note**: if you do not have an existing Matrix server and want to start quickly with "opinionated defaults", we suggest you to follow ⚡ **[Quick start](quick-start.md)** installation guide.
 
 ## Your local computer
 

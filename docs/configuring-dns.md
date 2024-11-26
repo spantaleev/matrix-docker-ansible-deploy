@@ -1,6 +1,6 @@
 # Configuring your DNS settings
 
-<sup>⚡️[Quick start](quick-start.md) | [Prerequisites](prerequisites.md) > Configuring your DNS settings > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
+<sup>[Prerequisites](prerequisites.md) > Configuring your DNS settings > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 To set up Matrix on your domain, you'd need to do some DNS configuration.
 
