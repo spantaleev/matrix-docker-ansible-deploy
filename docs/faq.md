@@ -6,8 +6,7 @@ This FAQ page does not intend to replace the [matrix.org FAQ](https://matrix.org
 
 We've only started this FAQ recently, so it's still somewhat empty.
 
-Also, we encourage you to not dig yourself into a hole by reading way too much. When you've heard enough, proceed to [Prerequisites](prerequisites.md) to get guided into installing Matrix.
-
+Also, we encourage you to not dig yourself into a hole by reading way too much. When you've heard enough, proceed to installation. To get started, see [below](#how-do-i-run-the-installation) about our installation guides.
 
 ## Introductory
 
@@ -66,7 +65,8 @@ Normally, you'd first choose the [Matrix](https://matrix.org/) server software y
 There are [many guides about installing Synapse](https://matrix.org/docs/guides/#installing-synapse). Using this Ansible playbook is just one way of doing it.
 
 Naturally, we're biased, so our usual recommendation is to go with this [Ansible](https://www.ansible.com/) playbook, instead of installing Synapse (and many many other things around it) manually.
-To get started with the playbook, start at the [Prerequisites](prerequisites.md) page.
+
+To get started with the playbook, check out the [Quick start](quick-start.md) or full installation guide (starting at the [Prerequisites](prerequisites.md) page).
 
 ### What is Ansible? How does it work?
 
@@ -373,13 +373,19 @@ Check each role's `roles/*/*/defaults/main.yml` for the corresponding variable a
 
 See [Installing](installing.md) to learn how to use Ansible to install Matrix services.
 
-Of course, don't just jump straight to Installing. Rather, start at [Prerequisites](prerequisites.md) and get guided from there (into [setting up DNS](configuring-dns.md), [configuring the playbook](configuring-playbook.md), etc).
+However, we recommend you to follow our installation guide, instead of jumping straight to installing.
+
+There are two guides available:
+
+- ⚡ **[Quick start](quick-start.md)** (for beginners): this is recommended for those who do not have an existing Matrix server and want to start quickly with "opinionated defaults".
+
+- **Full installation guide (for advanced users)**: if you need to import an existing Matrix server's data into the new server or want to learn more while setting up the server, follow this guide by starting with the **[Prerequisites](prerequisites.md)** documentation page.
 
 ### I installed Synapse some other way. Can I migrate such a setup to the playbook?
 
 Yes, you can.
 
-You generally need to do a playbook installation (start at the [Prerequisites](prerequisites.md) page), followed by importing your existing data into it.
+You generally need to do a playbook installation. It's recommended to follow the full installation guide (starting at the [Prerequisites](prerequisites.md) page), not the [Quick start](quick-start.md) guide. The full installation guide will tell you when it's time to import your existing data into the newly-prepared server.
 
 This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
