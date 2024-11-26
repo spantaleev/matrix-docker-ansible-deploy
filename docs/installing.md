@@ -1,6 +1,6 @@
 # Installing
 
-<sup>⚡️[Quick start](quick-start.md) | [Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
+<sup>[Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
 
 If you've configured your DNS records and the playbook, you can start the installation procedure.
 
