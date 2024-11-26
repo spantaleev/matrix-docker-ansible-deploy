@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.119.0
+matrix_synapse_version: v1.120.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -1010,10 +1010,10 @@ matrix_synapse_workers_media_repository_workers_container_arguments: []
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_enable_media_repo: "{{ not matrix_synapse_ext_media_repo_enabled and (not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length == 0)) }}"
 
-# matrix_synapse_enable_authenticated_media controls if authenticated media is enabled. If enabled all "old" media remains accessible over the legacy endpoints but new media is blocked.
+# matrix_synapse_enable_authenticated_media controls if authenticated media is enabled.
+# If enabled all "old" media remains accessible over the legacy endpoints but new media is blocked.
 # while this option is enabled all media access and downloads have to be done via authenticated endpoints.
-# FIX_ME_WHEN_DEFAULT_TRUE: This option is going to become set to default true in Synapse at a later date.
-matrix_synapse_enable_authenticated_media: false
+matrix_synapse_enable_authenticated_media: true
 
 # matrix_synapse_media_instance_running_background_jobs populates the `media_instance_running_background_jobs` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `media_instance_running_background_jobs` is meant to point to a single media-repository worker, which is dedicated to running background tasks that maintain the media repository.

@@ -1,3 +1,22 @@
+# 2024-11-26
+
+## (Backward Compatibility Break) Synapse now defaults to enabling authenticated media
+
+**TLDR**: with this update, your Synapse homeserver will start requiring authentication for newly-uploaded media files. While the majority of the ecosystem (clients, bots, etc.) should support this, certain software may lack support for it (and you may wish to turn it off, if it's causing issues).
+
+The default configuration for the Synapse homeserver now [enforces Authenticated media by default](https://element-hq.github.io/synapse/v1.120/upgrade.html#authenticated-media-is-now-enforced-by-default).
+
+Servers like `matrix.org` have already [sunset unauthenticated media](https://matrix.org/blog/2024/06/26/sunsetting-unauthenticated-media/) months ago.
+
+Now that **various clients, bots, bridges and extra services have caught up with authenticated media support**, Synapse developers seem confident that it's time to enable authenticated media by default.
+
+We're changing the playbook configuration for authenticated media to keep up with upstream defaults changing.
+
+Old and unmaintained bridges (like all mx-puppet bridges, etc.) do not support authenticated media. Other software may be similarly affected. If you experience issues with some Matrix-related software, you may wish to disable authenticated media and contact the software maintainers to let them know.
+
+You can disable authenticated media at any time by setting `matrix_synapse_enable_authenticated_media: false` in your `vars.yml` configuration file and re-running the playbook.
+
+
 # 2024-11-23
 
 ## (Backward Compatibility Break) The playbook now defaults to Valkey, instead of KeyDB
