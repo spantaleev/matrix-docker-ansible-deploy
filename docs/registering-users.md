@@ -16,7 +16,7 @@ Table of contents:
 
 **Notes**:
 - Make sure to adjust `USERNAME_HERE` and `PASSWORD_HERE`
-- For `USERNAME_HERE`, use a plain username like `john`, not a full identifier (`@user:example.com`)
+- For `USERNAME_HERE`, use a plain username like `alice`, not a full identifier (`@alice:example.com`)
 - Use `admin=yes` or `admin=no` depending on whether you wish to make the user an administrator of the Matrix server
 
 After registering a user (using one of the methods below), **you can log in with that user** via the [Element Web](configuring-playbook-client-element-web.md) service that this playbook has installed for you at a URL like this: `https://element.example.com/`.
@@ -30,7 +30,7 @@ To register a user via this Ansible playbook:
 ```sh
 just register-user USERNAME_HERE PASSWORD_HERE <admin access: yes or no>
 
-# Example: `just register-user john secret-password yes`
+# Example: `just register-user alice secret-password yes`
 ```
 
 **or** by invoking `ansible-playbook` manually:
@@ -38,7 +38,7 @@ just register-user USERNAME_HERE PASSWORD_HERE <admin access: yes or no>
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=USERNAME_HERE password=PASSWORD_HERE admin=<yes|no>' --tags=register-user
 
-# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
+# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=alice password=secret-password admin=yes' --tags=register-user
 ```
 
 Feel free to register as many users (for friends, family, etc.) as you want. Still, perhaps you should grant full administrative access to your user account only (with `admin=yes`), and others should be created with `admin=no`.
@@ -52,7 +52,7 @@ If you're using the [Synapse](configuring-playbook-synapse.md) homeserver implem
 ```sh
 /matrix/synapse/bin/register-user USERNAME_HERE PASSWORD_HERE <admin access: 0 or 1>
 
-# Example: `/matrix/synapse/bin/register-user john secret-password 1`
+# Example: `/matrix/synapse/bin/register-user alice secret-password 1`
 ```
 
 ### Registering users manually for Dendrite
@@ -62,7 +62,7 @@ If you're using the [Dendrite](./configuring-playbook-dendrite.md) homeserver im
 ```sh
 /matrix/dendrite/bin/create-account USERNAME_HERE PASSWORD_HERE <admin access: 0 or 1>
 
-# Example: `/matrix/dendrite/bin/create-account john secret-password 1`
+# Example: `/matrix/dendrite/bin/create-account alice secret-password 1`
 ```
 
 ### Registering users manually for Matrix Authentication Service
@@ -72,7 +72,7 @@ If you're using the [Matrix Authentication Service](./configuring-playbook-matri
 ```sh
 /matrix/matrix-authentication-service/bin/register-user USERNAME_HERE PASSWORD_HERE <admin access: 0 or 1>
 
-# Example: `/matrix/matrix-authentication-service/bin/register-user john secret-password 1`
+# Example: `/matrix/matrix-authentication-service/bin/register-user alice secret-password 1`
 ```
 
 This `register-user` script actually invokes the `mas-cli manage register-user` command under the hood. If you'd like more control over the registration process, consider invoking the `mas-cli` command directly:

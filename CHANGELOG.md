@@ -1354,7 +1354,7 @@ Our [justfile](justfile) already defines some additional helpful **shortcut** co
 - `just run-tags install-mautrix-slack,start` - to run specific playbook tags
 - `just start-all` - (re-)starts all services
 - `just stop-group postgres` - to stop only the Postgres service
-- `just register-user john secret-password yes` - registers a `john` user with the `secret-password` password and admin access (admin = `yes`)
+- `just register-user alice secret-password yes` - registers an `alice` user with the `secret-password` password and admin access (admin = `yes`)
 
 Additional helpful commands and shortcuts may be defined in the future.
 
