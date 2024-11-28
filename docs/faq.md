@@ -232,11 +232,7 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 
 It's the same with email servers. Your email address is likely `name@company.com`, not `name@mail.company.com`, even though it's `mail.company.com` that is really handling your data for `@company.com` email to work.
 
-Using a separate domain name is easier to manage (although it's a little hard to get right at first) and keeps your Matrix server isolated from your website (if you have one), from your email server (if you have one), etc.
-
-By default, this playbook sets up services on your Matrix server (`matrix.example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up [Server Delegation](howto-server-delegation.md). This is normally done by [configuring well-known](configuring-well-known.md) files on the base domain.
-
-If you'd really like to install Matrix services directly on the base domain (or need to do so), see [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
+Using a separate domain name is easier to manage (although it's a little hard to get right at first) and keeps your Matrix server isolated from your website (if you have one), from your email server (if you have one), etc. Therefore, this playbook sets up services on your Matrix server (`matrix.example.com`) by default.
 
 ### I don't control anything on the base domain and can't set up delegation to matrix.example.com. What do I do?
 
