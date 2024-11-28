@@ -4,6 +4,12 @@
 matrix_client_schildichat_enabled: true
 
 matrix_client_schildichat_container_image_self_build: false
+matrix_client_schildichat_container_image_self_build_repo: "https://github.com/SchildiChat/schildichat-desktop.git"
+matrix_client_schildichat_container_image_self_build_version: "{{ 'lite' if matrix_client_schildichat_version == 'latest' else ('v' + matrix_client_schildichat_version) }}"
+# Controls whether to patch webpack.config.js when self-building, so that building can pass on low-memory systems (< 4 GB RAM):
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1357
+# - https://github.com/element-hq/element-web/issues/19544
+matrix_client_schildichat_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_memtotal_mb < 4096 }}"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/schildichat-web
 matrix_client_schildichat_version: 1.11.36-sc.3
@@ -12,7 +18,7 @@ matrix_client_schildichat_docker_image_name_prefix: "{{ 'localhost/' if matrix_c
 matrix_client_schildichat_docker_image_force_pull: "{{ matrix_client_schildichat_docker_image.endswith(':latest') }}"
 
 matrix_client_schildichat_data_path: "{{ matrix_base_data_path }}/client-schildichat"
-matrix_client_schildichat_docker_src_files_path: "{{ matrix_client_schildichat_data_path }}/docker-src"
+matrix_client_schildichat_container_src_files_path: "{{ matrix_client_schildichat_data_path }}/docker-src"
 
 # The base container network
 matrix_client_schildichat_container_network: ''

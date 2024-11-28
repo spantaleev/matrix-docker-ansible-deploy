@@ -9,10 +9,10 @@
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {path: "{{ matrix_client_schildichat_data_path }}", when: true}
-    - {path: "{{ matrix_client_schildichat_docker_src_files_path }}", when: "{{ matrix_client_schildichat_container_image_self_build }}"}
+    - {path: "{{ matrix_client_schildichat_container_src_files_path }}", when: "{{ matrix_client_schildichat_container_image_self_build }}"}
   when: "item.when | bool"
 
-- name: Ensure SchildiChat Web Docker image is pulled
+- name: Ensure SchildiChat Web container image is pulled
   community.docker.docker_image:
     name: "{{ matrix_client_schildichat_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -24,40 +24,40 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
-- name: Ensure SchildiChat Web repository is present on self-build
-  ansible.builtin.git:
-    repo: "{{ matrix_client_schildichat_container_image_self_build_repo }}"
-    dest: "{{ matrix_client_schildichat_docker_src_files_path }}"
-    version: "{{ matrix_client_schildichat_docker_image.split(':')[1] }}"
-    force: "yes"
-  become: true
-  become_user: "{{ matrix_user_username }}"
-  register: matrix_client_schildichat_git_pull_results
-  when: "matrix_client_schildichat_container_image_self_build | bool"
+- when: "matrix_client_schildichat_container_image_self_build | bool"
+  block:
+    - name: Ensure SchildiChat Web repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_client_schildichat_container_image_self_build_repo }}"
+        dest: "{{ matrix_client_schildichat_container_src_files_path }}"
+        version: "{{ matrix_client_schildichat_container_image_self_build_version }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_username }}"
+      register: matrix_client_schildichat_git_pull_results
 
-# See:
-# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1357
-# - https://github.com/vector-im/schildichat-web/issues/19544 -- # Update (2023-12-15): 404
-- name: Patch webpack.config.js to support building on low-memory (<4G RAM) devices
-  ansible.builtin.lineinfile:
-    path: "{{ matrix_client_schildichat_docker_src_files_path }}/webpack.config.js"
-    regexp: '(\s+)splitChunks: \{'
-    line: '\1splitChunks: { maxSize: 100000,'
-    backrefs: true
-    owner: root
-    group: root
-    mode: '0644'
-  when: "matrix_client_schildichat_container_image_self_build | bool and matrix_client_schildichat_container_image_self_build_low_memory_system_patch_enabled | bool"
+    # See:
+    # - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1357
+    # - https://github.com/vector-im/schildichat-web/issues/19544 -- # Update (2023-12-15): 404
+    - name: Patch webpack.config.js to support building on low-memory (<4G RAM) devices
+      ansible.builtin.lineinfile:
+        path: "{{ matrix_client_schildichat_container_src_files_path }}/element-web/webpack.config.js"
+        regexp: '(\s+)splitChunks: \{'
+        line: '\1splitChunks: { maxSize: 100000,'
+        backrefs: true
+        owner: root
+        group: root
+        mode: '0644'
+      when: "matrix_client_schildichat_container_image_self_build_low_memory_system_patch_enabled | bool"
 
-- name: Ensure SchildiChat Web Docker image is built
-  ansible.builtin.command:
-    cmd: |-
-      {{ devture_systemd_docker_base_host_command_docker }} buildx build
-      --tag={{ matrix_client_schildichat_docker_image }}
-      --file={{ matrix_client_schildichat_docker_src_files_path }}/Dockerfile
-      {{ matrix_client_schildichat_docker_src_files_path }}
-  changed_when: true
-  when: matrix_client_schildichat_container_image_self_build | bool
+    - name: Ensure SchildiChat Web container image is built
+      ansible.builtin.command:
+        cmd: |-
+          {{ devture_systemd_docker_base_host_command_docker }} buildx build
+          --tag={{ matrix_client_schildichat_docker_image }}
+          --file={{ matrix_client_schildichat_container_src_files_path }}/Dockerfile
+          {{ matrix_client_schildichat_container_src_files_path }}
+      changed_when: true
 
 - name: Ensure SchildiChat Web configuration installed
   ansible.builtin.copy:
