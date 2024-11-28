@@ -121,6 +121,10 @@ Besides Synapse, you'd need other things - a Postgres database, likely the [Elem
 
 Using the playbook, you get all these components in a way that works well together out of the box.
 
+### Occasionally I see some people are talking about "MDAD". What is it?
+
+It is the acronym of us: **m**atrix-**d**ocker-**a**nsible-**d**eploy.
+
 ### What's different about this Ansible playbook compared to [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy)?
 
 This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) Ansible deployment, but:
