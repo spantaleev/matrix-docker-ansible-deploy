@@ -4,7 +4,7 @@
 
 **Notes**:
 - Make sure to adjust `USERNAME_HERE` and `PASSWORD_HERE`
-- For `USERNAME_HERE`, use a plain username like `john`, not a full identifier (`@user:example.com`)
+- For `USERNAME_HERE`, use a plain username like `alice`, not a full identifier (`@alice:example.com`)
 
 You can reset a user's password via the Ansible playbook:
 
