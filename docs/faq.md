@@ -232,11 +232,7 @@ If your distro runs within an [LXC container](https://linuxcontainers.org/), you
 
 It's the same with email servers. Your email address is likely `name@company.com`, not `name@mail.company.com`, even though it's `mail.company.com` that is really handling your data for `@company.com` email to work.
 
-Using a separate domain name is easier to manage (although it's a little hard to get right at first) and keeps your Matrix server isolated from your website (if you have one), from your email server (if you have one), etc.
-
-We allow `matrix.example.com` to be the Matrix server handling Matrix stuff for `example.com` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
-
-If you'd really like to install Matrix services directly on the base domain, see [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
+Using a separate domain name is easier to manage (although it's a little hard to get right at first) and keeps your Matrix server isolated from your website (if you have one), from your email server (if you have one), etc. Therefore, this playbook sets up services on your Matrix server (`matrix.example.com`) by default.
 
 ### I don't control anything on the base domain and can't set up delegation to matrix.example.com. What do I do?
 
@@ -248,11 +244,7 @@ If you really can't obtain an HTTPS certificate for your base domain, you can ta
 
 ### How do I install on matrix.example.com without involving the base domain?
 
-This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`.
-
-We allow `matrix.example.com` to be the Matrix server handling Matrix stuff for `example.com` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
-
-If you're fine with uglier identifiers (`@user:matrix.example.com`, which is the equivalent of having an email address like `bob@mail.company.com`, instead of just `bob@company.com`), you can do that as well using the following configuration in your `vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 # This is what your identifiers are like (e.g. `@bob:matrix.example.com`).
@@ -267,16 +259,19 @@ matrix_server_fqn_matrix: "matrix.example.com"
 # Feel free to use `element.matrix.example.com`, if you'd prefer that.
 matrix_server_fqn_element: "element.example.com"
 
-# This is where you access Dimension (if enabled via `matrix_dimension_enabled: true`; NOT enabled by default).
+# This is where you access Etherpad (if enabled via `etherpad_enabled: true`; NOT enabled by default).
 #
-# Feel free to use `dimension.matrix.example.com`, if you'd prefer that.
-matrix_server_fqn_dimension: "dimension.example.com"
-
-# This is where you access Jitsi (if enabled via `jitsi_enabled: true`; NOT enabled by default).
-#
-# Feel free to use `jitsi.matrix.example.com`, if you'd prefer that.
-matrix_server_fqn_jitsi: "jitsi.example.com"
+# Feel free to use `etherpad.matrix.example.com`, if you'd prefer that.
+matrix_server_fqn_etherpad: "etherpad.example.com"
 ```
+
+After configuring the playbook, run the [installation](installing.md) command:
+
+```
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+**Note**: without setting up [server delegation](howto-server-delegation.md) to `matrix.example.com`, your user identifiers will be like `@user:matrix.example.com`. This is equivalent to having an email address like `bob@mail.company.com`, instead of just `bob@company.com`.
 
 ### I don't use the base domain for anything. How am I supposed to set up Server Delegation for Matrix services?
 
@@ -462,12 +457,10 @@ We haven't documented this properly yet, but the general advice is to:
 
 - back up all `/matrix` files, except for `/matrix/postgres/data` (you already have a dump) and `/matrix/postgres/data-auto-upgrade-backup` (this directory may exist and contain your old data if you've [performed a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql)).
 
-You can later restore these roughly like this:
+You can later restore these by:
 
-- restore the `/matrix` directory and files on the new server manually
-- run the playbook again (see [Installing](installing.md)), but **don't** start services yet (**don't run** `... --tags=start`). This step will fix any file permission mismatches and will also set up additional software (Docker, etc.) and files on the server (systemd service, etc.).
-- perform a Postgres database import (see [Importing Postgres](importing-postgres.md)) to restore your database backup
-- start services (see [Finalize the installation](installing.md#finalize-the-installation))
+- Restoring the `/matrix` directory and files on the new server manually
+- Following the instruction described on [Installing a server into which you'll import old data](installing.md#installing-a-server-into-which-youll-import-old-data)
 
 If your server's IP address has changed, you may need to [set up DNS](configuring-dns.md) again.
 
