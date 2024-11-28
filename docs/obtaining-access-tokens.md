@@ -25,7 +25,7 @@ Below, we describe 2 ways to generate an access token for a user - using [Elemen
 
 You can use the following command to get an access token for your user directly from the [Matrix Client-Server API](https://www.matrix.org/docs/guides/client-server-api#login):
 
-```
+```sh
 curl -XPOST -d '{
     "identifier": { "type": "m.id.user", "user": "USERNAME" },
     "password": "PASSWORD",

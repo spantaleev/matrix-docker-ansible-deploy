@@ -15,7 +15,7 @@ Choose a strong password for the bot. You can generate a good password with a co
 
 You can use the playbook to [register a new user](registering-users.md):
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.mjolnir password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
@@ -119,7 +119,7 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 
 After configuring the playbook, run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 

@@ -172,18 +172,18 @@ By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-vid
 There is an ansible playbook that can be run with the following tag: `ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
 
 For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:
-```
+```INI
 [jitsi_jvb_servers]
 <your jvb hosts> ansible_host=<ip address of the jvb host>
 ```
 
 Each JVB will require a server ID to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB. The server ID is set with the variable `jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container. This variable can be set via the host file, a parameter to the ansible command or in the `vars.yaml` for the host which will have the additional JVB. For example:
 
-``` yaml
+```yaml
 jitsi_jvb_server_id: 'jvb-2'
 ```
 
-``` INI
+```INI
 [jitsi_jvb_servers]
 jvb-2.example.com ansible_host=192.168.0.2 jitsi_jvb_server_id=jvb-2
 jvb-3.example.com ansible_host=192.168.0.3 jitsi_jvb_server_id=jvb-2
@@ -271,7 +271,7 @@ jitsi_disable_gravatar: false
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 

@@ -57,7 +57,7 @@ Why? This change could be useful for people running small Synapse instances on s
 
 The following changes in the configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) will allow this and make it possible to proxy the federation through a CDN such as CloudFlare or any other:
 
-```
+```yaml
 matrix_synapse_http_listener_resource_names: ["client","federation"]
 # Any port can be used but in this case we use 443
 matrix_federation_public_port: 443

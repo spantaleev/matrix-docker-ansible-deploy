@@ -4,7 +4,7 @@ This playbook can perform a check to ensure that you've configured things correc
 
 To perform the check, run:
 
-```bash
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=self-check
 ```
 

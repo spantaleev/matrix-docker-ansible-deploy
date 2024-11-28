@@ -35,7 +35,7 @@ After deleting data, you may wish to run a [`FULL` Postgres `VACUUM`](./maintena
 
 To ask the playbook to run rust-synapse-compress-state, execute:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=rust-synapse-compress-state
 ```
 
@@ -52,14 +52,14 @@ Editing the database manually is not recommended or supported by the Synapse dev
 
 First, set up an SSH tunnel to your Matrix server (skip if it is your local machine):
 
-```
+```sh
 # you may replace 1799 with an arbitrary port unbound on both machines
 ssh -L 1799:localhost:1799 matrix.example.com
 ```
 
 Then start up an ephemeral [adminer](https://www.adminer.org/) container on the Matrix server, connecting it to the `matrix` network and linking the postgresql container:
 
-```
+```sh
 docker run --rm --publish 1799:8080 --link matrix-postgres --net matrix adminer
 ```
 
@@ -93,7 +93,7 @@ You can **learn more about cache-autotuning and the global cache factor settings
 
 To **disable cache auto-tuning**, unset all values:
 
-```yml
+```yaml
 matrix_synapse_cache_autotuning_max_cache_memory_usage: ''
 matrix_synapse_cache_autotuning_target_cache_memory_usage: ''
 matrix_synapse_cache_autotuning_min_cache_ttl: ''

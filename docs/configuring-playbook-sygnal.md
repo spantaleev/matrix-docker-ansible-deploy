@@ -79,7 +79,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 

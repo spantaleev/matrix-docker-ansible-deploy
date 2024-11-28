@@ -19,7 +19,7 @@ We recommend using the [git](https://git-scm.com/) tool to get the playbook's so
 
 Once you've installed git on your computer, you can go to any directory of your choosing and run the following command to retrieve the playbook's source code:
 
-```bash
+```sh
 git clone https://github.com/spantaleev/matrix-docker-ansible-deploy.git
 ```
 

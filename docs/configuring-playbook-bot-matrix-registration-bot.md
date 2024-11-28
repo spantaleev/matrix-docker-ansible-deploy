@@ -46,6 +46,6 @@ If you have any questions, or if you need help setting it up, read the [troublsh
 
 To clean the cache (session & encryption data) after you changed the bot's username, changed the login method from access_token to password etc... you can use:
 
-```bash
+```sh
 just run-tags bot-matrix-registration-bot-clean-cache
 ```

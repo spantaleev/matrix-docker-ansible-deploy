@@ -57,7 +57,7 @@ To automatically make Postgres database backups on a fixed schedule, see [Settin
 
 To make a one off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
 
-```bash
+```sh
 /usr/bin/docker exec \
 --env-file=/matrix/postgres/env-postgres-psql \
 matrix-postgres \

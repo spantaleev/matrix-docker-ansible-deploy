@@ -16,7 +16,7 @@ Choose a strong password for the bot. You can generate a good password with a co
 
 You can use the playbook to [register a new user](registering-users.md):
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.chatgpt password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 

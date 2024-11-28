@@ -18,7 +18,7 @@ By default, if you're using the integrated Postgres database server (as opposed 
 
 2. Create a new SSH key:
 
-    ```bash
+    ```sh
     ssh-keygen -t ed25519 -N '' -f matrix-borg-backup -C matrix
     ```
 
@@ -28,7 +28,7 @@ By default, if you're using the integrated Postgres database server (as opposed 
 
     If you plan to use a hosted solution, follow their instructions. If you have your own server, copy the key over:
 
-    ```bash
+    ```sh
     # example to append the new PUBKEY contents, where:
     # PUBKEY is path to the public key,
     # USER is a ssh user on a provider / server
@@ -73,7 +73,7 @@ Check the [backup_borg role](https://github.com/mother-of-all-self-hosting/ansib
 
 After configuring the playbook, run the [installation](installing.md) command:
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 

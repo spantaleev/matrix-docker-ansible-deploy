@@ -34,7 +34,7 @@ Since Synapse [v1.109.0](https://github.com/element-hq/synapse/releases/tag/v1.1
 
 Here's example configuration for using the **native** Synapse feature:
 
-```yml
+```yaml
 matrix_synapse_auto_accept_invites_enabled: true
 
 # Default settings below. Uncomment and adjust this part if necessary.
