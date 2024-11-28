@@ -197,7 +197,7 @@ The only thing we need on the distro is systemd and Python (we install Docker ou
 
 Instead of using [docker-compose](https://docs.docker.com/compose/), we prefer installing systemd services and scheduling those independently.
 
-There are people who have worked on turning this setup into a docker-compose-based one. See these experiments [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/64#issuecomment-603164625).
+There are people who have worked on turning this setup into a docker-compose-based one. See these experiments [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/64#issuecomment-603164625). There is also a demo project ([element-docker-demo](https://github.com/element-hq/element-docker-demo)) by Element.
 
 ### Can I run this on a distro without systemd?
 
