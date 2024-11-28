@@ -20,8 +20,8 @@ These users can modify the integrations this Dimension supports. Add this to you
 
 ```yaml
 matrix_dimension_admins:
-  - "@user1:{{ matrix_domain }}"
-  - "@user2:{{ matrix_domain }}"
+  - "@alice:{{ matrix_domain }}"
+  - "@bob:{{ matrix_domain }}"
 ```
 
 The admin interface is accessible within Element Web by accessing it in any room and clicking the cog wheel/settings icon in the top right. Currently, Dimension can be opened in Element Web by the "Add widgets, bridges, & bots" link in the room information.
