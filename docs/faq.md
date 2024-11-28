@@ -121,6 +121,10 @@ Besides Synapse, you'd need other things - a Postgres database, likely the [Elem
 
 Using the playbook, you get all these components in a way that works well together out of the box.
 
+### Occasionally I see some people are talking about "MDAD". What is it?
+
+It is the acronym of us: **m**atrix-**d**ocker-**a**nsible-**d**eploy.
+
 ### What's different about this Ansible playbook compared to [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy)?
 
 This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) Ansible deployment, but:
@@ -193,7 +197,7 @@ The only thing we need on the distro is systemd and Python (we install Docker ou
 
 Instead of using [docker-compose](https://docs.docker.com/compose/), we prefer installing systemd services and scheduling those independently.
 
-There are people who have worked on turning this setup into a docker-compose-based one. See these experiments [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/64#issuecomment-603164625).
+There are people who have worked on turning this setup into a docker-compose-based one. See these experiments [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/64#issuecomment-603164625). There is also a demo project ([element-docker-demo](https://github.com/element-hq/element-docker-demo)) by Element.
 
 ### Can I run this on a distro without systemd?
 
