@@ -17,10 +17,10 @@ matrix_hookshot_container_additional_networks_auto: []
 matrix_hookshot_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=halfshot/matrix-hookshot
-matrix_hookshot_version: 5.4.1
+matrix_hookshot_version: 6.0.1
 
-matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_name_prefix }}halfshot/matrix-hookshot:{{ matrix_hookshot_version }}"
-matrix_hookshot_docker_image_name_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_name_prefix }}matrix-org/matrix-hookshot:{{ matrix_hookshot_version }}"
+matrix_hookshot_docker_image_name_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else 'ghcr.io/' }}"
 matrix_hookshot_docker_image_force_pull: "{{ matrix_hookshot_docker_image.endswith(':latest') }}"
 
 matrix_hookshot_base_path: "{{ matrix_base_data_path }}/hookshot"
@@ -46,17 +46,18 @@ matrix_hookshot_appservice_hostname: "{{ matrix_hookshot_public_hostname }}"
 matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
 
 # The variables below control the Redis cache parameters.
-# Using caching is required when experimental encryption is enabled (`matrix_hookshot_experimental_encryption_enabled`)
+# Using caching is required when encryption is enabled (`matrix_hookshot_encryption_enabled`)
 # but may also speed up Hookshot startup, etc.
 matrix_hookshot_cache_redis_host: ''
 matrix_hookshot_cache_redis_port: "6379"
 matrix_hookshot_cache_redisUri: "{{ ('redis://' + matrix_hookshot_cache_redis_host + ':' + matrix_hookshot_cache_redis_port) if matrix_hookshot_cache_redis_host else '' }}"  # noqa var-naming
 
-# Controls whether the experimental end-to-bridge encryption support is enabled.
+# Controls whether the end-to-bridge encryption support is enabled.
 # This requires that:
 # - support to also be enabled in the homeserver, see the documentation of Hookshot.
 # - Hookshot to be pointed at a Redis instance via the `matrix_hookshot_cache_redis*` variables.
-matrix_hookshot_experimental_encryption_enabled: false
+# See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
+matrix_hookshot_encryption_enabled: false
 
 # Controls whether metrics are enabled in the bridge configuration.
 # Enabling them is usually enough for a local (in-container) Prometheus to consume them.
