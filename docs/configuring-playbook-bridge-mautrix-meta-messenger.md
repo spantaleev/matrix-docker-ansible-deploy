@@ -6,8 +6,9 @@ Since this bridge component can bridge to both [Messenger](https://messenger.com
 
 This documentation page only deals with the bridge's ability to bridge to Facebook Messenger. For bridging to Instagram, see [Setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md).
 
+## Prerequisites
 
-## Migrating from the old mautrix-facebook bridge
+### Migrating from the old mautrix-facebook bridge
 
 If you've been using the [mautrix-facebook](./configuring-playbook-bridge-mautrix-facebook.md) bridge, it's possible to migrate the database using [instructions from the bridge documentation](https://docs.mau.fi/bridges/go/meta/facebook-migration.html) (advanced).
 
@@ -16,6 +17,12 @@ Then you may wish to get rid of the Facebook bridge. To do so, send a `clean-roo
 Then, consider disabling the old bridge in your configuration, so it won't recreate the portals when you receive new messages.
 
 **Note**: the user ID of the new bridge bot is `@messengerbot:example.com`, not `@facebookbot:example.com`. After disabling the old bridge, its bot user will stop responding to a command.
+
+### Enable Appservice Double Puppet (optional)
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -93,7 +100,7 @@ To set it up, you have 2 ways of going about it.
 
 #### Method 1: automatically, by enabling Appservice Double Puppet
 
-The bridge will automatically perform Double Puppeting if you enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
 
 Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 

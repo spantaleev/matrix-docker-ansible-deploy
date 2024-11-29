@@ -6,6 +6,12 @@ The playbook can install and configure [mautrix-hangouts](https://github.com/mau
 
 See the project's [documentation](https://docs.mau.fi/bridges/python/hangouts/index.html) to learn what it does and why it might be useful to you.
 
+## Prerequisite (optional)
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook.
+
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#set-up-double-puppeting)
+
 ## Adjusting the playbook configuration
 
 To enable the [Google Hangouts](https://hangouts.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -38,7 +44,7 @@ To set it up, you have 2 ways of going about it.
 
 #### Method 1: automatically, by enabling Shared Secret Auth
 
-The bridge will automatically perform Double Puppeting if you enable [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook.
+The bridge automatically performs Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
 
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 

@@ -4,9 +4,21 @@ The playbook can install and configure [mautrix-signal](https://github.com/mautr
 
 See the project's [documentation](https://docs.mau.fi/bridges/python/signal/index.html) to learn what it does and why it might be useful to you.
 
-**Note/Prerequisite**: If you're running with the Postgres database server integrated by the playbook (which is the default), you don't need to do anything special and can easily proceed with installing. However, if you're [using an external Postgres server](configuring-playbook-external-postgres.md), you'd need to manually prepare a Postgres database for this bridge and adjust the variables related to that (`matrix_mautrix_signal_database_*`).
-
 **Note**: This revamped version of the [mautrix-signal (legacy)](configuring-playbook-bridge-mautrix-signal.md) may increase the CPU usage of your homeserver.
+
+## Prerequisites (optional)
+
+### Prepare Postgres database on external Postgres server
+
+If you're running with the Postgres database server integrated by the playbook (which is the default), you don't need to do anything special and can easily proceed with installing.
+
+However, if you're [using an external Postgres server](configuring-playbook-external-postgres.md), you'd need to manually prepare a Postgres database for this bridge and adjust the variables related to that (`matrix_mautrix_signal_database_*`).
+
+### Enable Appservice Double Puppet
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -70,7 +82,7 @@ To set it up, you have 2 ways of going about it.
 
 #### Method 1: automatically, by enabling Appservice Double Puppet
 
-The bridge will automatically perform Double Puppeting if you enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
 
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 

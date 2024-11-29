@@ -99,7 +99,7 @@ After configuring the playbook, run the [installation](installing.md) command: `
 
 To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
-The bridge will automatically perform Double Puppeting if you enable [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook by adding
+The bridge automatically performs Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) is configured and enabled on the server for this playbook by adding
 
 ```yaml
 matrix_appservice_double_puppet_enabled: true

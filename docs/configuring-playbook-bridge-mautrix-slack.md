@@ -17,6 +17,11 @@ For using this bridge, you would need to authenticate by **providing your userna
 
 Note that neither of these methods are officially supported by Slack. [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) uses a Slack bot account which is the only officially supported method for bridging a Slack channel.
 
+### Enable Appservice Double Puppet (optional)
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -61,7 +66,7 @@ To set it up, you have 2 ways of going about it.
 
 #### Method 1: automatically, by enabling Appservice Double Puppet
 
-The bridge will automatically perform Double Puppeting if you enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
 
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 
