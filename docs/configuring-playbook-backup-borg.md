@@ -78,6 +78,10 @@ After configuring the playbook, run the [installation](installing.md) command:
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
+The shortcut commands with `just` program are also available: `just install-all` or `just setup-all`.
+
+`just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
+
 ## Manually start a backup
 
 For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server and run `systemctl start matrix-backup-borg`. This will not return until the backup is done, so possibly a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.

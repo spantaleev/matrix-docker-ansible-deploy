@@ -51,6 +51,10 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
+The shortcut commands with `just` program are also available: `just install-all` or `just setup-all`.
+
+`just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
+
 ## Usage
 
 The Etherpad UI should be available at `https://etherpad.example.com`, while the admin UI (if enabled) should then be available at `https://etherpad.example.com/admin`.

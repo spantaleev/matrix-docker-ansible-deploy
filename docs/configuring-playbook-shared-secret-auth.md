@@ -31,3 +31,7 @@ After configuring the playbook, run the [installation](installing.md) command:
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
+
+The shortcut commands with `just` program are also available: `just install-all` or `just setup-all`.
+
+`just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)

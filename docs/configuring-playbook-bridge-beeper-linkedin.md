@@ -42,6 +42,10 @@ After configuring the playbook, run the [installation](installing.md) command:
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
+The shortcut commands with `just` program are also available: `just install-all` or `just setup-all`.
+
+`just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
+
 ## Set up Double Puppeting by enabling Appservice Double Puppet or Shared Secret Auth
 
 The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
