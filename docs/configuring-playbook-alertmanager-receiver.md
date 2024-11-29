@@ -80,7 +80,7 @@ Now that you've [prepared the bot account and room](#account-and-room-preparatio
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```
 
 The shortcut commands with `just` program are also available: `just install-all` or `just setup-all`.
