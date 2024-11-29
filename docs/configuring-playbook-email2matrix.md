@@ -83,6 +83,16 @@ Refer to the official documentation [here](https://github.com/devture/email2matr
 
 ## Installing
 
-To enable Email2Matrix, run the [installation](installing.md) command (`--tags=setup-email2matrix,start`).
+To enable Email2Matrix, run the playbook with [playbook tags](playbook-tags.md) as below:
 
-After installation, you may wish to send a test email to the email address assigned to `mailbox1` (default: `mailbox1@matrix.example.com`) to make sure that Email2Matrix works as expected.
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-email2matrix,start
+```
+
+**Notes**:
+
+- The shortcut commands with `just` program are also available: `just run-tags setup-email2matrix,start` or `just run-tags setup-all,start`
+
+  `just run-tags setup-email2matrix,start` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just run-tags setup-all,start`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
+
+- After installation, you may wish to send a test email to the email address assigned to `mailbox1` (default: `mailbox1@matrix.example.com`) to make sure that Email2Matrix works as expected.

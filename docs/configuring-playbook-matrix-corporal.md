@@ -116,8 +116,16 @@ To learn more about what the policy configuration, see the matrix-corporal docum
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+The shortcut commands with `just` program are also available: `just run-tags setup-aux-files,setup-corporal,start` or `just run-tags setup-all,start`
+
+`just run-tags setup-aux-files,setup-corporal,start` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just run-tags setup-all,start`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
 
 ## Matrix Corporal files
 
