@@ -91,9 +91,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
 
-Then, you can proceed to [Usage](#usage).
-
-
 ## Usage
 
 Configure your Prometheus Alertmanager with configuration like this:
