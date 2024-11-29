@@ -28,17 +28,6 @@ matrix_mautrix_slack_enabled: true
 
 You may optionally wish to add some [Additional configuration](#additional-configuration), or to [prepare for double-puppeting](#set-up-double-puppeting) before the initial installation.
 
-## Installing
-
-After configuring the playbook, run the [installation](installing.md) command:
-
-```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-```
-
-To make use of the bridge, see [Usage](#usage) below.
-
-
 ### Additional configuration
 
 There are some additional options you may wish to configure with the bridge.
@@ -48,10 +37,27 @@ Take a look at:
 - `roles/custom/matrix-bridge-mautrix-slack/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-bridge-mautrix-slack/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_mautrix_slack_configuration_extension_yaml` variable
 
+## Installing
+
+After configuring the playbook, run the [installation](installing.md) command:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+## Usage
+
+1. Start a chat with `@slackbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+2. If you would like to login to Slack using a token, send the `login-token` command, otherwise, send the `login-password` command. Read [here](https://docs.mau.fi/bridges/go/slack/authentication.html) on how to retrieve your token and cookie token.
+3. The bot should respond with "Successfully logged into <email> for team <workspace>"
+4. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to.
+5. Slack channels should automatically begin bridging if you authenticated using a token. Otherwise, you must wait to receive a message in the channel if you used password authentication.
 
 ### Set up Double Puppeting
 
-If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
+After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
+
+To set it up, you have 2 ways of going about it.
 
 #### Method 1: automatically, by enabling Appservice Double Puppet
 
@@ -70,12 +76,3 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 - send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
 
 - make sure you don't log out the `Mautrix-Slack` device some time in the future, as that would break the Double Puppeting feature
-
-
-## Usage
-
-1. Start a chat with `@slackbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
-2. If you would like to login to Slack using a token, send the `login-token` command, otherwise, send the `login-password` command. Read [here](https://docs.mau.fi/bridges/go/slack/authentication.html) on how to retrieve your token and cookie token.
-3. The bot should respond with "Successfully logged into <email> for team <workspace>"
-4. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to.
-5. Slack channels should automatically begin bridging if you authenticated using a token. Otherwise, you must wait to receive a message in the channel if you used password authentication.

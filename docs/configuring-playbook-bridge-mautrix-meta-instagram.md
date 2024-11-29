@@ -64,17 +64,23 @@ You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-instagram/templ
 
 After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
-## Set up Double Puppeting
+## Usage
 
-If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
+You then need to start a chat with `@instagrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-### Method 1: automatically, by enabling Appservice Double Puppet
+### Set up Double Puppeting
+
+After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
+
+To set it up, you have 2 ways of going about it.
+
+#### Method 1: automatically, by enabling Appservice Double Puppet
 
 The bridge will automatically perform Double Puppeting if you enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
 Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 
-### Method 2: manually, by asking each user to provide a working access token
+#### Method 2: manually, by asking each user to provide a working access token
 
 **Note**: This method for enabling Double Puppeting can be configured only after you've already set up bridging (see [Usage](#usage)).
 
@@ -85,8 +91,3 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 - send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
 
 - make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature
-
-
-## Usage
-
-You then need to start a chat with `@instagrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
