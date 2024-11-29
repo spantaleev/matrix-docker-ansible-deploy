@@ -73,8 +73,6 @@ This is the recommended way of setting up Double Puppeting, as it's easier to ac
 
 #### Method 2: manually, by asking each user to provide a working access token
 
-**Note**: This method for enabling Double Puppeting can be configured only after you've already set up bridging (see [Usage](#usage)).
-
 When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
 
 - retrieve a Matrix access token for yourself. Refer to the documentation on [how to do that](obtaining-access-tokens.md).
