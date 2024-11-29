@@ -8,7 +8,7 @@ To perform the check, run:
 ansible-playbook -i inventory/hosts setup.yml --tags=self-check
 ```
 
-The shortcut command with `just` program is also available: `just run-tags self-check`.
+The shortcut command with `just` program is also available: `just run-tags self-check`
 
 If it's all green, everything is probably running correctly.
 

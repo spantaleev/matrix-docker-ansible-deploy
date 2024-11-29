@@ -46,7 +46,7 @@ You can free some disk space from Docker, see [docker system prune](https://docs
 ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune
 ```
 
-The shortcut command with `just` program is also available: `just run-tags run-docker-prune`.
+The shortcut command with `just` program is also available: `just run-tags run-docker-prune`
 
 ## Postgres
 
