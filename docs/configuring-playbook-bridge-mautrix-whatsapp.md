@@ -36,7 +36,11 @@ If you want to activate the relay bot in a room, send `!wa set-relay`. To deacti
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook, run the [installation](installing.md) command:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 ## Usage
 

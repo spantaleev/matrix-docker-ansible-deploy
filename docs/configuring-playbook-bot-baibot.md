@@ -379,7 +379,7 @@ matrix_bot_baibot_config_initial_global_config_handler_image_generation: null
 After configuring the playbook, run the [installation](installing.md) command:
 
 ```sh
-just run-tags install-all,ensure-matrix-users-created,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```
 
 **Notes**:

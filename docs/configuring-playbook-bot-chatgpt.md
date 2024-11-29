@@ -59,7 +59,7 @@ You will need to get tokens for ChatGPT.
 After configuring the playbook, run the [installation](installing.md) command:
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
 

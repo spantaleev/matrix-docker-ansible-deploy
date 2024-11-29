@@ -32,7 +32,11 @@ The bot account will be created automatically.
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook, run the [installation](installing.md) command:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 ## Usage
 

@@ -288,7 +288,11 @@ If you've decided to use the default hostname, you won't need to do any extra DN
 
 ## Installing
 
-Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration) and [your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command: `just install-all`
+Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration) and [your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 If you're in the process of migrating an existing Synapse homeserver to MAS, you should now follow the rest of the steps in the [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) guide.
 
