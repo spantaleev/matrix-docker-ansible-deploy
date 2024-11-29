@@ -90,7 +90,7 @@ This will instruct UVS to verify the OpenID token against any domain given in a 
 
 ## Installing
 
-After these variables have been set, run the [installation](installing.md) command to restart UVS:
+After these variables have been set, run the playbook with [playbook tags](playbook-tags.md) as below to restart UVS:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-matrix-user-verification-service,start

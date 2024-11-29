@@ -42,7 +42,7 @@ If you've adjusted `matrix_client_cinny_hostname`, you will need to adjust your 
 
 ## Installing
 
-After configuring the playbook and [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
+After configuring the playbook and [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh

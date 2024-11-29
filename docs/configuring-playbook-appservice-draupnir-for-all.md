@@ -49,7 +49,7 @@ matrix_appservice_draupnir_for_all_master_control_room_alias: "ALIAS_FROM_STEP_2
 
 ### 4. Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh

@@ -29,7 +29,7 @@ Refer to the table below for additional configuration variables and their defaul
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh

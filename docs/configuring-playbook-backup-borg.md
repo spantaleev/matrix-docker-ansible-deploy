@@ -71,7 +71,7 @@ Check the [backup_borg role](https://github.com/mother-of-all-self-hosting/ansib
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
