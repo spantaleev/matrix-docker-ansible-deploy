@@ -21,7 +21,7 @@ Note that neither of these methods are officially supported by Slack. [matrix-ap
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#set-up-double-puppeting)
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -58,7 +58,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 4. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to.
 5. Slack channels should automatically begin bridging if you authenticated using a token. Otherwise, you must wait to receive a message in the channel if you used password authentication.
 
-### Set up Double Puppeting
+### 💡 Set up Double Puppeting
 
 After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
 

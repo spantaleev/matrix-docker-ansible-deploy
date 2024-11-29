@@ -8,7 +8,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/python/telegram/in
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#set-up-double-puppeting)
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -53,7 +53,7 @@ If you like to exclude all groups from syncing and use the Telgeram-Bridge only 
 matrix_mautrix_telegram_filter_mode: whitelist
 ```
 
-### Set up Double Puppeting
+### 💡 Set up Double Puppeting
 
 After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
 

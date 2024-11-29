@@ -19,7 +19,7 @@ If this is a dealbreaker for you, consider using one of the other Discord bridge
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#set-up-double-puppeting)
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -75,7 +75,7 @@ To acquire the token, open Discord in a private browser window. Then open the de
     - for each guild that you'd like bridged, send `guilds bridge GUILD_ID --entire`
 8. You may wish to uninstall the Discord app from your phone now. It's not needed for the bridge to function.
 
-### Set up Double Puppeting
+### 💡 Set up Double Puppeting
 
 After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
 
