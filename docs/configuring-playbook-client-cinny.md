@@ -44,6 +44,7 @@ If you've adjusted `matrix_client_cinny_hostname`, you will need to adjust your 
 
 After configuring the playbook and [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```

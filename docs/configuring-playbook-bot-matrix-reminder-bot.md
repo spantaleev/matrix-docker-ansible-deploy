@@ -29,6 +29,7 @@ matrix_bot_matrix_reminder_bot_reminders_timezone: Europe/London
 
 After configuring the playbook, run the [installation](installing.md) command:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```

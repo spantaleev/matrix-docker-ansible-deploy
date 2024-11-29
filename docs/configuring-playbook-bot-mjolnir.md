@@ -119,6 +119,7 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 
 After configuring the playbook, run the [installation](installing.md) command:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```

@@ -78,6 +78,7 @@ Steps 3 and 4 need to be done for each new room you'd like the bot to deliver al
 
 Now that you've [prepared the bot account and room](#account-and-room-preparation), [configured the playbook](#adjusting-the-playbook-configuration), and potentially [adjusted your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```

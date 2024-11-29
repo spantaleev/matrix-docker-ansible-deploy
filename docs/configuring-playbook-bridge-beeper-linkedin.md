@@ -37,6 +37,7 @@ You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/co
 
 After configuring the playbook, run the [installation](installing.md) command:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
