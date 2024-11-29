@@ -17,6 +17,11 @@ For using this bridge, you would need to authenticate by **providing your userna
 
 Note that neither of these methods are officially supported by Slack. [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) uses a Slack bot account which is the only officially supported method for bridging a Slack channel.
 
+### Enable Appservice Double Puppet (optional)
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -28,17 +33,6 @@ matrix_mautrix_slack_enabled: true
 
 You may optionally wish to add some [Additional configuration](#additional-configuration), or to [prepare for double-puppeting](#set-up-double-puppeting) before the initial installation.
 
-## Installing
-
-After configuring the playbook, run the [installation](installing.md) command:
-
-```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-```
-
-To make use of the bridge, see [Usage](#usage) below.
-
-
 ### Additional configuration
 
 There are some additional options you may wish to configure with the bridge.
@@ -48,29 +42,13 @@ Take a look at:
 - `roles/custom/matrix-bridge-mautrix-slack/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-bridge-mautrix-slack/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_mautrix_slack_configuration_extension_yaml` variable
 
+## Installing
 
-### Set up Double Puppeting
+After configuring the playbook, run the [installation](installing.md) command:
 
-If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
-
-#### Method 1: automatically, by enabling Appservice Double Puppet
-
-The bridge will automatically perform Double Puppeting if you enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
-
-This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-#### Method 2: manually, by asking each user to provide a working access token
-
-**Note**: This method for enabling Double Puppeting can be configured only after you've already set up bridging (see [Usage](#usage)).
-
-When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
-
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to do that](obtaining-access-tokens.md).
-
-- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
-
-- make sure you don't log out the `Mautrix-Slack` device some time in the future, as that would break the Double Puppeting feature
-
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
 ## Usage
 
@@ -79,3 +57,25 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 3. The bot should respond with "Successfully logged into <email> for team <workspace>"
 4. Now that you're logged in, you can send a `help` command to the bot again, to see additional commands you have access to.
 5. Slack channels should automatically begin bridging if you authenticated using a token. Otherwise, you must wait to receive a message in the channel if you used password authentication.
+
+### 💡 Set up Double Puppeting
+
+After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
+
+To set it up, you have 2 ways of going about it.
+
+#### Method 1: automatically, by enabling Appservice Double Puppet
+
+The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
+
+This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
+
+#### Method 2: manually, by asking each user to provide a working access token
+
+When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
+
+- retrieve a Matrix access token for yourself. Refer to the documentation on [how to do that](obtaining-access-tokens.md).
+
+- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
+
+- make sure you don't log out the `Mautrix-Slack` device some time in the future, as that would break the Double Puppeting feature

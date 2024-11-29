@@ -6,8 +6,9 @@ Since this bridge component can bridge to both [Messenger](https://messenger.com
 
 This documentation page only deals with the bridge's ability to bridge to Instagram. For bridging to Facebook/Messenger, see [Setting up Messenger bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-messenger.md).
 
+## Prerequisites
 
-## Migrating from the old mautrix-instagram bridge
+### Migrating from the old mautrix-instagram bridge
 
 If you've been using the [mautrix-instagram](./configuring-playbook-bridge-mautrix-instagram.md) bridge, **you'd better get rid of it first** or the 2 bridges will be in conflict:
 
@@ -18,6 +19,11 @@ To do so, send a `clean-rooms` command to the management room with the old bridg
 
 Then, consider disabling the old bridge in your configuration, so it won't recreate the portals when you receive new messages.
 
+### Enable Appservice Double Puppet (optional)
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -64,19 +70,23 @@ You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-instagram/templ
 
 After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
-## Set up Double Puppeting
+## Usage
 
-If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
+You then need to start a chat with `@instagrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-### Method 1: automatically, by enabling Appservice Double Puppet
+### 💡 Set up Double Puppeting
 
-The bridge will automatically perform Double Puppeting if you enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
 
-Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
+To set it up, you have 2 ways of going about it.
 
-### Method 2: manually, by asking each user to provide a working access token
+#### Method 1: automatically, by enabling Appservice Double Puppet
 
-**Note**: This method for enabling Double Puppeting can be configured only after you've already set up bridging (see [Usage](#usage)).
+The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
+
+This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
+
+#### Method 2: manually, by asking each user to provide a working access token
 
 When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
 
@@ -85,8 +95,3 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 - send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
 
 - make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature
-
-
-## Usage
-
-You then need to start a chat with `@instagrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).

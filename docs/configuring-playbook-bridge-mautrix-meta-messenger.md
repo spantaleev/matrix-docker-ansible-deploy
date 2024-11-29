@@ -6,8 +6,9 @@ Since this bridge component can bridge to both [Messenger](https://messenger.com
 
 This documentation page only deals with the bridge's ability to bridge to Facebook Messenger. For bridging to Instagram, see [Setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md).
 
+## Prerequisites
 
-## Migrating from the old mautrix-facebook bridge
+### Migrating from the old mautrix-facebook bridge
 
 If you've been using the [mautrix-facebook](./configuring-playbook-bridge-mautrix-facebook.md) bridge, it's possible to migrate the database using [instructions from the bridge documentation](https://docs.mau.fi/bridges/go/meta/facebook-migration.html) (advanced).
 
@@ -16,6 +17,12 @@ Then you may wish to get rid of the Facebook bridge. To do so, send a `clean-roo
 Then, consider disabling the old bridge in your configuration, so it won't recreate the portals when you receive new messages.
 
 **Note**: the user ID of the new bridge bot is `@messengerbot:example.com`, not `@facebookbot:example.com`. After disabling the old bridge, its bot user will stop responding to a command.
+
+### Enable Appservice Double Puppet (optional)
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+
+For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
 
 ## Adjusting the playbook configuration
 
@@ -77,19 +84,27 @@ You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-messenger/templ
 
 After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
-## Set up Double Puppeting
+## Usage
 
-If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
+You then need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`.
 
-### Method 1: automatically, by enabling Appservice Double Puppet
+You then need to send a `login` command and follow the bridge bot's instructions.
 
-The bridge will automatically perform Double Puppeting if you enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+Given that the bot is configured in `messenger` [bridge mode](#bridge-mode) by default, you will need to log in to [messenger.com](https://messenger.com/) (not `facebook.com`!) and obtain the cookies from there as per [the bridge's authentication instructions](https://docs.mau.fi/bridges/go/meta/authentication.html).
 
-Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
+### 💡 Set up Double Puppeting
 
-### Method 2: manually, by asking each user to provide a working access token
+After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
 
-**Note**: This method for enabling Double Puppeting can be configured only after you've already set up bridging (see [Usage](#usage)).
+To set it up, you have 2 ways of going about it.
+
+#### Method 1: automatically, by enabling Appservice Double Puppet
+
+The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
+
+This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
+
+#### Method 2: manually, by asking each user to provide a working access token
 
 When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
 
@@ -98,12 +113,3 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 - send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
 
 - make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature
-
-
-## Usage
-
-You then need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`.
-
-You then need to send a `login` command and follow the bridge bot's instructions.
-
-Given that the bot is configured in `messenger` [bridge mode](#bridge-mode) by default, you will need to log in to [messenger.com](https://messenger.com/) (not `facebook.com`!) and obtain the cookies from there as per [the bridge's authentication instructions](https://docs.mau.fi/bridges/go/meta/authentication.html).
