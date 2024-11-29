@@ -16,7 +16,7 @@ prometheus_node_exporter_enabled: true
 prometheus_postgres_exporter_enabled: true
 
 # You can remove this, if unnecessary.
-matrix_prometheus_nginxlog_exporter_enabled: true
+matrix_prometheus_traefik_exporter_enabled: true
 
 grafana_enabled: true
 
@@ -64,7 +64,7 @@ Name | Description
 `prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
 `prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
 `prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
-`matrix_prometheus_nginxlog_exporter_enabled`|[NGINX Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose NGINX logs to Prometheus.
+`matrix_prometheus_traefik_exporter_enabled`|Export [Traefik metrics](https://doc.traefik.io/traefik/observability/metrics/prometheus) to Prometheus and add Grafana dashboard for them.
 `grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.example.com` subdomain) the dashboards with the graphs that we're interested in
 `grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
@@ -100,6 +100,7 @@ Name | Description
 `prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](configuring-playbook-prometheus-postgres.md) (locally, on the container network)
 `prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](configuring-playbook-prometheus-postgres.md) metrics on `https://matrix.example.com/metrics/postgres-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
+`matrix_prometheus_traefik_exporter_enabled`|Set this to `true` to export [Traefik metrics](https://doc.traefik.io/traefik/observability/metrics/prometheus) (locally, on the container network) and add Grafana dashboard for them.
 `matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [NGINX Log exporter](configuring-playbook-prometheus-nginxlog.md) (locally, on the container network)
 `matrix_sliding_sync_metrics_enabled`|Set this to `true` to make [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) expose metrics (locally, on the container network)
 `matrix_sliding_sync_metrics_proxying_enabled`|Set this to `true` to expose the [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) metrics on `https://matrix.example.com/metrics/sliding-sync`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
