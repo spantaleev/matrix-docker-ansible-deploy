@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-livekit-server
+    - install-all
+    - install-livekit-server
+  block:
+    - when: livekit_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: livekit_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-livekit-server
+  block:
+    - when: not livekit_server_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

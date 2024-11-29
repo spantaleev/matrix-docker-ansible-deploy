@@ -1,0 +1,211 @@
+---
+
+# Project source code URL: https://github.com/livekit/livekit
+
+livekit_server_enabled: false
+
+livekit_server_identifier: livekit-server
+
+livekit_server_uid: ''
+livekit_server_gid: ''
+
+livekit_server_base_path: "/{{ livekit_server_identifier }}"
+livekit_server_config_path: "{{ livekit_server_base_path }}/config"
+
+# renovate: datasource=docker depName=docker.io/livekit/livekit-server
+livekit_server_version: v1.8.0
+
+livekit_server_scheme: https
+livekit_server_hostname: ""
+livekit_server_path_prefix: /
+
+livekit_server_container_network: "{{ livekit_server_identifier }}"
+
+livekit_server_container_additional_networks: "{{ livekit_server_container_additional_networks_auto + livekit_server_container_additional_networks_custom }}"
+livekit_server_container_additional_networks_auto: []
+livekit_server_container_additional_networks_custom: []
+
+# Controls whether the LiveKit Server container exposes its RCT TCP port (`livekit_server_config_rtc_tcp_port`)
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:5349"), or empty string to not expose.
+livekit_server_container_rtc_tcp_host_bind_port: "{{ livekit_server_config_rtc_tcp_port if livekit_server_container_network != 'host' else '' }}"
+
+# Controls whether the LiveKit Server container exposes its RTC UDP port range and which interface to do it on.
+#
+# Takes an interface "<ip address>" (e.g. "127.0.0.1"), or empty string to listen on all interfaces.
+# Takes a null/none value (`~`) or 'none' (as a string) to prevent listening.
+#
+# The UDP port-range itself is specified using `livekit_server_config_rtc_port_range_start` and `livekit_server_config_rtc_port_range_end`.
+livekit_server_container_rtc_range_listen_interface: "{{ '' if livekit_server_container_network != 'host' else 'none' }}"
+
+livekit_server_container_image_self_build: false
+livekit_server_container_repo: "https://github.com/livekit/livekit.git"
+livekit_server_container_repo_version: "{{ 'main' if livekit_server_version == 'latest' else livekit_server_version }}"
+livekit_server_container_src_files_path: "{{ livekit_server_base_path }}/container-src"
+
+livekit_server_container_image: "{{ livekit_server_container_image_name_prefix }}livekit/livekit-server:{{ livekit_server_version }}"
+livekit_server_container_image_name_prefix: "{{ 'localhost/' if livekit_server_container_image_self_build else 'docker.io/' }}"
+livekit_server_container_image_force_pull: "{{ livekit_server_container_image.endswith(':latest') }}"
+
+livekit_server_container_labels_traefik_enabled: true
+livekit_server_container_labels_traefik_docker_network: "{{ livekit_server_container_network }}"
+livekit_server_container_labels_traefik_hostname: "{{ livekit_server_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/element`).
+livekit_server_container_labels_traefik_path_prefix: "{{ livekit_server_path_prefix }}"
+livekit_server_container_labels_traefik_rule: "Host(`{{ livekit_server_container_labels_traefik_hostname }}`){% if livekit_server_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ livekit_server_container_labels_traefik_path_prefix }}`){% endif %}"
+livekit_server_container_labels_traefik_priority: 0
+livekit_server_container_labels_traefik_entrypoints: web-secure
+livekit_server_container_labels_traefik_tls: "{{ livekit_server_container_labels_traefik_entrypoints != 'web' }}"
+livekit_server_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `livekit_server_container_labels_traefik_additional_response_headers_custom`
+livekit_server_container_labels_traefik_additional_response_headers: "{{ livekit_server_container_labels_traefik_additional_response_headers_auto | combine(livekit_server_container_labels_traefik_additional_response_headers_custom) }}"
+livekit_server_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': livekit_server_http_header_xss_protection} if livekit_server_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': livekit_server_http_header_frame_options} if livekit_server_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': livekit_server_http_header_content_type_options} if livekit_server_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': livekit_server_http_header_content_security_policy} if livekit_server_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': livekit_server_http_header_content_permission_policy} if livekit_server_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': livekit_server_http_header_strict_transport_security} if livekit_server_http_header_strict_transport_security and livekit_server_container_labels_traefik_tls else {})
+  }}
+livekit_server_container_labels_traefik_additional_response_headers_custom: {}
+
+# livekit_server_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# livekit_server_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+livekit_server_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+livekit_server_container_extra_arguments: []
+
+# Additional environment variables for the container
+livekit_server_environment_variables_additional: {}
+
+# List of systemd services that LiveKit Server service depends on
+livekit_server_systemd_required_services_list: "{{ livekit_server_systemd_required_services_list_default + livekit_server_systemd_required_services_list_auto + livekit_server_systemd_required_services_list_custom }}"
+livekit_server_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+livekit_server_systemd_required_services_list_auto: []
+livekit_server_systemd_required_services_list_custom: []
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+livekit_server_http_header_xss_protection: ''
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+livekit_server_http_header_frame_options: ''
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+livekit_server_http_header_content_type_options: ''
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+livekit_server_http_header_content_security_policy: ''
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+livekit_server_http_header_content_permission_policy: ''
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+livekit_server_http_header_strict_transport_security: ''
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `livekit_server_content_permission_policy`
+livekit_server_floc_optout_enabled: false
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `livekit_server_http_header_strict_transport_security`
+livekit_server_hsts_preload_enabled: true
+
+# Holds the final LiveKit Server configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `livekit_server_configuration_yaml` or `livekit_server_configuration_extension_yaml`.
+livekit_server_configuration: "{{ livekit_server_configuration_yaml | from_yaml | combine(livekit_server_configuration_extension, recursive=True) }}"
+
+# Default LiveKit Server configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `livekit_server_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+livekit_server_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+livekit_server_configuration_extension_yaml: |
+  # Your custom YAML configuration for LiveKit Server goes here.
+  # This configuration extends the default starting configuration (`livekit_server_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `livekit_server_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  # logging:
+  #   level: debug
+
+livekit_server_configuration_extension: "{{ livekit_server_configuration_extension_yaml | from_yaml if livekit_server_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Controls the `port` configuration property.
+livekit_server_config_port: 7880
+
+# Controls the `rtc.tcp_port` configuration property
+livekit_server_config_rtc_tcp_port: 7881
+
+# Controls the `rtc.port_range_start` configuration property
+livekit_server_config_rtc_port_range_start: 50100
+
+# Controls the `rtc.port_range_end` configuration property
+livekit_server_config_rtc_port_range_end: 50120
+
+# Controls the `rtc.use_external_ip` configuration property.
+# When set to true, attempts to discover the host's public IP via STUN.
+# This is useful for cloud environments such as AWS & Google where hosts have an internal IP that maps to an external one.
+livekit_server_config_rtc_use_external_ip: true
+
+# Controls the `keys` configuration property.
+livekit_server_config_keys: "{{ livekit_server_config_keys_auto | combine(livekit_server_config_keys_custom, recursive=True) }}"
+livekit_server_config_keys_auto: {}
+livekit_server_config_keys_custom: {}
+
+# Controls the `logging.level` configuration property.
+# Known values: debug, info, warn, error
+livekit_server_config_logging_level: info
+
+# Controls the `logging.pion_level` configuration property
+livekit_server_config_logging_pion_level: error
+
+# Controls the `logging.json` configuration property.
+# When set to true, emits json fields.
+livekit_server_config_logging_json: false
+
+# Controls the `logging.sample` configuration property.
+# For production setups, enables sampling algorithm.
+# See: https://github.com/uber-go/zap/blob/master/FAQ.md#why-sample-application-logs
+livekit_server_config_logging_sample: false

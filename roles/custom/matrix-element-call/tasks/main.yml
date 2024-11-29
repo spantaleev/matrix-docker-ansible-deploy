@@ -1,0 +1,21 @@
+---
+# Main task file for matrix-element-call
+
+- tags:
+    - setup-all
+    - setup-element-call
+    - install-all
+    - install-element-call
+  block:
+    - when: matrix_element_call_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_element_call_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-element-call
+  block:
+    - when: not matrix_element_call_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

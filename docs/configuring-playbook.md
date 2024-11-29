@@ -212,6 +212,12 @@ Services that help you in administrating and monitoring your Matrix installation
 
 Various services that don't fit any other categories.
 
+- [Setting up the Element Call server](configuring-playbook-element-call.md) (optional)
+
+- [Setting up the LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) (optional)
+
+- [Setting up the Livekit server](configuring-playbook-livekit-server.md) (optional)
+
 - [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md)
 
 - [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
