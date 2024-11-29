@@ -53,7 +53,7 @@ To do the installation **without** starting services, run `ansible-playbook` wit
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all
 ```
 
-**Note**: do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution. See: [Difference between playbook tags and shortcuts](just.md#difference-between-playbook-tags-and-shortcuts)
+⚠️ **Warning**: do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution. See: [Difference between playbook tags and shortcuts](just.md#difference-between-playbook-tags-and-shortcuts)
 
 When this command completes, services won't be running yet.
 
