@@ -8,8 +8,6 @@ SchildiChat Web is a feature-rich messenger for Matrix based on Element Web with
 
 - [app.schildi.chat](https://app.schildi.chat/), hosted by the [SchildiChat](https://schildi.chat/) developers
 
-**WARNING**: SchildiChat Web is based on Element Web, but its releases are lagging behind. As of 2024-11, SchildiChat Web is many releases behind (it being based on Element Web `v1.11.36`, while Element Web is now on `v1.11.85`). Element Web frequently suffers from security issues (see [here](https://github.com/element-hq/element-web/security) for known issues), so running something based on an ancient Element Web release is **unsafe**. Use SchildiChat Web at your own risk!
-
 ## Adjusting the playbook configuration
 
 To enable SchildiChat Web, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
