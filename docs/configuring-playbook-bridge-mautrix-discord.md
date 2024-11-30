@@ -8,7 +8,6 @@ The playbook can install and configure [mautrix-discord](https://github.com/maut
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/discord/index.html) to learn what it does and why it might be useful to you.
 
-
 ## Prerequisites
 
 There are 2 ways to login to discord using this bridge, either by [scanning a QR code](#method-1-login-using-qr-code-recommended) using the Discord mobile app **or** by using a [Discord token](#method-2-login-using-discord-token-not-recommended).

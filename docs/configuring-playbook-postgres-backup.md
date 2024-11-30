@@ -4,7 +4,6 @@ The playbook can install and configure [docker-postgres-backup-local](https://gi
 
 For a more complete backup solution (one that includes not only Postgres, but also other configuration/data files), you may wish to look into [BorgBackup](configuring-playbook-backup-borg.md) instead.
 
-
 ## Adjusting the playbook configuration
 
 To enable Postgres backup, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -15,7 +14,6 @@ postgres_backup_enabled: true
 
 Refer to the table below for additional configuration variables and their default values.
 
-
 | Name                              | Default value                | Description                                                      |
 | :-------------------------------- | :--------------------------- | :--------------------------------------------------------------- |
 |`postgres_backup_enabled`|`false`|Set to true to use [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local) to create automatic database backups|
@@ -25,7 +23,6 @@ Refer to the table below for additional configuration variables and their defaul
 |`postgres_backup_keep_months`|`12`|Number of monthly backups to keep|
 |`postgres_backup_base_path` | `"{{ matrix_base_data_path }}/postgres-backup"` | Base path for postgres-backup. Also see `postgres_backup_data_path` |
 |`postgres_backup_data_path` | `"{{ postgres_backup_base_path }}/data"` | Storage path for postgres-backup database backups |
-
 
 ## Installing
 

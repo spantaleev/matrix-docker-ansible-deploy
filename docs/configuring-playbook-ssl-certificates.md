@@ -4,7 +4,6 @@ By default, this playbook retrieves and auto-renews free SSL certificates from [
 
 This guide is about using the integrated Traefik server and doesn't apply if you're using [your own webserver](configuring-playbook-own-webserver.md).
 
-
 ## Using staging Let's Encrypt certificates instead of real ones
 
 For testing purposes, you may wish to use staging certificates provide by Let's Encrypt.
@@ -14,7 +13,6 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 ```yaml
 traefik_config_certificatesResolvers_acme_use_staging: true
 ```
-
 
 ## Disabling SSL termination
 
@@ -26,14 +24,12 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 traefik_config_entrypoint_web_secure_enabled: false
 ```
 
-
 ## Using self-signed SSL certificates
 
 If you'd like to use your own SSL certificates, instead of the default (SSL certificates obtained automatically via [ACME](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment) from [Let's Encrypt](https://letsencrypt.org/)):
 
 - generate your self-signed certificate files
 - follow the [Using your own SSL certificates](#using-your-own-ssl-certificates) documentation below
-
 
 ## Using your own SSL certificates
 

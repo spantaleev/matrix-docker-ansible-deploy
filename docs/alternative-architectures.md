@@ -10,7 +10,6 @@ The playbook automatically determines the target server's architecture (the `mat
 
 Some tools and container images can be built on the host or other measures can be used to install on that architecture.
 
-
 ## Implementation details
 
 For `amd64`, prebuilt container images (see the [container images we use](container-images.md)) are used for all components (except [Hydrogen](configuring-playbook-client-hydrogen.md), which goes through self-building).

@@ -6,7 +6,6 @@ The bot allows you to easily **create and manage registration tokens** aka. invi
 
 See the project's [documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands) to learn what it does and why it might be useful to you.
 
-
 ## Configuration
 
 To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:

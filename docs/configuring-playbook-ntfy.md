@@ -8,7 +8,6 @@ This role is intended to support UnifiedPush notifications for use with the Matr
 
 **Note**: In contrast to push notifications using Google's FCM or Apple's APNs, the use of UnifiedPush allows each end-user to choose the push notification server that they prefer.  As a consequence, deploying this ntfy server does not by itself ensure any particular user or device or client app will use it.
 
-
 ## Adjusting the playbook configuration
 
 To enable ntfy, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -105,7 +104,6 @@ If the Matrix app doesn't seem to pick it up, try restarting it and try the Trou
 ntfy also has a web app to subscribe to and push to topics from the browser. This may be helpful to further troubleshoot UnifiedPush problems or to use ntfy for other purposes. The web app only runs in the browser locally (after downloading the JavaScript).
 
 The web app is disabled in this playbook by default as the expectation is that most users won't use it. You can either use the [official hosted one](https://ntfy.sh/app) (it supports using other public reachable ntfy instances) or host it yourself by setting `ntfy_web_root: "app"` and re-running Ansible.
-
 
 ## Troubleshooting
 

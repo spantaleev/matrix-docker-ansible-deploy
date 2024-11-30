@@ -5,7 +5,6 @@ This playbook is meant to be run using [Ansible](https://www.ansible.com/).
 
 Ansible typically runs on your local computer and carries out tasks on a remote server. If your local computer cannot run Ansible, you can also run Ansible on some server somewhere (including the server you wish to install to).
 
-
 ## Supported Ansible versions
 
 To manually check which version of Ansible you're on, run: `ansible --version`.
@@ -15,7 +14,6 @@ For the **best experience**, we recommend getting the **latest version of Ansibl
 We're not sure what's the minimum version of Ansible that can run this playbook successfully. The lowest version that we've confirmed (on 2022-11-26) to be working fine is: `ansible-core` (`2.11.7`) combined with `ansible` (`4.10.0`).
 
 If your distro ships with an Ansible version older than this, you may run into issues. Consider [Upgrading Ansible](#upgrading-ansible) or [using Ansible via Docker](#using-ansible-via-docker).
-
 
 ## Upgrading Ansible
 
@@ -27,9 +25,7 @@ Depending on your distribution, you may be able to upgrade Ansible in a few diff
 
 If using the `pip` method, do note that the `ansible-playbook` binary may not be on the `$PATH` (https://linuxconfig.org/linux-path-environment-variable), but in some more special location like `/usr/local/bin/ansible-playbook`. You may need to invoke it using the full path.
 
-
 **Note**: Both of the above methods are a bad way to run system software such as Ansible. If you find yourself needing to resort to such hacks, please consider reporting a bug to your distribution and/or switching to a sane distribution, which provides up-to-date software.
-
 
 ## Using Ansible via Docker
 
@@ -38,7 +34,6 @@ Alternatively, you can run Ansible inside a Docker container (powered by the [de
 This ensures that you're using a very recent Ansible version, which is less likely to be incompatible with the playbook.
 
 You can either [run Ansible in a container on the Matrix server itself](#running-ansible-in-a-container-on-the-matrix-server-itself) or [run Ansible in a container on another computer (not the Matrix server)](#running-ansible-in-a-container-on-another-computer-not-the-matrix-server).
-
 
 ### Running Ansible in a container on the Matrix server itself
 
@@ -71,7 +66,6 @@ First, consider running `git config --global --add safe.directory /work` to [res
 
 Finally, you can execute `ansible-playbook ...` (or `ansible-playbook --connection=community.docker.nsenter ...`) commands as per normal now.
 
-
 ### Running Ansible in a container on another computer (not the Matrix server)
 
 Run this from the playbook's directory:
@@ -93,7 +87,6 @@ First, consider running `git config --global --add safe.directory /work` to [res
 
 Finally, you execute `ansible-playbook ...` commands as per normal now.
 
-
 #### If you don't use SSH keys for authentication
 
 If you don't use SSH keys for authentication, simply remove that whole line (`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro`).
@@ -103,7 +96,6 @@ To authenticate at your server using a password, you need to add a package. So, 
 apk add sshpass
 ```
 Then, to be asked for the password whenever running an  `ansible-playbook` command add `--ask-pass` to the arguments of the command.
-
 
 #### Resolve directory ownership issues
 

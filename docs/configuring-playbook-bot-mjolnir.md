@@ -4,7 +4,6 @@ The playbook can install and configure the [Mjolnir](https://github.com/matrix-o
 
 See the project's [documentation](https://github.com/matrix-org/mjolnir) to learn what it does and why it might be useful to you.
 
-
 ## 1. Register the bot account
 
 The playbook does not automatically create users for you. The bot requires an access token to be able to connect to your homeserver.
@@ -21,11 +20,9 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.mjolnir
 
 If you would like Mjolnir to be able to deactivate users, move aliases, shutdown rooms, etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
 
-
 ## 2. Get an access token
 
 Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
-
 
 ## 3. Make sure the account is free from rate limiting
 
@@ -44,7 +41,6 @@ If you make the management room encrypted (E2EE), then you MUST enable and use P
 Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element Web you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
 
 Finally invite the `@bot.mjolnir:example.com` account you created earlier into the room.
-
 
 ## 5. Adjusting the playbook configuration
 
@@ -105,7 +101,6 @@ matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
-
 ```yaml
 matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: true
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
@@ -113,7 +108,6 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages: false
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 ```
-
 
 ## 7. Installing
 

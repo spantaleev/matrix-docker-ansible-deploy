@@ -130,7 +130,6 @@ to `vars.yml` to control the logging level, where you may replace WARN with one 
 
 If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
 
-
 ## Usage
 
 You then need to start a chat with `@SERVICENAMEbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
@@ -138,8 +137,6 @@ You then need to start a chat with `@SERVICENAMEbot:example.com` (where `example
 Send `login` to the bridge bot to get started. You can learn more here about authentication from the bridge's official documentation on Authentication: https://docs.mau.fi/bridges/python/SERVICENAME/authentication.html
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
-
-
 
 ## Troubleshooting
 

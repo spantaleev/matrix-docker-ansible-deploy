@@ -61,7 +61,6 @@ Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppe
 
 Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works at the time of writing, but is deprecated and will stop working in the future.
 
-
 #### Method 2: manually, by asking each user to provide a working access token
 
 When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:

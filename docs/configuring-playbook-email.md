@@ -10,11 +10,9 @@ By default, emails are sent from `matrix@matrix.example.com`, as specified by th
 
 💡 To improve deliverability, we recommend [relaying email through another SMTP server](#relaying-email-through-another-smtp-server) anyway.
 
-
 ## Firewall settings
 
 No matter whether you send email directly (the default) or you relay email through another host (see how below), you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
-
 
 ## Relaying email through another SMTP server
 
@@ -31,7 +29,6 @@ exim_relay_relay_auth_password: "some-password"
 ```
 
 **Note**: only the secure submission protocol (using `STARTTLS`, usually on port `587`) is supported. **SMTPS** (encrypted SMTP, usually on port `465`) **is not supported**.
-
 
 ### Configuations for sending emails using Sendgrid
 An easy and free SMTP service to set up is [Sendgrid](https://sendgrid.com/), the free tier allows for up to 100 emails per day to be sent. In the settings below you can provide any email for `exim_relay_sender_address`.

@@ -8,7 +8,6 @@ See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/l
 
 **Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however was deprecated by its author.
 
-
 ## Setup Instructions
 
 Refer to the [official instructions](https://matrix-org.github.io/matrix-hookshot/latest/setup.html) to learn what the individual options do.
@@ -40,7 +39,6 @@ Send a `!hookshot help` message to see a list of help commands.
 Refer to [Hookshot's documentation](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) for more details about using the bridge's various features.
 
 **Important**: Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](#urls-for-bridges-setup) below.
-
 
 ## More setup documentation
 

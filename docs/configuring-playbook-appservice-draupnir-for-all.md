@@ -4,7 +4,6 @@ The playbook can install and configure the [Draupnir](https://github.com/the-dra
 
 Appservice mode can be used together with the regular [Draupnir bot](configuring-playbook-bot-draupnir.md) or independently. Details about the differences between the 2 modes are described below.
 
-
 ## Draupnir Appservice mode compared to Draupnir bot mode
 
 The administrative functions for managing the appservice are alpha quality and very limited. However, the experience of using an appservice-provisioned Draupnir is on par with the experience of using Draupnir from bot mode except in the case of avatar customisation as described later on in this document.
@@ -16,7 +15,6 @@ Draupnir for all in the playbook is rate-limit-exempt automatically as its appse
 Normal Draupnir does come with the benefit of access to Synapse Admin features. You are also able to more easily customise your normal Draupnir than D4A as D4A even on the branch with the Avatar command (To be Upstreamed to Mainline Draupnir) that command is clunky as it requires the use of things like Element Web devtools. In normal Draupnir this is a quick operation where you login to Draupnir with a normal client and set Avatar and Display name normally.
 
 Draupnir for all does not support external tooling like [MRU](https://mru.rory.gay) as it can't access Draupnir's user account.
-
 
 ## Installation
 

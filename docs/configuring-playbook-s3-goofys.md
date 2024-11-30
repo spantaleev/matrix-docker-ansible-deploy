@@ -29,7 +29,6 @@ matrix_s3_media_store_custom_endpoint: "https://your-custom-endpoint"
 
 If you have local media store files and wish to migrate to Backblaze B2 subsequently, follow our [migration guide to Backblaze B2](#migrating-to-backblaze-b2) below instead of applying this configuration as-is.
 
-
 ## Migrating from local filesystem storage to S3
 
 It's a good idea to [make a complete server backup](faq.md#how-do-i-back-up-the-data-on-my-server) before migrating your local media store to an S3-backed one.
@@ -84,7 +83,6 @@ After making the backup, follow one of the guides below for a migration path fro
 13. You're done! Verify that loading existing (old) media files works and that you can upload new ones.
 
 14. When confident that it all works, get rid of the local media store directory: `rm -rf /matrix/synapse/storage/media-store-local-backup`
-
 
 ### Migrating to Backblaze B2
 

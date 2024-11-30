@@ -33,7 +33,6 @@ Server Delegation by means of a `/.well-known/matrix/server` file is the most st
 
 Otherwise, you can decide to go against the default for this playbook, and instead set up [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-srv-record-advanced) (much more complicated).
 
-
 ## Server Delegation via a DNS SRV record (advanced)
 
 **Note**: doing Server Delegation via a DNS SRV record is a more **advanced** way to do it and is not the default for this playbook. This is usually **much more complicated** to set up, so **we don't recommend it**. If you're not an experienced sysadmin, you'd better stay away from this.
@@ -59,7 +58,6 @@ How you can obtain a valid certificate for `example.com` on the `matrix.example.
 If `example.com` and `matrix.example.com` are hosted on the same machine, you can let the playbook obtain the certificate for you, by following our [Obtaining SSL certificates for additional domains](configuring-playbook-ssl-certificates.md#obtaining-ssl-certificates-for-additional-domains) guide.
 
 If `example.com` and `matrix.example.com` are not hosted on the same machine, you can copy over the certificate files manually. Don't forget that they may get renewed once in a while, so you may also have to transfer them periodically. How often you do that is up to you, as long as the certificate files don't expire.
-
 
 ### Serving the Federation API with your certificates
 

@@ -16,7 +16,6 @@ matrix_synapse_federation_domain_whitelist:
 
 If you wish to disable federation, you can do that with an empty list (`[]`), or better yet by completely disabling federation (see below).
 
-
 ## Exposing the room directory over federation
 
 By default, your server's public rooms directory is not exposed to other servers via federation.
@@ -26,7 +25,6 @@ If you wish to expose it, add this to your configuration file (`inventory/host_v
 ```yaml
 matrix_synapse_allow_public_rooms_over_federation: true
 ```
-
 
 ## Disabling federation
 
@@ -53,7 +51,6 @@ matrix_synapse_reverse_proxy_companion_federation_api_enabled: false
 ## Changing the federation port from 8448 to a different port to use a CDN that only accepts 443/80 ports
 
 Why? This change could be useful for people running small Synapse instances on small severs/VPSes to avoid being impacted by a simple DOS/DDOS when bandwidth, RAM, an CPU resources are limited and if your hosting provider does not provide a DOS/DDOS protection.
-
 
 The following changes in the configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) will allow this and make it possible to proxy the federation through a CDN such as CloudFlare or any other:
 

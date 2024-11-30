@@ -24,7 +24,6 @@ Follow the [Purge History API](https://github.com/element-hq/synapse/blob/master
 
 After deleting data, you may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
 
-
 ## Compressing state with rust-synapse-compress-state
 
 [rust-synapse-compress-state](https://github.com/matrix-org/rust-synapse-compress-state) can be used to optimize some `_state` tables used by Synapse. If your server participates in large rooms this is the most effective way to reduce the size of your database.
@@ -44,7 +43,6 @@ The shortcut command with `just` program is also available: `just run-tags rust-
 By default, all rooms with more than `100000` state group rows will be compressed. If you need to adjust this, pass: `--extra-vars='matrix_synapse_rust_synapse_compress_state_min_state_groups_required=SOME_NUMBER_HERE'` to the command above.
 
 After state compression, you may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
-
 
 ## Browse and manipulate the database
 

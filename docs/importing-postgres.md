@@ -3,7 +3,6 @@
 Run this if you'd like to import your database from a previous installation.
 (don't forget to import your Synapse `media_store` files as well - see [the importing-synape-media-store guide](importing-synapse-media-store.md)).
 
-
 ## Prerequisites
 
 For this to work, **the database name in Postgres must match** what this playbook uses. This playbook uses a Postgres database name of `synapse` by default (controlled by the `matrix_synapse_database_database` variable). If your database name differs, be sure to change `matrix_synapse_database_database` to your desired name and to re-run the playbook before proceeding.
@@ -13,7 +12,6 @@ The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump >
 The migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, ...)
 
 Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay).
-
 
 ## Importing
 

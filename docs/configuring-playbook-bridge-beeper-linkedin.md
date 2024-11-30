@@ -58,7 +58,6 @@ Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppe
 
 Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works at the time of writing, but is deprecated and will stop working in the future.
 
-
 ## Usage
 
 You then need to start a chat with `@linkedinbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
@@ -68,7 +67,6 @@ Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging fo
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
 After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting-by-enabling-appservice-double-puppet-or-shared-secret-auth), if you haven't already done so.
-
 
 ## Troubleshooting
 

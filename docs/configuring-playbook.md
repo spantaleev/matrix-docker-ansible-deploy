@@ -24,7 +24,6 @@ For a more custom setup, see the [Other configuration options](#other-configurat
 
 [▶️](installing.md) When you're done with all the configuration you'd like to do, continue with [Installing](installing.md).
 
-
 ## Other configuration options
 
 ### Core service adjustments
@@ -165,7 +164,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 - [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md)
 
 - [Setting up WeChat bridging](configuring-playbook-bridge-wechat.md)
-
 
 ### Bots
 

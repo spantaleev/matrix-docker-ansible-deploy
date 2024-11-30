@@ -177,7 +177,6 @@ Make sure to:
 - **replace `example.com`** in the server configuration with your actual domain name
 - and: to **do this for the HTTPS-enabled server block**, as that's where Matrix expects the file to be
 
-
 ## Confirming it works
 
 No matter which method you've used to set up the well-known files, if you've done it correctly you should be able to see a JSON file at these URLs:

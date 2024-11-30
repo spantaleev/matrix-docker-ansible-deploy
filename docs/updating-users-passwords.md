@@ -14,7 +14,6 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=USERNAME_HE
 
 **You can then log in with that user** via Element Web that this playbook has created for you at a URL like this: `https://element.example.com/`.
 
-
 ## Option 2 (if you are using an external Postgres server):
 
 You can manually generate the password hash by using the command-line after **SSH**-ing to your server (requires that [all services have been started](installing.md#finalize-the-installation):
@@ -30,7 +29,6 @@ UPDATE users SET password_hash = '<password-hash>' WHERE name = '@someone:exampl
 ```
 
 where `<password-hash>` is the hash returned by the docker command above.
-
 
 ## Option 3:
 

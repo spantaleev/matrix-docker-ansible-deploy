@@ -20,7 +20,6 @@ Below, we describe 2 ways to generate an access token for a user - using [Elemen
 
 ![Obtaining an access token with Element Web](assets/obtain_admin_access_token_element_web.png)
 
-
 ## Obtain an access token via curl
 
 You can use the following command to get an access token for your user directly from the [Matrix Client-Server API](https://www.matrix.org/docs/guides/client-server-api#login):

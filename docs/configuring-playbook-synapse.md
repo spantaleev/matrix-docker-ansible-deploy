@@ -16,7 +16,6 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 
 - or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_synapse_configuration` (or `matrix_synapse_configuration_yaml`). You can find information about this in [`roles/custom/matrix-synapse/defaults/main.yml`](../roles/custom/matrix-synapse/defaults/main.yml).
 
-
 ## Load balancing with workers
 
 To have Synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found in the [official Synapse workers documentation](https://github.com/element-hq/synapse/blob/master/docs/workers.md) and [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html).
@@ -80,11 +79,9 @@ A separate Ansible role (`matrix-synapse-reverse-proxy-companion`) and component
 
 In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/element-hq/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
 
-
 ## Synapse Admin
 
 Certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace, if you install [Synapse Admin](configuring-playbook-synapse-admin.md).
-
 
 ## Synapse + OpenID Connect for Single-Sign-On
 
@@ -116,7 +113,6 @@ matrix_synapse_oidc_providers:
     allow_existing_users: true # Optional
     backchannel_logout_enabled: true # Optional
 ```
-
 
 ## Customizing templates
 
@@ -155,7 +151,6 @@ matrix_synapse_container_image_customizations_templates_git_repository_ssh_priva
 ```
 
 As mentioned in Synapse's Templates documentation, Synapse will fall back to its own templates if a template is not found in that directory. Due to this, it's recommended to only store and maintain template files in your repository if you need to make custom changes. Other files (which you don't need to change), should not be duplicated, so that you don't need to worry about getting out-of-sync with the original Synapse templates.
-
 
 ## Monitoring Synapse Metrics with Prometheus and Grafana
 

@@ -24,7 +24,6 @@ traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 
 Traefik will manage SSL certificates for all services seamlessly.
 
-
 ### Traefik managed by you
 
 ```yaml
@@ -132,7 +131,6 @@ There are 2 ways to go about it:
 
 - (difficult) [Using no reverse-proxy on the Matrix side at all](#using-no-reverse-proxy-on-the-matrix-side-at-all) disabling the playbook-managed reverse-proxy (Traefik), exposing services one by one using `_host_bind_port` variables and forwarding traffic from your own webserver to those ports
 
-
 ### Fronting the integrated reverse-proxy webserver with another reverse-proxy
 
 This method is about leaving the integrated reverse-proxy webserver be, but making it not get in the way (using up important ports, trying to retrieve SSL certificates, etc.).
@@ -200,7 +198,6 @@ It's important that these webservers proxy-pass requests to the correct `ip:port
 To put it another way:
 - `curl http://127.0.0.1:81` will result in a `404 - not found` error
 - but `curl -H 'Host: matrix.example.com' http://127.0.0.1:81` should work.
-
 
 ### Using no reverse-proxy on the Matrix side at all
 

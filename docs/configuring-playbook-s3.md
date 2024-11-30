@@ -12,7 +12,6 @@ Then, [create the S3 bucket](#bucket-creation-and-security-configuration).
 
 Finally, [set up S3 storage for Synapse](#setting-up) (with [Goofys](configuring-playbook-s3-goofys.md), [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md), or use s3 datastore with the [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/configuration/s3-datastore.html)).
 
-
 ## Choosing an Object Storage provider
 
 You can create [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object storage like [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html), [Storj](https://storj.io), [Wasabi](https://wasabi.com), [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces), etc.
@@ -31,7 +30,6 @@ Here are some of the important aspects of choosing the right provider:
 - if a provider's infrastructure such as data center is centralized or distributed
 - if a provider's price model is transparent (whether it includes hidden costs like minimum charge, minimum storage term, etc.)
 - if a provider has free or cheap egress fee (in case you need to get the data out often, for some reason) - likely not too important for the common use-case
-
 
 ## Bucket creation and Security Configuration
 
@@ -66,7 +64,6 @@ You'll need an Amazon S3 bucket and some IAM user credentials (access key + secr
 
 **Note**: This policy needs to be attached to an IAM user created from the **Security Credentials** menu. This is not a **Bucket Policy**.
 
-
 ## Backblaze B2
 
 To use [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html) you first need to sign up.
@@ -92,13 +89,11 @@ For configuring [Goofys](configuring-playbook-s3-goofys.md) or [s3-synapse-stora
 
 - **Storage Class** - use `STANDARD`. Backblaze B2 does not have different storage classes, so it doesn't make sense to use any other value.
 
-
 ## Other providers
 
 For other S3-compatible providers, you may not need to configure security policies, etc. (just like for [Backblaze B2](#backblaze-b2)).
 
 You most likely just need to create an S3 bucket and get some credentials (access key and secret key) for accessing the bucket in a read/write manner.
-
 
 ## Setting up
 

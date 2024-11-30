@@ -33,7 +33,6 @@ etherpad_hostname: "{{ matrix_server_fqn_matrix }}"
 etherpad_path_prefix: /etherpad
 ```
 
-
 ## Adjusting DNS records
 
 Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Etherpad domain to the Matrix server.
@@ -67,13 +66,11 @@ The Etherpad UI should be available at `https://etherpad.example.com`, while the
 
 If you've [decided on another hostname or path-prefix](#adjusting-the-etherpad-url) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before usage.
 
-
 ### Managing / Deleting old pads
 
 If you want to manage and remove old unused pads from Etherpad, you will first need to able Admin access as described above.
 
 Then from the plugin manager page (`https://etherpad.example.com/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
-
 
 ### How to use Etherpad widgets without an integration manager (like Dimension)
 
@@ -81,20 +78,17 @@ This is how it works in Element Web, it might work quite similar with other clie
 
 To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.example.com`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
 
-
 ### Set Dimension default to the self-hosted Etherpad (optional)
 
 If you decided to install [Dimension integration manager](configuring-playbook-dimension.md) alongside Etherpad, the Dimension administrator users can configure the default URL template.
 
 The Dimension configuration menu can be accessed with the sprocket icon as you begin to add a widget to a room in Element Web. There you will find the Etherpad Widget Configuration action beneath the _Widgets_ tab.
 
-
 #### Removing the integrated Etherpad chat
 
 If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template.
 
 Example: `https://etherpad.example.com/p/$roomId_$padName?showChat=false`
-
 
 ## Known issues
 

@@ -6,7 +6,6 @@ It's a bot you can use to setup **your own helpdesk on matrix**
 
 See the project's [documentation](https://github.com/etkecc/honoroit#how-it-looks-like) to learn what it does with screenshots and why it might be useful to you.
 
-
 ## Adjusting the playbook configuration
 
 To enable Honoroit, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:

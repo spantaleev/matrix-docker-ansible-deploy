@@ -4,7 +4,6 @@ This page summarizes the container ([Docker](https://www.docker.com/)) images us
 
 We try to stick to official images (provided by their respective projects) as much as possible.
 
-
 ## Homeserver
 
 | Service | Container image | Default? | Description |

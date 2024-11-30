@@ -48,7 +48,6 @@ You may switch the mode via the `matrix_mautrix_meta_messenger_meta_mode` variab
 
 Note that switching the mode (especially between `facebook*` and `messenger`) will intentionally make the bridge use another database (`matrix_mautrix_meta_facebook` or `matrix_mautrix_meta_messenger`) to isolate the 2 instances. Switching between Tor and non-Tor may be possible without dataloss, but your mileage may vary. Before switching to a new mode, you may wish to de-configure the old one (send `help` to the bridge bot and unbridge your portals, etc.).
 
-
 ### Bridge permissions
 
 By default, any user on your homeserver will be able to use the bridge.
