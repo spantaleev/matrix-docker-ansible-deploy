@@ -65,7 +65,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 - If you change the bot password (`matrix_bot_honoroit_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_honoroit_password` to let the bot know its new password.
 
-
 ## Usage
 
 To use the bot, invite the `@honoroit:example.com` to the room you specified in config, after that any Matrix user can send a message to the `@honoroit:example.com` to start a new thread in that room.

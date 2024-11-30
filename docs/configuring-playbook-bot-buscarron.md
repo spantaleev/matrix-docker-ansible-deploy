@@ -73,7 +73,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 - If you change the bot password (`matrix_bot_buscarron_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_buscarron_password` to let the bot know its new password.
 
-
 ## Usage
 
 To use the bot, invite the `@bot.buscarron:example.com` to the room you specified in a config, after that any point your form to the form url, example for the `contact` form:
