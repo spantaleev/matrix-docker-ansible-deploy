@@ -142,4 +142,18 @@ Since it is unsafe to keep outdated services running on the server connected to 
 
 For more information about upgrading or maintaining services with the playbook, take at look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
 
-Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match.
+Feel free to **re-run the setup command any time** you think something is wrong with the server configuration. Ansible will take your configuration and update your server to match.
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+```
+
+**Note**: see [this page on the playbook tags](playbook-tags.md) for more information about those tags.
+
+### Make full use of `just` shortcut commands
+
+After you get familiar with reconfiguring and re-running the playbook to maintain the server, upgrade its services, etc., you probably would like to make use of `just` shortcut commands for faster input.
+
+For example, `just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
+
+You can learn about the shortcut commands on this page: [Running `just` commands](just.md)

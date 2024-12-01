@@ -96,9 +96,9 @@ After these variables have been set, run the playbook with [playbook tags](playb
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-matrix-user-verification-service,start
 ```
 
-The shortcut commands with `just` program are also available: `just run-tags setup-matrix-user-verification-service,start` or `just run-tags setup-all,start`
+The shortcut commands with the [`just` program](just.md) are also available: `just run-tags setup-matrix-user-verification-service,start` or `just setup-all`
 
-`just run-tags setup-matrix-user-verification-service,start` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just run-tags setup-all,start`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
+`just run-tags setup-matrix-user-verification-service,start` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too.
 
 ## Logging
 
