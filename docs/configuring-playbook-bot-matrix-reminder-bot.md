@@ -27,18 +27,22 @@ matrix_bot_matrix_reminder_bot_reminders_timezone: Europe/London
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```
 
 **Notes**:
 
-- the `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account
+- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
 
-- if you change the bot password (`matrix_bot_matrix_reminder_bot_matrix_user_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_matrix_reminder_bot_matrix_user_password` to let the bot know its new password
+- The shortcut commands with `just` program are also available: `just install-all` or `just setup-all`
 
+  `just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
+
+- If you change the bot password (`matrix_bot_matrix_reminder_bot_matrix_user_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_matrix_reminder_bot_matrix_user_password` to let the bot know its new password.
 
 ## Usage
 

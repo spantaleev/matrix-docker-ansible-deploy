@@ -288,9 +288,20 @@ If you've decided to use the default hostname, you won't need to do any extra DN
 
 ## Installing
 
-Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration) and [your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command: `just install-all`
+Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration) and [your DNS records](#adjusting-dns-records), you can run the playbook with [playbook tags](playbook-tags.md) as below:
 
-If you're in the process of migrating an existing Synapse homeserver to MAS, you should now follow the rest of the steps in the [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) guide.
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+**Notes**:
+
+- The shortcut commands with `just` program are also available: `just run-tags install-all,start` or `just run-tags setup-all,start`
+
+  `just run-tags install-all,start` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just run-tags setup-all,start`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)
+
+- If you're in the process of migrating an existing Synapse homeserver to MAS, you should now follow the rest of the steps in the [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) guide.
 
 💡 After installation, you should [verify that Matrix Authentication Service is installed correctly](#verify-that-matrix-authentication-service-is-installed-correctly).
 

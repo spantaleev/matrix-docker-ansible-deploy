@@ -18,6 +18,8 @@ As an alternative, you can perform a manual restore using the [AWS CLI tool](htt
 
 Run this command (make sure to replace `<server-path-to-media_store>` with a path on your server):
 
-	ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_media_store=<server-path-to-media_store>' --tags=import-synapse-media-store
+```sh
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='server_path_media_store=<server-path-to-media_store>' --tags=import-synapse-media-store
+```
 
 **Note**: `<server-path-to-media_store>` must be a file path to a `media_store` directory on the server (not on your local machine!).

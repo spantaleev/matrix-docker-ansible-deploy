@@ -69,4 +69,13 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 ## Installing
 
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
+
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+The shortcut commands with `just` program are also available: `just run-tags install-all,start` or `just run-tags setup-all,start`
+
+`just run-tags install-all,start` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just run-tags setup-all,start`, or these components will still remain installed. For more information about `just` shortcuts, take a look at this page: [Running `just` commands](just.md)

@@ -39,6 +39,8 @@ To ask the playbook to run rust-synapse-compress-state, execute:
 ansible-playbook -i inventory/hosts setup.yml --tags=rust-synapse-compress-state
 ```
 
+The shortcut command with `just` program is also available: `just run-tags rust-synapse-compress-state`
+
 By default, all rooms with more than `100000` state group rows will be compressed. If you need to adjust this, pass: `--extra-vars='matrix_synapse_rust_synapse_compress_state_min_state_groups_required=SOME_NUMBER_HERE'` to the command above.
 
 After state compression, you may wish to run a [`FULL` Postgres `VACUUM`](./maintenance-postgres.md#vacuuming-postgresql).
