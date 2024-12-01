@@ -37,11 +37,21 @@ After updating the Ansible roles, then re-run the [playbook setup](installing.md
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 ```
 
-If you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with `--tags=setup-all` instead of `--tags=install-all`. See [this page on the playbook tags](playbook-tags.md) for more information.
+If you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with the `setup-all` tag as below:
 
-#### Run `just` to execute shortcut command
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+```
 
-If you want to invoke the `ansible-playbook` command with less typing, you can run `just` to execute the shortcut command: `just install-all` (or `just setup-all`). Note that it restarts all services automatically.
+**Notes**:
+
+- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account, if any.
+
+- The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+  `just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
+
+- See [this page on the playbook tags](playbook-tags.md) for more information about those tags.
 
 ## PostgreSQL major version upgrade
 
