@@ -169,6 +169,7 @@ By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-vid
 There is an ansible playbook that can be run with the following tag: `ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
 
 For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:
+
 ```INI
 [jitsi_jvb_servers]
 <your jvb hosts> ansible_host=<ip address of the jvb host>

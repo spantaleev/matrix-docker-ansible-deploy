@@ -32,6 +32,7 @@ just run-tags import-postgres \
 ## Troubleshooting
 
 ### Table Ownership
+
 A table ownership issue can occur if you are importing from a Synapse installation which was both:
 
  - migrated from SQLite to Postgres, and
@@ -84,6 +85,7 @@ In this case you can use the command suggested in the import task to clear the d
 Now on your local machine run `just run-tags setup-postgres` to prepare the database roles etc.
 
 If not, you probably get this error. `synapse` is the correct table owner, but the role is missing in database.
+
 ```
 "ERROR:  role synapse does not exist"
 ```

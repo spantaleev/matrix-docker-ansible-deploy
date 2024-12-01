@@ -23,6 +23,7 @@ matrix_mautrix_facebook_enabled: true
 There are some additional things you may wish to configure about the bridge before you continue.
 
 Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
+
 ```yaml
 matrix_mautrix_facebook_configuration_extension_yaml: |
   bridge:
@@ -32,6 +33,7 @@ matrix_mautrix_facebook_configuration_extension_yaml: |
 ```
 
 If you would like to be able to administrate the bridge from your account it can be configured like this:
+
 ```yaml
 matrix_mautrix_facebook_configuration_extension_yaml: |
   bridge:

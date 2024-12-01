@@ -88,8 +88,7 @@ The auto-upgrade-backup directory stays around forever, until you **manually dec
 
 As part of the upgrade, the database is dumped to `/tmp`, an upgraded and empty Postgres server is started, and then the dump is restored into the new server. To use a different directory for the dump, pass some extra flags to the command above, like this: `--extra-vars="postgres_dump_dir=/directory/to/dump/here"`
 
-To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage.
-If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
+To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage. If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 
 **All databases, roles, etc. on the Postgres server are migrated**.
 

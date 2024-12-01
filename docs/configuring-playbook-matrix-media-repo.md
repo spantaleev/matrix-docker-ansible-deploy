@@ -30,6 +30,7 @@ By default, the media-repo will use the local filesystem for data storage. You c
 ## Configuring the media-repo
 
 Additional common configuration options:
+
 ```yaml
 
 # The postgres database pooling options

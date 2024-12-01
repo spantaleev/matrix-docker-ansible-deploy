@@ -52,6 +52,7 @@ matrix_mautrix_telegram_configuration_extension_yaml: |
 ```
 
 You might also want to give permissions to administrate the bot:
+
 ```yaml
 matrix_mautrix_telegram_configuration_extension_yaml: |
   bridge:
@@ -62,6 +63,7 @@ matrix_mautrix_telegram_configuration_extension_yaml: |
 More details about permissions in this example: https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml#L410
 
 If you like to exclude all groups from syncing and use the Telgeram-Bridge only for direct chats, you can add the following additional playbook configuration:
+
 ```yaml
 matrix_mautrix_telegram_filter_mode: whitelist
 ```

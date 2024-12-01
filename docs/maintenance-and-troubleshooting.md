@@ -3,6 +3,7 @@
 ## How to see the current status of your services
 
 You can check the status of your services by using `systemctl status`. Example:
+
 ```sh
 sudo systemctl status matrix-synapse
 

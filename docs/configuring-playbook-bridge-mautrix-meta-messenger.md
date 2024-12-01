@@ -61,6 +61,7 @@ Different levels of permission can be granted to users:
 The permissions are following the sequence: nothing < `relay` < `user` < `admin`.
 
 The default permissions are set via `matrix_mautrix_meta_messenger_bridge_permissions_default` and are somewhat like this:
+
 ```yaml
 matrix_mautrix_meta_messenger_bridge_permissions_default:
   '*': relay

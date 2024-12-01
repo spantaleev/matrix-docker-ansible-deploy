@@ -70,6 +70,7 @@ The GitHub bridge requires you to install a private key file. This can be done i
 - use the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux) to copy the file from an arbitrary path on your ansible client to the correct path on the server.
 
 To use the `aux` role, make sure the `matrix_hookshot_github_private_key` variable is empty. Then add the following additional configuration:
+
 ```yaml
 aux_file_definitions:
   - dest: "{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}"
@@ -78,6 +79,7 @@ aux_file_definitions:
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 ```
+
 For more information, see the documentation in the [default configuration of the aux role](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml).
 
 ### Provisioning API

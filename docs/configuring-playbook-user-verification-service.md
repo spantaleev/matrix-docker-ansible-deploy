@@ -68,6 +68,7 @@ matrix_user_verification_service_uvs_auth_token: "TOKEN"
 In case Jitsi is also managed by this playbook and 'matrix' authentication in Jitsi is enabled, this collection will automatically configure Jitsi to use the configured auth token.
 
 ###  (Optional) Disable Auth
+
 Authorization is enabled by default. To disable set
 
 ```yaml
@@ -108,6 +109,7 @@ The configuration variable `UVS_LOG_LEVEL` can be set to:
 - debug
 
 ## TLS Certificate Checking
+
 If the Matrix Homeserver does not provide a valid TLS certificate, UVS will fail with the following error message:
 
 > message: 'No response received: [object Object]',
