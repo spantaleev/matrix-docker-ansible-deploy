@@ -19,7 +19,6 @@ If you don't open these ports, you will still be able to send emails, but not re
 
 These port numbers are configurable via the `matrix_postmoogle_smtp_host_bind_port` and `matrix_postmoogle_submission_host_bind_port` variables, but other email servers will try to deliver on these default (standard) ports, so changing them is of little use.
 
-
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:

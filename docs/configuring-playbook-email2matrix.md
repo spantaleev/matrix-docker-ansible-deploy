@@ -6,7 +6,6 @@ The playbook can install and configure [email2matrix](https://github.com/devture
 
 See the project's [documentation](https://github.com/devture/email2matrix/blob/master/docs/README.md) to learn what it does and why it might be useful to you.
 
-
 ## Preparation
 
 ### DNS configuration

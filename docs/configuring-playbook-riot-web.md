@@ -7,7 +7,6 @@ Riot has since been [renamed to Element](https://element.io/blog/welcome-to-elem
 - to learn more about Element Web and its configuration, see our dedicated [Configuring Element Web](configuring-playbook-client-element-web.md) documentation page
 - to learn how to migrate from Riot to Element Web, see [Migrating to Element Web](#migrating-to-element-web) below
 
-
 ## Migrating to Element Web
 
 ### Migrating your custom settings
@@ -15,7 +14,6 @@ Riot has since been [renamed to Element](https://element.io/blog/welcome-to-elem
 If you have custom `matrix_riot_web_` variables in your `inventory/host_vars/matrix.example.com/vars.yml` file, you'll need to rename them (`matrix_riot_web_` -> `matrix_client_element_`).
 
 Some other playbook variables (but not all) with `riot` in their name are also renamed. The playbook checks and warns if you are using the old name for some commonly used ones.
-
 
 ### Domain migration
 
@@ -26,7 +24,6 @@ There are a few options for handling this:
 - (**avoiding changes** - using the old `riot.example.com` domain and avoiding DNS changes) -- to keep using `riot.example.com` instead of `element.example.com`, override the domain at which the playbook serves Element Web: `matrix_server_fqn_element: "riot.{{ matrix_domain }}"`
 
 - (**embracing changes** - using only `element.example.com`) - set up the `element.example.com` DNS record (see [Configuring DNS](configuring-dns.md)). You can drop the `riot.example.com` in this case.
-
 
 ### Re-running the playbook
 

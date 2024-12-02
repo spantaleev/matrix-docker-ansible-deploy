@@ -7,7 +7,6 @@ By default, this playbook installs the [Element Web](https://github.com/element-
 - [app.element.io](https://app.element.io/), hosted by [Element](https://element.io/)
 - [app.etke.cc](https://app.etke.cc/), hosted by [etke.cc](https://etke.cc/)
 
-
 ## Disabling Element Web
 
 If you'd like for the playbook to not install Element Web (or to uninstall it if it was previously installed), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -15,7 +14,6 @@ If you'd like for the playbook to not install Element Web (or to uninstall it if
 ```yaml
 matrix_client_element_enabled: false
 ```
-
 
 ## Adjusting the playbook configuration
 
@@ -32,7 +30,6 @@ Alternatively, **if there is no pre-defined variable** for an Element Web settin
 - or, you can **extend and override the default configuration** ([`config.json.j2`](../roles/custom/matrix-client-element/templates/config.json.j2)) by making use of the `matrix_client_element_configuration_extension_json_` variable. You can find information about this in [`roles/custom/matrix-client-element/defaults/main.yml`](../roles/custom/matrix-client-element/defaults/main.yml).
 
 - or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_client_element_configuration_default` (or `matrix_client_element_configuration`). You can find information about this in [`roles/custom/matrix-client-element/defaults/main.yml`](../roles/custom/matrix-client-element/defaults/main.yml).
-
 
 ### Themes
 

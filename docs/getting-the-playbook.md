@@ -12,7 +12,6 @@ You can retrieve the playbook's source code by:
 
 - [Downloading the playbook as a ZIP archive](#downloading-the-playbook-as-a-zip-archive) (not recommended)
 
-
 ## Using git to get the playbook
 
 We recommend using the [git](https://git-scm.com/) tool to get the playbook's source code, because it lets you easily keep up to date in the future when [Maintaining services](maintenance-upgrading-services.md).
@@ -25,7 +24,6 @@ git clone https://github.com/spantaleev/matrix-docker-ansible-deploy.git
 
 This will create a new `matrix-docker-ansible-deploy` directory. You're supposed to execute all other installation commands inside that directory.
 
-
 ## Downloading the playbook as a ZIP archive
 
 Alternatively, you can download the playbook as a ZIP archive. This is not recommended, as it's not easy to keep up to date with future updates. We suggest you [use git](#using-git-to-get-the-playbook) instead.
@@ -33,7 +31,6 @@ Alternatively, you can download the playbook as a ZIP archive. This is not recom
 The latest version is always at the following URL: https://github.com/spantaleev/matrix-docker-ansible-deploy/archive/master.zip
 
 You can extract this archive anywhere. You'll get a directory called `matrix-docker-ansible-deploy-master`. You're supposed to execute all other installation commands inside that directory.
-
 
 ---------------------------------------------
 

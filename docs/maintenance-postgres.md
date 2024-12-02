@@ -30,7 +30,6 @@ You can then proceed to write queries. Example: `SELECT COUNT(*) FROM users;`
 
 **Be careful**. Modifying the database directly (especially as services are running) is dangerous and may lead to irreversible database corruption. When in doubt, consider [making a backup](#backing-up-postgresql).
 
-
 ## Vacuuming PostgreSQL
 
 Deleting lots data from Postgres does not make it release disk space, until you perform a [`VACUUM` operation](https://www.postgresql.org/docs/current/sql-vacuum.html).
@@ -50,7 +49,6 @@ Example playbook invocations:
 - `just run-tags run-postgres-vacuum`: runs the default `vacuum-complete` preset and restarts all services
 - `just run-tags run-postgres-vacuum -e postgres_vacuum_preset=analyze`: runs the `analyze` preset with all services remaining operational at all times
 
-
 ## Backing up PostgreSQL
 
 To automatically make Postgres database backups on a fixed schedule, see [Setting up postgres backup](configuring-playbook-postgres-backup.md).
@@ -69,7 +67,6 @@ matrix-postgres \
 If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above command will not work, because neither the credentials file (`/matrix/postgres/env-postgres-psql`), nor the `matrix-postgres` container is available.
 
 Restoring a backup made this way can be done by [importing it](importing-postgres.md).
-
 
 ## Upgrading PostgreSQL
 
@@ -91,11 +88,9 @@ The auto-upgrade-backup directory stays around forever, until you **manually dec
 
 As part of the upgrade, the database is dumped to `/tmp`, an upgraded and empty Postgres server is started, and then the dump is restored into the new server. To use a different directory for the dump, pass some extra flags to the command above, like this: `--extra-vars="postgres_dump_dir=/directory/to/dump/here"`
 
-To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage.
-If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
+To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage. If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 
 **All databases, roles, etc. on the Postgres server are migrated**.
-
 
 ## Tuning PostgreSQL
 

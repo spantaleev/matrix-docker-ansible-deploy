@@ -90,7 +90,6 @@ By default Dimension will use [jitsi.riot.im](https://jitsi.riot.im/) as the `co
 
 In the interim until the above limitation is resolved, an admin user needs to configure the domain via the admin ui once dimension is running. In Element Web, go to *Manage Integrations* &rightarrow; *Settings* &rightarrow; *Widgets* &rightarrow; *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
 
-
 ## Additional features
 
 To use a more custom configuration, you can define a `matrix_dimension_configuration_extension_yaml` string variable and put your configuration in it. To learn more about how to do this, refer to the information about `matrix_dimension_configuration_extension_yaml` in the [default variables file](../roles/custom/matrix-dimension/defaults/main.yml) of the Dimension component.

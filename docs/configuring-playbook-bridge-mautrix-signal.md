@@ -41,6 +41,7 @@ Different levels of permission can be granted to users:
 The permissions are following the sequence: nothing < relay < user < admin.
 
 The default permissions are set as follows:
+
 ```yaml
 permissions:
   '*': relay
@@ -48,6 +49,7 @@ permissions:
 ```
 
 If you want to augment the preset permissions, you might want to set the additional permissions with the following settings in your `vars.yml` file:
+
 ```yaml
 matrix_mautrix_signal_configuration_extension_yaml: |
   bridge:
@@ -58,6 +60,7 @@ matrix_mautrix_signal_configuration_extension_yaml: |
 This will add the admin permission to the specific user, while keeping the default permissions.
 
 In case you want to replace the default permissions settings **completely**, populate the following item within your `vars.yml` file:
+
 ```yaml
 matrix_mautrix_signal_bridge_permissions:
   '@ADMIN:example.com': admin

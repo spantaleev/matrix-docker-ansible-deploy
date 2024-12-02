@@ -6,7 +6,6 @@ The playbook can install and configure [sliding-sync](https://github.com/matrix-
 
 Sliding Sync is an implementation of [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/sync-v3/proposals/3575-sync.md) and a prerequisite for running Element X clients ([Element X iOS](https://github.com/element-hq/element-x-ios) and [Element X Android](https://github.com/element-hq/element-x-android)). See the project's [documentation](https://github.com/matrix-org/sliding-sync) to learn more.
 
-
 ## Adjusting the playbook configuration
 
 To enable Sliding Sync proxy, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:

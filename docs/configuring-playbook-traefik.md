@@ -4,7 +4,6 @@ By default, this playbook installs and manages a [Traefik](https://doc.traefik.i
 
 This Ansible role support various configuration options. Feel free to consult its `default/main.yml` variables file.
 
-
 ## Adjusting SSL certificate retrieval
 
 See the dedicated [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) documentation page.
@@ -89,7 +88,6 @@ traefik_configuration_extension_yaml: |
     insecureSkipVerify: true
 ```
 
-
 Next, you have to add a new dynamic configuration file for Traefik that contains the actual information of the server using the `aux_file_definitions` variable. In this example, we will terminate SSL at the Traefik instance and connect to the other server via HTTPS. Traefik will now take care of managing the certificates.
 
 ```yaml
@@ -137,7 +135,6 @@ Changing the `url` to one with an `http://` prefix would allow to connect to the
 With these changes, all TCP traffic will be reverse-proxied to the target system.
 
 **WARNING**: This configuration might lead to problems or need additional steps when a [certbot](https://certbot.eff.org/) behind Traefik also tries to manage [Let's Encrypt](https://letsencrypt.org/) certificates, as Traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```.
-
 
 ## Traefik behind a `proxy_protocol` reverse-proxy
 

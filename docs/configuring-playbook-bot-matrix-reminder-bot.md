@@ -6,7 +6,6 @@ It's a bot you can use to **schedule one-off & recurring reminders and alarms**.
 
 See the project's [documentation](https://github.com/anoadragon453/matrix-reminder-bot#usage) to learn what it does and why it might be useful to you.
 
-
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -23,7 +22,6 @@ matrix_bot_matrix_reminder_bot_matrix_user_password: PASSWORD_FOR_THE_BOT
 # Adjust this to your timezone
 matrix_bot_matrix_reminder_bot_reminders_timezone: Europe/London
 ```
-
 
 ## Installing
 

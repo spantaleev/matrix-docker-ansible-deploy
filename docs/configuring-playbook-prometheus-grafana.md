@@ -78,13 +78,11 @@ Name | Description
 `grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
 
-
 ## Security and privacy
 
 Metrics and resulting graphs can contain a lot of information. This includes system specs but also usage patterns. This applies especially to small personal/family scale homeservers. Someone might be able to figure out when you wake up and go to sleep by looking at the graphs over time. Think about this before enabling anonymous access. And you should really not forget to change your Grafana password.
 
 Most of our docker containers run with limited system access, but the `prometheus-node-exporter` has access to the host network stack and (readonly) root filesystem. This is required to report on them. If you don't like that, you can set `prometheus_node_exporter_enabled: false` (which is actually the default). You will still get Synapse metrics with this container disabled. Both of the dashboards will always be enabled, so you can still look at historical data after disabling either source.
-
 
 ## Collecting metrics to an external Prometheus server
 
@@ -122,6 +120,7 @@ Name | Description
 If you are using workers (`matrix_synapse_workers_enabled: true`) and have enabled `matrix_synapse_metrics_proxying_enabled` as described above, the playbook will also automatically expose all Synapse worker threads' metrics to `https://matrix.example.com/metrics/synapse/worker/ID`, where `ID` corresponds to the worker `id` as exemplified in `matrix_synapse_workers_enabled_list`.
 
 The playbook also generates an exemplary config file (`/matrix/synapse/external_prometheus.yml.template`) with all the correct paths which you can copy to your Prometheus server and adapt to your needs. Make sure to edit the specified `password_file` path and contents and path to your `synapse-v2.rules`. It will look a bit like this:
+
 ```yaml
 scrape_configs:
   - job_name: 'synapse'
@@ -147,7 +146,6 @@ scrape_configs:
           job: "generic_worker"
           index: 18111
 ```
-
 
 ## More information
 

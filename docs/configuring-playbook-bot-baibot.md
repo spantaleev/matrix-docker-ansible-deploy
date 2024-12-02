@@ -11,11 +11,9 @@ It supports [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/ch
 
 It's designed as a more private and [✨ featureful](https://github.com/etkecc/baibot/?tab=readme-ov-file#-features) alternative to [matrix-chatgpt-bot](./configuring-playbook-bot-chatgpt.md). See the [baibot](https://github.com/etkecc/baibot) project and its documentation for more information.
 
-
 ## Prerequisites
 
 API access to one or more LLM [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md).
-
 
 ## Adjusting the playbook configuration
 
@@ -29,7 +27,6 @@ There are **a lot of configuration options** (some required, some possibly requi
 - [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers)
 
 Depending on your current `vars.yml` file and desired configuration, **you may require more than just the [base configuration](#base-configuration)**.
-
 
 ### Base configuration
 
@@ -72,7 +69,6 @@ matrix_bot_baibot_config_persistence_config_encryption_key: 'A_HEX_STRING_OF_64_
 ```
 
 As mentioned above, **this may not be enough**. Continue with the configuration sections below.
-
 
 ### 👮‍♂️ Administrator configuration
 
@@ -139,7 +135,6 @@ Depending on your propensity for [GitOps](https://en.wikipedia.org/wiki/DevOps#G
 
 Before proceeding, we recommend reading the upstream documentation on [How to choose a provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#how-to-choose-a-provider). In short, it's probably best to go with [OpenAI](#openai).
 
-
 #### Anthropic
 
 You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [Anthropic provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#anthropic) with the help of the playbook's preset variables.
@@ -165,7 +160,6 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: "YO
 If you'd like to use more than one model, take a look at the [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset) section below.
 
 💡 You may also wish to use this new agent for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
-
 
 #### Groq
 
@@ -200,7 +194,6 @@ If you'd like to use more than one model, take a look at the [Configuring additi
 
 💡 You may also wish to use this new agent for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
 
-
 #### Mistral
 
 You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [🇫🇷 Mistral provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#mistral) with the help of the playbook's preset variables.
@@ -228,7 +221,6 @@ Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/c
 If you'd like to use more than one model, take a look at the [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset) section below.
 
 💡 You may also wish to use this new agent for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
-
 
 #### OpenAI
 
@@ -260,7 +252,6 @@ If you'd like to use more than one model, take a look at the [Configuring additi
 
 💡 You may also wish to use this new agent for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
 
-
 #### OpenAI Compatible
 
 You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [OpenAI Compatible provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#openai-compatible) with the help of the playbook's preset variables.
@@ -270,7 +261,6 @@ This provider allows you to use OpenAI-compatible API services like [OpenRouter]
 Some of these popular services already have **shortcut** providers (see [supported providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md#supported-providers) leading to this one behind the scenes - this make it easier to get started.
 
 As of this moment, the playbook does not include presets for any of these services, so you'll need to [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset).
-
 
 #### Configuring additional agents (without a preset)
 
@@ -327,7 +317,6 @@ As with any [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.
 
 💡 You may also wish to use these new agents for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
 
-
 ### 🤝 Configuring initial default handlers
 
 This section is only useful if you're [🤖 Configuring agents via Ansible](#-configuring-agents-via-ansible), as it lets you put these agents to use as soon as the bot starts (by adjusting the bot's **initial global configuration**).
@@ -373,7 +362,6 @@ matrix_bot_baibot_config_initial_global_config_handler_image_generation: null
 
 **Note**: these are initial defaults for the bot's global configuration. As such, changing any of these values subsequently has no effect on the bot's behavior. **Once initially configured the global configuration cannot be managed Ansible**, but only via bot commands.
 
-
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -406,7 +394,6 @@ If you've [🤖 configured one or more agents via Ansible](#-configuring-agents-
 Send `!bai help` to the room at any time to see the bot's help menu for additional commands.
 
 You can also refer to the upstream [baibot](https://github.com/etkecc/baibot) project's documentation.
-
 
 ## Debugging
 

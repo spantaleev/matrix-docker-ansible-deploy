@@ -6,14 +6,12 @@ Jitsi installation is **not enabled by default**, because it's not a core compon
 
 The setup done by the playbook is very similar to [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet). You can refer to the documentation there for many of the options here.
 
-
 ## Prerequisites
 
 You may need to open the following ports to your server:
 
 - `4443/tcp` - RTP media fallback over TCP
 - `10000/udp` - RTP media over UDP. Depending on your firewall/NAT setup, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml)).
-
 
 ## Adjusting the playbook configuration
 
@@ -114,7 +112,6 @@ jitsi_ldap_start_tls: false
 
 For more information refer to the [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap) and the [saslauthd `LDAP_SASLAUTHD`](https://github.com/winlibs/cyrus-sasl/blob/master/saslauthd/LDAP_SASLAUTHD) documentation.
 
-
 ## (Optional) Making your Jitsi server work on a LAN
 
 By default the Jitsi Meet instance does not work with a client in LAN (Local Area Network), even if others are connected from WAN. There are no video and audio. In the case of WAN to WAN everything is ok.
@@ -172,6 +169,7 @@ By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-vid
 There is an ansible playbook that can be run with the following tag: `ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
 
 For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:
+
 ```INI
 [jitsi_jvb_servers]
 <your jvb hosts> ansible_host=<ip address of the jvb host>
@@ -291,7 +289,6 @@ You can use the self-hosted Jitsi server in multiple ways:
 - **directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`
 
 **Note**: Element apps on mobile devices currently [don't support joining meetings on a self-hosted Jitsi server](https://github.com/element-hq/riot-web/blob/601816862f7d84ac47547891bd53effa73d32957/docs/jitsi.md#mobile-app-support).
-
 
 ## Troubleshooting
 

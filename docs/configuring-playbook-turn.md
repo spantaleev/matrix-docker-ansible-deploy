@@ -4,7 +4,6 @@ The playbook installs a [Coturn](https://github.com/coturn/coturn) TURN server b
 
 By default, the Synapse chat server is configured, so that it points to the Coturn TURN server installed by the playbook.
 
-
 ## Disabling Coturn
 
 If, for some reason, you'd like to prevent the playbook from installing Coturn, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -47,7 +46,6 @@ matrix_coturn_authentication_method: lt-cred-mech
 Regardless of the selected authentication method, the playbook generates secrets automatically and passes them to the homeserver and Coturn.
 
 If you're using [Jitsi](./configuring-playbook-jitsi.md), note that switching to `lt-cred-mech` will remove the integration between Jitsi and your own Coturn server, because Jitsi only seems to support the `auth-secret` authentication method.
-
 
 ## Using your own external Coturn server
 

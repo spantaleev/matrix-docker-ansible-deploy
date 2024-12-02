@@ -6,7 +6,6 @@ While this playbook only supports running Synapse in combination with PostgreSQL
 
 If you have such a Synapse setup and wish to migrate it to one managed by the playbook (and over to PostgreSQL), this documentation page is for you.
 
-
 ## Prerequisites
 
 Before doing the actual import:

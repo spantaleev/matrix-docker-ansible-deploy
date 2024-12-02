@@ -30,8 +30,6 @@ Alternatively, **if there is no pre-defined variable** for a Dendrite setting yo
 
 - or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_dendrite_configuration` (or `matrix_dendrite_configuration_yaml`). You can find information about this in [`roles/custom/matrix-dendrite/defaults/main.yml`](../roles/custom/matrix-dendrite/defaults/main.yml).
 
-
-
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:

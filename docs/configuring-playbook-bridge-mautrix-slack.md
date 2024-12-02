@@ -10,7 +10,6 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/slack/index.htm
 
 See the [features and roadmap](https://github.com/mautrix/slack/blob/main/ROADMAP.md) for more information.
 
-
 ## Prerequisites
 
 For using this bridge, you would need to authenticate by **providing your username and password** (legacy) or by using a **token login**. See more information in the [docs](https://docs.mau.fi/bridges/go/slack/authentication.html).

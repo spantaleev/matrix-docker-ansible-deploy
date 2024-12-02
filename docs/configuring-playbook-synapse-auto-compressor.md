@@ -6,7 +6,6 @@ It's a CLI tool that automatically compresses Synapse's `state_groups` database 
 
 See the project's [documentation](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) to learn what it does and why it might be useful to you.
 
-
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -14,7 +13,6 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 ```yaml
 matrix_synapse_auto_compressor_enabled: true
 ```
-
 
 ## Installing
 

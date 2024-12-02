@@ -51,7 +51,6 @@ Still, ma1sd can do much more. You can refer to the [ma1sd website](https://gith
 
 To use a more custom configuration, you can define a `matrix_ma1sd_configuration_extension_yaml` string variable and put your configuration in it. To learn more about how to do this, refer to the information about `matrix_ma1sd_configuration_extension_yaml` in the [default variables file](../roles/custom/matrix-ma1sd/defaults/main.yml) of the ma1sd component.
 
-
 #### Customizing email templates
 
 If you'd like to change the default email templates used by ma1sd, take a look at the `matrix_ma1sd_threepid_medium_email_custom_` variables (in the `roles/custom/matrix-ma1sd/defaults/main.yml` file.
@@ -71,7 +70,6 @@ To use the [Registration](https://github.com/ma1uta/ma1sd/blob/master/docs/featu
 - `matrix_ma1sd_configuration_extension_yaml` - to configure ma1sd as required. See the [Registration feature's docs](https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_ma1sd_configuration_extension_yaml`.
 
 **Note**: For this to work, either the homeserver needs to [federate](configuring-playbook-federation.md) or the `openid` APIs need to exposed on the federation port. When federation is disabled and ma1sd is enabled, we automatically expose the `openid` APIs (only!) on the federation port. Make sure the federation port (usually `https://matrix.example.com:8448`) is whitelisted in your firewall (even if you don't actually use/need federation).
-
 
 #### Authentication
 

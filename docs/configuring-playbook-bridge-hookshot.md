@@ -8,7 +8,6 @@ See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/l
 
 **Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however was deprecated by its author.
 
-
 ## Setup Instructions
 
 Refer to the [official instructions](https://matrix-org.github.io/matrix-hookshot/latest/setup.html) to learn what the individual options do.
@@ -41,7 +40,6 @@ Refer to [Hookshot's documentation](https://matrix-org.github.io/matrix-hookshot
 
 **Important**: Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](#urls-for-bridges-setup) below.
 
-
 ## More setup documentation
 
 ### URLs for bridges setup
@@ -72,6 +70,7 @@ The GitHub bridge requires you to install a private key file. This can be done i
 - use the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux) to copy the file from an arbitrary path on your ansible client to the correct path on the server.
 
 To use the `aux` role, make sure the `matrix_hookshot_github_private_key` variable is empty. Then add the following additional configuration:
+
 ```yaml
 aux_file_definitions:
   - dest: "{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}"
@@ -80,6 +79,7 @@ aux_file_definitions:
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 ```
+
 For more information, see the documentation in the [default configuration of the aux role](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml).
 
 ### Provisioning API

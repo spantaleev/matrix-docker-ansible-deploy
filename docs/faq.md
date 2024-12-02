@@ -229,7 +229,6 @@ Besides the regular Matrix stuff, we also support things like video-conferencing
 
 If your distro runs within an [LXC container](https://linuxcontainers.org/), you may hit [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/703). It can be worked around, if absolutely necessary, but we suggest that you avoid running from within an LXC container.
 
-
 ## Configuration
 
 ### Why install my server at matrix.example.com and not at the base domain?
@@ -372,7 +371,6 @@ Check each role's `roles/*/*/defaults/main.yml` for the corresponding variable a
 
 **Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`) or `just update` (which automatically does `git pull` and `just roles`).
 
-
 ## Installation
 
 ### How do I run the installation?
@@ -404,7 +402,6 @@ If you're using the playbook directly on the server, then Ansible doesn't need t
 It can perform a local connection instead. Just set `ansible_connection=local` at the end of the server line in `inventory/hosts` and re-run the playbook.
 
 If you're running Ansible from within a container (one of the possibilities we list on our [dedicated Ansible documentation page](ansible.md)), then using `ansible_connection=local` is not possible.
-
 
 ## Troubleshooting
 
@@ -444,7 +441,6 @@ RateLimitInterval=0
 RateLimitBurst=0
 Storage=persistent
 ```
-
 
 ## Maintenance
 

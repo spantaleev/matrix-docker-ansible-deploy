@@ -73,7 +73,6 @@ Steps 1 and 2 above only need to be done once, while preparing your [configurati
 
 Steps 3 and 4 need to be done for each new room you'd like the bot to deliver alerts to. Step 5 is optional and provides cleaner `/alert/` URLs.
 
-
 ## Installing
 
 Now that you've [prepared the bot account and room](#account-and-room-preparation), [configured the playbook](#adjusting-the-playbook-configuration), and potentially [adjusted your DNS records](#adjusting-dns-records), you can run the playbook with [playbook tags](playbook-tags.md) as below:

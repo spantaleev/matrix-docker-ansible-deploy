@@ -8,7 +8,6 @@ Cinny is a web client focusing primarily on simple, elegant and secure interface
 
 - [app.cinny.in](https://app.cinny.in), hosted by the [Cinny](https://cinny.in/) developers
 
-
 ## Adjusting the playbook configuration
 
 To enable Cinny, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:

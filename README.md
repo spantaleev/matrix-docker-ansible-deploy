@@ -63,8 +63,6 @@ Web clients for Matrix that you can host on your own domains.
 | [Cinny](https://github.com/ajbura/cinny) |  ❌ | Simple, elegant and secure web client | [Link](docs/configuring-playbook-client-cinny.md) |
 | [SchildiChat Web](https://schildi.chat/) | ❌ | Based on Element Web, with a more traditional instant messaging experience | [Link](docs/configuring-playbook-client-schildichat-web.md) |
 
-
-
 ### Server Components
 
 Services that run on the server to make the various parts of your installation work.
@@ -79,7 +77,6 @@ Services that run on the server to make the various parts of your installation w
 | [ma1sd](https://github.com/ma1uta/ma1sd) | ❌ | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
 | [ddclient](https://github.com/linuxserver/docker-ddclient) | ❌ | Dynamic DNS | [Link](docs/configuring-playbook-dynamic-dns.md) |
 
-
 ### Authentication
 
 Extend and modify how users are authenticated on your homeserver.
@@ -93,7 +90,6 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-registration](https://github.com/ZerataX/matrix-registration) | ❌ | A simple python application to have a token based Matrix registration | [Link](docs/configuring-playbook-matrix-registration.md) |
 | [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (UVS) | ❌ | Service to verify details of a user based on an Open ID token | [Link](docs/configuring-playbook-user-verification-service.md) |
 | [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) (advanced) | ❌ | A spam checker module | [Link](docs/configuring-playbook-synapse-simple-antispam.md) |
-
 
 ### File Storage
 
@@ -139,7 +135,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) | ❌ | Bridge to [Steam](https://steamapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-steam.md) |
 | [Email2Matrix](https://github.com/devture/email2matrix) | ❌ | Bridge for relaying emails to Matrix rooms | [Link](docs/configuring-playbook-email2matrix.md) |
 | [Postmoogle](https://github.com/etkecc/postmoogle) | ❌ | Email to Matrix bridge | [Link](docs/configuring-playbook-bridge-postmoogle.md) |
-
 
 ### Bots
 
@@ -187,13 +182,11 @@ Various services that don't fit any other categories.
 | [Sygnal](https://github.com/matrix-org/sygnal) | ❌ | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | ❌ | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
 
-
 ## 🆕 Changes
 
 This playbook evolves over time, sometimes with backward-incompatible changes.
 
 When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up with what's new.
-
 
 ## 🆘 Support
 
@@ -202,7 +195,6 @@ When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up w
 - IRC channel: `#matrix-docker-ansible-deploy` on the [Libera Chat](https://libera.chat/) IRC network (irc.libera.chat:6697)
 
 - GitHub issues: [spantaleev/matrix-docker-ansible-deploy/issues](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues)
-
 
 ## 🤝 Related
 

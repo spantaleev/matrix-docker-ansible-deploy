@@ -27,7 +27,6 @@ Since it is difficult to create the first user account on Conduit (see [famedly/
 5. Run the playbook again (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-conduit,start` would be enough this time)
 6. You can now use your server safely. Additional users can be created by messaging the internal Conduit bot
 
-
 ## Configuring bridges / appservices
 
 Automatic appservice setup is currently unsupported when using Conduit. After setting up the service as usual you may notice that it is unable to start.
@@ -35,7 +34,6 @@ Automatic appservice setup is currently unsupported when using Conduit. After se
 You will have to manually register appservices using the the [register-appservice](https://gitlab.com/famedly/conduit/-/blob/next/APPSERVICES.md) command.
 
 Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`, then pass the content to Conduit:
-
 
     @conduit:example.com: register-appservice
     ```

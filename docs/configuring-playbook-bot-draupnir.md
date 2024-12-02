@@ -6,7 +6,6 @@ See the project's [documentation](https://github.com/the-draupnir-project/Draupn
 
 This documentation page is about installing Draupnir in bot mode. As an alternative, you can run a multi-instance Draupnir deployment by installing [Draupnir in appservice mode](./configuring-playbook-appservice-draupnir-for-all.md) (called Draupnir-for-all) instead.
 
-
 If your migrating from Mjolnir skip to step 5b.
 
 ## 1. Register the bot account
@@ -25,11 +24,9 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.draupni
 
 If you would like Draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ([see below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
 
-
 ## 2. Get an access token
 
 Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
-
 
 ## 3. Make sure the account is free from rate limiting
 
@@ -38,8 +35,6 @@ You will need to prevent Synapse from rate limiting the bot's account. This is n
 If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
 
 The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir itself. If you made Draupnir Admin you can just use the Draupnir token.
-
-
 
 ## 4. Create a management room
 
@@ -50,7 +45,6 @@ If you make the management room encrypted (E2EE), then you MUST enable and use P
 Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element Web you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
 
 Finally invite the `@bot.draupnir:example.com` account you created earlier into the room.
-
 
 ## 5. Adjusting the playbook configuration
 
@@ -199,7 +193,6 @@ To **set a specific option for a given protection**, send a command like this: `
 To **enable a given protection**, send a command like this: `!draupnir enable PROTECTION_NAME` (e.g. `!draupnir enable JoinWaveShortCircuit`).
 
 To **disable a given protection**, send a command like this: `!draupnir disable PROTECTION_NAME` (e.g. `!draupnir disable JoinWaveShortCircuit`).
-
 
 ## Extending the configuration
 

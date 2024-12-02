@@ -14,7 +14,6 @@ If you decide that you'd like to let this playbook install it for you, you'd nee
 - (required) [set up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md)
 - (optional, but encouraged) [set up the REST authentication password provider module](configuring-playbook-rest-auth.md)
 
-
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
