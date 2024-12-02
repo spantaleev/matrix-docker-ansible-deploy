@@ -2,11 +2,9 @@
 
 This directory contains a sample config that shows you how to use the [nginx](https://nginx.org/) webserver to front the integrated [Traefik](https://traefik.io/) reverse-proxy webserver with another reverse-proxy.
 
-
 ## Prerequisite configuration
 
 To get started, first follow the [front the integrated reverse-proxy webserver with another reverse-proxy](../../../docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) instructions and update your playbook's configuration (`inventory/host_vars/matrix.example.com/vars.yml`).
-
 
 ## Using the nginx configuration
 

@@ -163,7 +163,6 @@ It's designed as a more private and [✨ featureful](https://github.com/etkecc/b
 
 To get started, see the [Setting up baibot](./docs/configuring-playbook-bot-baibot.md) documentation page.
 
-
 ## Switching synapse-admin to etke.cc's fork
 
 The playbook now installs [etke.cc](https://etke.cc/)'s [fork](https://github.com/etkecc/synapse-admin) of [synapse-admin](https://github.com/Awesome-Technologies/synapse-admin) (originally developed by [Awesome-Technologies](https://github.com/Awesome-Technologies)). This fork is a drop-in replacement for the original software.
@@ -252,7 +251,6 @@ For those wishing to more easily integrate [Prometheus](https://prometheus.io/)'
 
 See [Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver](./docs/configuring-playbook-alertmanager-receiver.md) for more details.
 
-
 ## Traefik v3 and HTTP/3 are here now
 
 **TLDR**: Traefik was migrated from v2 to v3. Minor changes were done to the playbook. Mostly everything else worked out of the box. Most people will not have to do any tweaks to their configuration. In addition, [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3) support is now auto-enabled for the `web-secure` (port 443) and `matrix-federation` (port `8448`) entrypoints. If you have a firewall in front of your server and you wish to benefit from `HTTP3`, you will need to open the `443` and `8448` UDP ports in it.
@@ -272,7 +270,6 @@ If you're using the playbook's Traefik instance to reverse-proxy to some other s
 If you've tweaked any of this playbook's `_path_prefix` variables and made them use a regular expression, you will now need to make additional adjustments. The playbook makes extensive use of `PathPrefix()` matchers in Traefik rules and `PathPrefix` does not support regular expressions anymore. To work around it, you may now need to override a whole `_traefik_rule` variable and switch it from [`PathPrefix` to `PathRegexp`](https://doc.traefik.io/traefik/routing/routers/#path-pathprefix-and-pathregexp).
 
 If you're not using [matrix-media-repo](./docs/configuring-playbook-matrix-media-repo.md) (the only role we had to tweak to adapt it to Traefik v3), you **may potentially downgrade to Traefik v2** (if necessary) by adding `traefik_verison: v2.11.4` to your configuration. People using `matrix-media-repo` cannot downgrade this way, because `matrix-media-repo` has been adjusted to use `PathRegexp` - a [routing matcher](https://doc.traefik.io/traefik/v2.11/routing/routers/#rule) that Traefik v2 does not understand.
-
 
 ### HTTP/3 is enabled by default
 
@@ -347,7 +344,6 @@ When generating new webhooks, you should start seeing the new URLs being used.
 However, **we recommend that you update all your old webhook URLs** (configured in other systems) to include the new `/webhook` path component, so that future Hookshot changes (whenever they come) will not break your webhooks. You don't need to do anything on the Hookshot side - you merely need to reconfigure the remote systems that use your webhook URLs.
 
 
-
 # 2024-06-22
 
 ## The maubot user is now managed by the playbook
@@ -392,7 +388,6 @@ Users on `arm32` should be aware that there's **neither a prebuilt `arm32` conta
 # if the playbook requires it as a dependency for its operation.
 keydb_enabled: false
 ```
-
 
 
 # 2024-03-24
@@ -564,7 +559,6 @@ Due to complexity and the playbook's flexibility (trying to accommodate a mix of
 
 After **a ton of work** in the last weeks (200+ commits, which changed 467 files - 8684 insertions and 8913 deletions), **we're finally saying goodbye** to `matrix-nginx-proxy`.
 
-
 ### Going Traefik-native and cutting out all middlemen
 
 In our new setup, you'll see the bare minimum number of reverse-proxies.
@@ -573,7 +567,6 @@ In most cases, there's only Traefik and all services being registered directly w
 
 This reduces "network" hops (improving performance) and also decreases the number of components (containers).
 Each Ansible role in our setup is now independent and doesn't need to interact with other roles during runtime.
-
 
 ### Traefik now has an extra job
 
@@ -600,20 +593,17 @@ People running the default Traefik setup do not need to do anything to make Trae
 
 You may disable Traefik acting as an intermediary by explicitly setting `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled` to `false`. Services would then be configured to talk to the homeserver directly, giving you a slight performance boost and a "simpler" Traefik setup. However, such a configuration is less tested and will cause troubles, especially if you enable more services (like `matrix-media-repo`, etc.) in the future. As such, it's not recommended.
 
-
 ### People managing their own Traefik instance need to do minor changes
 
 This section is for people [managing their own Traefik instance on the Matrix server](./docs/configuring-playbook-own-webserver.md#traefik-managed-by-you). Those [using Traefik managed by the playbook](./docs/configuring-playbook-own-webserver.md#traefik-managed-by-the-playbook) don't need to do any changes.
 
 Because [Traefik has an extra job now](#traefik-now-has-an-extra-job), you need to adapt your configuration to add the additional `matrix-internal-matrix-client-api` entrypoint and potentially configure the `matrix_playbook_reverse_proxy_container_network` variable. See the [Traefik managed by you](./docs/configuring-playbook-own-webserver.md#traefik-managed-by-you) documentation section for more details.
 
-
 ### People fronting Traefik with another reverse proxy need to do minor changes
 
 We've already previously mentioned that you need to do some minor [configuration changes related to `traefik_additional_entrypoints_auto`](#backward-compatibility-configuration-changes-required-for-people-fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy).
 
 If you don't do these changes (switching from `traefik_additional_entrypoints_auto` to multiple other variables), your Traefik setup will not automatically receive the new `matrix-internal-matrix-client-api` Traefik entrypoint and Traefik would not be able to perform [its new duty of connecting addons with the homeserver](#traefik-now-has-an-extra-job).
-
 
 ### Supported reverse proxy types are now fewer
 
@@ -636,7 +626,6 @@ If you were using these values as a way to stay away from Traefik, you now have 
 - (recommended) [Fronting Traefik with another reverse-proxy](./docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy)
 - (not recommended) [Using no reverse-proxy on the Matrix side at all](./docs/configuring-playbook-own-webserver.md#using-no-reverse-proxy-on-the-matrix-side-at-all) and reverse-proxying to each and every service manually
 
-
 ### Container networking changes
 
 Now that `matrix-nginx-proxy` is not in the mix, it became easier to clear out some other long-overdue technical debt.
@@ -651,7 +640,6 @@ Carrying out these container networking changes necessitated modifying many comp
 
 We've refrained from creating too many container networks (e.g. one for each component), to avoid exhausting Docker's default network pool and contaminating the container networks list too much.
 
-
 ### Metrics exposure changes
 
 This section is for people who are exposing monitoring metrics publicly, to be consumed by an external Prometheus server.
@@ -664,7 +652,6 @@ From now on, there are new variables for doing roughly the same - `matrix_metric
 
 The playbook will tell you about all variables that you need to migrate during runtime, so rest assured - you shouldn't be able to miss anything!
 
-
 ### Matrix static files
 
 As mentioned above, static files like `/.well-known/matrix/*` or your base domain's `index.html` file (when [serving the base domain via the Matrix server](./docs/configuring-playbook-base-domain-serving.md) was enabled) were generated by the `matrix-base` or `matrix-nginx-proxy` roles and put into a `/matrix/static-files` directory on the server. Then `matrix-nginx-proxy` was serving all these static files.
@@ -672,7 +659,6 @@ As mentioned above, static files like `/.well-known/matrix/*` or your base domai
 All of this has been extracted into a new `matrix-static-files` Ansible role that's part of the playbook. The static files generated by this new role still live at roughly the same place (`/matrix/static-files/public` directory, instead of `/matrix/static-files`).
 
 The playbook will migrate and update the `/.well-known/matrix/*` files automatically but not your own files in `nginx-proxy/data/matrix-domain/` you will need to back these up yourself otherwise they will be lost. It will also warn you about usage of old variable names, so you can adapt to the new names.
-
 
 ### A note on performance
 
@@ -687,7 +673,6 @@ The heaviest part of running a Matrix homeserver is all the slow and potentially
 Even our previously mentioned benchmarks (yielding ~1300 rps) are synthetic - hitting a useless `/_matrix/client/versions` endpoint. Real-use does much more than this.
 
 If this is still not convincing enough for you and you want the best possible performance, consider [Fronting Traefik with another reverse-proxy](./docs/configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) (thus having the slowest part - SSL termination - happen elsewhere) or [Using no reverse-proxy on the Matrix side at all](./docs/configuring-playbook-own-webserver.md#using-no-reverse-proxy-on-the-matrix-side-at-all). The playbook will not get in your way of doing that, but these options may make your life much harder. Performance comes at a cost, after all.
-
 
 ### Migration procedure
 
@@ -709,7 +694,6 @@ We don't recommend changing these variables and suppressing warnings, unless you
 
 **Most people should just upgrade as per-normal**, bearing in mind that a lot has changed and some issues may arise.
 The playbook would guide you through renamed variables automatically.
-
 
 ### Conclusion
 
@@ -1238,7 +1222,6 @@ Some services (like [Coturn](docs/configuring-playbook-turn.md) and [Postmoogle]
 
 Our Traefik setup mostly works, but certain esoteric features may not work. If you have a default setup, we expect you to have a good experience.
 
-
 ### Where we're going in the near future?
 
 The `matrix-nginx-proxy` role is quite messy. It manages both nginx and Certbot and its certificate renewal scripts and timers. It generates configuration even when the role is disabled (weird). Although it doesn't directly reach into variables from other roles, it has explicit awareness of various other services that it reverse-proxies to (`roles/custom/matrix-nginx-proxy/templates/nginx/conf.d/matrix-ntfy.conf.j2`, etc.). We'd like to clean this up. The only way is probably to just get rid of the whole thing at some point.
@@ -1270,7 +1253,6 @@ You can help by:
 Thanks to [Jakob S.](https://github.com/jakicoll) ([zakk gGmbH](https://github.com/zakk-it)), Jitsi can now use Matrix for authentication (via [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service)).
 
 Additional details are available in the [Authenticate using Matrix OpenID (Auth-Type 'matrix')](docs/configuring-playbook-jitsi.md#authenticate-using-matrix-openid-auth-type-matrix).
-
 
 ## Draupnir moderation tool (bot) support
 
@@ -1310,7 +1292,6 @@ With such a configuration, **Docker no longer needs to configure thousands of fi
 This, however, means that **you will need to ensure these ports are open** in your firewall yourself.
 
 Thanks to us [tightening Coturn security](#backward-compatibility-tightening-coturn-security-can-lead-to-connectivity-issues), running Coturn with host-networking should be safe and not expose neither other services running on the host, nor other services running on the local network.
-
 
 ## (Backward Compatibility) Tightening Coturn security can lead to connectivity issues
 
@@ -1559,7 +1540,6 @@ This is not just for initial installations. Users with existing files (stored in
 
 To get started, see our [Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider](docs/configuring-playbook-synapse-s3-storage-provider.md) documentation.
 
-
 ## Synapse container image customization support
 
 We now support customizing the Synapse container image by adding additional build steps to its [`Dockerfile`](https://docs.docker.com/engine/reference/builder/).
@@ -1773,7 +1753,6 @@ If you still need bridging to [Skype](https://www.skype.com/), consider switchin
 
 If you think this is a mistake and `mx-puppet-skype` works for you (or you get it to work somehow), let us know and we may reconsider this removal.
 
-
 ## signald (0.19.0+) upgrade requires data migration
 
 In [Pull Request #1921](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/1921) we upgraded [signald](https://signald.org/) (used by the mautrix-signal bridge) from `v0.18.5` to `v0.20.0`.
@@ -1905,7 +1884,6 @@ Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the
 
 See our [Setting up BorgBackup](docs/configuring-playbook-backup-borg.md) documentation to get started.
 
-
 ## (Compatibility Break) Upgrading to Synapse v1.57 on setups using workers may require manual action
 
 If you're running a worker setup for Synapse (`matrix_synapse_workers_enabled: true`), the [Synapse v1.57 upgrade notes](https://github.com/element-hq/synapse/blob/v1.57.0rc1/docs/upgrade.md#changes-to-database-schema-for-application-services) say that you may need to take special care when upgrading:
@@ -2020,7 +1998,6 @@ matrix_homeserver_implementation: dendrite
 **The homeserver implementation of an existing server cannot be changed** (e.g. from Synapse to Dendrite) without data loss.
 
 We're excited to gain support for other homeserver implementations, like [Conduit](https://conduit.rs/), etc!
-
 
 ## Honoroit bot support
 
@@ -2142,7 +2119,6 @@ matrix_coturn_tls_v1_1_enabled: true
 Thanks to [foxcris](https://github.com/foxcris), the playbook can now make automated local Postgres backups on a fixed schedule using [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local).
 
 Additional details are available in [Setting up postgres backup](docs/configuring-playbook-postgres-backup.md).
-
 
 
 # 2021-04-03
@@ -2470,7 +2446,6 @@ If you went with the Postgres migration and it went badly for you (some bridge n
 We've removed support for the unmaintained [synapse-janitor](https://github.com/xwiki-labs/synapse_scripts) script. There's been past reports of it corrupting the Synapse database. Since there hasn't been any new development on it and it doesn't seem too useful nowadays, there's no point in including it in the playbook.
 
 If you need to clean up or compact your database, consider using the Synapse Admin APIs directly. See our [Synapse maintenance](docs/maintenance-synapse.md) and [Postgres maintenance](docs/maintenance-postgres.md) documentation pages for more details.
-
 
 ## Docker 20.10 is here
 
@@ -2999,7 +2974,6 @@ This greatly reduces the number of log messages that are being logged, leading t
 If you'd like to track down an issue, you [can always increase the logging level as described here](./docs/maintenance-and-troubleshooting.md#increasing-synapse-logging).
 
 
-
 # 2019-07-08
 
 ## Synapse Maintenance docs and synapse-janitor support are available
@@ -3009,7 +2983,6 @@ The playbook can now help you with Synapse's maintenance.
 There's a new documentation page about [Synapse maintenance](./docs/maintenance-synapse.md) and another section on [Postgres vacuuming](./docs/maintenance-postgres.md#vacuuming-postgresql).
 
 Among other things, if your Postgres database has grown significantly over time, you may wish to [ask the playbook to purge unused data with synapse-janitor](./docs/maintenance-synapse.md#purging-unused-data-with-synapse-janitor) for you.
-
 
 ## (BC Break) Rename run control variables
 
@@ -3222,14 +3195,12 @@ If you're using your own Synapse instance (especially one not running in a conta
 
 Having Synapse not be a required component potentially opens the door for installing alternative Matrix homeservers.
 
-
 ## Bridges are now separate from the Synapse role
 
 Bridges are no longer part of the `matrix-synapse` role.
 Each bridge now lives in its own separate role (`roles/custom/matrix-bridge-*`).
 
 These bridge roles are independent of the `matrix-synapse` role, so it should be possible to use them with a Synapse instance installed another way (not through the playbook).
-
 
 ## Renaming inconsistently-named Synapse variables
 
@@ -3310,7 +3281,6 @@ If you don't have a dedicated server for your base domain and want to set up [Se
 
 It's now possible for the playbook to obtain an SSL certificate and serve the necessary files for Matrix Server Delegation on your base domain.
 Take a look at the new [Serving the base domain](docs/configuring-playbook-base-domain-serving.md) documentation page.
-
 
 ## (BC break) matrix-nginx-proxy data variable renamed
 
@@ -3435,7 +3405,6 @@ Containers are given write access only to the directories they need to write to.
 A minor breaking change is the `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size` variable having being renamed to `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb` (note the `_mb` suffix). The new variable expects a number value (e.g. `25M` -> `25`).
 If you weren't customizing this variable, this wouldn't affect you.
 
-
 ## matrix-mailer is now based on Exim, not Postfix
 
 While we would have preferred to stay with [Postfix](http://www.postfix.org/), we found out that it cannot run as a non-root user.
@@ -3554,7 +3523,6 @@ For people who use Let's Encrypt (mostly everyone, since it's the default), you'
 
 - before: `host_specific_matrix_ssl_support_email`
 - after: `host_specific_matrix_ssl_lets_encrypt_support_email`
-
 
 ## (BC Break) mxisd upgrade with multiple base DN support
 
@@ -3676,7 +3644,6 @@ The playbook now installs [Postgres 11](https://www.postgresql.org/about/news/18
 
 If you have have an existing setup, it's likely running on an older Postgres version (9.x or 10.x). You can easily upgrade by following the [upgrading PostgreSQL guide](docs/maintenance-postgres.md#upgrading-postgresql).
 
-
 ## (BC Break) Renaming playbook variables
 
 Due to the large amount of features added to this playbook lately, to keep things manageable we've had to reorganize its configuration variables a bit.
@@ -3766,7 +3733,6 @@ The playbook now helps you set up [service discovery](https://matrix.org/docs/sp
 
 Additional details are available in [Configuring service discovery via .well-known](docs/configuring-well-known.md).
 
-
 ## (BC Break) Renaming playbook variables
 
 The following playbook variables were renamed:
@@ -3783,18 +3749,15 @@ The playbook now supports bridging with [Telegram](https://telegram.org/) by ins
 
 Additional details are available in [Setting up Mautrix Telegram bridging](docs/configuring-playbook-bridge-mautrix-telegram.md).
 
-
 ## Events cache size increase and configurability for Matrix Synapse
 
 The playbook now lets you configure Matrix Synapse's `event_cache_size` configuration via the `matrix_synapse_event_cache_size` playbook variable.
 
 Previously, this value was hardcoded to `"10K"`. From now on, a more reasonable default of `"100K"` is used.
 
-
 ## Password-peppering support for Matrix Synapse
 
 The playbook now supports enabling password-peppering for increased security in Matrix Synapse via the `matrix_synapse_password_config_pepper` playbook variable. Using a password pepper is disabled by default (just like it used to be before this playbook variable got introduced) and is not to be enabled/disabled after initial setup, as that would invalidate all existing passwords.
-
 
 ## Statistics-reporting support for Matrix Synapse
 
@@ -3856,7 +3819,6 @@ The playbook can now install and configure [matrix-synapse-rest-auth](https://gi
 
 Additional details are available in [Setting up the REST authentication password provider module](docs/configuring-playbook-rest-auth.md).
 
-
 ## Compression improvements
 
 Shifted Matrix Synapse compression from happening in the Matrix Synapse,
@@ -3864,7 +3826,6 @@ to happening in the nginx proxy that's in front of it.
 
 Additionally, `riot-web` also gets compressed now (in the nginx proxy),
 which drops the initial page load's size from 5.31MB to 1.86MB.
-
 
 ## Disabling some unnecessary Synapse services
 
@@ -3896,7 +3857,6 @@ With this, Matrix Synapse is able to send email notifications for missed message
 
 # 2018-08-08
 
-
 ## (BC Break) Renaming playbook variables
 
 The following playbook variables were renamed:
@@ -3912,12 +3872,10 @@ The following playbook variables were renamed:
 
 If you're overriding any of them in your `vars.yml` file, you'd need to change to the new names.
 
-
 ## Renaming Ansible playbook tag
 
 The command for executing the whole playbook has changed.
 The `setup-main` tag got renamed to `setup-all`.
-
 
 ## Docker container linking
 
