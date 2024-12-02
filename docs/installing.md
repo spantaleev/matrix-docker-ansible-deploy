@@ -154,6 +154,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 After you get familiar with reconfiguring and re-running the playbook to maintain the server, upgrade its services, etc., you probably would like to make use of `just` shortcut commands for faster input.
 
-For example, `just install-all` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
+For example, `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
 You can learn about the shortcut commands on this page: [Running `just` commands](just.md)
