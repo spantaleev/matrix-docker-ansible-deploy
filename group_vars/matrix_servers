@@ -753,7 +753,7 @@ matrix_appservice_discord_container_additional_networks_auto: |-
   }}
 
 # If the homeserver disables presence, it's likely better (less wasteful) to also disable presence on the bridge side.
-matrix_appservice_discord_bridge_disablePresence: "{{ not matrix_synapse_presence_enabled }}"
+matrix_appservice_discord_bridge_disablePresence: "{{ (not matrix_synapse_presence_enabled) if matrix_homeserver_implementation == 'synapse' else false }}"
 
 matrix_appservice_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'discord.as.token', rounds=655555) | to_uuid }}"
 
@@ -914,7 +914,7 @@ matrix_appservice_irc_container_additional_networks_auto: |-
 
 # The IRC bridge docs say that if homeserver presence is disabled, it's better to also disable
 # IRC bridge presence, for performance reasons.
-matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_presence_enabled }}"
+matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_presence_enabled if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_appservice_irc_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'irc.as.token', rounds=655555) | to_uuid }}"
 
@@ -1253,7 +1253,7 @@ matrix_mautrix_facebook_appservice_public_prefix: "/{{ '%s' | format(matrix_home
 
 matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
+matrix_mautrix_facebook_bridge_presence: "{{ (matrix_synapse_presence_enabled if matrix_synapse_enabled else true) if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_mautrix_facebook_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
@@ -1465,7 +1465,7 @@ matrix_mautrix_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver_g
 
 matrix_mautrix_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_instagram_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
+matrix_mautrix_instagram_bridge_presence: "{{ (matrix_synapse_presence_enabled if matrix_synapse_enabled else true) if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_mautrix_instagram_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
