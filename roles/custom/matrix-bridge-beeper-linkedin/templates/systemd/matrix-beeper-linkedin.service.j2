@@ -23,13 +23,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_beeper_linkedin_container_network }} \
-			--mount type=bind,src={{ matrix_beeper_linkedin_config_path }},dst=/data \
+			--mount type=bind,src={{ matrix_beeper_linkedin_config_path }},dst=/config,ro \
 			--workdir=/opt/linkedin-matrix \
 			{% for arg in matrix_beeper_linkedin_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_beeper_linkedin_docker_image }} \
-			python3 -m linkedin_matrix -c /data/config.yaml -r /data/registration.yaml
+			python3 -m linkedin_matrix -c /config/config.yaml -r /config/registration.yaml --no-update
 
 {% for network in matrix_beeper_linkedin_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-beeper-linkedin

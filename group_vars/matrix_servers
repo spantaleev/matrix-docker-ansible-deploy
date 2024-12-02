@@ -1011,18 +1011,20 @@ matrix_beeper_linkedin_appservice_token: "{{ '%s' | format(matrix_homeserver_gen
 matrix_beeper_linkedin_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_beeper_linkedin_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'linked.hs.token', rounds=655555) | to_uuid }}"
 
-matrix_beeper_linkedin_login_shared_secret: |-
+matrix_beeper_linkedin_bridge_login_shared_secret_map_auto: |-
   {{
-    ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
+    ({
+      matrix_beeper_linkedin_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
+    })
     if matrix_appservice_double_puppet_enabled
     else (
-      matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled
+      {matrix_beeper_linkedin_homeserver_domain: matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret}
       if matrix_synapse_ext_password_provider_shared_secret_auth_enabled
-      else ""
+      else {}
     )
   }}
 
-matrix_beeper_linkedin_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
+matrix_beeper_linkedin_bridge_presence: "{{ (matrix_synapse_presence_enabled if matrix_synapse_enabled else true) if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_beeper_linkedin_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_beeper_linkedin_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maulinkedin.db', rounds=655555) | to_uuid }}"

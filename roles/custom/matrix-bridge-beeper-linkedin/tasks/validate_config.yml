@@ -11,3 +11,12 @@
     - {'name': 'matrix_beeper_linkedin_homeserver_token', when: true}
     - {'name': 'matrix_beeper_linkedin_database_hostname', when: "{{ matrix_beeper_linkedin_database_engine == 'postgres' }}"}
     - {'name': 'matrix_beeper_linkedin_container_network', when: true}
+
+- name: (Deprecation) Catch and report renamed beeper-linkedin settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_beeper_linkedin_login_shared_secret', 'new': '<superseded by matrix_beeper_linkedin_bridge_login_shared_secret_map_*>'}
