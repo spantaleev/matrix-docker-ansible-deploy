@@ -41,6 +41,20 @@ homeserver:
 
 # Configuration specific to the IRC service
 ircService:
+
+  # WARNING: The bridge needs to send plaintext passwords to the IRC server, it cannot
+  # send a password hash. As a result, passwords (NOT hashes) are stored encrypted in
+  # the database.
+  #
+  # To generate a .pem file:
+  # $ openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+  #
+  # The path to the RSA PEM-formatted private key to use when encrypting IRC passwords
+  # for storage in the database. Passwords are stored by using the admin room command
+  # `!storepass example.com passw0rd. When a connection is made to IRC on behalf of
+  # the Matrix user, this password will be sent as the server password (PASS command).
+  passwordEncryptionKeyPath: "/data/passkey.pem" # does not typically need modification
+
   # Config for Matrix -> IRC bridging
   matrixHandler:
     # Cache this many Matrix events in memory to be used for m.relates_to messages (usually replies).
@@ -152,4 +166,4 @@ database:
   # Either a PostgreSQL connection string, or a path to the NeDB storage directory.
   # For postgres, it must start with postgres://
   # For NeDB, it must start with nedb://. The path is relative to the project directory.
-  connectionString: {{ matrix_appservice_irc_database_connectionString
+  connectionString: {{ matrix_appservice_irc_database_connectionString | to_json }}
