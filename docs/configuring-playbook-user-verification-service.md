@@ -59,7 +59,7 @@ It is possible to set an API Auth Token to restrict access to the UVS. If this i
 
 By default, the token will be derived from `matrix_homeserver_generic_secret_key` in `group_vars/matrix_servers`.
 
-To set your own Token, simply put the following in your host_vars.
+To set your own Token, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_user_verification_service_uvs_auth_token: "TOKEN"
@@ -67,25 +67,21 @@ matrix_user_verification_service_uvs_auth_token: "TOKEN"
 
 In case Jitsi is also managed by this playbook and 'matrix' authentication in Jitsi is enabled, this collection will automatically configure Jitsi to use the configured auth token.
 
-###  (Optional) Disable Auth
+### (Optional) Disable Auth
 
-Authorization is enabled by default. To disable set
+Authorization is enabled by default. To disable it, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_user_verification_service_uvs_require_auth: false
 ```
 
-in your host_vars.
-
 ### (Optional) Federation
 
-In theory (however currently untested), UVS can handle federation. Simply set:
+In theory (however currently untested), UVS can handle federation. To enable it, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_user_verification_service_uvs_pin_openid_verify_server_name: false
 ```
-
-in your host_vars.
 
 This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via '.well-known/matrix/server' of the given domain.
 
