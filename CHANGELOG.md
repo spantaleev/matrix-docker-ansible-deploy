@@ -1504,7 +1504,7 @@ If you've already got both Etherpad and Dimension in use you could:
 
 - **either** keep hosting Etherpad under the Dimension domain by adding `etherpad_mode: dimension` to your `vars.yml` file. All your existing room widgets will continue working at the same URLs and no other changes will be necessary.
 
-- **or**, you could change to hosting Etherpad separately on `etherpad.example.com`. You will need to [configure a DNS record](docs/configuring-dns.md) for this new domain. You will also need to reconfigure Dimension to use the new pad URLs (`https://etherpad.example.com/...`) going forward (refer to our [configuring Etherpad documentation](docs/configuring-playbook-etherpad.md)). All your existing room widgets (which still use `https://dimension.example.com/etherpad/...`) will break as Etherpad is not hosted there anymore. You will need to re-add them or to consider not using `standalone` mode
+- **or**, you could change to hosting Etherpad separately on `etherpad.example.com`. You will need to [configure a DNS record](docs/configuring-dns.md) for this new domain. You will also need to reconfigure Dimension to use the new pad URLs (`https://etherpad.example.com/…`) going forward (refer to our [configuring Etherpad documentation](docs/configuring-playbook-etherpad.md)). All your existing room widgets (which still use `https://dimension.example.com/etherpad/…`) will break as Etherpad is not hosted there anymore. You will need to re-add them or to consider not using `standalone` mode
 
 
 # 2022-11-04
@@ -1781,7 +1781,7 @@ See our [Setting up the ntfy push notifications server](docs/configuring-playboo
 
 **TLDR**: we've made extensive **changes to metrics exposure/collection, which concern people using an external Prometheus server**. If you don't know what that is, you don't need to read below.
 
-**Why do major changes to metrics**? Because various services were exposing metrics in different, hacky, ways. Synapse was exposing metrics at `/_synapse/metrics` and `/_synapse-worker-.../metrics` on the `matrix.example.com`. The Hookshot role was **repurposing** the Granana web UI domain (`stats.example.com`) for exposing its metrics on `stats.example.com/hookshot/metrics`, while protecting these routes using Basic Authentication **normally used for Synapse** (`/_synapse/metrics`). Node-exporter and Postgres-exporter roles were advising for more `stats.example.com` usage in manual ways. Each role was doing things differently and mixing variables from other roles. Each metrics endpoint was ending up in a different place, protected by who knows what Basic Authentication credentials (if protected at all).
+**Why do major changes to metrics**? Because various services were exposing metrics in different, hacky, ways. Synapse was exposing metrics at `/_synapse/metrics` and `/_synapse-worker-…/metrics` on the `matrix.example.com`. The Hookshot role was **repurposing** the Granana web UI domain (`stats.example.com`) for exposing its metrics on `stats.example.com/hookshot/metrics`, while protecting these routes using Basic Authentication **normally used for Synapse** (`/_synapse/metrics`). Node-exporter and Postgres-exporter roles were advising for more `stats.example.com` usage in manual ways. Each role was doing things differently and mixing variables from other roles. Each metrics endpoint was ending up in a different place, protected by who knows what Basic Authentication credentials (if protected at all).
 
 **The solution**: a completely revamped way to expose metrics to an external Prometheus server. We are **introducing new `https://matrix.example.com/metrics/*` endpoints**, where various services *can* expose their metrics, for collection by external Prometheus servers. To enable the `/metrics/*` endpoints, use `matrix_nginx_proxy_proxy_matrix_metrics_enabled: true`. There's also a way to protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). See the `matrix-nginx-proxy` role or our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation for additional variables around `matrix_nginx_proxy_proxy_matrix_metrics_enabled`.
 
@@ -1800,7 +1800,7 @@ See our [Setting up the ntfy push notifications server](docs/configuring-playboo
 
 1. Exposing metrics is now done using `matrix_synapse_metrics_proxying_enabled`, not `matrix_nginx_proxy_proxy_synapse_metrics: true`. You may still need to enable metrics using `matrix_synapse_metrics_enabled: true` before exposing them.
 2. Protecting metrics endpoints using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) is now done in another way. See our [Collecting metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) documentation
-3. If Synapse metrics are exposed, they will be made available at `https://matrix.example.com/metrics/synapse/main-process` or `https://matrix.example.com/metrics/synapse/worker/TYPE-ID` (when workers are enabled), not at `https://matrix.example.com/_synapse/metrics` and `https://matrix.example.com/_synapse-worker-.../metrics`
+3. If Synapse metrics are exposed, they will be made available at `https://matrix.example.com/metrics/synapse/main-process` or `https://matrix.example.com/metrics/synapse/worker/TYPE-ID` (when workers are enabled), not at `https://matrix.example.com/_synapse/metrics` and `https://matrix.example.com/_synapse-worker-…/metrics`
 4. The playbook still generates an `external_prometheus.yml.example` sample file for scraping Synapse from Prometheus as described in [Collecting Synapse worker metrics to an external Prometheus server](docs/configuring-playbook-prometheus-grafana.md#collecting-synapse-worker-metrics-to-an-external-prometheus-server), but it's now saved under `/matrix/synapse` (not `/matrix`).
 
 **If you where already using a external Prometheus server** before this change, and you gave a hashed version of the password as a variable, the playbook will now take care of hashing the password for you. Thus, you need to provide the non-hashed version now.
@@ -2779,7 +2779,7 @@ These playbook variables, with these default values, have been added:
 matrix_riot_web_default_server_name: "{{ matrix_domain }}"
 ```
 
-The login page previously said "Sign in to your Matrix account on matrix.example.org" (the homeserver's domain name). It will now say "Sign in ... on example.org" (the server name) by default, or "Sign in ... on Our Server" if you set the variable to "Our Server".
+The login page previously said "Sign in to your Matrix account on matrix.example.org" (the homeserver's domain name). It will now say "Sign in … on example.org" (the server name) by default, or "Sign in … on Our Server" if you set the variable to "Our Server".
 
 To support this, the config.json template is changed to use the configuration key `default_server_config` for setting the default HS/IS, and the new configuration key `server_name` is added in there.
 
