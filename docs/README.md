@@ -27,7 +27,7 @@ NOTE:
 
 You can check useful documentation for configuring components here: [Configuring the playbook](configuring-playbook.md)
 
-- [Administration](configuring-playbook.md#administration) -  services that help you in administrating and monitoring your Matrix installation
+- [Administration](configuring-playbook.md#administration) - services that help you in administrating and monitoring your Matrix installation
 
 - [Authentication and user-related](configuring-playbook.md#authentication-and-user-related) - extend and modify how users are authenticated on your homeserver
 
