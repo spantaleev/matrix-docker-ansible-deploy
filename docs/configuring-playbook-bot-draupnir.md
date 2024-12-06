@@ -8,7 +8,7 @@ This documentation page is about installing Draupnir in bot mode. As an alternat
 
 If your migrating from Mjolnir skip to step 5b.
 
-## 1. Register the bot account
+## Register the bot account
 
 The playbook does not automatically create users for you. The bot requires an access token to be able to connect to your homeserver.
 
@@ -24,11 +24,11 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.draupni
 
 If you would like Draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ([see below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
 
-## 2. Get an access token
+## Get an access token
 
 Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-## 3. Make sure the account is free from rate limiting
+## Make sure the account is free from rate limiting
 
 You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
 
@@ -36,7 +36,7 @@ If your Synapse Admin API is exposed to the internet for some reason like runnin
 
 The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir itself. If you made Draupnir Admin you can just use the Draupnir token.
 
-## 4. Create a management room
+## Create a management room
 
 Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room. Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
@@ -46,11 +46,11 @@ Once you have created the room you need to copy the room ID so you can tell the 
 
 Finally invite the `@bot.draupnir:example.com` account you created earlier into the room.
 
-## 5. Adjusting the playbook configuration
+## Adjusting the playbook configuration
 
 Decide whether you want Draupnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms. To support E2EE, Draupnir needs to [use Pantalaimon](configuring-playbook-pantalaimon.md).
 
-### 5a. Configuration with E2EE support
+### a. Configuration with E2EE support
 
 When using Pantalaimon, Draupnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
@@ -85,7 +85,7 @@ matrix_bot_draupnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matr
 matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 ```
 
-### 5b. Configuration without E2EE support
+### b. Configuration without E2EE support
 
 When NOT using Pantalaimon, Draupnir does not log in by itself and you must give it an access token for its bot account.
 
@@ -101,13 +101,13 @@ matrix_bot_draupnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
-### 5c. Migrating from Mjolnir (Only required if migrating.)
+### c. Migrating from Mjolnir (Only required if migrating.)
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
 
 That is all you need to do due to that Draupnir can complete migration on its own.
 
-## 6. Installing
+## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 

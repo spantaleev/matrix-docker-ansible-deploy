@@ -46,7 +46,7 @@ Once you have a working Docker installation on the server, **clone the playbook*
 
 You would then need to add `ansible_connection=community.docker.nsenter` to the host line in `inventory/hosts`. This tells Ansible to connect to the "remote" machine by switching Linux namespaces with [nsenter](https://man7.org/linux/man-pages/man1/nsenter.1.html), instead of using SSH.
 
-Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `ansible-playbook --connection=community.docker.nsenter ...`
+Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `ansible-playbook --connection=community.docker.nsenter …`
 
 Run this from the playbook's directory:
 
@@ -64,7 +64,7 @@ Once you execute the above command, you'll be dropped into a `/work` directory i
 
 First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues).
 
-Finally, you can execute `ansible-playbook ...` (or `ansible-playbook --connection=community.docker.nsenter ...`) commands as per normal now.
+Finally, you can execute `ansible-playbook …` (or `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now.
 
 ### Running Ansible in a container on another computer (not the Matrix server)
 
@@ -85,13 +85,13 @@ Once you execute the above command, you'll be dropped into a `/work` directory i
 
 First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues).
 
-Finally, you execute `ansible-playbook ...` commands as per normal now.
+Finally, you execute `ansible-playbook …` commands as per normal now.
 
 #### If you don't use SSH keys for authentication
 
 If you don't use SSH keys for authentication, simply remove that whole line (`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro`).
 
-To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (the previously used `docker run -it ...` command), run:
+To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (the previously used `docker run -it …` command), run:
 
 ```sh
 apk add sshpass
