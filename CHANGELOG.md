@@ -65,13 +65,11 @@ At some point in time in the future, we'll remove both KeyDB and Redis from the 
 
 The playbook now **automatically enables HTTP-compression support** for major services powered by the playbook, like [Cinny](./docs/configuring-playbook-client-cinny.md), [Element Web](./docs/configuring-playbook-client-element-web.md), [Hydrogen](./docs/configuring-playbook-client-hydrogen.md), as well as for Matrix Client-Server and Federation APIs (`matrix.example.com`).
 
-Other services installed by the playbook are currently not compression-enabled, but may become so over time.
-This change is rolled out on a per-service basis (as opposed to doing it globally, at the Traefik entrypoint level) to allow certain services or route endpoints which do not behave well when compressed (e.g. [issue 3749](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3749)) to be excluded from compression.
+Other services installed by the playbook are currently not compression-enabled, but may become so over time. This change is rolled out on a per-service basis (as opposed to doing it globally, at the Traefik entrypoint level) to allow certain services or route endpoints which do not behave well when compressed (e.g. [issue 3749](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3749)) to be excluded from compression.
 
 A long time ago, various services were operating with `gzip`-compression enabled at the nginx level. Since the switch to Traefik (see [Goodbye, `matrix-nginx-proxy` 🪦](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/57c5271d9d6265a34a9d9cceb93365f685074f96/CHANGELOG.md#goodbye-matrix-nginx-proxy-)), all services (with the exception of Matrix APIs for Synapse worker-enabled setups which are powered by `nginx` via `synapse-reverse-proxy-companion`) have been operating without HTTP-compression support.
 
-HTTP-compression is now done via Traefik's [compress](https://doc.traefik.io/traefik/middlewares/http/compress/) middleware. We use the default configuration for this middleware, which enables `zstd`, `br` and `gzip` support (in this order).
-This middleware's configuration can be configured via variables in the Traefik role (see `traefik_config_http_middlewares_compression_middleware_options`).
+HTTP-compression is now done via Traefik's [compress](https://doc.traefik.io/traefik/middlewares/http/compress/) middleware. We use the default configuration for this middleware, which enables `zstd`, `br` and `gzip` support (in this order). This middleware's configuration can be configured via variables in the Traefik role (see `traefik_config_http_middlewares_compression_middleware_options`).
 
 If you're using your own Traefik reverse-proxy server ([Traefik managed by you](./docs/configuring-playbook-own-webserver.md#traefik-managed-by-you)) instead of the playbook's integrated Traefik service, you can benefit from the same by:
 
@@ -85,9 +83,7 @@ The playbook now supports configuring various [transport.respondingTimeouts](htt
 
 If you're using your own Traefik reverse-proxy server ([Traefik managed by you](./docs/configuring-playbook-own-webserver.md#traefik-managed-by-you)) instead of the playbook's integrated Traefik service, you may wish to do similar configuration changes to your setup manually.
 
-The most interesting of these is the `readTimeout` configuration value (the maximum duration for reading the entire request, including the body), which used to default to `60s`.
-For large and slowly progressing file uploads, `60s` would often not be enough for the transfer to finish and uploads would end up being interrupted.
-The playbook now raises the `readTimeout` value to 5 minutes (`300s`) to improve this use-case.
+The most interesting of these is the `readTimeout` configuration value (the maximum duration for reading the entire request, including the body), which used to default to `60s`. For large and slowly progressing file uploads, `60s` would often not be enough for the transfer to finish and uploads would end up being interrupted. The playbook now raises the `readTimeout` value to 5 minutes (`300s`) to improve this use-case.
 
 The `traefik_config_entrypoint_web_transport_respondingTimeouts_*` variables (for the `web` entrypoint) cascade to affecting the timeout values for the `web-secure` and `matrix-federation` entrypoints, so you can easily adjust all timeout values using them.
 
@@ -273,8 +269,7 @@ If you're not using [matrix-media-repo](./docs/configuring-playbook-matrix-media
 
 ### HTTP/3 is enabled by default
 
-In Traefik v3, [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3) support is no longer considered experimental now.
-Due to this, **the playbook auto-enables HTTP3** for the `web-secure` (port 443) and `matrix-federation` (port `8448`) entrypoints.
+In Traefik v3, [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3) support is no longer considered experimental now. Due to this, **the playbook auto-enables HTTP3** for the `web-secure` (port 443) and `matrix-federation` (port `8448`) entrypoints.
 
 HTTP3 uses the UDP protocol and **the playbook (together with Docker) will make sure that the appropriate ports** (`443` over UDP & `8448` over UDP) **are exposed and whitelisted in your server's firewall**. However, **if you have another firewall in front of your server** (as is the case for many cloud providers), **you will need to manually open these UDP ports**.
 
@@ -350,8 +345,7 @@ However, **we recommend that you update all your old webhook URLs** (configured 
 
 To make things easier and to be consistent with other roles, the [maubot](./docs/configuring-playbook-bot-maubot.md) user (`bot.maubot` by default) is [now](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3376) automatically created be the playbook.
 
-If you have an existing maubot installation, you will need to specify `matrix_bot_maubot_initial_password` in your `vars.yml` file to make the playbook not complain about it being undefined.
-Since the bot is already registered in your installation, there's nothing for the playbook to do anyway. In case you don't remember the password you've registered your maubot user account with, you can specify any value for this variable.
+If you have an existing maubot installation, you will need to specify `matrix_bot_maubot_initial_password` in your `vars.yml` file to make the playbook not complain about it being undefined. Since the bot is already registered in your installation, there's nothing for the playbook to do anyway. In case you don't remember the password you've registered your maubot user account with, you can specify any value for this variable.
 
 If you've registered another username for the bot (other than the recommended default of `bot.maubot`), consider adjusting the `matrix_bot_maubot_login` variable (e.g. `matrix_bot_maubot_login: my.maubot.username`).
 
@@ -441,8 +435,7 @@ The documentation pages contain more information on how to migrate.
 
 ## Much larger Synapse caches and cache auto-tuning enabled by default
 
-Thanks to [FSG-Cat](https://github.com/FSG-Cat), the playbook now uses much larger caches and enables Synapse's [cache auto-tuning functionality](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caches-and-associated-values).
-This work and the default values used by the playbook are inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/deployment/synapse.html).
+Thanks to [FSG-Cat](https://github.com/FSG-Cat), the playbook now uses much larger caches and enables Synapse's [cache auto-tuning functionality](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caches-and-associated-values). This work and the default values used by the playbook are inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/deployment/synapse.html).
 
 The playbook has always used a very conservative cache factor (`matrix_synapse_caches_global_factor`) value of `0.5`, which may be OK for small and underactive deployments, but is not ideal for larger servers. Paradoxically, a small global cache factor value [does not necessarily decrease RAM usage as a whole](https://github.com/matrix-org/synapse/issues/3939).
 
@@ -552,8 +545,7 @@ To us, `matrix-nginx-proxy` was:
 
 Talk about a jack of all trades! The [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) (and Docker container philosophy) of "do one thing and do it well" had been severely violated for too long.
 
-On a related note, we also had a large chain of reverse-proxies in the mix.
-In the worst case, it was something like this: (Traefik -> `matrix-nginx-proxy:8080` -> `matrix-nginx-proxy:12080` -> `matrix-synapse-reverse-proxy-companion:8008` -> `matrix-synapse:8008`).
+On a related note, we also had a large chain of reverse-proxies in the mix. In the worst case, it was something like this: (Traefik -> `matrix-nginx-proxy:8080` -> `matrix-nginx-proxy:12080` -> `matrix-synapse-reverse-proxy-companion:8008` -> `matrix-synapse:8008`).
 
 Due to complexity and the playbook's flexibility (trying to accommodate a mix of tens of components), many layers of indirection were necessary. We do like reverse-proxies, but.. not quite enough to enjoy going through a chain of ~4 of them before reaching the target service.
 
@@ -565,8 +557,7 @@ In our new setup, you'll see the bare minimum number of reverse-proxies.
 
 In most cases, there's only Traefik and all services being registered directly with it. When [Synapse workers](./docs/configuring-playbook-synapse.md#load-balancing-with-workers) are enabled, `matrix-synapse-reverse-proxy-companion` remains as an extra reverse-proxy that requests go through (for load-balancing to the correct Synapse worker), but in all other cases services are exposed directly.
 
-This reduces "network" hops (improving performance) and also decreases the number of components (containers).
-Each Ansible role in our setup is now independent and doesn't need to interact with other roles during runtime.
+This reduces "network" hops (improving performance) and also decreases the number of components (containers). Each Ansible role in our setup is now independent and doesn't need to interact with other roles during runtime.
 
 ### Traefik now has an extra job
 
@@ -692,13 +683,11 @@ The updated playbook will automatically perform some migration tasks for you:
 
 We don't recommend changing these variables and suppressing warnings, unless you know what you're doing.
 
-**Most people should just upgrade as per-normal**, bearing in mind that a lot has changed and some issues may arise.
-The playbook would guide you through renamed variables automatically.
+**Most people should just upgrade as per-normal**, bearing in mind that a lot has changed and some issues may arise. The playbook would guide you through renamed variables automatically.
 
 ### Conclusion
 
-Thousands of lines of code were changed across hundreds of files.
-All addons (bridges, bots) were rewired in terms of container networking and in terms of how they reach the homeserver.
+Thousands of lines of code were changed across hundreds of files. All addons (bridges, bots) were rewired in terms of container networking and in terms of how they reach the homeserver.
 
 I don't actively use all the ~100 components offered by the playbook (no one does), nor do I operate servers exercising all edge-cases. As such, issues may arise. Please have patience and report (or try to fix) these issues!
 
@@ -713,8 +702,7 @@ People who are [Fronting the integrated Traefik reverse-proxy webserver with ano
 
 Such a full variable redefinion is intrustive, because it prevents the playbook from injecting additional entrypoints into the Traefik webserver. In the future, the playbook may have a need to do so.
 
-For this reason, we no longer recommend completely redefining `traefik_additional_entrypoints_auto`.
-The playbook now defines [various `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables in the `defaults/main.yml` file](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-base/defaults/main.yml) of the `matrix-base` role which can be used as a safer alternative to `traefik_additional_entrypoints_auto`.
+For this reason, we no longer recommend completely redefining `traefik_additional_entrypoints_auto`. The playbook now defines [various `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_*` variables in the `defaults/main.yml` file](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-base/defaults/main.yml) of the `matrix-base` role which can be used as a safer alternative to `traefik_additional_entrypoints_auto`.
 
 Adapt your configuration as seen below:
 
@@ -764,8 +752,7 @@ Thanks to them, a new [v0.3.0](https://github.com/anoadragon453/matrix-reminder-
 
 The new version also comes with new `allowlist` and `blocklist` settings, which make it possible to restrict who can use the bot. Previously anyone, even across the Matrix Federation could talk to it and schedule reminders.
 
-The playbook defaults all bridges and bots (where possible) to only be exposed to users of the current homeserver, not users across federation.
-Thanks to the new version of this bot making such a restriction possible, we're now making use of it. The playbook (via its `group_vars/matrix_servers` file) automatically enables the `allowlist` (`matrix_bot_matrix_reminder_bot_allowlist_enabled: true`) and configures it in such a way (`matrix_bot_matrix_reminder_bot_allowlist_regexes_auto`) so as to restrict the bot to your homeserver's users.
+The playbook defaults all bridges and bots (where possible) to only be exposed to users of the current homeserver, not users across federation. Thanks to the new version of this bot making such a restriction possible, we're now making use of it. The playbook (via its `group_vars/matrix_servers` file) automatically enables the `allowlist` (`matrix_bot_matrix_reminder_bot_allowlist_enabled: true`) and configures it in such a way (`matrix_bot_matrix_reminder_bot_allowlist_regexes_auto`) so as to restrict the bot to your homeserver's users.
 
 If you need **to undo or tweak these security improvements**, you can change your `vars.yml` file to:
 
@@ -802,8 +789,7 @@ The old Python-based [mautrix-signal](https://github.com/mautrix/signal) bridge 
 
 It seems like the path forward is to switch to the new mautrix-signal bridge written in Golang, which we did thanks to [PR #3031](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3041) by [Pierre 'McFly' Marty](https://github.com/pm-McFly).
 
-The playbook should **automatically migrate your mautrix-signal installation to the new bridge code**.
-You will **need to relink all your devices** to continue your bridged conversations.
+The playbook should **automatically migrate your mautrix-signal installation to the new bridge code**. You will **need to relink all your devices** to continue your bridged conversations.
 
 
 # 2023-10-23
@@ -814,8 +800,7 @@ You will **need to relink all your devices** to continue your bridged conversati
 
 We generally try to stick to the default configuration for Synapse (and all other components), unless these defaults seem wrong or harmful. One such previous case from a few months ago was us [Enabling `forget_rooms_on_leave` by default for Synapse](#enabling-forget_rooms_on_leave-by-default-for-synapse) - the default value was making Synapse more wasteful of resources by default.
 
-Today, we're going against upstream defaults again and flipping the `allow_public_rooms_over_federation` configuration option to `true`.
-This way, public rooms on your server will be made discoverable by others via federation, using the [`GET /_matrix/federation/v1/publicRooms` of the Server-Server API](https://spec.matrix.org/v1.8/server-server-api/#get_matrixfederationv1publicrooms).
+Today, we're going against upstream defaults again and flipping the `allow_public_rooms_over_federation` configuration option to `true`. This way, public rooms on your server will be made discoverable by others via federation, using the [`GET /_matrix/federation/v1/publicRooms` of the Server-Server API](https://spec.matrix.org/v1.8/server-server-api/#get_matrixfederationv1publicrooms).
 
 The upstream Synapse default is `false` (disabled), so that public rooms are not exposed for other servers to discover (learn about their existence). Nevertheless, even if these rooms are not exposed (listed) for discovery, they are **still joinable** by anyone who knows their address or is invited to the room by an existing member.
 
@@ -901,8 +886,7 @@ To learn more see our [Storing Matrix media files using matrix-media-repo](docs/
 
 ## Enabling `forget_rooms_on_leave` by default for Synapse
 
-With the [Synapse v1.84.0 update](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2698), we've also **changed the default value** of the `forget_rooms_on_leave` setting of Synapse to a value of `true`.
-This way, **when you leave a room, Synapse will now forget it automatically**.
+With the [Synapse v1.84.0 update](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2698), we've also **changed the default value** of the `forget_rooms_on_leave` setting of Synapse to a value of `true`. This way, **when you leave a room, Synapse will now forget it automatically**.
 
 The upstream Synapse default is `false` (disabled), so that you must forget rooms manually after leaving.
 
@@ -1062,8 +1046,7 @@ See the [Traefik managed by the playbook](docs/configuring-playbook-own-webserve
 
 This playbook manages many different services. All these services were initially integrated with `matrix-nginx-proxy`.
 
-While we migrate all these components to have native Traefik support, some still go through nginx internally (Traefik -> local `matrix-nginx-proxy` -> component).
-As time goes on, internal reliance on `matrix-nginx-proxy` will gradually decrease until it's completely removed.
+While we migrate all these components to have native Traefik support, some still go through nginx internally (Traefik -> local `matrix-nginx-proxy` -> component). As time goes on, internal reliance on `matrix-nginx-proxy` will gradually decrease until it's completely removed.
 
 ### How do I remain on matrix-nginx-proxy?
 
@@ -1148,8 +1131,7 @@ You need to **update your roles** (`just roles` or `make roles`) regardless of w
 
 ### Motivation for redoing our reverse-proxy setup
 
-The playbook has supported various reverse-proxy setups for a long time.
-We have various configuration variables (`matrix_nginx_proxy_enabled`, various `_host_bind_port` variables, etc.) which allow the playbook to adapt to these different setups. The whole situation was messy though - hard to figure out and with lots of variables to toggle to make things work as you'd expect - huge **operational complexity**.
+The playbook has supported various reverse-proxy setups for a long time. We have various configuration variables (`matrix_nginx_proxy_enabled`, various `_host_bind_port` variables, etc.) which allow the playbook to adapt to these different setups. The whole situation was messy though - hard to figure out and with lots of variables to toggle to make things work as you'd expect - huge **operational complexity**.
 
 We love containers, proven by the fact that **everything** that this playbook manages runs in a container. Yet, we weren't allowing people to easily host other web-exposed containers alongside Matrix services on the same server. We were using `matrix-nginx-proxy` (our integrated [nginx](https://nginx.org/) server), which was handling web-exposure and SSL termination for our own services, but we **weren't helping you with all your other containers**.
 
@@ -1288,8 +1270,7 @@ Such deployments don't need to run Coturn within a private container network any
 matrix_coturn_container_network: host
 ```
 
-With such a configuration, **Docker no longer needs to configure thousands of firewall forwarding rules** each time Coturn starts and stops.
-This, however, means that **you will need to ensure these ports are open** in your firewall yourself.
+With such a configuration, **Docker no longer needs to configure thousands of firewall forwarding rules** each time Coturn starts and stops. This, however, means that **you will need to ensure these ports are open** in your firewall yourself.
 
 Thanks to us [tightening Coturn security](#backward-compatibility-tightening-coturn-security-can-lead-to-connectivity-issues), running Coturn with host-networking should be safe and not expose neither other services running on the host, nor other services running on the local network.
 
@@ -1323,8 +1304,7 @@ Other roles which aren't strictly related to Matrix are likely to follow this fa
 
 ## Support for running commands via just
 
-We've previously used [make](https://www.gnu.org/software/make/) for easily running some playbook commands (e.g. `make roles` which triggers `ansible-galaxy`, see [Makefile](Makefile)).
-Our `Makefile` is still around and you can still run these commands.
+We've previously used [make](https://www.gnu.org/software/make/) for easily running some playbook commands (e.g. `make roles` which triggers `ansible-galaxy`, see [Makefile](Makefile)). Our `Makefile` is still around and you can still run these commands.
 
 In addition, we've added support for running commands via [just](https://github.com/casey/just) - a more modern command-runner alternative to `make`. Instead of `make roles`, you can now run `just roles` to accomplish the same.
 
@@ -1384,15 +1364,13 @@ The new role is an upgraded version of the old `matrix-postgres` role with these
 
 You'll need to run `make roles` to install the new role. You would also need to rename your `matrix_postgres`-prefixed variables to use a `devture_postgres` prefix.
 
-Note: the systemd service still remains the same - `matrix-postgres.service`. Your data will still be in `/matrix/postgres`, etc.
-Postgres-related scripts will be moved to `/matrix/postgres/bin` (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`, etc). Also see [The playbook no longer installs scripts in /usr/local/bin](#the-playbook-no-longer-installs-scripts-in-usrlocalbin).
+Note: the systemd service still remains the same - `matrix-postgres.service`. Your data will still be in `/matrix/postgres`, etc. Postgres-related scripts will be moved to `/matrix/postgres/bin` (`/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`, etc). Also see [The playbook no longer installs scripts in /usr/local/bin](#the-playbook-no-longer-installs-scripts-in-usrlocalbin).
 
 ## The playbook no longer installs scripts to /usr/local/bin
 
 The locations of various scripts installed by the playbook have changed.
 
-The playbook no longer contaminates your `/usr/local/bin` directory.
-All scripts installed by the playbook now live in `bin/` directories under `/matrix`. Some examples are below:
+The playbook no longer contaminates your `/usr/local/bin` directory. All scripts installed by the playbook now live in `bin/` directories under `/matrix`. Some examples are below:
 
 - `/usr/local/bin/matrix-remove-all` -> `/matrix/bin/remove-all`
 - `/usr/local/bin/matrix-postgres-cli` -> `/matrix/postgres/bin/cli`
@@ -1406,8 +1384,7 @@ All scripts installed by the playbook now live in `bin/` directories under `/mat
 
 **TLDR**: the playbook is 2x faster for running `--tags=setup-all` (and various other tags). It also has new `--tags=install-*` tags (like `--tags=install-all`), which skip uninstallation tasks and bring an additional 2.5x speedup. In total, the playbook can maintain your server 5 times faster.
 
-Our [etke.cc managed Matrix hosting service](https://etke.cc) runs maintenance against hundreds of servers, so the playbook being fast means a lot.
-The [etke.cc Ansible playbook](https://github.com/etkecc/ansible) (which is an extension of this one) is growing to support more and more services (besides just Matrix), so the Matrix playbook being leaner prevents runtimes from becoming too slow and improves the customer experience.
+Our [etke.cc managed Matrix hosting service](https://etke.cc) runs maintenance against hundreds of servers, so the playbook being fast means a lot. The [etke.cc Ansible playbook](https://github.com/etkecc/ansible) (which is an extension of this one) is growing to support more and more services (besides just Matrix), so the Matrix playbook being leaner prevents runtimes from becoming too slow and improves the customer experience.
 
 Even when running `ansible-playbook` manually (as most of us here do), it's beneficial not to waste time and CPU resources.
 
@@ -1419,23 +1396,20 @@ Recently, a few large optimizations have been done to this playbook and its exte
 
 You can still use `--tags=setup-all`. In fact, that's the best way to ensure your server is reconciled with the `vars.yml` configuration.
 
-If you know you haven't uninstalled any services since the last time you ran the playbook, you could run `--tags=install-all` instead and benefit from quicker runtimes.
-It should be noted that a service may become "eligible for uninstallation" even if your `vars.yml` file remains the same. In rare cases, we toggle services from being auto-installed to being optional, like we did on the 17th of March 2022 when we made [ma1sd not get installed by default](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#compatibility-break-ma1sd-identity-server-no-longer-installed-by-default). In such rare cases, you'd also need to run `--tags=setup-all`.
+If you know you haven't uninstalled any services since the last time you ran the playbook, you could run `--tags=install-all` instead and benefit from quicker runtimes. It should be noted that a service may become "eligible for uninstallation" even if your `vars.yml` file remains the same. In rare cases, we toggle services from being auto-installed to being optional, like we did on the 17th of March 2022 when we made [ma1sd not get installed by default](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#compatibility-break-ma1sd-identity-server-no-longer-installed-by-default). In such rare cases, you'd also need to run `--tags=setup-all`.
 
 
 # 2022-11-22
 
 # Automatic `matrix_architecture` determination
 
-From now on, the playbook automatically determines your server's architecture and sets the `matrix_architecture` variable accordingly.
-You no longer need to set this variable manually in your `vars.yml` file.
+From now on, the playbook automatically determines your server's architecture and sets the `matrix_architecture` variable accordingly. You no longer need to set this variable manually in your `vars.yml` file.
 
 # Docker and the Docker SDK for Python are now installed via external roles
 
 We're continuing our effort to make [the playbook use external roles for some things](#the-playbook-now-uses-external-roles-for-some-things), so as to avoid doing everything ourselves and to facilitate code re-use.
 
-Docker will now be installed on the server via the [geerlingguy.docker](https://github.com/geerlingguy/ansible-role-docker) Ansible role.
-If you'd like to manage the Docker installation yourself, you can disable the playbook's installation of Docker by setting `matrix_playbook_docker_installation_enabled: false`.
+Docker will now be installed on the server via the [geerlingguy.docker](https://github.com/geerlingguy/ansible-role-docker) Ansible role. If you'd like to manage the Docker installation yourself, you can disable the playbook's installation of Docker by setting `matrix_playbook_docker_installation_enabled: false`.
 
 The Docker SDK for Python (named `docker-python`, `python-docker`, etc. on the different platforms) is now also installed by another role ([com.devture.ansible.role.docker_sdk_for_python](https://github.com/devture/com.devture.ansible.role.docker_sdk_for_python)). To disable this role and install the necessary tools yourself, use `devture_docker_sdk_for_python_installation_enabled: false`.
 
@@ -1458,9 +1432,7 @@ Because `matrix-nginx-proxy` was so central to request forwarding, when it was d
 
 ### Solution
 
-From now on, `matrix-nginx-proxy` is relieved of its function of reverse-proxying to Synapse and its various worker processes.
-This role is now handled by the new `matrix-synapse-reverse-proxy-companion` nginx service and works even if `matrix-nginx-proxy` is disabled.
-The purpose of the new `matrix-synapse-reverse-proxy-companion` service is to:
+From now on, `matrix-nginx-proxy` is relieved of its function of reverse-proxying to Synapse and its various worker processes. This role is now handled by the new `matrix-synapse-reverse-proxy-companion` nginx service and works even if `matrix-nginx-proxy` is disabled. The purpose of the new `matrix-synapse-reverse-proxy-companion` service is to:
 
 - serve as a companion to Synapse and know how to reverse-proxy to Synapse correctly (no matter if workers are enabled or not)
 
@@ -1472,8 +1444,7 @@ The purpose of the new `matrix-synapse-reverse-proxy-companion` service is to:
 
 - allow reverse-proxying to Synapse, even if `matrix-nginx-proxy` is disabled
 
-`matrix-nginx-proxy` still remains as the public SSL-terminating reverse-proxy in the playbook. All traffic goes through it before reaching any of the services.
-It's just that now the Synapse traffic is routed through `matrix-synapse-reverse-proxy-companion` like this:
+`matrix-nginx-proxy` still remains as the public SSL-terminating reverse-proxy in the playbook. All traffic goes through it before reaching any of the services. It's just that now the Synapse traffic is routed through `matrix-synapse-reverse-proxy-companion` like this:
 
 (`matrix-nginx-proxy` -> `matrix-synapse-reverse-proxy-companion` -> (`matrix-synapse` or some Synapse worker)).
 
@@ -1607,47 +1578,39 @@ matrix_synapse_workers_stream_writer_presence_stream_workers_count: 1
 
 ### Multiple federation sender workers support
 
-Until now, we only supported a single `federation_sender` worker (`matrix_synapse_workers_federation_sender_workers_count` could either be `0` or `1`).
-From now on, you can have as many as you want to help with your federation traffic.
+Until now, we only supported a single `federation_sender` worker (`matrix_synapse_workers_federation_sender_workers_count` could either be `0` or `1`). From now on, you can have as many as you want to help with your federation traffic.
 
 ### Multiple pusher workers support
 
-Until now, we only supported a single `pusher` worker (`matrix_synapse_workers_pusher_workers_count` could either be `0` or `1`).
-From now on, you can have as many as you want to help with pushing notifications out.
+Until now, we only supported a single `pusher` worker (`matrix_synapse_workers_pusher_workers_count` could either be `0` or `1`). From now on, you can have as many as you want to help with pushing notifications out.
 
 ### Background tasks can run on a worker
 
 From now on, you can put [background task processing on a worker](https://matrix-org.github.io/synapse/latest/workers.html#background-tasks).
 
-With `matrix_synapse_workers_preset: one-of-each`, you'll get one `background` worker automatically.
-You can also control the `background` workers count with `matrix_synapse_workers_background_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `background` worker automatically. You can also control the `background` workers count with `matrix_synapse_workers_background_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
 
 ### Appservice worker support is back
 
 We previously had an `appservice` worker type, which [Synapse deprecated in v1.59.0](https://github.com/element-hq/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
 
-The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of talking to Application Services.
-From now on, we have support for this.
+The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of talking to Application Services. From now on, we have support for this.
 
-With `matrix_synapse_workers_preset: one-of-each`, you'll get one `appservice` worker automatically.
-You can also control the `appservice` workers count with `matrix_synapse_workers_appservice_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `appservice` worker automatically. You can also control the `appservice` workers count with `matrix_synapse_workers_appservice_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
 
 ### User Directory worker support is back
 
 We previously had a `user_dir` worker type, which [Synapse deprecated in v1.59.0](https://github.com/element-hq/synapse/blob/v1.59.0/docs/upgrade.md#deprecation-of-the-synapseappappservice-and-synapseappuser_dir-worker-application-types). So did we, at the time.
 
-The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of serving the user directory.
-From now on, we have support for this.
+The new way to implement such workers is by using a `generic_worker` and dedicating it to the task of serving the user directory. From now on, we have support for this.
 
-With `matrix_synapse_workers_preset: one-of-each`, you'll get one `user_dir` worker automatically.
-You can also control the `user_dir` workers count with `matrix_synapse_workers_user_dir_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
+With `matrix_synapse_workers_preset: one-of-each`, you'll get one `user_dir` worker automatically. You can also control the `user_dir` workers count with `matrix_synapse_workers_user_dir_workers_count`. Only  `0` or `1` workers of this type are supported by Synapse.
 
 ### Using more than 1 media repository worker is now more reliable
 
 With `matrix_synapse_workers_preset: one-of-each`, we only launch one `media_repository` worker.
 
-If you've been configuring `matrix_synapse_workers_media_repository_workers_count` manually, you may have increased that to more workers.
-When multiple media repository workers are in use, background tasks related to the media repository must always be configured to run on a single `media_repository` worker via `media_instance_running_background_jobs`. Until now, we weren't doing this correctly, but we now are.
+If you've been configuring `matrix_synapse_workers_media_repository_workers_count` manually, you may have increased that to more workers. When multiple media repository workers are in use, background tasks related to the media repository must always be configured to run on a single `media_repository` worker via `media_instance_running_background_jobs`. Until now, we weren't doing this correctly, but we now are.
 
 ### Potential Backward Incompatibilities after these Synapse worker changes
 
@@ -1946,8 +1909,7 @@ To enable this module (and prevent encryption from being used on your homserver)
 
 ## matrix-hookshot bridging support
 
-Thanks to [HarHarLinks](https://github.com/HarHarLinks), the playbook can now install the [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) bridge for bridging Matrix to multiple project management services, such as GitHub, GitLab and JIRA.
-See our [Setting up matrix-hookshot](docs/configuring-playbook-bridge-hookshot.md) documentation to get started.
+Thanks to [HarHarLinks](https://github.com/HarHarLinks), the playbook can now install the [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) bridge for bridging Matrix to multiple project management services, such as GitHub, GitLab and JIRA. See our [Setting up matrix-hookshot](docs/configuring-playbook-bridge-hookshot.md) documentation to get started.
 
 
 # 2022-01-31
@@ -2046,11 +2008,9 @@ Synapse still supports v9.6 (for now), but we're retiring support for it early, 
 
 ## Hangouts bridge no longer updated, superseded by a Googlechat bridge
 
-The mautrix-hangouts bridge is no longer receiving updates upstream and is likely to stop working in the future.
-We still retain support for this bridge in the playbook, but you're encouraged to switch away from it.
+The mautrix-hangouts bridge is no longer receiving updates upstream and is likely to stop working in the future. We still retain support for this bridge in the playbook, but you're encouraged to switch away from it.
 
-There's a new [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge that you can [install using the playbook](docs/configuring-playbook-bridge-mautrix-googlechat.md).
-Your **Hangouts bridge data will not be migrated**, however. You need to start fresh with the new bridge.
+There's a new [mautrix-googlechat](https://github.com/mautrix/googlechat) bridge that you can [install using the playbook](docs/configuring-playbook-bridge-mautrix-googlechat.md). Your **Hangouts bridge data will not be migrated**, however. You need to start fresh with the new bridge.
 
 
 # 2021-08-23
@@ -2074,8 +2034,7 @@ This is an optional component for the playbook, so most of our users wouldn't ca
 
 Since this feels like a relatively big (and untested, as of yet) Sygnal change, we're putting up this changelog entry.
 
-The new version is also available for the ARM architecture. It also no longer requires a database anymore.
-If you need to downgrade to the previous version, changing `matrix_sygnal_version` or `matrix_sygnal_docker_image` will not be enough, as we've removed the `database` configuration completely. You'd need to switch to an earlier playbook commit.
+The new version is also available for the ARM architecture. It also no longer requires a database anymore. If you need to downgrade to the previous version, changing `matrix_sygnal_version` or `matrix_sygnal_docker_image` will not be enough, as we've removed the `database` configuration completely. You'd need to switch to an earlier playbook commit.
 
 
 # 2021-05-21
@@ -2303,8 +2262,7 @@ As already mentioned above, you most likely don't need to do anything. If you re
 
 If you're **not running an external Postgres server**, then this bridge either already works on Postgres for you, or you've intentionally kept it back on SQLite with custom configuration (`matrix_mautrix_facebook_database_engine: 'sqlite'` in your `vars.yml`) .
 
-Simply remove that custom configuration from your `vars.yml` file (if it's there) and re-run the playbook. It should upgrade you automatically.
-You'll need to send a `login` message to the Facebook bridge bot again.
+Simply remove that custom configuration from your `vars.yml` file (if it's there) and re-run the playbook. It should upgrade you automatically. You'll need to send a `login` message to the Facebook bridge bot again.
 
 Alternatively, [you can stay on SQLite for a little longer](#staying-on-sqlite-for-a-little-longer-temporary-solution).
 
@@ -2453,8 +2411,7 @@ If you need to clean up or compact your database, consider using the Synapse Adm
 
 Docker 20.10 got released recently and your server will likely get it the next time you update.
 
-This is the first major Docker update in a long time and it packs a lot of changes.
-Some of them introduced some breakage for us initially (see [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/d08b27784f222effcbce2abf924bf07bbe0893be) and [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/7593d969e316cc0144bce378a5be58c76c2c37ee)), but it should be all good now.
+This is the first major Docker update in a long time and it packs a lot of changes. Some of them introduced some breakage for us initially (see [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/d08b27784f222effcbce2abf924bf07bbe0893be) and [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/7593d969e316cc0144bce378a5be58c76c2c37ee)), but it should be all good now.
 
 
 # 2020-12-08
@@ -2465,8 +2422,7 @@ We've changed some defaults. People running with our default configuration (fede
 
 If you are running an unfederated server (`matrix_synapse_federation_enabled: false`), this may be of interest to you.
 
-When federation is disabled, but ma1sd or Dimension are enabled, we'll now expose the `openid` APIs on the federation port.
-These APIs are necessary for some ma1sd features to work. If you'd like to prevent this, you can: `matrix_synapse_federation_port_openid_resource_required: false`.
+When federation is disabled, but ma1sd or Dimension are enabled, we'll now expose the `openid` APIs on the federation port. These APIs are necessary for some ma1sd features to work. If you'd like to prevent this, you can: `matrix_synapse_federation_port_openid_resource_required: false`.
 
 
 # 2020-11-27
@@ -2524,16 +2480,14 @@ Since `matrix.example.com` may be accessed by regular users in certain condition
 
 If Element Web is installed (`matrix_client_element_enabled: true`, which it is by default), we now redirect people to it, instead of showing them a Synapse static page.
 
-If you'd like to control where the redirect goes, use the `matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain` variable.
-To restore the old behavior of not redirecting anywhere and serving the Synapse static page, set it to an empty value (`matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""`).
+If you'd like to control where the redirect goes, use the `matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain` variable. To restore the old behavior of not redirecting anywhere and serving the Synapse static page, set it to an empty value (`matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain: ""`).
 
 
 # 2020-10-26
 
 ## (Compatibility Break) /_synapse/admin is no longer publicly exposed by default
 
-We used to expose the Synapse Admin APIs publicly (at `https://matrix.example.com/_synapse/admin`).
-These APIs require authentication with a valid access token, so it's not that big a deal to expose them.
+We used to expose the Synapse Admin APIs publicly (at `https://matrix.example.com/_synapse/admin`). These APIs require authentication with a valid access token, so it's not that big a deal to expose them.
 
 However, following [official Synapse's reverse-proxying recommendations](https://github.com/element-hq/synapse/blob/master/docs/reverse_proxy.md#synapse-administration-endpoints), we're no longer exposing `/_synapse/admin` by default.
 
@@ -2685,8 +2639,7 @@ This upgrades matrix-appservice-irc from 0.14.1 to 0.16.0.  Upstream
 made a change to how you define manual mappings.  If you added a
 `mapping` to your configuration, you will need to update it accoring
 to the [upstream
-instructions](https://github.com/matrix-org/matrix-appservice-irc/blob/master/CHANGELOG.md#0150-2020-02-05).
-If you did not include `mappings` in your configuration for IRC, no
+instructions](https://github.com/matrix-org/matrix-appservice-irc/blob/master/CHANGELOG.md#0150-2020-02-05). If you did not include `mappings` in your configuration for IRC, no
 change is necessary.  `mappings` is not part of the default
 configuration.
 
@@ -2728,8 +2681,7 @@ Thanks to [Marcel Partap](https://github.com/eMPee584)'s efforts, the [mxisd](ht
 
 **If you're using the default playbook configuration**, you don't need to do anything -- your mxisd installation will be replaced with ma1sd and all existing data will be migrated automatically the next time you run the playbook.
 
-**If you're doing something more special** (defining custom `matrix_mxisd_*` variables), the playbook will ask you to rename them to `matrix_ma1sd_*`.
-You're also encouraged to test that ma1sd works well for such a more custom setup.
+**If you're doing something more special** (defining custom `matrix_mxisd_*` variables), the playbook will ask you to rename them to `matrix_ma1sd_*`. You're also encouraged to test that ma1sd works well for such a more custom setup.
 
 
 # 2020-03-29
@@ -2754,8 +2706,7 @@ See our [Jitsi documentation page](docs/configuring-playbook-jitsi.md) to get st
 
 Thanks to [Gergely Horváth](https://github.com/hooger)'s effort, the playbook supports installing to a Raspberry Pi server, for at least some of the services.
 
-Since most ready-made container images do not support that architecture, we achieve this by building images locally on the device itself.
-See our [Self-building documentation page](docs/self-building.md) for how to get started.
+Since most ready-made container images do not support that architecture, we achieve this by building images locally on the device itself. See our [Self-building documentation page](docs/self-building.md) for how to get started.
 
 
 # 2020-02-26
@@ -2838,8 +2789,7 @@ We have added support for making `matrix-nginx-proxy` not being so invasive, so 
 
 The documentation has been updated with a **Method 2**, which might make "own webserver" setup easier in some cases (such as [reverse-proxying using Traefik](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/296)).
 
-**Existing users** are not affected by this and **don't need to change anything**.
-The defaults are still the same (`matrix-nginx-proxy` obtaining SSL certificates and doing everything for you automatically).
+**Existing users** are not affected by this and **don't need to change anything**. The defaults are still the same (`matrix-nginx-proxy` obtaining SSL certificates and doing everything for you automatically).
 
 
 # 2019-11-10
@@ -2848,8 +2798,7 @@ The defaults are still the same (`matrix-nginx-proxy` obtaining SSL certificates
 
 As per this [advisory blog post](https://matrix.org/blog/2019/11/09/avoiding-unwelcome-visitors-on-private-matrix-servers), we've decided to change the default publishing rules for the Matrix room directory.
 
-Our general goal is to favor privacy and security when running personal (family & friends) and corporate homeservers.
-Both of these likely benefit from having a more secure default of **not showing the room directory without authentication** and **not publishing the room directory over federation**.
+Our general goal is to favor privacy and security when running personal (family & friends) and corporate homeservers. Both of these likely benefit from having a more secure default of **not showing the room directory without authentication** and **not publishing the room directory over federation**.
 
 As with anything else, these new defaults can be overriden by changing the `matrix_synapse_allow_public_rooms_without_auth` and `matrix_synapse_allow_public_rooms_over_federation` variables, respectively.
 
@@ -2860,12 +2809,9 @@ As with anything else, these new defaults can be overriden by changing the `matr
 
 Postgres [upgrading](docs/maintenance-postgres.md#upgrading-postgresql) and [importing](docs/importing-postgres.md) have been improved to add support for multiple databases and roles.
 
-Previously, the playbook would only take care of the `homeserver` database and `synapse` user.
-We now back up and restore all databases and users on the Postgres server.
+Previously, the playbook would only take care of the `homeserver` database and `synapse` user. We now back up and restore all databases and users on the Postgres server.
 
-For now, the playbook only uses that one database (`homeserver`) and that one single user (`synapse`), so it's all the same.
-However, in the future, additional components besides Synapse may also make use the Postgres database server.
-One such example is the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge, which strongly encourages use of Postgres in its v1.0 release. We are yet to upgrade to it.
+For now, the playbook only uses that one database (`homeserver`) and that one single user (`synapse`), so it's all the same. However, in the future, additional components besides Synapse may also make use the Postgres database server. One such example is the [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) bridge, which strongly encourages use of Postgres in its v1.0 release. We are yet to upgrade to it.
 
 Additionally, Postgres [upgrading](docs/maintenance-postgres.md#upgrading-postgresql) now uses gzipped dump files by default, to minimize disk space usage.
 
@@ -2889,9 +2835,7 @@ Its new defaults (which we adopt as well) mean that certain old data will automa
 
 From now on the `trusted_key_servers` setting for Synapse is configurable. It still defaults to `matrix.org` just like it always has, but in a more explicit way now. If you'd like to use another trusted key server, adjust the `matrix_synapse_trusted_key_servers` playbook variable.
 
-Synapse 1.4.0 also changes lots of things related to identity server integration.
-Because Synapse will now by default be responsible for validating email addresses for user accounts, running without an identity server looks more feasible.
-We still [have concerns](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/275/files#r331104117) over disabling the identity server by default, so for now it remains enabled.
+Synapse 1.4.0 also changes lots of things related to identity server integration. Because Synapse will now by default be responsible for validating email addresses for user accounts, running without an identity server looks more feasible. We still [have concerns](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/275/files#r331104117) over disabling the identity server by default, so for now it remains enabled.
 
 
 # 2019-09-09
@@ -2911,8 +2855,7 @@ Learn more in [Setting up Synapse Simple Antispam](docs/configuring-playbook-syn
 
 Similarly to [Extensible Synapse configuration](#extensible-synapse-configuration) (below), Riot-web configuration is also extensible now.
 
-From now on, you can extend/override Riot-web's configuration by making use of the `matrix_riot_web_configuration_extension_json` variable.
-This should be enough for most customization needs.
+From now on, you can extend/override Riot-web's configuration by making use of the `matrix_riot_web_configuration_extension_json` variable. This should be enough for most customization needs.
 
 If you need even more power, you can now also take full control and override `matrix_riot_web_configuration_default` (or `matrix_riot_web_configuration`) directly.
 
@@ -2923,11 +2866,9 @@ Learn more in [Configuring Riot-web](docs/configuring-playbook-riot-web.md).
 
 ## Extensible Synapse configuration
 
-Previously, we had to create custom Ansible variables for each and every Synapse setting.
-This lead to too much effort (and configuration ugliness) to all of Synapse's settings, so naturally, not all features of Synapse could be controlled through the playbook.
+Previously, we had to create custom Ansible variables for each and every Synapse setting. This lead to too much effort (and configuration ugliness) to all of Synapse's settings, so naturally, not all features of Synapse could be controlled through the playbook.
 
-From now on, you can extend/override the Synapse server's configuration by making use of the `matrix_synapse_configuration_extension_yaml` variable.
-This should be enough for most customization needs.
+From now on, you can extend/override the Synapse server's configuration by making use of the `matrix_synapse_configuration_extension_yaml` variable. This should be enough for most customization needs.
 
 If you need even more power, you can now also take full control and override `matrix_synapse_configuration` (or `matrix_synapse_configuration_yaml`) directly.
 
@@ -2988,8 +2929,7 @@ Among other things, if your Postgres database has grown significantly over time,
 
 Some internal playbook control variables have been renamed.
 
-This change **only affects people who run this playbook's roles from another playbook**.
-If you're using this playbook as-is, you're not affected and don't need to do anything.
+This change **only affects people who run this playbook's roles from another playbook**. If you're using this playbook as-is, you're not affected and don't need to do anything.
 
 The following variables have been renamed:
 
@@ -3007,8 +2947,7 @@ The following variables have been renamed:
 
 Following what the official Synapse Docker image is doing ([#5565](https://github.com/matrix-org/synapse/pull/5565)) and what we've been doing for mostly everything installed by this playbook, **Synapse no longer logs to text files** (`/matrix/synapse/run/homeserver.log*`).
 
-From now on, Synapse would only log to console, which goes to systemd's journald.
-To see Synapse's logs, execute: `journalctl -fu matrix-synapse`
+From now on, Synapse would only log to console, which goes to systemd's journald. To see Synapse's logs, execute: `journalctl -fu matrix-synapse`
 
 Because of this, the following variables have become obsolete and were removed:
 
@@ -3036,8 +2975,7 @@ Likewise, data is now also stored in a subdirectory (`/matrix/appservice-discord
 
 The main directory (`/matrix/appservice-discord`) may contain some leftover files (`user-store.db`, `room-store.db`, `config.yaml`, `discord-registration.yaml`, `invite_link`). These are no longer necessary and can be deleted manually.
 
-We're now following the default sample configuration for the Discord bridge.
-If you need to override some values, define them in `matrix_appservice_discord_configuration_extension_yaml`.
+We're now following the default sample configuration for the Discord bridge. If you need to override some values, define them in `matrix_appservice_discord_configuration_extension_yaml`.
 
 
 # 2019-06-24
@@ -3050,8 +2988,7 @@ From now on, the playbook will keep the configuration in sync for you.
 
 This means that if you were making manual changes to the `/matrix/mautrix-whatsapp/config.yaml` or `/matrix/mautrix-whatsapp/registration.yaml` configuration files, those would be lost the next time you run the playbook.
 
-The bridge now stores configuration in a subdirectory (`/matrix/mautrix-whatsapp/config`), so your old configuration remains in the base directory (`/matrix/mautrix-whatsapp`).
-You need to migrate any manual changes over to the new `matrix_mautrix_whatsapp_configuration_extension_yaml` variable, so that the playbook would apply them for you.
+The bridge now stores configuration in a subdirectory (`/matrix/mautrix-whatsapp/config`), so your old configuration remains in the base directory (`/matrix/mautrix-whatsapp`). You need to migrate any manual changes over to the new `matrix_mautrix_whatsapp_configuration_extension_yaml` variable, so that the playbook would apply them for you.
 
 Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-whatsapp/data`). When you run the playbook with an existing database file (`/matrix/mautrix-whatsapp/mautrix-whatsapp.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
 
@@ -3074,8 +3011,7 @@ Previously, we asked people to configure bridged IRC servers by extending the br
 
 If you decide to continue using `matrix_appservice_irc_configuration_extension_yaml`, you might be interested to know that `ircService.databaseUri` and a few other keys now have default values in the base configuration (`matrix_appservice_irc_configuration_yaml`). You may wish to stop redefining those keys, unless you really intend to override them. You most likely only need to override `ircService.servers`.
 
-Bridge data (`passkey.pem` and database files) is now also stored in a subdirectory (`/matrix/appservice-irc/data`).
-When you run the playbook with an existing `/matrix/appservice-irc/passkey.pem` file, the playbook will stop the bridge and relocate the passkey and database files (`rooms.db` and `users.db`) to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
+Bridge data (`passkey.pem` and database files) is now also stored in a subdirectory (`/matrix/appservice-irc/data`). When you run the playbook with an existing `/matrix/appservice-irc/passkey.pem` file, the playbook will stop the bridge and relocate the passkey and database files (`rooms.db` and `users.db`) to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
 
 
 # 2019-06-15
@@ -3088,8 +3024,7 @@ From now on, the playbook will keep the configuration in sync for you.
 
 This means that if you were making manual changes to the `/matrix/mautrix-telegram/config.yaml` or `/matrix/mautrix-telegram/registration.yaml` configuration files, those would be lost the next time you run the playbook.
 
-The bridge now stores configuration in a subdirectory (`/matrix/mautrix-telegram/config`), so your old configuration remains in the base directory (`/matrix/mautrix-telegram`).
-You need to migrate any manual changes over to the new `matrix_mautrix_telegram_configuration_extension_yaml` variable, so that the playbook would apply them for you.
+The bridge now stores configuration in a subdirectory (`/matrix/mautrix-telegram/config`), so your old configuration remains in the base directory (`/matrix/mautrix-telegram`). You need to migrate any manual changes over to the new `matrix_mautrix_telegram_configuration_extension_yaml` variable, so that the playbook would apply them for you.
 
 Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-telegram/data`). When you run the playbook with an existing database file (`/matrix/mautrix-telegram/mautrix-telegram.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
 
@@ -3128,8 +3063,7 @@ From now on, the playbook will keep the configuration in sync for you.
 
 This means that if you were making manual changes to the `/matrix/mautrix-facebook/config.yaml` or `/matrix/mautrix-facebook/registration.yaml` configuration files, those would be lost the next time you run the playbook.
 
-The bridge now stores configuration in a subdirectory (`/matrix/mautrix-facebook/config`), so your old configuration remains in the base directory (`/matrix/mautrix-facebook`).
-You need to migrate any manual changes over to the new `matrix_mautrix_facebook_configuration_extension_yaml` variable, so that the playbook would apply them for you.
+The bridge now stores configuration in a subdirectory (`/matrix/mautrix-facebook/config`), so your old configuration remains in the base directory (`/matrix/mautrix-facebook`). You need to migrate any manual changes over to the new `matrix_mautrix_facebook_configuration_extension_yaml` variable, so that the playbook would apply them for you.
 
 Likewise, data is now also stored in a subdirectory (`/matrix/mautrix-facebook/data`). When you run the playbook with an existing database file (`/matrix/mautrix-facebook/mautrix-facebook.db`), the playbook will stop the bridge and relocate the database file to the `./data` directory. There's no data-loss involved. You'll need to restart the bridge manually though (`--tags=start`).
 
@@ -3190,15 +3124,13 @@ The playbook no longer insists on installing [Synapse](https://github.com/elemen
 
 If you would prefer to install Synapse another way and just use the playbook to install other services, it should be possible (`matrix_synapse_enabled: false`).
 
-Note that it won't necessarily be the best experience, since the playbook wires things to Synapse by default.
-If you're using your own Synapse instance (especially one not running in a container), you may have to override many variables to point them to the correct place.
+Note that it won't necessarily be the best experience, since the playbook wires things to Synapse by default. If you're using your own Synapse instance (especially one not running in a container), you may have to override many variables to point them to the correct place.
 
 Having Synapse not be a required component potentially opens the door for installing alternative Matrix homeservers.
 
 ## Bridges are now separate from the Synapse role
 
-Bridges are no longer part of the `matrix-synapse` role.
-Each bridge now lives in its own separate role (`roles/custom/matrix-bridge-*`).
+Bridges are no longer part of the `matrix-synapse` role. Each bridge now lives in its own separate role (`roles/custom/matrix-bridge-*`).
 
 These bridge roles are independent of the `matrix-synapse` role, so it should be possible to use them with a Synapse instance installed another way (not through the playbook).
 
@@ -3254,11 +3186,9 @@ We've also started building our own Docker image of Ansible ([devture/ansible](h
 
 ## TLS support for Coturn
 
-We've added TLS support to the Coturn TURN server installed by the playbook by default.
-The certificates from the Matrix domain will be used for the Coturn server.
+We've added TLS support to the Coturn TURN server installed by the playbook by default. The certificates from the Matrix domain will be used for the Coturn server.
 
-This feature is enabled by default for new installations.
-To make use of TLS support for your existing Matrix server's Coturn, make sure to rebuild both Coturn and Synapse:
+This feature is enabled by default for new installations. To make use of TLS support for your existing Matrix server's Coturn, make sure to rebuild both Coturn and Synapse:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-coturn,setup-synapse,start
@@ -3279,8 +3209,7 @@ People who build their own custom playbook from our roles should be aware that:
 
 If you don't have a dedicated server for your base domain and want to set up [Server Delegation via a well-known file](docs/howto-server-delegation.md#server-delegation-via-a-well-known-file), the playbook has got you covered now.
 
-It's now possible for the playbook to obtain an SSL certificate and serve the necessary files for Matrix Server Delegation on your base domain.
-Take a look at the new [Serving the base domain](docs/configuring-playbook-base-domain-serving.md) documentation page.
+It's now possible for the playbook to obtain an SSL certificate and serve the necessary files for Matrix Server Delegation on your base domain. Take a look at the new [Serving the base domain](docs/configuring-playbook-base-domain-serving.md) documentation page.
 
 ## (BC break) matrix-nginx-proxy data variable renamed
 
@@ -3300,16 +3229,14 @@ Thanks to [NullIsNot0](https://github.com/NullIsNot0), the playbook can now (opt
 
 ## Ability to customize mxisd's email templates
 
-Thanks to [Sylvia van Os](https://github.com/TheLastProject), mxisd's email templates can now be customized easily.
-To learn more, see the [Customizing email templates](docs/configuring-playbook-mxisd.md#customizing-email-templates) documentation page.
+Thanks to [Sylvia van Os](https://github.com/TheLastProject), mxisd's email templates can now be customized easily. To learn more, see the [Customizing email templates](docs/configuring-playbook-mxisd.md#customizing-email-templates) documentation page.
 
 
 # 2019-03-05
 
 ## Discord bridging support
 
-[@Lionstiger](https://github.com/Lionstiger) has done some great work adding Discord bridging support via [matrix-appservice-discord](https://github.com/matrix-org/matrix-appservice-discord).
-To learn more, see the [Setting up Appservice Discord bridging](docs/configuring-playbook-bridge-appservice-discord.md) documentation page.
+[@Lionstiger](https://github.com/Lionstiger) has done some great work adding Discord bridging support via [matrix-appservice-discord](https://github.com/matrix-org/matrix-appservice-discord). To learn more, see the [Setting up Appservice Discord bridging](docs/configuring-playbook-bridge-appservice-discord.md) documentation page.
 
 
 # 2019-02-19
@@ -3342,8 +3269,7 @@ However, we still provide you with hooks to install your own `home.html` file by
 
 ## Synapse v0.99.1
 
-As we're moving toward Synapse v1.0, things are beginning to stabilize.
-Upgrading from v0.99.0 to v0.99.1 should be painless.
+As we're moving toward Synapse v1.0, things are beginning to stabilize. Upgrading from v0.99.0 to v0.99.1 should be painless.
 
 If you've been overriding the default configuration so that you can terminate TLS at the Synapse side (`matrix_synapse_no_tls: false`), you'll now have to replace this custom configuration with `matrix_synapse_tls_federation_listener_enabled: true`. The `matrix_synapse_no_tls` variable is no more.
 
@@ -3352,8 +3278,7 @@ If you've been overriding the default configuration so that you can terminate TL
 
 ## Synapse v0.99 support and preparation for Synapse v1.0
 
-Matrix is undergoing a lot of changes as it matures towards Synapse v1.0.
-The first step is the Synapse v0.99 transitional release, which this playbook now supports.
+Matrix is undergoing a lot of changes as it matures towards Synapse v1.0. The first step is the Synapse v0.99 transitional release, which this playbook now supports.
 
 If you've been using this playbook successfully until now, you'd be aware that we've been doing [Server Delegation](docs/howto-server-delegation.md) using a `_matrix._tcp` DNS SRV record (as per [Configuring DNS](docs/configuring-dns.md)).
 
@@ -3385,33 +3310,26 @@ When using:
 
 ## IRC bridging support
 
-[Devon Maloney (@Plailect)](https://github.com/Plailect) has done some great work bringing IRC bridging support via [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc).
-To learn more, see the [Setting up Appservice IRC bridging](docs/configuring-playbook-bridge-appservice-irc.md) documentation page.
+[Devon Maloney (@Plailect)](https://github.com/Plailect) has done some great work bringing IRC bridging support via [matrix-appservice-irc](https://github.com/TeDomum/matrix-appservice-irc). To learn more, see the [Setting up Appservice IRC bridging](docs/configuring-playbook-bridge-appservice-irc.md) documentation page.
 
 
 # 2019-01-29
 
 ## Running container processes as non-root, without capabilities and read-only
 
-To improve security, this playbook no longer starts container processes as the `root` user.
-Most containers were dropping privileges anyway, but we were trusting them with `root` privileges until they would do that.
-Not anymore -- container processes now start as a non-root user (usually `matrix`) from the get-go.
+To improve security, this playbook no longer starts container processes as the `root` user. Most containers were dropping privileges anyway, but we were trusting them with `root` privileges until they would do that. Not anymore -- container processes now start as a non-root user (usually `matrix`) from the get-go.
 
 For additional security, various capabilities are also dropped (see [why it's important](https://github.com/projectatomic/atomic-site/issues/203)) for all containers.
 
-Additionally, most containers now use a read-only filesystem (see [why it's important](https://www.projectatomic.io/blog/2015/12/making-docker-images-write-only-in-production/)).
-Containers are given write access only to the directories they need to write to.
+Additionally, most containers now use a read-only filesystem (see [why it's important](https://www.projectatomic.io/blog/2015/12/making-docker-images-write-only-in-production/)). Containers are given write access only to the directories they need to write to.
 
-A minor breaking change is the `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size` variable having being renamed to `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb` (note the `_mb` suffix). The new variable expects a number value (e.g. `25M` -> `25`).
-If you weren't customizing this variable, this wouldn't affect you.
+A minor breaking change is the `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size` variable having being renamed to `matrix_nginx_proxy_proxy_matrix_client_api_client_max_body_size_mb` (note the `_mb` suffix). The new variable expects a number value (e.g. `25M` -> `25`). If you weren't customizing this variable, this wouldn't affect you.
 
 ## matrix-mailer is now based on Exim, not Postfix
 
-While we would have preferred to stay with [Postfix](http://www.postfix.org/), we found out that it cannot run as a non-root user.
-We've had to replace it with [Exim](https://www.exim.org/) (via the [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay) container image).
+While we would have preferred to stay with [Postfix](http://www.postfix.org/), we found out that it cannot run as a non-root user. We've had to replace it with [Exim](https://www.exim.org/) (via the [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay) container image).
 
-The internal `matrix-mailer` service (running in a container) now listens on port `8025` (used to be `587` before).
-The playbook will update your Synapse and mxisd email settings to match (`matrix-mailer:587` -> `matrix-mailer:8025`).
+The internal `matrix-mailer` service (running in a container) now listens on port `8025` (used to be `587` before). The playbook will update your Synapse and mxisd email settings to match (`matrix-mailer:587` -> `matrix-mailer:8025`).
 
 Using the [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay) container image instead of [panubo/postfix](https://hub.docker.com/r/panubo/postfix/) also gives us a nice disk usage reduction (~200MB -> 8MB).
 
@@ -3423,8 +3341,7 @@ Using the [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay) cont
 The following change **affects people running a more non-standard setup** - external Postgres or using our roles in their own other playbook.
 **Most users don't need to do anything**, besides becoming aware of the new glue variables file [`group_vars/matrix-servers`](group_vars/matrix-servers).
 
-Because people like using the playbook's components independently (outside of this playbook) and because it's much better for maintainability, we've continued working on separating them.
-Still, we'd like to offer a turnkey solution for running a fully-featured Matrix server, so this playbook remains important for wiring up the various components.
+Because people like using the playbook's components independently (outside of this playbook) and because it's much better for maintainability, we've continued working on separating them. Still, we'd like to offer a turnkey solution for running a fully-featured Matrix server, so this playbook remains important for wiring up the various components.
 
 With the new changes, **all roles are now only dependent on the minimal `matrix-base` role**. They are no longer dependent among themselves.
 
@@ -3487,8 +3404,7 @@ The following variables are no longer supported by this playbook:
 - `matrix_mxisd_ldap_directory_filter`
 - `matrix_mxisd_template_config`
 
-You are encouraged to use the `matrix_mxisd_configuration_extension_yaml` variable to define your own mxisd configuration additions and overrides.
-Refer to the [default variables file](roles/custom/matrix-mxisd/defaults/main.yml) for more information.
+You are encouraged to use the `matrix_mxisd_configuration_extension_yaml` variable to define your own mxisd configuration additions and overrides. Refer to the [default variables file](roles/custom/matrix-mxisd/defaults/main.yml) for more information.
 
 This new way of configuring mxisd is beneficial because:
 
@@ -3540,16 +3456,14 @@ Example change:
 
 ## Synapse 0.34.0 and Python 3
 
-Synapse has been upgraded to 0.34.0 and now uses Python 3.
-Based on feedback from others, running Synapse on Python 3 is supposed to decrease memory usage significantly (~2x).
+Synapse has been upgraded to 0.34.0 and now uses Python 3. Based on feedback from others, running Synapse on Python 3 is supposed to decrease memory usage significantly (~2x).
 
 
 # 2018-12-12
 
 ## Riot homepage customization
 
-You can now customize some parts of the Riot homepage (or even completely replace it with your own custom page).
-See the `matrix_riot_web_homepage_` variables in `roles/custom/matrix-riot-web/defaults/main.yml`.
+You can now customize some parts of the Riot homepage (or even completely replace it with your own custom page). See the `matrix_riot_web_homepage_` variables in `roles/custom/matrix-riot-web/defaults/main.yml`.
 
 
 # 2018-12-04
@@ -3577,15 +3491,13 @@ Additional details are available in [Setting up the LDAP authentication password
 
 ## Support for controlling public registration and room auto-join
 
-The playbook now lets you enable public registration for users (controlled via `matrix_synapse_enable_registration`).
-By default, public registration is forbidden.
+The playbook now lets you enable public registration for users (controlled via `matrix_synapse_enable_registration`). By default, public registration is forbidden.
 
 You can also make people automatically get auto-joined to rooms (controlled via `matrix_synapse_auto_join_rooms`).
 
 ## Support for changing the welcome user ID (welcome bot)
 
-By default, `@riot-bot:matrix.org` is used to welcome newly registered users.
-This can be changed to something else (or disabled) via the new `matrix_riot_web_welcome_user_id` variable.
+By default, `@riot-bot:matrix.org` is used to welcome newly registered users. This can be changed to something else (or disabled) via the new `matrix_riot_web_welcome_user_id` variable.
 
 
 # 2018-11-14
@@ -3684,8 +3596,7 @@ The playbook can now help you with [Controlling Matrix federation](docs/configur
 
 ## Disabling riot-web guests
 
-From now on, Riot's configuration setting `disable_guests` would be set to `true`.
-The homeserver was rejecting guests anyway, so this is just a cosmetic change affecting Riot's UI.
+From now on, Riot's configuration setting `disable_guests` would be set to `true`. The homeserver was rejecting guests anyway, so this is just a cosmetic change affecting Riot's UI.
 
 
 # 2018-10-21
@@ -3710,8 +3621,7 @@ If users participate in large rooms with many other servers, disabling presence 
 
 The playbook now makes the Synapse cache factor configurable, through the playbook's `matrix_synapse_cache_factor` variable (having a default value of `0.5`).
 
-Changing that value allows you to potentially decrease RAM usage or to increase performance by caching more stuff.
-Some information on it is available here: https://github.com/element-hq/synapse#help-synapse-eats-all-my-ram
+Changing that value allows you to potentially decrease RAM usage or to increase performance by caching more stuff. Some information on it is available here: https://github.com/element-hq/synapse#help-synapse-eats-all-my-ram
 
 
 # 2018-09-26
@@ -3774,8 +3684,7 @@ We've been using [acmetool](https://github.com/hlandau/acme) (with the [willwill
 
 Due to the Docker image being deprecated, and things looking bleak for acmetool's support of the newer ACME v2 API endpoint, we've switched to using [certbot](https://certbot.eff.org/) (with the [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) Docker image).
 
-Simply re-running the playbook will retrieve new certificates (via certbot) for you.
-To ensure you don't leave any old files behind, though, you'd better do this:
+Simply re-running the playbook will retrieve new certificates (via certbot) for you. To ensure you don't leave any old files behind, though, you'd better do this:
 
 - `systemctl stop 'matrix*'`
 - stop your custom webserver, if you're running one (only affects you if you've installed with `matrix_nginx_proxy_enabled: false`)
@@ -3833,24 +3742,21 @@ The following services are not necessary, so they have been disabled:
 - on the federation port (8448): the `client` service
 - on the http port (8008, exposed over 443): the old Angular `webclient` and the `federation` service
 
-Federation runs only on the federation port (8448) now.
-The Client APIs run only on the http port (8008) now.
+Federation runs only on the federation port (8448) now. The Client APIs run only on the http port (8008) now.
 
 
 # 2018-08-15
 
 ## mxisd Identity Server support
 
-The playbook now sets up an [mxisd](https://github.com/kamax-io/mxisd) Identity Server for you by default.
-Additional details are available in [Setting up ma1sd Identity Server](docs/configuring-playbook-mxisd.md).
+The playbook now sets up an [mxisd](https://github.com/kamax-io/mxisd) Identity Server for you by default. Additional details are available in [Setting up ma1sd Identity Server](docs/configuring-playbook-mxisd.md).
 
 
 # 2018-08-14
 
 ## Email-sending support
 
-The playbook now configures an email-sending service (postfix) by default.
-Additional details are available in [Adjusting email-sending settings](docs/configuring-playbook-email.md).
+The playbook now configures an email-sending service (postfix) by default. Additional details are available in [Adjusting email-sending settings](docs/configuring-playbook-email.md).
 
 With this, Matrix Synapse is able to send email notifications for missed messages, etc.
 
@@ -3874,8 +3780,7 @@ If you're overriding any of them in your `vars.yml` file, you'd need to change t
 
 ## Renaming Ansible playbook tag
 
-The command for executing the whole playbook has changed.
-The `setup-main` tag got renamed to `setup-all`.
+The command for executing the whole playbook has changed. The `setup-main` tag got renamed to `setup-all`.
 
 ## Docker container linking
 
