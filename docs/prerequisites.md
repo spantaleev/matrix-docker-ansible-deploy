@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Prerequisites
 
 <sup>Prerequisites > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>

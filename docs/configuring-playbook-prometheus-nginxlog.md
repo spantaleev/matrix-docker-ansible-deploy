@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Enabling metrics and graphs for NginX logs (optional)
 
 It can be useful to have some (visual) insight into [nginx](https://nginx.org/) logs.

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Google Messages bridging (optional)
 
 The playbook can install and configure [mautrix-gmessages](https://github.com/mautrix/gmessages) for you, for bridging to [Google Messages](https://messages.google.com/).

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Server Delegation via a DNS SRV record (advanced)
 
 **Reminder** : unless you are affected by the [Downsides of well-known-based Server Delegation](howto-server-delegation.md#downsides-of-well-known-based-server-delegation), we suggest you **stay on the simple/default path**: [Server Delegation](howto-server-delegation.md) by [configuring well-known files](configuring-well-known.md) at the base domain.

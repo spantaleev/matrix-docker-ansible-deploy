@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up MX Puppet Twitter bridging (optional)
 
 **Note**: bridging to [Twitter](https://twitter.com/) can also happen via the [mautrix-twitter](configuring-playbook-bridge-mautrix-twitter.md) bridge supported by the playbook.

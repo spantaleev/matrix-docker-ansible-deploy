@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Email2Matrix (optional)
 
 **Note**: email bridging can also happen via the [Postmoogle](configuring-playbook-bridge-postmoogle.md) bridge supported by the playbook. Postmoogle is much more powerful and easier to use, so we recommend that you use it, instead of Email2Matrix.

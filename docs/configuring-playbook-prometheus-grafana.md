@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server (optional)
 
 The playbook can install [Grafana](https://grafana.com/) with [Prometheus](https://prometheus.io/) and configure performance metrics of your homeserver with graphs for you.

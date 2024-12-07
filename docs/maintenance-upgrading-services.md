@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Upgrading the Matrix services
 
 This playbook not only installs the various Matrix services for you, but can also upgrade them as new versions are made available.

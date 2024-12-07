@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up matrix-registration (optional)
 
 The playbook can install and configure [matrix-registration](https://github.com/ZerataX/matrix-registration) for you.

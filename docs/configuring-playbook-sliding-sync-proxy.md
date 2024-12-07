@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the Sliding Sync proxy (optional)
 
 **Note**: The sliding-sync proxy is **not required** anymore as it's been replaced with a different method (called Simplified Sliding Sync) which is integrated into newer homeservers by default (**Conduit** homeserver from version `0.6.0` or **Synapse** from version `1.114`). This component and documentation remain here for historical purposes, but **installing this old sliding-sync proxy is generally not recommended anymore**.

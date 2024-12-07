@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Google Chat bridging (optional)
 
 The playbook can install and configure [mautrix-googlechat](https://github.com/mautrix/googlechat) for you.

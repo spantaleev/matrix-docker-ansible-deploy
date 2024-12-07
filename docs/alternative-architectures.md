@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Alternative architectures
 
 As stated in the [Prerequisites](prerequisites.md), currently only `amd64` (`x86_64`) is fully supported.

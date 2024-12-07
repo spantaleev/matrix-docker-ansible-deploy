@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Migrating to new server
 
 This documentation explains how to migrate your Matrix services (server, client, bridges, etc.) and data **from an old server to a new server**.

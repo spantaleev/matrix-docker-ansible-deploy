@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Storing Synapse media files on Amazon S3 or another compatible Object Storage (optional)
 
 By default, this playbook configures your server to store Synapse's content repository (`media_store`) files on the local filesystem. If that's okay, you can skip this document.

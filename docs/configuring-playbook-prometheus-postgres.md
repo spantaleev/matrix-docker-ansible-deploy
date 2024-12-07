@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Enabling metrics and graphs for Postgres (optional)
 
 Expanding on the metrics exposed by the [synapse exporter and the node exporter](configuring-playbook-prometheus-grafana.md), the playbook enables the [postgres exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your postgres database.

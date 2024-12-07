@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Etherpad (optional)
 
 [Etherpad](https://etherpad.org) is an open source collaborative text editor that can be embedded in a Matrix chat room using the [Dimension integration manager](https://dimension.t2bot.io) or used as standalone web app.

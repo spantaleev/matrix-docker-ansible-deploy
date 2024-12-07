@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the ntfy push notifications server (optional)
 
 The playbook can install and configure the [ntfy](https://ntfy.sh/) push notifications server for you.

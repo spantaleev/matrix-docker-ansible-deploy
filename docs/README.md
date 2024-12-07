@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Table of Contents
 
 ## ⬇️ Installaton guides <!-- NOTE: the 🚀 emoji is used by "Getting started" on README.md -->

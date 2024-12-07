@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Importing an existing SQLite database from another Synapse installation (optional)
 
 Run this if you'd like to import your database from a previous default installation of Synapse (don't forget to import your `media_store` files as well - see [the importing-synapse-media-store guide](importing-synapse-media-store.md)).

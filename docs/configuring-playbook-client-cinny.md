@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Cinny (optional)
 
 This playbook can install the [Cinny](https://github.com/ajbura/cinny) Matrix web client for you.

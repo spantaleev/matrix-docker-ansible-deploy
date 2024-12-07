@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the rageshake bug report server (optional)
 
 The playbook can install and configure the [rageshake](https://github.com/matrix-org/rageshake) bug report server for you.

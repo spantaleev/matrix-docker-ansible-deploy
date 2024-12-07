@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Heisenbridge bouncer-style IRC bridging (optional)
 
 **Note**: bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) can also happen via the [matrix-appservice-irc](configuring-playbook-bridge-appservice-irc.md) bridge supported by the playbook.

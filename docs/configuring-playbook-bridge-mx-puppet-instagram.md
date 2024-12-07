@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up MX Puppet Instagram bridging (optional)
 
 The playbook can install and configure [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) for you.

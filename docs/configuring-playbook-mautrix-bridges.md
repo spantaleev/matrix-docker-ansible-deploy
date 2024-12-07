@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up a Generic Mautrix Bridge (optional)
 
 The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, facebook, instagram, signal, hangouts, googlechat, etc.), as well as many other (non-mautrix) bridges. This is a common guide for configuring mautrix bridges.

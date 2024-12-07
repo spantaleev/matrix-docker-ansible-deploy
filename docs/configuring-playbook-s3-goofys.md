@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Storing Matrix media files on Amazon S3 with Goofys (optional)
 
 If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can let this playbook configure [Goofys](https://github.com/kahing/goofys) for you.

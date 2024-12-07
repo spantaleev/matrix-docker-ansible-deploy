@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Telegram bridging (optional)
 
 The playbook can install and configure [mautrix-telegram](https://github.com/mautrix/telegram) for you.

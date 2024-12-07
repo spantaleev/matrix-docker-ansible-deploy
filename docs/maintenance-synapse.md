@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Synapse maintenance
 
 This document shows you how to perform various maintenance tasks related to the Synapse chat server.

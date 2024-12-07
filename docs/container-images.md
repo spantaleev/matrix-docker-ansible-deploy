@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Container images used by the playbook
 
 This page summarizes the container ([Docker](https://www.docker.com/)) images used by the playbook when setting up your server.

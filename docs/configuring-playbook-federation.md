@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Controlling Matrix federation (optional)
 
 By default, your server federates with the whole Matrix network. That is, people on your server can communicate with people on any other Matrix server.

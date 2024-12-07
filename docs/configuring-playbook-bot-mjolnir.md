@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mjolnir (optional)
 
 The playbook can install and configure the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot for you.

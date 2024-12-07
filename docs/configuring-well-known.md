@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Service Discovery via .well-known
 
 This documentation page explains how to configure Service discovery via `/.well-known/` files. Service discovery is a way for the Matrix network to discover where a Matrix server is.

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Importing an existing Postgres database from another installation (optional)
 
 Run this if you'd like to import your database from a previous installation.

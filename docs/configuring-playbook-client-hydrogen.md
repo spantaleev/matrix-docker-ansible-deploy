@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Hydrogen (optional)
 
 This playbook can install the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client for you.
