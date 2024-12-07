@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Apache reverse-proxy
 
 This directory contains sample files that show you how to front the integrated [Traefik](https://traefik.io/) reverse-proxy webserver with your Apache reverse-proxy.

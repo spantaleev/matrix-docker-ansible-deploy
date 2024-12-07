@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Nginx reverse-proxy fronting the playbook's integrated Traefik reverse-proxy
 
 This directory contains a sample config that shows you how to use the [nginx](https://nginx.org/) webserver to front the integrated [Traefik](https://traefik.io/) reverse-proxy webserver with another reverse-proxy.
