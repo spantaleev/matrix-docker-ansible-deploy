@@ -87,7 +87,7 @@ When NOT using Pantalaimon, Mjolnir does not log in by itself and you must give 
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
-You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_4_GOES_HERE` with the your own values.
+You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_4_GOES_HERE` with your own values.
 
 ```yaml
 matrix_bot_mjolnir_enabled: true
