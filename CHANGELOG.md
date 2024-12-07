@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # 2024-11-26
 
 ## (Backward Compatibility Break) Synapse now defaults to enabling authenticated media
