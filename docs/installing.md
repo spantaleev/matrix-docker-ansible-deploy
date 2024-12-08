@@ -83,7 +83,7 @@ To create your user account (as an administrator of the server) via this Ansible
 
 **Notes**:
 - Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
-- For `YOUR_USERNAME_HERE`, use a plain username like `alice`, not your full identifier (`@alice:example.com`)
+- For `YOUR_USERNAME_HERE`, use a plain username like `alice`, not your full ID (`@alice:example.com`)
 - Use `admin=yes` to make your user account an administrator of the Matrix server
 
 ```sh
