@@ -37,7 +37,7 @@ matrix_admin: "@alice:{{ matrix_domain }}"
 matrix_mautrix_instagram_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@alice:example.com': admin
+      '@alice:{{ matrix_domain }}': admin
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-instagram/defaults/main.yml` to find other things you would like to configure.

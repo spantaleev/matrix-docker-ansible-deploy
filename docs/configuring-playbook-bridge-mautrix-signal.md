@@ -54,7 +54,7 @@ If you want to augment the preset permissions, you might want to set the additio
 matrix_mautrix_signal_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@alice:example.com': admin
+      '@alice:{{ matrix_domain }}': admin
 ```
 
 This will add the admin permission to the specific user, while keeping the default permissions.
@@ -63,8 +63,8 @@ In case you want to replace the default permissions settings **completely**, pop
 
 ```yaml
 matrix_mautrix_signal_bridge_permissions:
-  '@alice:example.com': admin
-  '@bob:example.com' : user
+  '@alice:{{ matrix_domain }}': admin
+  '@bob:{{ matrix_domain }}' : user
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-signal/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.

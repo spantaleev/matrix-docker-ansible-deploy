@@ -15,7 +15,7 @@ matrix_heisenbridge_enabled: true
 
 # Setting the owner is optional as the first local user to DM `@heisenbridge:example.com` will be made the owner.
 # If you are not using a local user you must set it as otherwise you can't DM it at all.
-matrix_heisenbridge_owner: "@alice:example.com"
+matrix_heisenbridge_owner: "@alice:{{ matrix_domain }}"
 
 # Uncomment to enable identd on host port 113/TCP (optional)
 # matrix_heisenbridge_identd_enabled: true

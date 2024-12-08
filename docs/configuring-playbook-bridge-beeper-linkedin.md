@@ -27,7 +27,7 @@ If you would like to be able to administrate the bridge from your account it can
 matrix_beeper_linkedin_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@alice:example.com': admin
+      '@alice:{{ matrix_domain }}': admin
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.

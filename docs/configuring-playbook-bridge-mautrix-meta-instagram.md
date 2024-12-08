@@ -62,7 +62,7 @@ You may redefine `matrix_mautrix_meta_instagram_bridge_permissions_default` any 
 
 ```yaml
 matrix_mautrix_meta_instagram_bridge_permissions_custom:
-  '@alice:example.com': admin
+  '@alice:{{ matrix_domain }}': admin
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-instagram/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
