@@ -353,7 +353,7 @@ If you have existing OIDC users in your Synapse user database (which will be the
 
 If you don't do this, `syn2mas` would report errors like this one:
 
-> [FATAL] migrate - [Failed to import external id 4264b0f0-4f11-4ddd-aedb-b500e4d07c25 with oidc-keycloak for user @user:example.com: Error: Unknown upstream provider oidc-keycloak]
+> [FATAL] migrate - [Failed to import external id 4264b0f0-4f11-4ddd-aedb-b500e4d07c25 with oidc-keycloak for user @alice:example.com: Error: Unknown upstream provider oidc-keycloak]
 
 Below is an example situation and a guide for how to solve it.
 

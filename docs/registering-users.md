@@ -130,7 +130,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 To change the admin privileges for a user in Synapse's local database, you need to run an SQL query like this against the `synapse` database:
 
 ```sql
-UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:example.com';
+UPDATE users SET admin=ADMIN_VALUE WHERE name = '@alice:example.com';
 ```
 
 where:

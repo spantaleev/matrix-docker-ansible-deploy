@@ -63,8 +63,8 @@ In case you want to replace the default permissions settings **completely**, pop
 
 ```yaml
 matrix_mautrix_signal_bridge_permissions:
-  '@ADMIN:example.com': admin
-  '@USER:example.com' : user
+  '@alice:example.com': admin
+  '@bob:example.com' : user
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-signal/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.

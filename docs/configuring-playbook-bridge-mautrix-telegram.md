@@ -57,7 +57,7 @@ You might also want to give permissions to administrate the bot:
 matrix_mautrix_telegram_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@user:example.com': admin
+      '@alice:example.com': admin
 ```
 
 More details about permissions in this example: https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml#L410

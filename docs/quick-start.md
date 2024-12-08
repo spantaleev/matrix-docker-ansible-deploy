@@ -13,7 +13,7 @@ We will be using `example.com` as the "base domain" in the following instruction
 By following the instruction on this page, you will set up:
 
 - **your own Matrix server** on a `matrix.example.com` server, which is configured to present itself as `example.com`
-- **your user account** like `@user:example.com` on the server
+- **your user account** like `@alice:example.com` on the server
 - a **self-hosted Matrix client**, [Element Web](configuring-playbook-client-element-web.md) with the default subdomain at `element.example.com`
 - Matrix delegation, so that your `matrix.example.com` server (presenting itself as `example.com`) can join the Matrix Federation and communicate with any other server in the Matrix network
 

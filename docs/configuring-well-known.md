@@ -16,7 +16,7 @@ There are 3 types of well-known service discovery mechanism that Matrix makes us
 
 All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`), instead of the base domain (`example.com`).
 
-As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a short Matrix user identifier like `@user:example.com` while hosting services on a subdomain such as `matrix.example.com`, the Matrix network needs to be instructed of [server delegation](howto-server-delegation.md) / redirection.
+As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a short Matrix user identifier like `@alice:example.com` while hosting services on a subdomain such as `matrix.example.com`, the Matrix network needs to be instructed of [server delegation](howto-server-delegation.md) / redirection.
 
 For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file.
 
@@ -24,7 +24,7 @@ If you set up the DNS SRV record for server delegation instead, take a look at t
 
 ### Client Server Discovery
 
-Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@username:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
+Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@alice:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
 
 This lets you (and your users) easily connect to your Matrix server without having to customize connection URLs. When using client programs that support it, you won't need to point them to `https://matrix.example.com` in Custom Server options manually anymore. The connection URL would be discovered automatically from your full username.
 

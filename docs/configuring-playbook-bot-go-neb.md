@@ -62,7 +62,7 @@ matrix_bot_go_neb_realms:
 matrix_bot_go_neb_sessions:
   - SessionID: "your_github_session"
     RealmID: "github_realm"
-    UserID: "@YOUR_USER_ID:{{ matrix_domain }}" # This needs to be the username of the person that's allowed to use the !github commands
+    UserID: "@alice:{{ matrix_domain }}" # This needs to be the username of the person that's allowed to use the !github commands
     Config:
       # Populate these fields by generating a "Personal Access Token" on github.com
       AccessToken: "YOUR_GITHUB_ACCESS_TOKEN"
@@ -149,7 +149,7 @@ matrix_bot_go_neb_services:
     UserID: "@another_goneb:{{ matrix_domain }}"
     Config:
       RealmID: "github_realm"
-      ClientUserID: "@YOUR_USER_ID:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
+      ClientUserID: "@alice:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
       Rooms:
         "!qporfwt:example.com":
           Repos:
@@ -234,7 +234,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite it to any existing Matrix room (`/invite @whatever_you_chose:example.com` where `example.com` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
+To use the bot, invite it to any existing Matrix room (`/invite @alice:example.com` where `example.com` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
 
 Basic usage is like this: `!echo hi` or `!imgur puppies` or `!giphy matrix`
 

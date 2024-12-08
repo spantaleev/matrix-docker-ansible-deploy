@@ -69,7 +69,7 @@ matrix_mautrix_meta_messenger_bridge_permissions_default:
   '{{ matrix_admin }}': admin
 ```
 
-If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @user:example.com`), then there's no admin by default.
+If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @alice:example.com`), then there's no admin by default.
 
 You may redefine `matrix_mautrix_meta_messenger_bridge_permissions_default` any way you see fit, or add extra permissions using `matrix_mautrix_meta_messenger_bridge_permissions_custom` like this:
 

@@ -25,7 +25,7 @@ docker exec -it matrix-synapse /usr/local/bin/hash_password -c /data/homeserver.
 and then connecting to the postgres server and executing:
 
 ```sql
-UPDATE users SET password_hash = '<password-hash>' WHERE name = '@someone:example.com';
+UPDATE users SET password_hash = '<password-hash>' WHERE name = '@alice:example.com';
 ```
 
 where `<password-hash>` is the hash returned by the docker command above.
@@ -40,8 +40,8 @@ If you didn't make your account a server admin when you created it, you can lear
 
 ### Example:
 
-To set @user:example.com's password to `correct_horse_battery_staple` you could use this curl command:
+To set @alice:example.com's password to `correct_horse_battery_staple` you could use this curl command:
 
 ```sh
-curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.example.com/_matrix/client/r0/admin/reset_password/@user:example.com?access_token=MDA...this_is_my_access_token
+curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.example.com/_matrix/client/r0/admin/reset_password/@alice:example.com?access_token=MDA...this_is_my_access_token
 ```

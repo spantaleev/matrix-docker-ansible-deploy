@@ -51,7 +51,7 @@ matrix_email2matrix_matrix_mappings:
   - MailboxName: "mailbox1"
     MatrixRoomId: "!qporfwt:{{ matrix_domain }}"
     MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
-    MatrixUserId: "@email2matrix:{{ matrix_domain }}"
+    MatrixUserId: "@alice:{{ matrix_domain }}"
     MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"
     IgnoreSubject: false
     IgnoreBody: false
@@ -60,7 +60,7 @@ matrix_email2matrix_matrix_mappings:
   - MailboxName: "mailbox2"
     MatrixRoomId: "!aaabaa:{{ matrix_domain }}"
     MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
-    MatrixUserId: "@email2matrix:{{ matrix_domain }}"
+    MatrixUserId: "@bob:{{ matrix_domain }}"
     MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"
     IgnoreSubject: true
     IgnoreBody: false
@@ -72,7 +72,7 @@ where:
 * MailboxName - local-part of the email address, through which emails are bridged to the room whose ID is defined with MatrixRoomId
 * MatrixRoomId - internal ID of the room, to which received emails are sent as Matrix message
 * MatrixHomeserverUrl - URL of your Matrix homeserver, through which to send Matrix messages. You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable
-* MatrixUserId - the full ID of the sender user which sends bridged messages to the room
+* MatrixUserId - the full ID of the sender user which sends bridged messages to the room. On this configuration it is `@alice:example.com` and `@bob:example.com` (where `example.com` is your base domain, not the `matrix.` domain)
 * MatrixAccessToken - sender user's access token
 * IgnoreSubject - if set to "true", the subject is not bridged to Matrix
 * IgnoreBody - if set to "true", the message body is not bridged to Matrix
