@@ -57,7 +57,7 @@ docker run -it --rm \
 -w /work \
 -v `pwd`:/work \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.17.0-r0-2
+docker.io/devture/ansible:2.18.1-r0-0
 ```
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code.
@@ -76,7 +76,7 @@ docker run -it --rm \
 -v `pwd`:/work \
 -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.17.0-r0-2
+docker.io/devture/ansible:2.18.1-r0-0
 ```
 
 The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`). If your SSH key is at a different path (not in `$HOME/.ssh/id_rsa`), adjust that part.
