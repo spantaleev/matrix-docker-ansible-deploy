@@ -38,7 +38,7 @@ If you would like to be able to administrate the bridge from your account it can
 matrix_mautrix_facebook_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
+      '@alice:{{ matrix_domain }}': admin
 ```
 
 Using both would look like
@@ -47,7 +47,7 @@ Using both would look like
 matrix_mautrix_facebook_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
+      '@alice:{{ matrix_domain }}': admin
     encryption:
       allow: true
       default: true

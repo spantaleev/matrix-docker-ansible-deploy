@@ -47,7 +47,7 @@ matrix_media_repo_database_max_idle_connections: 5
 # See docs/admin.md for information on what these people can do. They must belong to one of the
 # configured homeservers above.
 # matrix_media_repo_admins: [
-#   "@your_username:example.org"
+#   "@alice:example.org"
 # ]
 
 matrix_media_repo_admins: []

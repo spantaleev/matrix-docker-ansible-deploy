@@ -18,7 +18,7 @@ There are some additional things you may wish to configure about the bridge befo
 To **configure a user as an administrator for all bridges**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_admin: "@YOUR_USERNAME:{{ matrix_domain }}"
+matrix_admin: "@alice:{{ matrix_domain }}"
 ```
 
 **Alternatively** (more verbose, but allows multiple admins to be configured), you can do the same on a per-bridge basis with:
@@ -27,7 +27,7 @@ matrix_admin: "@YOUR_USERNAME:{{ matrix_domain }}"
 matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
+      '@alice:{{ matrix_domain }}': admin
 ```
 
 ## encryption
@@ -73,7 +73,7 @@ You can only have one `matrix_mautrix_SERVICENAME_configuration_extension_yaml` 
 matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
+      '@alice:{{ matrix_domain }}': admin
     encryption:
       allow: true
       default: true

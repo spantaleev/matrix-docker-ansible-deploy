@@ -26,7 +26,7 @@ In the world of the Matrix chat protocol, there are various client programs. The
 
 Matrix is also like email due to the fact that there are many servers around the world which can all talk to each other (you can send email from `@gmail.com` addresses to `@yahoo.com` and `@hotmail.com` addresses). It's the same with Matrix (`@bob:example.com` can talk to `@alice:example.org`).
 
-If someone else is hosting your Matrix server (you being `@example:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element Web or Element X Android.
+If someone else is hosting your Matrix server (you being `@alice:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element Web or Element X Android.
 
 If you'd like to host your own server (you being `@alice:example.com`), you'd need to set up a Matrix server program, like Synapse.
 
@@ -281,7 +281,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
-- Without setting up [server delegation](howto-server-delegation.md) to `matrix.example.com`, your user identifiers will be like `@example:matrix.example.com`. This is equivalent to having an email address like `bob@mail.company.com`, instead of just `bob@company.com`.
+- Without setting up [server delegation](howto-server-delegation.md) to `matrix.example.com`, your user identifiers will be like `@alice:matrix.example.com`. This is equivalent to having an email address like `bob@mail.company.com`, instead of just `bob@company.com`.
 
 ### I don't use the base domain for anything. How am I supposed to set up Server Delegation for Matrix services?
 

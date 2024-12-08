@@ -54,7 +54,7 @@ If you want to augment the preset permissions, you might want to set the additio
 matrix_mautrix_signal_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:example.com': admin
+      '@alice:example.com': admin
 ```
 
 This will add the admin permission to the specific user, while keeping the default permissions.
