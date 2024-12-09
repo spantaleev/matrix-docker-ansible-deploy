@@ -30,7 +30,7 @@ Should the crypto store be corrupted, you can reset it by executing this Ansible
 
 ## Usage
 
-Create a room and invite the Hookshot bot (`@hookshot:example.com`) to it.
+To use the bridge, you need to create a room and invite the Hookshot bot (`@hookshot:example.com`) to it.
 
 Make sure the bot is able to send state events (usually the Moderator power level in clients).
 

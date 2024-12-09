@@ -43,7 +43,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-Invite the bridge bot user to your room in either way.
+To use the bridge, you need to invite the bridge bot user to your room in either way.
 
 - Send `/invite @_webhook:example.com` (**Note**: Make sure you have administration permissions in your room)
 - Add the bridge bot to a private channel (personal channels imply you being an administrator)

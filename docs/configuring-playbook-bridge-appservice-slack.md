@@ -82,7 +82,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-Send `/invite @slackbot:example.com` to invite the bridge bot user into the admin room.
+To use the bridge, you need to send `/invite @slackbot:example.com` to invite the bridge bot user into the admin room.
 
 If Team Sync is not enabled, for each channel you would like to bridge, perform the following steps:
 

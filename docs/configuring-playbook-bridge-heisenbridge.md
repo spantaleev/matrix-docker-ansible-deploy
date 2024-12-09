@@ -66,7 +66,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-After the bridge is successfully running just DM `@heisenbridge:example.com` to start setting it up. If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
+To use the bridge, you need to start a chat with `@heisenbridge:example.com` (where `example.com` is your base domain, not the `matrix.` domain). If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
 
 Help is available for all commands with the `-h` switch.
 
