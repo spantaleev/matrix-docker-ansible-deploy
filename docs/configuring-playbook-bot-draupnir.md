@@ -170,7 +170,7 @@ The simplest and most useful entity to target is `user`. Below are a few example
 
 To create rules, you run commands in the Management Room (**not** in the policy list room).
 
-- (ban a single user on a given homeserver): `!draupnir ban @alice:example.com my-bans Rude to others`
+- (ban a single user on a given homeserver): `!draupnir ban @charles:example.com my-bans Rude to others`
 - (ban all users on a given homeserver by using a [wildcard](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#wildcards)): `!draupnir ban @*:example.org my-bans Spam server - all users are fake`
 
 As a result of running these commands, you may observe:
