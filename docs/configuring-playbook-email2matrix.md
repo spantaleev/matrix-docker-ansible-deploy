@@ -24,11 +24,13 @@ For details about using Email2Matrix alongside [Postfix](http://www.postfix.org/
 
 ### Creating a user
 
-Before enabling Email2Matrix, you'd most likely wish to create a dedicated user (or more) that would be sending messages on the Matrix side. Refer to [Registering users](registering-users.md) for ways to do that. A regular (non-admin) user works best.
+Before enabling Email2Matrix, you'd most likely wish to create a dedicated user (or more) that would be sending messages on the Matrix side. Take note of the user's ID as it needs to be specified as `MatrixUserId` on your `inventory/host_vars/matrix.example.com/vars.yml` file later.
+
+Refer to [Registering users](registering-users.md) for ways to create a user. A regular (non-admin) user works best.
 
 ### Creating a shared room
 
-After creating a sender user, you should create one or more Matrix rooms that you share with that user. It doesn't matter who creates and owns the rooms and who joins later (you or the sender user).
+After creating the sender user, you should create one or more Matrix rooms that you share with that user. It doesn't matter who creates and owns the rooms and who joins later (you or the sender user).
 
 What matters is that both you and the sender user are part of the same room and that the sender user has enough privileges in the room to be able to send messages there.
 
@@ -51,7 +53,7 @@ matrix_email2matrix_matrix_mappings:
   - MailboxName: "mailbox1"
     MatrixRoomId: "!qporfwt:{{ matrix_domain }}"
     MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
-    MatrixUserId: "@alice:{{ matrix_domain }}"
+    MatrixUserId: "@email2matrix1:{{ matrix_domain }}"
     MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"
     IgnoreSubject: false
     IgnoreBody: false
@@ -60,7 +62,7 @@ matrix_email2matrix_matrix_mappings:
   - MailboxName: "mailbox2"
     MatrixRoomId: "!aaabaa:{{ matrix_domain }}"
     MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
-    MatrixUserId: "@bob:{{ matrix_domain }}"
+    MatrixUserId: "@email2matrix2:{{ matrix_domain }}"
     MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"
     IgnoreSubject: true
     IgnoreBody: false
@@ -72,7 +74,7 @@ where:
 * MailboxName - local-part of the email address, through which emails are bridged to the room whose ID is defined with MatrixRoomId
 * MatrixRoomId - internal ID of the room, to which received emails are sent as Matrix message
 * MatrixHomeserverUrl - URL of your Matrix homeserver, through which to send Matrix messages. You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable
-* MatrixUserId - the full ID of the sender user which sends bridged messages to the room. On this configuration it is `@alice:example.com` and `@bob:example.com` (where `example.com` is your base domain, not the `matrix.` domain)
+* MatrixUserId - the full ID of the sender user which sends bridged messages to the room. On this configuration it is `@email2matrix1:example.com` and `@email2matrix2:example.com` (where `example.com` is your base domain, not the `matrix.` domain)
 * MatrixAccessToken - sender user's access token
 * IgnoreSubject - if set to "true", the subject is not bridged to Matrix
 * IgnoreBody - if set to "true", the message body is not bridged to Matrix
