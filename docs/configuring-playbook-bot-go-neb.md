@@ -234,7 +234,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite it to any existing Matrix room (`/invite @alice:example.com` where `example.com` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
+To use the bot, invite it to any existing Matrix room (`/invite @bot.go-neb:example.com` where `example.com` is your base domain, not the `matrix.` domain). Make sure you are granted with the sufficient permission if you are not the room owner.
 
 Basic usage is like this: `!echo hi` or `!imgur puppies` or `!giphy matrix`
 
