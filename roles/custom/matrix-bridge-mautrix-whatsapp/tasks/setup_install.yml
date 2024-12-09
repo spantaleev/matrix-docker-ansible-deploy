@@ -22,7 +22,7 @@
               caller: "{{ role_path | basename }}"
               engine_variable_name: 'matrix_mautrix_whatsapp_database_engine'
               engine_old: 'sqlite'
-              systemd_services_to_stop: ['matrix-mautrix-whatsapp.service']
+              systemd_services_to_stop: ['{{ matrix_mautrix_whatsapp_identifier }}.service']
               pgloader_options: ['--with "quote identifiers"']
 
         - ansible.builtin.set_fact:
@@ -89,7 +89,7 @@
 
 - name: (Data relocation) Ensure matrix-mautrix-whatsapp.service is stopped
   ansible.builtin.service:
-    name: matrix-mautrix-whatsapp
+    name: "{{ matrix_mautrix_whatsapp_identifier }}"
     state: stopped
     enabled: false
     daemon_reload: true
@@ -146,12 +146,12 @@
 - name: Ensure matrix-mautrix-whatsapp.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-whatsapp.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-whatsapp.service"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_mautrix_whatsapp_identifier }}.service"
     mode: 0644
 
 - name: Ensure matrix-mautrix-whatsapp.service restarted, if necessary
   ansible.builtin.service:
-    name: "matrix-mautrix-whatsapp.service"
+    name: "{{ matrix_mautrix_whatsapp_identifier }}.service"
     state: restarted
     daemon_reload: true
   when: "matrix_mautrix_whatsapp_requires_restart | bool"
