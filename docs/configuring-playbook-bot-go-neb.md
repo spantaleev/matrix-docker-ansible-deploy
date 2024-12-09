@@ -8,7 +8,7 @@ Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the ori
 
 See the project's [documentation](https://github.com/matrix-org/go-neb) to learn what it does and why it might be useful to you.
 
-## Registering the bot user
+## Registering the bot account
 
 The playbook does not automatically create users for you. The bot requires at least 1 access token to be able to connect to your homeserver.
 
