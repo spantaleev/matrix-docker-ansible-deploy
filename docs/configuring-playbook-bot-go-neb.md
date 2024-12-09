@@ -8,7 +8,7 @@ Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the ori
 
 See the project's [documentation](https://github.com/matrix-org/go-neb) to learn what it does and why it might be useful to you.
 
-## Registering the bot user
+## Registering the bot account
 
 The playbook does not automatically create users for you. The bot requires at least 1 access token to be able to connect to your homeserver.
 
@@ -62,7 +62,7 @@ matrix_bot_go_neb_realms:
 matrix_bot_go_neb_sessions:
   - SessionID: "your_github_session"
     RealmID: "github_realm"
-    UserID: "@YOUR_USER_ID:{{ matrix_domain }}" # This needs to be the username of the person that's allowed to use the !github commands
+    UserID: "@alice:{{ matrix_domain }}" # This needs to be the username of the person that's allowed to use the !github commands
     Config:
       # Populate these fields by generating a "Personal Access Token" on github.com
       AccessToken: "YOUR_GITHUB_ACCESS_TOKEN"
@@ -149,7 +149,7 @@ matrix_bot_go_neb_services:
     UserID: "@another_goneb:{{ matrix_domain }}"
     Config:
       RealmID: "github_realm"
-      ClientUserID: "@YOUR_USER_ID:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
+      ClientUserID: "@alice:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
       Rooms:
         "!qporfwt:example.com":
           Repos:
@@ -234,7 +234,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite it to any existing Matrix room (`/invite @whatever_you_chose:example.com` where `example.com` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
+To use the bot, invite it to any existing Matrix room (`/invite @bot.go-neb:example.com` where `example.com` is your base domain, not the `matrix.` domain). Make sure you are granted with the sufficient permission if you are not the room owner.
 
 Basic usage is like this: `!echo hi` or `!imgur puppies` or `!giphy matrix`
 

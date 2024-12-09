@@ -35,7 +35,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-Once the bot is enabled you need to start a chat with `Discord Puppet Bridge` with the handle `@_discordpuppet_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `Discord Puppet Bridge` with the handle `@_discordpuppet_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Three authentication methods are available, Legacy Token, OAuth and xoxc token. See mx-puppet-discord [documentation](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) for more information about how to configure the bridge.
 

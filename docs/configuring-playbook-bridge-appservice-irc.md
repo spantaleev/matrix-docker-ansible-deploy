@@ -79,4 +79,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-You then need to start a chat with `@irc_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `@irc_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
