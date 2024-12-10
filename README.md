@@ -32,6 +32,8 @@ While the [list of supported services](#-supported-services) and documentation i
 
     - **Full installation guide (for advanced users)**: if you need to import an existing Matrix server's data into the new server or want to learn more while setting up the server, follow this guide by starting with the **[Prerequisites](./docs/prerequisites.md)** documentation page.
 
+If you experience an issue on configuring the playbook, setting up your server, maintaining services on it, etc., please take a look at our [FAQ](./docs/faq.md). If you cannot find an answer to your question, feel free to ask for [help and support](#-support).
+
 ## ✔ Supported services
 
 Using this playbook, you can get the following list of services configured on your server. Basically, this playbook aims to get you up-and-running with all the necessities around Matrix, without you having to do anything else.

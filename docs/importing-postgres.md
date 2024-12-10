@@ -9,7 +9,7 @@ For this to work, **the database name in Postgres must match** what this playboo
 
 The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`). Importing multiple databases (as dumped by `pg_dumpall`) is also supported.
 
-The migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, ...)
+The migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, …)
 
 Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay).
 
@@ -55,7 +55,7 @@ ALTER TABLE public.account_data OWNER TO synapse_user;
 ALTER TABLE public.account_data_max_stream_id OWNER TO synapse_user;
 ALTER TABLE public.account_validity OWNER TO synapse_user;
 ALTER TABLE public.application_services_state OWNER TO synapse_user;
-...
+…
 ```
 
 It can be worked around by changing the username to `synapse`, for example by using `sed`:
@@ -64,7 +64,7 @@ It can be worked around by changing the username to `synapse`, for example by us
 $ sed -i "s/OWNER TO synapse_user;/OWNER TO synapse;/g" homeserver.sql
 ```
 
-This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` - replacing `matrix` only would... well - you can imagine.
+This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` - replacing `matrix` only would… well - you can imagine.
 
 Note that if the previous import failed with an error it may have made changes which are incompatible with re-running the import task right away; if you do so it may fail with an error such as:
 

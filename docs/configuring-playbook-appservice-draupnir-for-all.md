@@ -18,7 +18,7 @@ Draupnir for all does not support external tooling like [MRU](https://mru.rory.g
 
 ## Installation
 
-### 1. Create a main management room.
+### Create a main management room.
 
 The playbook does not create a management room for your Main Draupnir. This task you have to do on your own.
 
@@ -29,11 +29,11 @@ This management room is used to control who has access to your D4A deployment. T
 As noted in the Draupnir install instructions the control room is sensitive. The following is said about the control room in the Draupnir install instructions.
 >Anyone in this room can control the bot so it is important that you only invite trusted users to this room. The room must be unencrypted since the playbook does not support installing Pantalaimon yet.
 
-### 2. Give your main management room an alias.
+### Give your main management room an alias.
 
 Give the room from step 1 an alias. This alias can be anything you want and its recommended for increased security during the setup phase of the bot that you make this alias be a random string. You can give your room a secondary human readable alias when it has been locked down after setup phase.
 
-### 3. Adjusting the playbook configuration.
+### Adjusting the playbook configuration.
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
@@ -45,7 +45,7 @@ matrix_appservice_draupnir_for_all_enabled: true
 matrix_appservice_draupnir_for_all_master_control_room_alias: "ALIAS_FROM_STEP_2_GOES_HERE"
 ```
 
-### 4. Installing
+### Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
@@ -68,7 +68,7 @@ If you made it through all the steps above and your main control room was joined
 
 The installation of Draupnir for all in this playbook is very much Alpha quality. Usage-wise, Draupnir for allis almost identical to Draupnir bot mode.
 
-### 1. Granting Users the ability to use D4A
+### Granting Users the ability to use D4A
 
 Draupnir for all includes several security measures like that it only allows users that are on its allow list to ask for a bot. To add a user to this list we have 2 primary options. Using the chat to tell Draupnir to do this for us or if you want to automatically do it by sending `m.policy.rule.user` events that target the subject you want to allow provisioning for with the `org.matrix.mjolnir.allow` recomendation. Using the chat is recomended.
 
@@ -76,7 +76,7 @@ The bot requires a powerlevel of 50 in the management room to control who is all
 
 To allow users or whole homeservers you type /plain @draupnir-main:example.com allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to register. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially.
 
-### 2. How to provision a D4A once you are allowed to.
+### How to provision a D4A once you are allowed to.
 
 Open a DM with @draupnir-main:example.com and if using an Element client send a message into this DM to finalise creating it. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
 

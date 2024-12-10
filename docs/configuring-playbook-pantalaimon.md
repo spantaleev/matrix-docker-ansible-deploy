@@ -6,7 +6,7 @@ See the project's [documentation](https://github.com/matrix-org/pantalaimon) to 
 
 This role exposes Pantalaimon's API only within the container network, so bots and clients installed on the same machine can use it. In particular the [Draupnir](configuring-playbook-bot-draupnir.md) and [Mjolnir](configuring-playbook-bot-mjolnir.md) roles (and possibly others) can use it.
 
-## 1. Adjusting the playbook configuration
+## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
@@ -16,7 +16,7 @@ matrix_pantalaimon_enabled: true
 
 The default configuration should suffice. For advanced configuration, you can override the variables documented in the role's [defaults](../roles/custom/matrix-pantalaimon/defaults/main.yml).
 
-## 2. Installing
+## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 

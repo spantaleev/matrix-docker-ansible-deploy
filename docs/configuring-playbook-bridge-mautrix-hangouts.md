@@ -1,6 +1,6 @@
 # Setting up Mautrix Hangouts bridging (optional, deprecated)
 
-**Note**: This bridge has been deprecated in favor of [Google Chat bridge](https://github.com/mautrix/googlechat), which can be installed using [this playbook](configuring-playbook-bridge-mautrix-googlechat.md). Consider using that bridge instead of this one.
+💡 **Note**: This bridge has been deprecated in favor of [Google Chat bridge](https://github.com/mautrix/googlechat), which can be installed using [this playbook](configuring-playbook-bridge-mautrix-googlechat.md). Installing the mautrix-hangouts bridge is **no longer possible**. For now, this documentation page remains here for historical purposes.
 
 The playbook can install and configure [mautrix-hangouts](https://github.com/mautrix/hangouts) for you.
 

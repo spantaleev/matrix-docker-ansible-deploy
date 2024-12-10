@@ -393,7 +393,7 @@ You generally need to do a playbook installation. It's recommended to follow the
 
 This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
-After configuring the playbook and installing and **before starting** services (done with `ansible-playbook ... --tags=start`) you'd import [your SQLite](importing-synapse-sqlite.md) (or [Postgres](importing-postgres.md)) database and also [import your media store](importing-synapse-media-store.md).
+After configuring the playbook and installing and **before starting** services (done with `ansible-playbook … --tags=start`) you'd import [your SQLite](importing-synapse-sqlite.md) (or [Postgres](importing-postgres.md)) database and also [import your media store](importing-synapse-media-store.md).
 
 ### I've downloaded Ansible and the playbook on the server. It can't connect using SSH.
 
