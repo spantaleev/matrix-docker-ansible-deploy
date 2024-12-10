@@ -27,7 +27,8 @@ The management room has to be given an alias and be public when you are setting 
 This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel.
 
 As noted in the Draupnir install instructions the control room is sensitive. The following is said about the control room in the Draupnir install instructions.
->Anyone in this room can control the bot so it is important that you only invite trusted users to this room. The room must be unencrypted since the playbook does not support installing Pantalaimon yet.
+
+**Anyone in this room can control the bot so it is important that you only invite trusted users to this room.** The room must be unencrypted since the playbook does not support installing Pantalaimon yet.
 
 ### Give your main management room an alias
 
@@ -100,6 +101,6 @@ To allow users or whole homeservers you type /plain @draupnir-main:example.com a
 
 ### How to provision a D4A once you are allowed to
 
-Open a DM with @draupnir-main:example.com and if using an Element client send a message into this DM to finalise creating it. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
+To provision a D4A, you need to start a chat with `@draupnir-main:example.com`. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
 
 Congratulations if you made it all the way here because you now have a fully working Draupnir for all deployment.
