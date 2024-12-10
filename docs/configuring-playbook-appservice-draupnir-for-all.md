@@ -45,6 +45,28 @@ matrix_appservice_draupnir_for_all_enabled: true
 matrix_appservice_draupnir_for_all_master_control_room_alias: "ALIAS_FROM_STEP_2_GOES_HERE"
 ```
 
+You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable. For example, to change Draupnir's `protectAllJoinedRooms` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_appservice_draupnir_for_all_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_appservice_draupnir_for_all_yaml`.
+  protectAllJoinedRooms: true
+```
+
+You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for more configuration documentation.
+
+**Notes**:
+
+- The playbook ships a full copy of the example config that does transfer to provisioned Draupnirs in the production-bots.yaml.j2 file in the template directory of the role.
+
+- Config extension does not affect the appservices config as this config is not extensible in current Draupnir anyway. It instead touches the config passed to the Draupnirs that your Appservice creates. So the example above (`protectAllJoinedRooms: true`) makes all provisioned Draupnirs protect all joined rooms.
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -81,25 +103,3 @@ To allow users or whole homeservers you type /plain @draupnir-main:example.com a
 Open a DM with @draupnir-main:example.com and if using an Element client send a message into this DM to finalise creating it. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
 
 Congratulations if you made it all the way here because you now have a fully working Draupnir for all deployment.
-
-### Configuration of D4A
-
-You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for more configuration documentation. Please note that the playbook ships a full copy of the example config that does transfer to provisioned Draupnirs in the production-bots.yaml.j2 file in the template directory of the role.
-
-Please note that Config extension does not affect the appservices config as this config is not extensible in current Draupnir anyways. Config extension instead touches the config passed to the Draupnirs that your Appservice creates. So for example below makes all provisioned Draupnirs protect all joined rooms.
-
-You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
-
-For example to change Draupnir's `protectAllJoinedRooms` option to `true` you would add the following to your `vars.yml` file.
-
-```yaml
-matrix_appservice_draupnir_for_all_extension_yaml: |
-  # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_yaml`).
-  #
-  # You can override individual variables from the default configuration, or introduce new ones.
-  #
-  # If you need something more special, you can take full control by
-  # completely redefining `matrix_appservice_draupnir_for_all_yaml`.
-  protectAllJoinedRooms: true
-```
