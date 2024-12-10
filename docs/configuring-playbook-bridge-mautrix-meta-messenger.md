@@ -69,13 +69,13 @@ matrix_mautrix_meta_messenger_bridge_permissions_default:
   '{{ matrix_admin }}': admin
 ```
 
-If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @user:example.com`), then there's no admin by default.
+If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @alice:example.com`), then there's no admin by default.
 
 You may redefine `matrix_mautrix_meta_messenger_bridge_permissions_default` any way you see fit, or add extra permissions using `matrix_mautrix_meta_messenger_bridge_permissions_custom` like this:
 
 ```yaml
 matrix_mautrix_meta_messenger_bridge_permissions_custom:
-  '@YOUR_USERNAME:example.com': admin
+  '@alice:{{ matrix_domain }}': admin
 ```
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
@@ -99,7 +99,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-You then need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`.
+To use the bridge, you need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`.
 
 You then need to send a `login` command and follow the bridge bot's instructions.
 

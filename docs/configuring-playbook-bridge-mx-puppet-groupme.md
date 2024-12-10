@@ -31,7 +31,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-Once the bot is enabled you need to start a chat with `GroupMe Puppet Bridge` with the handle `@_groupmepuppet_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `GroupMe Puppet Bridge` with the handle `@_groupmepuppet_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 One authentication method is available.
 

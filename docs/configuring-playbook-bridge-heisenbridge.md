@@ -15,7 +15,7 @@ matrix_heisenbridge_enabled: true
 
 # Setting the owner is optional as the first local user to DM `@heisenbridge:example.com` will be made the owner.
 # If you are not using a local user you must set it as otherwise you can't DM it at all.
-matrix_heisenbridge_owner: "@you:example.com"
+matrix_heisenbridge_owner: "@alice:{{ matrix_domain }}"
 
 # Uncomment to enable identd on host port 113/TCP (optional)
 # matrix_heisenbridge_identd_enabled: true
@@ -66,7 +66,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-After the bridge is successfully running just DM `@heisenbridge:example.com` to start setting it up. If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
+To use the bridge, you need to start a chat with `@heisenbridge:example.com` (where `example.com` is your base domain, not the `matrix.` domain). If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
 
 Help is available for all commands with the `-h` switch.
 
