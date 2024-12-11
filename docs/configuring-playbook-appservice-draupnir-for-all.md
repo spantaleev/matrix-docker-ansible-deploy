@@ -28,7 +28,9 @@ This management room is used to control who has access to your D4A deployment. T
 
 As noted in the Draupnir install instructions the control room is sensitive. The following is said about the control room in the Draupnir install instructions.
 
-**Anyone in this room can control the bot so it is important that you only invite trusted users to this room.** The room must be unencrypted since the playbook does not support installing Pantalaimon yet.
+**Anyone in this room can control the bot so it is important that you only invite trusted users to this room.** The room must be unencrypted.
+
+<!-- TODO: enable Pantalaimon as configuring-playbook-bot-draupnir.md -->
 
 ### Give your main management room an alias
 
