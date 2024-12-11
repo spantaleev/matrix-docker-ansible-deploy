@@ -103,6 +103,24 @@ You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` with your own value.
 matrix_bot_draupnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 ```
 
+### Extending the configuration
+
+You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable.
+
+For example, to change Draupnir's `recordIgnoredInvites` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_bot_draupnir_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_draupnir_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_draupnir_configuration_yaml`.
+  recordIgnoredInvites: true
+```
+
 ### Migrating from Mjolnir (Only required if migrating)
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
@@ -195,24 +213,6 @@ To **set a specific option for a given protection**, send a command like this: `
 To **enable a given protection**, send a command like this: `!draupnir enable PROTECTION_NAME` (e.g. `!draupnir enable JoinWaveShortCircuit`).
 
 To **disable a given protection**, send a command like this: `!draupnir disable PROTECTION_NAME` (e.g. `!draupnir disable JoinWaveShortCircuit`).
-
-## Extending the configuration
-
-You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
-
-For example to change Draupnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
-
-```yaml
-matrix_bot_draupnir_configuration_extension_yaml: |
-  # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_bot_draupnir_configuration_yaml`).
-  #
-  # You can override individual variables from the default configuration, or introduce new ones.
-  #
-  # If you need something more special, you can take full control by
-  # completely redefining `matrix_bot_draupnir_configuration_yaml`.
-  recordIgnoredInvites: true
-```
 
 ## Abuse Reports
 

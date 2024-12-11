@@ -99,6 +99,24 @@ You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` with your own value.
 matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 ```
 
+### Extending the configuration
+
+You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
+
+For example, to change Mjolnir's `recordIgnoredInvites` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_bot_mjolnir_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_mjolnir_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_mjolnir_configuration_yaml`.
+  recordIgnoredInvites: true
+```
+
 ## Adding Mjolnir synapse antispam module (optional)
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
@@ -133,19 +151,3 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ## Usage
 
 You can refer to the upstream [documentation](https://github.com/matrix-org/mjolnir) for additional ways to use and configure Mjolnir. Check out their [quickstart guide](https://github.com/matrix-org/mjolnir#quickstart-guide) for some basic commands you can give to the bot.
-
-You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
-
-For example to change Mjolnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
-
-```yaml
-matrix_bot_mjolnir_configuration_extension_yaml: |
-  # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_bot_mjolnir_configuration_yaml`).
-  #
-  # You can override individual variables from the default configuration, or introduce new ones.
-  #
-  # If you need something more special, you can take full control by
-  # completely redefining `matrix_bot_mjolnir_configuration_yaml`.
-  recordIgnoredInvites: true
-```
