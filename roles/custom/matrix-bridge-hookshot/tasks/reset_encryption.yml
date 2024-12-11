@@ -1,5 +1,11 @@
 ---
 
+- name: Ensure matrix-hookshot is stopped
+  ansible.builtin.service:
+    name: matrix-hookshot
+    state: stopped
+  register: matrix_hookshot_stopped
+
 # `yarn start:resetcrypto` fails, as described here: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3868
 # Also related to: https://github.com/matrix-org/matrix-hookshot/issues/730
 - name: Resetting Hookshot's crypto store
@@ -14,3 +20,11 @@
       {{ matrix_hookshot_docker_image }}
       node --require source-map-support/register /usr/bin/matrix-hookshot/App/ResetCryptoStore.js
   changed_when: true
+
+- name: Ensure matrix-hookshot is started, if it previously was
+  ansible.builtin.service:
+    name: matrix-hookshot
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: matrix_hookshot_stopped.changed | bool
