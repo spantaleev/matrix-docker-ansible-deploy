@@ -44,6 +44,17 @@ Finally invite the `@bot.mjolnir:example.com` account you created earlier into t
 
 ## Adjusting the playbook configuration
 
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+
+You must replace `ROOM_ID_FROM_STEP_4_GOES_HERE` with your own value.
+
+```yaml
+# Enable Mjolnir
+matrix_bot_mjolnir_enabled: true
+
+matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
+```
+
 Decide whether you want Mjolnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms. To support E2EE, Mjolnir needs to [use Pantalaimon](configuring-playbook-pantalaimon.md).
 
 ### a. Configuration with E2EE support
@@ -56,17 +67,12 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 # Enable Pantalaimon. See docs/configuring-playbook-pantalaimon.md
 matrix_pantalaimon_enabled: true
 
-# Enable Mjolnir
-matrix_bot_mjolnir_enabled: true
-
 # Tell Mjolnir to use Pantalaimon
 matrix_bot_mjolnir_pantalaimon_use: true
 
 # User name and password for the bot. Required when using Pantalaimon.
 matrix_bot_mjolnir_pantalaimon_username: "MJOLNIR_USERNAME_FROM_STEP_1"
 matrix_bot_mjolnir_pantalaimon_password: ### you should create a secure password for the bot account
-
-matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
 The playbook's `group_vars` will configure other required settings. If using this role separately without the playbook, you also need to configure the two URLs that Mjolnir uses to reach the homeserver, one through Pantalaimon and one "raw". This example is taken from the playbook's `group_vars`:
@@ -87,14 +93,10 @@ When NOT using Pantalaimon, Mjolnir does not log in by itself and you must give 
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
-You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_4_GOES_HERE` with your own values.
+You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` with your own value.
 
 ```yaml
-matrix_bot_mjolnir_enabled: true
-
 matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
-
-matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
 ## Adding Mjolnir synapse antispam module (optional)
