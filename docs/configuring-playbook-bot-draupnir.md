@@ -6,7 +6,7 @@ See the project's [documentation](https://github.com/the-draupnir-project/Draupn
 
 This documentation page is about installing Draupnir in bot mode. As an alternative, you can run a multi-instance Draupnir deployment by installing [Draupnir in appservice mode](./configuring-playbook-appservice-draupnir-for-all.md) (called Draupnir-for-all) instead.
 
-If your migrating from Mjolnir skip to step 5b.
+If your migrating from Mjolnir skip to [this section](#migrating-from-mjolnir-only-required-if-migrating).
 
 ## Register the bot account
 
@@ -101,7 +101,7 @@ matrix_bot_draupnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
-### c. Migrating from Mjolnir (Only required if migrating.)
+### Migrating from Mjolnir (Only required if migrating)
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
 
