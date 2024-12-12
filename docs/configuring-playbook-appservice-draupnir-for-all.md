@@ -32,9 +32,11 @@ As noted in the Draupnir install instructions the control room is sensitive. The
 
 <!-- TODO: enable Pantalaimon as configuring-playbook-bot-draupnir.md -->
 
-### Give your main management room an alias
+### Set an alias to the management room
 
-Give the room from step 1 an alias. This alias can be anything you want and its recommended for increased security during the setup phase of the bot that you make this alias be a random string. You can give your room a secondary human readable alias when it has been locked down after setup phase.
+Next, set an alias to the management room.
+
+This alias can be anything you want. However, for increased security during the setup phase, it is recommended to make this alias be a random string. When it has been locked down after setup phase, you can give your room a secondary human readable alias.
 
 ## Adjusting the playbook configuration
 
