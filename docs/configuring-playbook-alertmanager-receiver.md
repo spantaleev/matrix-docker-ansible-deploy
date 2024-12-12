@@ -34,8 +34,6 @@ For each new room you would like the bot to deliver alerts to, invite the bot to
 
 Then, log in as the bot using any Matrix client of your choosing, accept the room invitation from the bot's account, and log out.
 
-You may optionally adjust `matrix_alertmanager_receiver_config_matrix_room_mapping` to create a mapping between the new room and its ID. It provides cleaner `/alert/` URLs.
-
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#get-an-access-token).
