@@ -32,7 +32,9 @@ Refer to the documentation on [how to obtain an access token](obtaining-access-t
 
 ### Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
+You will need to prevent Synapse from rate limiting the bot's account. **This is not an optional step. If you do not do this step Draupnir will crash.**
+
+This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
 
 If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
 
