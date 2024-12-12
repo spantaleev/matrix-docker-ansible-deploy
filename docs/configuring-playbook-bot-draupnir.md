@@ -59,9 +59,13 @@ matrix_bot_draupnir_enabled: true
 matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
 ```
 
-Decide whether you want Draupnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms. To support E2EE, Draupnir needs to [use Pantalaimon](configuring-playbook-pantalaimon.md).
+### End-to-End Encryption support
 
-### a. Configuration with E2EE support
+Decide whether you want Draupnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms.
+
+To support E2EE, Draupnir needs to [use Pantalaimon](configuring-playbook-pantalaimon.md).
+
+#### Configuration with E2EE support
 
 When using Pantalaimon, Draupnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
@@ -91,7 +95,7 @@ matrix_bot_draupnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matr
 matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 ```
 
-### b. Configuration without E2EE support
+#### Configuration without E2EE support
 
 When NOT using Pantalaimon, Draupnir does not log in by itself and you must give it an access token for its bot account.
 
