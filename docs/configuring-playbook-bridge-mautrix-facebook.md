@@ -38,7 +38,7 @@ If you would like to be able to administrate the bridge from your account it can
 matrix_mautrix_facebook_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
+      '@alice:{{ matrix_domain }}': admin
 ```
 
 Using both would look like
@@ -47,7 +47,7 @@ Using both would look like
 matrix_mautrix_facebook_configuration_extension_yaml: |
   bridge:
     permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
+      '@alice:{{ matrix_domain }}': admin
     encryption:
       allow: true
       default: true
@@ -74,7 +74,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-You then need to start a chat with `@facebookbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `@facebookbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `login YOUR_FACEBOOK_EMAIL_ADDRESS` to the bridge bot to enable bridging for your Facebook Messenger account. You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/facebook/authentication.html).
 

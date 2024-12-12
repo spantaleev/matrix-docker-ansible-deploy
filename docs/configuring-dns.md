@@ -6,9 +6,9 @@ To set up Matrix on your domain, you'd need to do some DNS configuration.
 
 ## DNS setting for server delegation (optional)
 
-In the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user identifier like `@<username>:example.com`.
+In the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user ID like `@alice:example.com` instead of `@alice:matrix.example.com`.
 
-To use such an identifier, you don't need to install anything on the actual `example.com` server. Instead, you need to instruct the Matrix network that Matrix services for `example.com` are redirected over to `matrix.example.com`. This redirection is also known as "delegation".
+To use such an ID, you don't need to install anything on the actual `example.com` server. Instead, you need to instruct the Matrix network that Matrix services for `example.com` are redirected over to `matrix.example.com`. This redirection is also known as "delegation".
 
 As we discuss in [Server Delegation](howto-server-delegation.md), server delegation can be configured in either of these ways:
 

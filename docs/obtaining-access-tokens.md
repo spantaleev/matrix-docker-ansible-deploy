@@ -26,7 +26,7 @@ You can use the following command to get an access token for your user directly 
 
 ```sh
 curl -XPOST -d '{
-    "identifier": { "type": "m.id.user", "user": "USERNAME" },
+    "identifier": { "type": "m.id.user", "user": "alice" },
     "password": "PASSWORD",
     "type": "m.login.password",
     "device_id": "YOURDEVICEID"
@@ -40,7 +40,7 @@ Your response will look like this (prettified):
 
 ```
 {
-    "user_id":"@USERNAME:example.com",
+    "user_id":"@alice:example.com",
     "access_token":">>>YOUR_ACCESS_TOKEN_IS_HERE<<<",
     "home_server":"example.com",
     "device_id":"YOURDEVICEID"

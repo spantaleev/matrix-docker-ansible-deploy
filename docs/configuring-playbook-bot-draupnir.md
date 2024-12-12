@@ -34,7 +34,7 @@ You will need to prevent Synapse from rate limiting the bot's account. This is n
 
 If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
 
-The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir itself. If you made Draupnir Admin you can just use the Draupnir token.
+The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.draupnir:example.com/override_ratelimit` Replace `@bot.draupnir:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir itself. If you made Draupnir Admin you can just use the Draupnir token.
 
 ## Create a management room
 
@@ -170,7 +170,7 @@ The simplest and most useful entity to target is `user`. Below are a few example
 
 To create rules, you run commands in the Management Room (**not** in the policy list room).
 
-- (ban a single user on a given homeserver): `!draupnir ban @someone:example.com my-bans Rude to others`
+- (ban a single user on a given homeserver): `!draupnir ban @charles:example.com my-bans Rude to others`
 - (ban all users on a given homeserver by using a [wildcard](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#wildcards)): `!draupnir ban @*:example.org my-bans Spam server - all users are fake`
 
 As a result of running these commands, you may observe:

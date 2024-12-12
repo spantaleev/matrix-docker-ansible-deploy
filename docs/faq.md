@@ -26,9 +26,9 @@ In the world of the Matrix chat protocol, there are various client programs. The
 
 Matrix is also like email due to the fact that there are many servers around the world which can all talk to each other (you can send email from `@gmail.com` addresses to `@yahoo.com` and `@hotmail.com` addresses). It's the same with Matrix (`@bob:example.com` can talk to `@alice:example.org`).
 
-If someone else is hosting your Matrix server (you being `@user:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element Web or Element X Android.
+If someone else is hosting your Matrix server (you being `@alice:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element Web or Element X Android.
 
-If you'd like to host your own server (you being `@user:example.com`), you'd need to set up a Matrix server program, like Synapse.
+If you'd like to host your own server (you being `@alice:example.com`), you'd need to set up a Matrix server program, like Synapse.
 
 In short:
 
@@ -56,7 +56,7 @@ There are 3 ways to get into Matrix, depending on your technical ability and nee
 
 - **using some other server** - instead of using the largest public server (`matrix.org`), you can use another public one. Here's a [list of public Matrix servers](https://joinmatrix.org/servers/) to choose from. Go to [Element Web](https://app.element.io) or download [some other client](https://matrix.org/clients/) of your choosing and adjust the homeserver URL during login.
 
-- **using your own server** - running your own server puts you in ultimate control of your data. It also lets you have your own user identifiers (e.g. `@bob:example.com`). See [How do I set up my own Matrix server](#how-do-i-set-up-my-own-matrix-server).
+- **using your own server** - running your own server puts you in ultimate control of your data. It also lets you have your own user IDs (e.g. `@bob:example.com`). See [How do I set up my own Matrix server](#how-do-i-set-up-my-own-matrix-server).
 
 ### How do I set up my own Matrix server?
 
@@ -281,7 +281,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
-- Without setting up [server delegation](howto-server-delegation.md) to `matrix.example.com`, your user identifiers will be like `@user:matrix.example.com`. This is equivalent to having an email address like `bob@mail.company.com`, instead of just `bob@company.com`.
+- Without setting up [server delegation](howto-server-delegation.md) to `matrix.example.com`, your user IDs will be like `@alice:matrix.example.com`. This is equivalent to having an email address like `bob@mail.company.com`, instead of just `bob@company.com`.
 
 ### I don't use the base domain for anything. How am I supposed to set up Server Delegation for Matrix services?
 
@@ -391,7 +391,7 @@ Yes, you can.
 
 You generally need to do a playbook installation. It's recommended to follow the full installation guide (starting at the [Prerequisites](prerequisites.md) page), not the [Quick start](quick-start.md) guide. The full installation guide will tell you when it's time to import your existing data into the newly-prepared server.
 
-This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
+This Ansible playbook guides you into installing a server for `example.com` (user IDs are like this: `@alice:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
 After configuring the playbook and installing and **before starting** services (done with `ansible-playbook … --tags=start`) you'd import [your SQLite](importing-synapse-sqlite.md) (or [Postgres](importing-postgres.md)) database and also [import your media store](importing-synapse-media-store.md).
 

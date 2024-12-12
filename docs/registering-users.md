@@ -15,7 +15,7 @@ Table of contents:
 
 **Notes**:
 - Make sure to adjust `USERNAME_HERE` and `PASSWORD_HERE`
-- For `USERNAME_HERE`, use a plain username like `alice`, not a full identifier (`@alice:example.com`)
+- For `USERNAME_HERE`, use a plain username like `alice`, not a full ID (`@alice:example.com`)
 - Use `admin=yes` or `admin=no` depending on whether you wish to make the user an administrator of the Matrix server
 
 After registering a user (using one of the methods below), **you can log in with that user** via the [Element Web](configuring-playbook-client-element-web.md) service that this playbook has installed for you at a URL like this: `https://element.example.com/`.
@@ -130,7 +130,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 To change the admin privileges for a user in Synapse's local database, you need to run an SQL query like this against the `synapse` database:
 
 ```sql
-UPDATE users SET admin=ADMIN_VALUE WHERE name = '@USER:example.com';
+UPDATE users SET admin=ADMIN_VALUE WHERE name = '@alice:example.com';
 ```
 
 where:

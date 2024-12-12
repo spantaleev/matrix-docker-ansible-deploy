@@ -13,7 +13,7 @@ We will be using `example.com` as the "base domain" in the following instruction
 By following the instruction on this page, you will set up:
 
 - **your own Matrix server** on a `matrix.example.com` server, which is configured to present itself as `example.com`
-- **your user account** like `@user:example.com` on the server
+- **your user account** like `@alice:example.com` on the server
 - a **self-hosted Matrix client**, [Element Web](configuring-playbook-client-element-web.md) with the default subdomain at `element.example.com`
 - Matrix delegation, so that your `matrix.example.com` server (presenting itself as `example.com`) can join the Matrix Federation and communicate with any other server in the Matrix network
 
@@ -136,7 +136,7 @@ To create your user account (as an administrator of the server) via this Ansible
 
 **💡 Notes**:
 - Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
-- For `YOUR_USERNAME_HERE`, use a plain username like `alice`, not your full identifier (`@alice:example.com`)
+- For `YOUR_USERNAME_HERE`, use a plain username like `alice`, not your full ID (`@alice:example.com`)
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=yes' --tags=register-user
