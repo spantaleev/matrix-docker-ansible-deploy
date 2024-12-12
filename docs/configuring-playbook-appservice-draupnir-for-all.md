@@ -40,14 +40,12 @@ This alias can be anything you want. However, for increased security during the 
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
-
-You must replace `ALIAS_FROM_STEP_2_GOES_HERE` with the alias you created in step 2.
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ALIAS_HERE`.
 
 ```yaml
 matrix_appservice_draupnir_for_all_enabled: true
 
-matrix_appservice_draupnir_for_all_master_control_room_alias: "ALIAS_FROM_STEP_2_GOES_HERE"
+matrix_appservice_draupnir_for_all_master_control_room_alias: "MANAGEMENT_ROOM_ALIAS_HERE"
 ```
 
 ### Extending the configuration

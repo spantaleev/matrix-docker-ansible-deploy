@@ -48,15 +48,13 @@ Finally invite the `@bot.draupnir:example.com` account you created earlier into 
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
-
-You must replace `ROOM_ID_FROM_STEP_4_GOES_HERE` with your own value.
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
 
 ```yaml
 # Enable Draupnir
 matrix_bot_draupnir_enabled: true
 
-matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
+matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
 ### End-to-End Encryption support
@@ -79,7 +77,7 @@ matrix_pantalaimon_enabled: true
 matrix_bot_draupnir_pantalaimon_use: true
 
 # User name and password for the bot. Required when using Pantalaimon.
-matrix_bot_draupnir_pantalaimon_username: "DRAUPNIR_USERNAME_FROM_STEP_1"
+matrix_bot_draupnir_pantalaimon_username: "bot.draupnir"
 matrix_bot_draupnir_pantalaimon_password: ### you should create a secure password for the bot account
 ```
 
@@ -99,12 +97,10 @@ matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_
 
 When NOT using Pantalaimon, Draupnir does not log in by itself and you must give it an access token for its bot account.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
-
-You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` with your own value.
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#get-an-access-token).
 
 ```yaml
-matrix_bot_draupnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
+matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
 ```
 
 ### Extending the configuration
@@ -228,7 +224,7 @@ The first method intercepts the report API endpoint of the client-server API, wh
 matrix_bot_draupnir_abuse_reporting_enabled: true
 ```
 
-The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user (see step 1). To enable it, set `pollReports: true` in Draupnir's config:
+The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user ([see above](#register-the-bot-account)). To enable it, set `pollReports: true` in Draupnir's config:
 
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |

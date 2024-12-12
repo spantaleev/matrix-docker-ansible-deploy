@@ -44,15 +44,13 @@ Finally invite the `@bot.mjolnir:example.com` account you created earlier into t
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
-
-You must replace `ROOM_ID_FROM_STEP_4_GOES_HERE` with your own value.
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
 
 ```yaml
 # Enable Mjolnir
 matrix_bot_mjolnir_enabled: true
 
-matrix_bot_mjolnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
+matrix_bot_mjolnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
 ### End-to-End Encryption support
@@ -75,7 +73,7 @@ matrix_pantalaimon_enabled: true
 matrix_bot_mjolnir_pantalaimon_use: true
 
 # User name and password for the bot. Required when using Pantalaimon.
-matrix_bot_mjolnir_pantalaimon_username: "MJOLNIR_USERNAME_FROM_STEP_1"
+matrix_bot_mjolnir_pantalaimon_username: "bot.mjolnir"
 matrix_bot_mjolnir_pantalaimon_password: ### you should create a secure password for the bot account
 ```
 
@@ -95,12 +93,10 @@ matrix_bot_mjolnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_u
 
 When NOT using Pantalaimon, Mjolnir does not log in by itself and you must give it an access token for its bot account.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
-
-You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` with your own value.
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#get-an-access-token).
 
 ```yaml
-matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
+matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_HERE"
 ```
 
 ### Adding Mjolnir synapse antispam module (optional)
