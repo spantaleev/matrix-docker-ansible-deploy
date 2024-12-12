@@ -103,6 +103,18 @@ You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` with your own value.
 matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
 ```
 
+### Adding Mjolnir synapse antispam module (optional)
+
+To enable Mjolnir synapse antispam module, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+
+```yaml
+matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: true
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages: false
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
+matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
+```
+
 ### Extending the configuration
 
 You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
@@ -119,18 +131,6 @@ matrix_bot_mjolnir_configuration_extension_yaml: |
   # If you need something more special, you can take full control by
   # completely redefining `matrix_bot_mjolnir_configuration_yaml`.
   recordIgnoredInvites: true
-```
-
-## Adding Mjolnir synapse antispam module (optional)
-
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
-
-```yaml
-matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: true
-matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
-matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_messages: false
-matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_usernames: false
-matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 ```
 
 ## Installing
