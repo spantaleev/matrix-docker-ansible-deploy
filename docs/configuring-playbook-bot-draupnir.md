@@ -12,9 +12,7 @@ If your migrating from Mjolnir skip to [this section](#migrating-from-mjolnir-on
 
 ### Register the bot account
 
-The playbook does not automatically create users for you. The bot requires an access token to be able to connect to your homeserver.
-
-You **need to register the bot user manually** before setting up the bot.
+The playbook does not automatically create users for you. You **need to register the bot user manually** before setting up the bot.
 
 Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
 
@@ -24,17 +22,17 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.draupnir password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-If you would like Draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ([see below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
+If you would like Draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports (see [below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
 
 ### Get an access token
 
-Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 ### Make sure the account is free from rate limiting
 
 If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a required step. If you do not configure it, Draupnir will crash.**
 
-This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). It can be accessed both externally and internally.
+This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally.
 
 To expose the APIs publicly, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
@@ -46,7 +44,7 @@ The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/syna
 
 **Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
 
-To discharge rate limiting, run the following command on systems that ship curl (note that it does not work on outdated Windows 10). Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally. Before running it, make sure to replace `@bot.draupnir:example.com` with the MXID of your Draupnir and `example.com` with your homeserver domain:
+To discharge rate limiting, run the following command on systems that ship curl (note that it does not work on outdated Windows 10). Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally. Before running it, make sure to replace `@bot.draupnir:example.com` with the MXID of your Draupnir:
 
 ```sh
 curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.draupnir:example.com/override_ratelimit
