@@ -94,9 +94,9 @@ matrix_pantalaimon_enabled: true
 # Tell Draupnir to use Pantalaimon
 matrix_bot_draupnir_pantalaimon_use: true
 
-# User name and password for the bot. Required when using Pantalaimon.
+# User name and password for the bot you have created above. Required when using Pantalaimon.
 matrix_bot_draupnir_pantalaimon_username: "bot.draupnir"
-matrix_bot_draupnir_pantalaimon_password: ### you should create a secure password for the bot account
+matrix_bot_draupnir_pantalaimon_password: "PASSWORD_FOR_THE_BOT"
 ```
 
 The playbook's `group_vars` will configure other required settings. If using this role separately without the playbook, you also need to configure the two URLs that Draupnir uses to reach the homeserver, one through Pantalaimon and one "raw". This example is taken from the playbook's `group_vars`:
