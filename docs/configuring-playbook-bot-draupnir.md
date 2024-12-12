@@ -121,11 +121,23 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
 ```
 
+### Abuse Reports
+
+Draupnir supports two methods to receive reports in the management room.
+
+The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using traefik, this playbook can set this up for you:
+
+```yaml
+matrix_bot_draupnir_abuse_reporting_enabled: true
+```
+
+The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below.
+
 ### Extending the configuration
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable.
 
-For example, to change Draupnir's `recordIgnoredInvites` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+For example, to change Draupnir's `pollReports` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |
@@ -136,7 +148,7 @@ matrix_bot_draupnir_configuration_extension_yaml: |
   #
   # If you need something more special, you can take full control by
   # completely redefining `matrix_bot_draupnir_configuration_yaml`.
-  recordIgnoredInvites: true
+  pollReports: true
 ```
 
 ### Migrating from Mjolnir (Only required if migrating)
@@ -231,20 +243,3 @@ To **set a specific option for a given protection**, send a command like this: `
 To **enable a given protection**, send a command like this: `!draupnir enable PROTECTION_NAME` (e.g. `!draupnir enable JoinWaveShortCircuit`).
 
 To **disable a given protection**, send a command like this: `!draupnir disable PROTECTION_NAME` (e.g. `!draupnir disable JoinWaveShortCircuit`).
-
-## Abuse Reports
-
-Draupnir supports two methods to receive reports in the management room.
-
-The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using traefik, this playbook can set this up for you:
-
-```yaml
-matrix_bot_draupnir_abuse_reporting_enabled: true
-```
-
-The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user ([see above](#register-the-bot-account)). To enable it, set `pollReports: true` in Draupnir's config:
-
-```yaml
-matrix_bot_draupnir_configuration_extension_yaml: |
-  pollReports: true
-```
