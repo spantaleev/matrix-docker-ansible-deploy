@@ -4,7 +4,9 @@ The playbook can install and configure the [Mjolnir](https://github.com/matrix-o
 
 See the project's [documentation](https://github.com/matrix-org/mjolnir) to learn what it does and why it might be useful to you.
 
-## Register the bot account
+## Prerequisites
+
+### Register the bot account
 
 The playbook does not automatically create users for you. The bot requires an access token to be able to connect to your homeserver.
 
@@ -20,11 +22,11 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.mjolnir
 
 If you would like Mjolnir to be able to deactivate users, move aliases, shutdown rooms, etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
 
-## Get an access token
+### Get an access token
 
 Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-## Make sure the account is free from rate limiting
+### Make sure the account is free from rate limiting
 
 You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Mjolnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
 
@@ -32,7 +34,7 @@ If your Synapse Admin API is exposed to the internet for some reason like runnin
 
 The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.mjolnir:example.com/override_ratelimit` Replace `@bot.mjolnir:example.com` with the MXID of your Mjolnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Mjolnir itself. If you made Mjolnir Admin you can just use the Mjolnir token.
 
-## Create a management room
+### Create a management room
 
 Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room. Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
