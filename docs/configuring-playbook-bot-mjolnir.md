@@ -28,13 +28,27 @@ Refer to the documentation on [how to obtain an access token](obtaining-access-t
 
 ### Make sure the account is free from rate limiting
 
-You will need to prevent Synapse from rate limiting the bot's account. **This is not an optional step. If you do not do this step Mjolnir will crash.**
+If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a required step. If you do not configure it, Mjolnir will crash.**
 
-This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
+This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). It can be accessed both externally and internally.
 
-If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
+To expose the APIs publicly, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
-The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.mjolnir:example.com/override_ratelimit` Replace `@bot.mjolnir:example.com` with the MXID of your Mjolnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Mjolnir itself. If you made Mjolnir Admin you can just use the Mjolnir token.
+```yaml
+matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
+```
+
+The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+
+**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
+
+To discharge rate limiting, run the following command on systems that ship curl (note that it does not work on outdated Windows 10). Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally. Before running it, make sure to replace `@bot.mjolnir:example.com` with the MXID of your Mjolnir and `example.com` with your homeserver domain:
+
+```sh
+curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.mjolnir:example.com/override_ratelimit
+```
+
+You can obtain an access token for a homeserver admin account in the same way as you can do so for Mjolnir itself. If you have made Mjolnir an admin, you can just use the Mjolnir token.
 
 ### Create a management room
 
