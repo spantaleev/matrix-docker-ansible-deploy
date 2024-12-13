@@ -95,7 +95,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 If you made it through all the steps above and your main control room was joined by a user called `@draupnir-main:example.com` you have succesfully installed Draupnir for All and can now start using it.
 
-The installation of Draupnir for all in this playbook is very much Alpha quality. Usage-wise, Draupnir for allis almost identical to Draupnir bot mode.
+The installation of Draupnir for all in this playbook is very much Alpha quality. Usage-wise, Draupnir for all is almost identical to Draupnir bot mode.
 
 ### Granting Users the ability to use D4A
 
