@@ -20,7 +20,7 @@ Draupnir for all does not support external tooling like [MRU](https://mru.rory.g
 
 ### Create a main management room
 
-The playbook does not create a management room for your Main Draupnir. This task you have to do on your own.
+The playbook does not create a management room for your Main Draupnir. You **need to create the room manually** before setting up the bot.
 
 The management room has to be given an alias and be public when you are setting up the bot for the first time as the bot does not differentiate between invites and invites to the management room.
 
