@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) service for you. It's a [client](https://prometheus.io/docs/alerting/latest/clients/) for Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/), allowing you to deliver alerts to Matrix rooms.
 
-See the project's [documentation](https://github.com/metio/matrix-alertmanager-receiver) to learn more about what this component does and why it might be useful to you.
+See the project's [documentation](https://github.com/metio/matrix-alertmanager-receiver) to learn what it does and why it might be useful to you.
 
 At the moment, **setting up this service's bot requires some manual actions** as described below in [Account and room preparation](#account-and-room-preparation).
 
