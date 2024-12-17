@@ -8,7 +8,9 @@ See the project's [documentation](https://github.com/mautrix/twitter) to learn w
 
 ## Prerequisite (optional)
 
-If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service for this playbook.
+### Enable Appservice Double Puppet (optional)
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
 For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
 
@@ -50,14 +52,18 @@ After successfully enabling bridging, you may wish to set up [Double Puppeting](
 
 To set it up, you have 2 ways of going about it.
 
-#### Method 1: automatically, by enabling Appservice Double Puppet or Shared Secret Auth
+#### Method 1: automatically, by enabling Appservice Double Puppet
 
-The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
+The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
 
-Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works at the time of writing, but is deprecated and will stop working in the future.
+This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 
 #### Method 2: manually, by asking each user to provide a working access token
 
-This method is currently not available for the Mautrix-Twitter bridge, but is on the [roadmap](https://github.com/mautrix/twitter/blob/master/ROADMAP.md) under Misc/Manual login with `login-matrix`
+When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
+
+- retrieve a Matrix access token for yourself. Refer to the documentation on [how to do that](obtaining-access-tokens.md).
+
+- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
+
+- make sure you don't log out the `Mautrix-Slack` device some time in the future, as that would break the Double Puppeting feature
