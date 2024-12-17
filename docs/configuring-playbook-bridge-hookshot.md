@@ -97,6 +97,7 @@ The different listeners are also reachable *internally* in the docker-network vi
 ### Manage GitHub Private Key with aux role
 
 The GitHub bridge requires you to install a private key file. This can be done in multiple ways:
+
 - copy the *contents* of the downloaded file and set the variable `matrix_hookshot_github_private_key` to the contents (see example in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml)).
 - somehow copy the file to the path `{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}` (default: `/matrix/hookshot/private-key.pem`) on the server manually.
 - use the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux) to copy the file from an arbitrary path on your ansible client to the correct path on the server.
