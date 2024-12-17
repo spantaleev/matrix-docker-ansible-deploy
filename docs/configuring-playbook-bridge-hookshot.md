@@ -8,9 +8,15 @@ See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/l
 
 **Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however was deprecated by its author.
 
+## Prerequisites
+
+### Download GitHub app private key
+
+If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app.
+
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `GITHUB_PRIVATE_KEY_HERE` with the one created [above](#download-github-app-private-key).
 
 ```yaml
 matrix_hookshot_enabled: true
@@ -18,13 +24,16 @@ matrix_hookshot_enabled: true
 # Uncomment to enable end-to-bridge encryption.
 # See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
 # matrix_hookshot_experimental_encryption_enabled: true
+
+# Uncomment and paste the contents of GitHub app private key to enable GitHub bridge.
+# Alternatively, you can use one of the other methods explained below on the "Manage GitHub Private Key with aux role" section.
+# matrix_hookshot_github_private_key: "GITHUB_PRIVATE_KEY_HERE"
 ```
 
 For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required.
 
 Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab, Generic), while you must first add the required configuration and enable the others (GitHub, Jira, Figma).
 
-4. If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app. Copy the contents of that file to the variable `matrix_hookshot_github_private_key` so the playbook can install it for you, or use one of the [other methods](#manage-github-private-key-with-aux-role) explained below.
 5. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready. Hookshot can be set up individually using the tag `setup-hookshot`.
 
 Other configuration options are available via the `matrix_hookshot_configuration_extension_yaml` and `matrix_hookshot_registration_extension_yaml` variables.
