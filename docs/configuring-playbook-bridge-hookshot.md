@@ -12,7 +12,9 @@ See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/l
 
 ### Download GitHub app private key
 
-If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app.
+If you're setting up the GitHub bridge, you need to create your GitHub app, and generate a private key file of it.
+
+You need to download the private key file, if you will install the file manually or with the `aux` role. For details, see [the section below](#manage-github-private-key-with-aux-role).
 
 ## Adjusting the playbook configuration
 
