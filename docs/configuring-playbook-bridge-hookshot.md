@@ -14,6 +14,10 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 
 ```yaml
 matrix_hookshot_enabled: true
+
+# Uncomment to enable end-to-bridge encryption.
+# See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
+# matrix_hookshot_experimental_encryption_enabled: true
 ```
 
 2. For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required.
@@ -27,12 +31,6 @@ Refer the [official instructions](https://matrix-org.github.io/matrix-hookshot/l
 
 Finally, run the playbook (see [installing](installing.md)).
 
-### End-to-bridge encryption
-
-You can enable [encryption](https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html) for Hookshot by adding `matrix_hookshot_encryption_enabled: true` to your configuration (`vars.yml`) and [executing the playbook](installing.md) again.
-
-Should the crypto store be corrupted, you can reset it by executing this Ansible playbook with the tag `reset-hookshot-encryption` added, for example `ansible-playbook -i inventory/hosts setup.yml --tags=reset-hookshot-encryption`.
-
 ## Usage
 
 To use the bridge, you need to create a room and invite the Hookshot bot (`@hookshot:example.com`) to it.
@@ -44,6 +42,14 @@ Send a `!hookshot help` message to see a list of help commands.
 Refer to [Hookshot's documentation](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) for more details about using the bridge's various features.
 
 **Important**: Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](#urls-for-bridges-setup) below.
+
+### Reset crypto store
+
+Should the crypto store be corrupted, you can reset it by executing this Ansible playbook with the tag `reset-hookshot-encryption` added:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=reset-hookshot-encryption
+```
 
 ## More setup documentation
 
