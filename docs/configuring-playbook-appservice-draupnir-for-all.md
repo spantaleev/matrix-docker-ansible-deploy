@@ -16,36 +16,65 @@ Normal Draupnir does come with the benefit of access to Synapse Admin features. 
 
 Draupnir for all does not support external tooling like [MRU](https://mru.rory.gay) as it can't access Draupnir's user account.
 
-## Installation
+## Prerequisites
 
-### Create a main management room.
+### Create a main management room
 
-The playbook does not create a management room for your Main Draupnir. This task you have to do on your own.
+The playbook does not create a management room for your Main Draupnir. You **need to create the room manually** before setting up the bot.
+
+Note that the room must be unencrypted.
+
+<!-- TODO: enable Pantalaimon as configuring-playbook-bot-draupnir.md -->
 
 The management room has to be given an alias and be public when you are setting up the bot for the first time as the bot does not differentiate between invites and invites to the management room.
 
 This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel.
 
-As noted in the Draupnir install instructions the control room is sensitive. The following is said about the control room in the Draupnir install instructions.
->Anyone in this room can control the bot so it is important that you only invite trusted users to this room. The room must be unencrypted since the playbook does not support installing Pantalaimon yet.
+As noted in the Draupnir install instructions the control room is sensitive. **Anyone in this room can control the bot so it is important that you only invite trusted users to this room.**
 
-### Give your main management room an alias.
+### Set an alias to the management room
 
-Give the room from step 1 an alias. This alias can be anything you want and its recommended for increased security during the setup phase of the bot that you make this alias be a random string. You can give your room a secondary human readable alias when it has been locked down after setup phase.
+Next, set an alias to the management room.
 
-### Adjusting the playbook configuration.
+This alias can be anything you want. However, for increased security during the setup phase, it is recommended to make this alias be a random string. When it has been locked down after setup phase, you can give your room a secondary human readable alias.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+## Adjusting the playbook configuration
 
-You must replace `ALIAS_FROM_STEP_2_GOES_HERE` with the alias you created in step 2.
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ALIAS_HERE`.
 
 ```yaml
 matrix_appservice_draupnir_for_all_enabled: true
 
-matrix_appservice_draupnir_for_all_master_control_room_alias: "ALIAS_FROM_STEP_2_GOES_HERE"
+matrix_appservice_draupnir_for_all_master_control_room_alias: "MANAGEMENT_ROOM_ALIAS_HERE"
 ```
 
-### Installing
+### Extending the configuration
+
+You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable.
+
+For example, to change Draupnir's `protectAllJoinedRooms` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_appservice_draupnir_for_all_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_appservice_draupnir_for_all_yaml`.
+  protectAllJoinedRooms: true
+```
+
+You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for more configuration documentation.
+
+**Notes**:
+
+- The playbook ships a full copy of the example config that does transfer to provisioned Draupnirs in the production-bots.yaml.j2 file in the template directory of the role.
+
+- Config extension does not affect the appservices config as this config is not extensible in current Draupnir anyway. It instead touches the config passed to the Draupnirs that your Appservice creates. So the example above (`protectAllJoinedRooms: true`) makes all provisioned Draupnirs protect all joined rooms.
+
+## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
@@ -66,7 +95,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 If you made it through all the steps above and your main control room was joined by a user called `@draupnir-main:example.com` you have succesfully installed Draupnir for All and can now start using it.
 
-The installation of Draupnir for all in this playbook is very much Alpha quality. Usage-wise, Draupnir for allis almost identical to Draupnir bot mode.
+The installation of Draupnir for all in this playbook is very much Alpha quality. Usage-wise, Draupnir for all is almost identical to Draupnir bot mode.
 
 ### Granting Users the ability to use D4A
 
@@ -76,30 +105,8 @@ The bot requires a powerlevel of 50 in the management room to control who is all
 
 To allow users or whole homeservers you type /plain @draupnir-main:example.com allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to register. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially.
 
-### How to provision a D4A once you are allowed to.
+### How to provision a D4A once you are allowed to
 
-Open a DM with @draupnir-main:example.com and if using an Element client send a message into this DM to finalise creating it. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
+To provision a D4A, you need to start a chat with `@draupnir-main:example.com`. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience.
 
 Congratulations if you made it all the way here because you now have a fully working Draupnir for all deployment.
-
-### Configuration of D4A
-
-You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for more configuration documentation. Please note that the playbook ships a full copy of the example config that does transfer to provisioned Draupnirs in the production-bots.yaml.j2 file in the template directory of the role.
-
-Please note that Config extension does not affect the appservices config as this config is not extensible in current Draupnir anyways. Config extension instead touches the config passed to the Draupnirs that your Appservice creates. So for example below makes all provisioned Draupnirs protect all joined rooms.
-
-You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
-
-For example to change Draupnir's `protectAllJoinedRooms` option to `true` you would add the following to your `vars.yml` file.
-
-```yaml
-matrix_appservice_draupnir_for_all_extension_yaml: |
-  # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_yaml`).
-  #
-  # You can override individual variables from the default configuration, or introduce new ones.
-  #
-  # If you need something more special, you can take full control by
-  # completely redefining `matrix_appservice_draupnir_for_all_yaml`.
-  protectAllJoinedRooms: true
-```
