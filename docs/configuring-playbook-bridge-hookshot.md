@@ -64,7 +64,7 @@ Send a `!hookshot help` message to see a list of help commands.
 
 Refer to [Hookshot's documentation](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) for more details about using the bridge's various features.
 
-**Important**: Note that the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation, see [URLs for bridges setup](#urls-for-bridges-setup) below.
+💡 **Note**: the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation. See [URLs for bridges setup](#urls-for-bridges-setup) below.
 
 ### Reset crypto store
 
