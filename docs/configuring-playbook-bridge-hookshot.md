@@ -8,9 +8,14 @@ See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/l
 
 **Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however was deprecated by its author.
 
-## Setup Instructions
+## Adjusting the playbook configuration
 
-1. Enable the bridge by adding `matrix_hookshot_enabled: true` to your `vars.yml` file
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_hookshot_enabled: true
+```
+
 2. For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required.
 3. Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab, Generic), while you must first add the required configuration and enable the others (GitHub, Jira, Figma).
 4. If you're setting up the GitHub bridge, you'll need to generate and download a private key file after you created your GitHub app. Copy the contents of that file to the variable `matrix_hookshot_github_private_key` so the playbook can install it for you, or use one of the [other methods](#manage-github-private-key-with-aux-role) explained below.
