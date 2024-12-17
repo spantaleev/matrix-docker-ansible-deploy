@@ -2,7 +2,7 @@
 
 The playbook can install and configure [matrix-synapse-rest-auth](https://github.com/ma1uta/matrix-synapse-rest-password-provider) for you.
 
-See that project's documentation to learn what it does and why it might be useful to you.
+See the project's documentation to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 
