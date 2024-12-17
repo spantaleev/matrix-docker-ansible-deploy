@@ -6,7 +6,7 @@ The playbook can install and configure [Go-NEB](https://github.com/matrix-org/go
 
 Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the original Matrix bot written in Python.
 
-See the project's [documentation](https://github.com/matrix-org/go-neb) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/matrix-org/go-neb/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Registering the bot account
 

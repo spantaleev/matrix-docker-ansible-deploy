@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [matrix-wechat](https://github.com/duo/matrix-wechat) bridge for you (for bridging to the [WeChat](https://www.wechat.com/) network).
 
-See the project page to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/duo/matrix-wechat/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

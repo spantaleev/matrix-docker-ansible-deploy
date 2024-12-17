@@ -2,7 +2,7 @@
 
 The playbook can install and configure [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) for you.
 
-See the project page to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/kelaresg/go-skype-bridge/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

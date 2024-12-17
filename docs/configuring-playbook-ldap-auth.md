@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) LDAP Auth password provider for you.
 
-See the project's documentation to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/matrix-org/matrix-synapse-ldap3/blob/main/README.rst) to learn what it does and why it might be useful to you.
 
 If you decide that you'd like to let this playbook install it for you, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 

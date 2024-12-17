@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [pantalaimon](https://github.com/matrix-org/pantalaimon) E2EE aware proxy daemon for you.
 
-See the project's [documentation](https://github.com/matrix-org/pantalaimon) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/matrix-org/pantalaimon/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 This role exposes Pantalaimon's API only within the container network, so bots and clients installed on the same machine can use it. In particular the [Draupnir](configuring-playbook-bot-draupnir.md) and [Mjolnir](configuring-playbook-bot-mjolnir.md) roles (and possibly others) can use it.
 

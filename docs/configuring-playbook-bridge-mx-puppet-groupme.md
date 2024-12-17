@@ -2,7 +2,7 @@
 
 The playbook can install and configure [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) for you.
 
-See the project page to learn what it does and why it might be useful to you.
+See the project's [documentation](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

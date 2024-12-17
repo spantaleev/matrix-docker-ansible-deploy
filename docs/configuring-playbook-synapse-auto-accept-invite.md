@@ -2,7 +2,9 @@
 
 The playbook can install and configure [synapse-auto-invite-accept](https://github.com/matrix-org/synapse-auto-accept-invite) for you.
 
-See the project's [documentation](https://github.com/matrix-org/synapse-auto-accept-invite) to learn what it does and why it might be useful to you. In short, it automatically accepts room invites. You can specify that only 1:1 room invites are auto-accepted. Defaults to false if not specified.
+In short, it automatically accepts room invites. You can specify that only 1:1 room invites are auto-accepted. Defaults to false if not specified.
+
+See the project's [documentation](https://github.com/matrix-org/synapse-auto-accept-invite/blob/main/README.md) to learn what it does and why it might be useful to you.
 
 **Note**: Synapse [v1.109.0](https://github.com/element-hq/synapse/releases/tag/v1.109.0), the same feature [has been merged](https://github.com/element-hq/synapse/pull/17147) into Synapse (see the [Native alternative](#native-alternative) section below). You'd better use the native feature, instead of the [synapse-auto-invite-accept](https://github.com/matrix-org/synapse-auto-accept-invite) 3rd party module.
 

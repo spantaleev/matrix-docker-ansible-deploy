@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [Sygnal](https://github.com/matrix-org/sygnal) push gateway for you.
 
-See the project's [documentation](https://github.com/matrix-org/sygnal) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/matrix-org/sygnal/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 **Note**: most people don't need to install their own gateway. As Sygnal's [Notes for application developers](https://github.com/matrix-org/sygnal/blob/master/docs/applications.md) documentation says:
 
