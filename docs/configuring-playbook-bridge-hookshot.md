@@ -32,9 +32,9 @@ matrix_hookshot_enabled: true
 # matrix_hookshot_github_private_key: "GITHUB_PRIVATE_KEY_HERE"
 ```
 
-For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required.
+For each of the services (GitHub, GitLab, Jira, Figma, and generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required.
 
-Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab, Generic), while you must first add the required configuration and enable the others (GitHub, Jira, Figma).
+Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab and generic webhooks), while you must first add the required configuration and enable the others (GitHub, Jira, and Figma).
 
 ### Extending the configuration
 
