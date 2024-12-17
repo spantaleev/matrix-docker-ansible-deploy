@@ -4,7 +4,7 @@ The playbook can install and configure [Honoroit](https://github.com/etkecc/hono
 
 It's a bot you can use to setup **your own helpdesk on matrix**
 
-See the project's [documentation](https://github.com/etkecc/honoroit#how-it-looks-like) to learn what it does with screenshots and why it might be useful to you.
+See the project's [documentation](https://github.com/etkecc/honoroit/blob/main/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

@@ -4,7 +4,7 @@
 
 The playbook can install and configure [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) for you.
 
-See the project page to learn what it does and why it might be useful to you.
+See the project's [documentation](https://gitlab.com/mx-puppet/slack/mx-puppet-slack/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Prerequisite
 

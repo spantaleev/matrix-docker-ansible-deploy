@@ -2,7 +2,7 @@
 
 The playbook can install and configure [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) for you.
 
-See that project's documentation to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/devture/matrix-synapse-shared-secret-auth/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

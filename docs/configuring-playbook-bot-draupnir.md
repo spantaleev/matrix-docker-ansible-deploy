@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.
 
-See the project's [documentation](https://github.com/the-draupnir-project/Draupnir) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/the-draupnir-project/Draupnir/blob/main/README.md) to learn what it does and why it might be useful to you.
 
 This documentation page is about installing Draupnir in bot mode. As an alternative, you can run a multi-instance Draupnir deployment by installing [Draupnir in appservice mode](./configuring-playbook-appservice-draupnir-for-all.md) (called Draupnir-for-all) instead.
 

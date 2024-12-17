@@ -6,7 +6,7 @@ The playbook can configure the [ma1sd](https://github.com/ma1uta/ma1sd) Identity
 
 ma1sd is used for 3PIDs (3rd party identifiers like E-mail and phone numbers) and some [enhanced features](https://github.com/ma1uta/ma1sd/#features). It is private by default, potentially at the expense of user discoverability.
 
-See the project's [documentation](https://github.com/ma1uta/ma1sd) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/ma1uta/ma1sd/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 **Note**: enabling ma1sd, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
 

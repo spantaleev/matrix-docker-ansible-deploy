@@ -4,7 +4,7 @@ The playbook can install and configure [synapse_auto_compressor](https://github.
 
 It's a CLI tool that automatically compresses Synapse's `state_groups` database table in the background.
 
-See the project's [documentation](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/matrix-org/rust-synapse-compress-state/blob/master/README.md#automated-tool-synapse_auto_compressor) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

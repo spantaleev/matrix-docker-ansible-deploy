@@ -4,7 +4,7 @@ The playbook can install and configure [matrix-appservice-kakaotalk](https://src
 
 ⚠️ **Warning**: there have been recent reports (~2022-09-16) that **using this bridge may get your account banned**.
 
-See the project's [documentation](https://src.miscworks.net/fair/matrix-appservice-kakaotalk) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://src.miscworks.net/fair/matrix-appservice-kakaotalk/src/branch/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Prerequisite (optional)
 

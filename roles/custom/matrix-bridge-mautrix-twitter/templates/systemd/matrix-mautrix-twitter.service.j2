@@ -30,7 +30,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_mautrix_twitter_docker_image }} \
-			python3 -m mautrix_twitter -c /config/config.yaml --no-update
+			/usr/bin/mautrix-twitter -c /config/config.yaml -r /config/registration.yaml --no-update
 
 {% for network in matrix_mautrix_twitter_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-mautrix-twitter
