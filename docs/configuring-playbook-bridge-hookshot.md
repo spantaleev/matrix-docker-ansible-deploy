@@ -34,13 +34,21 @@ For each of the services (GitHub, GitLab, Jira, Figma, generic webhooks) fill in
 
 Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab, Generic), while you must first add the required configuration and enable the others (GitHub, Jira, Figma).
 
-5. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready. Hookshot can be set up individually using the tag `setup-hookshot`.
-
 Other configuration options are available via the `matrix_hookshot_configuration_extension_yaml` and `matrix_hookshot_registration_extension_yaml` variables.
 
 Refer the [official instructions](https://matrix-org.github.io/matrix-hookshot/latest/setup.html) and the comments in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) to learn what the individual options do.
 
-Finally, run the playbook (see [installing](installing.md)).
+## Installing
+
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-hookshot
+```
+
+The shortcut commands with the [`just` program](just.md) are also available: `just run-tags setup-hookshot` or `just setup-all`
+
+`just run-tags setup-hookshot` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
