@@ -4,7 +4,7 @@ The playbook can install and configure [matrix-reminder-bot](https://github.com/
 
 It's a bot you can use to **schedule one-off & recurring reminders and alarms**.
 
-See the project's [documentation](https://github.com/anoadragon453/matrix-reminder-bot#usage) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/anoadragon453/matrix-reminder-bot/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

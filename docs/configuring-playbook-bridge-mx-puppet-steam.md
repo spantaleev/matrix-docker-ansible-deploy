@@ -2,7 +2,7 @@
 
 The playbook can install and configure [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) for you.
 
-See the project page to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/icewind1991/mx-puppet-steam/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

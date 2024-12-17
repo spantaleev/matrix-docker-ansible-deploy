@@ -2,7 +2,7 @@
 
 The playbook can install and configure [mautrix-wsproxy](https://github.com/mautrix/wsproxy) for you.
 
-See the project's [documentation](https://github.com/mautrix/wsproxy#readme) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/mautrix/wsproxy/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

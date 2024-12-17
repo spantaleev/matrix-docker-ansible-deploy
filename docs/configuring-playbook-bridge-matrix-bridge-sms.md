@@ -2,7 +2,7 @@
 
 The playbook can install and configure [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for you.
 
-See the project page to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/benkuly/matrix-sms-bridge/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 **The bridge uses [android-sms-gateway-server](https://github.com/RebekkaMa/android-sms-gateway-server). You need to configure it first.**
 

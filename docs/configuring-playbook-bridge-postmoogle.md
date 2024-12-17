@@ -6,7 +6,7 @@ The playbook can install and configure [Postmoogle](https://github.com/etkecc/po
 
 Postmoogle is a bridge you can use to have its bot user forward emails to Matrix rooms. It runs an SMTP email server and allows you to assign mailbox addresses to the rooms.
 
-See the project's [documentation](https://github.com/etkecc/postmoogle) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/etkecc/postmoogle/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Prerequisites
 

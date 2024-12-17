@@ -4,7 +4,7 @@
 
 The playbook can install and configure [mautrix-twitter](https://github.com/mautrix/twitter) for you.
 
-See the project's [documentation](https://github.com/mautrix/twitter) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/mautrix/twitter/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Prerequisite (optional)
 

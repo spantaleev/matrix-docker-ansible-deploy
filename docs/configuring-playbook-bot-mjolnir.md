@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot for you.
 
-See the project's [documentation](https://github.com/matrix-org/mjolnir) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/matrix-org/mjolnir/blob/main/README.md) to learn what it does and why it might be useful to you.
 
 ## Register the bot account
 
