@@ -10,7 +10,7 @@ See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/l
 
 ## Prerequisites
 
-### Download GitHub app private key
+### Download GitHub app private key (optional)
 
 If you're setting up the GitHub bridge, you need to create your GitHub app, and generate a private key file of it.
 
