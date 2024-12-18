@@ -87,15 +87,16 @@ This will instruct UVS to verify the OpenID token against any domain given in a 
 
 ## Installing
 
-After these variables have been set, run the playbook with [playbook tags](playbook-tags.md) as below to restart UVS:
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-matrix-user-verification-service,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
-The shortcut commands with the [`just` program](just.md) are also available: `just run-tags setup-matrix-user-verification-service,start` or `just setup-all`
+The shortcut commands with the [`just` program](just.md) are also available: `just install-service matrix-user-verification-service` or `just setup-all`
 
-`just run-tags setup-matrix-user-verification-service,start` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too.
+`just install-service matrix-user-verification-service` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too.
 
 ## Logging
 
