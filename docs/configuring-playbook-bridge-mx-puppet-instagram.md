@@ -45,4 +45,4 @@ For double-puppeting, you probably want to issue these commands:
 
 If you are linking only one Instagram account, your `$puppetId` is probably 1, but use the `list` command find out.
 
-The `help` command shows which commands are available, though at the time of writing, not every command is fully implemented.
+Send `help` to the bot to see the available commands. At the time of writing, not every command is fully implemented.
