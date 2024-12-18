@@ -2,7 +2,7 @@
 
 The playbook can install and configure [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) for you.
 
-Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from software project management services such as GitHub, GitLab, JIRA, and Figma, as well as generic webhooks.
+Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from software project management services such as GitHub, GitLab, Jira, and Figma, as well as generic webhooks.
 
 See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/latest/hookshot.html) to learn what it does and why it might be useful to you.
 
@@ -80,12 +80,12 @@ ansible-playbook -i inventory/hosts setup.yml --tags=reset-hookshot-encryption
 
 Unless indicated otherwise, the following endpoints are reachable on your `matrix.` subdomain (if the feature is enabled).
 
-| listener | default path | variable | used as |
+| Listener | Default path | Variable | Used as |
 |---|---|---|---|
 | - | `/hookshot/webhooks/` | `matrix_hookshot_webhook_endpoint` | Webhook-prefix, which affects all webhook-related URLs below |
 | generic | `/hookshot/webhooks/webhook` | `matrix_hookshot_generic_endpoint` | Generic webhooks |
 | github oauth | `/hookshot/webhooks/oauth` | `matrix_hookshot_github_oauth_endpoint` | GitHub "Callback URL" |
-| jira oauth | `/hookshot/webhooks/jira/oauth` | `matrix_hookshot_jira_oauth_endpoint` | JIRA OAuth |
+| jira oauth | `/hookshot/webhooks/jira/oauth` | `matrix_hookshot_jira_oauth_endpoint` | Jira OAuth |
 | figma endpoint | `/hookshot/webhooks/figma/webhook` | `matrix_hookshot_figma_endpoint` | Figma |
 | provisioning | `/hookshot/v1/` | `matrix_hookshot_provisioning_endpoint` | Dimension [provisioning](#provisioning-api) |
 | appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | Matrix server |
