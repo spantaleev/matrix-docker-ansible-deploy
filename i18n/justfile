@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2024 Slavi Pantaleev <slavi@devture.com>
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara <acioustick@noreply.codeberg.org>
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -34,18 +35,18 @@ sync-for-language language: extract-translation-templates (_sync-translation-tem
 _sync-translation-templates-to-locales-for-language language: _venv
     PATH={{ justfile_directory() }}/.venv/bin:$PATH {{ justfile_directory() }}/bin/sync-translation-templates-to-locales.sh {{ language }}
 
-# Builds the translated result for a given language into the `translated/{{ language }}` directory
+# Builds the translated result for a given language into the `translations/{{ language }}` directory
 build-for-language language: _venv
     PATH={{ justfile_directory() }}/.venv/bin:$PATH {{ justfile_directory() }}/bin/build-translated-result.sh {{ language }}
 
-# Builds the translated result for all published languages into the `translated/` directory
+# Builds the translated result for all published languages into the `translations/` directory
 build-for-all-published-languages:
     #!/bin/sh
     cat {{ justfile_directory() }}/PUBLISHED_LANGUAGES | while read language ; do
         {{ just_executable() }} build-for-language $language
     done
 
-# Builds the translated result for all known languages into the `translated/` directory
+# Builds the translated result for all known languages into the `translations/` directory
 build-for-all-known-languages:
     #!/bin/sh
     find {{ justfile_directory() }}/locales -mindepth 1 -maxdepth 1 -type d | while read path ; do

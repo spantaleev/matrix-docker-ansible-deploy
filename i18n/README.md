@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Internationalization
 
-Translated documentation files are published and maintained in [`translated/`](translated/) directory.
+Translated documentation files are published and maintained in [`translations/`](translations/) directory.
 
 Currently, we support translation of:
 
@@ -19,13 +19,13 @@ Currently, we support translation of:
 
 Organization of this `i18n` directory is as follows:
 
-- [PUBLISHED_LANGUAGES](PUBLISHED_LANGUAGES): a list of languages that we publish translations for (in the [translated/](translated/) directory)
-- [.gitignore](.gitignore): a list of files and directories to ignore in the `i18n` directory. We intentionaly ignore translated results (`translated/<language>` directories) for languages taht are still in progress. We only [publish translations in a new language](#publish-translations-in-a-new-language) when the translation progresses beyond a certain threshold.
+- [PUBLISHED_LANGUAGES](PUBLISHED_LANGUAGES): a list of languages that we publish translations for (in the [translations/](translations/) directory)
+- [.gitignore](.gitignore): a list of files and directories to ignore in the `i18n` directory. We intentionaly ignore translated results (`translations/<language>` directories) for languages taht are still in progress. We only [publish translations in a new language](#publish-translations-in-a-new-language) when the translation progresses beyond a certain threshold.
 - [justfile](justfile): a list of recipes for [just](https://github.com/casey/just) command runner
 - [requirements.txt](requirements.txt): a list of Python packages required to work with translations
 - [translation-templates/](translation-templates/): a list of English translation templates - strings extracted from Markdown files
 - [locales/](locales/): localization files for languages
-- [translated/](translated/): translated documents for published languages (see [PUBLISHED_LANGUAGES](PUBLISHED_LANGUAGES) and [publish translations in a new language](#publish-translations-in-a-new-language))
+- [translations/](translations/): translated documents for published languages (see [PUBLISHED_LANGUAGES](PUBLISHED_LANGUAGES) and [publish translations in a new language](#publish-translations-in-a-new-language))
 
 ## Guide for translators
 
@@ -55,7 +55,7 @@ Recommended flow when working on a new language (replace `<language>` with the l
 
 - Build translated documents: `just build-for-language <language>`
 
-- Preview the result in the `translated/<language>` directory
+- Preview the result in the `translations/<language>` directory
 
 - Commit your changes done to the `locales/<language>` directory
 
@@ -88,7 +88,7 @@ Recommended flow when working on a new language (replace `<language>` with the l
 
 - Build translated documents: `./bin/build-translated-result.sh <language>`
 
-- Preview the result in the `translated/<language>` directory
+- Preview the result in the `translations/<language>` directory
 
 - Commit your changes done to the `locales/<language>` directory
 
@@ -96,9 +96,9 @@ Recommended flow when working on a new language (replace `<language>` with the l
 
 ### Publish translations in a new language
 
-To publish prebuilt documents translated in a new language to the `translated/<language>` directory:
+To publish prebuilt documents translated in a new language to the `translations/<language>` directory:
 
 - add its language code to the [PUBLISHED_LANGUAGES](PUBLISHED_LANGUAGES) file
-- whitelist its `translated/<language>` directory by adding a `!translated/<language>` rule to the [.gitignore](.gitignore) file
+- whitelist its `translations/<language>` directory by adding a `!translations/<language>` rule to the [.gitignore](.gitignore) file
 
 💡 Leave a trailing new line at the end of the [PUBLISHED_LANGUAGES](PUBLISHED_LANGUAGES) file.
