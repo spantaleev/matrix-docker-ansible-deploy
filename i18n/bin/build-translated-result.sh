@@ -53,8 +53,8 @@ if [ -d ${base_path}/i18n/translations/${LANGUAGE} ]; then
 fi
 
 # Make sure the `translations/` directory exists
-if [ ! -d ${base_path}/i18n/translated ]; then
-    mkdir -p ${base_path}/i18n/translated
+if [ ! -d ${base_path}/i18n/translations ]; then
+    mkdir -p ${base_path}/i18n/translations
 fi
 
 # Relocate the built result to translations/<language>
