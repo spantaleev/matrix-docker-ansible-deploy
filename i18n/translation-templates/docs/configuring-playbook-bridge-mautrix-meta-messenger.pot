@@ -1,0 +1,241 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-20 07:23+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:1
+msgid "Setting up Messenger bridging via Mautrix Meta (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:3
+msgid "The playbook can install and configure the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:5
+msgid "Since this bridge component can bridge to both [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) and you may wish to do both at the same time, the playbook makes it available via 2 different Ansible roles (`matrix-bridge-mautrix-meta-messenger` and `matrix-bridge-mautrix-meta-instagram`). The latter is a reconfigured copy of the first one (created by `just rebuild-mautrix-meta-instagram` and `bin/rebuild-mautrix-meta-instagram.sh`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:7
+msgid "This documentation page only deals with the bridge's ability to bridge to Facebook Messenger. For bridging to Instagram, see [Setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:9
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:11
+msgid "Migrating from the old mautrix-facebook bridge"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:13
+msgid "If you've been using the [mautrix-facebook](./configuring-playbook-bridge-mautrix-facebook.md) bridge, it's possible to migrate the database using [instructions from the bridge documentation](https://docs.mau.fi/bridges/go/meta/facebook-migration.html) (advanced)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:15
+msgid "Then you may wish to get rid of the Facebook bridge. To do so, send a `clean-rooms` command to the management room with the old bridge bot (`@facebookbot:example.com`). It gives you a list of portals and groups of portals you may purge. Proceed with sending commands like `clean recommended`, etc."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:17
+msgid "Then, consider disabling the old bridge in your configuration, so it won't recreate the portals when you receive new messages."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:19
+msgid "**Note**: the user ID of the new bridge bot is `@messengerbot:example.com`, not `@facebookbot:example.com`. After disabling the old bridge, its bot user will stop responding to a command."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:21
+msgid "Enable Appservice Double Puppet (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:23
+msgid "If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:25
+msgid "For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:27
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:29
+msgid "To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:35
+msgid "Before proceeding to [re-running the playbook](./installing.md), you may wish to adjust the configuration further. See below."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:37
+msgid "Bridge mode"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:39
+msgid "As mentioned above, the [mautrix-meta](https://github.com/mautrix/meta) bridge supports multiple modes of operation."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:41
+msgid "The bridge can pull your Messenger messages via 3 different methods:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:43
+msgid "(`facebook`) Facebook via `facebook.com`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:44
+msgid "(`facebook-tor`) Facebook via `facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion` ([Tor](https://www.torproject.org/)) - does not currently proxy media downloads"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:45
+msgid "(default) (`messenger`) Messenger via `messenger.com` - usable even without a Facebook account"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:47
+msgid "You may switch the mode via the `matrix_mautrix_meta_messenger_meta_mode` variable. The playbook defaults to the `messenger` mode, because it's most universal (every Facebook user has a Messenger account, but the opposite is not true)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:49
+msgid "Note that switching the mode (especially between `facebook*` and `messenger`) will intentionally make the bridge use another database (`matrix_mautrix_meta_facebook` or `matrix_mautrix_meta_messenger`) to isolate the 2 instances. Switching between Tor and non-Tor may be possible without dataloss, but your mileage may vary. Before switching to a new mode, you may wish to de-configure the old one (send `help` to the bridge bot and unbridge your portals, etc.)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:51
+msgid "Bridge permissions"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:53
+msgid "By default, any user on your homeserver will be able to use the bridge."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:55
+msgid "Different levels of permission can be granted to users:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:57
+msgid "`relay` - Allowed to be relayed through the bridge, no access to commands"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:58
+msgid "`user` - Use the bridge with puppeting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:59
+msgid "`admin` - Use and administer the bridge"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:61
+msgid "The permissions are following the sequence: nothing < `relay` < `user` < `admin`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:63
+msgid "The default permissions are set via `matrix_mautrix_meta_messenger_bridge_permissions_default` and are somewhat like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:72
+msgid "If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @alice:example.com`), then there's no admin by default."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:74
+msgid "You may redefine `matrix_mautrix_meta_messenger_bridge_permissions_default` any way you see fit, or add extra permissions using `matrix_mautrix_meta_messenger_bridge_permissions_custom` like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:81
+msgid "You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:83
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:85
+msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:92
+msgid "**Notes**:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:94
+msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:96
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:98
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:100
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:102
+msgid "To use the bridge, you need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:104
+msgid "You then need to send a `login` command and follow the bridge bot's instructions."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:106
+msgid "Given that the bot is configured in `messenger` [bridge mode](#bridge-mode) by default, you will need to log in to [messenger.com](https://messenger.com/) (not `facebook.com`!) and obtain the cookies from there as per [the bridge's authentication instructions](https://docs.mau.fi/bridges/go/meta/authentication.html)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:108
+msgid "💡 Set up Double Puppeting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:110
+msgid "After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:112
+msgid "To set it up, you have 2 ways of going about it."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:114
+msgid "Method 1: automatically, by enabling Appservice Double Puppet"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:116
+msgid "The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:118
+msgid "This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:120
+msgid "Method 2: manually, by asking each user to provide a working access token"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:122
+msgid "When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:124
+msgid "retrieve a Matrix access token for yourself. Refer to the documentation on [how to do that](obtaining-access-tokens.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:126
+msgid "send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-meta-messenger.md:128
+msgid "make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature"
+msgstr ""

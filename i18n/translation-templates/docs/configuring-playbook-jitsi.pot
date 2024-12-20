@@ -1,0 +1,361 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-20 07:23+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-jitsi.md:1
+msgid "Setting up the Jitsi video-conferencing platform (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:3
+msgid "The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:5
+msgid "Jitsi installation is **not enabled by default**, because it's not a core component of Matrix services."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:7
+msgid "The setup done by the playbook is very similar to [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet). You can refer to the documentation there for many of the options here."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:9
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:11
+msgid "You may need to open the following ports to your server:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:13
+msgid "`4443/tcp` - RTP media fallback over TCP"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:14
+msgid "`10000/udp` - RTP media over UDP. Depending on your firewall/NAT setup, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml))."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:16
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:18
+msgid "To enable Jitsi, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:24
+msgid "Adjusting the Jitsi URL"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:26
+msgid "By default, this playbook installs Jitsi on the `jitsi.` subdomain (`jitsi.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:28
+msgid "By tweaking the `jitsi_hostname` variable, you can easily make the service available at a **different hostname** than the default one."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:30
+msgid "Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:37
+msgid "Adjusting DNS records"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:39
+msgid "Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Jitsi domain to the Matrix server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:41
+msgid "By default, you will need to create a CNAME record for `jitsi`. See [Configuring DNS](configuring-dns.md) for details about DNS changes."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:43
+msgid "(Optional) Configure Jitsi authentication and guests mode"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:45
+msgid "By default the Jitsi Meet instance does not require any kind of login and is open to use for anyone without registration."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:47
+msgid "If you're fine with such an open Jitsi instance, please skip to [Installing](#installing)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:49
+msgid "If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow the following steps to enable Jitsi's authentication and optionally guests mode."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:51
+msgid "Currently, there are three supported authentication modes: 'internal' (default), 'matrix' and 'ldap'."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:53
+msgid "**Note**: Authentication is not tested via the playbook's self-checks. We therefore recommend that you manually verify if authentication is required by jitsi. For this, try to manually create a conference on jitsi.example.com in your browser."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:55
+msgid "Authenticate using Jitsi accounts (Auth-Type 'internal')"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:57
+msgid "The default authentication mechanism is 'internal' auth, which requires jitsi-accounts to be setup and is the recommended setup, as it also works in federated rooms. With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join. If a registered host is not yet present, guests are put on hold in individual waiting rooms."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:59
+msgid "Add these lines to your `inventory/host_vars/matrix.example.com/vars.yml` configuration:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:71
+msgid "**Caution**: Accounts added here and subsequently removed will not be automatically removed from the Prosody server until user account cleaning is integrated into the playbook."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:73
+msgid "**If you get an error** like this: \"Error: Account creation/modification not supported.\", it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:75
+msgid "Authenticate using Matrix OpenID (Auth-Type 'matrix')"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:77
+msgid "**Attention: Probably breaks Jitsi in federated rooms and does not allow sharing conference links with guests.**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:79
+msgid "Using this authentication type require a [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service). By default, this playbook creates and configures a user-verification-service to run locally, see [configuring-user-verification-service](configuring-playbook-user-verification-service.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:81
+msgid "To enable set this configuration at host level:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:89
+msgid "For more information see also [https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification](https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:91
+msgid "Authenticate using LDAP (Auth-Type 'ldap')"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:93
+msgid "An example LDAP configuration could be:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:113
+msgid "For more information refer to the [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap) and the [saslauthd `LDAP_SASLAUTHD`](https://github.com/winlibs/cyrus-sasl/blob/master/saslauthd/LDAP_SASLAUTHD) documentation."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:115
+msgid "(Optional) Making your Jitsi server work on a LAN"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:117
+msgid "By default the Jitsi Meet instance does not work with a client in LAN (Local Area Network), even if others are connected from WAN. There are no video and audio. In the case of WAN to WAN everything is ok."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:119
+msgid "The reason is the Jitsi VideoBridge git to LAN client the IP address of the docker image instead of the host. The [documentation](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/#running-behind-nat-or-on-a-lan-environment) of Jitsi in docker suggest to add `JVB_ADVERTISE_IPS` in enviornment variable to make it work."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:121
+msgid "Here is how to do it in the playbook."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:123
+msgid "Add these two lines to your `inventory/host_vars/matrix.example.com/vars.yml` configuration:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:130
+msgid "(Optional) Fine tune Jitsi"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:132
+msgid "Sample **additional** `inventory/host_vars/matrix.example.com/vars.yml` configuration to save up resources (explained below):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:147
+msgid "You may want to **suspend unused video layers** until they are requested again, to save up resources on both server and clients. Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:149
+msgid "You may wish to **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:151
+msgid "You may want to **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes. This feature is found by default in other webconference applications such as Office 365 Teams (limit is set to 4). Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:153
+msgid "You may want to **limit the maximum video resolution**, to save up resources on both server and clients."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:155
+msgid "(Optional) Specify a Max number of participants on a Jitsi conference"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:157
+msgid "The playbook allows a user to set a max number of participants allowed to join a Jitsi conference. By default there is no limit."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:159
+msgid "In order to set the max number of participants use the following **additional** configuration:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:165
+msgid "(Optional) Additional JVBs"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:167
+msgid "By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you may need to provision additional JVB services on other hosts."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:169
+msgid "There is an ansible playbook that can be run with the following tag: `ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:171
+msgid "For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:178
+msgid "Each JVB will require a server ID to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB. The server ID is set with the variable `jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container. This variable can be set via the host file, a parameter to the ansible command or in the `vars.yaml` for the host which will have the additional JVB. For example:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:190
+msgid "Note that the server ID `jvb-1` is reserved for the JVB instance running on the Matrix host and therefore should not be used as the ID of an additional jvb host."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:192
+msgid "The additional JVB will also need to expose the colibri web socket port and this can be done with the following variable:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:198
+msgid "The JVB will also need to know where the prosody xmpp server is located, similar to the server ID this can be set in the vars for the JVB by using the variable `jitsi_xmpp_server`. The Jitsi prosody container is deployed on the Matrix server by default so the value can be set to the Matrix domain. For example:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:204
+msgid "However, it can also be set the ip address of the Matrix server. This can be useful if you wish to use a private ip. For example:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:210
+msgid "For the JVB to be able to contact the XMPP server, the latter must expose the XMPP port (5222). By default, the Matrix server does not expose the port; only the XMPP container exposes it internally inside the host, which means that the first JVB (which runs on the Matrix server) can reach it but the additional JVB cannot. The port is exposed by setting `jitsi_prosody_container_jvb_host_bind_port` like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:216
+msgid "(The default is empty; if it's set then docker forwards the port.)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:218
+msgid "Applied together this will allow you to provision extra JVB instances which will register themselves with the prosody service and be available for jicofo to route conferences too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:220
+msgid "To make Traefik reverse-proxy to these additional JVBs (living on other hosts), **you would need to add the following Traefik configuration extension**:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:256
+msgid "(Optional) Enable Gravatar"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:258
+msgid "In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since Element clients already send the url of configured Matrix avatars to Jitsi, we disabled gravatar."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:260
+msgid "To enable Gravatar set:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:266
+msgid "**Beware**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com). Besides metadata, this includes the Matrix user_id and possibly the room identifier (via `referrer` header)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:268
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:270
+msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:277
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:279
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:281
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:283
+msgid "You can use the self-hosted Jitsi server in multiple ways:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:285
+msgid "**by adding a widget to a room via Element Web** (the one configured by the playbook at `https://element.example.com`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:287
+msgid "**by adding a widget to a room via the Dimension integration manager**. You'll have to point the widget to your own Jitsi server manually. See our [Dimension integration manager](./configuring-playbook-dimension.md) documentation page for more details. Naturally, Dimension would need to be installed first (the playbook doesn't install it by default)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:289
+msgid "**directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:291
+msgid "**Note**: Element apps on mobile devices currently [don't support joining meetings on a self-hosted Jitsi server](https://github.com/element-hq/riot-web/blob/601816862f7d84ac47547891bd53effa73d32957/docs/jitsi.md#mobile-app-support)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:293
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:295
+msgid "Rebuilding your Jitsi installation"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:297
+msgid "**If you ever run into any trouble** or **if you change configuration (`jitsi_*` variables) too much**, we urge you to rebuild your Jitsi setup."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:299
+msgid "We normally don't require such manual intervention for other services, but Jitsi services generate a lot of configuration files on their own."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:301
+msgid "These files are not all managed by Ansible (at least not yet), so you may sometimes need to delete them all and start fresh."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:303
+msgid "To rebuild your Jitsi configuration:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:305
+msgid "ask Ansible to stop all Jitsi services: `just run-tags stop-group --extra-vars=group=jitsi`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:306
+msgid "SSH into the server and do this and remove all Jitsi configuration & data (`rm -rf /matrix/jitsi`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-jitsi.md:307
+msgid "ask Ansible to set up Jitsi anew and restart services (`just install-service jitsi`)"
+msgstr ""

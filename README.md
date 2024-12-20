@@ -198,6 +198,12 @@ When updating the playbook, refer to [the changelog](CHANGELOG.md) to catch up w
 
 - GitHub issues: [spantaleev/matrix-docker-ansible-deploy/issues](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues)
 
+## 🌐 Translation
+
+See the [i18n/README.md](i18n/README.md) file for more information about translation.
+
+Translations are still work in progress.
+
 ## 🤝 Related
 
 You may also be interested in [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) - another Ansible playbook for self-hosting non-Matrix services (see its [List of supported services](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/supported-services.md)).
