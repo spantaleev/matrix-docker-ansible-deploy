@@ -32,3 +32,11 @@ sphinx-intl update \
     --pot-dir ${base_path}/i18n/translation-templates \
     --locale-dir ${base_path}/i18n/locales \
     --language ${LANGUAGE}
+
+# Post-process all .po files to remove word-wrapping.
+#
+# Tools for editing .po files like Poedit don't use word-wrapping,
+# and us not using word-wrapping here means diffs can be smaller.
+for po_file in $(find ${base_path}/i18n/locales -name '*.po'); do
+    msgcat --no-wrap -o "$po_file" "$po_file"
+done
