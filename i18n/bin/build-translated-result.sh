@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # SPDX-FileCopyrightText: 2024 Slavi Pantaleev <slavi@devture.com>
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara <acioustick@noreply.codeberg.org>
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-# This script builds the translated result (translated project) for a given language in the `translated/<language>/` directory.
+# This script builds the translated result (translated project) for a given language in the `translations/<language>/` directory.
 
 set -euxo pipefail
 
@@ -47,14 +48,14 @@ rm -rf ${base_path}/i18n/translated-result-build-${LANGUAGE}/.doctrees
 cp -r ${base_path}/docs/assets ${base_path}/i18n/translated-result-build-${LANGUAGE}/docs/assets/
 
 # Remove the old result directory for this language
-if [ -d ${base_path}/i18n/translated/${LANGUAGE} ]; then
-    rm -rf ${base_path}/i18n/translated/${LANGUAGE}
+if [ -d ${base_path}/i18n/translations/${LANGUAGE} ]; then
+    rm -rf ${base_path}/i18n/translations/${LANGUAGE}
 fi
 
-# Make sure the `translated/` directory exists
+# Make sure the `translations/` directory exists
 if [ ! -d ${base_path}/i18n/translated ]; then
     mkdir -p ${base_path}/i18n/translated
 fi
 
-# Relocate the built result to translated/<language>
-mv ${base_path}/i18n/translated-result-build-${LANGUAGE} ${base_path}/i18n/translated/${LANGUAGE}
+# Relocate the built result to translations/<language>
+mv ${base_path}/i18n/translated-result-build-${LANGUAGE} ${base_path}/i18n/translations/${LANGUAGE}
