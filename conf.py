@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev <slavi@devture.com>
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara <acioustick@noreply.codeberg.org>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # Configuration file for the Sphinx documentation builder.
 # Also see the `i18n/` directory.
 #
