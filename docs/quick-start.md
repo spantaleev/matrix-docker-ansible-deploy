@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+SPDX-FileCopyrightText: 2024 Suguru Hirahara <acioustick@noreply.codeberg.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Quick start
 
 <!--
