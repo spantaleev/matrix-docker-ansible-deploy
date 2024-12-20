@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 12:05+0900\n"
+"POT-Creation-Date: 2024-12-20 09:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: bg\n"
@@ -84,27 +84,31 @@ msgid ""
 msgstr ""
 
 #: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:19
-msgid "Installation"
+msgid "Prerequisites"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:21
-msgid "Create a main management room."
+msgid "Create a main management room"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:23
 msgid ""
 "The playbook does not create a management room for your Main Draupnir. "
-"This task you have to do on your own."
+"You **need to create the room manually** before setting up the bot."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:25
+msgid "Note that the room must be unencrypted."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:29
 msgid ""
 "The management room has to be given an alias and be public when you are "
 "setting up the bot for the first time as the bot does not differentiate "
 "between invites and invites to the management room."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:27
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:31
 msgid ""
 "This management room is used to control who has access to your D4A "
 "deployment. The room stores this data inside of the control room state so"
@@ -112,77 +116,107 @@ msgid ""
 "This is default 50 or moderator as Element clients call this powerlevel."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:29
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:33
 msgid ""
 "As noted in the Draupnir install instructions the control room is "
-"sensitive. The following is said about the control room in the Draupnir "
-"install instructions."
+"sensitive. **Anyone in this room can control the bot so it is important "
+"that you only invite trusted users to this room.**"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:30
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:35
+msgid "Set an alias to the management room"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:37
+msgid "Next, set an alias to the management room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:39
 msgid ""
-"Anyone in this room can control the bot so it is important that you only "
-"invite trusted users to this room. The room must be unencrypted since the"
-" playbook does not support installing Pantalaimon yet."
+"This alias can be anything you want. However, for increased security "
+"during the setup phase, it is recommended to make this alias be a random "
+"string. When it has been locked down after setup phase, you can give your"
+" room a secondary human readable alias."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:32
-msgid "Give your main management room an alias."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:41
+msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:34
-msgid ""
-"Give the room from step 1 an alias. This alias can be anything you want "
-"and its recommended for increased security during the setup phase of the "
-"bot that you make this alias be a random string. You can give your room a"
-" secondary human readable alias when it has been locked down after setup "
-"phase."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:36
-msgid "Adjusting the playbook configuration."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:38
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:43
 msgid ""
 "Add the following configuration to your "
-"`inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your "
-"needs):"
+"`inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to "
+"replace `MANAGEMENT_ROOM_ALIAS_HERE`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:40
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:51
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:53
 msgid ""
-"You must replace `ALIAS_FROM_STEP_2_GOES_HERE` with the alias you created"
-" in step 2."
+"You can configure additional options by adding the "
+"`matrix_appservice_draupnir_for_all_extension_yaml` variable."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:48
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:55
+msgid ""
+"For example, to change Draupnir's `protectAllJoinedRooms` option to "
+"`true`, add the following configuration to your "
+"`inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:69
+msgid ""
+"You can refer to the upstream [documentation](https://github.com/the-"
+"draupnir-project/Draupnir) for more configuration documentation."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:71
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:86
+msgid "**Notes**:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:73
+msgid ""
+"The playbook ships a full copy of the example config that does transfer "
+"to provisioned Draupnirs in the production-bots.yaml.j2 file in the "
+"template directory of the role."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:75
+msgid ""
+"Config extension does not affect the appservices config as this config is"
+" not extensible in current Draupnir anyway. It instead touches the config"
+" passed to the Draupnirs that your Appservice creates. So the example "
+"above (`protectAllJoinedRooms: true`) makes all provisioned Draupnirs "
+"protect all joined rooms."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:77
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:50
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:79
 msgid ""
 "After configuring the playbook, run it with [playbook tags](playbook-"
 "tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:57
-msgid "**Notes**:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:59
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:88
 msgid ""
 "The `ensure-matrix-users-created` playbook tag makes the playbook "
 "automatically create the bot's user account."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:61
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:90
 msgid ""
 "The shortcut commands with the [`just` program](just.md) are also "
 "available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:63
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:92
 msgid ""
 "`just install-all` is useful for maintaining your setup quickly ([2x-5x "
 "faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-"
@@ -191,29 +225,29 @@ msgid ""
 "`just setup-all`, or these components will still remain installed."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:65
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:94
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:67
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:96
 msgid ""
 "If you made it through all the steps above and your main control room was"
 " joined by a user called `@draupnir-main:example.com` you have "
 "succesfully installed Draupnir for All and can now start using it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:69
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:98
 msgid ""
 "The installation of Draupnir for all in this playbook is very much Alpha "
-"quality. Usage-wise, Draupnir for allis almost identical to Draupnir bot "
-"mode."
+"quality. Usage-wise, Draupnir for all is almost identical to Draupnir bot"
+" mode."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:71
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:100
 msgid "Granting Users the ability to use D4A"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:73
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:102
 msgid ""
 "Draupnir for all includes several security measures like that it only "
 "allows users that are on its allow list to ask for a bot. To add a user "
@@ -224,7 +258,7 @@ msgid ""
 " the chat is recomended."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:75
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:104
 msgid ""
 "The bot requires a powerlevel of 50 in the management room to control who"
 " is allowed to use the bot. The bot does currently not say anything if "
@@ -233,7 +267,7 @@ msgid ""
 "project/Draupnir/issues/297))"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:77
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:106
 msgid ""
 "To allow users or whole homeservers you type /plain @draupnir-"
 "main:example.com allow `target` and target can be either a MXID or a "
@@ -242,57 +276,146 @@ msgid ""
 "this command as it can break Wildcard commands especially."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:79
-msgid "How to provision a D4A once you are allowed to."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:108
+msgid "How to provision a D4A once you are allowed to"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:81
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:110
 msgid ""
-"Open a DM with @draupnir-main:example.com and if using an Element client "
-"send a message into this DM to finalise creating it. The bot will reject "
-"this invite and you will shortly get invited to the Draupnir control room"
-" for your newly provisioned Draupnir. From here its just a normal "
-"Draupnir experience."
+"To provision a D4A, you need to start a chat with `@draupnir-"
+"main:example.com`. The bot will reject this invite and you will shortly "
+"get invited to the Draupnir control room for your newly provisioned "
+"Draupnir. From here its just a normal Draupnir experience."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:83
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:112
 msgid ""
 "Congratulations if you made it all the way here because you now have a "
 "fully working Draupnir for all deployment."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:85
-msgid "Configuration of D4A"
-msgstr ""
+#~ msgid "Installation"
+#~ msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:87
-msgid ""
-"You can refer to the upstream [documentation](https://github.com/the-"
-"draupnir-project/Draupnir) for more configuration documentation. Please "
-"note that the playbook ships a full copy of the example config that does "
-"transfer to provisioned Draupnirs in the production-bots.yaml.j2 file in "
-"the template directory of the role."
-msgstr ""
+#~ msgid "Create a main management room."
+#~ msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:89
-msgid ""
-"Please note that Config extension does not affect the appservices config "
-"as this config is not extensible in current Draupnir anyways. Config "
-"extension instead touches the config passed to the Draupnirs that your "
-"Appservice creates. So for example below makes all provisioned Draupnirs "
-"protect all joined rooms."
-msgstr ""
+#~ msgid ""
+#~ "The playbook does not create a "
+#~ "management room for your Main Draupnir."
+#~ " This task you have to do on"
+#~ " your own."
+#~ msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:91
-msgid ""
-"You can configure additional options by adding the "
-"`matrix_appservice_draupnir_for_all_extension_yaml` variable to your "
-"`inventory/host_vars/matrix.example.com/vars.yml` file."
-msgstr ""
+#~ msgid ""
+#~ "As noted in the Draupnir install "
+#~ "instructions the control room is "
+#~ "sensitive. The following is said about"
+#~ " the control room in the Draupnir "
+#~ "install instructions."
+#~ msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:93
-msgid ""
-"For example to change Draupnir's `protectAllJoinedRooms` option to `true`"
-" you would add the following to your `vars.yml` file."
-msgstr ""
+#~ msgid ""
+#~ "Anyone in this room can control "
+#~ "the bot so it is important that"
+#~ " you only invite trusted users to "
+#~ "this room. The room must be "
+#~ "unencrypted since the playbook does not"
+#~ " support installing Pantalaimon yet."
+#~ msgstr ""
+
+#~ msgid "Give your main management room an alias."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Give the room from step 1 an "
+#~ "alias. This alias can be anything "
+#~ "you want and its recommended for "
+#~ "increased security during the setup "
+#~ "phase of the bot that you make "
+#~ "this alias be a random string. You"
+#~ " can give your room a secondary "
+#~ "human readable alias when it has "
+#~ "been locked down after setup phase."
+#~ msgstr ""
+
+#~ msgid "Adjusting the playbook configuration."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Add the following configuration to your"
+#~ " `inventory/host_vars/matrix.example.com/vars.yml` file "
+#~ "(adapt to your needs):"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You must replace `ALIAS_FROM_STEP_2_GOES_HERE` "
+#~ "with the alias you created in step"
+#~ " 2."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The installation of Draupnir for all "
+#~ "in this playbook is very much "
+#~ "Alpha quality. Usage-wise, Draupnir for"
+#~ " allis almost identical to Draupnir "
+#~ "bot mode."
+#~ msgstr ""
+
+#~ msgid "How to provision a D4A once you are allowed to."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Open a DM with @draupnir-"
+#~ "main:example.com and if using an Element"
+#~ " client send a message into this "
+#~ "DM to finalise creating it. The "
+#~ "bot will reject this invite and "
+#~ "you will shortly get invited to "
+#~ "the Draupnir control room for your "
+#~ "newly provisioned Draupnir. From here "
+#~ "its just a normal Draupnir experience."
+#~ msgstr ""
+
+#~ msgid "Configuration of D4A"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You can refer to the upstream "
+#~ "[documentation](https://github.com/the-draupnir-"
+#~ "project/Draupnir) for more configuration "
+#~ "documentation. Please note that the "
+#~ "playbook ships a full copy of the"
+#~ " example config that does transfer to"
+#~ " provisioned Draupnirs in the "
+#~ "production-bots.yaml.j2 file in the "
+#~ "template directory of the role."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Please note that Config extension does"
+#~ " not affect the appservices config as"
+#~ " this config is not extensible in "
+#~ "current Draupnir anyways. Config extension "
+#~ "instead touches the config passed to "
+#~ "the Draupnirs that your Appservice "
+#~ "creates. So for example below makes "
+#~ "all provisioned Draupnirs protect all "
+#~ "joined rooms."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "You can configure additional options by"
+#~ " adding the "
+#~ "`matrix_appservice_draupnir_for_all_extension_yaml` variable "
+#~ "to your `inventory/host_vars/matrix.example.com/vars.yml`"
+#~ " file."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For example to change Draupnir's "
+#~ "`protectAllJoinedRooms` option to `true` you"
+#~ " would add the following to your "
+#~ "`vars.yml` file."
+#~ msgstr ""
 
