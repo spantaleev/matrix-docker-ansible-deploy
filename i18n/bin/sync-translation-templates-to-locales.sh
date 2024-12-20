@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev <slavi@devture.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # This script updates the translation files (locales/<language>/**/*.po) for a given language.
 # It uses the translation templates (translation-templates/**/*.pot) to generate the translation files.
 

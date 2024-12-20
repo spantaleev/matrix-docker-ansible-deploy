@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev <slavi@devture.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # This script builds the translated result (translated project) for a given language in the `translated/<language>/` directory.
 
 set -euxo pipefail
