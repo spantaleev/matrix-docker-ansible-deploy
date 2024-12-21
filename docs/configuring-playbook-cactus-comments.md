@@ -82,7 +82,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 Upon starting Cactus Comments, a `bot.cactusbot` user account is created automatically.
 
-To get started, send a `help` message to the `@bot.cactusbot:example.com` bot to confirm it's working.
+To get started, send `help` to the `@bot.cactusbot:example.com` bot to confirm it's working.
 
 Then, register a site by sending `register <YourSiteName>` (where `<YourSiteName>` is a unique identifier you choose. It does not have to match your domain). You will then be invited into a moderation room.
 

@@ -238,6 +238,6 @@ To use the bot, invite it to any existing Matrix room (`/invite @bot.go-neb:exam
 
 Basic usage is like this: `!echo hi` or `!imgur puppies` or `!giphy matrix`
 
-If you enabled the github_cmd service you can get the supported commands via `!github help`
+If you enabled the github_cmd service, send `!github help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [Documentation](https://github.com/matrix-org/go-neb).

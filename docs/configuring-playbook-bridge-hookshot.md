@@ -61,7 +61,7 @@ To use the bridge, you need to create a room and invite the Hookshot bot (`@hook
 
 Make sure the bot is able to send state events (usually the Moderator power level in clients).
 
-Send `!hookshot help` to the room to see the bridge's help menu for additional commands.
+Send `!hookshot help` to the bot to see the available commands.
 
 Refer to [Hookshot's documentation](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) for more details about using the bridge's various features.
 

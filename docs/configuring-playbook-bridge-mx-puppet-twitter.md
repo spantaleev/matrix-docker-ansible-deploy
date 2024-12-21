@@ -50,4 +50,4 @@ Once logged in, send `list` to the bot user to list the available rooms.
 
 Clicking rooms in the list will result in you receiving an invitation to the bridged room.
 
-Also send `help` to the bot to see the commands available.
+Send `help` to the bot to see the available commands.

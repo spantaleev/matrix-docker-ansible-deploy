@@ -63,7 +63,7 @@ Then, follow the instructions in the help output message.
 
 If the bot is not already in the Discord server, follow the provided invite link. This may require you to be a administrator of the Discord server.
 
-On the Discord side, you can say `!matrix help` to get a list of available commands to manage the bridge and Matrix users.
+On the Discord side, send `!matrix help` to the bot to see the available commands for managing the bridge and Matrix users.
 
 **Note**: Encrypted Matrix rooms are not supported as of writing.
 

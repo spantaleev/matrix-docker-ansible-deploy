@@ -71,7 +71,7 @@ To use the bridge, invite the `@postmoogle:example.com` bot user into a room you
 
 Then send `!pm mailbox NAME` to expose this Matrix room as an inbox with the email address `NAME@matrix.example.com`. Emails sent to that email address will be forwarded to the room.
 
-Send `!pm help` to the room to see the bridge's help menu for additional commands.
+Send `!pm help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [documentation](https://github.com/etkecc/postmoogle).
 

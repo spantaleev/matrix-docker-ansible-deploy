@@ -391,7 +391,7 @@ After joining, the bot will introduce itself and show information about the [✨
 
 If you've [🤖 configured one or more agents via Ansible](#-configuring-agents-via-ansible) and have [🤝 configured initial default handlers](#configuring-initial-default-handlers), the bot will immediately be able to make use of these agents for this new room. Otherwise, you will need to configure agents and/or handlers via chat commands.
 
-Send `!bai help` to the room at any time to see the bot's help menu for additional commands.
+Send `!bai help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [baibot](https://github.com/etkecc/baibot) project's documentation.
 
