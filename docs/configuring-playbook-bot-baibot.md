@@ -383,7 +383,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@baibot:example.com` bot user into a room.
+To use the bot, invite it to any existing Matrix room (`/invite @baibot:example.com` where `example.com` is your base domain, not the `matrix.` domain).
 
 If you're an allowed bot [👥 user](https://github.com/etkecc/baibot/blob/main/docs/access.md#user) (see [👥 Initial users configuration](#-initial-users-configuration)), the bot will accept your invitation and join the room.
 

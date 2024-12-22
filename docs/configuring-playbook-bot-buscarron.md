@@ -75,7 +75,11 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@bot.buscarron:example.com` to the room you specified in a config, after that any point your form to the form url, example for the `contact` form:
+To use the bot, invite it to the room you specified on your `vars.yml` file (`/invite @bot.buscarron:example.com` where `example.com` is your base domain, not the `matrix.` domain).
+
+After the bot joins the room, anyone can call the web form via HTTP POST method.
+
+Here is an example for the `contact` form:
 
 ```html
 <form method="POST" action="https://buscarron.example.com/contact">
@@ -85,9 +89,9 @@ To use the bot, invite the `@bot.buscarron:example.com` to the room you specifie
 
 **Note**: to fight against spam, Buscarron is **very aggressive when it comes to banning** and will ban you if:
 
-- if you hit the homepage (HTTP `GET` request to `/`)
-- if you submit a form to the wrong URL (`POST` request to `/non-existing-form`)
-- if `hasemail` is enabled for the form (like in the example above) and you don't submit an `email` field
+- you hit the homepage (HTTP `GET` request to `/`)
+- you submit a form to the wrong URL (`POST` request to `/non-existing-form`)
+- `hasemail` is enabled for the form (like in the example above) and you don't submit an `email` field
 
 If you get banned, you'd need to restart the process by running the playbook with `--tags=start` or running `systemctl restart matrix-bot-buscarron` on the server.
 

@@ -70,6 +70,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@bot.chatgpt:example.com` to the room you specified in a config, after that start speaking to it, use the prefix if you configured one or mention the bot.
+To use the bot, invite it to the room you specified on your `vars.yml` file (`/invite @bot.chatgpt:example.com` where `example.com` is your base domain, not the `matrix.` domain).
+
+After the bot joins the room, you can send a message to it. When you do so, use the prefix if you configured it or mention the bot.
 
 You can also refer to the upstream [documentation](https://github.com/matrixgpt/matrix-chatgpt-bot).

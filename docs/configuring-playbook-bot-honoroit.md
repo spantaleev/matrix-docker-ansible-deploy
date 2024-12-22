@@ -66,7 +66,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bot, invite the `@honoroit:example.com` to the room you specified in config, after that any Matrix user can send a message to the `@honoroit:example.com` to start a new thread in that room.
+To use the bot, invite it to the room you specified on your `vars.yml` file (`/invite @honoroit:example.com` where `example.com` is your base domain, not the `matrix.` domain).
+
+After the bot joins the room, any Matrix user can send a message to it to start a new thread in that room.
 
 Send `!ho help` to the bot in the room to see the available commands.
 
