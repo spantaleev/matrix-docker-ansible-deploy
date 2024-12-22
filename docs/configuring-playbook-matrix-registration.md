@@ -23,7 +23,7 @@ To enable matrix-registration, add the following configuration to your `inventor
 ```yaml
 matrix_registration_enabled: true
 
-# Generate a strong secret here. Consider generating it with `pwgen -s 64 1`
+# Generate a strong secret here. You can create one with a command like `pwgen -s 64 1`.
 matrix_registration_admin_secret: "ENTER_SOME_SECRET_HERE"
 ```
 
