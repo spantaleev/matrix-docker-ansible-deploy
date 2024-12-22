@@ -2192,7 +2192,7 @@ To migrate to the new setup, expect a few minutes of downtime, while you follow 
 
 1. We believe the steps below are safe and you won't encounter any data loss, but consider [making a Postgres backup](docs/maintenance-postgres.md#backing-up-postgresql) anyway. If you've never backed up Postgres, now would be a good time to try it.
 
-2. Generate a strong password to be used for your superuser Postgres user (called `matrix`). You can use `pwgen -s 64 1` to generate it, or some other tool. The **maximum length** for a Postgres password is 100 bytes (characters). Don't go crazy!
+2. Generate a strong password to be used for your superuser Postgres user (called `matrix`). You can create one with a command like `pwgen -s 64 1`. The **maximum length** for a Postgres password is 100 bytes (characters). Don't go crazy!
 
 3. Update your playbook's `inventory/host_vars/matrix.example.com/vars.yml` file, adding a line like this:
     ```yaml

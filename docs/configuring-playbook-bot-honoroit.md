@@ -16,7 +16,7 @@ matrix_bot_honoroit_enabled: true
 # Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_bot_honoroit_login: honoroit
 
-# Generate a strong password here. Consider generating it with `pwgen -s 64 1`
+# Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
 matrix_bot_honoroit_password: PASSWORD_FOR_THE_BOT
 
 # Adjust this to your room ID

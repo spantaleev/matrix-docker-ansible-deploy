@@ -10,7 +10,7 @@ See the project's [documentation](https://github.com/matrix-org/mjolnir/blob/mai
 
 The playbook does not automatically create users for you. You **need to register the bot user manually** before setting up the bot.
 
-Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
+Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
 
 You can use the playbook to [register a new user](registering-users.md):
 

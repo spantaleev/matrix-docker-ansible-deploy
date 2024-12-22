@@ -60,7 +60,7 @@ where:
 * USER - SSH user of a provider/server
 * HOST - SSH host of a provider/server
 * REPO - BorgBackup repository name, it will be initialized on backup start, eg: `matrix`, regarding Syntax see [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls)
-* PASSPHRASE - passphrase used for encrypting backups, you may generate it with `pwgen -s 64 1` or use any password manager
+* PASSPHRASE - passphrase used for encrypting backups. You can create one with a command like `pwgen -s 64 1`.
 * PRIVATE KEY - the content of the **private** part of the SSH key you created before. The whole key (all of its belonging lines) under `backup_borg_ssh_key_private` needs to be indented with 2 spaces
 
 To backup without encryption, add `backup_borg_encryption: 'none'` to your vars. This will also enable the `backup_borg_unknown_unencrypted_repo_access_is_ok` variable.

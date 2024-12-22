@@ -38,12 +38,12 @@ matrix_bot_baibot_enabled: true
 # Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_bot_baibot_config_user_mxid_localpart: baibot
 
-# Generate a strong password here. Consider generating it with `pwgen -s 64 1`.
+# Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
 # If you'd like to change this password subsequently, see the details below.
 matrix_bot_baibot_config_user_password: 'PASSWORD_FOR_THE_BOT'
 
 # An optional passphrase to use for backing up and recovering the bot's encryption keys.
-# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+# You can create one with a command like `pwgen -s 64 1`.
 #
 # If set to null, the recovery module will not be used and losing your session/database
 # will mean you lose access to old messages in encrypted room.
