@@ -146,7 +146,7 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_enabled: true
 
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: "YOUR_API_KEY_HERE"
 
-# If you'd like to use another text-generation agent, uncomment and adjust:
+# Uncomment and adjust this part if you'd like to use another text-generation agent
 # matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: claude-3-5-sonnet-20240620
 
 # The playbook defines a default prompt for all statically-defined agents.
