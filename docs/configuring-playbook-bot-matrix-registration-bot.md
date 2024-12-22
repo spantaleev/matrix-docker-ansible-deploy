@@ -6,7 +6,7 @@ The bot allows you to easily **create and manage registration tokens** aka. invi
 
 See the project's [documentation](https://github.com/moan0s/matrix-registration-bot/blob/master/README.md) to learn what it does and why it might be useful to you.
 
-## Configuration
+## Adjusting the playbook configuration
 
 To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 

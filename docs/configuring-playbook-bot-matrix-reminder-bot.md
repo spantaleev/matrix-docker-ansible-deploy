@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/anoadragon453/matrix-remind
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_matrix_reminder_bot_enabled: true

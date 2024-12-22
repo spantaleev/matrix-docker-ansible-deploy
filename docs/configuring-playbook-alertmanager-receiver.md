@@ -22,7 +22,7 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.alertmanager.receiver password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-### Get an access token
+### Obtain an access token
 
 The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
@@ -36,7 +36,7 @@ Then, log in as the bot using any Matrix client of your choosing, accept the roo
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#get-an-access-token).
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_alertmanager_receiver_enabled: true
@@ -44,7 +44,6 @@ matrix_alertmanager_receiver_enabled: true
 # Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_alertmanager_receiver_config_matrix_user_id_localpart: "bot.alertmanager.receiver"
 
-# Specify the bot user's access token here.
 matrix_alertmanager_receiver_config_matrix_access_token: "ACCESS_TOKEN_HERE"
 
 # Optionally, configure some mappings (URL-friendly room name -> actual Matrix room ID).

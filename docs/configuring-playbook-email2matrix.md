@@ -38,7 +38,7 @@ Inviting additional people to the room is okay too.
 
 Take note of each room's room ID (different clients show the room ID in a different place). You'll need the room ID when [configuring the playbook](#adjusting-the-playbook-configuration) below.
 
-### Obtaining an access token for the sender user
+### Obtain an access token for the sender user
 
 In order for the sender user created above to be able to send messages to the room, we'll need to obtain an access token for it. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 

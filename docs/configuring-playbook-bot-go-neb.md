@@ -8,11 +8,11 @@ Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the ori
 
 See the project's [documentation](https://github.com/matrix-org/go-neb/blob/master/README.md) to learn what it does and why it might be useful to you.
 
-## Registering the bot account
+## Prerequisites
 
-The playbook does not automatically create users for you. The bot requires at least 1 access token to be able to connect to your homeserver.
+### Register the bot account
 
-You **need to register the bot user manually** before setting up the bot.
+The playbook does not automatically create users for you. You **need to register the bot user manually** before setting up the bot.
 
 Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
 
@@ -22,11 +22,13 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.go-neb password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-Once the user is created you can [obtain an access token](obtaining-access-tokens.md).
+### Obtain an access token
+
+The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 ## Adjusting the playbook configuration
 
-To enable Go-NEB, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_FOR_GONEB_HERE` and `ACCESS_TOKEN_FOR_ANOTHER_GONEB_HERE` with the ones created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_bot_go_neb_enabled: true
@@ -35,7 +37,7 @@ matrix_bot_go_neb_enabled: true
 # Use the access token you obtained in the step above.
 matrix_bot_go_neb_clients:
   - UserID: "@goneb:{{ matrix_domain }}"
-    AccessToken: "MDASDASJDIASDJASDAFGFRGER"
+    AccessToken: "ACCESS_TOKEN_FOR_GONEB_HERE"
     DeviceID: "DEVICE1"
     HomeserverURL: "{{ matrix_addons_homeserver_client_api_url }}"
     Sync: true
@@ -44,7 +46,7 @@ matrix_bot_go_neb_clients:
     AcceptVerificationFromUsers: [":{{ matrix_domain }}"]
 
   - UserID: "@another_goneb:{{ matrix_domain }}"
-    AccessToken: "MDASDASJDIASDJASDAFGFRGER"
+    AccessToken: "ACCESS_TOKEN_FOR_ANOTHER_GONEB_HERE"
     DeviceID: "DEVICE2"
     HomeserverURL: "{{ matrix_addons_homeserver_client_api_url }}"
     Sync: false
@@ -105,7 +107,7 @@ matrix_bot_go_neb_services:
       api_key: "AIzaSyA4FD39m9"
       cx: "AIASDFWSRRtrtr"
 
-# Get a key via https://api.imgur.com/oauth2/addclient
+# Obtain a key via https://api.imgur.com/oauth2/addclient
 # Select "oauth2 without callback url"
   - ID: "imgur_service"
     Type: "imgur"
