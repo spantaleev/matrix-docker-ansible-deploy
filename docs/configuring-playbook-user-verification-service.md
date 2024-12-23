@@ -29,6 +29,18 @@ In order to use UVS, an admin token for the configured homeserver must be suppli
 
 UVS can only be installed after Matrix services are installed and running. If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) and come back here later.
 
+### Register a dedicated Matrix user (optional, recommended)
+
+We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username).
+
+Generate a strong password for the user. You can create one with a command like `pwgen -s 64 1`.
+
+You can use the playbook to [register a new user](registering-users.md):
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=uvs password=PASSWORD_FOR_THE_USER admin=yes' --tags=register-user
+```
+
 ## Adjusting the playbook configuration
 
 To enable Matrix User Verification Service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -48,8 +60,6 @@ In the default configuration, the UVS Server is only reachable via the docker ne
 ### Obtain an access token
 
 The Synapse Access Token is used to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`.
-
-We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username). Follow our [Registering users](registering-users.md) guide to register a user with administration privileges.
 
 You are required to specify an access token (belonging to this new user) for UVS to work. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
