@@ -32,7 +32,7 @@ We recommend that you create a dedicated Matrix user for Dimension (`dimension` 
 
 You are required to specify an access token (belonging to this new user) for Dimension to work. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-**Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 Add access token to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
