@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up SchildiChat Web (optional)
 
 This playbook can install the [SchildiChat Web](https://github.com/SchildiChat/schildichat-desktop) Matrix client for you.

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2019 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Hangouts bridging (optional, deprecated)
 
 💡 **Note**: This bridge has been deprecated in favor of [Google Chat bridge](https://github.com/mautrix/googlechat), which can be installed using [this playbook](configuring-playbook-bridge-mautrix-googlechat.md). Installing the mautrix-hangouts bridge is **no longer possible**. For now, this documentation page remains here for historical purposes.

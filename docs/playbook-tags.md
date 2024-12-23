@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Playbook tags
 
 The Ansible playbook's tasks are tagged, so that certain parts of the Ansible playbook can be run without running all other tasks.

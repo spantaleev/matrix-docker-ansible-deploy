@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2018 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Maintenance and Troubleshooting
 
 ## How to see the current status of your services

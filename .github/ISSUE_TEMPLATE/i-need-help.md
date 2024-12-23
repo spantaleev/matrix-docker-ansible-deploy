@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 Suguru Hirahara <acioustick@noreply.codeberg.org>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 ---
 name: I need help
 about: Get support from our community
