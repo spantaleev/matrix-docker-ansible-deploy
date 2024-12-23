@@ -56,7 +56,7 @@ You are required to specify an access token (belonging to this new user) for UVS
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ```yaml
-matrix_user_verification_service_uvs_access_token: "YOUR ACCESS TOKEN HERE"
+matrix_user_verification_service_uvs_access_token: "ACCESS_TOKEN_HERE"
 ```
 
 ### Custom Auth Token (optional)
