@@ -45,7 +45,7 @@ The Synapse Access Token is used to verify RoomMembership and PowerLevel against
 
 We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username). Follow our [Registering users](registering-users.md) guide to register a user with administration privileges.
 
-You are required to specify an access token (belonging to this new user) for UVS to work. To get an access token for the UVS user, you can follow the documentation on [how to do obtain an access token](obtaining-access-tokens.md).
+You are required to specify an access token (belonging to this new user) for UVS to work. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 **Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
 

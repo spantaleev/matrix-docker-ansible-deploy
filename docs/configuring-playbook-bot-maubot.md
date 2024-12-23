@@ -79,4 +79,4 @@ You should start in the following order
 
 This can be done via `mbc login` then `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)). To run these commands, you'll first need to `exec` into the maubot container with `docker exec -it matrix-bot-maubot sh`.
 
-Alternatively, you can follow our generic [obtain an access token](obtaining-access-tokens.md) documentation. Be aware that you'd better use the **Obtain an access token via curl** method (not **Obtain an access token via Element Web**) as the latter will give your bot issues in encrypted rooms. Read [more](https://docs.mau.fi/maubot/usage/basic.html#creating-clients).
+Alternatively, you can refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md). Be aware that you'd better use the **Obtain an access token via curl** method (not **Obtain an access token via Element Web**) as the latter will causes issues to your bot in encrypted rooms. Read [more](https://docs.mau.fi/maubot/usage/basic.html#creating-clients).
