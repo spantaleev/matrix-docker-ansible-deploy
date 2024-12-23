@@ -29,7 +29,7 @@ In order to use UVS, an admin token for the configured homeserver must be suppli
 
 UVS can only be installed after Matrix services are installed and running. If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) and come back here later.
 
-## Enable
+## Adjusting the playbook configuration
 
 To enable Matrix User Verification Service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
