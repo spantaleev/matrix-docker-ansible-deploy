@@ -41,33 +41,27 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=uvs password=PASSWORD_FOR_THE_USER admin=yes' --tags=register-user
 ```
 
+### Obtain an access token
+
+UVS requires an access token as an admin user to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
 ## Adjusting the playbook configuration
 
-To enable UVS, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable UVS, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_user_verification_service_enabled: true
+
+matrix_user_verification_service_uvs_access_token: "ACCESS_TOKEN_HERE"
 ```
 
 ## Configuration
 
-The only required configuration variable is `matrix_user_verification_service_uvs_access_token` (see below).
-
 For a list of all configuration options see the role defaults [`roles/matrix-user-verification-service/defaults/main.yml`](../roles/custom/matrix-user-verification-service/defaults/main.yml). But be aware of all the plugging happening in `group_vars/matrix_servers`.
 
 In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host. However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
-
-### Obtain an access token
-
-The Synapse Access Token is used to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`.
-
-You are required to specify an access token (belonging to this new user) for UVS to work. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
-
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
-
-```yaml
-matrix_user_verification_service_uvs_access_token: "ACCESS_TOKEN_HERE"
-```
 
 ### Custom Auth Token (optional)
 
