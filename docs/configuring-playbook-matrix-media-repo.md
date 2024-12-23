@@ -88,7 +88,7 @@ matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
 
 ```
 
-Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-media-repo/defaults/main.yml)
+Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](../roles/custom/matrix-media-repo/defaults/main.yml)
 
 ## Signing Keys
 

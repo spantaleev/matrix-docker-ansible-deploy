@@ -22,41 +22,52 @@ If you really need to run an email server on the Matrix machine for other purpos
 
 For details about using Email2Matrix alongside [Postfix](http://www.postfix.org/), see [here](https://github.com/devture/email2matrix/blob/master/docs/setup_with_postfix.md).
 
-### Creating a user
+### Register a dedicated Matrix user (optional, recommended)
 
-Before enabling Email2Matrix, you'd most likely wish to create a dedicated user (or more) that would be sending messages on the Matrix side. Take note of the user's ID as it needs to be specified as `MatrixUserId` on your `inventory/host_vars/matrix.example.com/vars.yml` file later.
+We recommend that you create a dedicated Matrix user for Email2Matrix.
 
-Refer to [Registering users](registering-users.md) for ways to create a user. A regular (non-admin) user works best.
+Generate a strong password for the user. You can create one with a command like `pwgen -s 64 1`.
 
-### Creating a shared room
+You can use the playbook to [register a new user](registering-users.md):
 
-After creating the sender user, you should create one or more Matrix rooms that you share with that user. It doesn't matter who creates and owns the rooms and who joins later (you or the sender user).
+```sh
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=email2matrix password=PASSWORD_FOR_THE_USER admin=no' --tags=register-user
+```
 
-What matters is that both you and the sender user are part of the same room and that the sender user has enough privileges in the room to be able to send messages there.
+Take note of the user's ID as it needs to be specified as `MatrixUserId` on your `inventory/host_vars/matrix.example.com/vars.yml` file later.
 
-Inviting additional people to the room is okay too.
+### Obtain an access token
 
-Take note of each room's room ID (different clients show the room ID in a different place). You'll need the room ID when [configuring the playbook](#adjusting-the-playbook-configuration) below.
-
-### Obtain an access token for the sender user
-
-In order for the sender user created above to be able to send messages to the room, we'll need to obtain an access token for it. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+Email2Matrix requires an access token for the sender user to be able to send messages to the room. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
+### Join to rooms as the sender user manually
+
+ℹ️ **Email2Matrix does not accept room invitations automatically**. To deliver messages to rooms, the sender user must be joined to all rooms manually.
+
+For each new room you would like the user to deliver messages to, invite the user to the room.
+
+Then, log in as the sender user using any Matrix client of your choosing, accept the room invitation from the user's account.
+
+Make sure that you and the sender user are part of the same room and that the sender user has enough privileges in the room to be able to send messages there, then log out.
+
+Take note of each room's room ID (different clients show the room ID in a different place). You'll need the room ID when [configuring the playbook](#adjusting-the-playbook-configuration) below.
+
 ## Adjusting the playbook configuration
 
-After doing the preparation steps above, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+To enable Email2Matrix, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_FOR_EMAIL2MATRIX1_HERE` and `ACCESS_TOKEN_FOR_EMAIL2MATRIX2_HERE` with the ones created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_email2matrix_enabled: true
 
+# You need at least 1 mailbox.
 matrix_email2matrix_matrix_mappings:
   - MailboxName: "mailbox1"
     MatrixRoomId: "!qporfwt:{{ matrix_domain }}"
     MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
     MatrixUserId: "@email2matrix1:{{ matrix_domain }}"
-    MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"
+    MatrixAccessToken: "ACCESS_TOKEN_FOR_EMAIL2MATRIX1_HERE"
     IgnoreSubject: false
     IgnoreBody: false
     SkipMarkdown: false
@@ -65,7 +76,7 @@ matrix_email2matrix_matrix_mappings:
     MatrixRoomId: "!aaabaa:{{ matrix_domain }}"
     MatrixHomeserverUrl: "{{ matrix_homeserver_url }}"
     MatrixUserId: "@email2matrix2:{{ matrix_domain }}"
-    MatrixAccessToken: "MATRIX_ACCESS_TOKEN_HERE"
+    MatrixAccessToken: "ACCESS_TOKEN_FOR_EMAIL2MATRIX2_HERE"
     IgnoreSubject: true
     IgnoreBody: false
     SkipMarkdown: true
