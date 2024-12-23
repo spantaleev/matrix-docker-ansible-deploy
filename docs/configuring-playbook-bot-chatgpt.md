@@ -28,6 +28,8 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.chatgpt
 
 The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
 To make sure the bot can read encrypted messages, it will need an encryption key, just like any other new user. While obtaining the access token, follow the prompts to setup a backup key. More information can be found in the [Element documentation](https://element.io/help#encryption6).
 
 ## Adjusting the playbook configuration

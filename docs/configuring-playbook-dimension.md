@@ -26,13 +26,13 @@ matrix_dimension_admins:
 
 The admin interface is accessible within Element Web by accessing it in any room and clicking the cog wheel/settings icon in the top right. Currently, Dimension can be opened in Element Web by the "Add widgets, bridges, & bots" link in the room information.
 
-### Access token
+### Obtain an access token
 
 We recommend that you create a dedicated Matrix user for Dimension (`dimension` is a good username). Follow our [Registering users](registering-users.md) guide to learn how to register **a regular (non-admin) user**.
 
-You are required to specify an access token (belonging to this new user) for Dimension to work. To get an access token for the Dimension user, you can follow the documentation on [how to do obtain an access token](obtaining-access-tokens.md).
+You are required to specify an access token (belonging to this new user) for Dimension to work. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-**Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.**
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 Add access token to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 

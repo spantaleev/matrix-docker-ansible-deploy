@@ -24,6 +24,8 @@ If you would like Mjolnir to be able to deactivate users, move aliases, shutdown
 
 The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
 ### Make sure the account is free from rate limiting
 
 If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a required step. If you do not configure it, Mjolnir will crash.**

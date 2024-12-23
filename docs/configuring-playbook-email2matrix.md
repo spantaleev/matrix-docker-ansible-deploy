@@ -42,6 +42,8 @@ Take note of each room's room ID (different clients show the room ID in a differ
 
 In order for the sender user created above to be able to send messages to the room, we'll need to obtain an access token for it. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
 ## Adjusting the playbook configuration
 
 After doing the preparation steps above, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
