@@ -51,7 +51,7 @@ To use DNS SRV record validation, you need to:
 
 For more details on how to configure the playbook to work with SRV delegation, take a look at this documentation: [Server Delegation via a DNS SRV record (advanced)](howto-srv-server-delegation.md)
 
-### Obtaining certificates
+### Obtain certificates
 
 How you can obtain a valid certificate for `example.com` on the `matrix.example.com` server is up to you.
 

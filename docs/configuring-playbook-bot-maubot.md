@@ -8,7 +8,7 @@ See the project's [documentation](https://docs.mau.fi/maubot/usage/basic.html) t
 
 ## Adjusting the playbook configuration
 
-To enable maubot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_maubot_enabled: true
@@ -75,7 +75,7 @@ You should start in the following order
 2. **Upload some Plugins**: Plugins can be obtained from [here](https://github.com/maubot/maubot#plugins) or any other source.
 3. **Create an instance**: An instance is the actual bot. You have to specify a client which the bot instance will use and the plugin (how the bot will behave)
 
-## Obtaining an access token
+## Obtain an access token
 
 This can be done via `mbc login` then `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)). To run these commands, you'll first need to `exec` into the maubot container with `docker exec -it matrix-bot-maubot sh`.
 

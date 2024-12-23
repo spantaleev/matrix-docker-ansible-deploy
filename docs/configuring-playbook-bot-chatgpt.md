@@ -6,11 +6,15 @@ The playbook can install and configure [matrix-chatgpt-bot](https://github.com/m
 
 Talk to [ChatGPT](https://openai.com/blog/chatgpt/) via your favourite Matrix client!
 
-## Register the bot account
+## Prerequisites
 
-The playbook does not automatically create users for you. The bot requires an access token to be able to connect to your homeserver.
+### Obtain an OpenAI API key
 
-You **need to register the bot user manually** before setting up the bot.
+To use the bot, you'd need to obtain an API key from [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys).
+
+### Register the bot account
+
+The playbook does not automatically create users for you. You **need to register the bot user manually** before setting up the bot.
 
 Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
 
@@ -20,36 +24,30 @@ You can use the playbook to [register a new user](registering-users.md):
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.chatgpt password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-## Get an access token and create encryption keys
+### Obtain an access token and create encryption keys
 
-Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 To make sure the bot can read encrypted messages, it will need an encryption key, just like any other new user. While obtaining the access token, follow the prompts to setup a backup key. More information can be found in the [Element documentation](https://element.io/help#encryption6).
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `API_KEY_HERE` with the API key retrieved [here](#obtain-an-openai-api-key) and `ACCESS_TOKEN_HERE` with the access token created [here](#obtain-an-access-token-and-create-encryption-keys), respectively.
 
 ```yaml
 matrix_bot_chatgpt_enabled: true
 
-# Obtain a new API key from https://platform.openai.com/account/api-keys
-matrix_bot_chatgpt_openai_api_key: ''
+matrix_bot_chatgpt_openai_api_key: 'API_KEY_HERE'
 
-# This is the default username
+# Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_bot_chatgpt_matrix_bot_username_localpart: 'bot.chatgpt'
 
-# Matrix access token (from bot user above)
-# see: https://webapps.stackexchange.com/questions/131056/how-to-get-an-access-token-for-element-riot-matrix
-matrix_bot_chatgpt_matrix_access_token: ''
+matrix_bot_chatgpt_matrix_access_token: 'ACCESS_TOKEN_HERE'
 
 # Configuring the system promt used, needed if the bot is used for special tasks.
 # More information: https://github.com/mustvlad/ChatGPT-System-Prompts
 matrix_bot_chatgpt_matrix_bot_prompt_prefix: 'Instructions:\nYou are ChatGPT, a large language model trained by OpenAI.'
-
 ```
-
-You will need to get tokens for ChatGPT.
 
 ## Installing
 

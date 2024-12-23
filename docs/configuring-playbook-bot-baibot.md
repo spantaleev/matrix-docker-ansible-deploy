@@ -30,7 +30,7 @@ Depending on your current `vars.yml` file and desired configuration, **you may r
 
 ### Base configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_baibot_enabled: true

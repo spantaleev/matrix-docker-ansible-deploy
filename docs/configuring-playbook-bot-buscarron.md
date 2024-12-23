@@ -6,7 +6,7 @@ Buscarron is bot that receives HTTP POST submissions of web forms and forwards t
 
 ## Adjusting the playbook configuration
 
-To enable Buscarron, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_buscarron_enabled: true

@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/etkecc/honoroit/blob/main/R
 
 ## Adjusting the playbook configuration
 
-To enable Honoroit, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bot_honoroit_enabled: true
