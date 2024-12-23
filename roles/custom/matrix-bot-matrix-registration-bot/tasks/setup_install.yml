@@ -10,7 +10,7 @@
   with_items:
     - {path: "{{ matrix_bot_matrix_registration_bot_config_path }}", when: true}
     - {path: "{{ matrix_bot_matrix_registration_bot_data_path }}", when: true}
-    - {path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}", when: true}
+    - {path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}", when: "{{ matrix_bot_matrix_registration_bot_container_image_self_build }}"}
   when: "item.when | bool"
 
 - name: Ensure matrix-registration-bot configuration file created
