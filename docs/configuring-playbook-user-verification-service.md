@@ -6,7 +6,7 @@ See the project's [documentation](https://github.com/matrix-org/matrix-user-veri
 
 Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference.
 
-**Note**: enabling Matrix User Verification Service, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled.
+**Note**: enabling UVS, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled.
 
 If the Jitsi server is also configured by this playbook, all plugging of variables and secrets is handled in `group_vars/matrix_servers`.
 
@@ -43,7 +43,7 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=uvs passwor
 
 ## Adjusting the playbook configuration
 
-To enable Matrix User Verification Service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable UVS, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_user_verification_service_enabled: true
