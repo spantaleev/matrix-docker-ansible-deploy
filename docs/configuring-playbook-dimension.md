@@ -1,17 +1,45 @@
 # Setting up Dimension integration manager (optional, unmaintained)
 
-**[Dimension](https://dimension.t2bot.io) can only be installed after Matrix services are installed and running.** If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
+**Notes**:
+- Dimension is **[officially unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299)**. We recommend not bothering with installing it.
+- This playbook now supports running Dimension in both a federated and [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environments. This is handled automatically based on the value of `matrix_homeserver_federation_enabled`. Enabling Dimension, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
 
-**Note**: Dimension is **[officially unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299)**. We recommend not bothering with installing it.
+The playbook can install and configure the [Dimension](https://dimension.t2bot.io) integration manager for you.
 
-**Note**: This playbook now supports running [Dimension](https://dimension.t2bot.io) in both a federated and [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environments. This is handled automatically based on the value of `matrix_homeserver_federation_enabled`. Enabling Dimension, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
+See the project's [documentation](https://github.com/turt2live/matrix-dimension/blob/master/README.md) to learn what it does and why it might be useful to you.
+
+## Prerequisites
+
+### Install Matrix services
+
+Dimension can only be installed after Matrix services are installed and running. If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) and come back here later.
+
+### Register a dedicated Matrix user (optional)
+
+We recommend that you create a dedicated Matrix user for Dimension (`dimension` is a good username).
+
+Generate a strong password for the user. You can create one with a command like `pwgen -s 64 1`.
+
+You can use the playbook to [register a new user](registering-users.md):
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=dimension password=PASSWORD_FOR_THE_USER admin=no' --tags=register-user
+```
+
+### Obtain an access token
+
+Dimension requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ## Adjusting the playbook configuration
 
-To enable Dimension, add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
+To enable Dimension, add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`). Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_dimension_enabled: true
+
+matrix_dimension_access_token: "ACCESS_TOKEN_HERE"
 ```
 
 ### Define admin users
@@ -25,22 +53,6 @@ matrix_dimension_admins:
 ```
 
 The admin interface is accessible within Element Web by accessing it in any room and clicking the cog wheel/settings icon in the top right. Currently, Dimension can be opened in Element Web by the "Add widgets, bridges, & bots" link in the room information.
-
-### Obtain an access token
-
-We recommend that you create a dedicated Matrix user for Dimension (`dimension` is a good username). Follow our [Registering users](registering-users.md) guide to learn how to register **a regular (non-admin) user**.
-
-You are required to specify an access token (belonging to this new user) for Dimension to work. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
-
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
-
-Add access token to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
-
-```yaml
-matrix_dimension_access_token: "YOUR ACCESS TOKEN HERE"
-```
-
-For more information on how to acquire an access token, visit [https://t2bot.io/docs/access_tokens](https://t2bot.io/docs/access_tokens).
 
 ### Adjusting the Dimension URL
 
