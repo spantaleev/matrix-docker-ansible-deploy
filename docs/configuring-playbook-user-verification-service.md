@@ -53,7 +53,7 @@ You are required to specify an access token (belonging to this new user) for UVS
 matrix_user_verification_service_uvs_access_token: "YOUR ACCESS TOKEN HERE"
 ```
 
-### (Optional) Custom Auth Token
+### Custom Auth Token (optional)
 
 It is possible to set an API Auth Token to restrict access to the UVS. If this is enabled, anyone making a request to UVS must provide it via the header "Authorization: Bearer TOKEN"
 
@@ -67,7 +67,7 @@ matrix_user_verification_service_uvs_auth_token: "TOKEN"
 
 In case Jitsi is also managed by this playbook and 'matrix' authentication in Jitsi is enabled, this collection will automatically configure Jitsi to use the configured auth token.
 
-### (Optional) Disable Auth
+### Disable Auth (optional)
 
 Authorization is enabled by default. To disable it, add the following configuration to your `vars.yml` file:
 
@@ -75,7 +75,7 @@ Authorization is enabled by default. To disable it, add the following configurat
 matrix_user_verification_service_uvs_require_auth: false
 ```
 
-### (Optional) Federation
+### Federation (optional)
 
 In theory (however currently untested), UVS can handle federation. To enable it, add the following configuration to your `vars.yml` file:
 

@@ -34,7 +34,7 @@ As [per the Client-Server specification](https://matrix.org/docs/spec/client_ser
 
 However, this playbook installs your Matrix server on another domain (e.g. `matrix.example.com`) and not on the base domain (e.g. `example.com`), so it takes a little extra manual effort to set up the file.
 
-### (Optional) Support Service Discovery
+### Support Service Discovery (optional)
 
 [MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929), which was added to [Matrix Specification version v1.10](https://spec.matrix.org/v1.10/client-server-api/#getwell-knownmatrixsupport), specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 

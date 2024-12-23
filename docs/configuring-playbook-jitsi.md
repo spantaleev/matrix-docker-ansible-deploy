@@ -40,7 +40,7 @@ Once you've decided on the domain and path, **you may need to adjust your DNS** 
 
 By default, you will need to create a CNAME record for `jitsi`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
-## (Optional) Configure Jitsi authentication and guests mode
+## Configure Jitsi authentication and guests mode (optional)
 
 By default the Jitsi Meet instance does not require any kind of login and is open to use for anyone without registration.
 
@@ -112,7 +112,7 @@ jitsi_ldap_start_tls: false
 
 For more information refer to the [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap) and the [saslauthd `LDAP_SASLAUTHD`](https://github.com/winlibs/cyrus-sasl/blob/master/saslauthd/LDAP_SASLAUTHD) documentation.
 
-## (Optional) Making your Jitsi server work on a LAN
+## Making your Jitsi server work on a LAN (optional)
 
 By default the Jitsi Meet instance does not work with a client in LAN (Local Area Network), even if others are connected from WAN. There are no video and audio. In the case of WAN to WAN everything is ok.
 
@@ -127,7 +127,7 @@ jitsi_jvb_container_extra_arguments:
   - '--env "JVB_ADVERTISE_IPS=<Local IP address of the host>"'
 ```
 
-## (Optional) Fine tune Jitsi
+## Fine tune Jitsi (optional)
 
 Sample **additional** `inventory/host_vars/matrix.example.com/vars.yml` configuration to save up resources (explained below):
 
@@ -152,7 +152,7 @@ You may want to **limit the number of video feeds forwarded to each client**, to
 
 You may want to **limit the maximum video resolution**, to save up resources on both server and clients.
 
-## (Optional) Specify a Max number of participants on a Jitsi conference
+## Specify a Max number of participants on a Jitsi conference (optional)
 
 The playbook allows a user to set a max number of participants allowed to join a Jitsi conference. By default there is no limit.
 
@@ -162,7 +162,7 @@ In order to set the max number of participants use the following **additional** 
 jitsi_prosody_max_participants: 4 # example value
 ```
 
-## (Optional) Additional JVBs
+## Additional JVBs (optional)
 
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you may need to provision additional JVB services on other hosts.
 
@@ -253,7 +253,7 @@ traefik_provider_configuration_extension_yaml: |
      {% endfor %}
 ```
 
-## (Optional) Enable Gravatar
+## Enable Gravatar (optional)
 
 In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since Element clients already send the url of configured Matrix avatars to Jitsi, we disabled gravatar.
 
