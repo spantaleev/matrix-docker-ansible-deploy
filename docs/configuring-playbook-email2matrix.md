@@ -22,7 +22,7 @@ If you really need to run an email server on the Matrix machine for other purpos
 
 For details about using Email2Matrix alongside [Postfix](http://www.postfix.org/), see [here](https://github.com/devture/email2matrix/blob/master/docs/setup_with_postfix.md).
 
-### Register a dedicated Matrix user (optional)
+### Register a dedicated Matrix user (optional, recommended)
 
 We recommend that you create a dedicated Matrix user for Email2Matrix.
 

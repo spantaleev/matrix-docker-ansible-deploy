@@ -14,7 +14,7 @@ See the project's [documentation](https://github.com/turt2live/matrix-dimension/
 
 Dimension can only be installed after Matrix services are installed and running. If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) and come back here later.
 
-### Register a dedicated Matrix user (optional)
+### Register a dedicated Matrix user (optional, recommended)
 
 We recommend that you create a dedicated Matrix user for Dimension (`dimension` is a good username).
 
