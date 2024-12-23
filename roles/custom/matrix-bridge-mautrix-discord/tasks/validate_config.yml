@@ -9,7 +9,7 @@
     - {'name': 'matrix_mautrix_discord_appservice_token', when: true}
     - {'name': 'matrix_mautrix_discord_homeserver_address', when: true}
     - {'name': 'matrix_mautrix_discord_homeserver_token', when: true}
-    - {'name': 'matrix_mautrix_discord_homeserver_public_address', when: true}
+    - {'name': 'matrix_mautrix_discord_bridge_public_address', when: true}
     - {'name': 'matrix_mautrix_discord_container_network', when: true}
     - {'name': 'matrix_mautrix_discord_database_hostname', when: "{{ matrix_mautrix_discord_database_engine == 'postgres' }}"}
 
@@ -21,3 +21,5 @@
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_mautrix_discord_login_shared_secret', 'new': '<removed>'}
+    - {'old': 'matrix_mautrix_discord_homeserver_public_address', 'new': 'matrix_mautrix_discord_bridge_public_address'}
+    - {'old': 'matrix_mautrix_discord_command_prefix', 'new': 'matrix_mautrix_discord_bridge_command_prefix'}

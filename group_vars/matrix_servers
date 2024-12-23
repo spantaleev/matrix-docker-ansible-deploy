@@ -1116,8 +1116,10 @@ matrix_mautrix_discord_systemd_required_services_list_auto: |
 matrix_mautrix_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.as.tok', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_discord_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_discord_homeserver_public_address: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_matrix }}"
 matrix_mautrix_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.hs.tok', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_discord_bridge_public_address: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_matrix }}"
+matrix_mautrix_discord_bridge_avatar_proxy_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.avatar', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_discord_bridge_login_shared_secret_map_auto: |-
   {{

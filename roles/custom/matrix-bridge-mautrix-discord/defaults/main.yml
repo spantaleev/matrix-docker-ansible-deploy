@@ -22,11 +22,31 @@ matrix_mautrix_discord_data_path: "{{ matrix_mautrix_discord_base_path }}/data"
 matrix_mautrix_discord_docker_src_files_path: "{{ matrix_mautrix_discord_base_path }}/docker-src"
 
 matrix_mautrix_discord_homeserver_address: ""
-matrix_mautrix_discord_homeserver_public_address: ''
 matrix_mautrix_discord_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_discord_appservice_address: "http://matrix-mautrix-discord:8080"
 
-matrix_mautrix_discord_command_prefix: "!discord"
+matrix_mautrix_discord_bridge_command_prefix: "!discord"
+
+# Publicly accessible base URL that Discord can use to reach the bridge, used for avatars in relay mode.
+# If not set, avatars will not be bridged. Only the /mautrix-discord/avatar/{server}/{id}/{hash} endpoint is used on this address.
+# This should not have a trailing slash, the endpoint above will be appended to the provided address.
+matrix_mautrix_discord_bridge_public_address: ''
+
+# A random key used to sign the avatar URLs. The bridge will only accept requests with a valid signature.
+matrix_mautrix_discord_bridge_avatar_proxy_key: ''
+
+# Localpart template of MXIDs for Discord users.
+# {{ '{{.}}' }} is replaced with the internal ID of the Discord user.
+matrix_mautrix_discord_bridge_username_template: "{% raw %}discord_{{.}}{% endraw %}"
+
+# Displayname template for Discord users. This is also used as the room name in DMs if private_chat_portal_meta is enabled.
+matrix_mautrix_discord_bridge_displayname_template: "{% raw %}{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}{% endraw %}"
+
+# Displayname template for Discord channels (bridged as rooms, or spaces when type=4).
+matrix_mautrix_discord_bridge_channel_name_template: "{% raw %}{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}{% endraw %}"
+
+# Displayname template for Discord guilds (bridged as spaces).
+matrix_mautrix_discord_bridge_guild_name_template: "{% raw %}{{.Name}}{% endraw %}"
 
 matrix_mautrix_discord_bridge_permissions: |
   {{
@@ -56,6 +76,8 @@ matrix_mautrix_discord_appservice_token: ''
 matrix_mautrix_discord_homeserver_token: ''
 
 matrix_mautrix_discord_appservice_bot_username: discordbot
+matrix_mautrix_discord_appservice_bot_displayname: Discord bridge bot
+matrix_mautrix_discord_appservice_bot_avatar: mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC
 
 matrix_mautrix_discord_provisioning_shared_secret: disable
 
@@ -162,6 +184,9 @@ matrix_mautrix_discord_registration: "{{ matrix_mautrix_discord_registration_yam
 # Enable End-to-bridge encryption
 matrix_mautrix_discord_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_mautrix_discord_bridge_encryption_default: "{{ matrix_bridges_encryption_default }}"
+matrix_mautrix_discord_bridge_encryption_require: false
+matrix_mautrix_discord_bridge_encryption_appservice: false
+matrix_mautrix_discord_bridge_encryption_plaintext_mentions: false
 matrix_mautrix_discord_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_discord_bridge_encryption_allow }}"
 
 # On Conduit versions before 0.5.0 this option prevented users from joining spaces created by the bridge.
