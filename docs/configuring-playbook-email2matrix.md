@@ -42,13 +42,15 @@ Email2Matrix requires an access token for the sender user to be able to send mes
 
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
-### Creating a shared room
+### Join to rooms as the sender user manually
 
-After creating the sender user, you should create one or more Matrix rooms that you share with that user. It doesn't matter who creates and owns the rooms and who joins later (you or the sender user).
+ℹ️ **Email2Matrix does not accept room invitations automatically**. To deliver messages to rooms, the sender user must be joined to all rooms manually.
 
-What matters is that both you and the sender user are part of the same room and that the sender user has enough privileges in the room to be able to send messages there.
+For each new room you would like the user to deliver messages to, invite the user to the room.
 
-Inviting additional people to the room is okay too.
+Then, log in as the sender user using any Matrix client of your choosing, accept the room invitation from the user's account.
+
+Make sure that you and the sender user are part of the same room and that the sender user has enough privileges in the room to be able to send messages there, then log out.
 
 Take note of each room's room ID (different clients show the room ID in a different place). You'll need the room ID when [configuring the playbook](#adjusting-the-playbook-configuration) below.
 
