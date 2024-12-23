@@ -4,6 +4,10 @@
 
 matrix_mautrix_discord_enabled: true
 
+matrix_mautrix_discord_hostname: ""
+matrix_mautrix_discord_path_prefix: /
+matrix_mautrix_discord_scheme: https
+
 matrix_mautrix_discord_container_image_self_build: false
 matrix_mautrix_discord_container_image_self_build_repo: "https://mau.dev/mautrix/discord.git"
 matrix_mautrix_discord_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_discord_version == 'latest' else matrix_mautrix_discord_version }}"
@@ -30,7 +34,7 @@ matrix_mautrix_discord_bridge_command_prefix: "!discord"
 # Publicly accessible base URL that Discord can use to reach the bridge, used for avatars in relay mode.
 # If not set, avatars will not be bridged. Only the /mautrix-discord/avatar/{server}/{id}/{hash} endpoint is used on this address.
 # This should not have a trailing slash, the endpoint above will be appended to the provided address.
-matrix_mautrix_discord_bridge_public_address: ''
+matrix_mautrix_discord_bridge_public_address: "{{ (matrix_mautrix_discord_scheme + '://' + matrix_mautrix_discord_hostname + (matrix_mautrix_discord_path_prefix if matrix_mautrix_discord_path_prefix != '/' else '')) if matrix_mautrix_discord_hostname else '' }}"
 
 # A random key used to sign the avatar URLs. The bridge will only accept requests with a valid signature.
 matrix_mautrix_discord_bridge_avatar_proxy_key: ''
@@ -59,6 +63,38 @@ matrix_mautrix_discord_container_network: ''
 matrix_mautrix_discord_container_additional_networks: "{{ matrix_mautrix_discord_container_additional_networks_auto + matrix_mautrix_discord_container_additional_networks_custom }}"
 matrix_mautrix_discord_container_additional_networks_auto: []
 matrix_mautrix_discord_container_additional_networks_custom: []
+
+# matrix_mautrix_discord_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_mautrix_discord_container_labels_additional_labels`.
+matrix_mautrix_discord_container_labels_traefik_enabled: true
+matrix_mautrix_discord_container_labels_traefik_docker_network: "{{ matrix_mautrix_discord_container_network }}"
+matrix_mautrix_discord_container_labels_traefik_hostname: "{{ matrix_mautrix_discord_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/matrix-alertmanager-receiver`).
+matrix_mautrix_discord_container_labels_traefik_path_prefix: "{{ matrix_mautrix_discord_path_prefix }}"
+matrix_mautrix_discord_container_labels_traefik_entrypoints: web-secure
+matrix_mautrix_discord_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose the bridge's avatar proxy (`/mautrix-discord/avatar/{server}/{id}/{hash}`).
+# See: matrix_mautrix_discord_bridge_public_address
+matrix_mautrix_discord_container_labels_avatar_proxy_enabled: "{{ matrix_mautrix_discord_bridge_public_address != '' }}"
+matrix_mautrix_discord_container_labels_avatar_proxy_hostname: "{{ matrix_mautrix_discord_container_labels_traefik_hostname }}"
+matrix_mautrix_discord_container_labels_avatar_proxy_path_prefix: "{{ matrix_mautrix_discord_container_labels_traefik_path_prefix if matrix_mautrix_discord_container_labels_traefik_path_prefix == '/' else (matrix_mautrix_discord_container_labels_traefik_path_prefix + '/') }}mautrix-discord/avatar"
+matrix_mautrix_discord_container_labels_avatar_proxy_traefik_rule: "Host(`{{ matrix_mautrix_discord_container_labels_traefik_hostname }}`) && PathPrefix(`{{ matrix_mautrix_discord_container_labels_avatar_proxy_path_prefix }}`)"
+matrix_mautrix_discord_container_labels_avatar_proxy_traefik_priority: 0
+matrix_mautrix_discord_container_labels_avatar_proxy_traefik_entrypoints: "{{ matrix_mautrix_discord_container_labels_traefik_entrypoints }}"
+matrix_mautrix_discord_container_labels_avatar_proxy_traefik_tls: "{{ matrix_mautrix_discord_container_labels_avatar_proxy_traefik_entrypoints != 'web' }}"
+matrix_mautrix_discord_container_labels_avatar_proxy_traefik_tls_certResolver: "{{ matrix_mautrix_discord_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_mautrix_discord_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_mautrix_discord_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_mautrix_discord_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
 matrix_mautrix_discord_container_extra_arguments: []
