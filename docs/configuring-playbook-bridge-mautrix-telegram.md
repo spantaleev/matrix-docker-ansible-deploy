@@ -88,7 +88,7 @@ Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playb
 
 When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
 
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to do that](obtaining-access-tokens.md).
+- retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md).
 
 - send `login-matrix` to the bot and follow instructions about how to send the access token to it
 
