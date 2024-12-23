@@ -39,7 +39,7 @@ For a list of all configuration options see the role defaults [`roles/matrix-use
 
 In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host. However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
 
-### Access token
+### Obtain an access token
 
 The Synapse Access Token is used to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`.
 
