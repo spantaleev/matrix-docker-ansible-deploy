@@ -6,7 +6,7 @@ See the project's [documentation](https://github.com/matrix-org/matrix-user-veri
 
 Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference. If the Jitsi server is also configured by this playbook, all plugging of variables and secrets is handled in `group_vars/matrix_servers`.
 
-__Some general concepts of UVS may be helpful to understand the rest, so here they are:__
+## What does it do?
 
 UVS can be used to verify two claims:
 
