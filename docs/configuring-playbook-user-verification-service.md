@@ -4,11 +4,7 @@ The playbook can install and configure [Matrix User Verification Service](https:
 
 See the project's [documentation](https://github.com/matrix-org/matrix-user-verification-service/blob/master/README.md) to learn what it does and why it might be useful to you.
 
-Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference.
-
-**Note**: enabling UVS, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled.
-
-If the Jitsi server is also configured by this playbook, all plugging of variables and secrets is handled in `group_vars/matrix_servers`.
+Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference. If the Jitsi server is also configured by this playbook, all plugging of variables and secrets is handled in `group_vars/matrix_servers`.
 
 __Some general concepts of UVS may be helpful to understand the rest, so here they are:__
 
@@ -22,6 +18,10 @@ Verifying an OpenID token ID done by finding the corresponding Homeserver via  '
 Verifying RoomMembership and PowerLevel is done against `matrix_user_verification_service_uvs_homeserver_url` which is by default done via the docker network. UVS will verify the validity of the token beforehand though.
 
 ## Prerequisites
+
+### Open Matrix Federation port
+
+UVS exposes the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that port is accessible.
 
 ### Install Matrix services
 
