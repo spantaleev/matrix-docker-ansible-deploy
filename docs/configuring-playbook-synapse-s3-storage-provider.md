@@ -23,7 +23,7 @@ While you will need some local disk space around, it's only to accommodate usage
 
 ## Adjusting the playbook configuration
 
-After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure `s3-storage-provider` in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
+After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_ext_synapse_s3_storage_provider_enabled: true
@@ -43,8 +43,6 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # 
 # This only works on AWS when your server is hosted on an EC2 instance with the correct instance profile set.
 # Uncomment the variable below to use it.
 # matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile: true
-
-# For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
 
 If you have existing files in Synapse's media repository (`/matrix/synapse/storage/media-store/…`):
