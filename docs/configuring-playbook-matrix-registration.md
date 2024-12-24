@@ -2,9 +2,11 @@
 
 The playbook can install and configure [matrix-registration](https://github.com/ZerataX/matrix-registration) for you.
 
-**WARNING**: this is a poorly maintained and buggy project. It's better to avoid using it.
+⚠️ **Warnings**:
 
-**WARNING**: this is not related to [matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md)
+- This is a poorly maintained and buggy project. It's better to avoid using it.
+
+- This is not related to [matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md)
 
 > matrix-registration is a simple python application to have a token based Matrix registration.
 
