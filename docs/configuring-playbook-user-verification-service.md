@@ -29,7 +29,7 @@ UVS can only be installed after Matrix services are installed and running. If yo
 
 ### Register a dedicated Matrix user (optional, recommended)
 
-We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username).
+We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username). **Because UVS requires an access token as an admin user, that user needs to be an admin.**
 
 Generate a strong password for the user. You can create one with a command like `pwgen -s 64 1`.
 
