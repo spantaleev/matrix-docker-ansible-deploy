@@ -51,7 +51,3 @@ The shortcut command with `just` program is also available: `just run-tags run-d
 ## Postgres
 
 See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
-
-## Ma1sd
-
-See the dedicated [Adjusting ma1sd Identity Server configuration](configuring-playbook-ma1sd.md) documentation page.
