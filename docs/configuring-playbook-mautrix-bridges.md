@@ -30,7 +30,7 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
       '@alice:{{ matrix_domain }}': admin
 ```
 
-## encryption
+### Encryption
 
 Encryption support is off by default. If you would like to enable encryption, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
@@ -48,7 +48,7 @@ matrix_mautrix_SERVICENAME_bridge_encryption_enabled: true
 matrix_mautrix_SERVICENAME_bridge_encryption_default: true
 ```
 
-## relay mode
+### Relay mode
 
 Relay mode is off by default. If you would like to enable relay mode, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
@@ -79,7 +79,7 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
       default: true
 ```
 
-## Setting the bot's username
+### Setting the bot's username
 
 ```yaml
 matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
@@ -87,7 +87,7 @@ matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
 
 Can be used to set the username for the bridge.
 
-## Discovering additional configuration options
+### Extending the configuration
 
 You may wish to look at `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` to find other things you would like to configure.
 

@@ -14,7 +14,7 @@ This means that this is **limited to the list of DNS providers supported by Trae
 
 The up-to-date list can be accessed on [traefik's documentation](https://doc.traefik.io/traefik/https/acme/#providers)
 
-## The changes
+## Adjusting the playbook configuration
 
 **Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
 

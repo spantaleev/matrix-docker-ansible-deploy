@@ -21,7 +21,7 @@ You can run some scripts to delete the local files once in a while (which we do 
 
 While you will need some local disk space around, it's only to accommodate usage, etc., and won't grow as large as your S3 store.
 
-## Installing
+## Adjusting the playbook configuration
 
 After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure `s3-storage-provider` in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
