@@ -1,8 +1,10 @@
 # Setting up Matrix User Verification Service (optional)
 
-**[Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) can only be installed after Matrix services are installed and running.** If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
+The playbook can install and configure [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) for you.
 
-Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference. Please refer to the documentation of the [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) to understand how it works.
+See the project's [documentation](https://github.com/matrix-org/matrix-user-verification-service/blob/master/README.md) to learn what it does and why it might be useful to you.
+
+Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference.
 
 **Note**: enabling Matrix User Verification Service, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled.
 
@@ -22,6 +24,10 @@ Verifying RoomMembership and PowerLevel is done against `matrix_user_verificatio
 ## Prerequisites
 
 In order to use UVS, an admin token for the configured homeserver must be supplied. For now this means configuring Synapse and creating the token before installing UVS.
+
+### Install Matrix services
+
+UVS can only be installed after Matrix services are installed and running. If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) and come back here later.
 
 ## Enable
 
