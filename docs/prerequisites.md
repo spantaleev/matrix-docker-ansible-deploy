@@ -52,7 +52,7 @@ We will be using `example.com` as the domain in the following instruction. Pleas
   - `3478/udp`: TURN over UDP (used by Coturn)
   - `5349/tcp`: TURN over TCP (used by Coturn)
   - `5349/udp`: TURN over UDP (used by Coturn)
-  - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. In some cases, this **may necessary even with federation disabled**. Integration Servers (like Dimension) and Identity Servers (like ma1sd) may need to access `openid` APIs on the federation port.
+  - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. Some components like [Matrix User Verification Service](configuring-playbook-user-verification-service.md#open-matrix-federation-port) require this port to be opened **even with federation disabled**.
   - the range `49152-49172/udp`: TURN over UDP
   - potentially some other ports, depending on the additional (non-default) services that you enable in the **configuring the playbook** step (later on). Consult each service's documentation page in `docs/` for that.
 
