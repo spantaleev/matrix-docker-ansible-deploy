@@ -2734,10 +2734,12 @@ matrix_bot_matrix_registration_bot_container_network: "{{ matrix_addons_containe
 
 matrix_bot_matrix_registration_bot_container_additional_networks_auto: |-
   {{
-    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+    ([matrix_homeserver_container_network] if matrix_bot_matrix_registration_bot_container_network != matrix_homeserver_container_network else [])
   }}
 
-matrix_bot_matrix_registration_bot_api_base_url: "{{ matrix_addons_homeserver_client_api_url }}"
+# Using `matrix_addons_homeserver_client_api_url` would not work here,
+# because `matrix-traefik:8008` (matrix-internal-client-api) does not expose any `/_synapse` paths.
+matrix_bot_matrix_registration_bot_api_base_url: "{{ matrix_homeserver_container_url }}"
 
 ######################################################################
 #
