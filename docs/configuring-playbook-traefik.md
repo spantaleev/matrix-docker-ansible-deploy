@@ -37,14 +37,30 @@ traefik_dashboard_basicauth_password: YOUR_PASSWORD_HERE
 > [!WARNING]
 > Enabling the dashboard on a hostname you use for something else (like `matrix_server_fqn_matrix` in the configuration above) may cause conflicts. Enabling the Traefik Dashboard makes Traefik capture all `/dashboard` and `/api` requests and forward them to itself. If any of the services hosted on the same hostname requires any of these 2 URL prefixes, you will experience problems. So far, we're not aware of any playbook services which occupy these endpoints and are likely to cause conflicts.
 
-## Additional configuration
+## Extending the configuration
 
-Use the `traefik_configuration_extension_yaml` variable provided by the Traefik Ansible role to override or inject additional settings, even when no dedicated variable exists.
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- [Traefik role](https://github.com/mother-of-all-self-hosting/ansible-role-traefik)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-traefik/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `traefik_configuration_extension_yaml` variable
+
+For example, to enable and secure the Dashboard, you can add the following configuration to your `vars.yml` file:
+
+**Note**: this is a contrived example as you can enable and secure the Dashboard using the dedicated variables. See above for details.
 
 ```yaml
-# This is a contrived example.
-# You can enable and secure the Dashboard using dedicated variables. See above.
 traefik_configuration_extension_yaml: |
+  # Your custom YAML configuration for Traefik goes here.
+  # This configuration extends the default starting configuration (`traefik_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `traefik_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
   api:
     dashboard: true
 ```
