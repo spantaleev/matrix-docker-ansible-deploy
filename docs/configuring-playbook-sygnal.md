@@ -46,7 +46,7 @@ aux_file_definitions:
     group: "{{ matrix_user_groupname }}"
 ```
 
-For a more complete example of available fields and values they can take, see `roles/custom/matrix-sygnal/templates/sygnal.yaml.j2` (or the [upstream `sygnal.yaml.sample` configuration file](https://github.com/matrix-org/sygnal/blob/master/sygnal.yaml.sample)).
+For a more complete example of available fields and values they can take, see `roles/custom/matrix-sygnal/templates/config.yaml.j2` (or the [upstream `sygnal.yaml.sample` configuration file](https://github.com/matrix-org/sygnal/blob/master/sygnal.yaml.sample)).
 
 Configuring [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/) is easier, as it only requires that you provide some config values.
 
