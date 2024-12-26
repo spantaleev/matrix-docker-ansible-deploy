@@ -54,6 +54,14 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-buscarron/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
