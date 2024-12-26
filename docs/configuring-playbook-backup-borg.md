@@ -65,7 +65,13 @@ To backup without encryption, add `backup_borg_encryption: 'none'` to your vars.
 
 `backup_borg_location_source_directories` defines the list of directories to back up: it's set to `{{ matrix_base_data_path }}` by default, which is the base directory for every service's data, such as Synapse, Postgres and the bridges. You might want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable.
 
-Check the [backup_borg role](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg)'s [defaults/main.yml](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/main/defaults/main.yml) file for the full list of available options.
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- [backup_borg role](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `backup_borg_configuration_extension_yaml` variable
 
 ## Installing
 
