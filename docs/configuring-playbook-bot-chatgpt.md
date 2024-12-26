@@ -52,6 +52,14 @@ matrix_bot_chatgpt_matrix_access_token: 'ACCESS_TOKEN_HERE'
 matrix_bot_chatgpt_matrix_bot_prompt_prefix: 'Instructions:\nYou are ChatGPT, a large language model trained by OpenAI.'
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-chatgpt/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
