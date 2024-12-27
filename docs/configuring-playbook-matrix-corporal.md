@@ -116,6 +116,15 @@ aux_file_definitions:
 
 To learn more about what the policy configuration, see the matrix-corporal documentation on [policy](https://github.com/devture/matrix-corporal/blob/master/docs/policy.md).
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-corporal/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-corporal/templates/config.json.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_corporal_configuration_extension_json` variable
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
