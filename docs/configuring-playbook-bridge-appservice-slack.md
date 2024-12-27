@@ -61,7 +61,21 @@ matrix_appservice_slack_control_room_id: "Your Matrix admin room ID"
 # matrix_appservice_slack_team_sync_enabled: true
 ```
 
-Other configuration options are available via the `matrix_appservice_slack_configuration_extension_yaml` variable.
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-appservice-slack/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-appservice-slack/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_slack_configuration_extension_yaml` variable
+
+For example, to change the bot's username from `slackbot`, add the following configuration to your `vars.yml` file. Replace `examplebot` with your own.
+
+```yaml
+matrix_appservice_slack_configuration_extension_yaml: |
+  bot_username: "examplebot"
+```
 
 ## Installing
 
