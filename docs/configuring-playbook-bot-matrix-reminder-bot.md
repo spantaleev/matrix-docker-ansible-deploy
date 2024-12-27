@@ -23,6 +23,15 @@ matrix_bot_matrix_reminder_bot_matrix_user_password: PASSWORD_FOR_THE_BOT
 matrix_bot_matrix_reminder_bot_reminders_timezone: Europe/London
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-matrix-reminder-bot/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bot-matrix-reminder-bot/templates/config.yaml.j2` for the bot's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_matrix_reminder_bot_configuration_extension_yaml` variable
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
