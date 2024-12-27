@@ -47,6 +47,15 @@ If you've changed the default hostname, you may need to create a CNAME record fo
 
 When setting, replace `example.com` with your own.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-maubot/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bot-maubot/templates/config.yaml.j2` for the bot's default configuration
+
 ## Customizing the maubot container image
 
 Certain [maubot plugins](https://plugins.mau.bot/) require additional dependencies to be installed.
