@@ -61,6 +61,18 @@ If you've changed the default hostname, you may need to create a CNAME record fo
 
 When setting, replace `example.com` with your own.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the components.
+
+For `matrix-cactus-comments`, take a look at:
+
+- `roles/custom/matrix-cactus-comments/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
+For `matrix-cactus-comments-client`, take a look at:
+
+- `roles/custom/matrix-cactus-comments-client/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
