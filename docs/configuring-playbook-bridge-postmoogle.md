@@ -55,6 +55,14 @@ matrix_postmoogle_password: PASSWORD_FOR_THE_BOT
 # matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-postmoogle/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
