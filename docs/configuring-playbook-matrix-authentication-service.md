@@ -276,6 +276,15 @@ matrix_authentication_service_config_upstream_oauth2_providers:
 - go through the [migrating an existing homeserver](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) process
 - remove all Synapse OIDC-related configuration (`matrix_synapse_oidc_*`) to prevent it being in conflict with the MAS OIDC configuration
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-authentication-service/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-authentication-service/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_authentication_service_configuration_extension_yaml` variable
+
 ## Installing
 
 Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration) and [your DNS records](#adjusting-dns-records), you can run the playbook with [playbook tags](playbook-tags.md) as below:
