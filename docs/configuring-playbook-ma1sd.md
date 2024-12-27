@@ -47,15 +47,15 @@ To enable matrix.org forwarding, add the following configuration to your `vars.y
 matrix_ma1sd_matrixorg_forwarding_enabled: true
 ```
 
-### Additional features
+### Extending the configuration
 
-What this playbook configures for your is some bare minimum Identity Server functionality, so that you won't need to rely on external 3rd party services.
+There are some additional things you may wish to configure about the component.
 
-A few variables can be toggled in this playbook to alter the ma1sd configuration that gets generated.
+Take a look at:
 
-Still, ma1sd can do much more. You can refer to the [ma1sd website](https://github.com/ma1uta/ma1sd) for more details and configuration options.
+- `roles/custom/matrix-ma1sd/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_ma1sd_configuration_extension_yaml` variable
 
-To use a more custom configuration, you can define a `matrix_ma1sd_configuration_extension_yaml` string variable and put your configuration in it. To learn more about how to do this, refer to the information about `matrix_ma1sd_configuration_extension_yaml` in the [default variables file](../roles/custom/matrix-ma1sd/defaults/main.yml) of the ma1sd component.
+You can refer to the [ma1sd website](https://github.com/ma1uta/ma1sd) for more details and configuration options.
 
 #### Customizing email templates
 
