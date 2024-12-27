@@ -234,7 +234,7 @@ matrix_metrics_exposure_http_basic_auth_users: ''
 matrix_playbook_reverse_proxy_type: ''
 
 # Specifies the network that the reverse-proxy is operating at
-matrix_playbook_reverse_proxy_container_network: 'traefik'
+matrix_playbook_reverse_proxy_container_network: "{{ 'traefik' if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] else '' }}"
 
 # Specifies the hostname that the reverse-proxy is available at
 matrix_playbook_reverse_proxy_hostname: 'matrix-traefik'
