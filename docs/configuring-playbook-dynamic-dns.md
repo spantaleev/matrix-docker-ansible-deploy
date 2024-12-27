@@ -23,6 +23,14 @@ matrix_dynamic_dns_domain_configurations:
     domain: "{{ matrix_domain }}"
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-dynamic-dns/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
