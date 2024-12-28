@@ -47,6 +47,25 @@ See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
 
+## Customizing the maubot container image
+
+Certain [maubot plugins](https://plugins.mau.bot/) require additional dependencies to be installed.
+
+You can customize the default maubot container image and install your own dependencies.
+
+Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_bot_maubot_container_image_customizations_enabled: true
+
+# Adjust the Dockerfile and install ffmpeg.
+#
+matrix_bot_maubot_container_image_customizations_dockerfile_body_custom: |
+  RUN apk add --no-cache ffmpeg
+```
+
+Consult the [Dockerfile reference](https://docs.docker.com/reference/dockerfile/) for more information about the syntax.
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
