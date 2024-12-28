@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 12:05+0900\n"
+"POT-Creation-Date: 2024-12-28 10:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: bg\n"
@@ -42,7 +42,7 @@ msgid "Adjusting the playbook configuration"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:11
-msgid "To enable maubot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgid "To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:26
@@ -62,6 +62,7 @@ msgid "By tweaking the `matrix_bot_maubot_hostname` and `matrix_bot_maubot_path_
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:34
+#: ../../../docs/configuring-playbook-bot-maubot.md:56
 msgid "Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
@@ -82,65 +83,85 @@ msgid "If you've decided to use the default hostname, you won't need to do any e
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:50
-msgid "Installing"
+msgid "Customizing the maubot container image"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:52
-msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
+msgid "Certain [maubot plugins](https://plugins.mau.bot/) require additional dependencies to be installed."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-maubot.md:59
-msgid "**Notes**:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-maubot.md:61
-msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-maubot.md:63
-msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-maubot.md:65
-msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
+#: ../../../docs/configuring-playbook-bot-maubot.md:54
+msgid "You can customize the default maubot container image and install your own dependencies."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:67
-msgid "If you change the bot password (`matrix_bot_maubot_initial_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_maubot_initial_password` to let the bot know its new password."
+msgid "Consult the [Dockerfile reference](https://docs.docker.com/reference/dockerfile/) for more information about the syntax."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:69
-msgid "Usage"
+msgid "Installing"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:71
-msgid "By default, you can visit `matrix.example.com/_matrix/maubot/` to manage your available plugins, clients and instances."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-maubot.md:73
-msgid "You should start in the following order"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-maubot.md:74
-msgid "**Create one or more clients**: A client is a Matrix account which the bot will use to message. By default, the playbook creates a `bot.maubot` account (as per the configuration above). You only need to [obtain an access token](#obtaining-an-access-token) for it"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-maubot.md:75
-msgid "**Upload some Plugins**: Plugins can be obtained from [here](https://github.com/maubot/maubot#plugins) or any other source."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-maubot.md:76
-msgid "**Create an instance**: An instance is the actual bot. You have to specify a client which the bot instance will use and the plugin (how the bot will behave)"
+msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:78
-msgid "Obtaining an access token"
+msgid "**Notes**:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:80
-msgid "This can be done via `mbc login` then `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)). To run these commands, you'll first need to `exec` into the maubot container with `docker exec -it matrix-bot-maubot sh`."
+msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-maubot.md:82
-msgid "Alternatively, you can follow our generic [obtain an access token](obtaining-access-tokens.md) documentation. Be aware that you'd better use the **Obtain an access token via curl** method (not **Obtain an access token via Element Web**) as the latter will give your bot issues in encrypted rooms. Read [more](https://docs.mau.fi/maubot/usage/basic.html#creating-clients)."
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:84
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:86
+msgid "If you change the bot password (`matrix_bot_maubot_initial_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_maubot_initial_password` to let the bot know its new password."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:88
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:90
+msgid "By default, you can visit `matrix.example.com/_matrix/maubot/` to manage your available plugins, clients and instances."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:92
+msgid "You should start in the following order"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:93
+msgid "**Create one or more clients**: A client is a Matrix account which the bot will use to message. By default, the playbook creates a `bot.maubot` account (as per the configuration above). You only need to [obtain an access token](#obtaining-an-access-token) for it"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:94
+msgid "**Upload some Plugins**: Plugins can be obtained from [here](https://github.com/maubot/maubot#plugins) or any other source."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:95
+msgid "**Create an instance**: An instance is the actual bot. You have to specify a client which the bot instance will use and the plugin (how the bot will behave)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:97
+msgid "Obtain an access token"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:99
+msgid "This can be done via `mbc login` then `mbc auth` (see the [maubot documentation](https://docs.mau.fi/maubot/usage/cli/auth.html)). To run these commands, you'll first need to `exec` into the maubot container with `docker exec -it matrix-bot-maubot sh`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:101
+msgid "Alternatively, you can refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md). Be aware that you'd better use the **Obtain an access token via curl** method (not **Obtain an access token via Element Web**) as the latter will causes issues to your bot in encrypted rooms. Read [more](https://docs.mau.fi/maubot/usage/basic.html#creating-clients)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-maubot.md:103
+msgid "⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone."
 msgstr ""
