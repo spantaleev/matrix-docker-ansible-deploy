@@ -14,6 +14,14 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 matrix_synapse_auto_compressor_enabled: true
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-synapse-auto-compressor/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
