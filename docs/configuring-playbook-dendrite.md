@@ -16,9 +16,14 @@ To use Dendrite, you **generally** need to add the following configuration to yo
 matrix_homeserver_implementation: dendrite
 ```
 
-The playbook provides lots of customization variables you could use to change Dendrite's settings.
+### Extending the configuration
 
-Their defaults are defined in [`roles/custom/matrix-dendrite/defaults/main.yml`](../roles/custom/matrix-dendrite/defaults/main.yml) and they ultimately end up in the generated `/matrix/dendrite/config/dendrite.yaml` file (on the server). This file is generated from the [`roles/custom/matrix-dendrite/templates/dendrite.yaml.j2`](../roles/custom/matrix-dendrite/templates/dendrite.yaml.j2) template.
+There are some additional things you may wish to configure about the server.
+
+Take a look at:
+
+- `roles/custom/matrix-dendrite/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-dendrite/templates/dendrite.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_dendrite_configuration_extension_yaml` variable
 
 **If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
 
@@ -26,9 +31,30 @@ Alternatively, **if there is no pre-defined variable** for a Dendrite setting yo
 
 - you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of Dendrite's various settings that rarely get used.
 
-- or, you can **extend and override the default configuration** ([`dendrite.yaml.j2`](../roles/custom/matrix-dendrite/templates/dendrite.yaml.j2)) by making use of the `matrix_dendrite_configuration_extension_yaml` variable. You can find information about this in [`roles/custom/matrix-dendrite/defaults/main.yml`](../roles/custom/matrix-dendrite/defaults/main.yml).
+- or, you can **extend and override the default configuration** ([`dendrite.yaml.j2`](../roles/custom/matrix-dendrite/templates/dendrite.yaml.j2)) by making use of the `matrix_dendrite_configuration_extension_yaml` variable.
 
-- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_dendrite_configuration` (or `matrix_dendrite_configuration_yaml`). You can find information about this in [`roles/custom/matrix-dendrite/defaults/main.yml`](../roles/custom/matrix-dendrite/defaults/main.yml).
+- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_dendrite_configuration` (or `matrix_dendrite_configuration_yaml`).
+
+For example, to override some Dendrite settings, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_dendrite_configuration_extension_yaml: |
+  # Your custom YAML configuration for Dendrite goes here.
+  # This configuration extends the default starting configuration (`matrix_dendrite_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_dendrite_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  #
+  server_notices:
+    system_mxid_localpart: notices
+    system_mxid_display_name: "Server Notices"
+    system_mxid_avatar_url: "mxc://example.com/oumMVlgDnLYFaPVkExemNVVZ"
+    room_name: "Server Notices"
+```
 
 ## Installing
 

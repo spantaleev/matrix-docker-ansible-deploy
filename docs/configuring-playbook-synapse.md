@@ -2,9 +2,14 @@
 
 By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case. If that's okay, you can skip this document.
 
-The playbook provides lots of customization variables you could use to change Synapse's settings.
+## Extending the configuration
 
-Their defaults are defined in [`roles/custom/matrix-synapse/defaults/main.yml`](../roles/custom/matrix-synapse/defaults/main.yml) and they ultimately end up in the generated `/matrix/synapse/config/homeserver.yaml` file (on the server). This file is generated from the [`roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2`](../roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2) template.
+There are some additional things you may wish to configure about the server.
+
+Take a look at:
+
+- `roles/custom/matrix-synapse/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_synapse_configuration_extension_yaml` variable
 
 **If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
 
@@ -12,9 +17,9 @@ Alternatively, **if there is no pre-defined variable** for a Synapse setting you
 
 - you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of Synapse's various settings that rarely get used.
 
-- or, you can **extend and override the default configuration** ([`homeserver.yaml.j2`](../roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2)) by making use of the `matrix_synapse_configuration_extension_yaml` variable. You can find information about this in [`roles/custom/matrix-synapse/defaults/main.yml`](../roles/custom/matrix-synapse/defaults/main.yml).
+- or, you can **extend and override the default configuration** ([`homeserver.yaml.j2`](../roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2)) by making use of the `matrix_synapse_configuration_extension_yaml` variable.
 
-- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_synapse_configuration` (or `matrix_synapse_configuration_yaml`). You can find information about this in [`roles/custom/matrix-synapse/defaults/main.yml`](../roles/custom/matrix-synapse/defaults/main.yml).
+- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_synapse_configuration` (or `matrix_synapse_configuration_yaml`).
 
 ## Load balancing with workers
 
