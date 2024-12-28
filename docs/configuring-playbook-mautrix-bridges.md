@@ -89,7 +89,12 @@ Can be used to set the username for the bridge.
 
 ### Extending the configuration
 
-You may wish to look at `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` to find other things you would like to configure.
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_mautrix_SERVICENAME_configuration_extension_yaml` variable
 
 ## Installing
 
