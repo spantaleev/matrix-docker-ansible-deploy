@@ -14,7 +14,13 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 matrix_pantalaimon_enabled: true
 ```
 
-The default configuration should suffice. For advanced configuration, you can override the variables documented in the role's [defaults](../roles/custom/matrix-pantalaimon/defaults/main.yml).
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-pantalaimon/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_pantalaimon_configuration` variable
 
 ## Installing
 
