@@ -46,19 +46,23 @@ matrix_appservice_draupnir_for_all_master_control_room_alias: "MANAGEMENT_ROOM_A
 
 ### Extending the configuration
 
-You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable.
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-appservice-draupnir-for-all/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_draupnir_for_all_configuration_extension_yaml` variable
 
 For example, to change Draupnir's `protectAllJoinedRooms` option to `true`, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_appservice_draupnir_for_all_extension_yaml: |
+matrix_appservice_draupnir_for_all_configuration_extension_yaml: |
   # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_yaml`).
+  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_configuration_yaml`).
   #
   # You can override individual variables from the default configuration, or introduce new ones.
   #
   # If you need something more special, you can take full control by
-  # completely redefining `matrix_appservice_draupnir_for_all_yaml`.
+  # completely redefining `matrix_appservice_draupnir_for_all_configuration_yaml`.
   protectAllJoinedRooms: true
 ```
 
