@@ -56,8 +56,6 @@ matrix_user_verification_service_enabled: true
 matrix_user_verification_service_uvs_access_token: "ACCESS_TOKEN_HERE"
 ```
 
-Check the role's [defaults/main.yml](../roles/custom/matrix-user-verification-service/defaults/main.yml) for the full list of variables that you could override. Note that all the plugging happening in `group_vars/matrix_servers`.
-
 In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host. However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
 
 ### Custom Auth Token (optional)
@@ -103,6 +101,14 @@ UVS_LOG_LEVEL: info
 Replace `info` with one of the choices (they can be checked [here](https://github.com/winstonjs/winston#logging-levels)) to control the verbosity of the logs generated.
 
 If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-user-verification-service/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Installing
 
