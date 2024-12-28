@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2022 MDAD Team and contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Buscarron (optional)
 
 The playbook can install and configure [Buscarron](https://github.com/etkecc/buscarron) for you.
