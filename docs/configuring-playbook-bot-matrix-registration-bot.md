@@ -29,6 +29,15 @@ matrix_synapse_registration_requires_token: true
 
 The bot account will be created automatically.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-matrix-registration-bot/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bot-matrix-registration-bot/templates/config.yaml.j2` for the bridge's default configuration
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
