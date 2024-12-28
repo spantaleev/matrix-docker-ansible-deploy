@@ -66,8 +66,6 @@ matrix_alertmanager_receiver_config_matrix_room_mapping:
   some-room-name: "!qporfwt:{{ matrix_domain }}"
 ```
 
-See `roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for additional configuration variables.
-
 ### Adjusting the matrix-alertmanager-receiver URL (optional)
 
 By tweaking the `matrix_alertmanager_receiver_hostname` and `matrix_alertmanager_receiver_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
@@ -83,6 +81,15 @@ matrix_alertmanager_receiver_path_prefix: /
 If you've changed the default hostname, you may need to create a CNAME record for the matrix-alertmanager-receiver domain (`alertmanager.example.com`), which targets `matrix.example.com`.
 
 When setting, replace `example.com` with your own.
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-alertmanager-receiver/templates/config.yml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_alertmanager_receiver_configuration_extension_yaml` variable
 
 ## Installing
 
