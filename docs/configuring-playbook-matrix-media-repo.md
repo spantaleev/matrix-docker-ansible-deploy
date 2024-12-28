@@ -88,7 +88,13 @@ matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
 
 ```
 
-Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](../roles/custom/matrix-media-repo/defaults/main.yml)
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-media-repo/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Signing Keys
 
