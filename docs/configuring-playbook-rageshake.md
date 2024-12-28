@@ -20,18 +20,6 @@ To enable rageshake, add the following configuration to your `inventory/host_var
 matrix_rageshake_enabled: true
 ```
 
-rageshake has various options which don't have dedicated Ansible variables. You can see the full list of options in the [`rageshake.sample.yaml` file](https://github.com/matrix-org/rageshake/blob/master/rageshake.sample.yaml).
-
-To set these, you can make use of the  `matrix_rageshake_configuration_extension_yaml` variable like this:
-
-```yaml
-matrix_rageshake_configuration_extension_yaml: |
-  github_token: secrettoken
-
-  github_project_mappings:
-     my-app: octocat/HelloWorld
-```
-
 ### Adjusting the rageshake URL (optional)
 
 By tweaking the `matrix_rageshake_hostname` and `matrix_rageshake_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
@@ -50,6 +38,31 @@ matrix_rageshake_path_prefix: /rageshake
 After changing the domain, **you may need to adjust your DNS** records to point the rageshake domain to the Matrix server.
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the server.
+
+Take a look at:
+
+- `roles/custom/matrix-rageshake/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-rageshake/templates/config.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_rageshake_configuration_extension_yaml` variable
+
+```yaml
+matrix_rageshake_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_rageshake_configuration_extension_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_rageshake_configuration_extension_yaml`.
+
+  github_token: secrettoken
+
+  github_project_mappings:
+     my-app: octocat/HelloWorld
+```
 
 ## Installing
 
