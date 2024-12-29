@@ -147,16 +147,6 @@ Take a look at:
 - `roles/custom/matrix-synapse/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_synapse_configuration_extension_yaml` variable
 
-**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
-
-Alternatively, **if there is no pre-defined variable** for a Synapse setting you wish to change:
-
-- you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of Synapse's various settings that rarely get used.
-
-- or, you can **extend and override the default configuration** ([`homeserver.yaml.j2`](../roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2)) by making use of the `matrix_synapse_configuration_extension_yaml` variable.
-
-- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_synapse_configuration` (or `matrix_synapse_configuration_yaml`).
-
 ## Monitoring Synapse Metrics with Prometheus and Grafana
 
 This playbook allows you to enable Synapse metrics, which can provide insight into the performance and activity of Synapse.
