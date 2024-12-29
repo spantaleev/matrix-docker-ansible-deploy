@@ -25,16 +25,6 @@ Take a look at:
 - `roles/custom/matrix-client-schildichat/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-client-schildichat/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_schildichat_configuration_extension_json` variable
 
-**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
-
-Alternatively, **if there is no pre-defined variable** for a SchildiChat Web setting you wish to change:
-
-- you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of SchildiChat Web's various settings that rarely get used.
-
-- or, you can **extend and override the default configuration** ([`config.json.j2`](../roles/custom/matrix-client-schildichat/templates/config.json.j2)) by making use of the `matrix_client_schildichat_configuration_extension_json` variable.
-
-- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_client_schildichat_configuration_default` (or `matrix_client_schildichat_configuration`).
-
 ### Themes
 
 To change the look of SchildiChat Web, you can define your own themes manually by using the `matrix_client_schildichat_setting_defaults_custom_themes` setting.
