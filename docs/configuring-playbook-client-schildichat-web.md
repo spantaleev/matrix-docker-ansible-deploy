@@ -16,15 +16,6 @@ To enable SchildiChat Web, add the following configuration to your `inventory/ho
 matrix_client_schildichat_enabled: true
 ```
 
-## Extending the configuration
-
-There are some additional things you may wish to configure about the component.
-
-Take a look at:
-
-- `roles/custom/matrix-client-schildichat/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-client-schildichat/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_schildichat_configuration_extension_json` variable
-
 ### Themes
 
 To change the look of SchildiChat Web, you can define your own themes manually by using the `matrix_client_schildichat_setting_defaults_custom_themes` setting.
@@ -51,6 +42,15 @@ matrix_client_schildichat_hostname: "{{ matrix_server_fqn_matrix }}"
 # Expose under the /schildichat subpath
 matrix_client_schildichat_path_prefix: /schildichat
 ```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-client-schildichat/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-client-schildichat/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_schildichat_configuration_extension_json` variable
 
 ## Adjusting DNS records
 

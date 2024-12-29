@@ -7,22 +7,7 @@ By default, this playbook installs the [Element Web](https://github.com/element-
 - [app.element.io](https://app.element.io/), hosted by [Element](https://element.io/)
 - [app.etke.cc](https://app.etke.cc/), hosted by [etke.cc](https://etke.cc/)
 
-## Disabling Element Web
-
-If you'd like for the playbook to not install Element Web (or to uninstall it if it was previously installed), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
-
-```yaml
-matrix_client_element_enabled: false
-```
-
-## Extending the configuration
-
-There are some additional things you may wish to configure about the component.
-
-Take a look at:
-
-- `roles/custom/matrix-client-element/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-client-element/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_element_configuration_extension_json` variable
+## Adjusting the playbook configuration
 
 ### Themes
 
@@ -51,6 +36,15 @@ matrix_client_element_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_client_element_path_prefix: /element
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-client-element/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-client-element/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_element_configuration_extension_json` variable
+
 ## Adjusting DNS records
 
 Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Element Web domain to the Matrix server.
@@ -58,6 +52,14 @@ Once you've decided on the domain and path, **you may need to adjust your DNS** 
 By default, you will need to create a CNAME record for `element`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
+
+## Disabling Element Web
+
+If you'd like for the playbook to not install Element Web (or to uninstall it if it was previously installed), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_client_element_enabled: false
+```
 
 ## Installing
 
