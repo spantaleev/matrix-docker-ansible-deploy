@@ -15,6 +15,8 @@ matrix_mautrix_SERVICENAME_enabled: true
 
 There are some additional things you may wish to configure about the bridge before you continue. Each bridge may have additional requirements besides `_enabled: true`. For example, the mautrix-telegram bridge (our documentation page about it is [here](configuring-playbook-bridge-mautrix-telegram.md)) requires the `matrix_mautrix_telegram_api_id` and `matrix_mautrix_telegram_api_hash` variables to be defined. Refer to each bridge's individual documentation page for details about enabling bridges.
 
+### Configure bridge permissions (optional)
+
 To **configure a user as an administrator for all bridges**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
@@ -30,7 +32,7 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
       '@alice:{{ matrix_domain }}': admin
 ```
 
-### Encryption
+### Enable encryption (optional)
 
 Encryption support is off by default. If you would like to enable encryption, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
@@ -48,7 +50,7 @@ matrix_mautrix_SERVICENAME_bridge_encryption_enabled: true
 matrix_mautrix_SERVICENAME_bridge_encryption_default: true
 ```
 
-### Relay mode
+### Enable relay mode (optional)
 
 Relay mode is off by default. If you would like to enable relay mode, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
@@ -79,7 +81,7 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
       default: true
 ```
 
-### Setting the bot's username
+### Set the bot's username (optional)
 
 ```yaml
 matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
@@ -113,7 +115,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-## Set up Double Puppeting
+## Set up Double Puppeting (optional)
 
 To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
@@ -125,7 +127,7 @@ matrix_appservice_double_puppet_enabled: true
 
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 
-## Controlling the logging level
+## Control the logging level (optional)
 
 ```yaml
 matrix_mautrix_SERVICENAME_logging_level: WARN
