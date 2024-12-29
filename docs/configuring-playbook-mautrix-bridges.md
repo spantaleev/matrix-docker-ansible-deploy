@@ -85,19 +85,21 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
 
 ### Set the bot's username (optional)
 
+To set the bot's username, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
 ```yaml
 matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
 ```
 
-Can be used to set the username for the bridge.
-
 ### Configure the logging level (optional)
+
+To specify the logging level, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_mautrix_SERVICENAME_logging_level: WARN
 ```
 
-to `vars.yml` to control the logging level, where you may replace WARN with one of the following to control the verbosity of the logs generated: TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
+Replace WARN with one of the following to control the verbosity of the logs generated: TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
 
 If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
 
