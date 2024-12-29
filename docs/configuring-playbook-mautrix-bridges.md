@@ -1,6 +1,6 @@
 # Setting up a Generic Mautrix Bridge (optional)
 
-The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, facebook, instagram, signal, hangouts, googlechat, etc.), as well as many other (non-mautrix) bridges. This is a common guide for configuring mautrix bridges.
+The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, discord, signal, googlechat, etc.), as well as many other (non-mautrix) bridges. This is a common guide for configuring mautrix bridges.
 
 You can see each bridge's features at in the `ROADMAP.md` file in its corresponding [mautrix](https://github.com/mautrix) repository.
 
@@ -9,9 +9,11 @@ You can see each bridge's features at in the `ROADMAP.md` file in its correspond
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-# Replace SERVICENAME with one of: twitter, facebook, instagram, ..
+# Replace SERVICENAME with one of: twitter, discord, signal, googlechat, etc.
 matrix_mautrix_SERVICENAME_enabled: true
 ```
+
+**Note**: for bridging to Meta's Messenger or Instagram, you would need to add `meta` with an underscore symbol (`_`) or hyphen (`-`) based on the context as prefix to each `SERVICENAME`; add `_` to variables (as in `matrix_mautrix_meta_messenger_configuration_extension_yaml` for example) and `-` to paths of the configuration files (as in `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2`), respectively. **`matrix_mautrix_facebook_*` and `matrix_mautrix_instagram_*` variables belong to the deprecated components and do not control the new bridge** ([mautrix-meta](https://github.com/mautrix/meta)), which can be installed using [this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md).
 
 There are some additional things you may wish to configure about the bridge before you continue. Each bridge may have additional requirements besides `_enabled: true`. For example, the mautrix-telegram bridge (our documentation page about it is [here](configuring-playbook-bridge-mautrix-telegram.md)) requires the `matrix_mautrix_telegram_api_id` and `matrix_mautrix_telegram_api_hash` variables to be defined. Refer to each bridge's individual documentation page for details about enabling bridges.
 
