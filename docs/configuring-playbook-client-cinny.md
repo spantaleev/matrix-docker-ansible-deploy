@@ -40,6 +40,15 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 **Note**: while there is a `matrix_client_cinny_path_prefix` variable for changing the path where Cinny is served, overriding it is [not possible](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701), because Cinny requires an application rebuild (with a tweaked build config) to be functional under a custom path. You'd need to serve Cinny at a dedicated subdomain.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-client-cinny/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-client-cinny/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_cinny_configuration_extension_json` variable
+
 ## Installing
 
 After configuring the playbook and [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
