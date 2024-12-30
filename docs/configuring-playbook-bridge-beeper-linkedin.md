@@ -12,7 +12,14 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_beeper_linkedin_enabled: true
 ```
 
-There are some additional things you may wish to configure about the bridge before you continue.
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-beeper-linkedin/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_beeper_linkedin_configuration_extension_yaml` variable
 
 Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
 
@@ -29,8 +36,6 @@ matrix_beeper_linkedin_configuration_extension_yaml: |
     permissions:
       '@alice:{{ matrix_domain }}': admin
 ```
-
-You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
 
 ## Installing
 
