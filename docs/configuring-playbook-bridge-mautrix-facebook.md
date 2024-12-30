@@ -71,7 +71,7 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 - send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
 
-- make sure you don't log out the `Mautrix-Facebook` device some time in the future, as that would break the Double Puppeting feature
+- make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature
 
 ## Troubleshooting
 

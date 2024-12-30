@@ -104,4 +104,4 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 - send `login-matrix` to the bot and follow instructions about how to send the access token to it
 
-- make sure you don't log out the `Mautrix-Telegram` device some time in the future, as that would break the Double Puppeting feature
+- make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature
