@@ -16,26 +16,7 @@ matrix_beeper_linkedin_enabled: true
 
 There are some additional things you may wish to configure about the bridge.
 
-Take a look at:
-
-- `roles/custom/matrix-bridge-beeper-linkedin/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_beeper_linkedin_configuration_extension_yaml` variable
-
-Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
-
-```yaml
-matrix_beeper_linkedin_bridge_encryption_allow: true
-matrix_beeper_linkedin_bridge_encryption_default: true
-```
-
-If you would like to be able to administrate the bridge from your account it can be configured like this:
-
-```yaml
-matrix_beeper_linkedin_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@alice:{{ matrix_domain }}': admin
-```
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
 
 ## Installing
 
