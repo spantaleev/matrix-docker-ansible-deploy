@@ -27,6 +27,8 @@ Different levels of permission can be granted to users. For example, to **config
 matrix_admin: "@alice:{{ matrix_domain }}"
 ```
 
+If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @alice:example.com`), then there's no admin by default.
+
 **Alternatively** (more verbose, but allows multiple admins to be configured), you can do the same on a per-bridge basis with:
 
 ```yaml

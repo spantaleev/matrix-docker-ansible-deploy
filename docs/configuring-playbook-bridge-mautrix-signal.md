@@ -26,36 +26,26 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_mautrix_signal_enabled: true
 ```
 
-There are some additional things you may wish to configure about the bridge before you continue.
+### Bridge permissions
 
 By default, any user on your homeserver will be able to use the bridge.
 
 Different levels of permission can be granted to users:
 
-* relay - Allowed to be relayed through the bridge, no access to commands;
-* user - Use the bridge with puppeting;
-* admin - Use and administer the bridge.
+- `relay` - Allowed to be relayed through the bridge, no access to commands
+- `user` - Use the bridge with puppeting
+- `admin` - Use and administer the bridge
 
-The permissions are following the sequence: nothing < relay < user < admin.
+The permissions are following the sequence: nothing < `relay` < `user` < `admin`.
 
-The default permissions are set as follows:
+The default permissions are set via `matrix_mautrix_signal_bridge_permissions` and are somewhat like this:
 
 ```yaml
-permissions:
+matrix_mautrix_signal_bridge_permissions:
   '*': relay
   example.com: user
+  '{{ matrix_admin }}': admin
 ```
-
-If you want to augment the preset permissions, you might want to set the additional permissions with the following settings in your `vars.yml` file:
-
-```yaml
-matrix_mautrix_signal_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@alice:{{ matrix_domain }}': admin
-```
-
-This will add the admin permission to the specific user, while keeping the default permissions.
 
 In case you want to replace the default permissions settings **completely**, populate the following item within your `vars.yml` file:
 
