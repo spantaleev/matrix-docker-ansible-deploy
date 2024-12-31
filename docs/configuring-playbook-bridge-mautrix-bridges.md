@@ -36,7 +36,7 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
 
 ### Enable encryption (optional)
 
-Encryption support is off by default. If you would like to enable encryption, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+[Encryption (End-to-Bridge Encryption, E2BE) support](https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html) is off by default. If you would like to enable encryption, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 **for all bridges with encryption support**:
 
@@ -54,7 +54,7 @@ matrix_mautrix_SERVICENAME_bridge_encryption_default: true
 
 ### Enable relay mode (optional)
 
-Relay mode is off by default. If you would like to enable relay mode, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+[Relay mode](https://docs.mau.fi/bridges/general/relay-mode.html) is off by default. If you would like to enable relay mode, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 **for all bridges with relay mode support**:
 
