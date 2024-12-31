@@ -10,7 +10,7 @@ See the project's [documentation](https://github.com/mautrix/twitter/blob/master
 
 ## Prerequisite (optional)
 
-### Enable Appservice Double Puppet (optional)
+### Enable Appservice Double Puppet
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
@@ -52,6 +52,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@twitterbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You then need to send login-cookie to start the login. The bot should respond with instructions on how to proceed.
-
-You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/twitter/authentication.html).
+You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/twitter/authentication.html).
