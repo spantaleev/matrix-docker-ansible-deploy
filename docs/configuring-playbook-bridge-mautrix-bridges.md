@@ -19,7 +19,9 @@ There are some additional things you may wish to configure about the bridge befo
 
 ### Configure bridge permissions (optional)
 
-To **configure a user as an administrator for all bridges**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+By default any user on your homeserver will be able to use the mautrix bridges. To limit who can use them you would need to configure their permissions settings.
+
+Different levels of permission can be granted to users. For example, to **configure a user as an administrator for all bridges**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_admin: "@alice:{{ matrix_domain }}"
@@ -33,6 +35,10 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
     permissions:
       '@alice:{{ matrix_domain }}': admin
 ```
+
+This will add the admin permission to the specific user, while keeping the default permissions.
+
+You could also redefine the default permissions settings completely, rather than adding extra permissions. You may wish to look at `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` to find information on the permission settings and other options you would like to configure.
 
 ### Enable encryption (optional)
 
