@@ -143,22 +143,28 @@ After successfully enabling bridging, you may wish to set up [Double Puppeting](
 
 To set it up, you have 2 ways of going about it.
 
-#### Method 1: automatically, by enabling Appservice Double Puppet or Shared Secret Auth
+#### Method 1: automatically, by enabling Appservice Double Puppet
 
-To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
+To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html), you could enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
-The bridge automatically performs Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) is configured and enabled on the server for this playbook by adding the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Appservice Double Puppet is a homeserver appservice through which bridges (and potentially other services) can impersonate any user on the homeserver.
+
+To enable the Appservice Double Puppet service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_appservice_double_puppet_enabled: true
 ```
 
+When enabled, double puppeting will automatically be enabled for all bridges that support double puppeting via the appservice method.
+
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
 
-Enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works for some bridges at the time of writing, but is deprecated and will stop working in the future.
+**Notes**:
+
+- Previously there were multiple different automatic double puppeting methods like one with the help of the [Shared Secret Auth password provider module](./configuring-playbook-shared-secret-auth.md), but they have been superseded by this Appservice Double Puppet method. Double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future as the older methods were completely removed in the megabridge rewrites on [the upstream project](https://docs.mau.fi/bridges/general/double-puppeting.html#automatically).
 
 <!-- TODO: remove this note if the Shared Secret Auth service has stopped working or the bridges have been removed -->
-💡 **Note**: some bridges like [the deprecated Facebook mautrix bridge](configuring-playbook-bridge-mautrix-facebook.md) and [matrix-appservice-kakaotalk](configuring-playbook-bridge-appservice-kakaotalk.md), which is partially based on the Facebook bridge, are compatible with the Shared Secret Auth service only. These bridges automatically perform Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
+- Some bridges like [the deprecated Facebook mautrix bridge](configuring-playbook-bridge-mautrix-facebook.md) and [matrix-appservice-kakaotalk](configuring-playbook-bridge-appservice-kakaotalk.md), which is partially based on the Facebook bridge, are compatible with the Shared Secret Auth service only. These bridges automatically perform Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
 
 #### Method 2: manually, by asking each user to provide a working access token
 
