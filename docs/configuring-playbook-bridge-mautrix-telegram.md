@@ -36,6 +36,8 @@ matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 
 ### Relaying
 
+### Enable relay-bot (optional)
+
 If you want to use the relay-bot feature ([relay bot documentation](https://docs.mau.fi/bridges/python/telegram/relay-bot.html)), which allows anonymous user to chat with telegram users, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
@@ -46,18 +48,13 @@ matrix_mautrix_telegram_configuration_extension_yaml: |
       '*': relaybot
 ```
 
-You might also want to give permissions to administrate the bot:
+### Configure a user as an administrator of the bridge (optional)
 
-```yaml
-matrix_mautrix_telegram_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@alice:{{ matrix_domain }}': admin
-```
+You might also want to give permissions to a user to administrate the bot. See [this section](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional) on the common guide for details about it.
 
 More details about permissions in this example: https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml#L410
 
-### Use the bridge for direct chat only
+### Use the bridge for direct chats only (optional)
 
 If you want to exclude all groups from syncing and use the Telegram-Bridge only for direct chats, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
@@ -93,4 +90,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@telegrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/telegram/authentication.html).
+You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/telegram/authentication.html).
