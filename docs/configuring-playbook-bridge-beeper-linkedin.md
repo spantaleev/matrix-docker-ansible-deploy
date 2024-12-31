@@ -35,14 +35,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-## Set up Double Puppeting by enabling Appservice Double Puppet or Shared Secret Auth
-
-The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
-
-Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works at the time of writing, but is deprecated and will stop working in the future.
-
 ## Usage
 
 To use the bridge, you need to start a chat with `@linkedinbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
@@ -51,7 +43,9 @@ Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging fo
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
-After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting-by-enabling-appservice-double-puppet-or-shared-secret-auth), if you haven't already done so.
+### 💡 Set up Double Puppeting
+
+After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
 
 ## Troubleshooting
 
