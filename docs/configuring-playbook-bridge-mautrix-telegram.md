@@ -81,7 +81,3 @@ If you like to exclude all groups from syncing and use the Telgeram-Bridge only 
 ```yaml
 matrix_mautrix_telegram_filter_mode: whitelist
 ```
-
-### 💡 Set up Double Puppeting
-
-After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).

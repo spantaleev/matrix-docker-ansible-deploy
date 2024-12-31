@@ -52,7 +52,3 @@ Automatic login may not work. If it does not, reload the page and select the "Ma
 Once logged in, recent chats should show up as new conversations automatically. Other chats will get portals as you receive messages.
 
 You can learn more about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/googlechat/authentication.html).
-
-### 💡 Set up Double Puppeting
-
-After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).

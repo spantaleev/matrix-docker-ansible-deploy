@@ -51,10 +51,6 @@ Send `login YOUR_FACEBOOK_EMAIL_ADDRESS` to the bridge bot to enable bridging fo
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
-### 💡 Set up Double Puppeting
-
-After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
-
 ## Troubleshooting
 
 ### Facebook rejecting login attempts and forcing you to change password
