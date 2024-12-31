@@ -14,7 +14,9 @@ To use the bridge, you'd need to obtain an API key from [https://my.telegram.org
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
+
+**Note**: if you decided to enable Double Puppeting manually, send `login-matrix` to the bot in order to receive an instruction about how to send an access token to it.
 
 ## Adjusting the playbook configuration
 
@@ -83,25 +85,3 @@ matrix_mautrix_telegram_filter_mode: whitelist
 ### 💡 Set up Double Puppeting
 
 After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
-
-To set it up, you have 2 ways of going about it.
-
-#### Method 1: automatically, by enabling Appservice Double Puppet or Shared Secret Auth
-
-The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
-
-Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works at the time of writing, but is deprecated and will stop working in the future.
-
-#### Method 2: manually, by asking each user to provide a working access token
-
-**Note**: This method for enabling Double Puppeting can be configured only after you've already set up bridging.
-
-When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
-
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md).
-
-- send `login-matrix` to the bot and follow instructions about how to send the access token to it
-
-- make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature
