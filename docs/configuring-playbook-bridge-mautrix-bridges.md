@@ -139,6 +139,12 @@ If you run into trouble, check the [Troubleshooting](#troubleshooting) section b
 
 ### Set up Double Puppeting (optional)
 
+After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
+
+To set it up, you have 2 ways of going about it.
+
+#### Method 1: automatically, by enabling Appservice Double Puppet (or Shared Secret Auth)
+
 To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
 The bridge automatically performs Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) is configured and enabled on the server for this playbook by adding the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -148,6 +154,18 @@ matrix_appservice_double_puppet_enabled: true
 ```
 
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
+
+Enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works for some bridges at the time of writing, but is deprecated and will stop working in the future.
+
+#### Method 2: manually, by asking each user to provide a working access token
+
+When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
+
+- retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md).
+
+- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
+
+- make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature
 
 ## Troubleshooting
 
