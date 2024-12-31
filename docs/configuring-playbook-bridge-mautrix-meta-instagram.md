@@ -35,34 +35,6 @@ matrix_mautrix_meta_instagram_enabled: true
 
 Before proceeding to [re-running the playbook](./installing.md), you may wish to adjust the configuration further. See below.
 
-### Bridge permissions
-
-By default, any user on your homeserver will be able to use the bridge.
-
-Different levels of permission can be granted to users:
-
-- `relay` - Allowed to be relayed through the bridge, no access to commands
-- `user` - Use the bridge with puppeting
-- `admin` - Use and administer the bridge
-
-The permissions are following the sequence: nothing < `relay` < `user` < `admin`.
-
-The default permissions are set via `matrix_mautrix_meta_instagram_bridge_permissions_default` and are somewhat like this:
-
-```yaml
-matrix_mautrix_meta_instagram_bridge_permissions_default:
-  '*': relay
-  example.com: user
-  '{{ matrix_admin }}': admin
-```
-
-You may redefine `matrix_mautrix_meta_instagram_bridge_permissions_default` any way you see fit, or add extra permissions using `matrix_mautrix_meta_instagram_bridge_permissions_custom` like this:
-
-```yaml
-matrix_mautrix_meta_instagram_bridge_permissions_custom:
-  '@alice:{{ matrix_domain }}': admin
-```
-
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.

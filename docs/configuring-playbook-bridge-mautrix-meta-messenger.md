@@ -48,36 +48,6 @@ You may switch the mode via the `matrix_mautrix_meta_messenger_meta_mode` variab
 
 Note that switching the mode (especially between `facebook*` and `messenger`) will intentionally make the bridge use another database (`matrix_mautrix_meta_facebook` or `matrix_mautrix_meta_messenger`) to isolate the 2 instances. Switching between Tor and non-Tor may be possible without dataloss, but your mileage may vary. Before switching to a new mode, you may wish to de-configure the old one (send `help` to the bridge bot and unbridge your portals, etc.).
 
-### Bridge permissions
-
-By default, any user on your homeserver will be able to use the bridge.
-
-Different levels of permission can be granted to users:
-
-- `relay` - Allowed to be relayed through the bridge, no access to commands
-- `user` - Use the bridge with puppeting
-- `admin` - Use and administer the bridge
-
-The permissions are following the sequence: nothing < `relay` < `user` < `admin`.
-
-The default permissions are set via `matrix_mautrix_meta_messenger_bridge_permissions_default` and are somewhat like this:
-
-```yaml
-matrix_mautrix_meta_messenger_bridge_permissions_default:
-  '*': relay
-  example.com: user
-  '{{ matrix_admin }}': admin
-```
-
-You may redefine `matrix_mautrix_meta_messenger_bridge_permissions_default` any way you see fit, or add extra permissions using `matrix_mautrix_meta_messenger_bridge_permissions_custom` like this:
-
-```yaml
-matrix_mautrix_meta_messenger_bridge_permissions_custom:
-  '@alice:{{ matrix_domain }}': admin
-```
-
-You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
-
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
