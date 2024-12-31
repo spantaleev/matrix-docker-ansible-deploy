@@ -60,7 +60,9 @@ matrix_mautrix_SERVICENAME_bridge_encryption_default: true
 
 ### Enable relay mode (optional)
 
-[Relay mode](https://docs.mau.fi/bridges/general/relay-mode.html) is off by default. If you would like to enable relay mode, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+[Relay mode](https://docs.mau.fi/bridges/general/relay-mode.html) is off by default. Check [the table on the official documentation](https://docs.mau.fi/bridges/general/relay-mode.html#support-table) for bridges which support relay mode.
+
+If you would like to enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 **for all bridges with relay mode support**:
 
@@ -87,6 +89,18 @@ matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
     encryption:
       allow: true
       default: true
+```
+
+If you want to activate the relaybot in a room, send `!prefix set-relay` in the rooms where you want to use the bot (replace `!prefix` with the appropriate command prefix for the bridge, like `!signal` or `!wa`). To deactivate, send `!prefix unset-relay`.
+
+Use `!prefix set-pl 100` to be able for the bot to modify room settings and invite others.
+
+#### Allow anyone on the homeserver to become a relay user (optional)
+
+By default, only admins are allowed to set themselves as relay users. To allow anyone on your homeserver to set themselves as relay users, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_mautrix_SERVICENAME_bridge_relay_admin_only: false
 ```
 
 ### Set the bot's username (optional)
