@@ -143,7 +143,7 @@ After successfully enabling bridging, you may wish to set up [Double Puppeting](
 
 To set it up, you have 2 ways of going about it.
 
-#### Method 1: automatically, by enabling Appservice Double Puppet
+#### Method 1: automatically, by enabling Appservice Double Puppet (recommended)
 
 To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html), you could enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
