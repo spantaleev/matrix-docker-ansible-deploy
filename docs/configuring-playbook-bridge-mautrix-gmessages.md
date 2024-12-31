@@ -6,6 +6,8 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/gmessages/index
 
 ## Prerequisite (optional)
 
+### Enable Appservice Double Puppet
+
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) for this playbook.
 
 See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
