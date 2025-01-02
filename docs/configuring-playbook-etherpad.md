@@ -43,6 +43,14 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- [etherpad role](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `etherpad_configuration_extension_json` variable
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
