@@ -41,8 +41,6 @@ To use the bridge, you need to start a chat with `@linkedinbot:example.com` (whe
 
 Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging for your LinkedIn account.
 
-If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
-
 ## Troubleshooting
 
 ### Bridge asking for 2FA even if you don't have 2FA enabled
