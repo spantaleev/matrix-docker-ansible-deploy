@@ -14,6 +14,8 @@ If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/dou
 
 See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
 
+**Note**: double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future.
+
 ## Adjusting the playbook configuration
 
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:

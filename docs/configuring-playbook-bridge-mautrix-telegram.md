@@ -16,7 +16,11 @@ If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/dou
 
 See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
 
-**Note**: if you decided to enable Double Puppeting manually, send `login-matrix` to the bot in order to receive an instruction about how to send an access token to it.
+**Notes**:
+
+- Double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future.
+
+- If you decided to enable Double Puppeting manually, send `login-matrix` to the bot in order to receive an instruction about how to send an access token to it.
 
 ## Adjusting the playbook configuration
 
