@@ -1,8 +1,8 @@
 # Setting up Appservice Double Puppet (optional)
 
-Appservice Double Puppet is a homeserver appservice through which bridges (and potentially other services) can impersonate any user on the homeserver.
+The playbook can install and configure the Appservice Double Puppet service for you. It is a homeserver appservice through which bridges (and potentially other services) can impersonate any user on the homeserver.
 
-This is useful for performing [double-puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) via the [appservice method](https://docs.mau.fi/bridges/general/double-puppeting.html#appservice-method-new). The Appservice Double Puppet service is an implementation of this approach.
+This is useful for performing [double-puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) via the appservice method. The service is an implementation of this approach.
 
 Previously, bridges supported performing double-puppeting with the help of the [Shared Secret Auth password provider module](./configuring-playbook-shared-secret-auth.md), but this old and hacky solution has been superseded by this Appservice Double Puppet method.
 
@@ -41,4 +41,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-When enabled, double puppeting will automatically be enabled for all bridges that support double puppeting via the appservice method.
+Installing the service will automatically enable double puppeting for all bridges that support double puppeting via the appservice method.
