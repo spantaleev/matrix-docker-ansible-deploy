@@ -38,7 +38,7 @@ Dimension requires an access token to be able to connect to your homeserver. Ref
 
 ## Adjusting the playbook configuration
 
-To enable Dimension, add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`). Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
+To enable Dimension, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_dimension_enabled: true
@@ -48,7 +48,7 @@ matrix_dimension_access_token: "ACCESS_TOKEN_HERE"
 
 ### Define admin users
 
-These users can modify the integrations this Dimension supports. Add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
+To define admin users who can modify the integrations this Dimension supports, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_dimension_admins:
