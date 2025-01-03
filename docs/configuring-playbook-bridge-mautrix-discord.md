@@ -30,8 +30,6 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_mautrix_discord_enabled: true
 ```
 
-You may optionally wish to add some [Additional configuration](#additional-configuration), or to [prepare for double-puppeting](#set-up-double-puppeting) before the initial installation.
-
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
