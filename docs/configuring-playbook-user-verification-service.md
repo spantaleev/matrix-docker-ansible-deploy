@@ -13,7 +13,7 @@ UVS can be used to verify two claims:
 * (A) Whether a given OpenID token is valid for a given server and
 * (B) whether a user is member of a given room and the corresponding PowerLevel
 
-Verifying an OpenID token ID done by finding the corresponding Homeserver via  '.well-known/matrix/server' for the given domain. The configured `matrix_user_verification_service_uvs_homeserver_url` does **not** factor into this. By default, this playbook only checks against `matrix_server_fqn_matrix`. Therefore, the request will be made against the public openid API for `matrix_server_fqn_matrix`.
+Verifying an OpenID token ID done by finding the corresponding Homeserver via `/.well-known/matrix/server` for the given domain. The configured `matrix_user_verification_service_uvs_homeserver_url` does **not** factor into this. By default, this playbook only checks against `matrix_server_fqn_matrix`. Therefore, the request will be made against the public `openid` API for `matrix_server_fqn_matrix`.
 
 Verifying RoomMembership and PowerLevel is done against `matrix_user_verification_service_uvs_homeserver_url` which is by default done via the docker network. UVS will verify the validity of the token beforehand though.
 
@@ -91,6 +91,18 @@ matrix_user_verification_service_uvs_pin_openid_verify_server_name: false
 
 This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via '.well-known/matrix/server' of the given domain.
 
+### Controlling the logging level (optional)
+
+To specify the logging level, add the following configuration to your `vars.yml` file:
+
+```yaml
+UVS_LOG_LEVEL: info
+```
+
+Replace `info` with one of the choices (they can be checked [here](https://github.com/winstonjs/winston#logging-levels)) to control the verbosity of the logs generated.
+
+If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -104,14 +116,9 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 `just install-service matrix-user-verification-service` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too.
 
-## Logging
+## Troubleshooting
 
-The configuration variable `UVS_LOG_LEVEL` can be set to:
-- warning
-- info
-- debug
-
-## TLS Certificate Checking
+### TLS Certificate Checking
 
 If the Matrix Homeserver does not provide a valid TLS certificate, UVS will fail with the following error message:
 
