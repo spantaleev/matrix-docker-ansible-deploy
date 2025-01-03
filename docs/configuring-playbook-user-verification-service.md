@@ -21,7 +21,7 @@ Verifying RoomMembership and PowerLevel is done against `matrix_user_verificatio
 
 ### Open Matrix Federation port
 
-UVS exposes the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that port is accessible.
+Enabling the UVS service will automatically reconfigure your Synapse homeserver to expose the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that the port is accessible.
 
 ### Install Matrix services
 

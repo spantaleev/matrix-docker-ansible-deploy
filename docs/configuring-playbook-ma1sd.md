@@ -12,7 +12,7 @@ See the project's [documentation](https://github.com/ma1uta/ma1sd/blob/master/RE
 
 ### Open Matrix Federation port
 
-ma1sd exposes the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that port is accessible.
+Enabling the ma1sd service will automatically reconfigure your Synapse homeserver to expose the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that the port is accessible.
 
 ## Adjusting DNS records
 
