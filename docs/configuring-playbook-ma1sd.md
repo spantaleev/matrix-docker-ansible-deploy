@@ -8,7 +8,11 @@ ma1sd is used for 3PIDs (3rd party identifiers like E-mail and phone numbers) an
 
 See the project's [documentation](https://github.com/ma1uta/ma1sd/blob/master/README.md) to learn what it does and why it might be useful to you.
 
-**Note**: enabling ma1sd, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
+## Prerequisites
+
+### Open Matrix Federation port
+
+Enabling the ma1sd service will automatically reconfigure your Synapse homeserver to expose the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that the port is accessible.
 
 ## Adjusting DNS records
 

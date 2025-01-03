@@ -1,14 +1,12 @@
 # Setting up Matrix User Verification Service (optional)
 
-**[Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) can only be installed after Matrix services are installed and running.** If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) flow and come back here later.
+The playbook can install and configure [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) for you.
 
-Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference. Please refer to the documentation of the [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) to understand how it works.
+See the project's [documentation](https://github.com/matrix-org/matrix-user-verification-service/blob/master/README.md) to learn what it does and why it might be useful to you.
 
-**Note**: enabling Matrix User Verification Service, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled.
+Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference. If the Jitsi server is also configured by this playbook, all plugging of variables and secrets is handled in `group_vars/matrix_servers`.
 
-If the Jitsi server is also configured by this playbook, all plugging of variables and secrets is handled in `group_vars/matrix_servers`.
-
-__Some general concepts of UVS may be helpful to understand the rest, so here they are:__
+## What does it do?
 
 UVS can be used to verify two claims:
 
@@ -21,37 +19,45 @@ Verifying RoomMembership and PowerLevel is done against `matrix_user_verificatio
 
 ## Prerequisites
 
-In order to use UVS, an admin token for the configured homeserver must be supplied. For now this means configuring Synapse and creating the token before installing UVS.
+### Open Matrix Federation port
 
-## Enable
+Enabling the UVS service will automatically reconfigure your Synapse homeserver to expose the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that the port is accessible.
 
-To enable Matrix User Verification Service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+### Install Matrix services
 
-```yaml
-matrix_user_verification_service_enabled: true
+UVS can only be installed after Matrix services are installed and running. If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) and come back here later.
+
+### Register a dedicated Matrix user (optional, recommended)
+
+We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username). **Because UVS requires an access token as an admin user, that user needs to be an admin.**
+
+Generate a strong password for the user. You can create one with a command like `pwgen -s 64 1`.
+
+You can use the playbook to [register a new user](registering-users.md):
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=uvs password=PASSWORD_FOR_THE_USER admin=yes' --tags=register-user
 ```
-
-## Configuration
-
-The only required configuration variable is `matrix_user_verification_service_uvs_access_token` (see below).
-
-For a list of all configuration options see the role defaults [`roles/matrix-user-verification-service/defaults/main.yml`](../roles/custom/matrix-user-verification-service/defaults/main.yml). But be aware of all the plugging happening in `group_vars/matrix_servers`.
-
-In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host. However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
 
 ### Obtain an access token
 
-The Synapse Access Token is used to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`.
-
-We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username). Follow our [Registering users](registering-users.md) guide to register a user with administration privileges.
-
-You are required to specify an access token (belonging to this new user) for UVS to work. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+UVS requires an access token as an admin user to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
+## Adjusting the playbook configuration
+
+To enable UVS, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
+
 ```yaml
-matrix_user_verification_service_uvs_access_token: "YOUR ACCESS TOKEN HERE"
+matrix_user_verification_service_enabled: true
+
+matrix_user_verification_service_uvs_access_token: "ACCESS_TOKEN_HERE"
 ```
+
+Check the role's [defaults/main.yml](../roles/custom/matrix-user-verification-service/defaults/main.yml) for the full list of variables that you could override. Note that all the plugging happening in `group_vars/matrix_servers`.
+
+In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host. However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
 
 ### Custom Auth Token (optional)
 

@@ -2,13 +2,17 @@
 
 **Notes**:
 - Dimension is **[officially unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299)**. We recommend not bothering with installing it.
-- This playbook now supports running Dimension in both a federated and [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environments. This is handled automatically based on the value of `matrix_homeserver_federation_enabled`. Enabling Dimension, means that the `openid` API endpoints will be exposed on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. It's something to be aware of, especially in terms of firewall whitelisting (make sure port `8448` is accessible).
+- This playbook now supports running Dimension in both a federated and [unfederated](https://github.com/turt2live/matrix-dimension/blob/master/docs/unfederated.md) environments. This is handled automatically based on the value of `matrix_homeserver_federation_enabled`.
 
 The playbook can install and configure the [Dimension](https://dimension.t2bot.io) integration manager for you.
 
 See the project's [documentation](https://github.com/turt2live/matrix-dimension/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Prerequisites
+
+### Open Matrix Federation port
+
+Enabling the Dimension service will automatically reconfigure your Synapse homeserver to expose the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that the port is accessible.
 
 ### Install Matrix services
 
