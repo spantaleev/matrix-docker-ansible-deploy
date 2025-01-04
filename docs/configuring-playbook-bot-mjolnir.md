@@ -32,7 +32,7 @@ If your homeserver's implementation is Synapse, you will need to prevent it from
 
 This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally.
 
-To expose the APIs publicly, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file.
+To expose the APIs publicly, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
