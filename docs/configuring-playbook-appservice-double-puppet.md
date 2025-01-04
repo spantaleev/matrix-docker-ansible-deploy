@@ -4,7 +4,7 @@ Appservice Double Puppet is a homeserver appservice through which bridges (and p
 
 This is useful for performing [double-puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) via the [appservice method](https://docs.mau.fi/bridges/general/double-puppeting.html#appservice-method-new). The Appservice Double Puppet service is an implementation of this approach.
 
-Previously, bridges supported performing [double-puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) with the help of the [Shared Secret Auth password provider module](./configuring-playbook-shared-secret-auth.md), but this old and hacky solution has been superseded by this Appservice Double Puppet method.
+Previously, bridges supported performing double-puppeting with the help of the [Shared Secret Auth password provider module](./configuring-playbook-shared-secret-auth.md), but this old and hacky solution has been superseded by this Appservice Double Puppet method.
 
 ## Adjusting the playbook configuration
 

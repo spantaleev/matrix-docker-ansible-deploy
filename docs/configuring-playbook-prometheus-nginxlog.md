@@ -12,7 +12,7 @@ To make use of this, you need to install [Prometheus](./configuring-playbook-pro
 
 If your setup includes [Grafana](./configuring-playbook-prometheus-grafana.md), a dedicated `NGINX PROXY` Grafana dashboard will be created.
 
-## Configuration
+## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 

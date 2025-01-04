@@ -26,6 +26,8 @@ For a more custom setup, see the [Other configuration options](#other-configurat
 
 ## Other configuration options
 
+**Note**: some of the roles like one for integrating Etherpad or Jitsi are managed by their own repositories, and the configuration files for them cannot be found locally (in `roles/galaxy`) until those roles are fetched from the upstream projects. Check [requirements.yml](../requirements.yml) for the URLs of those roles.
+
 ### Core service adjustments
 
 - Homeserver configuration:

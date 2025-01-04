@@ -2,7 +2,9 @@
 
 The playbook can install and configure the [rageshake](https://github.com/matrix-org/rageshake) bug report server for you.
 
-This is useful if you're developing your own applications and would like to collect bug reports for them.
+See the project's [documentation](https://github.com/matrix-org/rageshake/blob/main/README.md) to learn what it does and why it might be useful to you.
+
+**Note**: most people don't need to install rageshake to collect bug reports. This component is only useful to people who develop/build their own Matrix client applications themselves.
 
 ## Adjusting the playbook configuration
 
@@ -64,4 +66,4 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-Refer to the [rageshake documentation](https://github.com/matrix-org/rageshake) for available APIs, etc.
+Refer to the project's [documentation](https://github.com/matrix-org/rageshake/blob/main/README.md) for available APIs, etc.

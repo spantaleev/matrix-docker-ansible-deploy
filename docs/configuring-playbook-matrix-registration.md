@@ -1,14 +1,12 @@
 # Setting up matrix-registration (optional)
 
-The playbook can install and configure [matrix-registration](https://github.com/ZerataX/matrix-registration) for you.
+⚠️ **Warnings**:
+- This is a poorly maintained and buggy project. It's better to avoid using it.
+- This is not related to [matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md)
 
-**WARNING**: this is a poorly maintained and buggy project. It's better to avoid using it.
+The playbook can install and configure [matrix-registration](https://github.com/ZerataX/matrix-registration) for you. It is a simple python application to have a token based Matrix registration.
 
-**WARNING**: this is not related to [matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md)
-
-> matrix-registration is a simple python application to have a token based Matrix registration.
-
-Use matrix-registration to **create unique registration links**, which people can use to register on your Matrix server. It allows you to **keep your server's registration closed (private)**, but still allow certain people (these having a special link) to register a user account.
+Use matrix-registration to **create unique registration links**, which people can use to register on your Matrix server. It allows certain people (these having a special link) to register a user account, **keeping your server's registration closed (private)**.
 
 **matrix-registration** provides 2 things:
 
