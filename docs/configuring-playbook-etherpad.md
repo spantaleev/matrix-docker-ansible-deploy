@@ -4,8 +4,6 @@
 
 When enabled together with the Jitsi audio/video conferencing system (see [our docs on Jitsi](configuring-playbook-jitsi.md)), it will be made available as an option during the conferences.
 
-**Note**: the component is not managed by this repository but its [own repository](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad).
-
 ## Adjusting the playbook configuration
 
 To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
