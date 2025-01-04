@@ -4,7 +4,13 @@ The playbook can install and configure [mautrix-telegram](https://github.com/mau
 
 See the project's [documentation](https://docs.mau.fi/bridges/python/telegram/index.html) to learn what it does and why it might be useful to you.
 
-## Prerequisite (optional)
+## Prerequisites
+
+### Obtain a Telegram API key
+
+To use the bridge, you'd need to obtain an API key from [https://my.telegram.org/apps](https://my.telegram.org/apps).
+
+### Enable Appservice Double Puppet or Shared Secret Auth (optional)
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service for this playbook.
 
@@ -12,7 +18,7 @@ For details about configuring Double Puppeting for this bridge, see the section 
 
 ## Adjusting the playbook configuration
 
-You'll need to obtain API keys from [https://my.telegram.org/apps](https://my.telegram.org/apps) and then add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `YOUR_TELEGRAM_APP_ID` and `YOUR_TELEGRAM_API_HASH`.
 
 ```yaml
 matrix_mautrix_telegram_enabled: true

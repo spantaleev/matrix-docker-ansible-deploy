@@ -14,7 +14,7 @@ This means that this is **limited to the list of DNS providers supported by Trae
 
 The up-to-date list can be accessed on [traefik's documentation](https://doc.traefik.io/traefik/https/acme/#providers)
 
-## The changes
+## Adjusting the playbook configuration
 
 **Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
 
@@ -91,7 +91,7 @@ By default, Coturn is configured to wait on the certificate for the `matrix.` su
 
 We also need to indicate to Coturn where the wildcard certificate is.
 
-**⚠️ WARNING ⚠️** : On first start of the services, Coturn might still fail to start because Traefik is still in the process of obtaining the certificates. If you still get an error, make sure Traefik obtained the certificates and restart the Coturn service (`just start-group coturn`).
+⚠️ **Warning** : On first start of the services, Coturn might still fail to start because Traefik is still in the process of obtaining the certificates. If you still get an error, make sure Traefik obtained the certificates and restart the Coturn service (`just start-group coturn`).
 
 This should not happen again afterwards as Traefik will renew certificates well before their expiry date, and the Coturn service is setup to restart periodically.
 

@@ -1,6 +1,6 @@
 # Setting up WeChat bridging (optional)
 
-The playbook can install and configure the [matrix-wechat](https://github.com/duo/matrix-wechat) bridge for you (for bridging to the [WeChat](https://www.wechat.com/) network).
+The playbook can install and configure [matrix-wechat](https://github.com/duo/matrix-wechat) for you, for bridging to [WeChat](https://www.wechat.com/).
 
 See the project's [documentation](https://github.com/duo/matrix-wechat/blob/master/README.md) to learn what it does and why it might be useful to you.
 
@@ -31,6 +31,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-Once the bridge is installed, start a chat with `@wechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `@wechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `help` to the bot to see the available commands.

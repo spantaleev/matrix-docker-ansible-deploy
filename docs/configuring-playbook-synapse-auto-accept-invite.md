@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/matrix-org/synapse-auto-acc
 
 **Note**: Synapse [v1.109.0](https://github.com/element-hq/synapse/releases/tag/v1.109.0), the same feature [has been merged](https://github.com/element-hq/synapse/pull/17147) into Synapse (see the [Native alternative](#native-alternative) section below). You'd better use the native feature, instead of the [synapse-auto-invite-accept](https://github.com/matrix-org/synapse-auto-accept-invite) 3rd party module.
 
-## Configuration
+## Adjusting the playbook configuration
 
 If you decide that you'd like to let this playbook install the [synapse-auto-invite-accept](https://github.com/matrix-org/synapse-auto-accept-invite module for you, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 

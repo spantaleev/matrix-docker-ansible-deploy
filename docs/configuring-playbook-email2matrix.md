@@ -8,7 +8,7 @@ See the project's [documentation](https://github.com/devture/email2matrix/blob/m
 
 ## Preparation
 
-### DNS configuration
+## Adjusting DNS records
 
 It's not strictly necessary, but you may increase the chances that incoming emails reach your server by adding an `MX` record for `matrix.example.com`, as described in the [Configuring DNS](configuring-dns.md) documentation page.
 

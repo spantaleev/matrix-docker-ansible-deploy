@@ -4,8 +4,6 @@ The playbook can install and configure [mautrix-signal](https://github.com/mautr
 
 See the project's [documentation](https://docs.mau.fi/bridges/python/signal/index.html) to learn what it does and why it might be useful to you.
 
-**Note**: This revamped version of the [mautrix-signal (legacy)](configuring-playbook-bridge-mautrix-signal.md) may increase the CPU usage of your homeserver.
-
 ## Prerequisites (optional)
 
 ### Prepare Postgres database on external Postgres server

@@ -22,7 +22,7 @@ To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/j
 sudo journalctl -fu matrix-synapse
 ```
 
-## Increasing Synapse logging
+## Increase logging verbosity
 
 Because the [Synapse](https://github.com/element-hq/synapse) Matrix server is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`.
 
@@ -51,7 +51,3 @@ The shortcut command with `just` program is also available: `just run-tags run-d
 ## Postgres
 
 See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
-
-## Ma1sd
-
-See the dedicated [Adjusting ma1sd Identity Server configuration](configuring-playbook-ma1sd.md) documentation page.

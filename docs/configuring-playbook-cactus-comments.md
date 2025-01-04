@@ -14,7 +14,7 @@ The playbook contains 2 roles for configuring different pieces of the Cactus Com
 
 You can enable whichever component you need (typically both).
 
-## Configuration
+## Adjusting the playbook configuration
 
 To enable Cactus Comments, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
