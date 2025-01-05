@@ -86,6 +86,8 @@ You can only have one `matrix_mautrix_SERVICENAME_configuration_extension_yaml` 
 ```yaml
 matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
   bridge:
+    relay:
+      enabled: true
     permissions:
       '@alice:{{ matrix_domain }}': admin
     encryption:
