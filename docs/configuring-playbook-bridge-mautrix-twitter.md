@@ -54,4 +54,4 @@ To use the bridge, you need to start a chat with `@twitterbot:example.com` (wher
 
 You then need to send login-cookie to start the login. The bot should respond with instructions on how to proceed.
 
-You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/twitter/authentication.html).
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/twitter/authentication.html).

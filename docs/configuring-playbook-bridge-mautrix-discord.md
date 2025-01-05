@@ -60,6 +60,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ### Logging in
 
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/discord/authentication.html).
+
 #### Method 1: Login using QR code (recommended)
 
 For using this bridge, you would need to authenticate by **scanning a QR code** with the Discord app on your phone.

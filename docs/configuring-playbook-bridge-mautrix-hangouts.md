@@ -6,8 +6,6 @@
 
 The playbook can install and configure [mautrix-hangouts](https://github.com/mautrix/hangouts) for you.
 
-See the project's [documentation](https://docs.mau.fi/bridges/python/hangouts/index.html) to learn what it does and why it might be useful to you.
-
 ## Prerequisite (optional)
 
 ### Enable Shared Secret Auth
@@ -58,5 +56,3 @@ You then need to send `login` to the bridge bot to receive a link to the portal 
 Automatic login may not work. If it does not, reload the page and select the "Manual login" checkbox before starting. Manual login involves logging into your Google account normally and then manually getting the OAuth token from browser cookies with developer tools.
 
 Once logged in, recent chats should show up as new conversations automatically. Other chats will get portals as you receive messages.
-
-You can learn more about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/hangouts/authentication.html).

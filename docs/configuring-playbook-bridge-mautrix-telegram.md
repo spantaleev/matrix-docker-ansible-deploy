@@ -92,3 +92,5 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ## Usage
 
 To use the bridge, you need to start a chat with `@telegrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/telegram/authentication.html).

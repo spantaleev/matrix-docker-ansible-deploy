@@ -6,7 +6,7 @@
 
 The playbook can install and configure [mautrix-instagram](https://github.com/mautrix/instagram) for you.
 
-See the project's [documentation](https://docs.mau.fi/bridges/python/instagram/index.html) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/mautrix/instagram/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 

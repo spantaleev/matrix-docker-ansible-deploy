@@ -63,3 +63,5 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 3. The bot should respond with "Successfully logged into <email> for team <workspace>"
 4. Now that you're logged in, you can send `help` to the bot to see the available commands.
 5. Slack channels should automatically begin bridging if you authenticated using a token. Otherwise, you must wait to receive a message in the channel if you used password authentication.
+
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/slack/authentication.html).

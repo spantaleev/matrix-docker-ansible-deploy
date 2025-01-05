@@ -4,7 +4,7 @@
 
 The playbook can install and configure [mautrix-signal](https://github.com/mautrix/signal) for you.
 
-See the project's [documentation](https://docs.mau.fi/bridges/python/signal/index.html) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://docs.mau.fi/bridges/go/signal/index.html) to learn what it does and why it might be useful to you.
 
 ## Prerequisites (optional)
 
@@ -54,3 +54,5 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ## Usage
 
 To use the bridge, you need to start a chat with `@signalbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/signal/authentication.html).
