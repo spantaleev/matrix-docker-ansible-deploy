@@ -89,6 +89,16 @@ matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
 
 Can be used to set the username for the bridge.
 
+### Configure the logging level (optional)
+
+```yaml
+matrix_mautrix_SERVICENAME_logging_level: WARN
+```
+
+to `vars.yml` to control the logging level, where you may replace WARN with one of the following to control the verbosity of the logs generated: TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
+
+If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
@@ -126,16 +136,6 @@ matrix_appservice_double_puppet_enabled: true
 ```
 
 This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-## Control the logging level (optional)
-
-```yaml
-matrix_mautrix_SERVICENAME_logging_level: WARN
-```
-
-to `vars.yml` to control the logging level, where you may replace WARN with one of the following to control the verbosity of the logs generated: TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
-
-If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
 
 ## Usage
 
