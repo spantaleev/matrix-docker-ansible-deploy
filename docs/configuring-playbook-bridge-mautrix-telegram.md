@@ -55,6 +55,14 @@ matrix_mautrix_telegram_configuration_extension_yaml: |
 
 More details about permissions in this example: https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml#L410
 
+### Use the bridge for direct chat only
+
+If you want to exclude all groups from syncing and use the Telegram-Bridge only for direct chats, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_mautrix_telegram_filter_mode: whitelist
+```
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
@@ -82,9 +90,3 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ## Usage
 
 To use the bridge, you need to start a chat with `@telegrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
-
-If you like to exclude all groups from syncing and use the Telgeram-Bridge only for direct chats, you can add the following additional playbook configuration:
-
-```yaml
-matrix_mautrix_telegram_filter_mode: whitelist
-```
