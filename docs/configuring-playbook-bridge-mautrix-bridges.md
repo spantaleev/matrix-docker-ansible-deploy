@@ -116,12 +116,12 @@ matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
 To specify the logging level, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_mautrix_SERVICENAME_logging_level: WARN
+matrix_mautrix_SERVICENAME_logging_level: warn
 ```
 
-Replace WARN with one of the following to control the verbosity of the logs generated: TRACE, DEBUG, INFO, WARN, ERROR, or FATAL.
+Replace `warn` with one of the following to control the verbosity of the logs generated: `trace`, `debug`, `info`, `warn`, `error` or `fatal`.
 
-If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
+If you have issues with a service, and are requesting support, the higher levels of logging (those that appear earlier in the list, like `trace`) will generally be more helpful.
 
 ### Extending the configuration
 
