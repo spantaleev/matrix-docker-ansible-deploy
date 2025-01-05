@@ -109,6 +109,8 @@ Use alternative file storage to the default `media_store` folder.
 
 Bridges can be used to connect your Matrix installation with third-party communication networks.
 
+- [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md) - a common guide for configuring mautrix bridges
+
 - [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md)
 
 - [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md)
