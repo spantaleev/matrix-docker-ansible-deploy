@@ -1,5 +1,7 @@
 # Setting up Mautrix Twitter bridging (optional)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 **Note**: bridging to [Twitter](https://twitter.com/) can also happen via the [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) bridge supported by the playbook.
 
 The playbook can install and configure [mautrix-twitter](https://github.com/mautrix/twitter) for you.

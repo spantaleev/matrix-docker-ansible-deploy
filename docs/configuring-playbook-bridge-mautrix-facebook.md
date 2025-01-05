@@ -1,5 +1,7 @@
 # Setting up Mautrix Facebook bridging (optional, deprecated)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 **Note**: This bridge has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, which can be installed using [this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md). Consider using that bridge instead of this one.
 
 The playbook can install and configure [mautrix-facebook](https://github.com/mautrix/facebook) for you.

@@ -1,5 +1,7 @@
 # Setting up Mautrix Whatsapp bridging (optional)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 The playbook can install and configure [mautrix-whatsapp](https://github.com/mautrix/whatsapp) for you.
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/whatsapp/index.html) to learn what it does and why it might be useful to you.

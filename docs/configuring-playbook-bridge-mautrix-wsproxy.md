@@ -1,5 +1,7 @@
 # Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage (optional)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 The playbook can install and configure [mautrix-wsproxy](https://github.com/mautrix/wsproxy) for you.
 
 See the project's [documentation](https://github.com/mautrix/wsproxy/blob/master/README.md) to learn what it does and why it might be useful to you.
