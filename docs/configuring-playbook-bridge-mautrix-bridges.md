@@ -157,7 +157,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@SERVICENAMEbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Send `login` to the bridge bot to get started. You can learn more here about authentication from the bridge's official documentation on Authentication: https://docs.mau.fi/bridges/python/SERVICENAME/authentication.html
+For details about the next steps, refer to each bridge's individual documentation page.
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 

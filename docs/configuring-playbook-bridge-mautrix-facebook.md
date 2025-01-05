@@ -53,7 +53,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@facebookbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Send `login YOUR_FACEBOOK_EMAIL_ADDRESS` to the bridge bot to enable bridging for your Facebook Messenger account.
+You then need to send `login YOUR_FACEBOOK_EMAIL_ADDRESS` to the bridge bot to enable bridging for your Facebook Messenger account.
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 

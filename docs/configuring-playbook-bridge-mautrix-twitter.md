@@ -50,7 +50,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-1. You then need to start a chat with `@twitterbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
-2. Send login-cookie to start the login. The bot should respond with instructions on how to proceed.
+To use the bridge, you need to start a chat with `@twitterbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+
+You then need to send login-cookie to start the login. The bot should respond with instructions on how to proceed.
 
 You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/twitter/authentication.html).

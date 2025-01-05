@@ -77,6 +77,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`.
 
-You then need to send a `login` command and follow the bridge bot's instructions.
+You then need to send `login` to the bridge bot and follow the instructions.
 
 Given that the bot is configured in `messenger` [bridge mode](#bridge-mode) by default, you will need to log in to [messenger.com](https://messenger.com/) (not `facebook.com`!) and obtain the cookies from there as per [the bridge's authentication instructions](https://docs.mau.fi/bridges/go/meta/authentication.html).
