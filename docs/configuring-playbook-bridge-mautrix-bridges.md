@@ -204,4 +204,6 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 For troubleshooting information with a specific bridge, please see the playbook documentation about it (some other document in in `docs/`) and the upstream ([mautrix](https://github.com/mautrix)) bridge documentation for that specific bridge.
 
-Reporting bridge bugs should happen upstream, in the corresponding mautrix repository, not to us.
+If the bridge's bot doesn't accept the invite to a chat, refer [the official troubleshooting page](https://docs.mau.fi/bridges/general/troubleshooting.html) as well.
+
+If you found bugs in mautrix bridges, they should be reported to the upstream project, in the corresponding mautrix repository, not to us.
