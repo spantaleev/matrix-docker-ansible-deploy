@@ -49,7 +49,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bridge, you need to start a chat with `Hangouts bridge bot` with handle `@hangoutsbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `@hangoutsbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 You then need to send `login` to the bridge bot to receive a link to the portal from which you can enable the bridging. Open the link sent by the bot and follow the instructions.
 
