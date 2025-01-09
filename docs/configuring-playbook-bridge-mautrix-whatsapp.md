@@ -54,3 +54,5 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 To use the bridge, you need to start a chat with `@whatsappbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/whatsapp/authentication.html).
+
+Approximately in a minute after logging in, the bridge will create portal rooms for recent chats.

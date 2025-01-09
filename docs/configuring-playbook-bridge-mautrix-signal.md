@@ -56,3 +56,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 To use the bridge, you need to start a chat with `@signalbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/signal/authentication.html).
+
+After logging in, the bridge will bridge chats as you receive messages.
+
+**Note**: Signal does not support any kind of message history (even on official apps), so the bridge won't backfill any messages.

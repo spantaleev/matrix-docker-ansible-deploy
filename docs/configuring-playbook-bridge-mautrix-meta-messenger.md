@@ -81,4 +81,6 @@ To use the bridge, you need to start a chat with `@messengerbot:example.com` (wh
 
 You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/meta/authentication.html).
 
+After logging in, the bridge will sync recent chats.
+
 **Note**: given that the bot is configured in `messenger` [bridge mode](#bridge-mode) by default, you will need to log in to [messenger.com](https://messenger.com/) (not `facebook.com`!) and obtain the cookies from there.

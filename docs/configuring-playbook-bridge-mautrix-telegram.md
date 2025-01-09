@@ -91,3 +91,5 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 To use the bridge, you need to start a chat with `@telegrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/telegram/authentication.html).
+
+After logging in, the bridge will create portal rooms for all of your Telegram groups and invite you to them. Note that the bridge won't automatically create rooms for private chats.

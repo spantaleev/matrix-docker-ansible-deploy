@@ -62,7 +62,7 @@ To use the bridge, you need to start a chat with `@discordbot:example.com` (wher
 
 You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/discord/authentication.html).
 
-After successfully logged in, direct messages from Discord should start syncing automatically.
+After logging in, the bridge will create portal rooms for some recent direct messages.
 
 Send `help` to the bot to see the available commands.
 
