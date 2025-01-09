@@ -159,6 +159,8 @@ To use the bridge, you need to start a chat with `@SERVICENAMEbot:example.com` (
 
 For details about the next steps, refer to each bridge's individual documentation page.
 
+Send `help` to the bot to see the available commands.
+
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
 ### Set up Double Puppeting (optional)

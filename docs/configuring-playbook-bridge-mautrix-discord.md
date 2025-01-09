@@ -64,8 +64,6 @@ You can then follow instructions on the bridge's [official documentation on Auth
 
 After logging in, the bridge will create portal rooms for some recent direct messages.
 
-Send `help` to the bot to see the available commands.
-
 ### Bridge guilds
 
 If you'd like to bridge guilds, send `guilds status` to see the list of guilds, then send `guilds bridge GUILD_ID_HERE` for each guild that you'd like bridged. Make sure to replace `GUILD_ID_HERE` with the guild's ID.
