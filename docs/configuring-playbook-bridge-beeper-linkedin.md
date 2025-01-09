@@ -1,8 +1,18 @@
 # Setting up Beeper Linkedin bridging (optional)
 
-The playbook can install and configure [beeper-linkedin](https://github.com/beeper/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) Messaging. This bridge is based on the mautrix-python framework and can be configured in a similar way to the other mautrix bridges
+The playbook can install and configure [beeper-linkedin](https://github.com/beeper/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) Messaging. This bridge is based on the mautrix-python framework and can be configured in a similar way to the mautrix bridges.
 
 See the project's [documentation](https://github.com/beeper/linkedin/blob/master/README.md) to learn what it does and why it might be useful to you.
+
+## Prerequisite
+
+### Enable Appservice Double Puppet or Shared Secret Auth (optional)
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service for this playbook.
+
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
+
+**Note**: double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future.
 
 ## Adjusting the playbook configuration
 
@@ -12,25 +22,13 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_beeper_linkedin_enabled: true
 ```
 
-There are some additional things you may wish to configure about the bridge before you continue.
+### Extending the configuration
 
-Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
+There are some additional things you may wish to configure about the bridge.
 
-```yaml
-matrix_beeper_linkedin_bridge_encryption_allow: true
-matrix_beeper_linkedin_bridge_encryption_default: true
-```
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
 
-If you would like to be able to administrate the bridge from your account it can be configured like this:
-
-```yaml
-matrix_beeper_linkedin_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@alice:{{ matrix_domain }}': admin
-```
-
-You may wish to look at `roles/custom/matrix-bridge-beeper-linkedin/templates/config.yaml.j2` to find other things you would like to configure.
+**Note**: when following the guide to configure the bridge, make sure to replace `_mautrix_SERVICENAME_` in the variable names with `_beeper_linkedin_`.
 
 ## Installing
 
@@ -49,23 +47,11 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-## Set up Double Puppeting by enabling Appservice Double Puppet or Shared Secret Auth
-
-The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
-
-Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works at the time of writing, but is deprecated and will stop working in the future.
-
 ## Usage
 
 To use the bridge, you need to start a chat with `@linkedinbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging for your LinkedIn account.
-
-If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
-
-After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting-by-enabling-appservice-double-puppet-or-shared-secret-auth), if you haven't already done so.
+You then need to send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to enable bridging for your LinkedIn account.
 
 ## Troubleshooting
 

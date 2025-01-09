@@ -1,8 +1,10 @@
 # Setting up Mautrix Signal bridging (optional)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 The playbook can install and configure [mautrix-signal](https://github.com/mautrix/signal) for you.
 
-See the project's [documentation](https://docs.mau.fi/bridges/python/signal/index.html) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://docs.mau.fi/bridges/go/signal/index.html) to learn what it does and why it might be useful to you.
 
 ## Prerequisites (optional)
 
@@ -16,7 +18,7 @@ However, if you're [using an external Postgres server](configuring-playbook-exte
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
 
 ## Adjusting the playbook configuration
 
@@ -26,46 +28,11 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_mautrix_signal_enabled: true
 ```
 
-There are some additional things you may wish to configure about the bridge before you continue.
+### Extending the configuration
 
-By default, any user on your homeserver will be able to use the bridge.
+There are some additional things you may wish to configure about the bridge.
 
-Different levels of permission can be granted to users:
-
-* relay - Allowed to be relayed through the bridge, no access to commands;
-* user - Use the bridge with puppeting;
-* admin - Use and administer the bridge.
-
-The permissions are following the sequence: nothing < relay < user < admin.
-
-The default permissions are set as follows:
-
-```yaml
-permissions:
-  '*': relay
-  example.com: user
-```
-
-If you want to augment the preset permissions, you might want to set the additional permissions with the following settings in your `vars.yml` file:
-
-```yaml
-matrix_mautrix_signal_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@alice:{{ matrix_domain }}': admin
-```
-
-This will add the admin permission to the specific user, while keeping the default permissions.
-
-In case you want to replace the default permissions settings **completely**, populate the following item within your `vars.yml` file:
-
-```yaml
-matrix_mautrix_signal_bridge_permissions:
-  '@alice:{{ matrix_domain }}': admin
-  '@bob:{{ matrix_domain }}' : user
-```
-
-You may wish to look at `roles/custom/matrix-bridge-mautrix-signal/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
 
 ## Installing
 
@@ -88,24 +55,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@signalbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-### 💡 Set up Double Puppeting
-
-After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
-
-To set it up, you have 2 ways of going about it.
-
-#### Method 1: automatically, by enabling Appservice Double Puppet
-
-The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
-
-This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-#### Method 2: manually, by asking each user to provide a working access token
-
-When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
-
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md).
-
-- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
-
-- make sure you don't log out the `Mautrix-Signal` device some time in the future, as that would break the Double Puppeting feature
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/signal/authentication.html).

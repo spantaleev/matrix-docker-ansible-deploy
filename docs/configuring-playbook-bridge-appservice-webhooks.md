@@ -48,7 +48,7 @@ To use the bridge, you need to invite the bridge bot user to your room in either
 - Send `/invite @_webhook:example.com` (**Note**: Make sure you have administration permissions in your room)
 - Add the bridge bot to a private channel (personal channels imply you being an administrator)
 
-You then need to send a message to the bridge bot in order to receive a private message including the webhook link:
+You then need to send a message to the bridge bot to receive a private message including the webhook link:
 
 ```
 !webhook

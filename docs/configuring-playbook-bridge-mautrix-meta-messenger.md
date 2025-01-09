@@ -1,6 +1,10 @@
 # Setting up Messenger bridging via Mautrix Meta (optional)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 The playbook can install and configure the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge for you.
+
+See the project's [documentation](https://docs.mau.fi/bridges/go/meta/index.html) to learn what it does and why it might be useful to you.
 
 Since this bridge component can bridge to both [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) and you may wish to do both at the same time, the playbook makes it available via 2 different Ansible roles (`matrix-bridge-mautrix-meta-messenger` and `matrix-bridge-mautrix-meta-instagram`). The latter is a reconfigured copy of the first one (created by `just rebuild-mautrix-meta-instagram` and `bin/rebuild-mautrix-meta-instagram.sh`).
 
@@ -22,7 +26,7 @@ Then, consider disabling the old bridge in your configuration, so it won't recre
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
 
 ## Adjusting the playbook configuration
 
@@ -48,37 +52,11 @@ You may switch the mode via the `matrix_mautrix_meta_messenger_meta_mode` variab
 
 Note that switching the mode (especially between `facebook*` and `messenger`) will intentionally make the bridge use another database (`matrix_mautrix_meta_facebook` or `matrix_mautrix_meta_messenger`) to isolate the 2 instances. Switching between Tor and non-Tor may be possible without dataloss, but your mileage may vary. Before switching to a new mode, you may wish to de-configure the old one (send `help` to the bridge bot and unbridge your portals, etc.).
 
-### Bridge permissions
+### Extending the configuration
 
-By default, any user on your homeserver will be able to use the bridge.
+There are some additional things you may wish to configure about the bridge.
 
-Different levels of permission can be granted to users:
-
-- `relay` - Allowed to be relayed through the bridge, no access to commands
-- `user` - Use the bridge with puppeting
-- `admin` - Use and administer the bridge
-
-The permissions are following the sequence: nothing < `relay` < `user` < `admin`.
-
-The default permissions are set via `matrix_mautrix_meta_messenger_bridge_permissions_default` and are somewhat like this:
-
-```yaml
-matrix_mautrix_meta_messenger_bridge_permissions_default:
-  '*': relay
-  example.com: user
-  '{{ matrix_admin }}': admin
-```
-
-If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @alice:example.com`), then there's no admin by default.
-
-You may redefine `matrix_mautrix_meta_messenger_bridge_permissions_default` any way you see fit, or add extra permissions using `matrix_mautrix_meta_messenger_bridge_permissions_custom` like this:
-
-```yaml
-matrix_mautrix_meta_messenger_bridge_permissions_custom:
-  '@alice:{{ matrix_domain }}': admin
-```
-
-You may wish to look at `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2` to find more information on the permissions settings and other options you would like to configure.
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
 
 ## Installing
 
@@ -101,28 +79,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@messengerbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). Note that the user ID of the bridge's bot is not `@facebookbot:example.com`.
 
-You then need to send a `login` command and follow the bridge bot's instructions.
+You then need to send `login` to the bridge bot and follow the instructions.
 
 Given that the bot is configured in `messenger` [bridge mode](#bridge-mode) by default, you will need to log in to [messenger.com](https://messenger.com/) (not `facebook.com`!) and obtain the cookies from there as per [the bridge's authentication instructions](https://docs.mau.fi/bridges/go/meta/authentication.html).
 
-### 💡 Set up Double Puppeting
-
-After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
-
-To set it up, you have 2 ways of going about it.
-
-#### Method 1: automatically, by enabling Appservice Double Puppet
-
-The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
-
-This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-#### Method 2: manually, by asking each user to provide a working access token
-
-When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
-
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md).
-
-- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
-
-- make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/meta/authentication.html).

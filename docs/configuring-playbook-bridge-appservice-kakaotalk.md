@@ -8,9 +8,13 @@ See the project's [documentation](https://src.miscworks.net/fair/matrix-appservi
 
 ## Prerequisite (optional)
 
+### Enable Shared Secret Auth
+
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
+
+**Note**: double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future.
 
 ## Adjusting the playbook configuration
 
@@ -20,9 +24,7 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_appservice_kakaotalk_enabled: true
 ```
 
-You may optionally wish to add some [Additional configuration](#additional-configuration), or to [prepare for double-puppeting](#set-up-double-puppeting) before the initial installation.
-
-### Additional configuration
+### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
 
@@ -52,26 +54,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@kakaotalkbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Send `login --save EMAIL_OR_PHONE_NUMBER` to the bridge bot to enable bridging for your Kakaotalk account. The `--save` flag may be omitted, if you'd rather not save your password.
-
-### 💡 Set up Double Puppeting
-
-After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
-
-To set it up, you have 2 ways of going about it.
-
-#### Method 1: automatically, by enabling Shared Secret Auth
-
-The bridge automatically performs Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
-
-This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-#### Method 2: manually, by asking each user to provide a working access token
-
-When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
-
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md).
-
-- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
-
-- make sure you don't log out the `Appservice-Kakaotalk` device some time in the future, as that would break the Double Puppeting feature
+You then need to send `login --save EMAIL_OR_PHONE_NUMBER` to the bridge bot to enable bridging for your Kakaotalk account. The `--save` flag may be omitted, if you'd rather not save your password.

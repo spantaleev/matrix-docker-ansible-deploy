@@ -1,5 +1,7 @@
 # Setting up Mautrix Discord bridging (optional)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 **Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) bridges supported by the playbook.
 - For using as a Bot we recommend the [Appservice Discord](configuring-playbook-bridge-appservice-discord.md), because it supports plumbing.
 - For personal use with a discord account we recommend the `mautrix-discord` bridge (the one being discussed here), because it is the most fully-featured and stable of the 3 Discord bridges supported by the playbook.
@@ -18,7 +20,9 @@ If this is a dealbreaker for you, consider using one of the other Discord bridge
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
+
+**Note**: double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future.
 
 ## Adjusting the playbook configuration
 
@@ -28,16 +32,12 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_mautrix_discord_enabled: true
 ```
 
-You may optionally wish to add some [Additional configuration](#additional-configuration), or to [prepare for double-puppeting](#set-up-double-puppeting) before the initial installation.
-
-### Additional configuration
+### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
 
-Take a look at:
-
-- `roles/custom/matrix-bridge-mautrix-discord/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-bridge-mautrix-discord/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_mautrix_discord_configuration_extension_yaml` variable
+<!-- NOTE: common relay mode is not supported for this bridge -->
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
 
 ## Installing
 
@@ -59,6 +59,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ## Usage
 
 ### Logging in
+
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/discord/authentication.html).
 
 #### Method 1: Login using QR code (recommended)
 
@@ -83,26 +85,6 @@ To acquire the token, open Discord in a private browser window. Then open the de
     - for each guild that you'd like bridged, send `guilds bridge GUILD_ID --entire`
 8. You may wish to uninstall the Discord app from your phone now. It's not needed for the bridge to function.
 
-### 💡 Set up Double Puppeting
+### Relaying
 
-After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
-
-To set it up, you have 2 ways of going about it.
-
-#### Method 1: automatically, by enabling Appservice Double Puppet or Shared Secret Auth
-
-The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook.
-
-Enabling [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-Enabling double puppeting by enabling the [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service works at the time of writing, but is deprecated and will stop working in the future.
-
-#### Method 2: manually, by asking each user to provide a working access token
-
-When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
-
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md).
-
-- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
-
-- make sure you don't log out the `Mautrix-Discord` device some time in the future, as that would break the Double Puppeting feature
+The bridge supports using Discord's webhook feature to relay messages from Matrix users who haven't logged into the bridge. See [the official documentation](https://docs.mau.fi/bridges/go/discord/relay.html#setup) for setting up webhook relaying.

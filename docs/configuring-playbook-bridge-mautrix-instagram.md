@@ -1,10 +1,12 @@
 # Setting up Mautrix Instagram bridging (optional, deprecated)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 **Note**: This bridge has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, which can be installed using [this playbook](configuring-playbook-bridge-mautrix-meta-instagram.md). Consider using that bridge instead of this one.
 
 The playbook can install and configure [mautrix-instagram](https://github.com/mautrix/instagram) for you.
 
-See the project's [documentation](https://docs.mau.fi/bridges/python/instagram/index.html) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/mautrix/instagram/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 
@@ -14,33 +16,11 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_mautrix_instagram_enabled: true
 ```
 
-There are some additional things you may wish to configure about the bridge before you continue.
+### Extending the configuration
 
-Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
+There are some additional things you may wish to configure about the bridge.
 
-```yaml
-matrix_mautrix_instagram_configuration_extension_yaml: |
-  bridge:
-    encryption:
-      allow: true
-      default: true
-```
-
-If you would like to be able to administrate the bridge from your account it can be configured like this:
-
-```yaml
-# The easy way. The specified Matrix user ID will be made an admin of all bridges
-matrix_admin: "@alice:{{ matrix_domain }}"
-
-# OR:
-# The more verbose way. Applies to this bridge only. You may define multiple Matrix users as admins.
-matrix_mautrix_instagram_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@alice:{{ matrix_domain }}': admin
-```
-
-You may wish to look at `roles/custom/matrix-bridge-mautrix-instagram/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-instagram/defaults/main.yml` to find other things you would like to configure.
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
 
 ## Installing
 
@@ -63,4 +43,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@instagrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Send `login YOUR_INSTAGRAM_EMAIL_ADDRESS YOUR_INSTAGRAM_PASSWORD` to the bridge bot to enable bridging for your instagram/Messenger account.
+You then need to send `login YOUR_INSTAGRAM_EMAIL_ADDRESS YOUR_INSTAGRAM_PASSWORD` to the bridge bot to enable bridging for your instagram/Messenger account.

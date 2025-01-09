@@ -1,5 +1,7 @@
 # Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage (optional)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 The playbook can install and configure [mautrix-wsproxy](https://github.com/mautrix/wsproxy) for you.
 
 See the project's [documentation](https://github.com/mautrix/wsproxy/blob/master/README.md) to learn what it does and why it might be useful to you.
@@ -19,6 +21,12 @@ matrix_mautrix_wsproxy_syncproxy_shared_secret: 'secret token from bridge'
 ```
 
 Note that the tokens must match what is compiled into the [mautrix-imessage](https://github.com/mautrix/imessage) bridge running on your Mac or Android device.
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
 
 ### Adjusting the wsproxy URL
 

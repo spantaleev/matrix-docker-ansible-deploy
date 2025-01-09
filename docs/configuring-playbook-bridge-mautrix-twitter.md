@@ -1,5 +1,7 @@
 # Setting up Mautrix Twitter bridging (optional)
 
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
 **Note**: bridging to [Twitter](https://twitter.com/) can also happen via the [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) bridge supported by the playbook.
 
 The playbook can install and configure [mautrix-twitter](https://github.com/mautrix/twitter) for you.
@@ -12,7 +14,7 @@ See the project's [documentation](https://github.com/mautrix/twitter/blob/master
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
-For details about configuring Double Puppeting for this bridge, see the section below: [Set up Double Puppeting](#-set-up-double-puppeting)
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
 
 ## Adjusting the playbook configuration
 
@@ -21,6 +23,13 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 ```yaml
 matrix_mautrix_twitter_enabled: true
 ```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+<!-- NOTE: relay mode is not supported for this bridge -->
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
 
 ## Installing
 
@@ -41,29 +50,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-1. You then need to start a chat with `@twitterbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
-2. Send login-cookie to start the login. The bot should respond with instructions on how to proceed.
+To use the bridge, you need to start a chat with `@twitterbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/twitter/authentication.html).
+You then need to send login-cookie to start the login. The bot should respond with instructions on how to proceed.
 
-### 💡 Set up Double Puppeting
-
-After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do).
-
-To set it up, you have 2 ways of going about it.
-
-#### Method 1: automatically, by enabling Appservice Double Puppet
-
-The bridge automatically performs Double Puppeting if [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service is configured and enabled on the server for this playbook.
-
-This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-#### Method 2: manually, by asking each user to provide a working access token
-
-When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
-
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md).
-
-- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
-
-- make sure you don't log out the `Mautrix-Slack` device some time in the future, as that would break the Double Puppeting feature
+You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/twitter/authentication.html).
