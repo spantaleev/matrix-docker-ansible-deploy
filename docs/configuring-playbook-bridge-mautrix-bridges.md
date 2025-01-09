@@ -2,6 +2,8 @@
 
 The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, discord, signal, googlechat, etc.), as well as many other (non-mautrix) bridges. This is a common guide for configuring mautrix bridges.
 
+The author of the bridges maintains [the official docs](https://docs.mau.fi/bridges/index.html), whose source code is available at [mautrix/docs](https://github.com/mautrix/docs) repository on GitHub. You may as well to refer it while configuring them.
+
 You can see each bridge's features on the `ROADMAP.md` file in its corresponding mautrix repository.
 
 ## Adjusting the playbook configuration
