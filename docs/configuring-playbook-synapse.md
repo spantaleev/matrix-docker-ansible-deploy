@@ -147,7 +147,9 @@ Take a look at:
 
 ## Synapse Admin
 
-Certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace, if you install [Synapse Admin](configuring-playbook-synapse-admin.md).
+With [Synapse Admin](configuring-playbook-synapse-admin.md), certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace.
+
+The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
 
 ## Monitoring Synapse Metrics with Prometheus and Grafana
 
