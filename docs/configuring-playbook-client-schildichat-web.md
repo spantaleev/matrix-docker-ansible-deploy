@@ -18,13 +18,32 @@ matrix_client_schildichat_enabled: true
 
 ### Themes
 
-To change the look of SchildiChat Web, you can define your own themes manually by using the `matrix_client_schildichat_setting_defaults_custom_themes` setting.
+You can change the look of SchildiChat Web by pulling themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project or defining your own themes manually.
 
-Or better yet, you can automatically pull it all themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project by simply flipping a flag (`matrix_client_schildichat_themes_enabled: true`).
+#### Use themes by `element-themes`
 
-If you make your own theme, we encourage you to submit it to the **aaronraimist/element-themes** project, so that the whole community could easily enjoy it.
+To pull the themes from the `element-themes` project and use them for your SchildiChat Web instance, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_client_schildichat_themes_enabled: true
+```
+
+If the variable is set to `true`, all themes found in the repository specified with `matrix_client_schildichat_themes_repository_url` will be installed and enabled automatically.
 
 Note that for a custom theme to work well, all SchildiChat Web instances that you use must have the same theme installed.
+
+#### Define themes manually
+
+You can also define your own themes manually by adding and adjusting the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Controls the `setting_defaults.custom_themes` setting of the SchildiChat Web configuration.
+matrix_client_schildichat_setting_defaults_custom_themes: []
+```
+
+If you define your own themes with it and set `matrix_client_schildichat_themes_enabled` to `true` for the themes by `element-themes`, your themes will be preserved as well.
+
+If you make your own theme, we encourage you to submit it to the **aaronraimist/element-themes** project, so that the whole community could easily enjoy it.
 
 ### Adjusting the SchildiChat Web URL
 
