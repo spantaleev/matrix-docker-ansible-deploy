@@ -29,7 +29,7 @@ matrix_mautrix_googlechat_enabled: true
 There are some additional things you may wish to configure about the bridge.
 
 <!-- NOTE: relay mode is not supported for this bridge -->
-See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#set-the-bots-username-optional), etc.
 
 ## Installing
 
@@ -50,12 +50,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-To use the bridge, you need to start a chat with `googlechat bridge bot` with handle `@googlechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `@googlechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You then need to send `login` to the bridge bot to receive a link to the portal from which you can enable the bridging. Open the link sent by the bot and follow the instructions.
+You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/googlechat/authentication.html).
 
-Automatic login may not work. If it does not, reload the page and select the "Manual login" checkbox before starting. Manual login involves logging into your Google account normally and then manually getting the OAuth token from browser cookies with developer tools.
-
-Once logged in, recent chats should show up as new conversations automatically. Other chats will get portals as you receive messages.
-
-You can learn more about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/googlechat/authentication.html).
+After logging in, the bridge will create portal rooms for some recent chats. Portal rooms for other chats will be created as you receive messages.

@@ -37,7 +37,7 @@ matrix_mautrix_slack_enabled: true
 There are some additional things you may wish to configure about the bridge.
 
 <!-- NOTE: relay mode is not supported for this bridge -->
-See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#set-the-bots-username-optional), etc.
 
 ## Installing
 
@@ -58,10 +58,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-1. Start a chat with `@slackbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
-2. If you would like to login to Slack using a token, send the `login-token` command, otherwise, send the `login-password` command. Read [here](https://docs.mau.fi/bridges/go/slack/authentication.html) on how to retrieve your token and cookie token.
-3. The bot should respond with "Successfully logged into <email> for team <workspace>"
-4. Now that you're logged in, you can send `help` to the bot to see the available commands.
-5. Slack channels should automatically begin bridging if you authenticated using a token. Otherwise, you must wait to receive a message in the channel if you used password authentication.
+To use the bridge, you need to start a chat with `@slackbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/slack/authentication.html).
+You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/slack/authentication.html).
+
+If you authenticated using a token, the recent chats will be bridged automatically (depending on the `conversation_count` setting). Otherwise (i.e. logging with the Discord application), the chats the bot is in will be bridged automatically.

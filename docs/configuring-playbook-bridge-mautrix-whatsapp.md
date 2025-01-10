@@ -24,13 +24,11 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_mautrix_whatsapp_enabled: true
 ```
 
-Whatsapp multidevice beta is required, now it is enough if Whatsapp is connected to the Internet every 2 weeks.
-
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
 
-See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#set-the-bots-username-optional), etc.
 
 ## Installing
 
@@ -53,4 +51,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bridge, you need to start a chat with `@whatsappbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/whatsapp/authentication.html).
+You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/whatsapp/authentication.html).
+
+Approximately in a minute after logging in, the bridge will create portal rooms for recent chats.
+
+**Note**: your linked devices will be logged out if you don’t use your phone for over 14 days (see the official FAQ entry [here](https://faq.whatsapp.com/general/download-and-installation/about-linked-devices)). The bridge will warn you if it doesn't receive any data from the phone over 12 days.

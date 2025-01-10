@@ -37,7 +37,7 @@ matrix_mautrix_discord_enabled: true
 There are some additional things you may wish to configure about the bridge.
 
 <!-- NOTE: common relay mode is not supported for this bridge -->
-See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#setting-the-bot-s-username-optional), etc.
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#set-the-bots-username-optional), etc.
 
 ## Installing
 
@@ -58,33 +58,16 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-### Logging in
+To use the bridge, you need to start a chat with `@discordbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/discord/authentication.html).
+You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/discord/authentication.html).
 
-#### Method 1: Login using QR code (recommended)
+After logging in, the bridge will create portal rooms for some recent direct messages.
 
-For using this bridge, you would need to authenticate by **scanning a QR code** with the Discord app on your phone.
+### Bridge guilds
 
-You can delete the Discord app after the authentication process.
+If you'd like to bridge guilds, send `guilds status` to see the list of guilds, then send `guilds bridge GUILD_ID_HERE` for each guild that you'd like bridged. Make sure to replace `GUILD_ID_HERE` with the guild's ID.
 
-#### Method 2: Login using Discord token (not recommended)
+After bridging, spaces will be created automatically, and rooms will be created if necessary when messages are received. You can also pass `--entire` to the bridge command to immediately create all rooms.
 
-To acquire the token, open Discord in a private browser window. Then open the developer settings (keyboard shortcut might be "ctrl+shift+i" or by pressing "F12"). Navigate to the "Network" tab then reload the page. In the URL filter or search bar type "/api" and find the response with the file name of "library". Under the request headers you should find a variable called "Authorization", this is the token to your Discord account. After copying the token, you can close the browser window.
-
-### Bridging
-
-1. Start a chat with `@discordbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
-2. If you would like to login to Discord using a token, send `login-token` command, otherwise, send `login-qr` command.
-3. You'll see a QR code which you need to scan with the Discord app on your phone. You can scan it with the camera app too, which will open Discord, which will then instruct you to scan it a 2nd time in the Discord app.
-4. After confirming (in the Discord app) that you'd like to allow this login, the bot should respond with "Succcessfully authenticated as …"
-5. Now that you're logged in, you can send `help` to the bot to see the available commands.
-6. Some Direct Messages from Discord should start syncing automatically
-7. If you'd like to bridge guilds:
-    - send `guilds status` to see the list of guilds
-    - for each guild that you'd like bridged, send `guilds bridge GUILD_ID --entire`
-8. You may wish to uninstall the Discord app from your phone now. It's not needed for the bridge to function.
-
-### Relaying
-
-The bridge supports using Discord's webhook feature to relay messages from Matrix users who haven't logged into the bridge. See [the official documentation](https://docs.mau.fi/bridges/go/discord/relay.html#setup) for setting up webhook relaying.
+If you want to manually bridge channels, invite the bot to the room you want to bridge, and run `!discord bridge CHANNEL_ID_HERE` to bridge the room. Make sure to replace `CHANNEL_ID_HERE` with the channel's ID.

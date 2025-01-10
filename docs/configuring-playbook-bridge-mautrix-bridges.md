@@ -2,6 +2,8 @@
 
 The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, discord, signal, googlechat, etc.), as well as many other (non-mautrix) bridges. This is a common guide for configuring mautrix bridges.
 
+The author of the bridges maintains [the official docs](https://docs.mau.fi/bridges/index.html), whose source code is available at [mautrix/docs](https://github.com/mautrix/docs) repository on GitHub. You may as well to refer it while configuring them.
+
 You can see each bridge's features on the `ROADMAP.md` file in its corresponding mautrix repository.
 
 ## Adjusting the playbook configuration
@@ -159,6 +161,8 @@ To use the bridge, you need to start a chat with `@SERVICENAMEbot:example.com` (
 
 For details about the next steps, refer to each bridge's individual documentation page.
 
+Send `help` to the bot to see the available commands.
+
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
 ### Set up Double Puppeting (optional)
@@ -204,4 +208,6 @@ When using this method, **each user** that wishes to enable Double Puppeting nee
 
 For troubleshooting information with a specific bridge, please see the playbook documentation about it (some other document in in `docs/`) and the upstream ([mautrix](https://github.com/mautrix)) bridge documentation for that specific bridge.
 
-Reporting bridge bugs should happen upstream, in the corresponding mautrix repository, not to us.
+If the bridge's bot doesn't accept the invite to a chat, refer [the official troubleshooting page](https://docs.mau.fi/bridges/general/troubleshooting.html) as well.
+
+If you found bugs in mautrix bridges, they should be reported to the upstream project, in the corresponding mautrix repository, not to us.
