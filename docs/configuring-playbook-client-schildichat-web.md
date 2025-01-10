@@ -71,6 +71,24 @@ Take a look at:
 - `roles/custom/matrix-client-schildichat/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-client-schildichat/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_schildichat_configuration_extension_json` variable
 
+For example, to override some SchildiChat Web settings, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+ # Your custom JSON configuration for SchildiChat Web should go to `matrix_client_schildichat_configuration_extension_json`.
+ # This configuration extends the default starting configuration (`matrix_client_schildichat_configuration_default`).
+ #
+ # You can override individual variables from the default configuration, or introduce new ones.
+ #
+ # If you need something more special, you can take full control by
+ # completely redefining `matrix_client_schildichat_configuration_default`.
+ #
+matrix_client_schildichat_configuration_extension_json: |
+ {
+ "disable_3pid_login": true,
+ "disable_login_language_selector": true
+ }
+```
+
 ## Adjusting DNS records
 
 Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the SchildiChat Web domain to the Matrix server.
