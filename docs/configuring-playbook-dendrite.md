@@ -1,6 +1,10 @@
 # Configuring Dendrite (optional)
 
-By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, but you can also use [Dendrite](https://github.com/element-hq/dendrite).
+The playbook can install and configure the [Dendrite](https://github.com/element-hq/dendrite) Matrix server for you.
+
+See the project's [documentation](https://element-hq.github.io/dendrite/) to learn what it does and why it might be useful to you.
+
+By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document.
 
 ⚠️ **Warnings**:
 
@@ -10,7 +14,7 @@ By default, this playbook configures the [Synapse](https://github.com/element-hq
 
 ## Adjusting the playbook configuration
 
-To use Dendrite, you **generally** need to add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To use Dendrite, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:
 
 ```yaml
 matrix_homeserver_implementation: dendrite
