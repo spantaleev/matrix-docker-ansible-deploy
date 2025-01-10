@@ -16,29 +16,34 @@ To enable SchildiChat Web, add the following configuration to your `inventory/ho
 matrix_client_schildichat_enabled: true
 ```
 
-The playbook provides some customization variables you could use to change SchildiChat Web's settings.
-
-Their defaults are defined in [`roles/custom/matrix-client-schildichat/defaults/main.yml`](../roles/custom/matrix-client-schildichat/defaults/main.yml) and they ultimately end up in the generated `/matrix/schildichat/config.json` file (on the server). This file is generated from the [`roles/custom/matrix-client-schildichat/templates/config.json.j2`](../roles/custom/matrix-client-schildichat/templates/config.json.j2) template.
-
-**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
-
-Alternatively, **if there is no pre-defined variable** for a SchildiChat Web setting you wish to change:
-
-- you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of SchildiChat Web's various settings that rarely get used.
-
-- or, you can **extend and override the default configuration** ([`config.json.j2`](../roles/custom/matrix-client-schildichat/templates/config.json.j2)) by making use of the `matrix_client_schildichat_configuration_extension_json_` variable. You can find information about this in [`roles/custom/matrix-client-schildichat/defaults/main.yml`](../roles/custom/matrix-client-schildichat/defaults/main.yml).
-
-- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_client_schildichat_configuration_default` (or `matrix_client_schildichat_configuration`). You can find information about this in [`roles/custom/matrix-client-schildichat/defaults/main.yml`](../roles/custom/matrix-client-schildichat/defaults/main.yml).
-
 ### Themes
 
-To change the look of SchildiChat Web, you can define your own themes manually by using the `matrix_client_schildichat_setting_defaults_custom_themes` setting.
+You can change the look of SchildiChat Web by pulling themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project or defining your own themes manually.
 
-Or better yet, you can automatically pull it all themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project by simply flipping a flag (`matrix_client_schildichat_themes_enabled: true`).
+#### Use themes by `element-themes`
 
-If you make your own theme, we encourage you to submit it to the **aaronraimist/element-themes** project, so that the whole community could easily enjoy it.
+To pull the themes from the `element-themes` project and use them for your SchildiChat Web instance, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_client_schildichat_themes_enabled: true
+```
+
+If the variable is set to `true`, all themes found in the repository specified with `matrix_client_schildichat_themes_repository_url` will be installed and enabled automatically.
 
 Note that for a custom theme to work well, all SchildiChat Web instances that you use must have the same theme installed.
+
+#### Define themes manually
+
+You can also define your own themes manually by adding and adjusting the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Controls the `setting_defaults.custom_themes` setting of the SchildiChat Web configuration.
+matrix_client_schildichat_setting_defaults_custom_themes: []
+```
+
+If you define your own themes with it and set `matrix_client_schildichat_themes_enabled` to `true` for the themes by `element-themes`, your themes will be preserved as well.
+
+If you make your own theme, we encourage you to submit it to the **aaronraimist/element-themes** project, so that the whole community could easily enjoy it.
 
 ### Adjusting the SchildiChat Web URL
 
@@ -55,6 +60,33 @@ matrix_client_schildichat_hostname: "{{ matrix_server_fqn_matrix }}"
 
 # Expose under the /schildichat subpath
 matrix_client_schildichat_path_prefix: /schildichat
+```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-client-schildichat/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-client-schildichat/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_schildichat_configuration_extension_json` variable
+
+For example, to override some SchildiChat Web settings, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+ # Your custom JSON configuration for SchildiChat Web should go to `matrix_client_schildichat_configuration_extension_json`.
+ # This configuration extends the default starting configuration (`matrix_client_schildichat_configuration_default`).
+ #
+ # You can override individual variables from the default configuration, or introduce new ones.
+ #
+ # If you need something more special, you can take full control by
+ # completely redefining `matrix_client_schildichat_configuration_default`.
+ #
+matrix_client_schildichat_configuration_extension_json: |
+ {
+ "disable_3pid_login": true,
+ "disable_login_language_selector": true
+ }
 ```
 
 ## Adjusting DNS records
