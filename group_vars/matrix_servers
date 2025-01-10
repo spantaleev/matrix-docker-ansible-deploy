@@ -3076,6 +3076,8 @@ matrix_bot_draupnir_container_image_self_build: "{{ matrix_architecture not in [
 
 matrix_bot_draupnir_container_network: "{{ matrix_addons_container_network }}"
 
+matrix_bot_draupnir_admin_api_enabled: "{{ matrix_bot_draupnir_room_hijack_enabled }}"
+
 matrix_bot_draupnir_container_additional_networks_auto: |-
   {{
     (
@@ -4731,6 +4733,7 @@ matrix_synapse_container_labels_public_client_root_redirection_enabled: "{{ matr
 matrix_synapse_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
 
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
+matrix_synapse_container_labels_internal_client_synapse_admin_api_enabled: "{{ matrix_bot_draupnir_admin_api_enabled }}"
 
 matrix_synapse_container_labels_public_federation_api_traefik_hostname: "{{ matrix_server_fqn_matrix_federation }}"
 matrix_synapse_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
@@ -4922,6 +4925,7 @@ matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_midd
 
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_enabled }}"
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_public_client_synapse_admin_api_enabled }}"
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_enabled: "{{ matrix_synapse_container_labels_internal_client_synapse_admin_api_enabled }}"
 
 matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_synapse_container_labels_public_federation_api_traefik_entrypoints }}"
 matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_tls: "{{ matrix_synapse_container_labels_public_federation_api_traefik_tls }}"
