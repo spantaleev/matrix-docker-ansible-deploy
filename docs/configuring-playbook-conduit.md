@@ -29,6 +29,12 @@ Take a look at:
 - `roles/custom/matrix-conduit/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-conduit/templates/conduit.toml.j2` for the server's default configuration
 
+If you'd like to have your own different configuration, feel free to copy and paste the original files into your inventory (e.g. in `inventory/host_vars/matrix.example.com/`) and then change the specific host's `vars.yaml` file like this:
+
+```yaml
+matrix_conduit_template_conduit_config: "{{ playbook_dir }}/inventory/host_vars/matrix.example.com/conduit.toml.j2"
+```
+
 ## Creating the first user account
 
 Since it is difficult to create the first user account on Conduit (see [famedly/conduit#276](https://gitlab.com/famedly/conduit/-/issues/276) and [famedly/conduit#354](https://gitlab.com/famedly/conduit/-/merge_requests/354)) and it does not support [registering users](registering-users.md) (via the command line or via the playbook) like Synapse and Dendrite do, we recommend the following procedure:
