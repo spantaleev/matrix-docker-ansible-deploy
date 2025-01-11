@@ -76,7 +76,7 @@ Once installed, the playbook attempts to preserve the Postgres version it starts
 
 Upgrades must be performed manually.
 
-This playbook can upgrade your existing Postgres setup with the following command:
+The playbook can upgrade your existing Postgres setup with the following command:
 
 ```sh
 just run-tags upgrade-postgres

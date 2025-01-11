@@ -125,7 +125,7 @@ matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
 
 Draupnir supports two methods to receive reports in the management room.
 
-The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using traefik, this playbook can set this up for you:
+The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using traefik, the playbook can set this up for you:
 
 ```yaml
 matrix_bot_draupnir_abuse_reporting_enabled: true

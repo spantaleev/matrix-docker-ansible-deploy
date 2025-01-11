@@ -1,6 +1,6 @@
 # Setting up Hydrogen (optional)
 
-This playbook can install the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client for you.
+The playbook can install and configure the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client for you.
 
 Hydrogen is a lightweight web client that supports mobile and legacy web browsers. It can be installed alongside or instead of Element Web.
 
