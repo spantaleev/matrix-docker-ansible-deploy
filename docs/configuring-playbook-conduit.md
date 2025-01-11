@@ -1,19 +1,38 @@
 # Configuring Conduit (optional)
 
-By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, but you can also use [Conduit](https://conduit.rs).
+The playbook can install and configure the [Conduit](https://conduit.rs) Matrix server for you.
 
-**Notes**:
+See the project's [documentation](https://docs.conduit.rs/) to learn what it does and why it might be useful to you.
+
+By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document.
+
+⚠️ **Warnings**:
 
 - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Conduit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
 
-- **homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
+- **Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
 
 ## Adjusting the playbook configuration
 
-To use Conduit, you **generally** need to add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To use Conduit, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:
 
 ```yaml
 matrix_homeserver_implementation: conduit
+```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the server.
+
+Take a look at:
+
+- `roles/custom/matrix-conduit/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-conduit/templates/conduit.toml.j2` for the server's default configuration
+
+If you'd like to have your own different configuration, feel free to copy and paste the original files into your inventory (e.g. in `inventory/host_vars/matrix.example.com/`) and then change the specific host's `vars.yaml` file like this:
+
+```yaml
+matrix_conduit_template_conduit_config: "{{ playbook_dir }}/inventory/host_vars/matrix.example.com/conduit.toml.j2"
 ```
 
 ## Creating the first user account
