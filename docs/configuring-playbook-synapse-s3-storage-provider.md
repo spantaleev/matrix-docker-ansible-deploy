@@ -70,9 +70,9 @@ Migrating your existing data can happen in multiple ways:
 - [using the `s3_media_upload` script from `synapse-s3-storage-provider`](#using-the-s3_media_upload-script-from-synapse-s3-storage-provider) (very slow when dealing with lots of data)
 - [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload) (quicker when dealing with lots of data)
 
-#### Using the `s3_media_upload` script from `synapse-s3-storage-provider`
+💡 **Note**: instead of using `s3_media_upload` directly, which is very slow and painful for an initial data migration, we recommend [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload).
 
-Instead of using `s3_media_upload` directly, which is very slow and painful for an initial data migration, we recommend [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload).
+#### Using the `s3_media_upload` script from `synapse-s3-storage-provider`
 
 To copy your existing files, SSH into the server and run `/matrix/synapse/ext/s3-storage-provider/bin/shell`.
 
@@ -119,7 +119,7 @@ docker.io/amazon/aws-cli:2.9.16 \
 
 ##### Copying data to an S3 alternative using the aws-s3 tool
 
-To copy to a provider other than AWS S3 (e.g. Wasabi, Digital Ocean Spaces, etc.), you can use the command for [Copying data to Amazon S3](#copying-data-to-amazon-s3) with an added `--endpoint-url=$ENDPOINT` argument.
+To copy to a provider other than AWS S3 (e.g. Storj, Wasabi, Digital Ocean Spaces, etc.), you can use the command for [Copying data to Amazon S3](#copying-data-to-amazon-s3) with an added `--endpoint-url=$ENDPOINT` argument.
 
 Add this argument to the command **as-is** (`$ENDPOINT` is an environment variable corresponding to `matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url`, so you don't need to touch it). Make sure to add the argument **before** the final quote (`'`) of the command.
 
