@@ -87,7 +87,7 @@ If `matrix_admin` is already configured in your `vars.yml` configuration, you ca
 #   - "@*:example.com"
 #   - "@admin:example.net"
 #
-# .. unless you've made yourself an admin of all bots/bridges like this:
+# … unless you've made yourself an admin of all bots/bridges like this:
 #
 # matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```

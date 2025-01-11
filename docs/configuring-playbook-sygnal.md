@@ -23,11 +23,11 @@ matrix_sygnal_apps:
   com.example.myapp.ios:
     type: apns
     keyfile: /data/my_key.p8
-    # .. more configuration ..
+    # … more configuration …
   com.example.myapp.android:
     type: gcm
     api_key: your_api_key_for_gcm
-    # .. more configuration ..
+    # … more configuration …
 
 aux_file_definitions:
   - dest: "{{ matrix_sygnal_data_path }}/my_key.p8"
@@ -48,7 +48,7 @@ To configure [APNS](https://developer.apple.com/notifications/) (Apple Push Noti
 
 - makes use of the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux) (and its `aux_file_definitions` variable) to make the playbook install files into `/matrix/sygnal/data` (the `matrix_sygnal_data_path` variable). See [`defaults/main.yml` file](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml) of the `aux` role for usage examples. It also makes sure the files are owned by `matrix:matrix`, so that Sygnal can read them. Of course, you can also install these files manually yourself, if you'd rather not use `aux`.
 
-- references these files in the Sygnal configuration (`matrix_sygnal_apps`) using a path like `/data/..` (the `/matrix/sygnal/data` directory on the host system is mounted into the `/data` directory inside the container)
+- references these files in the Sygnal configuration (`matrix_sygnal_apps`) using a path like `/data/…` (the `/matrix/sygnal/data` directory on the host system is mounted into the `/data` directory inside the container)
 
 ### Adjusting the Sygnal URL
 

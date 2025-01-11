@@ -130,7 +130,7 @@ matrix_synapse_container_image_customizations_templates_git_repository_keyscan_h
 # If your git repository is public, do not define the private key (remove the variable).
 matrix_synapse_container_image_customizations_templates_git_repository_ssh_private_key: |
   -----BEGIN OPENSSH PRIVATE KEY-----
-  ....
+  …
   -----END OPENSSH PRIVATE KEY-----
 ```
 
