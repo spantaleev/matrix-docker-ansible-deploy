@@ -43,5 +43,7 @@ If you didn't make your account a server admin when you created it, you can lear
 To set @alice:example.com's password to `correct_horse_battery_staple` you could use this curl command:
 
 ```sh
-curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.example.com/_matrix/client/r0/admin/reset_password/@alice:example.com?access_token=MDA...this_is_my_access_token
+curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.example.com/_matrix/client/r0/admin/reset_password/@alice:example.com?access_token=ACCESS_TOKEN_HERE
 ```
+
+Make sure to replace `ACCESS_TOKEN_HERE` with the access token of the server admin account.
