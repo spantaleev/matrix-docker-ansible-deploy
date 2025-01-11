@@ -47,7 +47,7 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # 
 # For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
 
-If you have existing files in Synapse's media repository (`/matrix/synapse/media-store/..`):
+If you have existing files in Synapse's media repository (`/matrix/synapse/storage/media-store/..`):
 
 - new files will start being stored both locally and on the S3 store
 - the existing files will remain on the local filesystem only until [migrating them to the S3 store](#migrating-your-existing-media-files-to-the-s3-store)
