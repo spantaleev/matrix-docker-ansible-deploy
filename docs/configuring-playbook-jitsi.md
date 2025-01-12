@@ -159,7 +159,6 @@ jitsi_web_custom_config_extension: |
 
   config.disableAudioLevels = true;
 
-  // Limit the number of video feeds forwarded to each client
   config.channelLastN = 4;
 ```
 
