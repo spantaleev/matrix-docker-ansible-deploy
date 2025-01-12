@@ -22,7 +22,7 @@ You can change the look of SchildiChat Web by pulling themes provided by the [aa
 
 #### Use themes by `element-themes`
 
-To pull the themes from the `element-themes` project and use them for your SchildiChat Web instance, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To pull the themes from the `element-themes` project and use them for your SchildiChat Web instance, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_client_schildichat_themes_enabled: true
@@ -34,7 +34,7 @@ Note that for a custom theme to work well, all SchildiChat Web instances that yo
 
 #### Define themes manually
 
-You can also define your own themes manually by adding and adjusting the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+You can also define your own themes manually by adding and adjusting the following configuration to your `vars.yml` file:
 
 ```yaml
 # Controls the `setting_defaults.custom_themes` setting of the SchildiChat Web configuration.
@@ -51,7 +51,7 @@ By default, this playbook installs SchildiChat Web on the `schildichat.` subdoma
 
 By tweaking the `matrix_client_schildichat_hostname` and `matrix_client_schildichat_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.example.com`),
@@ -71,7 +71,7 @@ Take a look at:
 - `roles/custom/matrix-client-schildichat/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-client-schildichat/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_schildichat_configuration_extension_json` variable
 
-For example, to override some SchildiChat Web settings, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+For example, to override some SchildiChat Web settings, add the following configuration to your `vars.yml` file:
 
 ```yaml
  # Your custom JSON configuration for SchildiChat Web should go to `matrix_client_schildichat_configuration_extension_json`.

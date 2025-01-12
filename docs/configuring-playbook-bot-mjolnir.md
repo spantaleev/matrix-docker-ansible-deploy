@@ -62,7 +62,7 @@ Finally invite the `@bot.mjolnir:example.com` account you created earlier into t
 
 ## Adjusting the playbook configuration
 
-To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
+To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
 
 ```yaml
 # Enable Mjolnir
@@ -81,7 +81,7 @@ To support E2EE, Mjolnir needs to [use Pantalaimon](configuring-playbook-pantala
 
 When using Pantalaimon, Mjolnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+Add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 # Enable Pantalaimon. See docs/configuring-playbook-pantalaimon.md
@@ -111,7 +111,7 @@ matrix_bot_mjolnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_u
 
 When NOT using Pantalaimon, Mjolnir does not log in by itself and you must give it an access token for its bot account.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
+Add the following configuration to your `vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_HERE"
@@ -119,7 +119,7 @@ matrix_bot_mjolnir_access_token: "ACCESS_TOKEN_HERE"
 
 ### Adding Mjolnir synapse antispam module (optional)
 
-To enable Mjolnir synapse antispam module, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+To enable Mjolnir synapse antispam module, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: true
@@ -133,7 +133,7 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 
 You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
 
-For example, to change Mjolnir's `recordIgnoredInvites` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+For example, to change Mjolnir's `recordIgnoredInvites` option to `true`, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_bot_mjolnir_configuration_extension_yaml: |

@@ -34,7 +34,7 @@ By default, this playbook installs ntfy on the `ntfy.` subdomain (`ntfy.example.
 
 By tweaking the `ntfy_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname

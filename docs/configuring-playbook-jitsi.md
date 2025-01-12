@@ -27,7 +27,7 @@ By default, this playbook installs Jitsi on the `jitsi.` subdomain (`jitsi.examp
 
 By tweaking the `jitsi_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname
@@ -56,7 +56,7 @@ Currently, there are three supported authentication modes: 'internal' (default),
 
 The default authentication mechanism is 'internal' auth, which requires jitsi-accounts to be setup and is the recommended setup, as it also works in federated rooms. With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join. If a registered host is not yet present, guests are put on hold in individual waiting rooms.
 
-Add these lines to your `inventory/host_vars/matrix.example.com/vars.yml` configuration:
+Add the following configuration to your `vars.yml` file:
 
 ```yaml
 jitsi_enable_auth: true
@@ -118,9 +118,7 @@ By default the Jitsi Meet instance does not work with a client in LAN (Local Are
 
 The reason is the Jitsi VideoBridge git to LAN client the IP address of the docker image instead of the host. The [documentation](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/#running-behind-nat-or-on-a-lan-environment) of Jitsi in docker suggest to add `JVB_ADVERTISE_IPS` in enviornment variable to make it work.
 
-Here is how to do it in the playbook.
-
-Add these two lines to your `inventory/host_vars/matrix.example.com/vars.yml` configuration:
+To enable it, add the following configuration to your `vars.yml` file:
 
 ```yaml
 jitsi_jvb_container_extra_arguments:
@@ -129,7 +127,7 @@ jitsi_jvb_container_extra_arguments:
 
 ## Fine tune Jitsi (optional)
 
-Sample **additional** `inventory/host_vars/matrix.example.com/vars.yml` configuration to save up resources (explained below):
+If you'd like to have Jitsi save up resources, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 jitsi_web_custom_config_extension: |
@@ -175,7 +173,7 @@ For this role to work you will need an additional section in the ansible hosts f
 <your jvb hosts> ansible_host=<ip address of the jvb host>
 ```
 
-Each JVB will require a server ID to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB. The server ID is set with the variable `jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container. This variable can be set via the host file, a parameter to the ansible command or in the `vars.yaml` for the host which will have the additional JVB. For example:
+Each JVB will require a server ID to be set so that it can be uniquely identified and this allows Jitsi to keep track of which conferences are on which JVB. The server ID is set with the variable `jitsi_jvb_server_id` which ends up as the JVB_WS_SERVER_ID environment variables in the JVB docker container. This variable can be set via the host file, a parameter to the ansible command or in the `vars.yml` for the host which will have the additional JVB. For example:
 
 ```yaml
 jitsi_jvb_server_id: 'jvb-2'

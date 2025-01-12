@@ -123,7 +123,7 @@ By default, this playbook installs the Matrix Authentication Service on the `mat
 
 By tweaking the `matrix_authentication_service_hostname` and `matrix_authentication_service_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix
@@ -146,7 +146,7 @@ The playbook exposes a `matrix_authentication_service_config_upstream_oauth2_pro
 <details>
 <summary>Click to expand the example configuration:</summary>
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 matrix_authentication_service_config_upstream_oauth2_providers:
@@ -361,7 +361,7 @@ If in `matrix_synapse_oidc_providers` your provider `idp_id` is (was) named `key
 
 The same OIDC provider may have an `id` of `01HFVBY12TMNTYTBV8W921M5FA` on the MAS side, as defined in `matrix_authentication_service_config_upstream_oauth2_providers` (see the [Upstream OAuth2 configuration](#upstream-oauth2-configuration) section above).
 
-To tell `syn2mas` how the Synapse-configured OIDC provider maps to the new MAS-configured OIDC provider, add this additional configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To tell `syn2mas` how the Synapse-configured OIDC provider maps to the new MAS-configured OIDC provider, add this additional configuration to your `vars.yml` file:
 
 ```yaml
 # Adjust the mapping below to match your provider IDs on the Synapse side and the MAS side.

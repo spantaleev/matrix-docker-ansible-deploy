@@ -18,7 +18,7 @@ traefik_config_certificatesResolvers_acme_use_staging: true
 
 For testing or other purposes, you may wish to install services without SSL termination and have services exposed to `http://` instead of `https://`.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Add the following configuration to your `vars.yml` file:
 
 ```yaml
 traefik_config_entrypoint_web_secure_enabled: false

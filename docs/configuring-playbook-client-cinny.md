@@ -24,7 +24,7 @@ By tweaking the `matrix_client_cinny_hostname` variable, you can easily make the
 
 While a `matrix_client_cinny_path_prefix` variable exists for tweaking the path-prefix, it's [not supported anymore](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701), because Cinny requires an application rebuild (with a tweaked build config) to be functional under a custom path.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to a different domain (`app.example.com`) than the default one (`cinny.example.com`)

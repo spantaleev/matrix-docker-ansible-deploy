@@ -52,7 +52,7 @@ matrix_appservice_draupnir_for_all_master_control_room_alias: "MANAGEMENT_ROOM_A
 
 You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable.
 
-For example, to change Draupnir's `protectAllJoinedRooms` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+For example, to change Draupnir's `protectAllJoinedRooms` option to `true`, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_appservice_draupnir_for_all_extension_yaml: |

@@ -20,7 +20,7 @@ By default, this playbook installs the Sliding Sync proxy on the `matrix.` subdo
 
 By tweaking the `matrix_sliding_sync_hostname` and `matrix_sliding_sync_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix

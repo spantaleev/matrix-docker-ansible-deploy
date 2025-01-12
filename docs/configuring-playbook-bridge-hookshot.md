@@ -105,7 +105,7 @@ The GitHub bridge requires you to install a private key file. This can be done i
 - somehow copy the file to the path `{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}` (default: `/matrix/hookshot/private-key.pem`) on the server manually.
 - use the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux) to copy the file from an arbitrary path on your ansible client to the correct path on the server.
 
-To use the `aux` role, make sure the `matrix_hookshot_github_private_key` variable is empty. Then add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To use the `aux` role, make sure the `matrix_hookshot_github_private_key` variable is empty. Then add the following configuration to your `vars.yml` file:
 
 ```yaml
 aux_file_definitions:

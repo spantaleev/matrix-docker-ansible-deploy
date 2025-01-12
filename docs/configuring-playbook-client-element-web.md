@@ -29,7 +29,7 @@ Note that for a custom theme to work well, all Element Web instances that you us
 
 #### Define themes manually
 
-You can also define your own themes manually by adding and adjusting the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+You can also define your own themes manually by adding and adjusting the following configuration to your `vars.yml` file:
 
 ```yaml
 # Controls the `setting_defaults.custom_themes` setting of the Element Web configuration.
@@ -46,7 +46,7 @@ By default, this playbook installs Element Web on the `element.` subdomain (`ele
 
 By tweaking the `matrix_client_element_hostname` and `matrix_client_element_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.example.com`),
@@ -66,7 +66,7 @@ Take a look at:
 - `roles/custom/matrix-client-element/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-client-element/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_element_configuration_extension_json` variable
 
-For example, to override some Element Web settings, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+For example, to override some Element Web settings, add the following configuration to your `vars.yml` file:
 
 ```yaml
  # Your custom JSON configuration for Element Web should go to `matrix_client_element_configuration_extension_json`.
@@ -94,7 +94,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 ## Disabling Element Web
 
-If you'd like for the playbook to not install Element Web (or to uninstall it if it was previously installed), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+If you'd like for the playbook to not install Element Web (or to uninstall it if it was previously installed), add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_client_element_enabled: false

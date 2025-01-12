@@ -29,7 +29,7 @@ Take a look at:
 - `roles/custom/matrix-dendrite/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-dendrite/templates/dendrite.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_dendrite_configuration_extension_yaml` variable
 
-For example, to override some Dendrite settings, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+For example, to override some Dendrite settings, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_dendrite_configuration_extension_yaml: |

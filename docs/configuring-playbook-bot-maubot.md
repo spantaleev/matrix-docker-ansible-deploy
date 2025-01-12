@@ -31,7 +31,7 @@ By default, this playbook installs maubot on the `matrix.` subdomain, at the `/_
 
 By tweaking the `matrix_bot_maubot_hostname` and `matrix_bot_maubot_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix
@@ -53,7 +53,7 @@ Certain [maubot plugins](https://plugins.mau.bot/) require additional dependenci
 
 You can customize the default maubot container image and install your own dependencies.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 matrix_bot_maubot_container_image_customizations_enabled: true

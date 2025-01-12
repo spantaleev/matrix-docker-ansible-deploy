@@ -47,7 +47,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Self-Service Bridging (Manual)
 
-Self-service bridging allows you to bridge specific and existing Matrix rooms to specific Discord rooms. To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Self-service bridging allows you to bridge specific and existing Matrix rooms to specific Discord rooms. To enable it, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_appservice_discord_bridge_enableSelfServiceBridging: true
@@ -73,7 +73,7 @@ Through portal bridging, Matrix rooms will automatically be created by the bot a
 
 All Matrix rooms created this way are **listed publicly** by default, and you will not have admin permissions to change this. To get more control, [make yourself a room Administrator](#getting-administrator-access-in-a-portal-bridged-room). You can then unlist the room from the directory and change the join rules.
 
-To disable portal bridging, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To disable portal bridging, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_appservice_discord_bridge_disablePortalBridging: true

@@ -44,7 +44,7 @@ By default, this playbook installs Cactus Comments' client on the `matrix.` subd
 
 By tweaking the `matrix_cactus_comments_client_hostname` and `matrix_cactus_comments_client_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix to host the client assets at a different location

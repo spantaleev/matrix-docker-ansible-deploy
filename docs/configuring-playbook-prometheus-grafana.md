@@ -38,7 +38,7 @@ By default, this playbook installs Grafana web user-interface on the `stats.` su
 
 By tweaking the `grafana_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname
