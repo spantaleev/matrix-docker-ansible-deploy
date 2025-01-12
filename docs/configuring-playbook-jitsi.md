@@ -1,6 +1,8 @@
 # Setting up the Jitsi video-conferencing platform (optional)
 
-The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS).
+The playbook can install and configure the [Jitsi](https://jitsi.org/) video-conferencing platform for you.
+
+Jitsi can not only be integrated with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS) as a widget, but also be used as standalone web app.
 
 See the project's [documentation](https://jitsi.github.io/handbook/) to learn what it does and why it might be useful to you.
 
