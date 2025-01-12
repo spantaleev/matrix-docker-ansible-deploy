@@ -71,7 +71,7 @@ To set your own Token, add the following configuration to your `vars.yml` file:
 matrix_user_verification_service_uvs_auth_token: "TOKEN"
 ```
 
-In case Jitsi is also managed by this playbook and 'matrix' authentication in Jitsi is enabled, this collection will automatically configure Jitsi to use the configured auth token.
+If a Jitsi instance is also managed by this playbook and [`matrix` authentication](configuring-playbook-jitsi.md#authenticate-using-matrix-openid-auth-type-matrix) is enabled there, this collection will automatically configure Jitsi to use the configured auth token.
 
 ### Disable Auth (optional)
 
