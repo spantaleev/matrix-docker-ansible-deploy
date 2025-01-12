@@ -170,6 +170,33 @@ These configurations:
 - **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved
 - **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes. This feature is available by default on other webconference applications such as Office 365 Teams (the number is limited to 4). Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf).
 
+### Example configurations
+
+Here is an example set of configurations for running a Jitsi instance with:
+
+- authentication using a Jitsi account (username: `US3RNAME`, password: `passw0rd`)
+- maximum participants: 6 people
+- fine tuning with the configurations presented above
+- other miscellaneous options (see the official Jitsi documentation [here](https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-configuration) and [here](https://jitsi.github.io/handbook/docs/user-guide/user-guide-advanced))
+
+```yaml
+jitsi_enabled: true
+jitsi_enable_auth: true
+jitsi_enable_guests: true
+jitsi_prosody_auth_internal_accounts:
+  - username: "US3RNAME"
+    password: "passw0rd"
+jitsi_prosody_max_participants: 6
+jitsi_web_config_resolution_width_ideal_and_max: 480
+jitsi_web_config_resolution_height_ideal_and_max: 240
+jitsi_web_custom_config_extension: |
+  config.enableLayerSuspension = true;
+  config.disableAudioLevels = true;
+  config.channelLastN = 4;
+  config.requireDisplayName = true; // force users to set a display name
+  config.startAudioOnly = true; // start the conference in audio only mode (no video is being received nor sent)
+```
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
