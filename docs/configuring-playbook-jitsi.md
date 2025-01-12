@@ -2,9 +2,9 @@
 
 The playbook can install the [Jitsi](https://jitsi.org/) video-conferencing platform and integrate it with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS).
 
-Jitsi installation is **not enabled by default**, because it's not a core component of Matrix services.
+See the project's [documentation](https://jitsi.github.io/handbook/) to learn what it does and why it might be useful to you.
 
-The setup done by the playbook is very similar to [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet). You can refer to the documentation there for many of the options here.
+**Note**: the configuration by the playbook is similar to the one by [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet). You can refer to the official documentation for Docker deployment [here](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/).
 
 ## Prerequisites
 
