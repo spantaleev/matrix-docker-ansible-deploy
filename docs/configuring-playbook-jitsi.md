@@ -133,15 +133,17 @@ jitsi_prosody_max_participants: 4 # example value
 
 ### Enable Gravatar (optional)
 
-In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since Element clients already send the url of configured Matrix avatars to Jitsi, we disabled gravatar.
+In the default Jisti Meet configuration, `gravatar.com` is enabled as an avatar service.
 
-To enable Gravatar, add the following configuration to your `vars.yml` file:
+Since Element clients (Element Web, Element X Android, etc.) send the URL of configured Matrix avatars to the Jitsi instance, our default configuration has disabled the Gravatar service.
+
+To enable the Gravatar service, add the following configuration to your `vars.yml` file:
 
 ```yaml
 jitsi_disable_gravatar: false
 ```
 
-⚠️ **Warning**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com). Besides metadata, this includes the Matrix user_id and possibly the room identifier (via `referrer` header).
+⚠️ **Warning**: This will result in third party request leaking data to the Gravatar Service (`gravatar.com`, unless configured otherwise). Besides metadata, the Matrix user_id and possibly the room ID (via `referrer` header) will be also sent to the third party.
 
 ### Fine tune Jitsi (optional)
 
