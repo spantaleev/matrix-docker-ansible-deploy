@@ -547,7 +547,7 @@ Talk about a jack of all trades! The [UNIX philosophy](https://en.wikipedia.org/
 
 On a related note, we also had a large chain of reverse-proxies in the mix. In the worst case, it was something like this: (Traefik -> `matrix-nginx-proxy:8080` -> `matrix-nginx-proxy:12080` -> `matrix-synapse-reverse-proxy-companion:8008` -> `matrix-synapse:8008`).
 
-Due to complexity and the playbook's flexibility (trying to accommodate a mix of tens of components), many layers of indirection were necessary. We do like reverse-proxies, but.. not quite enough to enjoy going through a chain of ~4 of them before reaching the target service.
+Due to complexity and the playbook's flexibility (trying to accommodate a mix of tens of components), many layers of indirection were necessary. We do like reverse-proxies, but… not quite enough to enjoy going through a chain of ~4 of them before reaching the target service.
 
 After **a ton of work** in the last weeks (200+ commits, which changed 467 files - 8684 insertions and 8913 deletions), **we're finally saying goodbye** to `matrix-nginx-proxy`.
 
@@ -1146,7 +1146,7 @@ Others still, wanted to run Matrix locally (no SSL certificates), regardless of 
 
 Despite this operational complexity, things worked and were reasonably flexible to adapt to all these situations.
 
-When using `matrix-nginx-proxy` as is, we still had another problem - one of **internal playbook complexity**. Too many services need to be web-exposed (port 80/443, SSL certificates). Because of this, they all had to integrate with the `matrix-nginx-proxy` role. Tens of different roles explicitly integrating with `matrix-nginx-proxy` is not what we call clean. The `matrix-nginx-proxy` role contains variables for many of these roles (yikes). Other roles were more decoupled from it and were injecting configuration into `matrix-nginx-proxy` at runtime - see all the `inject_into_nginx_proxy.yml` task files in this playbook (more decoupled, but still.. yikes).
+When using `matrix-nginx-proxy` as is, we still had another problem - one of **internal playbook complexity**. Too many services need to be web-exposed (port 80/443, SSL certificates). Because of this, they all had to integrate with the `matrix-nginx-proxy` role. Tens of different roles explicitly integrating with `matrix-nginx-proxy` is not what we call clean. The `matrix-nginx-proxy` role contains variables for many of these roles (yikes). Other roles were more decoupled from it and were injecting configuration into `matrix-nginx-proxy` at runtime - see all the `inject_into_nginx_proxy.yml` task files in this playbook (more decoupled, but still… yikes).
 
 The next problem is one of **efficiency, interoperability and cost-saving**. We're working on other playbooks:
 
@@ -1415,7 +1415,7 @@ The Docker SDK for Python (named `docker-python`, `python-docker`, etc. on the d
 
 If you're hitting issues with Docker installation or Docker SDK for Python installation, consider reporting bugs or contributing to these other projects.
 
-These additional roles are downloaded into the playbook directory (to `roles/galaxy`) via an `ansible-galaxy ..` command. `make roles` is an easy shortcut for invoking the `ansible-galaxy` command to download these roles.
+These additional roles are downloaded into the playbook directory (to `roles/galaxy`) via an `ansible-galaxy …` command. `make roles` is an easy shortcut for invoking the `ansible-galaxy` command to download these roles.
 
 
 # 2022-11-20
@@ -1428,7 +1428,7 @@ These additional roles are downloaded into the playbook directory (to `roles/gal
 
 Previously, `matrix-nginx-proxy` forwarded requests to Synapse directly. When Synapse is running in worker mode, the reverse-proxying configuration is more complicated (different requests need to go to different Synapse worker processes). `matrix-nginx-proxy` had configuration for sending each URL endpoint to the correct Synapse worker responsible for handling it. However, sometimes people like to disable `matrix-nginx-proxy` (for whatever reason) as detailed in [Using your own webserver, instead of this playbook's nginx proxy](docs/configuring-playbook-own-webserver.md).
 
-Because `matrix-nginx-proxy` was so central to request forwarding, when it was disabled and Synapse was running with workers enabled, there was nothing which could forward requests to the correct place anymore.. which caused [problems such as this one affecting Dimension](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2090).
+Because `matrix-nginx-proxy` was so central to request forwarding, when it was disabled and Synapse was running with workers enabled, there was nothing which could forward requests to the correct place anymore… which caused [problems such as this one affecting Dimension](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2090).
 
 ### Solution
 
@@ -2199,7 +2199,7 @@ To migrate to the new setup, expect a few minutes of downtime, while you follow 
     matrix_postgres_connection_password: 'YOUR_POSTGRES_PASSWORD_HERE'
     ```
 
-.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
+… where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
 
 4. Stop all services: `ansible-playbook -i inventory/hosts setup.yml --tags=stop`
 5. Log in to the server via SSH. The next commands will be performed there.
@@ -2211,7 +2211,7 @@ To migrate to the new setup, expect a few minutes of downtime, while you follow 
     CREATE ROLE matrix LOGIN SUPERUSER PASSWORD 'YOUR_POSTGRES_PASSWORD_HERE';
     ```
 
-.. where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
+… where `YOUR_POSTGRES_PASSWORD_HERE` is to be replaced with the password you generated during step #2.
 
 9. Execute the following queries as you see them (no modifications necessary, so you can just **paste them all at once**):
 
@@ -3630,7 +3630,7 @@ Changing that value allows you to potentially decrease RAM usage or to increase 
 
 `--log-driver=none` is used for all Docker containers now.
 
-All these containers are started through systemd anyway and get logged in journald, so there's no need for Docker to be logging the same thing using the default `json-file` driver. Doing that was growing `/var/lib/docker/containers/..` infinitely until service/container restart.
+All these containers are started through systemd anyway and get logged in journald, so there's no need for Docker to be logging the same thing using the default `json-file` driver. Doing that was growing `/var/lib/docker/containers/…` infinitely until service/container restart.
 
 As a result of this, things like `docker logs matrix-synapse` won't work anymore. `journalctl -u matrix-synapse` is how one can see the logs.
 

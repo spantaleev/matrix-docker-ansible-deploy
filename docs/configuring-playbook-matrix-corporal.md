@@ -48,7 +48,7 @@ matrix_corporal_policy_provider_config: |
     "TimeoutMilliseconds": 300
   }
 
-# If you also want to enable Matrix Corporal's HTTP API..
+# If you also want to enable Matrix Corporal's HTTP API…
 matrix_corporal_http_api_enabled: true
 matrix_corporal_http_api_auth_token: "AUTH_TOKEN_HERE"
 

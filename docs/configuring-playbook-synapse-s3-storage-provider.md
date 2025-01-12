@@ -47,7 +47,7 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # 
 # For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
 
-If you have existing files in Synapse's media repository (`/matrix/synapse/storage/media-store/..`):
+If you have existing files in Synapse's media repository (`/matrix/synapse/storage/media-store/…`):
 
 - new files will start being stored both locally and on the S3 store
 - the existing files will remain on the local filesystem only until [migrating them to the S3 store](#migrating-your-existing-media-files-to-the-s3-store)
@@ -85,7 +85,7 @@ Instead of running the above commands manually in the shell, you can also run th
 - it's what the upstream project demonstrates and it teaches you how to use the `s3_media_upload` tool
 - allows you to check and verify the output of each command, to catch mistakes
 - includes progress bars and detailed output for each command
-- allows you to easily interrupt slow-running commands, etc. (the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill ..`)
+- allows you to easily interrupt slow-running commands, etc. (the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill …`)
 
 ### Using another tool in combination with `s3_media_upload`
 
@@ -140,7 +140,7 @@ As described in [How it works?](#how-it-works) above, when new media is uploaded
 By default, we periodically ensure that all local files are uploaded to S3 and are then removed from the local filesystem. This is done automatically using:
 
 - the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` script
-- .. invoked via the `matrix-synapse-s3-storage-provider-migrate.service` service
-- .. triggered by the `matrix-synapse-s3-storage-provider-migrate.timer` timer, every day at 05:00
+- … invoked via the `matrix-synapse-s3-storage-provider-migrate.service` service
+- … triggered by the `matrix-synapse-s3-storage-provider-migrate.timer` timer, every day at 05:00
 
-So.. you don't need to perform any maintenance yourself.
+So… you don't need to perform any maintenance yourself.

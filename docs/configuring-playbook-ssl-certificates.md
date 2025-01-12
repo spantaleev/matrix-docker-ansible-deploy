@@ -50,7 +50,7 @@ traefik_ssl_dir_enabled: true
 
 # Tell Traefik to load our custom ssl key pair by extending provider configuration.
 # The key pair files are created below, in `aux_file_definitions`.
-# The `/ssl/..` path is an in-container path, not a path on the host (like `/matrix/traefik/ssl`). Do not change it!
+# The `/ssl/…` path is an in-container path, not a path on the host (like `/matrix/traefik/ssl`). Do not change it!
 traefik_provider_configuration_extension_yaml:
   tls:
     certificates:

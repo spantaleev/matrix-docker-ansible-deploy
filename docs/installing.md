@@ -65,7 +65,7 @@ You can now:
 
 - [Importing `media_store` data files from an existing Synapse installation](importing-synapse-media-store.md) (optional)
 
-.. and then proceed to starting all services:
+… and then proceed to starting all services:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=ensure-matrix-users-created,start

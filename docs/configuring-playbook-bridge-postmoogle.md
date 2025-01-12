@@ -37,7 +37,7 @@ matrix_postmoogle_password: PASSWORD_FOR_THE_BOT
 # matrix_postmoogle_admins:
 #  - '@yourAdminAccount:{{ matrix_domain }}'
 #
-# .. unless you've made yourself an admin of all bots/bridges like this:
+# … unless you've made yourself an admin of all bots/bridges like this:
 #
 # matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```

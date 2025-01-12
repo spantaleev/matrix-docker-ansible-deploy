@@ -98,7 +98,7 @@ Reading the documentation of this Ansible playbook, you may also be thinking:
 
 > I don't know what [Ansible](https://www.ansible.com/) is. I don't know what [Docker](https://www.docker.com/) is. This looks more complicated.
 
-.. so you may be leaning toward [installing Synapse manually](https://github.com/element-hq/synapse/blob/master/INSTALL.md).
+… so you may be leaning toward [installing Synapse manually](https://github.com/element-hq/synapse/blob/master/INSTALL.md).
 
 The problem with a manual installation is:
 

@@ -9,7 +9,7 @@ default:
 
 # Extracts original English strings (translation templates) into the `translation-templates/` directory
 extract-translation-templates: _venv
-    @echo "Extracting translation templates..."
+    @echo "Extracting translation templates…"
     PATH={{ justfile_directory() }}/.venv/bin:$PATH {{ justfile_directory() }}/bin/extract-translation-templates.sh
 
 # Syncs the translation templates (affects `translation-templates/`) and strings (affects `locales/*`) for all published languages (`PUBLISHED_LANGUAGES`)
@@ -24,7 +24,7 @@ sync-for-all-known-languages:
     #!/bin/sh
     find {{ justfile_directory() }}/locales -mindepth 1 -maxdepth 1 -type d | while read path ; do
         language=$(basename "$path")
-        echo "Syncing for language $language.."
+        echo "Syncing for language $language…"
         {{ just_executable() }} sync-for-language $language
     done
 
@@ -51,7 +51,7 @@ build-for-all-known-languages:
     #!/bin/sh
     find {{ justfile_directory() }}/locales -mindepth 1 -maxdepth 1 -type d | while read path ; do
         language=$(basename "$path")
-        echo "Building for language $language.."
+        echo "Building for language $language…"
         {{ just_executable() }} build-for-language $language
     done
 
@@ -59,7 +59,7 @@ build-for-all-known-languages:
 _venv:
     #!/bin/sh
     if [ ! -f {{ justfile_directory() }}/.venv/bin/sphinx-build ]; then
-        echo "No sphinx-build found, creating virtual environment and installing requirements..."
+        echo "No sphinx-build found, creating virtual environment and installing requirements…"
         uv venv {{ justfile_directory() }}/.venv
         VIRTUAL_ENV={{ justfile_directory() }}/.venv uv pip install -r {{ justfile_directory() }}/requirements.txt
     fi
