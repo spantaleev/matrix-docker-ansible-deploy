@@ -135,6 +135,65 @@ To set the max number of participants, add the following configuration to your `
 jitsi_prosody_max_participants: 4 # example value
 ```
 
+### Enable Gravatar (optional)
+
+In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since Element clients already send the url of configured Matrix avatars to Jitsi, we disabled gravatar.
+
+To enable Gravatar, add the following configuration to your `vars.yml` file:
+
+```yaml
+jitsi_disable_gravatar: false
+```
+
+⚠️ **Warning**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com). Besides metadata, this includes the Matrix user_id and possibly the room identifier (via `referrer` header).
+
+### Fine tune Jitsi (optional)
+
+If you'd like to have Jitsi save up resources, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+jitsi_web_custom_config_extension: |
+  config.enableLayerSuspension = true;
+
+  config.disableAudioLevels = true;
+
+  // Limit the number of video feeds forwarded to each client
+  config.channelLastN = 4;
+
+jitsi_web_config_resolution_width_ideal_and_max: 480
+jitsi_web_config_resolution_height_ideal_and_max: 240
+```
+
+These configurations:
+
+- **suspend unused video layers** until they are requested again, to save up resources on both server and clients. Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/).
+- **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved
+- **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes. This feature is available by default on other webconference applications such as Office 365 Teams (the number is limited to 4). Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf).
+- **limit the maximum video resolution**, to save up resources on both server and clients
+
+## Installing
+
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
+
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
+
+## Usage
+
+You can use the self-hosted Jitsi server in multiple ways:
+
+- **by adding a widget to a room via Element Web** (the one configured by the playbook at `https://element.example.com`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
+
+- **by adding a widget to a room via the Dimension integration manager**. You'll have to point the widget to your own Jitsi server manually. See our [Dimension integration manager](./configuring-playbook-dimension.md) documentation page for more details. Naturally, Dimension would need to be installed first (the playbook doesn't install it by default).
+
+- **directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`
+
 ### Set up Additional JVBs (optional)
 
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you'd need to provision additional JVB services on other hosts.
@@ -269,65 +328,6 @@ After configuring `vars.yml` and `hosts` files, run the playbook with [playbook 
 ```sh
 ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start
 ```
-
-### Enable Gravatar (optional)
-
-In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since Element clients already send the url of configured Matrix avatars to Jitsi, we disabled gravatar.
-
-To enable Gravatar, add the following configuration to your `vars.yml` file:
-
-```yaml
-jitsi_disable_gravatar: false
-```
-
-⚠️ **Warning**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com). Besides metadata, this includes the Matrix user_id and possibly the room identifier (via `referrer` header).
-
-### Fine tune Jitsi (optional)
-
-If you'd like to have Jitsi save up resources, add the following configuration to your `vars.yml` file (adapt to your needs):
-
-```yaml
-jitsi_web_custom_config_extension: |
-  config.enableLayerSuspension = true;
-
-  config.disableAudioLevels = true;
-
-  // Limit the number of video feeds forwarded to each client
-  config.channelLastN = 4;
-
-jitsi_web_config_resolution_width_ideal_and_max: 480
-jitsi_web_config_resolution_height_ideal_and_max: 240
-```
-
-These configurations:
-
-- **suspend unused video layers** until they are requested again, to save up resources on both server and clients. Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/).
-- **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved
-- **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes. This feature is available by default on other webconference applications such as Office 365 Teams (the number is limited to 4). Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf).
-- **limit the maximum video resolution**, to save up resources on both server and clients
-
-## Installing
-
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
-
-<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
-```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-```
-
-The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
-
-`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
-
-## Usage
-
-You can use the self-hosted Jitsi server in multiple ways:
-
-- **by adding a widget to a room via Element Web** (the one configured by the playbook at `https://element.example.com`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
-
-- **by adding a widget to a room via the Dimension integration manager**. You'll have to point the widget to your own Jitsi server manually. See our [Dimension integration manager](./configuring-playbook-dimension.md) documentation page for more details. Naturally, Dimension would need to be installed first (the playbook doesn't install it by default).
-
-- **directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`
 
 ## Troubleshooting
 
