@@ -74,7 +74,7 @@ jitsi_prosody_auth_internal_accounts:
 
 ### Authenticate using Matrix OpenID (Auth-Type 'matrix')
 
-**Attention: Probably breaks Jitsi in federated rooms and does not allow sharing conference links with guests.**
+⚠️ **Warning**: probably this breaks the Jitsi instance in federated rooms and does not allow sharing conference links with guests.
 
 Using this authentication type require a [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service). By default, this playbook creates and configures a user-verification-service to run locally, see [configuring-user-verification-service](configuring-playbook-user-verification-service.md).
 
@@ -152,9 +152,9 @@ You may want to **limit the maximum video resolution**, to save up resources on 
 
 ## Specify a Max number of participants on a Jitsi conference (optional)
 
-The playbook allows a user to set a max number of participants allowed to join a Jitsi conference. By default there is no limit.
+The playbook allows a user to set a max number of participants allowed to join a Jitsi conference. By default the number is not limited.
 
-In order to set the max number of participants use the following **additional** configuration:
+To set the max number of participants, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 jitsi_prosody_max_participants: 4 # example value
@@ -164,7 +164,11 @@ jitsi_prosody_max_participants: 4 # example value
 
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you may need to provision additional JVB services on other hosts.
 
-There is an ansible playbook that can be run with the following tag: `ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start`
+To do so, run the playbook with [playbook tags](playbook-tags.md) as below:
+
+```sh
+ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start
+```
 
 For this role to work you will need an additional section in the ansible hosts file with the details of the JVB hosts, for example:
 
@@ -255,7 +259,7 @@ traefik_provider_configuration_extension_yaml: |
 
 In the default Jisti Meet configuration, gravatar.com is enabled as an avatar service. This results in third party request leaking data to gravatar. Since Element clients already send the url of configured Matrix avatars to Jitsi, we disabled gravatar.
 
-To enable Gravatar set:
+To enable Gravatar, add the following configuration to your `vars.yml` file:
 
 ```yaml
 jitsi_disable_gravatar: false
