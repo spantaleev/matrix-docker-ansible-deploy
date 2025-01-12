@@ -68,8 +68,6 @@ jitsi_prosody_auth_internal_accounts:
 
 **Note**: as Jitsi account removal function is not integrated into the playbook, these accounts will not be able to be removed from the Prosody server automatically, even if they are removed from your `vars.yml` file subsequently.
 
-**Note**: if you get an error like `Error: Account creation/modification not supported.`, it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
-
 #### Authenticate using Matrix OpenID (Auth-Type `matrix`)
 
 ⚠️ **Warning**: probably this breaks the Jitsi instance in federated rooms and does not allow sharing conference links with guests.
@@ -328,6 +326,12 @@ ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --ta
 ```
 
 ## Troubleshooting
+
+### `Error: Account creation/modification not supported`
+
+If you get an error like `Error: Account creation/modification not supported` with authentication enabled, it's likely that you had previously installed Jitsi without auth/guest support.
+
+In this case, you should consider to rebuild your Jitsi installation.
 
 ### Rebuilding your Jitsi installation
 
