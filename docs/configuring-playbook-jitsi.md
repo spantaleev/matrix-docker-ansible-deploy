@@ -125,30 +125,6 @@ jitsi_jvb_container_extra_arguments:
   - '--env "JVB_ADVERTISE_IPS=<Local IP address of the host>"'
 ```
 
-## Fine tune Jitsi (optional)
-
-If you'd like to have Jitsi save up resources, add the following configuration to your `vars.yml` file (adapt to your needs):
-
-```yaml
-jitsi_web_custom_config_extension: |
-  config.enableLayerSuspension = true;
-
-  config.disableAudioLevels = true;
-
-  // Limit the number of video feeds forwarded to each client
-  config.channelLastN = 4;
-
-jitsi_web_config_resolution_width_ideal_and_max: 480
-jitsi_web_config_resolution_height_ideal_and_max: 240
-```
-
-These configurations:
-
-- **suspend unused video layers** until they are requested again, to save up resources on both server and clients. Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/).
-- **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved
-- **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes. This feature is available by default on other webconference applications such as Office 365 Teams (the number is limited to 4). Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf).
-- **limit the maximum video resolution**, to save up resources on both server and clients
-
 ## Specify a Max number of participants on a Jitsi conference (optional)
 
 The playbook allows a user to set a max number of participants allowed to join a Jitsi conference. By default the number is not limited.
@@ -305,6 +281,30 @@ jitsi_disable_gravatar: false
 ```
 
 ⚠️ **Warning**: This leaks information to a third party, namely the Gravatar-Service (unless configured otherwise: gravatar.com). Besides metadata, this includes the Matrix user_id and possibly the room identifier (via `referrer` header).
+
+## Fine tune Jitsi (optional)
+
+If you'd like to have Jitsi save up resources, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+jitsi_web_custom_config_extension: |
+  config.enableLayerSuspension = true;
+
+  config.disableAudioLevels = true;
+
+  // Limit the number of video feeds forwarded to each client
+  config.channelLastN = 4;
+
+jitsi_web_config_resolution_width_ideal_and_max: 480
+jitsi_web_config_resolution_height_ideal_and_max: 240
+```
+
+These configurations:
+
+- **suspend unused video layers** until they are requested again, to save up resources on both server and clients. Read more on this feature [here](https://jitsi.org/blog/new-off-stage-layer-suppression-feature/).
+- **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved
+- **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes. This feature is available by default on other webconference applications such as Office 365 Teams (the number is limited to 4). Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/master/doc/last-n.md) and performance evaluation on this [study](https://jitsi.org/wp-content/uploads/2016/12/nossdav2015lastn.pdf).
+- **limit the maximum video resolution**, to save up resources on both server and clients
 
 ## Installing
 
