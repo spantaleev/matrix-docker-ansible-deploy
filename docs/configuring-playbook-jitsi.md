@@ -42,43 +42,41 @@ By default, you will need to create a CNAME record for `jitsi`. See [Configuring
 
 ### Configure Jitsi authentication and guests mode (optional)
 
-By default the Jitsi Meet instance does not require any kind of login and is open to use for anyone without registration.
+By default the Jitsi instance does not require for anyone to log in, and is open to use without an account. To control who is allowed to start meetings on your Jitsi instance, you'd need to enable Jitsi's authentication and optionally guests mode.
 
-If you're fine with such an open Jitsi instance, please skip to [Installing](#installing).
+Currently, there are three supported authentication methods: `internal` (default), `matrix` and `ldap`.
 
-If you would like to control who is allowed to open meetings on your new Jitsi instance, then please follow the following steps to enable Jitsi's authentication and optionally guests mode.
+**Note**: authentication is not tested by the playbook's self-checks. We therefore recommend that you would make sure by yourself that authentication is configured properly. To test it, start a meeting at `jitsi.example.com` on your browser.
 
-Currently, there are three supported authentication modes: 'internal' (default), 'matrix' and 'ldap'.
+#### Authenticate using Jitsi accounts (Auth-Type `internal`)
 
-**Note**: Authentication is not tested via the playbook's self-checks. We therefore recommend that you manually verify if authentication is required by jitsi. For this, try to manually create a conference on jitsi.example.com in your browser.
+The default authentication mechanism is `internal` auth, which requires a Jitsi account to have been configured. This is the recommended method, as it also works in federated rooms.
 
-#### Authenticate using Jitsi accounts (Auth-Type 'internal')
+With authentication enabled, all meetings have to be started by a registered user. After the meeting is started by that user, then guests are free to join. If the registered user is not yet present, the guests are put on hold in individual waiting rooms.
 
-The default authentication mechanism is 'internal' auth, which requires jitsi-accounts to be setup and is the recommended setup, as it also works in federated rooms. With authentication enabled, all meeting rooms have to be opened by a registered user, after which guests are free to join. If a registered host is not yet present, guests are put on hold in individual waiting rooms.
-
-Add the following configuration to your `vars.yml` file:
+To enable authentication with a Jitsi account, add the following configuration to your `vars.yml` file. Make sure to replace `USERNAME_…` and `PASSWORD_…` with your own values.
 
 ```yaml
 jitsi_enable_auth: true
 jitsi_enable_guests: true
 jitsi_prosody_auth_internal_accounts:
-  - username: "jitsi-moderator"
-    password: "secret-password"
-  - username: "another-user"
-    password: "another-password"
+  - username: "USERNAME_FOR_THE_FIRST_USER_HERE"
+    password: "PASSWORD_FOR_THE_FIRST_USER_HERE"
+  - username: "USERNAME_FOR_THE_SECOND_USER_HERE"
+    password: "PASSWORD_FOR_THE_SECOND_USER_HERE"
 ```
 
-⚠️ **Warning**: Accounts added here and subsequently removed will not be automatically removed from the Prosody server until user account cleaning is integrated into the playbook.
+**Note**: as Jitsi account removal function is not integrated into the playbook, these accounts will not be able to be removed from the Prosody server automatically, even if they are removed from your `vars.yml` file subsequently.
 
-**If you get an error** like this: "Error: Account creation/modification not supported.", it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
+**Note**: if you get an error like `Error: Account creation/modification not supported.`, it's likely that you had previously installed Jitsi without auth/guest support. In such a case, you should look into [Rebuilding your Jitsi installation](#rebuilding-your-jitsi-installation).
 
-#### Authenticate using Matrix OpenID (Auth-Type 'matrix')
+#### Authenticate using Matrix OpenID (Auth-Type `matrix`)
 
 ⚠️ **Warning**: probably this breaks the Jitsi instance in federated rooms and does not allow sharing conference links with guests.
 
-Using this authentication type require a [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service). By default, this playbook creates and configures a user-verification-service to run locally, see [configuring-user-verification-service](configuring-playbook-user-verification-service.md).
+This authentication method requires [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service), which can be installed using this [playbook](configuring-playbook-user-verification-service.md). By default, the playbook creates and configures a user-verification-service so that it runs locally.
 
-To enable set this configuration at host level:
+To enable authentication with Matrix OpenID, add the following configuration to your `vars.yml` file:
 
 ```yaml
 jitsi_enable_auth: true
@@ -88,9 +86,9 @@ matrix_user_verification_service_enabled: true
 
 For more information see also [https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification](https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification).
 
-#### Authenticate using LDAP (Auth-Type 'ldap')
+#### Authenticate using LDAP (Auth-Type `ldap`)
 
-An example LDAP configuration could be:
+To enable authentication with LDAP, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 jitsi_enable_auth: true
