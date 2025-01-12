@@ -23,7 +23,7 @@ While you will need some local disk space around, it's only to accommodate usage
 
 ## Adjusting the playbook configuration
 
-After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), you can proceed to configure `s3-storage-provider` in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
+After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_ext_synapse_s3_storage_provider_enabled: true
@@ -43,9 +43,17 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # 
 # This only works on AWS when your server is hosted on an EC2 instance with the correct instance profile set.
 # Uncomment the variable below to use it.
 # matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile: true
-
-# For additional advanced settings, take a look at `roles/custom/matrix-synapse/defaults/main.yml`
 ```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the server.
+
+Take a look at:
+
+- `roles/custom/matrix-synapse/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
+## Usage
 
 If you have existing files in Synapse's media repository (`/matrix/synapse/storage/media-store/…`):
 
@@ -55,16 +63,16 @@ If you have existing files in Synapse's media repository (`/matrix/synapse/stora
 
 Regardless of whether you need to [Migrate your existing files to the S3 store](#migrating-your-existing-media-files-to-the-s3-store) or not, make sure you've familiarized yourself with [How it works?](#how-it-works) above and [Periodically cleaning up the local filesystem](#periodically-cleaning-up-the-local-filesystem) below.
 
-## Migrating your existing media files to the S3 store
+### Migrating your existing media files to the S3 store
 
 Migrating your existing data can happen in multiple ways:
 
 - [using the `s3_media_upload` script from `synapse-s3-storage-provider`](#using-the-s3_media_upload-script-from-synapse-s3-storage-provider) (very slow when dealing with lots of data)
 - [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload) (quicker when dealing with lots of data)
 
-### Using the `s3_media_upload` script from `synapse-s3-storage-provider`
+💡 **Note**: instead of using `s3_media_upload` directly, which is very slow and painful for an initial data migration, we recommend [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload).
 
-Instead of using `s3_media_upload` directly, which is very slow and painful for an initial data migration, we recommend [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload).
+#### Using the `s3_media_upload` script from `synapse-s3-storage-provider`
 
 To copy your existing files, SSH into the server and run `/matrix/synapse/ext/s3-storage-provider/bin/shell`.
 
@@ -87,7 +95,7 @@ Instead of running the above commands manually in the shell, you can also run th
 - includes progress bars and detailed output for each command
 - allows you to easily interrupt slow-running commands, etc. (the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill …`)
 
-### Using another tool in combination with `s3_media_upload`
+#### Using another tool in combination with `s3_media_upload`
 
 To migrate your existing local data to S3, we recommend to:
 
@@ -95,7 +103,7 @@ To migrate your existing local data to S3, we recommend to:
 
 - **only then** [use the `s3_media_upload` tool to finish the migration](#using-the-s3_media_upload-script-from-synapse-s3-storage-provider) (this checks to ensure all files are uploaded and then deletes the local files)
 
-#### Copying data to Amazon S3
+##### Copying data to Amazon S3
 
 To copy to AWS S3, start a container on the Matrix server like this:
 
@@ -109,13 +117,13 @@ docker.io/amazon/aws-cli:2.9.16 \
 -c 'aws s3 sync /work/. s3://$BUCKET/'
 ```
 
-#### Copying data to an S3 alternative using the aws-s3 tool
+##### Copying data to an S3 alternative using the aws-s3 tool
 
-To copy to a provider other than AWS S3 (e.g. Wasabi, Digital Ocean Spaces, etc.), you can use the command for [Copying data to Amazon S3](#copying-data-to-amazon-s3) with an added `--endpoint-url=$ENDPOINT` argument.
+To copy to a provider other than AWS S3 (e.g. Storj, Wasabi, Digital Ocean Spaces, etc.), you can use the command for [Copying data to Amazon S3](#copying-data-to-amazon-s3) with an added `--endpoint-url=$ENDPOINT` argument.
 
 Add this argument to the command **as-is** (`$ENDPOINT` is an environment variable corresponding to `matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url`, so you don't need to touch it). Make sure to add the argument **before** the final quote (`'`) of the command.
 
-#### Copying data to Backblaze B2
+##### Copying data to Backblaze B2
 
 You can copy files to Backblaze B2 either by following the [Copying data to an S3 alternative using the aws-s3 tool](#copying-data-to-an-s3-alternative-using-the-aws-s3-tool) or by using the B2-specific [b2 command-line tool](https://www.backblaze.com/b2/docs/quick_command_line.html) as described below.
 
@@ -133,7 +141,7 @@ docker.io/tianon/backblaze-b2:3.6.0 \
 -c 'b2 authorize-account $B2_KEY_ID $B2_KEY_SECRET && b2 sync /work b2://$B2_BUCKET_NAME --skipNewer'
 ```
 
-## Periodically cleaning up the local filesystem
+### Periodically cleaning up the local filesystem
 
 As described in [How it works?](#how-it-works) above, when new media is uploaded to the Synapse homeserver, it's first stored locally and then also stored on the remote S3 storage.
 
