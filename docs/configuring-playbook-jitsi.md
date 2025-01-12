@@ -13,7 +13,7 @@ See the project's [documentation](https://jitsi.github.io/handbook/) to learn wh
 You may need to open the following ports to your server:
 
 - `4443/tcp` - RTP media fallback over TCP
-- `10000/udp` - RTP media over UDP. Depending on your firewall/NAT setup, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml)).
+- `10000/udp` - RTP media over UDP. Depending on your firewall/NAT configuration, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml)).
 
 ## Adjusting DNS records
 
@@ -48,9 +48,9 @@ Currently, there are three supported authentication methods: `internal` (default
 
 **Note**: authentication is not tested by the playbook's self-checks. We therefore recommend that you would make sure by yourself that authentication is configured properly. To test it, start a meeting at `jitsi.example.com` on your browser.
 
-#### Authenticate using Jitsi accounts (Auth-Type `internal`)
+#### Authenticate using Jitsi accounts: Auth-Type `internal` (recommended)
 
-The default authentication mechanism is `internal` auth, which requires a Jitsi account to have been configured. This is the recommended method, as it also works in federated rooms.
+The default authentication mechanism is `internal` auth, which requires a Jitsi account to have been configured. This is a recommended method, as it also works in federated rooms.
 
 With authentication enabled, all meetings have to be started by a registered user. After the meeting is started by that user, then guests are free to join. If the registered user is not yet present, the guests are put on hold in individual waiting rooms.
 
@@ -68,9 +68,9 @@ jitsi_prosody_auth_internal_accounts:
 
 **Note**: as Jitsi account removal function is not integrated into the playbook, these accounts will not be able to be removed from the Prosody server automatically, even if they are removed from your `vars.yml` file subsequently.
 
-#### Authenticate using Matrix OpenID (Auth-Type `matrix`)
+#### Authenticate using Matrix OpenID: Auth-Type `matrix`
 
-⚠️ **Warning**: probably this breaks the Jitsi instance in federated rooms and does not allow sharing conference links with guests.
+⚠️ **Warning**: this breaks the Jitsi instance on federated rooms probably and does not allow sharing conference links with guests.
 
 This authentication method requires [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service), which can be installed using this [playbook](configuring-playbook-user-verification-service.md). By default, the playbook creates and configures a user-verification-service so that it runs locally.
 
@@ -84,7 +84,7 @@ matrix_user_verification_service_enabled: true
 
 For more information see also [https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification](https://github.com/matrix-org/prosody-mod-auth-matrix-user-verification).
 
-#### Authenticate using LDAP (Auth-Type `ldap`)
+#### Authenticate using LDAP: Auth-Type `ldap`
 
 To enable authentication with LDAP, add the following configuration to your `vars.yml` file (adapt to your needs):
 
@@ -108,7 +108,7 @@ jitsi_ldap_start_tls: false
 
 For more information refer to the [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap) and the [saslauthd `LDAP_SASLAUTHD`](https://github.com/winlibs/cyrus-sasl/blob/master/saslauthd/LDAP_SASLAUTHD) documentation.
 
-### Running behind NAT or on a LAN environment (optional)
+### Configure `JVB_ADVERTISE_IPS` for running behind NAT or on a LAN environment (optional)
 
 When running Jitsi in a LAN environment, or on the public Internet via NAT, the `JVB_ADVERTISE_IPS` enviornment variable should be set.
 
@@ -125,11 +125,11 @@ jitsi_jvb_container_extra_arguments:
 
 Check [the official documentation](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/#running-behind-nat-or-on-a-lan-environment) for more details about it.
 
-### Specify a Max number of participants on a Jitsi conference (optional)
+### Set a maximum number of participants on a Jitsi conference (optional)
 
-The playbook allows a user to set a max number of participants allowed to join a Jitsi conference. By default the number is not limited.
+You can set a maximum number of participants allowed to join a Jitsi conference. By default the number is not specified.
 
-To set the max number of participants, add the following configuration to your `vars.yml` file (adapt to your needs):
+To set it, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 jitsi_prosody_max_participants: 4 # example value
@@ -139,7 +139,7 @@ jitsi_prosody_max_participants: 4 # example value
 
 In the default Jisti Meet configuration, `gravatar.com` is enabled as an avatar service.
 
-Since Element clients (Element Web, Element X Android, etc.) send the URL of configured Matrix avatars to the Jitsi instance, our default configuration has disabled the Gravatar service.
+Since the Element clients send the URL of configured Matrix avatars to the Jitsi instance, our default configuration has disabled the Gravatar service.
 
 To enable the Gravatar service, add the following configuration to your `vars.yml` file:
 
@@ -147,7 +147,7 @@ To enable the Gravatar service, add the following configuration to your `vars.ym
 jitsi_disable_gravatar: false
 ```
 
-⚠️ **Warning**: This will result in third party request leaking data to the Gravatar Service (`gravatar.com`, unless configured otherwise). Besides metadata, the Matrix user_id and possibly the room ID (via `referrer` header) will be also sent to the third party.
+⚠️ **Warning**: this will result in third party request leaking data to the Gravatar Service (`gravatar.com`, unless configured otherwise). Besides metadata, the Matrix user_id and possibly the room ID (via `referrer` header) will be also sent to the third party.
 
 ### Fine tune Jitsi (optional)
 
@@ -176,6 +176,7 @@ These configurations:
 Here is an example set of configurations for running a Jitsi instance with:
 
 - authentication using a Jitsi account (username: `US3RNAME`, password: `passw0rd`)
+- guests: allowed
 - maximum participants: 6 people
 - fine tuning with the configurations presented above
 - other miscellaneous options (see the official Jitsi documentation [here](https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-configuration) and [here](https://jitsi.github.io/handbook/docs/user-guide/user-guide-advanced))
@@ -219,7 +220,7 @@ You can use the self-hosted Jitsi server in multiple ways:
 
 - **directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`
 
-### Set up Additional JVBs (optional)
+### Set up additional JVBs for more video-conferences (optional)
 
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you'd need to provision additional JVB services on other hosts.
 
@@ -244,7 +245,7 @@ Each JVB requires a server ID to be set, so that it will be uniquely identified.
 
 The server ID can be set with the variable `jitsi_jvb_server_id`. It will end up as the `JVB_WS_SERVER_ID` environment variables in the JVB docker container.
 
-To set the server ID to `jvb-2`, add the following configuration to either `vars.yml` or `hosts` file (adapt to your needs). If you set the value on the `hosts` file, add `jitsi_jvb_server_id=jvb-2` after your JVB's external IP addresses as below.
+To set the server ID to `jvb-2`, add the following configuration to either `vars.yml` or `hosts` file (adapt to your needs). If you'd specify the server ID on the `hosts` file, add `jitsi_jvb_server_id=jvb-2` after your JVB's external IP addresses as below.
 
 - On `vars.yml`:
 
@@ -348,7 +349,7 @@ traefik_provider_configuration_extension_yaml: |
 
 #### Run the playbook
 
-After configuring `vars.yml` and `hosts` files, run the playbook with [playbook tags](playbook-tags.md) as below:
+After configuring `hosts` and `vars.yml` files, run the playbook with [playbook tags](playbook-tags.md) as below:
 
 ```sh
 ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --tags=common,setup-additional-jitsi-jvb,start
@@ -364,7 +365,7 @@ In this case, you should consider to rebuild your Jitsi installation.
 
 ### Rebuilding your Jitsi installation
 
-**If you ever run into any trouble** or **if you change configuration (`jitsi_*` variables) too much**, we recommend you to rebuild your Jitsi setup.
+If you ever run into any trouble or if you have changed configuration (`jitsi_*` variables) too much, you can rebuild your Jitsi installation.
 
 We normally don't recommend manual intervention, but Jitsi services tend to generate a lot of configuration files, and it is often wise to start afresh setting the services up, rather than messing with the existing configuration files. Since not all of those files are managed by Ansible (at least not yet), you may sometimes need to delete them by yourself manually.
 
