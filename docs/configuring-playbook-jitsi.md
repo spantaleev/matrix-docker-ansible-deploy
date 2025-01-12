@@ -108,18 +108,22 @@ jitsi_ldap_start_tls: false
 
 For more information refer to the [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet#authentication-using-ldap) and the [saslauthd `LDAP_SASLAUTHD`](https://github.com/winlibs/cyrus-sasl/blob/master/saslauthd/LDAP_SASLAUTHD) documentation.
 
-### Making your Jitsi server work on a LAN (optional)
+### Running behind NAT or on a LAN environment (optional)
 
-By default the Jitsi Meet instance does not work with a client in LAN (Local Area Network), even if others are connected from WAN. There are no video and audio. In the case of WAN to WAN everything is ok.
+When running Jitsi in a LAN environment, or on the public Internet via NAT, the `JVB_ADVERTISE_IPS` enviornment variable should be set.
 
-The reason is the Jitsi VideoBridge git to LAN client the IP address of the docker image instead of the host. The [documentation](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/#running-behind-nat-or-on-a-lan-environment) of Jitsi in docker suggest to add `JVB_ADVERTISE_IPS` in enviornment variable to make it work.
+This variable allows to control which IP addresses the JVB will advertise for WebRTC media traffic. It is necessary to set it regardless of the use of a reverse proxy, since it's the IP address that will receive the media (audio / video) and not HTTP traffic, hence it's oblivious to the reverse proxy.
 
-To enable it, add the following configuration to your `vars.yml` file:
+If your users are coming in over the Internet (and not over LAN), this will likely be your public IP address. If this is not set up correctly, calls will crash when more than two users join a meeting.
+
+To set the variable, add the following configuration to your `vars.yml` file. Make sure to replace `LOCAL_IP_ADDRESS_OF_THE_HOST_HERE` with a proper value.
 
 ```yaml
 jitsi_jvb_container_extra_arguments:
-  - '--env "JVB_ADVERTISE_IPS=<Local IP address of the host>"'
+  - '--env "JVB_ADVERTISE_IPS=LOCAL_IP_ADDRESS_OF_THE_HOST_HERE"'
 ```
+
+Check [the official documentation](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/#running-behind-nat-or-on-a-lan-environment) for more details about it.
 
 ### Specify a Max number of participants on a Jitsi conference (optional)
 
