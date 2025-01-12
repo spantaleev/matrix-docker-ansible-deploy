@@ -31,7 +31,7 @@ This makes it easy to install it, because it **doesn't require additional DNS re
 
 By tweaking the `matrix_heisenbridge_hostname` and `matrix_heisenbridge_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix

@@ -23,7 +23,7 @@ There are some additional things you may wish to configure about the bridge befo
 
 By default any user on your homeserver will be able to use the mautrix bridges. To limit who can use them you would need to configure their permissions settings.
 
-Different levels of permission can be granted to users. For example, to **configure a user as an administrator for all bridges**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Different levels of permission can be granted to users. For example, to **configure a user as an administrator for all bridges**, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_admin: "@alice:{{ matrix_domain }}"
@@ -46,7 +46,7 @@ You could also redefine the default permissions settings completely, rather than
 
 ### Enable encryption (optional)
 
-[Encryption (End-to-Bridge Encryption, E2BE) support](https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html) is off by default. If you would like to enable encryption, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+[Encryption (End-to-Bridge Encryption, E2BE) support](https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html) is off by default. If you would like to enable encryption, add the following configuration to your `vars.yml` file:
 
 **for all bridges with encryption support**:
 
@@ -66,7 +66,7 @@ matrix_mautrix_SERVICENAME_bridge_encryption_default: true
 
 [Relay mode](https://docs.mau.fi/bridges/general/relay-mode.html) is off by default. Check [the table on the official documentation](https://docs.mau.fi/bridges/general/relay-mode.html#support-table) for bridges which support relay mode.
 
-If you would like to enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+If you would like to enable it, add the following configuration to your `vars.yml` file:
 
 **for all bridges with relay mode support**:
 
@@ -103,7 +103,7 @@ Use `!prefix set-pl 100` to be able for the bot to modify room settings and invi
 
 #### Allow anyone on the homeserver to become a relay user (optional)
 
-By default, only admins are allowed to set themselves as relay users. To allow anyone on your homeserver to set themselves as relay users, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+By default, only admins are allowed to set themselves as relay users. To allow anyone on your homeserver to set themselves as relay users, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_mautrix_SERVICENAME_bridge_relay_admin_only: false
@@ -111,7 +111,7 @@ matrix_mautrix_SERVICENAME_bridge_relay_admin_only: false
 
 ### Set the bot's username (optional)
 
-To set the bot's username, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To set the bot's username, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
@@ -119,7 +119,7 @@ matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
 
 ### Configure the logging level (optional)
 
-To specify the logging level, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To specify the logging level, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_mautrix_SERVICENAME_logging_level: warn
@@ -177,7 +177,7 @@ To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppetin
 
 Appservice Double Puppet is a homeserver appservice through which bridges (and potentially other services) can impersonate any user on the homeserver.
 
-To enable the Appservice Double Puppet service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the Appservice Double Puppet service, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_appservice_double_puppet_enabled: true

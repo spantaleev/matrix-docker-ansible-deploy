@@ -108,7 +108,7 @@ If template customization is enabled, the playbook will build a custom container
 
 Your custom templates need to live in a public or private git repository. This repository will be cloned during Synapse image customization (during the playbook run).
 
-To enable template customizations, use a configuration (`inventory/host_vars/matrix.example.com/vars.yml`) like this:
+To enable template customizations, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 # If you'd like to ensure that the customized image is built each time the playbook runs, enable this.

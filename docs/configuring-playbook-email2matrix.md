@@ -56,7 +56,7 @@ Take note of each room's room ID (different clients show the room ID in a differ
 
 ## Adjusting the playbook configuration
 
-To enable Email2Matrix, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_FOR_EMAIL2MATRIX1_HERE` and `ACCESS_TOKEN_FOR_EMAIL2MATRIX2_HERE` with the ones created [above](#obtain-an-access-token).
+To enable Email2Matrix, add the following configuration to your `vars.yml` file. Make sure to replace `ACCESS_TOKEN_FOR_EMAIL2MATRIX1_HERE` and `ACCESS_TOKEN_FOR_EMAIL2MATRIX2_HERE` with the ones created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_email2matrix_enabled: true

@@ -56,7 +56,7 @@ By default, this playbook installs Sygnal on the `sygnal.` subdomain (`sygnal.ex
 
 By tweaking the `matrix_sygnal_hostname` and `matrix_sygnal_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.example.com`),

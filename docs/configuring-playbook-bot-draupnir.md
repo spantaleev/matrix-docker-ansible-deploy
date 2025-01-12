@@ -66,7 +66,7 @@ Finally invite the `@bot.draupnir:example.com` account you created earlier into 
 
 ## Adjusting the playbook configuration
 
-To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
+To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
 
 ```yaml
 # Enable Draupnir
@@ -85,7 +85,7 @@ To support E2EE, Draupnir needs to [use Pantalaimon](configuring-playbook-pantal
 
 When using Pantalaimon, Draupnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+Add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 # Enable Pantalaimon. See docs/configuring-playbook-pantalaimon.md
@@ -115,7 +115,7 @@ matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_
 
 When NOT using Pantalaimon, Draupnir does not log in by itself and you must give it an access token for its bot account.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
+Add the following configuration to your `vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
@@ -137,7 +137,7 @@ The other method polls an Synapse Admin API endpoint, hence it is available only
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable.
 
-For example, to change Draupnir's `pollReports` option to `true`, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+For example, to change Draupnir's `pollReports` option to `true`, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |

@@ -48,7 +48,7 @@ matrix_dimension_access_token: "ACCESS_TOKEN_HERE"
 
 ### Define admin users
 
-To define admin users who can modify the integrations this Dimension supports, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To define admin users who can modify the integrations this Dimension supports, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_dimension_admins:
@@ -64,7 +64,7 @@ By default, this playbook installs Dimension on the `dimension.` subdomain (`dim
 
 By tweaking the `matrix_dimension_hostname` and `matrix_dimension_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.example.com`),

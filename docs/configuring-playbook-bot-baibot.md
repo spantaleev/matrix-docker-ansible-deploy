@@ -78,7 +78,7 @@ To specify who is considered a bot [👮‍♂️ Administrator](https://github.
 
 If `matrix_admin` is already configured in your `vars.yml` configuration, you can skip this section.
 
-**If necessary**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+**If necessary**, add the following configuration to your `vars.yml` file:
 
 ```yaml
 # Uncomment to add one or more admins to this bridge:
@@ -107,7 +107,7 @@ Configuring `matrix_bot_baibot_config_initial_global_config_user_patterns` is op
 
 **Note**: Once initially configured, the allowed users list **cannot be managed via Ansible anymore**. It can only be managed subsequently via bot commands.
 
-**If necessary**, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+**If necessary**, add the following configuration to your `vars.yml` file:
 
 ```yaml
 # Uncomment and adjust the bot users if necessary:

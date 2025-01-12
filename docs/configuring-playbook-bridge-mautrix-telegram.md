@@ -38,7 +38,7 @@ matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 
 ### Enable relay-bot (optional)
 
-If you want to use the relay-bot feature ([relay bot documentation](https://docs.mau.fi/bridges/python/telegram/relay-bot.html)), which allows anonymous user to chat with telegram users, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+If you want to use the relay-bot feature ([relay bot documentation](https://docs.mau.fi/bridges/python/telegram/relay-bot.html)), which allows anonymous user to chat with telegram users, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_mautrix_telegram_bot_token: YOUR_TELEGRAM_BOT_TOKEN
@@ -56,7 +56,7 @@ More details about permissions in this example: https://github.com/mautrix/teleg
 
 ### Use the bridge for direct chats only (optional)
 
-If you want to exclude all groups from syncing and use the Telegram-Bridge only for direct chats, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+If you want to exclude all groups from syncing and use the Telegram-Bridge only for direct chats, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_mautrix_telegram_filter_mode: whitelist
