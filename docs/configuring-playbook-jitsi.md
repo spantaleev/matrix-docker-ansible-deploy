@@ -341,14 +341,13 @@ In this case, you should consider to rebuild your Jitsi installation.
 
 ### Rebuilding your Jitsi installation
 
-**If you ever run into any trouble** or **if you change configuration (`jitsi_*` variables) too much**, we urge you to rebuild your Jitsi setup.
+**If you ever run into any trouble** or **if you change configuration (`jitsi_*` variables) too much**, we recommend you to rebuild your Jitsi setup.
 
-We normally don't require such manual intervention for other services, but Jitsi services generate a lot of configuration files on their own.
+We normally don't recommend manual intervention, but Jitsi services tend to generate a lot of configuration files, and it is often wise to start afresh setting the services up, rather than messing with the existing configuration files. Since not all of those files are managed by Ansible (at least not yet), you may sometimes need to delete them by yourself manually.
 
-These files are not all managed by Ansible (at least not yet), so you may sometimes need to delete them all and start fresh.
+To rebuild your Jitsi configuration, follow the procedure below:
 
-To rebuild your Jitsi configuration:
-
-- ask Ansible to stop all Jitsi services: `just run-tags stop-group --extra-vars=group=jitsi`
-- SSH into the server and do this and remove all Jitsi configuration & data (`rm -rf /matrix/jitsi`)
-- ask Ansible to set up Jitsi anew and restart services (`just install-service jitsi`)
+- run this command locally to stop all Jitsi services: `just run-tags stop-group --extra-vars=group=jitsi`
+- log in the server with SSH
+- run this command remotely to remove all Jitsi configuration & data: `rm -rf /matrix/jitsi`
+- run this command locally to set up Jitsi anew and restart services: `just install-service jitsi`
