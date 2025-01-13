@@ -8,6 +8,12 @@ This role is intended to support UnifiedPush notifications for use with the Matr
 
 **Note**: In contrast to push notifications using Google's FCM or Apple's APNs, the use of UnifiedPush allows each end-user to choose the push notification server that they prefer.  As a consequence, deploying this ntfy server does not by itself ensure any particular user or device or client app will use it.
 
+## Adjusting DNS records
+
+By default, this playbook installs ntfy on the `ntfy.` subdomain (`ntfy.example.com`) and requires you to create a CNAME record for `ntfy`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
 ## Adjusting the playbook configuration
 
 To enable ntfy, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -28,9 +34,7 @@ For a more complete list of variables that you could override, see the [`default
 
 For a complete list of ntfy config options that you could put in `ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 
-### Adjusting the ntfy URL
-
-By default, this playbook installs ntfy on the `ntfy.` subdomain (`ntfy.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the ntfy URL (optional)
 
 By tweaking the `ntfy_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
@@ -41,11 +45,7 @@ Example additional configuration for your `vars.yml` file:
 ntfy_hostname: push.example.com
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain, **you may need to adjust your DNS** records to point the ntfy domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `ntfy`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+After changing the domain, **you may need to adjust your DNS** records to point the ntfy domain to the Matrix server.
 
 ## Installing
 

@@ -17,7 +17,9 @@ You may need to open the following ports to your server:
 
 ## Adjusting DNS records
 
-By default, this playbook installs Jitsi on the `jitsi.` subdomain (`jitsi.example.com`) and requires you to create a CNAME record for `jitsi`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+By default, this playbook installs Jitsi on the `jitsi.` subdomain (`jitsi.example.com`) and requires you to create a CNAME record for `jitsi`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
 
 ## Adjusting the playbook configuration
 
@@ -27,7 +29,7 @@ To enable Jitsi, add the following configuration to your `inventory/host_vars/ma
 jitsi_enabled: true
 ```
 
-### Adjusting the Jitsi URL
+### Adjusting the Jitsi URL (optional)
 
 By tweaking the `jitsi_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 

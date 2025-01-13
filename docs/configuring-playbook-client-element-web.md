@@ -9,6 +9,12 @@ If you'd like to stop the playbook installing the client, see the section [below
 - [app.element.io](https://app.element.io/), hosted by [Element](https://element.io/)
 - [app.etke.cc](https://app.etke.cc/), hosted by [etke.cc](https://etke.cc/)
 
+## Adjusting DNS records
+
+By default, this playbook installs Element Web on the `element.` subdomain (`element.example.com`) and requires you to create a CNAME record for `element`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
 ## Adjusting the playbook configuration
 
 ### Themes
@@ -40,9 +46,7 @@ If you define your own themes with it and set `matrix_client_element_themes_enab
 
 If you make your own theme, we encourage you to submit it to the **aaronraimist/element-themes** project, so that the whole community could easily enjoy it.
 
-### Adjusting the Element Web URL
-
-By default, this playbook installs Element Web on the `element.` subdomain (`element.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the Element Web URL (optional)
 
 By tweaking the `matrix_client_element_hostname` and `matrix_client_element_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -56,6 +60,10 @@ matrix_client_element_hostname: "{{ matrix_server_fqn_matrix }}"
 # Expose under the /element subpath
 matrix_client_element_path_prefix: /element
 ```
+
+After changing the domain, **you may need to adjust your DNS** records to point the Element domain to the Matrix server.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
 ### Extending the configuration
 
@@ -83,14 +91,6 @@ matrix_client_element_configuration_extension_json: |
  "disable_login_language_selector": true
  }
 ```
-
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Element Web domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `element`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
 ## Disabling Element Web
 

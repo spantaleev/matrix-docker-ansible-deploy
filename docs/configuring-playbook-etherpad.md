@@ -4,6 +4,12 @@
 
 When enabled together with the Jitsi audio/video conferencing system (see [our docs on Jitsi](configuring-playbook-jitsi.md)), it will be made available as an option during the conferences.
 
+## Adjusting DNS records
+
+By default, this playbook installs Etherpad on the `etherpad.` subdomain (`etherpad.example.com`) and requires you to create a CNAME record for `etherpad`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
 ## Adjusting the playbook configuration
 
 To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -16,9 +22,7 @@ etherpad_enabled: true
 # etherpad_admin_password: YOUR_PASSWORD_HERE
 ```
 
-### Adjusting the Etherpad URL
-
-By default, this playbook installs Etherpad on the `etherpad.` subdomain (`etherpad.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the Etherpad URL (optional)
 
 By tweaking the `etherpad_hostname` and `etherpad_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -33,11 +37,7 @@ etherpad_hostname: "{{ matrix_server_fqn_matrix }}"
 etherpad_path_prefix: /etherpad
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Etherpad domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `etherpad`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+After changing the domain, **you may need to adjust your DNS** records to point the Etherpad domain to the Matrix server.
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
