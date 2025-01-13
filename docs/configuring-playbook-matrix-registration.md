@@ -14,6 +14,12 @@ Use matrix-registration to **create unique registration links**, which people ca
 
 - **a user registration page**, where people can use these registration tokens. By default, exposed at `https://matrix.example.com/matrix-registration`
 
+## Adjusting DNS records (optional)
+
+By default, this playbook installs the matrix-registration on the `matrix.` subdomain, at the `/matrix-registration` path (https://matrix.example.com/matrix-registration). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+If you wish to adjust it, see the section [below](#adjusting-the-matrix-registration-url-optional) for details about DNS configuration.
+
 ## Adjusting the playbook configuration
 
 To enable matrix-registration, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -25,9 +31,7 @@ matrix_registration_enabled: true
 matrix_registration_admin_secret: "ENTER_SOME_SECRET_HERE"
 ```
 
-### Adjusting the matrix-registration URL
-
-By default, this playbook installs the matrix-registration on the `matrix.` subdomain, at the `/matrix-registration` path (https://matrix.example.com/matrix-registration). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+### Adjusting the matrix-registration URL (optional)
 
 By tweaking the `matrix_registration_hostname` and `matrix_registration_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -39,13 +43,9 @@ matrix_registration_hostname: registration.example.com
 matrix_registration_path_prefix: /
 ```
 
-## Adjusting DNS records
+If you've changed the default hostname, you may need to create a CNAME record for the matrix-registration domain (`registration.example.com`), which targets `matrix.example.com`.
 
-If you've changed the default hostname, **you may need to adjust your DNS** records to point the matrix-registration domain to the Matrix server.
-
-See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
+When setting, replace `example.com` with your own.
 
 ## Installing
 

@@ -11,6 +11,12 @@ Enabling this service will automatically:
 - re-configure [Prometheus](./configuring-playbook-prometheus-grafana.md) (if Prometheus is enabled), to periodically scrape metrics from synapse-usage-exporter
 - add a new [Grafana](./configuring-playbook-prometheus-grafana.md) dashboard (if Grafana is enabled) containing Synapse usage statistics
 
+## Adjusting DNS records (optional)
+
+By default, this playbook installs synapse-usage-exporter on the `matrix.` subdomain, at the `/report-usage-stats/push` path (https://matrix.example.com/report-usage-stats/push). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+If you wish to adjust it, see the section [below](#adjusting-the-synapse-usage-exporter-url-optional) for details about DNS configuration.
+
 ## Adjusting the playbook configuration
 
 To enable synapse-usage-exporter, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -25,9 +31,7 @@ matrix_synapse_usage_exporter_enabled: true
 # matrix_synapse_usage_exporter_proxying_enabled: true
 ```
 
-### Adjusting the synapse-usage-exporter URL
-
-By default, this playbook installs synapse-usage-exporter on the `matrix.` subdomain, at the `/report-usage-stats/push` path (https://matrix.example.com/report-usage-stats/push). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+### Adjusting the synapse-usage-exporter URL (optional)
 
 By tweaking the `matrix_synapse_usage_exporter_hostname` and `matrix_synapse_usage_exporter_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -40,13 +44,9 @@ matrix_synapse_usage_exporter_hostname: sue.example.com
 matrix_synapse_usage_exporter_path_prefix: /
 ```
 
-## Adjusting DNS records
+If you've changed the default hostname, you may need to create a CNAME record for the synapse-usage-exporter domain (`sue.example.com`), which targets `matrix.example.com`.
 
-If you've changed the default hostname, **you may need to adjust your DNS** records to point the synapse-usage-exporter domain to the Matrix server.
-
-See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
+When setting, replace `example.com` with your own.
 
 ## Installing
 
