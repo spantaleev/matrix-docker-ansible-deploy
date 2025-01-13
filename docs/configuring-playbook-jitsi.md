@@ -44,7 +44,7 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 By default the Jitsi instance does not require for anyone to log in, and is open to use without an account. To control who is allowed to start meetings on your Jitsi instance, you'd need to enable Jitsi's authentication and optionally guests mode.
 
-Currently, there are three supported authentication methods: `internal` (default), `matrix` and `ldap`.
+Authentication type must be one of them: `internal` (default), `jwt`, `matrix` or `ldap`. Currently, only `internal`, `matrix` and `ldap` mechanisms are supported by the [Jitsi role](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi).
 
 With authentication enabled, all meetings have to be started by a registered user. After the meeting is started by that user, then guests are free to join. If the registered user is not yet present, the guests are put on hold in individual waiting rooms.
 
@@ -72,8 +72,7 @@ jitsi_prosody_auth_internal_accounts:
 
 ⚠️ **Warning**: this breaks the Jitsi instance on federated rooms probably and does not allow sharing conference links with guests.
 
-This authentication method requires [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service), which can be installed using this [playbook](configuring-playbook-user-verification-service.md). By default, the playbook creates and configures a user-verification-service so that it runs locally.
-
+This authentication method requires [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service), which can be installed using this [playbook](configuring-playbook-user-verification-service.md). It verifies against Matrix openID, and requires a user-verification-service to run.
 
 To enable authentication with Matrix OpenID, add the following configuration to your `vars.yml` file:
 
