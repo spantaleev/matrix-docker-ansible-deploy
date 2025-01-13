@@ -8,10 +8,6 @@ See the project's [documentation](https://github.com/devture/email2matrix/blob/m
 
 ## Preparation
 
-## Adjusting DNS records
-
-It's not strictly necessary, but you may increase the chances that incoming emails reach your server by adding an `MX` record for `matrix.example.com`, as described in the [Configuring DNS](configuring-dns.md) documentation page.
-
 ### Port availability
 
 Ensure that port 25 is available on your Matrix server and open in your firewall.
@@ -53,6 +49,14 @@ Then, log in as the sender user using any Matrix client of your choosing, accept
 Make sure that you and the sender user are part of the same room and that the sender user has enough privileges in the room to be able to send messages there, then log out.
 
 Take note of each room's room ID (different clients show the room ID in a different place). You'll need the room ID when [configuring the playbook](#adjusting-the-playbook-configuration) below.
+
+## Adjusting DNS records
+
+To increase the chances that incoming emails reach your server, you can set up a `MX` record for `matrix.example.com` that looks like this:
+
+| Type | Host     | Priority | Weight | Port | Target                             |
+|------|----------|----------|--------|------|------------------------------------|
+| MX   | `matrix` | 10       | 0      | -    | `matrix.example.com`               |
 
 ## Adjusting the playbook configuration
 
