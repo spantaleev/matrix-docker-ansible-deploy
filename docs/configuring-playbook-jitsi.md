@@ -46,13 +46,13 @@ By default the Jitsi instance does not require for anyone to log in, and is open
 
 Currently, there are three supported authentication methods: `internal` (default), `matrix` and `ldap`.
 
+With authentication enabled, all meetings have to be started by a registered user. After the meeting is started by that user, then guests are free to join. If the registered user is not yet present, the guests are put on hold in individual waiting rooms.
+
 **Note**: authentication is not tested by the playbook's self-checks. We therefore recommend that you would make sure by yourself that authentication is configured properly. To test it, start a meeting at `jitsi.example.com` on your browser.
 
 #### Authenticate using Jitsi accounts: Auth-Type `internal` (recommended)
 
 The default authentication mechanism is `internal` auth, which requires a Jitsi account to have been configured. This is a recommended method, as it also works in federated rooms.
-
-With authentication enabled, all meetings have to be started by a registered user. After the meeting is started by that user, then guests are free to join. If the registered user is not yet present, the guests are put on hold in individual waiting rooms.
 
 To enable authentication with a Jitsi account, add the following configuration to your `vars.yml` file. Make sure to replace `USERNAME_…` and `PASSWORD_…` with your own values.
 
@@ -73,6 +73,7 @@ jitsi_prosody_auth_internal_accounts:
 ⚠️ **Warning**: this breaks the Jitsi instance on federated rooms probably and does not allow sharing conference links with guests.
 
 This authentication method requires [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service), which can be installed using this [playbook](configuring-playbook-user-verification-service.md). By default, the playbook creates and configures a user-verification-service so that it runs locally.
+
 
 To enable authentication with Matrix OpenID, add the following configuration to your `vars.yml` file:
 
