@@ -38,21 +38,6 @@ Be mindful as to how long it will take for the DNS records to propagate.
 
 If you are using Cloudflare DNS, make sure to disable the proxy and set all records to "DNS only". Otherwise, fetching certificates will fail.
 
-## DNS settings for optional services/features
-
-For other services which may need subdomain settings, see the table below and configure the DNS (`CNAME`) records accordingly.
-
-| Used by component                                                                                                          | Type  | Host                           | Priority | Weight | Port | Target                             |
-| -------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------ | -------- | ------ | ---- | -----------------------------------|
-| [Postmoogle](configuring-playbook-bridge-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges | MX    | `matrix`                       | 10       | 0      | -    | `matrix.example.com`               |
-| [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:matrix-server-IP -all` |
-| [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`          |
-| [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`             |
-
-### MX and TXT records for Postmoogle
-
-To make Postmoogle enable its email sending features, you need to configure MX and TXT (SPF, DMARC, and DKIM) records. See the table above for values which need to be specified.
-
 ---------------------------------------------
 
 [▶️](getting-the-playbook.md) When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
