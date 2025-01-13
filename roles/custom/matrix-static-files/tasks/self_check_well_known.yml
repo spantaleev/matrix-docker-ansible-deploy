@@ -24,6 +24,21 @@
       ansible.builtin.set_fact:
         well_known_file_checks: "{{ well_known_file_checks + [well_known_file_check_matrix_server] }}"
 
+- when: matrix_static_files_file_matrix_mautrix_enabled | bool
+  block:
+    - name: Prepare /.well-known/matrix/mautrix to well-known files to check, if enabled
+      ansible.builtin.set_fact:
+        well_known_file_check_matrix_mautrix:
+          path: /.well-known/matrix/mautrix
+          purpose: Mautrix bridge discovery
+          cors: true
+          follow_redirects: safe
+          validate_certs: "{{ matrix_static_files_self_check_validate_certificates }}"
+
+    - name: Inject /.well-known/matrix/mautrix to well-known files to check, if enabled
+      ansible.builtin.set_fact:
+        well_known_file_checks: "{{ well_known_file_checks + [well_known_file_check_matrix_mautrix] }}"
+
 - name: Perform well-known checks
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_well_known_file.yml"
   with_items: "{{ well_known_file_checks }}"
