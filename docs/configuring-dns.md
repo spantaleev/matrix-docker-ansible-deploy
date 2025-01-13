@@ -44,17 +44,10 @@ For other services which may need subdomain settings, see the table below and co
 
 | Used by component                                                                                                          | Type  | Host                           | Priority | Weight | Port | Target                             |
 | -------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------ | -------- | ------ | ---- | -----------------------------------|
-| [ma1sd](configuring-playbook-ma1sd.md) identity server                                                                     | SRV   | `_matrix-identity._tcp`        | 10       | 0      | 443  | `matrix.example.com`               |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md)/[Email2Matrix](configuring-playbook-email2matrix.md) email bridges | MX    | `matrix`                       | 10       | 0      | -    | `matrix.example.com`               |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `matrix`                       | -        | -      | -    | `v=spf1 ip4:matrix-server-IP -all` |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`          |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) email bridge                                                       | TXT   | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`             |
-
-### SRV record for ma1sd
-
-To make ma1sd enable its federation features, you need to set up a `_matrix-identity._tcp` SRV record. Don't confuse this with the `_matrix._tcp` SRV record for server delegation. See the table above and [this section](configuring-playbook-ma1sd.md#adjusting-dns-records) for values which need to be specified.
-
-When setting up a SRV record, if you are asked for a service and protocol instead of a hostname split the host value from the table where the period is. For example use service as `_matrix-identity` and protocol as `_tcp`.
 
 ### MX and TXT records for Postmoogle
 
