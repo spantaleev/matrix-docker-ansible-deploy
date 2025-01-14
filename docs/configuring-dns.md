@@ -36,7 +36,7 @@ The `element.example.com` subdomain is necessary, because this playbook installs
 
 Be mindful as to how long it will take for the DNS records to propagate.
 
-If you are using Cloudflare DNS, make sure to disable the proxy and set all records to "DNS only". Otherwise, fetching certificates will fail.
+**Note**: if you are using Cloudflare DNS, make sure to disable the proxy and set all records to "DNS only". Otherwise, fetching certificates will fail.
 
 ---------------------------------------------
 
