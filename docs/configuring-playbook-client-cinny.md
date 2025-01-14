@@ -31,11 +31,14 @@ Example additional configuration for your `vars.yml` file:
 ```yaml
 # Switch to a different domain (`app.example.com`) than the default one (`cinny.example.com`)
 matrix_client_cinny_hostname: "app.{{ matrix_domain }}"
+
+# Expose under the /cinny subpath
+# matrix_client_cinny_path_prefix: /cinny
 ```
 
 After changing the domain, **you may need to adjust your DNS** records to point the Cinny domain to the Matrix server.
 
-**Note**: while a `matrix_client_cinny_path_prefix` variable exists for tweaking the path-prefix, it's [not supported anymore](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701), because Cinny requires an application rebuild (with a tweaked build config) to be functional under a custom path.
+**Note**: while there is a `matrix_client_cinny_path_prefix` variable for changing the path where Cinny is served, overriding it is [not possible](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701), because Cinny requires an application rebuild (with a tweaked build config) to be functional under a custom path. You'd need to serve Cinny at a dedicated subdomain.
 
 ## Installing
 
