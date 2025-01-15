@@ -8,6 +8,12 @@ Cinny is a web client focusing primarily on simple, elegant and secure interface
 
 - [app.cinny.in](https://app.cinny.in), hosted by the [Cinny](https://cinny.in/) developers
 
+## Adjusting DNS records
+
+By default, this playbook installs Cinny on the `cinny.` subdomain (`cinny.example.com`) and requires you to create a CNAME record for `cinny`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
 ## Adjusting the playbook configuration
 
 To enable Cinny, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -16,28 +22,23 @@ To enable Cinny, add the following configuration to your `inventory/host_vars/ma
 matrix_client_cinny_enabled: true
 ```
 
-### Adjusting the Cinny URL
-
-By default, this playbook installs Cinny on the `cinny.` subdomain (`cinny.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the Cinny URL (optional)
 
 By tweaking the `matrix_client_cinny_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
-
-While a `matrix_client_cinny_path_prefix` variable exists for tweaking the path-prefix, it's [not supported anymore](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701), because Cinny requires an application rebuild (with a tweaked build config) to be functional under a custom path.
 
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to a different domain (`app.example.com`) than the default one (`cinny.example.com`)
 matrix_client_cinny_hostname: "app.{{ matrix_domain }}"
+
+# Expose under the /cinny subpath
+# matrix_client_cinny_path_prefix: /cinny
 ```
 
-## Adjusting DNS records
+After changing the domain, **you may need to adjust your DNS** records to point the Cinny domain to the Matrix server.
 
-Once you've decided on the domain, **you may need to adjust your DNS** records to point the Cinny domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `cinny`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-If you've adjusted `matrix_client_cinny_hostname`, you will need to adjust your DNS configuration accordingly.
+**Note**: while there is a `matrix_client_cinny_path_prefix` variable for changing the path where Cinny is served, overriding it is [not possible](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701), because Cinny requires an application rebuild (with a tweaked build config) to be functional under a custom path. You'd need to serve Cinny at a dedicated subdomain.
 
 ## Installing
 

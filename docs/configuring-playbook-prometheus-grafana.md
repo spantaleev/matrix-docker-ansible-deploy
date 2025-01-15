@@ -2,6 +2,12 @@
 
 The playbook can install [Grafana](https://grafana.com/) with [Prometheus](https://prometheus.io/) and configure performance metrics of your homeserver with graphs for you.
 
+## Adjusting DNS records
+
+By default, this playbook installs Grafana web user-interface on the `stats.` subdomain (`stats.example.com`) and requires you to create a CNAME record for `stats`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
 ## Adjusting the playbook configuration
 
 To enable Grafana and/or Prometheus, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -32,9 +38,7 @@ grafana_default_admin_password: "some_strong_password_chosen_by_you"
 
 The retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
 
-### Adjusting the Grafana URL
-
-By default, this playbook installs Grafana web user-interface on the `stats.` subdomain (`stats.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the Grafana URL (optional)
 
 By tweaking the `grafana_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
@@ -45,11 +49,7 @@ Example additional configuration for your `vars.yml` file:
 grafana_hostname: grafana.example.com
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain, **you may need to adjust your DNS** records to point the Grafana domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `stats`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+After changing the domain, **you may need to adjust your DNS** records to point the Grafana domain to the Matrix server.
 
 **Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
 

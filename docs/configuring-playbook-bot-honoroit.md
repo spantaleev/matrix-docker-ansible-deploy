@@ -6,6 +6,12 @@ It's a bot you can use to setup **your own helpdesk on matrix**
 
 See the project's [documentation](https://github.com/etkecc/honoroit/blob/main/README.md) to learn what it does and why it might be useful to you.
 
+## Adjusting DNS records (optional)
+
+By default, this playbook installs Honoroit on the `matrix.` subdomain, at the `/honoroit` path (https://matrix.example.com/honoroit). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+If you wish to adjust it, see the section [below](#adjusting-the-honoroit-url-optional) for details about DNS configuration.
+
 ## Adjusting the playbook configuration
 
 To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -23,9 +29,7 @@ matrix_bot_honoroit_password: PASSWORD_FOR_THE_BOT
 matrix_bot_honoroit_roomid: "!qporfwt:{{ matrix_domain }}"
 ```
 
-### Adjusting the Honoroit URL
-
-By default, this playbook installs Honoroit on the `matrix.` subdomain, at the `/honoroit` path (https://matrix.example.com/honoroit). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+### Adjusting the Honoroit URL (optional)
 
 By tweaking the `matrix_bot_honoroit_hostname` and `matrix_bot_honoroit_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -37,13 +41,9 @@ matrix_bot_honoroit_hostname: honoroit.example.com
 matrix_bot_honoroit_path_prefix: /
 ```
 
-## Adjusting DNS records
+If you've changed the default hostname, you may need to create a CNAME record for the Honoroit domain (`honoroit.example.com`), which targets `matrix.example.com`.
 
-If you've changed the default hostname, **you may need to adjust your DNS** records to point the Honoroit domain to the Matrix server.
-
-See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
+When setting, replace `example.com` with your own.
 
 ## Installing
 

@@ -19,6 +19,19 @@ If you don't open these ports, you will still be able to send emails, but not re
 
 These port numbers are configurable via the `matrix_postmoogle_smtp_host_bind_port` and `matrix_postmoogle_submission_host_bind_port` variables, but other email servers will try to deliver on these default (standard) ports, so changing them is of little use.
 
+## Adjusting DNS records
+
+To make Postmoogle enable its email sending features, you need to configure MX and TXT (SPF, DMARC, and DKIM) records. See the table below for values which need to be specified.
+
+| Type | Host                           | Priority | Weight | Port | Target                             |
+|------|--------------------------------|----------|--------|------|------------------------------------|
+| MX   | `matrix`                       | 10       | 0      | -    | `matrix.example.com`               |
+| TXT  | `matrix`                       | -        | -      | -    | `v=spf1 ip4:matrix-server-IP -all` |
+| TXT  | `_dmarc.matrix`                | -        | -      | -    | `v=DMARC1; p=quarantine;`          |
+| TXT  | `postmoogle._domainkey.matrix` | -        | -      | -    | get it from `!pm dkim`             |
+
+**Note**: the DKIM record can be retrieved after configuring and installing the bridge's bot.
+
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -41,10 +54,6 @@ matrix_postmoogle_password: PASSWORD_FOR_THE_BOT
 #
 # matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```
-
-## Adjusting DNS records
-
-You will also need to add several DNS records so that Postmoogle can send emails. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
 
 ## Installing
 

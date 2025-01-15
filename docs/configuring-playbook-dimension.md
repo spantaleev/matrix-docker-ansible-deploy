@@ -36,6 +36,12 @@ Dimension requires an access token to be able to connect to your homeserver. Ref
 
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
+## Adjusting DNS records
+
+By default, this playbook installs Dimension on the `dimension.` subdomain (`dimension.example.com`) and requires you to create a CNAME record for `dimension`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
 ## Adjusting the playbook configuration
 
 To enable Dimension, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
@@ -58,9 +64,7 @@ matrix_dimension_admins:
 
 The admin interface is accessible within Element Web by accessing it in any room and clicking the cog wheel/settings icon in the top right. Currently, Dimension can be opened in Element Web by the "Add widgets, bridges, & bots" link in the room information.
 
-### Adjusting the Dimension URL
-
-By default, this playbook installs Dimension on the `dimension.` subdomain (`dimension.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the Dimension URL (optional)
 
 By tweaking the `matrix_dimension_hostname` and `matrix_dimension_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -75,13 +79,11 @@ matrix_dimension_hostname: "{{ matrix_server_fqn_matrix }}"
 # matrix_dimension_path_prefix: /dimension
 ```
 
-**Note**: While there is a `matrix_dimension_path_prefix` variable for changing the path where Dimension is served, overriding it is not possible due to [this Dimension issue](https://github.com/turt2live/matrix-dimension/issues/510). You must serve Dimension at a dedicated subdomain.
+After changing the domain, **you may need to adjust your DNS** records to point the Dimension domain to the Matrix server.
 
-## Adjusting DNS records
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Dimension domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `dimension`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+**Note**: while there is a `matrix_dimension_path_prefix` variable for changing the path where Dimension is served, overriding it is not possible due to [this Dimension issue](https://github.com/turt2live/matrix-dimension/issues/510). You'd need to serve Dimension at a dedicated subdomain.
 
 ## Installing
 

@@ -10,6 +10,12 @@ See the project's [documentation](https://github.com/matrix-org/sygnal/blob/mast
 
 This optional playbook component is only useful to people who develop/build their own Matrix client applications themselves.
 
+## Adjusting DNS records
+
+By default, this playbook installs Sygnal on the `sygnal.` subdomain (`sygnal.example.com`) and requires you to create a CNAME record for `sygnal`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
 ## Adjusting the playbook configuration
 
 To enable Sygnal, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -50,9 +56,7 @@ To configure [APNS](https://developer.apple.com/notifications/) (Apple Push Noti
 
 - references these files in the Sygnal configuration (`matrix_sygnal_apps`) using a path like `/data/…` (the `/matrix/sygnal/data` directory on the host system is mounted into the `/data` directory inside the container)
 
-### Adjusting the Sygnal URL
-
-By default, this playbook installs Sygnal on the `sygnal.` subdomain (`sygnal.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the Sygnal URL (optional)
 
 By tweaking the `matrix_sygnal_hostname` and `matrix_sygnal_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -67,11 +71,7 @@ matrix_sygnal_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_sygnal_path_prefix: /sygnal
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Sygnal domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `sygnal`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+After changing the domain, **you may need to adjust your DNS** records to point the Sygnal domain to the Matrix server.
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 

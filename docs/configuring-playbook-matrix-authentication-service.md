@@ -97,6 +97,12 @@ For existing Synapse homeservers:
 
 - then follow the [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) instructions to perform the installation and migration
 
+## Adjusting DNS records (optional)
+
+By default, this playbook installs the Matrix Authentication Service on the `matrix.` subdomain, at the `/auth` path (https://matrix.example.com/auth). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+If you wish to adjust it, see the section [below](#adjusting-the-matrix-authentication-service-url-optional) for details about DNS configuration.
+
 ## Adjusting the playbook configuration
 
 To enable Matrix Authentication Service, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -117,9 +123,7 @@ In the sub-sections that follow, we'll cover some additional configuration optio
 
 There are many other configuration options available. Consult the [`defaults/main.yml` file](../roles/custom/matrix-authentication-service/defaults/main.yml) in the [matrix-authentication-service role](../roles/custom/matrix-authentication-service/) to discover them.
 
-### Adjusting the Matrix Authentication Service URL
-
-By default, this playbook installs the Matrix Authentication Service on the `matrix.` subdomain, at the `/auth` path (https://matrix.example.com/auth). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+### Adjusting the Matrix Authentication Service URL (optional)
 
 By tweaking the `matrix_authentication_service_hostname` and `matrix_authentication_service_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -130,6 +134,10 @@ Example additional configuration for your `vars.yml` file:
 matrix_authentication_service_hostname: auth.example.com
 matrix_authentication_service_path_prefix: /
 ```
+
+If you've changed the default hostname, you may need to create a CNAME record for the Matrix Authentication Service domain (`auth.example.com`), which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
 
 ### Marking an existing homeserver for migration
 
@@ -267,14 +275,6 @@ matrix_authentication_service_config_upstream_oauth2_providers:
 - [Configure upstream OIDC provider mapping for syn2mas](#configuring-upstream-oidc-provider-mapping-for-syn2mas)
 - go through the [migrating an existing homeserver](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) process
 - remove all Synapse OIDC-related configuration (`matrix_synapse_oidc_*`) to prevent it being in conflict with the MAS OIDC configuration
-
-## Adjusting DNS records
-
-If you've changed the default hostname, **you may need to adjust your DNS** records to point the Matrix Authentication Service domain to the Matrix server.
-
-See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
 
 ## Installing
 

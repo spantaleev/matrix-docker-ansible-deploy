@@ -6,6 +6,12 @@ See the project's [documentation](https://github.com/matrix-org/rageshake/blob/m
 
 **Note**: most people don't need to install rageshake to collect bug reports. This component is only useful to people who develop/build their own Matrix client applications themselves.
 
+## Adjusting DNS records
+
+By default, this playbook installs rageshake on the `rageshake.` subdomain (`rageshake.example.com`) and requires you to create a CNAME record for `rageshake`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
 ## Adjusting the playbook configuration
 
 To enable rageshake, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -26,9 +32,7 @@ matrix_rageshake_configuration_extension_yaml: |
      my-app: octocat/HelloWorld
 ```
 
-### Adjusting the rageshake URL
-
-By default, this playbook installs rageshake on the `rageshake.` subdomain (`rageshake.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the rageshake URL (optional)
 
 By tweaking the `matrix_rageshake_hostname` and `matrix_rageshake_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -43,11 +47,7 @@ matrix_rageshake_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_rageshake_path_prefix: /rageshake
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the rageshake domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `rageshake`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+After changing the domain, **you may need to adjust your DNS** records to point the rageshake domain to the Matrix server.
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 

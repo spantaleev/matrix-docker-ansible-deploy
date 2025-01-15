@@ -6,6 +6,12 @@ The playbook can install and configure [sliding-sync](https://github.com/matrix-
 
 Sliding Sync is an implementation of [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/sync-v3/proposals/3575-sync.md) and a prerequisite for running Element X clients ([Element X iOS](https://github.com/element-hq/element-x-ios) and [Element X Android](https://github.com/element-hq/element-x-android)). See the project's [documentation](https://github.com/matrix-org/sliding-sync) to learn more.
 
+## Adjusting DNS records (optional)
+
+By default, this playbook installs the Sliding Sync proxy on the `matrix.` subdomain, at the `/sliding-sync` path (https://matrix.example.com/sliding-sync). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+If you wish to adjust it, see the section [below](#adjusting-the-sliding-sync-proxy-url-optional) for details about DNS configuration.
+
 ## Adjusting the playbook configuration
 
 To enable Sliding Sync proxy, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -14,9 +20,7 @@ To enable Sliding Sync proxy, add the following configuration to your `inventory
 matrix_sliding_sync_enabled: true
 ```
 
-### Adjusting the Sliding Sync proxy URL
-
-By default, this playbook installs the Sliding Sync proxy on the `matrix.` subdomain, at the `/sliding-sync` path (https://matrix.example.com/sliding-sync). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+### Adjusting the Sliding Sync proxy URL (optional)
 
 By tweaking the `matrix_sliding_sync_hostname` and `matrix_sliding_sync_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -28,13 +32,9 @@ matrix_sliding_sync_hostname: ss.example.com
 matrix_sliding_sync_path_prefix: /
 ```
 
-## Adjusting DNS records
+If you've changed the default hostname, you may need to create a CNAME record for the Sliding Sync proxy domain (`ss.example.com`), which targets `matrix.example.com`.
 
-If you've changed the default hostname, **you may need to adjust your DNS** records to point the Honoroit domain to the Matrix server.
-
-See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
+When setting, replace `example.com` with your own.
 
 ## Installing
 
