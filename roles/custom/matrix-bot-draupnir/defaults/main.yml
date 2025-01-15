@@ -5,7 +5,7 @@
 matrix_bot_draupnir_enabled: true
 
 # renovate: datasource=docker depName=gnuxie/draupnir
-matrix_bot_draupnir_version: "v1.87.0"
+matrix_bot_draupnir_version: "v2.0.0"
 
 matrix_bot_draupnir_container_image_self_build: false
 matrix_bot_draupnir_container_image_self_build_repo: "https://github.com/the-draupnir-project/Draupnir.git"
@@ -49,7 +49,19 @@ matrix_bot_draupnir_systemd_wanted_services_list: []
 # Whether Draupnir should talk to the homeserver through Pantalaimon
 # If true, then other variables must be provided including pointing
 # `matrix_bot_draupnir_homeserver_url` to the Pantalaimon URL.
+# This option is discouraged from being used by upstream as it
+# breaks core parts of the user experience. Any part of the workflow
+# that relies on reactions will break. (Hint: A lot of the workflow relies on them.)
 matrix_bot_draupnir_pantalaimon_use: false
+
+# If you choose to accept the risks of using Pantalaimon in your setup against upstream advice
+# this config option will disable the warning about this.
+matrix_bot_draupnir_pantalaimon_breakage_ignore: false
+
+# Tells the bot if it should use its native E2EE support in the form of Experimental Rust Crypto in the bot SDK.
+# This option is mutually exclusive with `matrix_bot_draupnir_pantalaimon_use`.
+# Rust Crypto requires a clean access token that has not touched E2EE so curl is recommended as creation method.
+matrix_bot_draupnir_enable_experimental_rust_crypto: false
 
 # The access token for the bot user. Required when NOT using Pantalaimon.
 # (Otherwise provide `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` instead.)
@@ -83,6 +95,11 @@ matrix_bot_draupnir_raw_homeserver_url: ""
 # Please follow the advice of upstream and only change this value if you know what your doing.
 # Its Exposed here because its common enough to be valid to expose.
 matrix_bot_draupnir_disable_server_acl: "false"
+
+# Controls if the room state backing store is activated.
+# Room state backing store makes restarts of the bot lightning fast as the bot doesnt suffer from amnesia.
+# This config option has diminished improvements for bots on extremely fast homeservers or very very small bots on fast homeservers.
+matrix_bot_draupnir_enable_room_state_backing_store: "true"
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
