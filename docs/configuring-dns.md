@@ -4,23 +4,6 @@
 
 To set up Matrix on your domain, you'd need to do some DNS configuration.
 
-## DNS setting for server delegation (optional)
-
-In the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user ID like `@alice:example.com` instead of `@alice:matrix.example.com`.
-
-To use such an ID, you don't need to install anything on the actual `example.com` server. Instead, you need to instruct the Matrix network that Matrix services for `example.com` are redirected over to `matrix.example.com`. This redirection is also known as "delegation".
-
-As we discuss in [Server Delegation](howto-server-delegation.md), server delegation can be configured in either of these ways:
-
-- Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)
-- Setting up a `_matrix._tcp` DNS SRV record
-
-For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file, instead of using a DNS SRV record.
-
-If you choose the recommended method (file-based delegation), you do not need to configure the DNS record to enable server delegation. You will need to add a necessary configuration later, when you [finalize the installation](installing.md#finalize-the-installation) after installing and starting Matrix services.
-
-On the other hand, if you choose this method (setting up a DNS SRV record), you need to configure the additional DNS record as well as adjust SSL certificate handling. Take a look at this documentation for more information: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
-
 ## DNS settings for services enabled by default
 
 To serve the base domain (`example.com`) and [Element Web](configuring-playbook-client-element-web.md) with the default subdomain, adjust DNS records as below.
@@ -37,6 +20,23 @@ The `element.example.com` subdomain is necessary, because this playbook installs
 Be mindful as to how long it will take for the DNS records to propagate.
 
 **Note**: if you are using Cloudflare DNS, make sure to disable the proxy and set all records to "DNS only". Otherwise, fetching certificates will fail.
+
+## DNS setting for server delegation (optional)
+
+In the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user ID like `@alice:example.com` instead of `@alice:matrix.example.com`.
+
+To use such an ID, you don't need to install anything on the actual `example.com` server. Instead, you need to instruct the Matrix network that Matrix services for `example.com` are redirected over to `matrix.example.com`. This redirection is also known as "delegation".
+
+As we discuss in [Server Delegation](howto-server-delegation.md), server delegation can be configured in either of these ways:
+
+- Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)
+- Setting up a `_matrix._tcp` DNS SRV record
+
+For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file, instead of using a DNS SRV record.
+
+If you choose the recommended method (file-based delegation), you do not need to configure the DNS record to enable server delegation. You will need to add a necessary configuration later, when you [finalize the installation](installing.md#finalize-the-installation) after installing and starting Matrix services.
+
+On the other hand, if you choose this method (setting up a DNS SRV record), you need to configure the additional DNS record as well as adjust SSL certificate handling. Take a look at this documentation for more information: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)
 
 ---------------------------------------------
 
