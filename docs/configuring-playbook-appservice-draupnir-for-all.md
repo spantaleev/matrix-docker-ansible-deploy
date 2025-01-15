@@ -24,9 +24,7 @@ The playbook does not create a management room for your Main Draupnir. You **nee
 
 Note that the room must be unencrypted.
 
-<!-- TODO: enable Pantalaimon as configuring-playbook-bot-draupnir.md -->
-
-The management room has to be given an alias and be public when you are setting up the bot for the first time as the bot does not differentiate between invites and invites to the management room.
+The management room has to be given an alias and your bot has to be invited to the room. The bot previously was unable to join the management room if it was not public but this bug has been resolved.
 
 This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel.
 
@@ -36,7 +34,7 @@ As noted in the Draupnir install instructions the control room is sensitive. **A
 
 Next, set an alias to the management room.
 
-This alias can be anything you want. However, for increased security during the setup phase, it is recommended to make this alias be a random string. When it has been locked down after setup phase, you can give your room a secondary human readable alias.
+This alias can be anything you want.
 
 ## Adjusting the playbook configuration
 
@@ -85,8 +83,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 **Notes**:
 
-- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
-
 - The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
@@ -103,7 +99,7 @@ Draupnir for all includes several security measures like that it only allows use
 
 The bot requires a powerlevel of 50 in the management room to control who is allowed to use the bot. The bot does currently not say anything if this is true or false. (This is considered a bug and is documented in issue [#297](https://github.com/the-draupnir-project/Draupnir/issues/297))
 
-To allow users or whole homeservers you type /plain @draupnir-main:example.com allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to register. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially.
+To allow users or whole homeservers you type /plain !admin allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to register. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially.
 
 ### How to provision a D4A once you are allowed to
 

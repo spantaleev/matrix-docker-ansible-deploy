@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.
 
-See the project's [documentation](https://github.com/the-draupnir-project/Draupnir/blob/main/README.md) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) to learn what it does and why it might be useful to you.
 
 This documentation page is about installing Draupnir in bot mode. As an alternative, you can run a multi-instance Draupnir deployment by installing [Draupnir in appservice mode](./configuring-playbook-appservice-draupnir-for-all.md) (called Draupnir-for-all) instead.
 
@@ -79,9 +79,21 @@ matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 
 Decide whether you want Draupnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms.
 
-To support E2EE, Draupnir needs to [use Pantalaimon](configuring-playbook-pantalaimon.md).
+To use Native E2EE support see [this section](### Native E2EE Support)
 
-#### Configuration with E2EE support
+Rust Crypto is experimental but is considerably more stable than Pantalaimon support and is improving over time with improvements to the element fork of matrix-bot-sdk.
+
+Using [Pantalaimon](configuring-playbook-pantalaimon.md) for E2EE support is unsupported by Draupnir as it breaks core parts of the workflow. Pantalaimon is explicitly unsupported.
+
+### Native E2EE Support
+
+To use Native E2EE support you need to use access token based authentication from [below](####Configuration-without-E2EE-support-or-Native-E2EE).
+
+You also need to activate the support via setting `matrix_bot_draupnir_enable_experimental_rust_crypto` to `true`
+
+⚠️ **Warning**: The access token used for authentication must be obtained via means like curl. Using an access token from Element does not work with Rust Crypto. The access token in question can not have touched E2EE before use with Draupnir.
+
+#### Configuring Draupnir to use Pantalaimon (Unsupported by upstream.)
 
 When using Pantalaimon, Draupnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
@@ -111,7 +123,7 @@ matrix_bot_draupnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matr
 matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 ```
 
-#### Configuration without E2EE support
+#### Configuration without Pantalaimon
 
 When NOT using Pantalaimon, Draupnir does not log in by itself and you must give it an access token for its bot account.
 
@@ -131,13 +143,13 @@ The first method intercepts the report API endpoint of the client-server API, wh
 matrix_bot_draupnir_abuse_reporting_enabled: true
 ```
 
-The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below.
+<!-- The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below. (This is unsupported by the playbook due to the admin API being inaccessible from containers currently.) -->
 
 ### Extending the configuration
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable.
 
-For example, to change Draupnir's `pollReports` option to `true`, add the following configuration to your `vars.yml` file:
+For example, to change Draupnir's `acceptInvitesFromSpace` option to `!example:example.org`, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |
@@ -148,12 +160,14 @@ matrix_bot_draupnir_configuration_extension_yaml: |
   #
   # If you need something more special, you can take full control by
   # completely redefining `matrix_bot_draupnir_configuration_yaml`.
-  pollReports: true
+  acceptInvitesFromSpace: "!example:example.org"
 ```
 
 ### Migrating from Mjolnir (Only required if migrating)
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
+
+Note that Pantalaimon is unsupported by Draupnir so its recommended to consult [Native E2EE Support](###Native-E2EE-Support) on how to setup Draupnirs native E2EE support.
 
 That is all you need to do due to that Draupnir can complete migration on its own.
 
@@ -167,8 +181,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ```
 
 **Notes**:
-
-- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
 
 - The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
@@ -236,7 +248,7 @@ You can also **turn on various built-in [protections](https://the-draupnir-proje
 
 To **see which protections are available and which are enabled**, send a `!draupnir protections` command to the Management Room.
 
-To **see the configuration options for a given protection**, send a `!draupnir config get PROTECTION_NAME` (e.g. `!draupnir config get JoinWaveShortCircuit`).
+To **see the configuration options for a given protection**, send a `!draupnir protections show PROTECTION_NAME` (e.g. `!draupnir protections show JoinWaveShortCircuit`).
 
 To **set a specific option for a given protection**, send a command like this: `!draupnir config set PROTECTION_NAME.OPTION VALUE` (e.g. `!draupnir config set JoinWaveShortCircuit.timescaleMinutes 30`).
 
