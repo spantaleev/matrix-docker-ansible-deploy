@@ -153,7 +153,7 @@ The other method polls an Synapse Admin API endpoint, hence it is available only
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable.
 
-For example, to change Draupnir's `acceptInvitesFromSpace` option to `!example:example.org`, add the following configuration to your `vars.yml` file:
+For example, to change Draupnir's `acceptInvitesFromSpace` option to `!qporfwt:example.com`, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_bot_draupnir_configuration_extension_yaml: |
