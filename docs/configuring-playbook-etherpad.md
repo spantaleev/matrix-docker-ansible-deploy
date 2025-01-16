@@ -98,26 +98,8 @@ If you want to manage and remove old unused pads from Etherpad, you will first n
 
 Then from the plugin manager page (`https://etherpad.example.com/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
 
-### How to use Etherpad widgets without an integration manager (like Dimension)
+### Integrating a Etherpad widget in a room
 
 This is how it works in Element Web, it might work quite similar with other clients:
 
 To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.example.com`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
-
-### Set Dimension default to the self-hosted Etherpad (optional)
-
-If you decided to install [Dimension integration manager](configuring-playbook-dimension.md) alongside Etherpad, the Dimension administrator users can configure the default URL template.
-
-The Dimension configuration menu can be accessed with the sprocket icon as you begin to add a widget to a room in Element Web. There you will find the Etherpad Widget Configuration action beneath the _Widgets_ tab.
-
-#### Removing the integrated Etherpad chat
-
-If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template.
-
-Example: `https://etherpad.example.com/p/$roomId_$padName?showChat=false`
-
-## Known issues
-
-If your Etherpad widget fails to load, this might be due to Dimension generating a Pad name so long, the Etherpad app rejects it.
-
-`$roomId_$padName` can end up being longer than 50 characters. You can avoid having this problem by altering the template so it only contains the three word random identifier `$padName`.
