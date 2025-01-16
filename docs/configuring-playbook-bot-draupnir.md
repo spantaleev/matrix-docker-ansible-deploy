@@ -171,7 +171,7 @@ matrix_bot_draupnir_configuration_extension_yaml: |
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
 
-Note that Pantalaimon is unsupported by Draupnir so its recommended to consult [Native E2EE Support](###Native-E2EE-Support) on how to setup Draupnirs native E2EE support.
+Note that Pantalaimon is unsupported by Draupnir so it is recommended to consult the instructions to enable [the native E2EE support](#native-e2ee-support).
 
 That is all you need to do due to that Draupnir can complete migration on its own.
 
@@ -181,7 +181,7 @@ After configuring the playbook, run it with [playbook tags](playbook-tags.md) as
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
 **Notes**:
