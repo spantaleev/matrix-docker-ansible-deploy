@@ -95,16 +95,6 @@ backup_borg_retention_keep_monthly: 12
 backup_borg_retention_keep_yearly: 2
 ```
 
-### Backup without encryption (optional)
-
-To backup without encryption, add the following configuration to your `vars.yml` file:
-
-```yaml
-backup_borg_encryption: 'none'
-```
-
-This will also enable the `backup_borg_unknown_unencrypted_repo_access_is_ok` variable.
-
 ### Edit the backup schedule (optional)
 
 By default the backup will run 4 a.m. every day based on the `backup_borg_schedule` variable. It is defined in the format of systemd timer calendar.
