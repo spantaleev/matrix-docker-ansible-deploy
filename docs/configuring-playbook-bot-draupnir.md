@@ -164,7 +164,7 @@ matrix_bot_draupnir_configuration_extension_yaml: |
   #
   # If you need something more special, you can take full control by
   # completely redefining `matrix_bot_draupnir_configuration_yaml`.
-  acceptInvitesFromSpace: "!example:example.org"
+  acceptInvitesFromSpace: "!qporfwt:example.com"
 ```
 
 ### Migrating from Mjolnir (Only required if migrating)
