@@ -75,6 +75,26 @@ backup_borg_ssh_key_private: |
 
 **Note**: `REPO` will be initialized on backup start, for example: `matrix`. See [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls) for the syntax.
 
+### Set backup archive name (optional)
+
+You can specify the backup archive name format. To set it, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+backup_borg_storage_archive_name_format: matrix-{now:%Y-%m-%d-%H%M%S}
+```
+
+### Configure retention policy (optional)
+
+It is also possible to configure a retention strategy. To configure it, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+backup_borg_retention_keep_hourly: 0
+backup_borg_retention_keep_daily: 7
+backup_borg_retention_keep_weekly: 4
+backup_borg_retention_keep_monthly: 12
+backup_borg_retention_keep_yearly: 2
+```
+
 ### Backup without encryption (optional)
 
 To backup without encryption, add the following configuration to your `vars.yml` file:
