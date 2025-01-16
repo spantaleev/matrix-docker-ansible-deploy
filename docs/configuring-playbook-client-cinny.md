@@ -1,6 +1,6 @@
 # Setting up Cinny (optional)
 
-This playbook can install the [Cinny](https://github.com/ajbura/cinny) Matrix web client for you.
+The playbook can install and configure the [Cinny](https://github.com/ajbura/cinny) Matrix web client for you.
 
 Cinny is a web client focusing primarily on simple, elegant and secure interface. It can be installed alongside or instead of [Element Web](./configuring-playbook-client-element-web.md).
 

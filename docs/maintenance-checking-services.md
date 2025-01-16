@@ -1,6 +1,6 @@
 # Checking if services work
 
-This playbook can perform a check to ensure that you've configured things correctly and that services are running.
+The playbook can perform a check to ensure that you've configured things correctly and that services are running.
 
 To perform the check, run:
 
