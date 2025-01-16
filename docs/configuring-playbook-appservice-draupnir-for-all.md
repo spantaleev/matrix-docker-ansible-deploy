@@ -24,7 +24,7 @@ The playbook does not create a management room for your Main Draupnir. You **nee
 
 Note that the room must be unencrypted.
 
-The management room has to be given an alias and your bot has to be invited to the room. The bot previously was unable to join the management room if it was not public but this bug has been resolved.
+The management room has to be given an alias, and your bot has to be invited to the room.
 
 This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel.
 

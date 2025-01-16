@@ -79,21 +79,21 @@ matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 
 Decide whether you want Draupnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms.
 
-To use Native E2EE support see [this section](### Native E2EE Support)
+Draupnir supports E2EE by default. To enable it, refer [this section](#native-e2ee-support) for details about the native E2EE support.
 
-Rust Crypto is experimental but is considerably more stable than Pantalaimon support and is improving over time with improvements to the element fork of matrix-bot-sdk.
+Rust Crypto is experimental but is considerably more stable than [Pantalaimon](configuring-playbook-pantalaimon.md) support. It also improves over time with improvements to the element fork of `matrix-bot-sdk`.
 
-Using [Pantalaimon](configuring-playbook-pantalaimon.md) for E2EE support is unsupported by Draupnir as it breaks core parts of the workflow. Pantalaimon is explicitly unsupported.
+**Note**: Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions.
 
 ### Native E2EE Support
 
-To use Native E2EE support you need to use access token based authentication from [below](####Configuration-without-E2EE-support-or-Native-E2EE).
+To enable the native E2EE support, you need to obtain an access token for Draupnir.
 
-You also need to activate the support via setting `matrix_bot_draupnir_enable_experimental_rust_crypto` to `true`
+Note that Rust Crypto requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
-⚠️ **Warning**: The access token used for authentication must be obtained via means like curl. Using an access token from Element does not work with Rust Crypto. The access token in question can not have touched E2EE before use with Draupnir.
+You also need to activate it by setting `matrix_bot_draupnir_enable_experimental_rust_crypto` to `true`.
 
-#### Configuring Draupnir to use Pantalaimon (Unsupported by upstream.)
+#### Configuring Draupnir to use Pantalaimon (unsupported by upstream)
 
 When using Pantalaimon, Draupnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
 
@@ -143,7 +143,11 @@ The first method intercepts the report API endpoint of the client-server API, wh
 matrix_bot_draupnir_abuse_reporting_enabled: true
 ```
 
-<!-- The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below. (This is unsupported by the playbook due to the admin API being inaccessible from containers currently.) -->
+<!--
+NOTE: this is unsupported by the playbook due to the admin API being inaccessible from containers currently.
+
+The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below. 
+-->
 
 ### Extending the configuration
 
