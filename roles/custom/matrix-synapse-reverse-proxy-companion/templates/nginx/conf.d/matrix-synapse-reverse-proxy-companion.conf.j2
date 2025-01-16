@@ -269,14 +269,12 @@ server {
 			# https://tcpipuk.github.io/synapse/deployment/workers.html
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_room_worker_federation_locations, 'room_workers_upstream') }}
 		{% endif %}
-		{% if federation_reader_workers | length > 0 %}
-			# https://tcpipuk.github.io/synapse/deployment/workers.html
-			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_federation_reader_federation_locations, 'federation_reader_workers_upstream') }}
-		{% endif %}
+
 		{% if generic_workers | length > 0 %}
 			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappgeneric_worker
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_generic_worker_federation_locations, 'generic_workers_upstream') }}
 		{% endif %}
+
 		{% if media_repository_workers | length > 0 %}
 			# https://matrix-org.github.io/synapse/latest/workers.html#synapseappmedia_repository
 			{% for location in matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations %}
@@ -297,6 +295,20 @@ server {
 				{% endif %}
 			}
 			{% endfor %}
+		{% endif %}
+
+		{#
+			This is last, because we'd like more-specific requests (e.g. `/_matrix/federation/v1/media/` that may be handled by a media repository worker, if enabled)
+			to be routed to more specialized workers via their respective `locations` defined earlier (above).
+
+			As https://nginx.org/en/docs/http/ngx_http_core_module.html#location says about location matching:
+			> .. Then regular expressions are checked, in the order of their appearance in the configuration file.
+
+			See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3918
+		#}
+		{% if federation_reader_workers | length > 0 %}
+			# https://tcpipuk.github.io/synapse/deployment/workers.html
+			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_federation_reader_federation_locations, 'federation_reader_workers_upstream') }}
 		{% endif %}
 	{% endif %}
 
