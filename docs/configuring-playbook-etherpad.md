@@ -90,16 +90,18 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 The Etherpad UI should be available at `https://etherpad.example.com`, while the admin UI (if enabled) should then be available at `https://etherpad.example.com/admin`.
 
-If you've [decided on another hostname or path-prefix](#adjusting-the-etherpad-url) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before usage.
+If you've [decided on another hostname or path-prefix](#adjusting-the-etherpad-url-optional) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before using it.
 
 ### Managing / Deleting old pads
 
-If you want to manage and remove old unused pads from Etherpad, you will first need to able Admin access as described above.
+If you want to manage and remove old unused pads from Etherpad, you will first need to create the Etherpad admin user as described above.
 
-Then from the plugin manager page (`https://etherpad.example.com/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
+After logging in to the admin web UI, go to the plugin manager page, and install the `adminpads2` plugin.
+
+Once the plugin is installed, you should have a "Manage pads" section in the UI.
 
 ### Integrating a Etherpad widget in a room
 
-This is how it works in Element Web, it might work quite similar with other clients:
+**Note**: this is how it works in Element Web. It might work quite similar with other clients:
 
 To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.example.com`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
