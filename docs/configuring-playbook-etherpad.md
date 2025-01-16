@@ -43,6 +43,22 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
+### Configure the default text (optional)
+
+You can also edit the default text on a new pad with the variable `etherpad_default_pad_text`.
+
+To do so, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+
+```yaml
+# Note: the whole text (all of its belonging lines) under the variable needs to be indented with 2 spaces.
+etherpad_default_pad_text: |
+  Welcome to Etherpad!
+
+  This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!
+
+  Get involved with Etherpad at https://etherpad.org
+```
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the component.
