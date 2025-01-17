@@ -47,7 +47,7 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 You can also edit the default text on a new pad with the variable `etherpad_default_pad_text`.
 
-To do so, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+To do so, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 # Note: the whole text (all of its belonging lines) under the variable needs to be indented with 2 spaces.
