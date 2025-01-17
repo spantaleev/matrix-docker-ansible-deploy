@@ -1,6 +1,6 @@
 # Configuring a TURN server (optional, advanced)
 
-By default, this playbook installs and configures the [Coturn](https://github.com/coturn/coturn) as a TURN server, through which clients can make audio/video calls even from [NAT](https://en.wikipedia.org/wiki/Network_address_translation)-ed networks. It also configures the Synapse chat server by default, so that it points to the Coturn TURN server installed by the playbook. If that's okay, you can skip this document.
+By default, this playbook installs and configures the [coturn](https://github.com/coturn/coturn) as a TURN server, through which clients can make audio/video calls even from [NAT](https://en.wikipedia.org/wiki/Network_address_translation)-ed networks. It also configures the Synapse chat server by default, so that it points to the coturn TURN server installed by the playbook. If that's okay, you can skip this document.
 
 If you'd like to stop the playbook installing the server, see the section [below](#disabling-coturn) to check the configuration for disabling it.
 
@@ -8,7 +8,7 @@ If you'd like to stop the playbook installing the server, see the section [below
 
 ### Define public IP manually (optional)
 
-In the `hosts` file we explicitly ask for your server's external IP address when defining `ansible_host`, because the same value is used for configuring Coturn.
+In the `hosts` file we explicitly ask for your server's external IP address when defining `ansible_host`, because the same value is used for configuring coturn.
 
 If you'd rather use a local IP for `ansible_host`, add the following configuration to your `vars.yml` file. Make sure to replace `YOUR_PUBLIC_IP` with the pubic IP used by the server.
 
@@ -18,7 +18,7 @@ matrix_coturn_turn_external_ip_address: "YOUR_PUBLIC_IP"
 
 If you'd like to rely on external IP address auto-detection (not recommended unless you need it), set an empty value to the variable. The playbook will automatically contact an [EchoIP](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable.
 
-If your server has multiple external IP addresses, the Coturn role offers a different variable for specifying them:
+If your server has multiple external IP addresses, the coturn role offers a different variable for specifying them:
 
 ```yaml
 # Note: matrix_coturn_turn_external_ip_addresses is different than matrix_coturn_turn_external_ip_address
@@ -35,19 +35,19 @@ To do so, add the following configuration to your `vars.yml` file:
 matrix_coturn_authentication_method: lt-cred-mech
 ```
 
-Regardless of the selected authentication method, the playbook generates secrets automatically and passes them to the homeserver and Coturn.
+Regardless of the selected authentication method, the playbook generates secrets automatically and passes them to the homeserver and coturn.
 
-If [Jitsi](configuring-playbook-jitsi.md) is installed, note that switching to `lt-cred-mech` will disable the integration between Jitsi and your Coturn server, as Jitsi seems to support the `auth-secret` authentication method only.
+If [Jitsi](configuring-playbook-jitsi.md) is installed, note that switching to `lt-cred-mech` will disable the integration between Jitsi and your coturn server, as Jitsi seems to support the `auth-secret` authentication method only.
 
-### Use your own external Coturn server (optional)
+### Use your own external coturn server (optional)
 
-If you'd like to use another TURN server (be it Coturn or some other one), add the following configuration to your `vars.yml` file. Make sure to replace `HOSTNAME_OR_IP` with your own.
+If you'd like to use another TURN server (be it coturn or some other one), add the following configuration to your `vars.yml` file. Make sure to replace `HOSTNAME_OR_IP` with your own.
 
 ```yaml
-# Disable integrated Coturn server
+# Disable integrated coturn server
 matrix_coturn_enabled: false
 
-# Point Synapse to your other Coturn server
+# Point Synapse to your other coturn server
 matrix_synapse_turn_uris:
 - turns:HOSTNAME_OR_IP?transport=udp
 - turns:HOSTNAME_OR_IP?transport=tcp
@@ -72,15 +72,15 @@ Take a look at:
 
 - `roles/custom/matrix-coturn/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
-## Disabling Coturn
+## Disabling coturn
 
-If, for some reason, you'd like for the playbook to not install Coturn (or to uninstall it if it was previously installed), add the following configuration to your `vars.yml` file:
+If, for some reason, you'd like for the playbook to not install coturn (or to uninstall it if it was previously installed), add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_coturn_enabled: false
 ```
 
-In that case, Synapse would not point to any Coturn servers and audio/video call functionality may fail.
+In that case, Synapse would not point to any coturn servers and audio/video call functionality may fail.
 
 ## Installing
 

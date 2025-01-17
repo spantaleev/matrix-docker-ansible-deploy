@@ -32,7 +32,7 @@
     - ansible.builtin.set_fact:
         matrix_coturn_turn_external_ip_address: "{{ result_matrix_coturn_turn_external_ip_address_auto_detection_echoip_response.json.ip }}"
 
-- name: Ensure Matrix Coturn path exists
+- name: Ensure Matrix coturn path exists
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -43,7 +43,7 @@
     - {path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
   when: "item.when | bool"
 
-- name: Ensure Coturn image is pulled
+- name: Ensure coturn image is pulled
   community.docker.docker_image:
     name: "{{ matrix_coturn_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -57,7 +57,7 @@
 
 - when: "matrix_coturn_container_image_self_build | bool"
   block:
-    - name: Ensure Coturn repository is present on self-build
+    - name: Ensure coturn repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_coturn_container_image_self_build_repo }}"
         dest: "{{ matrix_coturn_docker_src_files_path }}"
@@ -67,7 +67,7 @@
       become_user: "{{ matrix_user_username }}"
       register: matrix_coturn_git_pull_results
 
-    - name: Ensure Coturn Docker image is built
+    - name: Ensure coturn Docker image is built
       community.docker.docker_image:
         name: "{{ matrix_coturn_docker_image }}"
         source: build
@@ -78,7 +78,7 @@
           path: "{{ matrix_coturn_docker_src_files_path }}"
           pull: true
 
-- name: Ensure Coturn configuration path exists
+- name: Ensure coturn configuration path exists
   ansible.builtin.file:
     path: "{{ matrix_coturn_base_path }}"
     state: directory
@@ -94,7 +94,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure Coturn network is created in Docker
+- name: Ensure coturn network is created in Docker
   when: matrix_coturn_container_network not in ['', 'host']
   community.docker.docker_network:
     name: "{{ matrix_coturn_container_network }}"
