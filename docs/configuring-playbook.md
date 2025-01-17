@@ -40,7 +40,7 @@ For a more custom setup, see the [Other configuration options](#other-configurat
 - Server components:
   - [Using an external PostgreSQL server](configuring-playbook-external-postgres.md)
 
-  - [Adjusting TURN server configuration](configuring-playbook-turn.md) (advanced)
+  - [Configuring a TURN server](configuring-playbook-turn.md) (advanced)
 
   - [Configuring the Traefik reverse-proxy](configuring-playbook-traefik.md) (advanced)
 

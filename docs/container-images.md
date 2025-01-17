@@ -30,7 +30,7 @@ Services that run on the server to make the various parts of your installation w
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [PostgreSQL](configuring-playbook-external-postgres.md) | [postgres](https://hub.docker.com/_/postgres/) | ✅ | Database for Synapse. [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) is also possible. |
-| [Coturn](configuring-playbook-turn.md) | [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) | ✅ | STUN/TURN server for WebRTC audio/video calls |
+| [coturn](configuring-playbook-turn.md) | [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) | ✅ | STUN/TURN server for WebRTC audio/video calls |
 | [Traefik](configuring-playbook-traefik.md) | [Traefik](https://hub.docker.com/_/traefik/) | ✅ | Web server, listening on ports 80, 443 and 8448 - standing in front of all the other services. Using your own webserver [is possible](configuring-playbook-own-webserver.md) |
 | [Let's Encrypt](configuring-playbook-ssl-certificates.md) | [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) | ✅ | The [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) |
 | [Exim](configuring-playbook-email.md) | [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) | ✅ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) |

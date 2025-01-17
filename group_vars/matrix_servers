@@ -257,12 +257,12 @@ matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_s
 #   - so that addon services (starting later) can communicte with the homeserver via Traefik's internal entrypoint
 #     (see `matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled`)
 # - core services (the homeserver) get a level of ~1000
-# - services that the homeserver depends on (database, Redis, ntfy, Coturn, etc.) get a lower level - between 500 and 1000
-# - Coturn gets a higher level if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
+# - services that the homeserver depends on (database, Redis, ntfy, coturn, etc.) get a lower level - between 500 and 1000
+# - coturn gets a higher level if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
 #  - starting services one by one means that the service manager role waits for each service to fully start before proceeding to the next one
-#  - if Coturn has a lower priority than the homeserver, it would be started before it
-#  - since Coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.example.com` certificate
-#  - thus, Coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
+#  - if coturn has a lower priority than the homeserver, it would be started before it
+#  - since coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.example.com` certificate
+#  - thus, coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
 #  - only later, when the homeserver actually starts, would that certificate be fetched and dumped
 # - reverse-proxying services get level 3000
 # - Matrix utility services (bridges, bots) get a level of 2000/2200, so that:
@@ -3691,7 +3691,7 @@ jitsi_web_stun_servers: |
 # The Jitsi instance installed by this playbook is meant for embedding into Matrix clients, so framing is allowed.
 jitsi_web_framing_enabled: true
 
-# Jitsi (Prosody) only seems to support authenticating with Coturn using `auth-secret`, not `lt-cred-mech`.
+# Jitsi (Prosody) only seems to support authenticating with coturn using `auth-secret`, not `lt-cred-mech`.
 # See: https://prosody.im/doc/coturn
 jitsi_turn_credentials: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 jitsi_turn_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
