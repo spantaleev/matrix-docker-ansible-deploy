@@ -1,8 +1,8 @@
 # Setting up Appservice Double Puppet (optional)
 
-Appservice Double Puppet is a homeserver appservice through which bridges (and potentially other services) can impersonate any user on the homeserver.
+The playbook can install and configure the Appservice Double Puppet service for you. It is a homeserver appservice through which bridges (and potentially other services) can impersonate any user on the homeserver.
 
-This is useful for performing [double-puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) via the [appservice method](https://docs.mau.fi/bridges/general/double-puppeting.html#appservice-method-new). The Appservice Double Puppet service is an implementation of this approach.
+This is useful for performing [double-puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) via the appservice method. The service is an implementation of this approach.
 
 Previously, bridges supported performing double-puppeting with the help of the [Shared Secret Auth password provider module](./configuring-playbook-shared-secret-auth.md), but this old and hacky solution has been superseded by this Appservice Double Puppet method.
 
@@ -13,6 +13,14 @@ To enable the Appservice Double Puppet service, add the following configuration 
 ```yaml
 matrix_appservice_double_puppet_enabled: true
 ```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the service.
+
+Take a look at:
+
+- `roles/custom/matrix-appservice-double-puppet/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_double_puppet_registration_configuration_extension_yaml` variable
 
 ## Installing
 
@@ -33,4 +41,4 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 ## Usage
 
-When enabled, double puppeting will automatically be enabled for all bridges that support double puppeting via the appservice method.
+Installing the service will automatically enable double puppeting for all bridges that support double puppeting via the appservice method.
