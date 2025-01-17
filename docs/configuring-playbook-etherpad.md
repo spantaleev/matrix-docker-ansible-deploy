@@ -43,6 +43,30 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
+### Configure the default text (optional)
+
+You can also edit the default text on a new pad with the variable `etherpad_default_pad_text`.
+
+To do so, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+# Note: the whole text (all of its belonging lines) under the variable needs to be indented with 2 spaces.
+etherpad_default_pad_text: |
+  Welcome to Etherpad!
+
+  This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!
+
+  Get involved with Etherpad at https://etherpad.org
+```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- [etherpad role](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `etherpad_configuration_extension_json` variable
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -66,34 +90,18 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 The Etherpad UI should be available at `https://etherpad.example.com`, while the admin UI (if enabled) should then be available at `https://etherpad.example.com/admin`.
 
-If you've [decided on another hostname or path-prefix](#adjusting-the-etherpad-url) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before usage.
+If you've [decided on another hostname or path-prefix](#adjusting-the-etherpad-url-optional) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before using it.
 
 ### Managing / Deleting old pads
 
-If you want to manage and remove old unused pads from Etherpad, you will first need to able Admin access as described above.
+If you want to manage and remove old unused pads from Etherpad, you will first need to create the Etherpad admin user as described above.
 
-Then from the plugin manager page (`https://etherpad.example.com/admin/plugins`, install the `adminpads2` plugin. Once installed, you should have a "Manage pads" section in the Admin web-UI.
+After logging in to the admin web UI, go to the plugin manager page, and install the `adminpads2` plugin.
 
-### How to use Etherpad widgets without an integration manager (like Dimension)
+Once the plugin is installed, you should have a "Manage pads" section in the UI.
 
-This is how it works in Element Web, it might work quite similar with other clients:
+### Integrating a Etherpad widget in a room
+
+**Note**: this is how it works in Element Web. It might work quite similar with other clients:
 
 To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.example.com`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
-
-### Set Dimension default to the self-hosted Etherpad (optional)
-
-If you decided to install [Dimension integration manager](configuring-playbook-dimension.md) alongside Etherpad, the Dimension administrator users can configure the default URL template.
-
-The Dimension configuration menu can be accessed with the sprocket icon as you begin to add a widget to a room in Element Web. There you will find the Etherpad Widget Configuration action beneath the _Widgets_ tab.
-
-#### Removing the integrated Etherpad chat
-
-If you wish to disable the Etherpad chat button, you can do it by appending `?showChat=false` to the end of the pad URL, or the template.
-
-Example: `https://etherpad.example.com/p/$roomId_$padName?showChat=false`
-
-## Known issues
-
-If your Etherpad widget fails to load, this might be due to Dimension generating a Pad name so long, the Etherpad app rejects it.
-
-`$roomId_$padName` can end up being longer than 50 characters. You can avoid having this problem by altering the template so it only contains the three word random identifier `$padName`.
