@@ -484,3 +484,11 @@ SSL certificates are managed automatically by the [Traefik](https://doc.traefik.
 If you're having trouble with SSL certificate renewal, check the Traefik logs (`journalctl -fu matrix-traefik`).
 
 If you're [using your own webserver](configuring-playbook-own-webserver.md) instead of the integrated one (Traefik), you should investigate in another way.
+
+## Miscellaneous
+
+### I would like to see this favorite service of mine integrated and become available on my Matrix server. How can I request it?
+
+You can freely create an issue for feature request on the repository at GitHub [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/new). Note this is a community project with no financial backing, and there is not assurance that your request would be eventually picked up by others and the requested feature would become available. The easiest way to get a feature into this project is to just develop it yourself.
+
+Also, please note that this playbook intends to focus solely on Matrix and Matrix-related services. If your request is not specific to Matrix, you may as well to consider to submit it to the [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook), maintained by the members behind this matrix-docker-ansible-deploy project. [This document on the interoperability](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/interoperability.md) describes how to deploy services along with the Matrix services easily.
