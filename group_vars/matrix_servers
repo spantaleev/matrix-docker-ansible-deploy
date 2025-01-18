@@ -4994,6 +4994,10 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     ] if matrix_bot_buscarron_enabled else [])
     +
     ([
+      '^@'+(matrix_bot_draupnir_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_draupnir_enabled else [])
+    +
+    ([
       '^@'+(matrix_bot_chatgpt_matrix_bot_username_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
     ] if matrix_bot_chatgpt_enabled else [])
     +
@@ -5855,6 +5859,12 @@ matrix_user_creator_users_auto: |
       'initial_password': matrix_bot_maubot_initial_password,
       'initial_type': 'bot',
     }] if matrix_bot_maubot_enabled else [])
+        +
+    ([{
+      'username': matrix_bot_draupnir_login,
+      'initial_password': matrix_bot_draupnir_password,
+      'initial_type': 'bot',
+    }] if matrix_bot_draupnir_enabled and matrix_bot_draupnir_password else [])
   }}
 
 ######################################################################

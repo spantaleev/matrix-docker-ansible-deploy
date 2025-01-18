@@ -5,7 +5,7 @@
 matrix_bot_draupnir_enabled: true
 
 # renovate: datasource=docker depName=gnuxie/draupnir
-matrix_bot_draupnir_version: "v1.87.0"
+matrix_bot_draupnir_version: "v2.0.1"
 
 matrix_bot_draupnir_container_image_self_build: false
 matrix_bot_draupnir_container_image_self_build_repo: "https://github.com/the-draupnir-project/Draupnir.git"
@@ -49,7 +49,19 @@ matrix_bot_draupnir_systemd_wanted_services_list: []
 # Whether Draupnir should talk to the homeserver through Pantalaimon
 # If true, then other variables must be provided including pointing
 # `matrix_bot_draupnir_homeserver_url` to the Pantalaimon URL.
+# Enabling this option is discouraged, because Draupnir does not support
+# running with Pantalaimon as it would break all workflows that involve answering
+# prompts with reactions. (Hint: a lot of workflows rely on them.)
 matrix_bot_draupnir_pantalaimon_use: false
+
+# If you choose to accept the risks of using Pantalaimon in your installation
+# against the upstream advice, you can enable this to disable the warning about it.
+matrix_bot_draupnir_pantalaimon_breakage_ignore: false
+
+# Tells the bot if it should use its native E2EE support in the form of experimental Rust Crypto in the bot SDK.
+# This option is mutually exclusive with `matrix_bot_draupnir_pantalaimon_use`.
+# Rust Crypto requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it.
+matrix_bot_draupnir_enable_experimental_rust_crypto: false
 
 # The access token for the bot user. Required when NOT using Pantalaimon.
 # (Otherwise provide `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` instead.)
@@ -59,6 +71,15 @@ matrix_bot_draupnir_access_token: ""
 # (Otherwise provide `matrix_bot_draupnir_access_token` instead.)
 matrix_bot_draupnir_pantalaimon_username: ""
 matrix_bot_draupnir_pantalaimon_password: ""
+
+# Username and password the bot uses for logging in directly. If using Pantalimon
+# these values become the values of `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password`
+matrix_bot_draupnir_login: "{{ matrix_bot_draupnir_pantalaimon_username if matrix_bot_draupnir_pantalaimon_use == 'true' else 'bot.draupnir' }}"
+matrix_bot_draupnir_password: "{{ matrix_bot_draupnir_pantalaimon_password }}"
+
+# Controls if we activate the pantalaimon config block for now. This configuration block is proable to change name for our usecase
+# due to a Draupnir push to scrub Pantalaimon from the codebase.
+matrix_bot_draupnir_login_native: ""
 
 # The room ID where people can use the bot. The bot has no access controls, so
 # anyone in this room can use the bot - secure your room!
@@ -83,6 +104,11 @@ matrix_bot_draupnir_raw_homeserver_url: ""
 # Please follow the advice of upstream and only change this value if you know what your doing.
 # Its Exposed here because its common enough to be valid to expose.
 matrix_bot_draupnir_disable_server_acl: "false"
+
+# Controls if the room state backing store is activated.
+# Room state backing store makes restarts of the bot lightning fast as the bot does not suffer from amnesia.
+# This config option has diminished improvements for bots on extremely fast homeservers or very very small bots on fast homeservers.
+matrix_bot_draupnir_enable_room_state_backing_store: "true"
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

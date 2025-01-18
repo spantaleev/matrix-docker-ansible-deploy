@@ -5,6 +5,7 @@
     msg: "The `{{ item.name }}` variable must be defined and have a non-null value."
   with_items:
     - {'name': 'matrix_bot_draupnir_access_token', when: "{{ not matrix_bot_draupnir_pantalaimon_use }}"}
+    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_enable_experimental_rust_crypto }}"}
     - {'name': 'matrix_bot_draupnir_management_room', when: true}
     - {'name': 'matrix_bot_draupnir_container_network', when: true}
     - {'name': 'matrix_bot_draupnir_homeserver_url', when: true}
@@ -18,4 +19,19 @@
     msg: "The `{{ item.name }}` variable must be undefined or have a null value."
   with_items:
     - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
+    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_login_native }}"}
+    - {'name': 'matrix_bot_draupnir_pantalaimon_use', when: "{{  matrix_bot_draupnir_enable_experimental_rust_crypto }}"}
   when: "item.when | bool and not (vars[item.name] == '' or vars[item.name] is none)"
+
+- when: "matrix_bot_draupnir_pantalaimon_use == 'true' and matrix_bot_draupnir_pantalaimon_breakage_ignore == 'false'"
+  block:
+    - name: Inject warning if Pantalaimon is used together with Draupnir
+      ansible.builtin.set_fact:
+        devture_playbook_runtime_messages_list: |
+          {{
+            devture_playbook_runtime_messages_list | default([])
+            +
+            [
+              "Note: Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions. To enable E2EE for Draupnir, it is recommended to use matrix_bot_draupnir_enable_experimental_rust_crypto instead. This warning can be disabled by setting matrix_bot_draupnir_pantalaimon_breakage_ignore to true."
+            ]
+          }}
