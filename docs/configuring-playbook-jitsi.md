@@ -175,6 +175,17 @@ These configurations:
 - **disable audio levels** to avoid excessive refresh of the client-side page and decrease the CPU consumption involved
 - **limit the number of video feeds forwarded to each client**, to save up resources on both server and clients. As clients’ bandwidth and CPU may not bear the load, use this setting to avoid lag and crashes. This feature is available by default on other webconference applications such as Office 365 Teams (the number is limited to 4). Read how it works [here](https://github.com/jitsi/jitsi-videobridge/blob/5ff195985edf46c9399dcf263cb07167f0a2c724/doc/allocation.md).
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- [Jitsi role](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using these variables:
+  - `jitsi_web_custom_interface_config_extension`: custom configuration to be appended to `interface_config.js`, passed to Jitsi Web
+  - `jitsi_web_custom_config_extension`: custom configuration to be injected into `custom-config.js`, passed to Jitsi Web
+  - `jitsi_jvb_custom_config_extension`: custom configuration to be injected into `custom-sip-communicator.properties`, passed to Jitsi JVB
+
 ### Example configurations
 
 Here is an example set of configurations for running a Jitsi instance with:
