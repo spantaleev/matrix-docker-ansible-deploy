@@ -14,7 +14,7 @@ If your migrating from Mjolnir skip to [this section](#migrating-from-mjolnir-on
 
 Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room. Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
-If you make the management room encrypted (E2EE), then you need to enable Native E2EE (see [below](###Native-E2EE-Support)).
+If you make the management room encrypted (E2EE), then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
 
 Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element Web you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
 
@@ -51,20 +51,20 @@ To enable the native E2EE support, you need to obtain an access token for Draupn
 
 Note that Rust Crypto requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
-#### Adjust the playbook configuration to enable Native E2EE
+To enable the native E2EE support, add the following configuration to your `vars.yml` file:
 
 ```yaml
-#Enables Native E2EE Support in Draupnir
+# Enables the native E2EE Support
 matrix_bot_draupnir_enable_experimental_rust_crypto: true
 ```
 
-## Make sure the account is free from rate limiting
+### Make sure the account is free from rate limiting
 
 If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a heavily recomended step. If you do not configure it, Draupnir performance will be degraded.**
 
 This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally.
 
-To expose the APIs publicly, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To expose the APIs publicly, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
@@ -86,11 +86,11 @@ Manual access to Synapse's Admin API requires an access token. Refer to the docu
 
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
-## Abuse Reports
+### Abuse Reports
 
 Draupnir can receive reports in the management room.
 
-The bot can intercept the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using traefik, this playbook can set this up for you:
+The bot can intercept the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using Traefik, this playbook can set this up for you:
 
 ```yaml
 matrix_bot_draupnir_abuse_reporting_enabled: true
@@ -102,7 +102,7 @@ NOTE: this is unsupported by the playbook due to the admin API being inaccessibl
 The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below. 
 -->
 
-## Extending the configuration
+### Extending the configuration
 
 You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable.
 
