@@ -241,26 +241,36 @@ Make sure to replace `jvb-2.example.com` with your hostname for the JVB and `192
 
 You could add JVB hosts as many as you would like. When doing so, add lines with the details of them.
 
+#### Prepare `vars.yml` files for additional JVBs
+
+If the main server is `matrix.example.com` and the additional JVB instance is going to be deployed at `jvb-2.example.com`, the variables for the latter need to be specified on `vars.yml` in its directory (`inventory/host_vars/jvb-2.example.com`).
+
+Note that most (if not all) variables are common for both servers.
+
+If you are setting up multiple JVB instances, you'd need to create `vars.yml` files for each of them too (`inventory/host_vars/jvb-3.example.com/vars.yml`, for example).
+
 #### Set the server ID to each JVB
 
 Each JVB requires a server ID to be set, so that it will be uniquely identified. The server ID allows Jitsi to keep track of which conferences are on which JVB.
 
 The server ID can be set with the variable `jitsi_jvb_server_id`. It will end up as the `JVB_WS_SERVER_ID` environment variables in the JVB docker container.
 
-To set the server ID to `jvb-2`, add the following configuration to either `vars.yml` or `hosts` file (adapt to your needs). If you'd specify the server ID on the `hosts` file, add `jitsi_jvb_server_id=jvb-2` after your JVB's external IP addresses as below.
-
-- On `vars.yml`:
-
-  ```yaml
-  jitsi_jvb_server_id: 'jvb-2'
-  ```
+To set the server ID to `jvb-2`, add the following configuration to either `hosts` or `vars.yml` files (adapt to your needs).
 
 - On `hosts`:
+
+  Add `jitsi_jvb_server_id=jvb-2` after your JVB's external IP addresses as below:
 
   ```INI
   [jitsi_jvb_servers]
   jvb-2.example.com ansible_host=192.168.0.2 jitsi_jvb_server_id=jvb-2
   jvb-3.example.com ansible_host=192.168.0.3 jitsi_jvb_server_id=jvb-2
+  ```
+
+- On `vars.yml` files:
+
+  ```yaml
+  jitsi_jvb_server_id: 'jvb-2'
   ```
 
 Alternatively, you can specify the variable as a parameter to [the ansible command](#run-the-playbook).
@@ -271,7 +281,7 @@ Alternatively, you can specify the variable as a parameter to [the ansible comma
 
 The additional JVBs will need to expose the colibri WebSocket port.
 
-To expose the port, add the following configuration to your `vars.yml` file:
+To expose the port, add the following configuration to your `vars.yml` files:
 
 ```yaml
 jitsi_jvb_container_colibri_ws_host_bind_port: 9090
@@ -285,7 +295,7 @@ Similar to the server ID (`jitsi_jvb_server_id`), this can be set with the varia
 
 ##### Set the Matrix domain
 
-The Jitsi Prosody container is deployed on the Matrix server by default, so the value can be set to the Matrix domain. To set the value, add the following configuration to your `vars.yml` file:
+The Jitsi Prosody container is deployed on the Matrix server by default, so the value can be set to the Matrix domain. To set the value, add the following configuration to your `vars.yml` files:
 
 ```yaml
 jitsi_xmpp_server: "{{ matrix_domain }}"
@@ -295,7 +305,7 @@ jitsi_xmpp_server: "{{ matrix_domain }}"
 
 Alternatively, the IP address of the Matrix server can be set. This can be useful if you would like to use a private IP address.
 
-To set the IP address of the Matrix server, add the following configuration to your `vars.yml` file:
+To set the IP address of the Matrix server, add the following configuration to your `vars.yml` files:
 
 ```yaml
 jitsi_xmpp_server: "192.168.0.1"
@@ -305,7 +315,7 @@ jitsi_xmpp_server: "192.168.0.1"
 
 By default, the Matrix server does not expose the XMPP port (`5222`); only the XMPP container exposes it internally inside the host. This means that the first JVB (which runs on the Matrix server) can reach it but the additional JVBs cannot. Therefore, the XMPP server needs to expose the port, so that the additional JVBs can connect to it.
 
-To expose the port and have Docker forward the port, add the following configuration to your `vars.yml` file:
+To expose the port and have Docker forward the port, add the following configuration to your `vars.yml` files:
 
 ```yaml
 jitsi_prosody_container_jvb_host_bind_port: 5222
@@ -313,7 +323,7 @@ jitsi_prosody_container_jvb_host_bind_port: 5222
 
 #### Reverse-proxy with Traefik
 
-To make Traefik reverse-proxy to these additional JVBs (living on other hosts), add the following configuration to your `vars.yml` file:
+To make Traefik reverse-proxy to these additional JVBs, add the following configuration to your main `vars.yml` file (`inventory/host_vars/matrix.example.com/vars.yml`):
 
 ```yaml
 # Traefik proxying for additional JVBs. These can't be configured using Docker
