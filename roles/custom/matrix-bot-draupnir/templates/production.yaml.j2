@@ -1,5 +1,4 @@
 # Endpoint URL that Draupnir uses to interact with the Matrix homeserver (client-server API),
-# set this to the pantalaimon URL if you're using that.
 homeserverUrl: {{ matrix_bot_draupnir_homeserver_url | to_json }}
 
 # Endpoint URL that Draupnir could use to fetch events related to reports (client-server API and /_synapse/),
@@ -14,10 +13,7 @@ accessToken: {{ matrix_bot_draupnir_access_token | to_json }}
 {% if matrix_bot_draupnir_pantalaimon_use or matrix_bot_draupnir_login_native %}
 # Options related to Pantalaimon (https://github.com/matrix-org/pantalaimon)
 pantalaimon:
-  # Whether or not Draupnir will use Pantalaimon to access the Matrix homeserver,
-  # set to `true` if you're using pantalaimon.
-  #
-  # Be sure to point homeserverUrl to the pantalaimon instance.
+  # Set to `true` when the bot is to login and fetch the access token on its own.
   #
   # Draupnir will log in using the given username and password once,
   # then store the resulting access token in a file under dataPath.
@@ -29,13 +25,13 @@ pantalaimon:
   # The password Draupnir will login with.
   #
   # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
-  # This option can be loaded from a file by passing "--pantalaimon-password-path <path>" at the command line,
+  # This option can be loaded from a file by passing "--password-path <path>" at the command line,
   # which would allow using secret management systems such as systemd's service credentials.
   password: {{ matrix_bot_draupnir_password | to_json }}
 {% endif %}
 
-# Experimental usage of the matrix-bot-sdk Rust Crypto. This cannot be used with Pantalaimon.
-# Make sure to configure the bot, so that it does not use Pantalaimon for it.
+# Experimental usage of the matrix-bot-sdk rust crypto. This can not be used with Pantalaimon.
+# Make sure Pantalaimon is disabled in Draupnir's configuration.
 #
 # Warning: At this time this is not considered production safe.
 experimentalRustCrypto: {{ matrix_bot_draupnir_enable_experimental_rust_crypto | to_json }}
