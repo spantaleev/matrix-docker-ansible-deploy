@@ -46,8 +46,6 @@ aux_file_definitions:
     group: "{{ matrix_user_groupname }}"
 ```
 
-For a more complete example of available fields and values they can take, see `roles/custom/matrix-sygnal/templates/sygnal.yaml.j2` (or the [upstream `sygnal.yaml.sample` configuration file](https://github.com/matrix-org/sygnal/blob/master/sygnal.yaml.sample)).
-
 Configuring [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/) is easier, as it only requires that you provide some config values.
 
 To configure [APNS](https://developer.apple.com/notifications/) (Apple Push Notification Service), you'd need to provide one or more certificate files. To do that, the above example configuration:
@@ -74,6 +72,15 @@ matrix_sygnal_path_prefix: /sygnal
 After changing the domain, **you may need to adjust your DNS** records to point the Sygnal domain to the Matrix server.
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-sygnal/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-sygnal/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_sygnal_configuration_extension_yaml` variable
 
 ## Installing
 
