@@ -19,6 +19,7 @@
     msg: "The `{{ item.name }}` variable must be undefined or have a null value."
   with_items:
     - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
+    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_login_native }}"}
     - {'name': 'matrix_bot_draupnir_pantalaimon_use', when: "{{  matrix_bot_draupnir_enable_experimental_rust_crypto }}"}
   when: "item.when | bool and not (vars[item.name] == '' or vars[item.name] is none)"
 

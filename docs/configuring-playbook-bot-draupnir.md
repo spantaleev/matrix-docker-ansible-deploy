@@ -20,6 +20,31 @@ Once you have created the room you need to copy the room ID so you can tell the 
 
 Finally invite the `@bot.draupnir:example.com` account that the playbook will create for you to the management room. Please note that clients can issue a warning that your attempting to invite a user that doesnt have a profile and might not exist. This warning is expected as your inviting the bot before its user account exists.
 
+## End-to-End Encryption support
+
+Decide whether you want to support having an Encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
+
+Refer to Draupnir's [Documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more information on why you might or might not care about encryption support for protected rooms.
+
+**Note**: Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions.
+
+### Native E2EE support
+
+To enable the native E2EE support, you need to obtain an access token for Draupnir.
+
+Note that native E2EE requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
+
+To enable the native E2EE support, add the following configuration to your `vars.yml` file:
+
+```yaml
+# Enables the native E2EE Support
+matrix_bot_draupnir_enable_experimental_rust_crypto: true
+
+# Access Token the bot uses to login.
+# Comment out `matrix_bot_draupnir_login_native` when using this option.
+matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
+```
+
 ## Adjusting the playbook configuration
 
 To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
@@ -32,30 +57,18 @@ matrix_bot_draupnir_enabled: true
 # matrix_bot_draupnir_login: bot.draupnir
 
 # Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
+# If creating the user on your own and using `matrix_bot_draupnir_access_token` to login you can comment out this line.
 matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
+
+# Comment out if using `matrix_bot_draupnir_enable_experimental_rust_crypto: true` or `matrix_bot_draupnir_access_token` to login.
+matrix_bot_draupnir_login_native: true
 
 matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
-## End-to-End Encryption support
-
-Decide whether you want to support having an Encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
-
-Refer to Draupnir's [Documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more information on why you might or might not care about encryption support for protected rooms.
-
-**Note**: Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions.
-
-### Native E2EE Support
-
-To enable the native E2EE support, you need to obtain an access token for Draupnir.
-
-Note that Rust Crypto requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
-
-To enable the native E2EE support, add the following configuration to your `vars.yml` file:
-
-```yaml
-# Enables the native E2EE Support
-matrix_bot_draupnir_enable_experimental_rust_crypto: true
+Before Proceeding run the playbook with the following command to make sure the Draupnir user has been created.
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
 ```
 
 ### Make sure the account is free from rate limiting
