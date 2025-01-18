@@ -11,7 +11,7 @@ rawHomeserverUrl: {{ matrix_bot_draupnir_raw_homeserver_url | to_json }}
 # which would allow using secret management systems such as systemd's service credentials.
 accessToken: {{ matrix_bot_draupnir_access_token | to_json }}
 
-{% if matrix_bot_draupnir_pantalaimon_use %}
+{% if matrix_bot_draupnir_pantalaimon_use or matrix_bot_draupnir_login_native %}
 # Options related to Pantalaimon (https://github.com/matrix-org/pantalaimon)
 pantalaimon:
   # Whether or not Draupnir will use Pantalaimon to access the Matrix homeserver,
@@ -24,14 +24,14 @@ pantalaimon:
   use: true
 
   # The username to login with.
-  username: {{ matrix_bot_draupnir_pantalaimon_username | to_json }}
+  username: {{ matrix_bot_draupnir_login | to_json }}
 
   # The password Draupnir will login with.
   #
   # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
   # This option can be loaded from a file by passing "--pantalaimon-password-path <path>" at the command line,
   # which would allow using secret management systems such as systemd's service credentials.
-  password: {{ matrix_bot_draupnir_pantalaimon_password | to_json }}
+  password: {{ matrix_bot_draupnir_password | to_json }}
 {% endif %}
 
 # Experimental usage of the matrix-bot-sdk Rust Crypto. This cannot be used with Pantalaimon.
