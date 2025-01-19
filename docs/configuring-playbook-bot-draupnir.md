@@ -53,7 +53,7 @@ Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draup
 
 If you will enable the E2EE support, you need to obtain a fresh access token for the bot. To do so, by default you need to create the bot user first.
 
-Alternatively, you can set your own user as the bot. In this case you'd not need to create the bot user. You can proceed to [obtain its fresh access token](#obtain-a-fresh-access-token).
+Alternatively, you can set your own user as the bot. In this case you'd not need to create the bot user.
 
 To create the user, add the following configuration to your `vars.yml` file. Make sure to replace `PASSWORD_FOR_THE_BOT` with your own.
 
