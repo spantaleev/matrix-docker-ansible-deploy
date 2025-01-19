@@ -23,7 +23,6 @@ server_name = "{{ matrix_domain }}"
 
 # This is the only directory where Conduwuit will save its data
 database_path = "/var/lib/matrix-conduwuit/"
-database_backend = "rocksdb"
 
 # The port Conduwuit will be running on. You need to set up a reverse proxy in
 # your web server (e.g. apache or nginx), so all requests to /_matrix on port
@@ -34,20 +33,15 @@ port = {{ matrix_conduwuit_port_number }}
 # Max size for uploads
 max_request_size = {{ matrix_conduwuit_max_request_size }}
 
-# Max number of open files for the RocksDB database
-rocksdb_max_open_files = {{ matrix_conduwuit_rocksdb_max_open_files }}
-
 # Enables registration. If set to false, no users can register on this server.
 allow_registration = {{ matrix_conduwuit_allow_registration | to_json }}
 
 allow_federation = {{ matrix_conduwuit_allow_federation | to_json }}
 
-# Enable the display name lightning bolt on registration.
-enable_lightning_bolt = {{ matrix_conduwuit_enable_lightning_bolt | to_json }}
+# Enable the display name suffix on registration.
+new_user_displayname_suffix = {{ matrix_conduwuit_new_user_displayname_suffix | to_json }}
 
 trusted_servers = {{ matrix_conduwuit_trusted_servers | to_json }}
-
-max_concurrent_requests = {{ matrix_conduwuit_max_concurrent_requests }}
 
 log = "info,state_res=warn,rocket=off,_=off,sled=off"
 
