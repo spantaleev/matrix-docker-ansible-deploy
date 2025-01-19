@@ -20,13 +20,15 @@ Once you have created the room you need to copy the room ID so you can specify i
 
 After running the installation command, you'll need to invite the bot to the management room. See the [Usage](#usage) section for details about it.
 
-### Disable Pantalaimon for Draupnir (since v2.0.0)
+### Disable Pantalaimon for Draupnir (since v2.0.0; optional)
 
-**Since v2.0.0 Draupnir does not support running with Pantalaimon** as it would break all workflows that involve answering prompts with reactions. If you are updating Draupnir from v1.x.x and have enabled Pantalaimon for it, you'd need to disable it.
+It is known that running Draupnir along with Pantalaimon breaks all workflows that involve answering prompts with reactions.
 
-To disable it, remove the configuration `matrix_bot_draupnir_pantalaimon_use: true` from your `vars.yml` file.
+If you are updating Draupnir from v1.x.x and have enabled Pantalaimon for it, you can disable Pantalaimon in favor of the native E2EE support.
 
-Since the bot user for E2EE is managed by Draupnir directly, it is safe to remove `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` variables. If you do not use Pantalaimon for other components, it is also safe to remove `matrix_pantalaimon_enabled: true` too.
+To disable Pantalaimon, remove the configuration `matrix_bot_draupnir_pantalaimon_use: true` from your `vars.yml` file.
+
+**Note**: because the management room is still encrypted, disabling it without enabling the native E2EE support will break the management room.
 
 ## Adjusting the playbook configuration
 
@@ -170,7 +172,7 @@ matrix_bot_draupnir_configuration_extension_yaml: |
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
 
-Note that Pantalaimon is unsupported by Draupnir so it is recommended to consult the instructions to enable [the native E2EE support](#end-to-end-encryption-support). Before configuring it, do not forget to [remove configurations for Pantalaimon](#disable-pantalaimon-for-draupnir-since-v2-0-0) too.
+Note that Draupnir supports E2EE natively, so you can enable it instead of Pantalaimon. It is recommended to consult the instruction [here](#end-to-end-encryption-support).
 
 That is all you need to do due to that Draupnir can complete migration on its own.
 
