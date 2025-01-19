@@ -64,7 +64,7 @@ matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 # Comment out this part if creating the user on your own and setting `matrix_bot_draupnir_access_token` for logging in.
 matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
 
-# Comment out this part if setting `matrix_bot_draupnir_enable_experimental_rust_crypto: true` or `matrix_bot_draupnir_access_token` for logging in.
+# Comment out this part if setting `matrix_bot_draupnir_enable_experimental_rust_crypto: true` and `matrix_bot_draupnir_access_token` for logging in.
 matrix_bot_draupnir_login_native: true
 ```
 
