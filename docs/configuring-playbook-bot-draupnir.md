@@ -172,7 +172,7 @@ matrix_bot_draupnir_configuration_extension_yaml: |
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
 
-Note that Pantalaimon is unsupported by Draupnir so it is recommended to consult the instructions to enable [the native E2EE support](#end-to-end-encryption-support).
+Note that Pantalaimon is unsupported by Draupnir so it is recommended to consult the instructions to enable [the native E2EE support](#end-to-end-encryption-support). Before configuring it, do not forget to [remove configurations for Pantalaimon](#disable-pantalaimon-for-draupnir-since-v2-0-0) too.
 
 That is all you need to do due to that Draupnir can complete migration on its own.
 
