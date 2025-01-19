@@ -8,6 +8,15 @@ If you've been maintaining your setup for a while and you haven't been doing [Po
 
 If you're on a Postgres version older than v13, you need to [upgrade your Postgres setup](maintenance-postgres.md#upgrading-postgresql) or Synapse will produce an error on startup.
 
+If you're using an external Postgres server (not installed by this playbook), you'll need to figure out how to upgrade it yourself.
+
+If you're not ready to upgrade your Postgres setup yet, you can temporarily remain on an old Synapse version by adding the following configuration to your `vars.yml` file:
+
+```yaml
+# Pinning to the last Synapse version which supports Postgres v11 and v12.
+matrix_synapse_version: v1.121.1
+```
+
 
 # 2024-11-26
 
