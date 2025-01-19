@@ -55,6 +55,8 @@ To enable the bot, add the following configuration to your `vars.yml` file. Make
 # Enable Draupnir
 matrix_bot_draupnir_enabled: true
 
+matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
+
 # Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_bot_draupnir_login: bot.draupnir
 
@@ -64,8 +66,6 @@ matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
 
 # Comment out if using `matrix_bot_draupnir_enable_experimental_rust_crypto: true` or `matrix_bot_draupnir_access_token` to login.
 matrix_bot_draupnir_login_native: true
-
-matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
 Before proceeding to the next step, run the playbook with the following command to make sure that the bot user has been created.
