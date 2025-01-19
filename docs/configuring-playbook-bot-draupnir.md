@@ -30,7 +30,7 @@ Since the bot user for E2EE is managed by Draupnir directly, it is safe to remov
 
 ### End-to-End Encryption support
 
-Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
+Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without an E2EE capable device.
 
 Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
 
