@@ -89,9 +89,11 @@ matrix_fluffygate_container_labels_traefik_entrypoints: web-secure
 
 ## Adjusting DNS records
 
-You will need to configure your DNS records to point the Fluffygate hostname to your server. This typically involves creating either:
-- an A record pointing to your server's IPv4 address
-- a CNAME record pointing to your server's hostname
+Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Fluffygate domain to the Matrix server.
+
+By default, you will need to create a CNAME record for `push`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+
+If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
 ## Installing
 
