@@ -32,25 +32,27 @@ If your homeserver's implementation is Synapse, you will need to prevent it from
 
 This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally.
 
-**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
-
-The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
-
-#### Add the configuration
-
 To expose the APIs publicly, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
 ```
 
+**Notes**:
+
+- Access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
+
+- The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+
 #### Obtain an access token for admin account
 
-Manual access to Synapse's Admin APIs requires an access token for a homeserver admin account. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md). If you have made Mjolnir an admin, you can just use the Mjolnir token.
+Manual access to Synapse's Admin APIs requires an access token for a homeserver admin account. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+
+If you have made Mjolnir an admin, you can just use the Mjolnir token.
 
 #### Run the `curl` command
 
-To discharge rate limiting, run the following command on systems that ship curl (note that it does not work on outdated Windows 10).
+After obtaining the access token for the admin account, run the following command on systems that ship curl to discharge rate limiting.
 
 Before running it, make sure to replace:
 - `ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account
@@ -61,7 +63,11 @@ Before running it, make sure to replace:
 curl --header "Authorization: Bearer ADMIN_ACCESS_TOKEN_HERE" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.mjolnir:example.com/override_ratelimit
 ```
 
-**Note**: even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally.
+**Notes**:
+
+- The command does not work on the outdated Windows 10.
+
+- Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally.
 
 ### Create a management room
 
