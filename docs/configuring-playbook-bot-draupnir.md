@@ -47,8 +47,6 @@ Decide whether you want to support having an encrypted management room or not. D
 
 Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
 
-If you would like to enable the E2EE support, move to [the next section](#configuration-with-e2ee-support). If you would not like to enable it, move to [the section below](#configuration-without-e2ee-support).
-
 #### Configuration with E2EE support
 
 ##### Create the bot user with a password

@@ -54,8 +54,6 @@ Decide whether you want Mjolnir to be capable of operating in end-to-end encrypt
 
 To support E2EE, Mjolnir needs to [use Pantalaimon](configuring-playbook-pantalaimon.md).
 
-If you would like to enable the E2EE support, move to [the next section](#configuration-with-e2ee-support). If you would not like to enable it, move to [the section below](#configuration-without-e2ee-support).
-
 #### Configuration with E2EE support
 
 When using Pantalaimon, Mjolnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
