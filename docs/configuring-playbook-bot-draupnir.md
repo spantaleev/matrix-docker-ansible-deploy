@@ -26,7 +26,13 @@ Decide whether you want to support having an encrypted management room or not. D
 
 Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
 
-**Note**: since v2.0.0 Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions.
+### Disable Pantalaimon for Draupnir (since v2.0.0)
+
+**Since v2.0.0 Draupnir does not support running with Pantalaimon** as it would break all workflows that involve answering prompts with reactions. If you are updating Draupnir from v1.x.x, you'd need to disable Pantalaimon for Draupnir to enable E2EE support.
+
+To do so, remove the configuration `matrix_bot_draupnir_pantalaimon_use: true` from your `vars.yml` file.
+
+Since the bot user for E2EE is managed by Draupnir directly, it is safe to remove  `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` variables. If you do not use Pantalaimon for other components, it is also safe to remove `matrix_pantalaimon_enabled: true` too.
 
 ### Native E2EE support
 
