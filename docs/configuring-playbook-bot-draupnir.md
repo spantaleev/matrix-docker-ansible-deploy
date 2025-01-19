@@ -72,7 +72,7 @@ Before proceeding to the next step, run the playbook with the following command 
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
 ```
 
-### Make sure the account is free from rate limiting
+### Make sure the account is free from rate limiting (optional, recommended)
 
 If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a highly recommended step. If you do not configure it, Draupnir performance will be degraded.**
 
