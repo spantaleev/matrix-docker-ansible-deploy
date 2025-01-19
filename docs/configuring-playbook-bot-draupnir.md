@@ -90,6 +90,12 @@ To expose the APIs publicly, add the following configuration to your `vars.yml` 
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
 ```
 
+Then, run the playbook with the following command to apply the configuration to the server *without starting the systemd services*:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all
+```
+
 **Notes**:
 
 - Access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
@@ -102,7 +108,7 @@ Manual access to Synapse's Admin APIs requires an access token for a homeserver 
 
 #### Run the `curl` command
 
-After obtaining the access token for the admin account, run the following command on systems that ship curl to discharge rate limiting.
+After applying the configuration to the server and obtaining the access token for the admin account, run the following command on systems that ship curl to discharge rate limiting.
 
 Before running it, make sure to replace:
 - `ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account
