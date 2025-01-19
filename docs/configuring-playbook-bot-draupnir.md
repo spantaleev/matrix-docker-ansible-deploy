@@ -47,6 +47,8 @@ matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 # matrix_bot_draupnir_login: bot.draupnir
 ```
 
+If you would like to enable the E2EE support, move to [the next section](#configuration-with-e2ee-support). If you would not like to enable it, move to [the section below](#configuration-without-e2ee-support).
+
 ### Configuration with E2EE support
 
 #### Create the bot user with a password
