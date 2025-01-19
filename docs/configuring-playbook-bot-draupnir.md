@@ -47,9 +47,22 @@ matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 # matrix_bot_draupnir_login: bot.draupnir
 ```
 
-### Run the playbook
+### Configuration with E2EE support
 
-Before proceeding to the next step, run the playbook with the following command to make sure that the bot user has been created.
+#### Create the bot user with a password
+
+If you will enable the E2EE support, you need to obtain a fresh access token for the bot. To do so, by default you need to create the bot user first.
+
+Alternatively, you can set your own user as the bot. In this case you'd not need to create the bot user.
+
+To create the user, add the following configuration to your `vars.yml` file. Make sure to replace `PASSWORD_FOR_THE_BOT` with your own.
+
+```yml
+# Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
+matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
+```
+
+Then, run the playbook with the following command to make sure that the bot user has been created.
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
@@ -57,17 +70,26 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
 
-### Configuration with E2EE support
-
 #### Obtain a fresh access token
-
-If you will enable the E2EE support, you need to obtain a fresh access token for the bot you have just created.
 
 Since v2.0.0 Draupnir supports E2EE natively. Note that native E2EE requires a fresh access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
+For example, you can use the following command to get the access token:
+
+```sh
+curl -XPOST -d '{
+    "identifier": { "type": "m.id.user", "user": "bot.draupnir" },
+    "password": "PASSWORD_FOR_THE_BOT",
+    "type": "m.login.password",
+    "device_id": "YOURDEVICEID"
+}' 'https://matrix.example.com/_matrix/client/r0/login'
+```
+
+Replace `bot.draupnir` if you are setting your own user as the bot. Also, replace `PASSWORD_FOR_THE_BOT` with the one you have specified on your `vars.yml` file and `example.com` with your own, respectively. `YOURDEVICEID` is optional.
+
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
-#### Add the configuration
+#### Specify the access token to `vars.yml`
 
 After obtaining the fresh token, add the following configuration to your `vars.yml` file. Make sure to replace `FRESH_ACCESS_TOKEN_HERE` with the one created [above](#obtain-a-fresh-access-token).
 
@@ -77,6 +99,10 @@ matrix_bot_draupnir_enable_experimental_rust_crypto: true
 
 matrix_bot_draupnir_access_token: "FRESH_ACCESS_TOKEN_HERE"
 ```
+
+#### Comment out `matrix_bot_draupnir_password`
+
+After setting the access token, you'd need to comment out `matrix_bot_draupnir_password` since it is no longer needed as long as the E2EE support is enabled.
 
 ### Configuration without E2EE support
 
@@ -89,9 +115,17 @@ To enable the bot without the E2EE support, add the following configuration to y
 # matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
 # matrix_bot_draupnir_login_native: true
 
-# Uncomment and adjust this part if you'd like to have the bot which you have created log in with the access token.
+# Uncomment and adjust this part if you'd like to have the bot log in with the access token.
 #
 # matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
+```
+
+#### Create the bot user
+
+Then, run the playbook with the following command to make sure that the bot user has been created.
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
 ```
 
 ### Make sure the account is free from rate limiting (recommended)
