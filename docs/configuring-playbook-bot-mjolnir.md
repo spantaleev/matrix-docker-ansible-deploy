@@ -92,13 +92,12 @@ Finally invite the `@bot.mjolnir:example.com` account you created earlier into t
 To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created just now.
 
 ```yaml
-# Enable Mjolnir
 matrix_bot_mjolnir_enabled: true
 
 matrix_bot_mjolnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
-### Enable End-to-End Encryption support (optional)
+### End-to-End Encryption support
 
 Decide whether you want Mjolnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms.
 

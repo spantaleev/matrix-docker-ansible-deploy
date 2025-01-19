@@ -14,64 +14,72 @@ If your migrating from Mjolnir skip to [this section](#migrating-from-mjolnir-on
 
 Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room.
 
-It is possible to make the management room encrypted (E2EE). If doing so, then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
+It is possible to make the management room encrypted (E2EE). If doing so, you need to enable the E2EE support.
 
 Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking "Advanced". The room ID will look something like `!qporfwt:example.com`.
 
 After running the installation command, you'll need to invite the bot to the management room. See the [Usage](#usage) section for details about it.
 
-## Enable End-to-End Encryption support (optional)
+### Disable Pantalaimon for Draupnir (since v2.0.0)
+
+**Since v2.0.0 Draupnir does not support running with Pantalaimon** as it would break all workflows that involve answering prompts with reactions. If you are updating Draupnir from v1.x.x and have enabled Pantalaimon for it, you'd need to disable it.
+
+To disable it, remove the configuration `matrix_bot_draupnir_pantalaimon_use: true` from your `vars.yml` file.
+
+Since the bot user for E2EE is managed by Draupnir directly, it is safe to remove `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` variables. If you do not use Pantalaimon for other components, it is also safe to remove `matrix_pantalaimon_enabled: true` too.
+
+### End-to-End Encryption support
 
 Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
 
 Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
 
-### Disable Pantalaimon for Draupnir (since v2.0.0)
+#### Obtain a fresh access token
 
-**Since v2.0.0 Draupnir does not support running with Pantalaimon** as it would break all workflows that involve answering prompts with reactions. If you are updating Draupnir from v1.x.x, you'd need to disable Pantalaimon for Draupnir to enable E2EE support.
+If you will enable the E2EE support, you need to obtain a fresh access token for Draupnir.
 
-To do so, remove the configuration `matrix_bot_draupnir_pantalaimon_use: true` from your `vars.yml` file.
-
-Since the bot user for E2EE is managed by Draupnir directly, it is safe to remove  `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` variables. If you do not use Pantalaimon for other components, it is also safe to remove `matrix_pantalaimon_enabled: true` too.
-
-### Native E2EE support
-
-To enable the native E2EE support, you need to obtain an access token for Draupnir and set it on your `vars.yml` file.
-
-Note that native E2EE requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
+Since v2.0.0 Draupnir supports E2EE natively. Note that native E2EE requires a fresh access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
-
-To enable the native E2EE support, add the following configuration to your `vars.yml` file. Make sure to replace `CLEAN_ACCESS_TOKEN_HERE` with the access token you obtained just now.
-
-```yaml
-# Enables the native E2EE support
-matrix_bot_draupnir_enable_experimental_rust_crypto: true
-
-# Access token which the bot will use for logging in.
-# Comment out `matrix_bot_draupnir_login_native` if using this option.
-matrix_bot_draupnir_access_token: "CLEAN_ACCESS_TOKEN_HERE"
-```
 
 ## Adjusting the playbook configuration
 
 To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created earlier.
 
 ```yaml
-# Enable Draupnir
 matrix_bot_draupnir_enabled: true
 
 matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 
 # Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_bot_draupnir_login: bot.draupnir
+```
 
+### Configuration with E2EE support
+
+To enable the bot with the E2EE support, add the following configuration to your `vars.yml` file. Make sure to replace `FRESH_ACCESS_TOKEN_HERE` with the one created [above](#obtain-a-fresh-access-token).
+
+```yaml
+# Enables the native E2EE support
+matrix_bot_draupnir_enable_experimental_rust_crypto: true
+
+matrix_bot_draupnir_access_token: "FRESH_ACCESS_TOKEN_HERE"
+```
+
+### Configuration without E2EE support
+
+To enable the bot without the E2EE support, add the following configuration to your `vars.yml` file. Make sure to specify either a password or access token for the bot. As E2EE support is not going to be enabled, the access token can be the one obtained via Element Web.
+
+```yaml
+# Uncomment and adjust this part if you'd like to have the bot log in with the password.
 # Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
-# Comment out this part if creating the user on your own and setting `matrix_bot_draupnir_access_token` for logging in.
-matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
+#
+# matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
+# matrix_bot_draupnir_login_native: true
 
-# Comment out this part if setting `matrix_bot_draupnir_enable_experimental_rust_crypto: true` and `matrix_bot_draupnir_access_token` for logging in.
-matrix_bot_draupnir_login_native: true
+# Uncomment and adjust this part if you'd like to have the bot which you have created log in with the access token.
+#
+# matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
 ```
 
 ### Run the playbook
@@ -173,7 +181,7 @@ matrix_bot_draupnir_configuration_extension_yaml: |
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
 
-Note that Pantalaimon is unsupported by Draupnir so it is recommended to consult the instructions to enable [the native E2EE support](#native-e2ee-support).
+Note that Pantalaimon is unsupported by Draupnir so it is recommended to consult the instructions to enable [the native E2EE support](#end-to-end-encryption-support).
 
 That is all you need to do due to that Draupnir can complete migration on its own.
 
@@ -188,7 +196,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
-`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components ([Pantalaimon](#disable-pantalaimon-for-draupnir-since-v2-0-0), for example), you'd need to run `just setup-all`, or these components will still remain installed.
 
 ## Usage
 
