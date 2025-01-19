@@ -16,9 +16,9 @@ Using your own account, create a new invite only room that you will use to manag
 
 It is possible to make the management room encrypted (E2EE). If doing so, then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
 
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element Web you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
+Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the room ID by going to the room's settings, clicking "Advanced", and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
 
-Finally invite the `@bot.draupnir:example.com` account that the playbook will create for you to the management room. Please note that clients can issue a warning that you are attempting to invite a user that does not have a profile and might not exist. This warning is expected as your inviting the bot before its user account exists.
+After running the installation command, you'll need to invite the bot to the management room. See the [Usage](#usage) section for details about it.
 
 ## End-to-End Encryption support
 
@@ -34,7 +34,7 @@ To enable the native E2EE support, you need to obtain an access token for Draupn
 
 Note that native E2EE requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
-To enable the native E2EE support, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the native E2EE support, add the following configuration to your `vars.yml` file:
 
 ```yaml
 # Enables the native E2EE support
@@ -164,6 +164,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
 ## Usage
+
+To use Draupnir, you need to invite the bot (`@bot.draupnir:example.com`) to its management room which you have created earlier.
 
 You can refer to the upstream [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) for additional ways to use and configure Draupnir and for a more detailed usage guide.
 
