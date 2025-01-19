@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-20 07:23+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-turn.md:1
+msgid "Adjusting TURN server configuration (optional, advanced)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:3
+msgid "The playbook installs a [Coturn](https://github.com/coturn/coturn) TURN server by default, so that clients can make audio/video calls even from [NAT](https://en.wikipedia.org/wiki/Network_address_translation)-ed networks."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:5
+msgid "By default, the Synapse chat server is configured, so that it points to the Coturn TURN server installed by the playbook."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:7
+msgid "Disabling Coturn"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:9
+msgid "If, for some reason, you'd like to prevent the playbook from installing Coturn, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:15
+msgid "In that case, Synapse would not point to any Coturn servers and audio/video call functionality may fail."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:17
+msgid "Manually defining your public IP"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:19
+msgid "In the `hosts` file we explicitly ask for your server's external IP address when defining `ansible_host`, because the same value is used for configuring Coturn."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:21
+msgid "If you'd rather use a local IP for `ansible_host`, make sure to set up `matrix_coturn_turn_external_ip_address` replacing `YOUR_PUBLIC_IP` with the pubic IP used by the server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:27
+msgid "If you'd like to rely on external IP address auto-detection (not recommended unless you need it), set `matrix_coturn_turn_external_ip_address` to an empty value. The playbook will automatically contact an [EchoIP](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:29
+msgid "If your server has multiple external IP addresses, the Coturn role offers a different variable for specifying them:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:36
+msgid "Changing the authentication mechanism"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:38
+msgid "The playbook uses the [`auth-secret` authentication method](https://github.com/coturn/coturn/blob/873cabd6a2e5edd7e9cc5662cac3ffe47fe87a8e/README.turnserver#L186-L199) by default, but you may switch to the [`lt-cred-mech` method](https://github.com/coturn/coturn/blob/873cabd6a2e5edd7e9cc5662cac3ffe47fe87a8e/README.turnserver#L178) which [some report](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3191) to be working better."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:40
+msgid "To do so, add this override to your configuration:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:46
+msgid "Regardless of the selected authentication method, the playbook generates secrets automatically and passes them to the homeserver and Coturn."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:48
+msgid "If you're using [Jitsi](./configuring-playbook-jitsi.md), note that switching to `lt-cred-mech` will remove the integration between Jitsi and your own Coturn server, because Jitsi only seems to support the `auth-secret` authentication method."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:50
+msgid "Using your own external Coturn server"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:52
+msgid "If you'd like to use another TURN server (be it Coturn or some other one), you can configure the playbook like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:66
+msgid "If you have or want to enable [Jitsi](configuring-playbook-jitsi.md), you might want to enable the TURN server there too. If you do not do it, Jitsi will fall back to an upstream service."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:72
+msgid "You can put multiple host/port combinations if you like."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:74
+msgid "Further variables and configuration options"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:75
+msgid "To see all the available configuration options, check roles/custom/matrix-coturn/defaults/main.yml"
+msgstr ""

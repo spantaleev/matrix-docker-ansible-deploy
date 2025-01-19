@@ -60,7 +60,8 @@ matrix_beeper_linkedin_appservice_token: ""
 matrix_beeper_linkedin_homeserver_token: ""
 
 matrix_beeper_linkedin_appservice_bot_username: linkedinbot
-
+matrix_beeper_linkedin_appservice_bot_displayname: LinkedIn bridge bot
+matrix_beeper_linkedin_appservice_bot_avatar: mxc://nevarro.space/cwsWnmeMpWSMZLUNblJHaIvP
 
 # Database-related configuration fields.
 # Only Postgres is supported.
@@ -87,9 +88,24 @@ matrix_beeper_linkedin_appservice_database_uri: "{{
 	}[matrix_beeper_linkedin_database_engine]
 }}"
 
+matrix_beeper_linkedin_bridge_login_shared_secret_map: "{{ matrix_beeper_linkedin_bridge_login_shared_secret_map_auto | combine(matrix_beeper_linkedin_bridge_login_shared_secret_map_custom) }}"
+matrix_beeper_linkedin_bridge_login_shared_secret_map_auto: {}
+matrix_beeper_linkedin_bridge_login_shared_secret_map_custom: {}
 
-# Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth) or Appservice Double Puppet.
-matrix_beeper_linkedin_login_shared_secret: ''
+# Servers to always allow double puppeting from
+matrix_beeper_linkedin_bridge_double_puppet_server_map: "{{ matrix_beeper_linkedin_bridge_double_puppet_server_map_default | combine(matrix_beeper_linkedin_bridge_double_puppet_server_map_auto) | combine(matrix_beeper_linkedin_bridge_double_puppet_server_map_custom) }}"
+matrix_beeper_linkedin_bridge_double_puppet_server_map_default: |-
+  {{
+    {}
+    | combine({
+      matrix_beeper_linkedin_homeserver_domain: matrix_beeper_linkedin_homeserver_address
+    })
+  }}
+matrix_beeper_linkedin_bridge_double_puppet_server_map_auto: {}
+matrix_beeper_linkedin_bridge_double_puppet_server_map_custom: {}
+
+matrix_beeper_linkedin_provisioning_enabled: false
+matrix_beeper_linkedin_provisioning_shared_secret: ''
 
 # Specifies the default log level for all bridge loggers.
 matrix_beeper_linkedin_logging_level: WARNING
@@ -97,6 +113,8 @@ matrix_beeper_linkedin_logging_level: WARNING
 # Enable End-to-bridge encryption
 matrix_beeper_linkedin_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_beeper_linkedin_bridge_encryption_default: "{{ matrix_bridges_encryption_default }}"
+matrix_beeper_linkedin_bridge_encryption_appservice: "{{ matrix_beeper_linkedin_bridge_encryption_default }}"
+matrix_beeper_linkedin_bridge_encryption_require: false
 matrix_beeper_linkedin_bridge_encryption_key_sharing_allow: "{{ matrix_beeper_linkedin_bridge_encryption_allow }}"
 
 # Default beeper-linkedin configuration template which covers the generic use case.

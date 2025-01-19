@@ -1,7 +1,7 @@
 ---
 
 # The bare domain name which represents your Matrix identity.
-# Matrix user ids for your server will be of the form (`@user:example.com`).
+# Matrix user IDs for your server will be of the form (`@alice:example.com`).
 #
 # Note: this playbook does not touch the server referenced here.
 # Installation happens on another server ("matrix.example.com", see `matrix_server_fqn_matrix`).
@@ -10,7 +10,7 @@
 matrix_domain: ~
 
 # The optional Matrix admin MXID, used in bridges' configs to set bridge admin user
-# Example value: "@someone:{{ matrix_domain }}"
+# Example value: "@alice:{{ matrix_domain }}"
 matrix_admin: ''
 
 # Global var to enable/disable encryption across all bridges with encryption support
@@ -49,12 +49,12 @@ matrix_monitoring_container_network: matrix-monitoring
 matrix_homeserver_enabled: true
 
 # This will contain the homeserver implementation that is in use.
-# Valid values: synapse, dendrite, conduit
+# Valid values: synapse, dendrite, conduit, conduwuit
 #
 # By default, we use Synapse, because it's the only full-featured Matrix server at the moment.
 #
 # This value automatically influences other variables (`matrix_synapse_enabled`, `matrix_dendrite_enabled`, etc.).
-# The homeserver implementation of an existing server cannot be changed without data loss.
+# Note that the homeserver implementation of a server will not be able to be changed without data loss.
 matrix_homeserver_implementation: synapse
 
 # This contains a secret, which is used for generating various other secrets later on.
@@ -67,7 +67,7 @@ matrix_server_fqn_matrix: "matrix.{{ matrix_domain }}"
 # This is where you access federation API.
 matrix_server_fqn_matrix_federation: '{{ matrix_server_fqn_matrix }}'
 
-# This is where you access the Element web UI from (if enabled via matrix_client_element_enabled; enabled by default).
+# This is where you access the Element Web from (if enabled via matrix_client_element_enabled; enabled by default).
 # This and the Matrix FQN (see above) are expected to be on the same server.
 matrix_server_fqn_element: "element.{{ matrix_domain }}"
 
@@ -77,10 +77,10 @@ matrix_server_fqn_hydrogen: "hydrogen.{{ matrix_domain }}"
 # This is where you access the Cinny web client from (if enabled via matrix_client_cinny_enabled; disabled by default).
 matrix_server_fqn_cinny: "cinny.{{ matrix_domain }}"
 
-# This is where you access the SchildiChat web client from (if enabled via matrix_client_schildichat_enabled; disabled by default).
+# This is where you access the SchildiChat Web from (if enabled via matrix_client_schildichat_enabled; disabled by default).
 matrix_server_fqn_schildichat: "schildichat.{{ matrix_domain }}"
 
-# This is where you access the buscarron bot from (if enabled via matrix_bot_buscarron_enabled; disabled by default).
+# This is where you access the Buscarron bot from (if enabled via matrix_bot_buscarron_enabled; disabled by default).
 matrix_server_fqn_buscarron: "buscarron.{{ matrix_domain }}"
 
 # This is where you access the Dimension.
@@ -234,10 +234,17 @@ matrix_metrics_exposure_http_basic_auth_users: ''
 matrix_playbook_reverse_proxy_type: ''
 
 # Specifies the network that the reverse-proxy is operating at
-matrix_playbook_reverse_proxy_container_network: 'traefik'
+matrix_playbook_reverse_proxy_container_network: "{{ 'traefik' if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] else '' }}"
 
 # Specifies the hostname that the reverse-proxy is available at
 matrix_playbook_reverse_proxy_hostname: 'matrix-traefik'
+
+# Specifies whether the Traefik reverse-proxy (if `matrix_playbook_reverse_proxy_type` indicates that Traefik is being used) defines a compression middleware.
+matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled: false
+
+# Specifies the name of the compression middleware defined for the Traefik reverse-proxy (if `matrix_playbook_reverse_proxy_type` indicates that Traefik is being used).
+# It's better to use a fully-qualified middleware name (e.g. `compression@docker` or `compression@file`) here to prevent ambiguity.
+matrix_playbook_reverse_proxy_traefik_middleware_compression_name: ''
 
 # Controls the additional network that reverse-proxyable services will be connected to.
 matrix_playbook_reverse_proxyable_services_additional_network: "{{ matrix_playbook_reverse_proxy_container_network }}"
@@ -267,11 +274,38 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port_u
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default | combine (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto)) | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: true
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port }}"  # noqa var-naming
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_readTimeout: "{{ traefik_config_entrypoint_web_secure_transport_respondingTimeouts_readTimeout }}"  # noqa var-naming
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_writeTimeout: "{{ traefik_config_entrypoint_web_secure_transport_respondingTimeouts_writeTimeout }}"  # noqa var-naming
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_idleTimeout: "{{ traefik_config_entrypoint_web_secure_transport_respondingTimeouts_idleTimeout }}"  # noqa var-naming
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default: |
   {{
-    ({'http3': {'advertisedPort': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort | int}})
-    if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled
-    else {}
+    {}
+
+    | combine(
+      (
+        (
+          {
+            'http3': {
+              'advertisedPort': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort | int
+            }
+          }
+        )
+        if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled
+        else {}
+      )
+    )
+
+    | combine(
+      {
+        'transport': {
+          'respondingTimeouts': {
+            'readTimeout': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_readTimeout,
+            'writeTimeout': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_writeTimeout,
+            'idleTimeout': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_idleTimeout,
+          }
+        }
+      }
+    )
   }}
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto: {}
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom: {}

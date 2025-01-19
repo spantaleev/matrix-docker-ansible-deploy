@@ -9,6 +9,10 @@ traefik.http.services.matrix-client-element.loadbalancer.server.port=8080
 
 {% set middlewares = [] %}
 
+{% if matrix_client_element_container_labels_traefik_compression_middleware_enabled %}
+{% set middlewares = middlewares + [matrix_client_element_container_labels_traefik_compression_middleware_name] %}
+{% endif %}
+
 {% if matrix_client_element_container_labels_traefik_path_prefix != '/' %}
 traefik.http.middlewares.matrix-client-element-slashless-redirect.redirectregex.regex=({{ matrix_client_element_container_labels_traefik_path_prefix | quote }})$
 traefik.http.middlewares.matrix-client-element-slashless-redirect.redirectregex.replacement=${1}/

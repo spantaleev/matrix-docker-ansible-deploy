@@ -13,7 +13,7 @@
 matrix_synapse_reverse_proxy_companion_enabled: true
 
 # renovate: datasource=docker depName=nginx
-matrix_synapse_reverse_proxy_companion_version: 1.27.2-alpine
+matrix_synapse_reverse_proxy_companion_version: 1.27.3-alpine
 
 matrix_synapse_reverse_proxy_companion_base_path: "{{ matrix_synapse_base_path }}/reverse-proxy-companion"
 matrix_synapse_reverse_proxy_companion_confd_path: "{{ matrix_synapse_reverse_proxy_companion_base_path }}/conf.d"
@@ -60,6 +60,11 @@ matrix_synapse_reverse_proxy_companion_container_labels_traefik_docker_network: 
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints: web-secure
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 matrix_synapse_reverse_proxy_companion_container_labels_traefik_hostname: ''
+
+# Controls whether a compression middleware will be injected into the middlewares list.
+# This compression middleware is supposed to be defined elsewhere (using labels or a File provider, etc.) and is merely referenced by this router.
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_enabled: false
+matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_name: ""
 
 # Controls whether labels will be added that expose the Client-Server API on a public Traefik entrypoint.
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_api_enabled: true
@@ -185,7 +190,7 @@ matrix_synapse_reverse_proxy_companion_send_timeout: 60
 # For OCSP purposes, we need to define a resolver at the `server{}` level or `http{}` level (we do the latter).
 #
 # Otherwise, we get warnings like this:
-# > [warn] 22#22: no resolver defined to resolve r3.o.lencr.org while requesting certificate status, responder: r3.o.lencr.org, certificate: "/matrix/ssl/config/live/.../fullchain.pem"
+# > [warn] 22#22: no resolver defined to resolve r3.o.lencr.org while requesting certificate status, responder: r3.o.lencr.org, certificate: "/matrix/ssl/config/live/…/fullchain.pem"
 #
 # We point it to the internal Docker resolver, which likely delegates to nameservers defined in `/etc/resolv.conf`.
 matrix_synapse_reverse_proxy_companion_http_level_resolver: 127.0.0.11
@@ -230,6 +235,9 @@ matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations: []
 matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations: []
 matrix_synapse_reverse_proxy_companion_client_server_main_override_locations_regex: ^/_matrix/client/(api/v1|r0|v3|unstable)/(account/3pid/|directory/list/room/|pushrules/|rooms/[^/]+/(forget|upgrade|report)|login/sso/redirect/|register)
 matrix_synapse_reverse_proxy_companion_client_server_sso_override_locations_regex: ^(/_matrix/client/(api/v1|r0|v3|unstable)/login/sso/redirect|/_synapse/client/(pick_username|(new_user_consent|oidc/callback|pick_idp|sso_register)$))
+# Related to MSC4108 (https://github.com/matrix-org/matrix-spec-proposals/pull/4108)
+matrix_synapse_reverse_proxy_companion_client_server_qr_code_login_locations_regex: ^(/_matrix/client/(unstable|v1)/org.matrix.msc4108/rendezvous|/_synapse/client/rendezvous)$
+
 matrix_synapse_reverse_proxy_companion_federation_override_locations_regex: ^/_matrix/federation/v1/openid/userinfo$
 
 # synapse content caching

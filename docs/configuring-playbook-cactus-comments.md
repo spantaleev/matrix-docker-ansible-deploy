@@ -14,7 +14,13 @@ The playbook contains 2 roles for configuring different pieces of the Cactus Com
 
 You can enable whichever component you need (typically both).
 
-## Configuration
+## Adjusting DNS records (optional)
+
+By default, this playbook installs Cactus Comments' client on the `matrix.` subdomain, at the `/cactus-comments` path (https://matrix.example.com/cactus-comments). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+If you wish to adjust it, see the section [below](#adjusting-the-cactus-comments-client-url-optional) for details about DNS configuration.
+
+## Adjusting the playbook configuration
 
 To enable Cactus Comments, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
@@ -38,13 +44,11 @@ matrix_cactus_comments_enabled: true
 matrix_cactus_comments_client_enabled: true
 ```
 
-### Adjusting the Cactus Comments' client URL
-
-By default, this playbook installs Cactus Comments' client on the `matrix.` subdomain, at the `/cactus-comments` path (https://matrix.example.com/cactus-comments). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+### Adjusting the Cactus Comments' client URL (optional)
 
 By tweaking the `matrix_cactus_comments_client_hostname` and `matrix_cactus_comments_client_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix to host the client assets at a different location
@@ -53,23 +57,32 @@ matrix_cactus_comments_client_hostname: cactus.example.com
 matrix_cactus_comments_client_path_prefix: /
 ```
 
-## Adjusting DNS records
+If you've changed the default hostname, you may need to create a CNAME record for the Cactus Comments' client domain (`cactus.example.com`), which targets `matrix.example.com`.
 
-If you've changed the default hostname, **you may need to adjust your DNS** records to point the Cactus Comments' client domain to the Matrix server.
-
-See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
+When setting, replace `example.com` with your own.
 
 ## Installing
 
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
+
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+```
+
+**Notes**:
+
+- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
+
+- The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+  `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
 ## Usage
 
 Upon starting Cactus Comments, a `bot.cactusbot` user account is created automatically.
 
-To get started, send a `help` message to the `@bot.cactusbot:example.com` bot to confirm it's working.
+To get started, send `help` to the `@bot.cactusbot:example.com` bot to confirm it's working.
 
 Then, register a site by sending `register <YourSiteName>` (where `<YourSiteName>` is a unique identifier you choose. It does not have to match your domain). You will then be invited into a moderation room.
 

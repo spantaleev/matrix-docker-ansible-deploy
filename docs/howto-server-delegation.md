@@ -1,20 +1,23 @@
 # Server Delegation
 
-To have a server on a subdomain (e.g. `matrix.example.com`) handle Matrix federation traffic for the base domain (`example.com`), we need to instruct the Matrix network of such a delegation.
+By default, this playbook sets up services on your Matrix server (`matrix.example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up server delegation / redirection.
 
-By default, this playbook guides you into setting up [Server Delegation via a well-known file](#server-delegation-via-a-well-known-file). However, that method may have some downsides that are not to your liking. Hence this guide about alternative ways to set up Server Delegation.
+Server delegation can be configured in either of these ways:
 
-It is a complicated matter, so unless you are affected by the [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation), we suggest you stay on the simple/default path.
+- [Setting up a `/.well-known/matrix/server` file](#server-delegation-via-a-well-known-file) on the base domain (`example.com`)
+- [Setting up a `_matrix._tcp` DNS SRV record](#server-delegation-via-a-dns-srv-record-advanced)
 
+Both methods have their place and will continue to do so. You only need to use just one of these delegation methods.
+
+For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file. However, that method may have some downsides that are not to your liking. Hence this guide about alternative ways to set up Server Delegation.
+
+**Note**: as an alternative, it is possible to install the server such that it uses only the `matrix.example.com` domain (instead of identifying as the shorter base domain - `example.com`). This should be helpful if you are not in control of anything on the base domain (`example.com`). In this case, you would not need to configure server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
 
 ## Server Delegation via a well-known file
 
-Serving a `/.well-known/matrix/server` file from the base domain is the most straightforward way to set up server delegation, but it suffers from some problems that we list in [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation).
+This playbook recommends you to set up server delegation by means of a `/.well-known/matrix/server` file served from the base domain (`example.com`), as this is the most straightforward way to set up the delegation.
 
-As we already mention in [Configuring DNS](configuring-dns.md) and [Configuring Service Discovery via .well-known](configuring-well-known.md), this playbook already properly guides you into setting up such delegation by means of a `/.well-known/matrix/server` file served from the base domain (`example.com`).
-
-If this is okay with you, feel free to not read ahead.
-
+To configure server delegation with the well-known file, check this section on [Configuring Service Discovery via .well-known](configuring-well-known.md): [Installing well-known files on the base domain's server](configuring-well-known.md#installing-well-known-files-on-the-base-domain-s-server)
 
 ### Downsides of well-known-based Server Delegation
 
@@ -30,10 +33,9 @@ Server Delegation by means of a `/.well-known/matrix/server` file is the most st
 
 Otherwise, you can decide to go against the default for this playbook, and instead set up [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-srv-record-advanced) (much more complicated).
 
-
 ## Server Delegation via a DNS SRV record (advanced)
 
-**Note**: doing Server Delegation via a DNS SRV record is a more **advanced** way to do it and is not the default for this playbook. This is usually **much more complicated** to set up, so **we don't recommend it**. If you're not an experience sysadmin, you'd better stay away from this.
+**Note**: doing Server Delegation via a DNS SRV record is a more **advanced** way to do it and is not the default for this playbook. This is usually **much more complicated** to set up, so **we don't recommend it**. If you're not an experienced sysadmin, you'd better stay away from this.
 
 As per the [Server-Server spec](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), it's possible to do Server Delegation using only a SRV record (without a `/.well-known/matrix/server` file).
 
@@ -47,9 +49,9 @@ To use DNS SRV record validation, you need to:
 
 - ensure that you are serving the Matrix Federation API (tcp/8448) with a certificate for `example.com` (not `matrix.example.com`!). Getting this certificate to the `matrix.example.com` server may be complicated. The playbook's automatic SSL obtaining/renewal flow will likely not work and you'll need to copy certificates around manually. See below.
 
-For more details on [how to configure the playbook to work with SRV delegation](howto-srv-server-delegation.md)
+For more details on how to configure the playbook to work with SRV delegation, take a look at this documentation: [Server Delegation via a DNS SRV record (advanced)](howto-srv-server-delegation.md)
 
-### Obtaining certificates
+### Obtain certificates
 
 How you can obtain a valid certificate for `example.com` on the `matrix.example.com` server is up to you.
 
@@ -57,34 +59,15 @@ If `example.com` and `matrix.example.com` are hosted on the same machine, you ca
 
 If `example.com` and `matrix.example.com` are not hosted on the same machine, you can copy over the certificate files manually. Don't forget that they may get renewed once in a while, so you may also have to transfer them periodically. How often you do that is up to you, as long as the certificate files don't expire.
 
-
 ### Serving the Federation API with your certificates
 
 Regardless of which method for obtaining certificates you've used, once you've managed to get certificates for your base domain onto the `matrix.example.com` machine you can put them to use.
 
 Based on your setup, you have different ways to go about it:
 
-- [Server Delegation](#server-delegation)
-	- [Server Delegation via a well-known file](#server-delegation-via-a-well-known-file)
-		- [Downsides of well-known-based Server Delegation](#downsides-of-well-known-based-server-delegation)
-	- [Server Delegation via a DNS SRV record (advanced)](#server-delegation-via-a-dns-srv-record-advanced)
-		- [Obtaining certificates](#obtaining-certificates)
-		- [Serving the Federation API with your certificates](#serving-the-federation-api-with-your-certificates)
-		- [Serving the Federation API with your certificates and another webserver](#serving-the-federation-api-with-your-certificates-and-another-webserver)
-		- [Serving the Federation API with your certificates and Synapse handling Federation](#serving-the-federation-api-with-your-certificates-and-synapse-handling-federation)
+#### Serving the Federation API with your certificates and Synapse handling Federation
 
-
-
-
-### Serving the Federation API with your certificates and another webserver
-
-**If you are using some other webserver**, you can set up reverse-proxying for the `tcp/8448` port by yourself. Make sure to use the proper certificates for `example.com` (not for `matrix.example.com`) when serving the `tcp/8448` port.
-
-As recommended in our [Fronting the integrated reverse-proxy webserver with another reverse-proxy](./configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) documentation section, we recommend you to expose the Matrix Federation entrypoint from traffic at a local port (e.g. `127.0.0.1:8449`), so your reverese-proxy should send traffic there.
-
-### Serving the Federation API with your certificates and Synapse handling Federation
-
-**Alternatively**, you can let Synapse handle Federation by itself.
+You can let Synapse handle Federation by itself.
 
 To do that, make sure the certificate files are mounted into the Synapse container:
 
@@ -102,3 +85,9 @@ matrix_synapse_tls_private_key_path: /some/path/inside/the/container/private.key
 ```
 
 Make sure to reload Synapse once in a while (`systemctl reload matrix-synapse`), so that newer certificates can kick in. Reloading doesn't cause any downtime.
+
+#### Serving the Federation API with your certificates and another webserver
+
+**Alternatively**, if you are using another webserver, you can set up reverse-proxying for the `tcp/8448` port by yourself. Make sure to use the proper certificates for `example.com` (not for `matrix.example.com`) when serving the `tcp/8448` port.
+
+As recommended in our [Fronting the integrated reverse-proxy webserver with another reverse-proxy](./configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) documentation section, we recommend you to expose the Matrix Federation entrypoint from traffic at a local port (e.g. `127.0.0.1:8449`), so your reverese-proxy should send traffic there.

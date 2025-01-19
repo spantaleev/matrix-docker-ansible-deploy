@@ -14,9 +14,9 @@ matrix_coturn_docker_image: "{{ matrix_coturn_docker_image_name_prefix }}coturn/
 matrix_coturn_docker_image_name_prefix: "{{ 'localhost/' if matrix_coturn_container_image_self_build else matrix_container_global_registry_prefix }}"
 matrix_coturn_docker_image_force_pull: "{{ matrix_coturn_docker_image.endswith(':latest') }}"
 
-# The Docker network that Coturn would be put into.
+# The Docker network that coturn would be put into.
 #
-# Because Coturn relays traffic to unvalidated IP addresses,
+# Because coturn relays traffic to unvalidated IP addresses,
 # using a dedicated network, isolated from other Docker (and local) services is preferrable.
 #
 # Setting up deny/allow rules with `matrix_coturn_allowed_peer_ips`/`matrix_coturn_denied_peer_ips` is also
@@ -24,7 +24,7 @@ matrix_coturn_docker_image_force_pull: "{{ matrix_coturn_docker_image.endswith('
 #
 # Setting `matrix_coturn_container_network` to 'host' will run the container with host networking,
 # which will drastically improve performance when thousands of ports are opened due to Docker not having to set up forwarding rules for each port.
-# Running with host networking can be dangerous, as it potentially exposes your local network and its services to Coturn peers.
+# Running with host networking can be dangerous, as it potentially exposes your local network and its services to coturn peers.
 # Regardless of the networking mode, we apply a deny list which via `matrix_coturn_denied_peer_ips`,
 # which hopefully prevents access to such private network ranges.
 # When running in host-networking mode, you need to adjust the firewall yourself, so that ports are opened.
@@ -51,17 +51,17 @@ matrix_coturn_container_additional_volumes: []
 # A list of extra arguments to pass to the container
 matrix_coturn_container_extra_arguments: []
 
-# Controls whether the Coturn container exposes its plain STUN port (tcp/3478 and udp/3478 in the container).
+# Controls whether the coturn container exposes its plain STUN port (tcp/3478 and udp/3478 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:3478"), or empty string to not expose.
 matrix_coturn_container_stun_plain_host_bind_port: "{{ '3478' if matrix_coturn_container_network != 'host' else '' }}"
 
-# Controls whether the Coturn container exposes its TLS STUN port (tcp/5349 and udp/5349 in the container).
+# Controls whether the coturn container exposes its TLS STUN port (tcp/5349 and udp/5349 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:5349"), or empty string to not expose.
 matrix_coturn_container_stun_tls_host_bind_port: "{{ '5349' if matrix_coturn_container_network != 'host' else '' }}"
 
-# Controls whether the Coturn container exposes its TURN UDP port range and which interface to do it on.
+# Controls whether the coturn container exposes its TURN UDP port range and which interface to do it on.
 #
 # Takes an interface "<ip address>" (e.g. "127.0.0.1"), or empty string to listen on all interfaces.
 # Takes a null/none value (`~`) or 'none' (as a string) to prevent listening.
@@ -85,7 +85,7 @@ matrix_coturn_turn_udp_max_port: 49172
 matrix_coturn_authentication_method: auth-secret
 
 # A shared secret used for authentication when `matrix_coturn_authentication_method` is `auth-secret`.
-# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+# You can put any string here, but generating a strong one is preferred. You can create one with a command like `pwgen -s 64 1`.
 matrix_coturn_turn_static_auth_secret: ""
 
 # A username used authentication when `matrix_coturn_authentication_method` is `lt-cred-mech`.
@@ -93,7 +93,7 @@ matrix_coturn_lt_cred_mech_username: ""
 # A password used authentication when `matrix_coturn_authentication_method` is `lt-cred-mech`.
 matrix_coturn_lt_cred_mech_password: ""
 
-# The external IP address of the machine where Coturn is.
+# The external IP address of the machine where coturn is.
 # If do not define an IP address here or in `matrix_coturn_turn_external_ip_addresses`, auto-detection via an EchoIP service will be done.
 # See `matrix_coturn_turn_external_ip_address_auto_detection_enabled`
 matrix_coturn_turn_external_ip_address: ''
@@ -117,11 +117,11 @@ matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_retries_del
 matrix_coturn_allowed_peer_ips: []
 
 # We block loopback interfaces and private networks by default to prevent private resources from being accessible.
-# This is especially important when Coturn does not run within a container network (e.g. `matrix_coturn_container_network: host`).
+# This is especially important when coturn does not run within a container network (e.g. `matrix_coturn_container_network: host`).
 #
 # Learn more: https://www.rtcsec.com/article/cve-2020-26262-bypass-of-coturns-access-control-protection/
 #
-# If you're running Coturn for local network peers, you may wish to override these rules.
+# If you're running coturn for local network peers, you may wish to override these rules.
 matrix_coturn_denied_peer_ips:
   - 0.0.0.0-0.255.255.255
   - 10.0.0.0-10.255.255.255

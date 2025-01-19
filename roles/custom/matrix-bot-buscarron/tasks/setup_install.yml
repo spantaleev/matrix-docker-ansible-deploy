@@ -26,7 +26,7 @@
         - ansible.builtin.set_fact:
             matrix_bot_buscarron_requires_restart: true
 
-- name: Ensure buscarron paths exist
+- name: Ensure Buscarron paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -40,7 +40,7 @@
     - {path: "{{ matrix_bot_buscarron_docker_src_files_path }}", when: true}
   when: "item.when | bool"
 
-- name: Ensure buscarron support files installed
+- name: Ensure Buscarron support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_bot_buscarron_config_path }}/{{ item }}"
@@ -51,7 +51,7 @@
     - env
     - labels
 
-- name: Ensure buscarron image is pulled
+- name: Ensure Buscarron image is pulled
   community.docker.docker_image:
     name: "{{ matrix_bot_buscarron_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -63,7 +63,7 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
-- name: Ensure buscarron repository is present on self-build
+- name: Ensure Buscarron repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_bot_buscarron_docker_repo }}"
     version: "{{ matrix_bot_buscarron_docker_repo_version }}"
@@ -74,7 +74,7 @@
   register: matrix_bot_buscarron_git_pull_results
   when: "matrix_bot_buscarron_container_image_self_build | bool"
 
-- name: Ensure buscarron image is built
+- name: Ensure Buscarron image is built
   community.docker.docker_image:
     name: "{{ matrix_bot_buscarron_docker_image }}"
     source: build
@@ -92,7 +92,7 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-buscarron.service"
     mode: 0644
 
-- name: Ensure buscarron container network is created
+- name: Ensure Buscarron container network is created
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_bot_buscarron_container_network }}"

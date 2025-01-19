@@ -31,6 +31,7 @@
     - {'old': 'matrix_hookshot_ident', 'new': 'matrix_hookshot_identifier'}
     - {'old': 'matrix_hookshot_queue_host', 'new': 'matrix_hookshot_cache_redis_host'}
     - {'old': 'matrix_hookshot_queue_port', 'new': 'matrix_hookshot_cache_redis_port'}
+    - {'old': 'matrix_hookshot_experimental_encryption_enabled', 'new': 'matrix_hookshot_encryption_enabled'}
 
 - name: Fail if required Hookshot settings not defined
   ansible.builtin.fail:
@@ -96,7 +97,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`matrix_hookshot_cache_redis*`) to enable Hookshot encryption.
-  when: "matrix_hookshot_experimental_encryption_enabled and matrix_hookshot_cache_redisUri == ''"
+  when: "matrix_hookshot_encryption_enabled and matrix_hookshot_cache_redisUri == ''"
 
 - name: (Deprecation) Catch and report old metrics usage
   ansible.builtin.fail:

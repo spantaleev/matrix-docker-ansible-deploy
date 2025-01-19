@@ -1,39 +1,86 @@
 # Table of Contents
 
-- [FAQ](faq.md) - lots of questions and answers. Jump to [Prerequisites](prerequisites.md) to avoid reading too much and to just start a guided installation.
+## ⬇️ Installaton guides <!-- NOTE: the 🚀 emoji is used by "Getting started" on README.md -->
 
-- [Prerequisites](prerequisites.md) - go here to a guided installation using this Ansible playbook
+There are two installation guides available for beginners and advanced users.
 
-- [Configuring your DNS server](configuring-dns.md)
+- ⚡ **[Quick start](quick-start.md) (for beginners)**: this is recommended for those who do not have an existing Matrix server and want to start quickly with "opinionated defaults".
 
-- [Getting this playbook's source code](getting-the-playbook.md)
+- **Full installation guide (for advanced users)**: if you need to import an existing Matrix server's data into the new server or want to learn more while setting up the server, follow this guide.
 
-- [Configuring the playbook](configuring-playbook.md)
+    - [Prerequisites](prerequisites.md)
 
-- [Installing](installing.md)
+    - [Configuring your DNS settings](configuring-dns.md)
 
-- **Importing data from another server installation**
+    - [Getting the playbook](getting-the-playbook.md)
 
-  - [Importing an existing SQLite database (from another Synapse installation)](importing-synapse-sqlite.md) (optional)
+    - [Configuring the playbook](configuring-playbook.md)
 
-  - [Importing an existing Postgres database (from another installation)](importing-postgres.md) (optional)
+    - [Installing](installing.md)
 
-  - [Importing `media_store` data files from an existing Synapse installation](importing-synapse-media-store.md) (optional)
+## 🛠️ Configuration options
 
-- [Registering users](registering-users.md)
+<!--
+NOTE:
+- Avoid putting the same anchor links as configuring-playbook.md lists under the "configuration options" section. Note that most of them are linked to "configure-playbook-*.md" and their titles start with "Setting up" (e.g. "Setting up Hydrogen").
+-->
 
-- [Updating users passwords](updating-users-passwords.md)
+You can check useful documentation for configuring components here: [Configuring the playbook](configuring-playbook.md)
 
-- [Configuring service discovery via .well-known](configuring-well-known.md)
+- [Administration](configuring-playbook.md#administration) - services that help you in administrating and monitoring your Matrix installation
 
-- [Maintenance / checking if services work](maintenance-checking-services.md)
+- [Authentication and user-related](configuring-playbook.md#authentication-and-user-related) - extend and modify how users are authenticated on your homeserver
 
-- [Maintenance / upgrading services](maintenance-upgrading-services.md)
+- [Bots](configuring-playbook.md#bots) - bots provide various additional functionality to your installation
 
-- [Maintenance / Synapse](maintenance-synapse.md)
+- [Bridges](configuring-playbook.md#bridging-other-networks) - bridges can be used to connect your Matrix installation with third-party communication networks
 
-- [Maintenance / PostgreSQL](maintenance-postgres.md)
+- [Clients](configuring-playbook.md#clients) - web clients for Matrix that you can host on your own domains
+
+- [Core service adjustments](configuring-playbook.md#core-service-adjustments) - backbone of your Matrix system
+
+- [File Storage](configuring-playbook.md#file-storage) - use alternative file storage to the default `media_store` folder
+
+<!-- NOTE: sort list items above alphabetically -->
+
+- [Other specialized services](configuring-playbook.md#other-specialized-services) - various services that don't fit any other categories
+
+## 👨‍🔧 Maintenance
+
+If your server and services experience issues, feel free to come to [our support room](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) and ask for help.
+
+<!-- NOTE: sort list items alphabetically -->
+
+- [Checking if services work](maintenance-checking-services.md)
 
 - [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
 
+- [PostgreSQL maintenance](maintenance-postgres.md)
+
+- [Synapse maintenance](maintenance-synapse.md)
+
+- [Upgrading services](maintenance-upgrading-services.md)
+
+## Other documentation pages <!-- NOTE: this header's title and the section below need optimization -->
+
+- ℹ️ **[FAQ](faq.md)** - various Frequently Asked Questions about Matrix, with a focus on this Ansible playbook
+
+<!-- NOTE: sort list items under faq.md alphabetically -->
+
+- [Alternative architectures](alternative-architectures.md)
+
+- [Container images used by the playbook](container-images.md)
+
+- [Obtaining an Access Token](obtaining-access-tokens.md)
+
+- [Playbook tags](playbook-tags.md)
+
+- [Registering users](registering-users.md)
+
+- [Running `just` commands](just.md)
+
+- [Self-building](self-building.md)
+
 - [Uninstalling](uninstalling.md)
+
+- [Updating users passwords](updating-users-passwords.md)

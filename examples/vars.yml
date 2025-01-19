@@ -1,6 +1,6 @@
 ---
 # The bare domain name which represents your Matrix identity.
-# Matrix user ids for your server will be of the form (`@user:example.com`).
+# Matrix user IDs for your server will be of the form (`@alice:example.com`).
 #
 # Note: this playbook does not touch the server referenced here.
 # Installation happens on another server ("matrix.example.com", see `matrix_server_fqn_matrix`).
@@ -12,11 +12,15 @@ matrix_domain: example.com
 # The Matrix homeserver software to install.
 # See:
 #  - `roles/custom/matrix-base/defaults/main.yml` for valid options
-# - the `docs/configuring-playbook-IMPLEMENTATION_NAME.md` documentation page, if one is available for your implementation choice
+#  - the `docs/configuring-playbook-IMPLEMENTATION_NAME.md` documentation page, if one is available for your implementation choice
+#
+# By default, we use Synapse, because it's the only full-featured Matrix server at the moment.
+#
+# Note that the homeserver implementation of a server will not be able to be changed without data loss.
 matrix_homeserver_implementation: synapse
 
 # A secret used as a base, for generating various other secrets.
-# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+# You can put any string here, but generating a strong one is preferred. You can create one with a command like `pwgen -s 64 1`.
 matrix_homeserver_generic_secret_key: ''
 
 # By default, the playbook manages its own Traefik (https://doc.traefik.io/traefik/) reverse-proxy server.
@@ -40,7 +44,7 @@ traefik_config_certificatesResolvers_acme_email: ''
 # using this superuser account.
 postgres_connection_password: ''
 
-# By default, we configure Coturn's external IP address using the value specified for `ansible_host` in your `inventory/hosts` file.
+# By default, we configure coturn's external IP address using the value specified for `ansible_host` in your `inventory/hosts` file.
 # If this value is an external IP address, you can skip this section.
 #
 # If `ansible_host` is not the server's external IP address, you have 2 choices:
@@ -48,7 +52,7 @@ postgres_connection_password: ''
 # 2. Uncomment and adjust the line below to specify an IP address manually
 #
 # By default, auto-detection will be attempted using the `https://ifconfig.co/json` API.
-# Default values for this are specified in `matrix_coturn_turn_external_ip_address_auto_detection_*` variables in the Coturn role
+# Default values for this are specified in `matrix_coturn_turn_external_ip_address_auto_detection_*` variables in the coturn role
 # (see `roles/custom/matrix-coturn/defaults/main.yml`).
 #
 # If your server has multiple IP addresses, you may define them in another variable which allows a list of addresses.

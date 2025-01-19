@@ -6,15 +6,13 @@ The email server would attempt to deliver emails directly to their final destina
 
 By default, emails are sent from `matrix@matrix.example.com`, as specified by the `exim_relay_sender_address` playbook variable.
 
-⚠ **Warning**: On some cloud providers (Google Cloud, etc.), [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible. You will need to [relay email through another SMTP server](#relaying-email-through-another-smtp-server).
+⚠️ **Warning**: On some cloud providers (Google Cloud, etc.), [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible. You will need to [relay email through another SMTP server](#relaying-email-through-another-smtp-server).
 
 💡 To improve deliverability, we recommend [relaying email through another SMTP server](#relaying-email-through-another-smtp-server) anyway.
-
 
 ## Firewall settings
 
 No matter whether you send email directly (the default) or you relay email through another host (see how below), you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
-
 
 ## Relaying email through another SMTP server
 
@@ -32,8 +30,8 @@ exim_relay_relay_auth_password: "some-password"
 
 **Note**: only the secure submission protocol (using `STARTTLS`, usually on port `587`) is supported. **SMTPS** (encrypted SMTP, usually on port `465`) **is not supported**.
 
-
 ### Configuations for sending emails using Sendgrid
+
 An easy and free SMTP service to set up is [Sendgrid](https://sendgrid.com/), the free tier allows for up to 100 emails per day to be sent. In the settings below you can provide any email for `exim_relay_sender_address`.
 
 The only other thing you need to change is the `exim_relay_relay_auth_password`, which you can generate at https://app.sendgrid.com/settings/api_keys. The API key password looks something like `SG.955oW1mLSfwds7i9Yd6IA5Q.q8GTaB8q9kGDzasegdG6u95fQ-6zkdwrPP8bOeuI`.

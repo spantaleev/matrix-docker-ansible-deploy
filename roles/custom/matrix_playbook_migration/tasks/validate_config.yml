@@ -56,12 +56,16 @@
     - {'old': 'matrix_prometheus_scraper_hookshot_targets', 'new': '<superseded by matrix_prometheus_services_connect_scraper_hookshot_static_configs_target>'}
     - {'old': 'matrix_prometheus_scraper_nginxlog_enabled', 'new': 'matrix_prometheus_services_connect_scraper_nginxlog_enabled'}
     - {'old': 'matrix_prometheus_scraper_nginxlog_server_port', 'new': 'matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target'}
+
     - {'old': 'matrix_prosody_jitsi_max_participants', 'new': 'jitsi_prosody_max_participants'}
     - {'old': 'jitsi_require_well_known', 'new': 'jitsi_web_well_known_element_jitsi_enabled'}
     - {'old': 'jitsi_wellknown_element_jitsi_json', 'new': 'jitsi_web_well_known_element_jitsi_json'}
     - {'old': 'exim_relay_docker_image', 'new': 'exim_relay_container_image'}
     - {'old': 'exim_relay_docker_image_name_prefix', 'new': 'exim_relay_container_image_name_prefix'}
     - {'old': 'exim_relay_docker_image_force_pull', 'new': 'exim_relay_container_image_force_pull'}
+
+    - {'old': 'matrix_playbook_reverse_proxy_traefik_middleware_compession_enabled', 'new': 'matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled'}
+    - {'old': 'matrix_playbook_reverse_proxy_traefik_middleware_compession_name', 'new': 'matrix_playbook_reverse_proxy_traefik_middleware_compression_name'}
 
 - name: (Deprecation) Catch and report matrix_postgres variables
   ansible.builtin.fail:
@@ -223,6 +227,20 @@
           We found usage of the following variables: {{ matrix_playbook_migration_jitsi_migration_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_jitsi_migration_vars | length > 0"
 
+- when: matrix_playbook_migration_matrix_postmoogle_migration_validation_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_postmoogle_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'matrix_bot_postmoogle_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_bot_postmoogle variables
+      ansible.builtin.fail:
+        msg: >-
+          Your configuration contains a variable, which now has a different name.
+          Please change your configuration (vars.yml) to rename all variables (`matrix_bot_postmoogle_` -> `matrix_postmoogle_`).
+          We found usage of the following variables: {{ matrix_playbook_migration_postmoogle_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_postmoogle_migration_vars | length > 0"
+
 - when: matrix_playbook_migration_matrix_nginx_proxy_elimination_variable_transition_checks_enabled | bool
   block:
     - name: (Deprecation) Catch and report transitioned playbook settings during the matrix-nginx-proxy elimination
@@ -258,8 +276,8 @@
         - {'old': 'matrix_nginx_proxy_base_domain_homepage_enabled', 'new': 'matrix_static_files_file_index_html_enabled'}
         - {'old': 'matrix_nginx_proxy_base_domain_homepage_template', 'new': 'matrix_static_files_file_index_html_template'}
         - {'old': 'matrix_nginx_proxy_base_domain_create_directory', 'new': '<no longer necessary; see matrix_static_files_file_index_html_enabled>'}
-        - {'old': 'matrix_nginx_proxy_proxy_riot_compat_redirect_enabled', 'new': '<redirecting the riot domain to an element domain is no longer supported - you can implement it yourself using matrix_client_element_container_labels_additional_labels>'}
-        - {'old': 'matrix_nginx_proxy_proxy_riot_compat_redirect_hostname', 'new': '<redirecting the riot domain to an element domain is no longer supported - you can implement it yourself using matrix_client_element_container_labels_additional_labels>'}
+        - {'old': 'matrix_nginx_proxy_proxy_riot_compat_redirect_enabled', 'new': '<redirecting the Riot domain to an Element domain is no longer supported - you can implement it yourself using matrix_client_element_container_labels_additional_labels>'}
+        - {'old': 'matrix_nginx_proxy_proxy_riot_compat_redirect_hostname', 'new': '<redirecting the Riot domain to an Element domain is no longer supported - you can implement it yourself using matrix_client_element_container_labels_additional_labels>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_redirect_enabled', 'new': '<superseded by matrix_synapse_container_labels_public_client_root_redirection_enabled or other equivalent variables based on the homeserver implementation you use>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_redirect_root_uri_to_domain', 'new': '<superseded by matrix_synapse_container_labels_public_client_root_redirection_url or other equivalent variables based on the homeserver implementation you use>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_client_api_enabled'}

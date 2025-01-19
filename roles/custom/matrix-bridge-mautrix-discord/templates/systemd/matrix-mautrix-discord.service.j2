@@ -23,6 +23,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_mautrix_discord_container_network }} \
+			--label-file={{ matrix_mautrix_discord_base_path }}/labels \
 			--mount type=bind,src={{ matrix_mautrix_discord_config_path }},dst=/config,ro \
 			--mount type=bind,src={{ matrix_mautrix_discord_data_path }},dst=/data \
 			--workdir=/data \

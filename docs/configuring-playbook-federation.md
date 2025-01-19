@@ -2,6 +2,7 @@
 
 By default, your server federates with the whole Matrix network. That is, people on your server can communicate with people on any other Matrix server.
 
+**Note**: in the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user ID like `@alice:example.com` instead of `@alice:matrix.example.com` and set up [server delegation](howto-server-delegation.md) / redirection. Without a proper configuration, your server will effectively not be part of the Matrix network. If you find your server is not federated, make sure to [check whether services work](maintenance-checking-services.md) and your server is properly delegated.
 
 ## Federating only with select servers
 
@@ -15,21 +16,19 @@ matrix_synapse_federation_domain_whitelist:
 
 If you wish to disable federation, you can do that with an empty list (`[]`), or better yet by completely disabling federation (see below).
 
-
 ## Exposing the room directory over federation
 
 By default, your server's public rooms directory is not exposed to other servers via federation.
 
-If you wish to expose it, add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
+To expose it, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_synapse_allow_public_rooms_over_federation: true
 ```
 
-
 ## Disabling federation
 
-To completely disable federation, isolating your server from the rest of the Matrix network, add this to your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`):
+To completely disable federation, isolating your server from the rest of the Matrix network, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_homeserver_federation_enabled: false
@@ -53,10 +52,9 @@ matrix_synapse_reverse_proxy_companion_federation_api_enabled: false
 
 Why? This change could be useful for people running small Synapse instances on small severs/VPSes to avoid being impacted by a simple DOS/DDOS when bandwidth, RAM, an CPU resources are limited and if your hosting provider does not provide a DOS/DDOS protection.
 
+To make it possible to proxy the federation through a CDN such as CloudFlare or any other, add the following configuration to your `vars.yml` file:
 
-The following changes in the configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) will allow this and make it possible to proxy the federation through a CDN such as CloudFlare or any other:
-
-```
+```yaml
 matrix_synapse_http_listener_resource_names: ["client","federation"]
 # Any port can be used but in this case we use 443
 matrix_federation_public_port: 443

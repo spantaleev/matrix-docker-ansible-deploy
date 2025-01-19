@@ -1,0 +1,168 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-28 10:25+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: jp\n"
+"Language-Team: jp <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:1
+msgid "Storing Matrix media files using matrix-media-repo (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:3
+msgid "[matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated \"MMR\") is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:5
+msgid "Smaller/individual homeservers can still make use of this project's features, though it may be difficult to set up or have higher than expected resource consumption. Please do your research before deploying this as this project may not be useful for your environment."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:7
+msgid "For a simpler alternative (which allows you to offload your media repository storage to S3, etc.), you can [configure S3 storage](configuring-playbook-s3.md) instead of setting up matrix-media-repo."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md
+msgid "**Table of Contents**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md
+msgid "[Quickstart](#quickstart)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md
+msgid "[Additional configuration options](#configuring-the-media-repo)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md
+msgid "[Importing data from an existing media store](#importing-data-from-an-existing-media-store)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:15
+msgid "Quickstart"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:17
+msgid "Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file and [re-run the installation process](./installing.md) for the playbook:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:26
+msgid "The repo is pre-configured for integrating with the Postgres database, Traefik proxy and [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) (if metrics enabled) from this playbook for all the available homeserver roles. When the media repo is enabled, other media store roles should be disabled (if using Synapse with other media store roles)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:28
+msgid "By default, the media-repo will use the local filesystem for data storage. You can alternatively use a `s3` cloud backend as well. Access token caching is also enabled by default since the logout endpoints are proxied through the media repo."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:30
+msgid "Configuring the media-repo"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:32
+msgid "Additional common configuration options:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:91
+msgid "Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](../roles/custom/matrix-media-repo/defaults/main.yml)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:93
+msgid "Signing Keys"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:95
+msgid "Authenticated media endpoints ([MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916)) requires MMR to have a configured signing key to authorize outbound federation requests. Additionally, the signing key must be merged with your homeserver's signing key file."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:97
+msgid "The playbook default is to generate a MMR signing key when invoking the setup role and merge it with your homeserver if you are using Synapse or Dendrite. This can be disabled if desired by setting the option in your inventory:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:103
+msgid "If you wish to manually generate the signing key and merge it with your homeserver's signing key file, see https://docs.t2bot.io/matrix-media-repo/v1.3.5/installation/signing-key/ for more details."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:105
+msgid "**Note that if you uninstall MMR from the playbook, it will not remove the old MMR signing key from your homeserver's signing key file. You will have to remove it manually.**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:107
+msgid "Key backup and revoking"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:109
+msgid "Since your homeserver signing key file is modified by the playbook, a backup will be created in `HOMESERVER_DIR/config/example.com.signing.key.backup`. If you need to remove/revoke old keys, you can restore from this backup or remove the MMR key ID from your `example.com.signing.key` file."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:111
+msgid "Additionally, its recommended after revoking a signing key to update your homeserver config file (`old_signing_keys` field for Synapse and `old_private_keys` for Dendrite). See your homeserver config file for further documentation on how to populate the field."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:113
+msgid "Importing data from an existing media store"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:115
+msgid "If you want to add this repo to an existing homeserver managed by the playbook, you will need to import existing media into MMR's database or you will lose access to older media while it is active. MMR versions up to `v1.3.3` only support importing from Synapse, but newer versions (at time of writing: only `latest`) also support importing from Dendrite."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:117
+msgid "**Before importing**: ensure you have an initial matrix-media-repo deployment by following the [quickstart](#quickstart) guide above"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:119
+msgid "Depending on the homeserver implementation yu're using (Synapse, Dendrite), you'll need to use a different import tool (part of matrix-media-repo) and point it to the homeserver's database."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:121
+msgid "Importing data from the Synapse media store"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:123
+msgid "To import the Synapse media store, you're supposed to invoke the `import_synapse` tool which is part of the matrix-media-repo container image. Your Synapse database is called `synapse` by default, unless you've changed it by modifying `matrix_synapse_database_database`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:125
+msgid "This guide here is adapted from the [upstream documentation about the import_synapse script](https://github.com/turt2live/matrix-media-repo#importing-media-from-synapse)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:127
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:149
+msgid "Run the following command on the server (after replacing `postgres_connection_password` in it with the value found in your `vars.yml` file):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:139
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:161
+msgid "Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:141
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:163
+msgid "This should output a `msg=\"Import completed\"` when finished successfully!"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:143
+msgid "Importing data from the Dendrite media store"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:145
+msgid "If you're using the [Dendrite](configuring-playbook-dendrite.md) homeserver instead of the default for this playbook (Synapse), follow this importing guide here."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-media-repo.md:147
+msgid "To import the Dendrite media store, you're supposed to invoke the `import_dendrite` tool which is part of the matrix-media-repo container image. Your Dendrite database is called `dendrite_mediaapi` by default, unless you've changed it by modifying `matrix_dendrite_media_api_database`."
+msgstr ""

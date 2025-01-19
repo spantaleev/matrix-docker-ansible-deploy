@@ -1,4 +1,4 @@
-# Setting up Appservice IRC (optional)
+# Setting up Appservice IRC bridging (optional)
 
 **Note**: bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) can also happen via the [Heisenbridge](configuring-playbook-bridge-heisenbridge.md) bridge supported by the playbook.
 
@@ -62,8 +62,21 @@ matrix_appservice_irc_ircService_servers:
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
+
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+```
+
+**Notes**:
+
+- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
+
+- The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+  `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
 ## Usage
 
-You then need to start a chat with `@irc_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `@irc_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).

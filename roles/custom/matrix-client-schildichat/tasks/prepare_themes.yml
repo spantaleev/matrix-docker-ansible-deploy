@@ -1,7 +1,7 @@
 ---
 
 #
-# Tasks related to setting up SchildiChat themes
+# Tasks related to setting up SchildiChat Web themes
 #
 
 - when: matrix_client_schildichat_themes_enabled | bool
@@ -9,35 +9,35 @@
   delegate_to: 127.0.0.1
   become: false
   block:
-    - name: Ensure SchildiChat themes repository is pulled
+    - name: Ensure SchildiChat Web themes repository is pulled
       ansible.builtin.git:
         repo: "{{ matrix_client_schildichat_themes_repository_url }}"
         version: "{{ matrix_client_schildichat_themes_repository_version }}"
         dest: "{{ role_path }}/files/scratchpad/themes"
 
-    - name: Find all SchildiChat theme files
+    - name: Find all SchildiChat Web theme files
       ansible.builtin.find:
         paths: "{{ role_path }}/files/scratchpad/themes"
         patterns: "*.json"
         recurse: true
       register: matrix_client_schildichat_theme_file_list
 
-    - name: Read SchildiChat theme
+    - name: Read SchildiChat Web theme
       ansible.builtin.slurp:
         path: "{{ item.path }}"
       register: "matrix_client_schildichat_theme_file_contents"
       with_items: "{{ matrix_client_schildichat_theme_file_list.files }}"
 
-    - name: Load SchildiChat theme
+    - name: Load SchildiChat Web theme
       ansible.builtin.set_fact:
         matrix_client_schildichat_setting_defaults_custom_themes: "{{ matrix_client_schildichat_setting_defaults_custom_themes + [item['content'] | b64decode | from_json] }}"  # noqa var-naming
       with_items: "{{ matrix_client_schildichat_theme_file_contents.results }}"
 
 #
-# Tasks related to getting rid of SchildiChat themes (if it was previously enabled)
+# Tasks related to getting rid of SchildiChat Web themes (if it was previously enabled)
 #
 
-- name: Ensure SchildiChat themes repository is removed
+- name: Ensure SchildiChat Web themes repository is removed
   ansible.builtin.file:
     path: "{{ role_path }}/files/scratchpad/themes"
     state: absent

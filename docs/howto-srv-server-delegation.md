@@ -14,11 +14,11 @@ This means that this is **limited to the list of DNS providers supported by Trae
 
 The up-to-date list can be accessed on [traefik's documentation](https://doc.traefik.io/traefik/https/acme/#providers)
 
-## The changes
+## Adjusting the playbook configuration
 
 **Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
 
-- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md) or [Dendrite](./configuring-playbook-dendrite.md))
+- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [Conduwuit](./configuring-playbook-conduwuit.md) or [Dendrite](./configuring-playbook-dendrite.md))
 - if you're using [Synapse with workers enabled](./configuring-playbook-synapse.md#load-balancing-with-workers) (`matrix_synapse_workers_enabled: true`). In that case, it's actually the `matrix-synapse-reverse-proxy-companion` service which has Traefik labels attached
 
 Also, all instructions below are from an older version of the playbook and may not work anymore.
@@ -73,7 +73,7 @@ traefik_configuration_extension_yaml: |
         storage: {{ traefik_config_certificatesResolvers_acme_storage | to_json }}
 
 # 2. Configure the environment variables needed by Rraefik to automate the ACME DNS Challenge (example for Cloudflare)
-traefik_environment_variables: |
+traefik_environment_variables_additional_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
@@ -83,17 +83,17 @@ traefik_environment_variables: |
 traefik_certResolver_primary: dns
 ```
 
-## Adjust Coturn's configuration
+## Adjust coturn's configuration
 
-The last step is to alter the generated Coturn configuration.
+The last step is to alter the generated coturn configuration.
 
-By default, Coturn is configured to wait on the certificate for the `matrix.` subdomain using an [instantiated systemd service](https://www.freedesktop.org/software/systemd/man/systemd.service.html#Service%20Templates) using the domain name as the parameter for this service. However, we need to serve the wildcard certificate, which is incompatible with systemd, it will try to expand the `*`, which will break and prevent Coturn from starting.
+By default, coturn is configured to wait on the certificate for the `matrix.` subdomain using an [instantiated systemd service](https://www.freedesktop.org/software/systemd/man/systemd.service.html#Service%20Templates) using the domain name as the parameter for this service. However, we need to serve the wildcard certificate, which is incompatible with systemd, it will try to expand the `*`, which will break and prevent coturn from starting.
 
-We also need to indicate to Coturn where the wildcard certificate is.
+We also need to indicate to coturn where the wildcard certificate is.
 
-**⚠ WARNING ⚠** : On first start of the services, Coturn might still fail to start because Traefik is still in the process of obtaining the certificates. If you still get an error, make sure Traefik obtained the certificates and restart the Coturn service (`just start-group coturn`).
+⚠️ **Warning** : On first start of the services, coturn might still fail to start because Traefik is still in the process of obtaining the certificates. If you still get an error, make sure Traefik obtained the certificates and restart the coturn service (`just start-group coturn`).
 
-This should not happen again afterwards as Traefik will renew certificates well before their expiry date, and the Coturn service is setup to restart periodically.
+This should not happen again afterwards as Traefik will renew certificates well before their expiry date, and the coturn service is setup to restart periodically.
 
 ```yaml
 # Only depend on docker.service, this removes the dependency on the certificate exporter, might imply the need to manually restart coturn on the first installation once the certificates are obtained, afterwards, the reload service should handle things
@@ -153,13 +153,13 @@ traefik_configuration_extension_yaml: |
 traefik_certResolver_primary: "dns"
 
 # Configure the environment variables needed by Traefik to automate the ACME DNS Challenge (example for Cloudflare)
-traefik_environment_variables: |
+traefik_environment_variables_additional_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
   LEGO_DISABLE_CNAME_SUPPORT=true
 
-# Only depend on docker.service, this removes the dependency on the certificate exporter, might imply the need to manually restart Coturn on the first installation once the certificates are obtained, afterwards, the reload service should handle things
+# Only depend on docker.service, this removes the dependency on the certificate exporter, might imply the need to manually restart coturn on the first installation once the certificates are obtained, afterwards, the reload service should handle things
 matrix_coturn_systemd_required_services_list: ['docker.service']
 
 # This changes the path of the loaded certificate, while maintaining the original functionality, we're now loading the wildcard certificate.

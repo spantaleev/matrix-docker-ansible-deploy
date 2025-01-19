@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.117.0
+matrix_synapse_version: v1.122.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -48,6 +48,10 @@ matrix_synapse_container_image_customizations_enabled: |-
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_s3_storage_provider_version`.
 matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"
 
+# Controls whether to install an old version of boto3 and botocore, to work around the following issue:
+# https://github.com/aws/aws-cli/issues/9214
+matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled: true
+
 # Controls whether custom build steps will be added to the Dockerfile for installing auto-accept-invite module.
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_auto_accept_invite_version`.
 matrix_synapse_container_image_customizations_auto_accept_invite_installation_enabled: "{{ matrix_synapse_ext_synapse_auto_accept_invite_enabled }}"
@@ -56,7 +60,7 @@ matrix_synapse_container_image_customizations_auto_accept_invite_installation_en
 #
 # Example usage:
 #
-# ```yml
+# ```yaml
 # matrix_synapse_container_image_customizations_templates_enabled: true
 # # The templates are expected to be in a `templates/` subdirectory in
 # matrix_synapse_container_image_customizations_templates_in_container_template_files_relative_path: templates/
@@ -78,7 +82,7 @@ matrix_synapse_container_image_customizations_templates_git_repository_keyscan_h
 
 # matrix_synapse_container_image_customizations_dockerfile_body contains your custom Dockerfile steps
 # for building your customized Synapse image based on the original (upstream) image (`matrix_synapse_docker_image`).
-# A `FROM ...` clause is included automatically so you don't have to.
+# A `FROM …` clause is included automatically so you don't have to.
 #
 # Example:
 # matrix_synapse_container_image_customizations_dockerfile_body_custom: |
@@ -185,6 +189,11 @@ matrix_synapse_container_labels_traefik_docker_network: "{{ matrix_synapse_conta
 matrix_synapse_container_labels_traefik_entrypoints: web-secure
 matrix_synapse_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 matrix_synapse_container_labels_traefik_hostname: ''
+
+# Controls whether a compression middleware will be injected into the middlewares list.
+# This compression middleware is supposed to be defined elsewhere (using labels or a File provider, etc.) and is merely referenced by this router.
+matrix_synapse_container_labels_traefik_compression_middleware_enabled: false
+matrix_synapse_container_labels_traefik_compression_middleware_name: ""
 
 # Controls whether Matrix-related labels will be added.
 #
@@ -335,7 +344,7 @@ matrix_synapse_goofys_systemd_required_services_list_custom: []
 # This can be set to 0 to remove the delay.
 matrix_synapse_systemd_service_post_start_delay_seconds: 10
 
-matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.11/site-packages"
+matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.12/site-packages"
 
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
@@ -361,6 +370,30 @@ matrix_synapse_media_retention_local_media_lifetime:
 # should be removed under certain conditions, typically for the purpose of saving space.
 # should be empty to disable
 matrix_synapse_media_retention_remote_media_lifetime:
+
+# Controls the list of additional oembed providers to be added to the homeserver.
+matrix_synapse_oembed_additional_providers: []
+
+# Controls message retention policies
+matrix_synapse_retention_enabled: false
+# "A single var to control them all" - applied to all retention period vars, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_period: ""
+# The default min lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_default_policy_min_lifetime: "{{ matrix_synapse_retention_period }}"
+# The default max lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_default_policy_max_lifetime: "{{ matrix_synapse_retention_period }}"
+# The allowed min lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_allowed_lifetime_min: "{{ matrix_synapse_retention_period }}"
+# The allowed max lifetime, applied only if a value is set, e.g. : "1d", "1w", "1m", "1y"
+matrix_synapse_retention_allowed_lifetime_max: "{{ matrix_synapse_retention_period }}"
+# The list of the purge jobs, structure (all fields are optional, example below contains all available variants):
+# - longest_max_lifetime: "1d"
+#   shortest_max_lifetime: "1d"
+#   interval: "12h"
+# - longest_max_lifetime: "1d"
+# - shortest_max_lifetime: "1d"
+# - interval: "12h"
+matrix_synapse_retention_purge_jobs: []
 
 # The tmpfs at /tmp needs to be large enough to handle multiple concurrent file uploads.
 matrix_synapse_tmp_directory_size_mb: "{{ matrix_synapse_max_upload_size_mb * 50 }}"
@@ -981,10 +1014,10 @@ matrix_synapse_workers_media_repository_workers_container_arguments: []
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_enable_media_repo: "{{ not matrix_synapse_ext_media_repo_enabled and (not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length == 0)) }}"
 
-# matrix_synapse_enable_authenticated_media controls if authenticated media is enabled. If enabled all "old" media remains accessible over the legacy endpoints but new media is blocked.
+# matrix_synapse_enable_authenticated_media controls if authenticated media is enabled.
+# If enabled all "old" media remains accessible over the legacy endpoints but new media is blocked.
 # while this option is enabled all media access and downloads have to be done via authenticated endpoints.
-# FIX_ME_WHEN_DEFAULT_TRUE: This option is going to become set to default true in Synapse at a later date.
-matrix_synapse_enable_authenticated_media: false
+matrix_synapse_enable_authenticated_media: true
 
 # matrix_synapse_media_instance_running_background_jobs populates the `media_instance_running_background_jobs` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `media_instance_running_background_jobs` is meant to point to a single media-repository worker, which is dedicated to running background tasks that maintain the media repository.
@@ -1176,6 +1209,10 @@ matrix_synapse_experimental_features_msc3861_admin_token: ''
 
 # URL to advertise to clients where users can self-manage their account.
 matrix_synapse_experimental_features_msc3861_account_management_url: ''
+
+# Controls whether to enable the "QR code login" experimental feature.
+# Enabling this requires that MSC3861 (see `matrix_synapse_experimental_features_msc3861_enabled`) is also enabled.
+matrix_synapse_experimental_features_msc4108_enabled: false
 
 ################################################################################
 #
@@ -1406,7 +1443,7 @@ matrix_synapse_media_storage_providers_auto: |
 # matrix_synapse_media_storage_providers_custom:
 # - module: module.SomeModule
 #   store_local: True
-#   # ...
+#   # …
 matrix_synapse_media_storage_providers_custom: []
 
 matrix_synapse_encryption_enabled_by_default_for_room_type: "off"

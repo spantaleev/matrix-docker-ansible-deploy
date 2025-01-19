@@ -1,0 +1,29 @@
+---
+
+- tags:
+    - setup-all
+    - setup-conduwuit
+    - install-all
+    - install-conduwuit
+  block:
+    - when: matrix_conduwuit_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_conduwuit_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-conduwuit
+  block:
+    - when: not matrix_conduwuit_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
+
+- tags:
+    - self-check
+  block:
+    - when: matrix_conduwuit_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
+
+    - when: matrix_conduwuit_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"

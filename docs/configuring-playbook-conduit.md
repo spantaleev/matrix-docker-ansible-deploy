@@ -1,19 +1,40 @@
 # Configuring Conduit (optional)
 
-By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, but you can also use [Conduit](https://conduit.rs).
+The playbook can install and configure the [Conduit](https://conduit.rs) Matrix server for you.
 
-**Notes**:
+See the project's [documentation](https://docs.conduit.rs/) to learn what it does and why it might be useful to you.
+
+By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document.
+
+💡 **Note**: The playbook also supports installing a (currently) faster-moving Conduit fork called [Conduwuit](./configuring-playbook-conduwuit.md).
+
+⚠️ **Warnings**:
 
 - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Conduit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
 
-- **homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
+- **Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
 
 ## Adjusting the playbook configuration
 
-To use Conduit, you **generally** need to add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To use Conduit, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:
 
 ```yaml
 matrix_homeserver_implementation: conduit
+```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the server.
+
+Take a look at:
+
+- `roles/custom/matrix-conduit/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-conduit/templates/conduit.toml.j2` for the server's default configuration
+
+If you'd like to have your own different configuration, feel free to copy and paste the original files into your inventory (e.g. in `inventory/host_vars/matrix.example.com/`) and then change the specific host's `vars.yml` file like this:
+
+```yaml
+matrix_conduit_template_conduit_config: "{{ playbook_dir }}/inventory/host_vars/matrix.example.com/conduit.toml.j2"
 ```
 
 ## Creating the first user account
@@ -22,20 +43,18 @@ Since it is difficult to create the first user account on Conduit (see [famedly/
 
 1. Add `matrix_conduit_allow_registration: true` to your `vars.yml` the first time around, temporarily
 2. Run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start` - see [Installing](installing.md))
-3. Create your first user via Element or any other client which supports creating users
+3. Create your first user via Element Web or any other client which supports creating users
 4. Get rid of `matrix_conduit_allow_registration: true` from your `vars.yml`
 5. Run the playbook again (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-conduit,start` would be enough this time)
 6. You can now use your server safely. Additional users can be created by messaging the internal Conduit bot
 
-
 ## Configuring bridges / appservices
 
-Automatic appservice setup is currently unsupported when using Conduit. After setting up the service as usual you may notice that it is unable to start.
+For other homeserver implementations (like Synapse and Dendrite), the playbook automatically registers appservices (for bridges, bots, etc.) with the homeserver.
 
-You will have to manually register appservices using the the [register-appservice](https://gitlab.com/famedly/conduit/-/blob/next/APPSERVICES.md) command.
+For Conduit, you will have to manually register appservices using the the [register-appservice](https://gitlab.com/famedly/conduit/-/blob/next/APPSERVICES.md) command.
 
 Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`, then pass the content to Conduit:
-
 
     @conduit:example.com: register-appservice
     ```

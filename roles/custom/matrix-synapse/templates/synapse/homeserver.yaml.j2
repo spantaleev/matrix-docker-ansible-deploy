@@ -30,7 +30,7 @@ modules: {{ matrix_synapse_modules|to_json }}
 #
 # The server_name name will appear at the end of usernames and room addresses
 # created on this server. For example if the server_name was example.com,
-# usernames on this server would be in the format @user:example.com
+# usernames on this server would be in the format @alice:example.com
 #
 # In most cases you should avoid using a Matrix specific subdomain such as
 # matrix.example.com or synapse.example.com as the server_name for the same
@@ -55,7 +55,7 @@ pid_file: /homeserver.pid
 #web_client_location: https://riot.example.com/
 
 # The public-facing base URL that clients use to access this Homeserver (not
-# including _matrix/...). This is the same URL a user might enter into the
+# including _matrix/…). This is the same URL a user might enter into the
 # 'Custom Homeserver URL' field on their client. If you use Synapse with a
 # reverse proxy, this should be the URL to reach Synapse via the proxy.
 # Otherwise, it should be the URL to reach Synapse's client HTTP listener (see
@@ -590,26 +590,37 @@ templates:
 # purged are ignored and not stored again.
 #
 retention:
+  {% if matrix_synapse_retention_enabled %}
   # The message retention policies feature is disabled by default. Uncomment the
   # following line to enable it.
   #
-  #enabled: true
+  enabled: {{ matrix_synapse_retention_enabled|to_json }}
 
   # Default retention policy. If set, Synapse will apply it to rooms that lack the
   # 'm.room.retention' state event. Currently, the value of 'min_lifetime' doesn't
   # matter much because Synapse doesn't take it into account yet.
   #
-  #default_policy:
-  #  min_lifetime: 1d
-  #  max_lifetime: 1y
+  {% if matrix_synapse_retention_default_policy_min_lifetime | length > 0 or matrix_synapse_retention_default_policy_max_lifetime | length > 0 %}
+  default_policy:
+  {% if matrix_synapse_retention_default_policy_min_lifetime | length > 0 %}
+    min_lifetime: {{ matrix_synapse_retention_default_policy_min_lifetime|to_json }}
+  {% endif %}
+  {% if matrix_synapse_retention_default_policy_max_lifetime | length > 0 %}
+    max_lifetime: {{ matrix_synapse_retention_default_policy_max_lifetime|to_json }}
+  {% endif %}
+  {% endif %}
 
   # Retention policy limits. If set, and the state of a room contains a
   # 'm.room.retention' event in its state which contains a 'min_lifetime' or a
   # 'max_lifetime' that's out of these bounds, Synapse will cap the room's policy
   # to these limits when running purge jobs.
   #
-  #allowed_lifetime_min: 1d
-  #allowed_lifetime_max: 1y
+  {% if matrix_synapse_retention_allowed_lifetime_min | length > 0 %}
+  allowed_lifetime_min: {{ matrix_synapse_retention_allowed_lifetime_min|to_json }}
+  {% endif %}
+  {% if matrix_synapse_retention_allowed_lifetime_max | length > 0 %}
+  allowed_lifetime_max: {{ matrix_synapse_retention_allowed_lifetime_max|to_json }}
+  {% endif %}
 
   # Server admins can define the settings of the background jobs purging the
   # events which lifetime has expired under the 'purge_jobs' section.
@@ -640,12 +651,8 @@ retention:
   # room's policy to these values is done after the policies are retrieved from
   # Synapse's database (which is done using the range specified in a purge job's
   # configuration).
-  #
-  #purge_jobs:
-  #  - longest_max_lifetime: 3d
-  #    interval: 12h
-  #  - shortest_max_lifetime: 3d
-  #    interval: 1d
+  purge_jobs: {{ matrix_synapse_retention_purge_jobs | to_json }}
+  {% endif %}
 
 
 ## TLS ##
@@ -1235,6 +1242,7 @@ oembed:
   #
   #additional_providers:
   #  - oembed/my_providers.json
+  additional_providers: {{ matrix_synapse_oembed_additional_providers|to_json }}
 
 
 ## Captcha ##
@@ -2454,34 +2462,34 @@ email:
     #
     # Subject to use to notify about one message from one or more user(s) in a
     # room which has a name.
-    #message_from_person_in_room: "[%(app)s] You have a message on %(app)s from %(person)s in the %(room)s room..."
+    #message_from_person_in_room: "[%(app)s] You have a message on %(app)s from %(person)s in the %(room)s room…"
     #
     # Subject to use to notify about one message from one or more user(s) in a
     # room which doesn't have a name.
-    #message_from_person: "[%(app)s] You have a message on %(app)s from %(person)s..."
+    #message_from_person: "[%(app)s] You have a message on %(app)s from %(person)s…"
     #
     # Subject to use to notify about multiple messages from one or more users in
     # a room which doesn't have a name.
-    #messages_from_person: "[%(app)s] You have messages on %(app)s from %(person)s..."
+    #messages_from_person: "[%(app)s] You have messages on %(app)s from %(person)s…"
     #
     # Subject to use to notify about multiple messages in a room which has a
     # name.
-    #messages_in_room: "[%(app)s] You have messages on %(app)s in the %(room)s room..."
+    #messages_in_room: "[%(app)s] You have messages on %(app)s in the %(room)s room…"
     #
     # Subject to use to notify about multiple messages in multiple rooms.
-    #messages_in_room_and_others: "[%(app)s] You have messages on %(app)s in the %(room)s room and others..."
+    #messages_in_room_and_others: "[%(app)s] You have messages on %(app)s in the %(room)s room and others…"
     #
     # Subject to use to notify about multiple messages from multiple persons in
     # multiple rooms. This is similar to the setting above except it's used when
     # the room in which the notification was triggered has no name.
-    #messages_from_person_and_others: "[%(app)s] You have messages on %(app)s from %(person)s and others..."
+    #messages_from_person_and_others: "[%(app)s] You have messages on %(app)s from %(person)s and others…"
     #
     # Subject to use to notify about an invite to a room which has a name.
-    #invite_from_person_to_room: "[%(app)s] %(person)s has invited you to join the %(room)s room on %(app)s..."
+    #invite_from_person_to_room: "[%(app)s] %(person)s has invited you to join the %(room)s room on %(app)s…"
     #
     # Subject to use to notify about an invite to a room which doesn't have a
     # name.
-    #invite_from_person: "[%(app)s] %(person)s has invited you to chat on %(app)s..."
+    #invite_from_person: "[%(app)s] %(person)s has invited you to chat on %(app)s…"
 
     # Subject for emails related to account administration.
     #
@@ -2838,8 +2846,8 @@ opentracing:
     # By default, the list is empty.
     #
     #force_tracing_for_users:
-    #  - "@user1:server_name"
-    #  - "@user2:server_name"
+    #  - "@alice:server_name"
+    #  - "@bob:server_name"
 
     # Jaeger can be configured to sample traces at different rates.
     # All configuration options provided by Jaeger can be set here.
@@ -2985,6 +2993,9 @@ experimental_features:
     client_secret: {{ matrix_synapse_experimental_features_msc3861_client_secret | to_json }}
     admin_token: {{ matrix_synapse_experimental_features_msc3861_admin_token | to_json }}
     account_management_url: {{ matrix_synapse_experimental_features_msc3861_account_management_url | to_json }}
+  {% endif %}
+  {% if matrix_synapse_experimental_features_msc4108_enabled %}
+  msc4108_enabled: true
   {% endif %}
 
 # vim:ft=yaml

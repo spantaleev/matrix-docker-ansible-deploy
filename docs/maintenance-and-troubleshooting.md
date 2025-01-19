@@ -3,7 +3,8 @@
 ## How to see the current status of your services
 
 You can check the status of your services by using `systemctl status`. Example:
-```
+
+```sh
 sudo systemctl status matrix-synapse
 
 ● matrix-synapse.service - Synapse server
@@ -21,12 +22,11 @@ To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/j
 sudo journalctl -fu matrix-synapse
 ```
 
-
-## Increasing Synapse logging
+## Increase logging verbosity
 
 Because the [Synapse](https://github.com/element-hq/synapse) Matrix server is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`.
 
-If you'd like to debug an issue or [report a Synapse bug](https://github.com/matrix-org/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increasing the logging level to `INFO`.
+If you'd like to debug an issue or [report a Synapse bug](https://github.com/element-hq/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increasing the logging level to `INFO`.
 
 Example configuration (`inventory/host_vars/matrix.example.com/vars.yml`):
 
@@ -41,14 +41,13 @@ Re-run the playbook after making these configuration changes.
 ## Remove unused Docker data
 
 You can free some disk space from Docker, see [docker system prune](https://docs.docker.com/engine/reference/commandline/system_prune/) for more information.
-```bash
+
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune
 ```
+
+The shortcut command with `just` program is also available: `just run-tags run-docker-prune`
 
 ## Postgres
 
 See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
-
-## Ma1sd
-
-See the dedicated [Adjusting ma1sd Identity Server configuration](configuring-playbook-ma1sd.md) documentation page.

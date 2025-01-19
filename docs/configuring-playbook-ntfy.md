@@ -1,4 +1,4 @@
-# Setting up ntfy (optional)
+# Setting up the ntfy push notifications server (optional)
 
 The playbook can install and configure the [ntfy](https://ntfy.sh/) push notifications server for you.
 
@@ -8,6 +8,11 @@ This role is intended to support UnifiedPush notifications for use with the Matr
 
 **Note**: In contrast to push notifications using Google's FCM or Apple's APNs, the use of UnifiedPush allows each end-user to choose the push notification server that they prefer.  As a consequence, deploying this ntfy server does not by itself ensure any particular user or device or client app will use it.
 
+## Adjusting DNS records
+
+By default, this playbook installs ntfy on the `ntfy.` subdomain (`ntfy.example.com`) and requires you to create a CNAME record for `ntfy`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
 
 ## Adjusting the playbook configuration
 
@@ -25,37 +30,35 @@ ntfy_enabled: true
 #   log_level: DEBUG
 ```
 
-For a more complete list of variables that you could override, see the [`defaults/main.yml` file](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/-/blob/main/defaults/main.yml) of the ntfy Ansible role.
+For a more complete list of variables that you could override, see the [`defaults/main.yml` file](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/defaults/main.yml) of the ntfy Ansible role.
 
 For a complete list of ntfy config options that you could put in `ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options).
 
-### Adjusting the ntfy URL
-
-By default, this playbook installs ntfy on the `ntfy.` subdomain (`ntfy.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the ntfy URL (optional)
 
 By tweaking the `ntfy_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname
 ntfy_hostname: push.example.com
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain, **you may need to adjust your DNS** records to point the ntfy domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `ntfy`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+After changing the domain, **you may need to adjust your DNS** records to point the ntfy domain to the Matrix server.
 
 ## Installing
 
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
 
-```
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
@@ -102,17 +105,16 @@ ntfy also has a web app to subscribe to and push to topics from the browser. Thi
 
 The web app is disabled in this playbook by default as the expectation is that most users won't use it. You can either use the [official hosted one](https://ntfy.sh/app) (it supports using other public reachable ntfy instances) or host it yourself by setting `ntfy_web_root: "app"` and re-running Ansible.
 
-
 ## Troubleshooting
 
 First check that the Matrix client app you are using supports UnifiedPush. There may well be different variants of the app.
 
 Set the ntfy server's log level to 'DEBUG', as shown in the example settings above, and watch the server's logs with `sudo journalctl -fu matrix-ntfy`.
 
-To check if UnifiedPush is correctly configured on the client device, look at "Settings -> Notifications -> Notification Targets" in Element-Android or SchildiChat, or "Settings -> Notifications -> Devices" in FluffyChat. There should be one entry for each Matrix client app that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL.
+To check if UnifiedPush is correctly configured on the client device, look at "Settings -> Notifications -> Notification Targets" in Element Android or SchildiChat Android, or "Settings -> Notifications -> Devices" in FluffyChat. There should be one entry for each Matrix client app that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL.
 
-In the "Notification Targets" screen in Element-Android or SchildiChat, two relevant URLs are shown, "push\_key" and "Url", and both should begin with your ntfy server's URL. If "push\_key" shows your server but "Url" shows an external server such as `up.schildi.chat` then push notifications will still work but are being routed through that external server before they reach your ntfy server. To rectify that, in SchildiChat (at least around version 1.4.20.sc55) you must enable the `Force custom push gateway` setting as described in the "Usage" section above.
+In the "Notification Targets" screen in Element Android or SchildiChat Android, two relevant URLs are shown, "push\_key" and "Url", and both should begin with your ntfy server's URL. If "push\_key" shows your server but "Url" shows an external server such as `up.schildi.chat` then push notifications will still work but are being routed through that external server before they reach your ntfy server. To rectify that, in SchildiChat (at least around version 1.4.20.sc55) you must enable the `Force custom push gateway` setting as described in the "Usage" section above.
 
-If it is not working, useful tools are "Settings -> Notifications -> Re-register push distributor" and "Settings -> Notifications -> Troubleshoot Notifications" in SchildiChat (possibly also Element-Android). In particular the "Endpoint/FCM" step of that troubleshooter should display your ntfy server's URL that it has discovered from the ntfy client app.
+If it is not working, useful tools are "Settings -> Notifications -> Re-register push distributor" and "Settings -> Notifications -> Troubleshoot Notifications" in SchildiChat Android (possibly also Element Android). In particular the "Endpoint/FCM" step of that troubleshooter should display your ntfy server's URL that it has discovered from the ntfy client app.
 
 The simple [UnifiedPush troubleshooting](https://unifiedpush.org/users/troubleshooting/) app [UP-Example](https://f-droid.org/en/packages/org.unifiedpush.example/) can be used to manually test UnifiedPush registration and operation on an Android device.

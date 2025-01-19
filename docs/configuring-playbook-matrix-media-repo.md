@@ -1,4 +1,4 @@
-# Setting up matrix-media-repo (optional)
+# Storing Matrix media files using matrix-media-repo (optional)
 
 [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated "MMR") is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
 
@@ -30,6 +30,7 @@ By default, the media-repo will use the local filesystem for data storage. You c
 ## Configuring the media-repo
 
 Additional common configuration options:
+
 ```yaml
 
 # The postgres database pooling options
@@ -46,7 +47,7 @@ matrix_media_repo_database_max_idle_connections: 5
 # See docs/admin.md for information on what these people can do. They must belong to one of the
 # configured homeservers above.
 # matrix_media_repo_admins: [
-#   "@your_username:example.org"
+#   "@alice:example.org"
 # ]
 
 matrix_media_repo_admins: []
@@ -87,7 +88,7 @@ matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
 
 ```
 
-Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/roles/custom/matrix-media-repo/defaults/main.yml)
+Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](../roles/custom/matrix-media-repo/defaults/main.yml)
 
 ## Signing Keys
 
