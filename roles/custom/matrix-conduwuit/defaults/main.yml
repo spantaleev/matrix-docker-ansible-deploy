@@ -1,5 +1,5 @@
 ---
-# Conduwuit is a fork of Conduit, powered by Matrix
+# conduwuit is a very cool, featureful fork of conduit (https://gitlab.com/famedly/conduit).
 # Project source code URL: https://github.com/girlbossceo/conduwuit
 # See: https://conduwuit.puppyirl.gay/
 
@@ -7,17 +7,18 @@ matrix_conduwuit_enabled: true
 
 matrix_conduwuit_hostname: ''
 
-matrix_conduwuit_docker_image: "{{ matrix_conduwuit_docker_image_name_prefix }}girlbossceo/conduwuit:{{ matrix_conduwuit_docker_image_tag }}"
+matrix_conduwuit_docker_image: "{{ matrix_conduwuit_docker_image_registry_prefix }}girlbossceo/conduwuit:{{ matrix_conduwuit_docker_image_tag }}"
 matrix_conduwuit_docker_image_name_prefix: "docker.io/"
-# renovate: datasource=docker depName=girlbossceo/conduwuit
-matrix_conduwuit_docker_image_tag: "main"
+# renovate: datasource=docker depName=ghcr.io/girlbossceo/conduwuit
+matrix_conduwuit_docker_image_tag: v0.4.6-8f7ade4c22533a3177bfd8f175e178573ba6c1d4
 matrix_conduwuit_docker_image_force_pull: "{{ matrix_conduwuit_docker_image.endswith(':latest') }}"
+matrix_conduwuit_docker_image_registry_prefix: ghcr.io/
 
 matrix_conduwuit_base_path: "{{ matrix_base_data_path }}/conduwuit"
 matrix_conduwuit_config_path: "{{ matrix_conduwuit_base_path }}/config"
 matrix_conduwuit_data_path: "{{ matrix_conduwuit_base_path }}/data"
 
-matrix_conduwuit_port_number: 6167
+matrix_conduwuit_config_port_number: 6167
 
 matrix_conduwuit_tmp_directory_size_mb: 500
 
@@ -88,7 +89,7 @@ matrix_conduwuit_container_labels_internal_client_api_traefik_priority: "{{ matr
 matrix_conduwuit_container_labels_internal_client_api_traefik_entrypoints: ""
 
 # Controls whether labels will be added that expose the Server-Server API (Federation API) on a public Traefik entrypoint.
-matrix_conduwuit_container_labels_public_federation_api_enabled: "{{ matrix_conduwuit_allow_federation }}"
+matrix_conduwuit_container_labels_public_federation_api_enabled: "{{ matrix_conduwuit_config_allow_federation }}"
 matrix_conduwuit_container_labels_public_federation_api_traefik_hostname: "{{ matrix_conduwuit_hostname }}"
 matrix_conduwuit_container_labels_public_federation_api_traefik_path_prefix: /_matrix
 matrix_conduwuit_container_labels_public_federation_api_traefik_rule: "Host(`{{ matrix_conduwuit_container_labels_public_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduwuit_container_labels_public_federation_api_traefik_path_prefix }}`)"
@@ -97,6 +98,16 @@ matrix_conduwuit_container_labels_public_federation_api_traefik_entrypoints: ''
 # TLS is force-enabled here, because the spec (https://spec.matrix.org/v1.9/server-server-api/#tls) says that the federation API must use HTTPS.
 matrix_conduwuit_container_labels_public_federation_api_traefik_tls: true
 matrix_conduwuit_container_labels_public_federation_api_traefik_tls_certResolver: "{{ matrix_conduwuit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose the `/_conduwuit` path prefix on a public Traefik entrypoint.
+matrix_conduwuit_container_labels_public_conduwuit_api_enabled: true
+matrix_conduwuit_container_labels_public_conduwuit_api_traefik_hostname: "{{ matrix_conduwuit_hostname }}"
+matrix_conduwuit_container_labels_public_conduwuit_api_traefik_path_prefix: /_conduwuit
+matrix_conduwuit_container_labels_public_conduwuit_api_traefik_rule: "Host(`{{ matrix_conduwuit_container_labels_public_conduwuit_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_conduwuit_container_labels_public_conduwuit_api_traefik_path_prefix }}`)"
+matrix_conduwuit_container_labels_public_conduwuit_api_traefik_priority: 0
+matrix_conduwuit_container_labels_public_conduwuit_api_traefik_entrypoints: "{{ matrix_conduwuit_container_labels_traefik_entrypoints }}"
+matrix_conduwuit_container_labels_public_conduwuit_api_traefik_tls: "{{ matrix_conduwuit_container_labels_public_conduwuit_api_traefik_entrypoints != 'web' }}"
+matrix_conduwuit_container_labels_public_conduwuit_api_traefik_tls_certResolver: "{{ matrix_conduwuit_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # matrix_conduwuit_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
@@ -118,25 +129,61 @@ matrix_conduwuit_container_extra_arguments: []
 matrix_conduwuit_template_conduwuit_config: "{{ role_path }}/templates/conduwuit.toml.j2"
 
 # Max size for uploads, in bytes
-matrix_conduwuit_max_request_size: 20_000_000
+matrix_conduwuit_config_server_name: "{{ matrix_domain }}"
+
+# Max size for uploads, in bytes
+matrix_conduwuit_config_max_request_size: 20_000_000
 
 # Enables registration. If set to false, no users can register on this server.
-matrix_conduwuit_allow_registration: false
+matrix_conduwuit_config_allow_registration: false
 
-matrix_conduwuit_allow_federation: true
+# Controls the `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse` setting.
+# This is only used when `matrix_conduwuit_config_allow_registration` is set to true and no registration token is configured.
+matrix_conduwuit_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse: false
 
-# The display name suffix on registration. Change to '' to disable.
-matrix_conduwuit_new_user_displayname_suffix: ''
+# Controls the `registration_token` setting.
+# When registration is enabled (`matrix_conduwuit_config_allow_registration`) you:
+# - either need to set a token to protect registration from abuse
+# - or you need to enable the `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse` setting
+#   (see `matrix_conduwuit_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`),
+#   to allow registration without any form of 2nd-step.
+matrix_conduwuit_config_registration_token: ''
+
+# Controls the `new_user_displayname_suffix` setting.
+# This is the suffix that will be added to the displayname of new users.
+# Upstream defaults this to "🏳️‍⚧️", but we keep this consistent across all homeserver implementations and do not enable a suffix.
+matrix_conduwuit_config_new_user_displayname_suffix: ""
+
+# Controls the `allow_check_for_updates` setting.
+matrix_conduwuit_config_allow_check_for_updates: false
+
+# Controls the `emergency_password` setting.
+matrix_conduwuit_config_emergency_password: ''
+
+# Controls the `allow_federation` setting.
+matrix_conduwuit_config_allow_federation: true
 
 matrix_conduwuit_trusted_servers:
  - "matrix.org"
 
-# How many requests conduwuit sends to other servers at the same time
-matrix_conduwuit_max_concurrent_requests: 100
+matrix_conduwuit_config_log: "info,state_res=warn,rocket=off,_=off,sled=off"
 
 # TURN integration.
-# See: https://gitlab.com/famedly/conduwuit/-/blob/next/TURN.md
-matrix_conduwuit_turn_uris: []
-matrix_conduwuit_turn_secret: ''
-matrix_conduwuit_turn_username: ''
-matrix_conduwuit_turn_password: ''
+# See: https://conduwuit.puppyirl.gay/turn.html
+matrix_conduwuit_config_turn_uris: []
+matrix_conduwuit_config_turn_secret: ''
+matrix_conduwuit_config_turn_username: ''
+matrix_conduwuit_config_turn_password: ''
+
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_conduwuit_self_check_validate_certificates: true
+
+# Additional environment variables to pass to the container.
+#
+# Environment variables take priority over settings in the configuration file.
+#
+# Example:
+# matrix_conduwuit_environment_variables_extension: |
+#   CONDUWUIT_MAX_REQUEST_SIZE=50000000
+#   CONDUWUIT_REQUEST_TIMEOUT=60
+matrix_conduwuit_environment_variables_extension: ''

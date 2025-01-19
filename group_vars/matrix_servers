@@ -553,7 +553,7 @@ matrix_homeserver_container_client_api_endpoint: |-
       'synapse': ('matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled | default(false) else ('matrix-synapse:'+ matrix_synapse_container_client_api_port | default('8008') | string)),
       'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port | default('8008') | string),
       'conduit': ('matrix-conduit:' + matrix_conduit_port_number | default('8008') | string),
-      'conduwuit': ('matrix-conduwuit:' + matrix_conduwuit_port_number | default('8008') | string),
+      'conduwuit': ('matrix-conduwuit:' + matrix_conduwuit_config_port_number | default('8008') | string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -563,7 +563,7 @@ matrix_homeserver_container_federation_api_endpoint: |-
       'synapse': ('matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else ('matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port | default('8008') | string)),
       'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port | default('8008') | string),
       'conduit': ('matrix-conduit:' + matrix_conduit_port_number | default('8008') | string),
-      'conduwuit': ('matrix-conduwuit:' + matrix_conduwuit_port_number | default('8008') | string),
+      'conduwuit': ('matrix-conduwuit:' + matrix_conduwuit_config_port_number | default('8008') | string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -5818,7 +5818,7 @@ matrix_conduwuit_enabled: "{{ matrix_homeserver_implementation == 'conduwuit' }}
 
 matrix_conduwuit_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_conduwuit_allow_federation: "{{ matrix_homeserver_federation_enabled }}"
+matrix_conduwuit_config_allow_federation: "{{ matrix_homeserver_federation_enabled }}"
 
 matrix_conduwuit_container_network: "{{ matrix_homeserver_container_network }}"
 
@@ -5844,7 +5844,7 @@ matrix_conduwuit_container_labels_public_federation_api_traefik_tls: "{{ matrix_
 matrix_conduwuit_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_conduwuit_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
-matrix_conduwuit_turn_uris: |
+matrix_conduwuit_config_turn_uris: |
   {{
     ([
       'turns:' + matrix_server_fqn_matrix + '?transport=udp',
@@ -5857,9 +5857,11 @@ matrix_conduwuit_turn_uris: |
     ] if matrix_coturn_enabled else [])
   }}
 
-matrix_conduwuit_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
-matrix_conduwuit_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
-matrix_conduwuit_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_conduwuit_config_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_conduwuit_config_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_conduwuit_config_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+
+matrix_conduwuit_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 ######################################################################
 #

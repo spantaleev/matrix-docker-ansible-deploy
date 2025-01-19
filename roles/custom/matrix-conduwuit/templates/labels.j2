@@ -5,7 +5,7 @@ traefik.enable=true
 traefik.docker.network={{ matrix_conduwuit_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.matrix-conduwuit.loadbalancer.server.port={{ matrix_conduwuit_port_number }}
+traefik.http.services.matrix-conduwuit.loadbalancer.server.port={{ matrix_conduwuit_config_port_number }}
 
 
 {% if matrix_conduwuit_container_labels_public_client_root_enabled %}
@@ -124,6 +124,37 @@ traefik.http.routers.matrix-conduwuit-public-federation-api.tls.certResolver={{ 
 ############################################################
 #                                                          #
 # /Public Federation-API (/_matrix)                        #
+#                                                          #
+############################################################
+{% endif %}
+
+
+
+
+{% if matrix_conduwuit_container_labels_public_conduwuit_api_enabled %}
+############################################################
+#                                                          #
+# Public Conduwuit-API (/_conduwuit)                       #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-conduwuit-public-conduwuit-api.rule={{ matrix_conduwuit_container_labels_public_conduwuit_api_traefik_rule }}
+
+{% if matrix_conduwuit_container_labels_public_conduwuit_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-conduwuit-public-conduwuit-api.priority={{ matrix_conduwuit_container_labels_public_conduwuit_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-conduwuit-public-conduwuit-api.service=matrix-conduwuit
+traefik.http.routers.matrix-conduwuit-public-conduwuit-api.entrypoints={{ matrix_conduwuit_container_labels_public_conduwuit_api_traefik_entrypoints }}
+
+traefik.http.routers.matrix-conduwuit-public-conduwuit-api.tls={{ matrix_conduwuit_container_labels_public_conduwuit_api_traefik_tls | to_json }}
+{% if matrix_conduwuit_container_labels_public_conduwuit_api_traefik_tls %}
+traefik.http.routers.matrix-conduwuit-public-conduwuit-api.tls.certResolver={{ matrix_conduwuit_container_labels_public_conduwuit_api_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public Conduwuit-API (/_conduwuit)                      #
 #                                                          #
 ############################################################
 {% endif %}

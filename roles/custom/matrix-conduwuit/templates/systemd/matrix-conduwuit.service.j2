@@ -1,6 +1,6 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
-Description=Conduwuit Matrix homeserver
+Description=conduwuit Matrix homeserver
 {% for service in matrix_conduwuit_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
@@ -21,10 +21,10 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_conduwuit_tmp_directory_size_mb }}m \
 			--network={{ matrix_conduwuit_container_network }} \
-			--env conduwuit_CONFIG=/etc/matrix-conduwuit/conduwuit.toml \
+			--env CONDUWUIT_CONFIG=/etc/conduwuit/conduwuit.toml \
 			--label-file={{ matrix_conduwuit_base_path }}/labels \
-			--mount type=bind,src={{ matrix_conduwuit_data_path }},dst=/var/lib/matrix-conduwuit \
-			--mount type=bind,src={{ matrix_conduwuit_config_path }},dst=/etc/matrix-conduwuit,ro \
+			--mount type=bind,src={{ matrix_conduwuit_data_path }},dst=/var/lib/conduwuit \
+			--mount type=bind,src={{ matrix_conduwuit_config_path }},dst=/etc/conduwuit,ro \
 			{% for arg in matrix_conduwuit_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
