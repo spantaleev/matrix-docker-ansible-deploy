@@ -1,3 +1,14 @@
+# 2025-01-14
+
+## (Backward Compatibility Break) Synapse v1.122.0 requires Postgres v13
+
+The Synapse homeserver [requires Postgres v13 or newer](https://github.com/element-hq/synapse/issues/18034).
+
+If you've been maintaining your setup for a while and you haven't been doing [Postgres upgrades](maintenance-postgres.md#upgrading-postgresql), you may be on an old version of Postgres. The easiest way to check is to see the contents of the `/matrix/postgres/data/PG_VERSION` file.
+
+If you're on a Postgres version older than v13, you need to [upgrade your Postgres setup](maintenance-postgres.md#upgrading-postgresql) or Synapse will produce an error on startup.
+
+
 # 2024-11-26
 
 ## (Backward Compatibility Break) Synapse now defaults to enabling authenticated media
