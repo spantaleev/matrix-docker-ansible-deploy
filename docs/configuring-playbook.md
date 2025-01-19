@@ -35,6 +35,8 @@ For a more custom setup, see the [Other configuration options](#other-configurat
 
   - [Configuring Conduit](configuring-playbook-conduit.md), if you've switched to the [Conduit](https://conduit.rs) homeserver implementation
 
+  - [Configuring Conduwuit](configuring-playbook-conduwuit.md), if you've switched to the [Conduwuit](https://conduwuit.puppyirl.gay/) homeserver implementation
+
   - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation
 
 - Server components:
