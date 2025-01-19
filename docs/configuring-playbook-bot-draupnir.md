@@ -112,11 +112,19 @@ Manual access to Synapse's Admin APIs requires an access token for a homeserver 
 
 #### Run the `curl` command
 
-To disable rate limiting, run the following command on systems that ship curl (note that it does not work on outdated Windows 10). Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally. Before running it, make sure to replace `@bot.draupnir:example.com` with the MXID of your Draupnir:
+To disable rate limiting, run the following command on systems that ship curl. Before running it, make sure to replace:
+
+- `ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account
+- `example.com` with your base domain
+- `@bot.draupnir:example.com` with the MXID of your Draupnir bot user
 
 ```sh
-curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.draupnir:example.com/override_ratelimit
+curl --header "Authorization: Bearer ADMIN_ACCESS_TOKEN_HERE" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.draupnir:example.com/override_ratelimit
 ```
+
+**Notes**:
+- This does not work on outdated Windows 10 as curl is not available there.
+- Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally.
 
 ### Abuse Reports
 
