@@ -44,6 +44,12 @@ To expose the APIs publicly, add the following configuration to your `inventory/
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
 ```
 
+#### Obtain an access token for admin account
+
+Manual access to Synapse's Admin APIs requires an access token for a homeserver admin account. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md). If you have made Mjolnir an admin, you can just use the Mjolnir token.
+
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
 #### Run the `curl` command
 
 To disable rate limiting, run the following command on systems that ship curl (note that it does not work on outdated Windows 10). Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally. Before running it, make sure to replace `@bot.mjolnir:example.com` with the MXID of your Mjolnir:
@@ -51,8 +57,6 @@ To disable rate limiting, run the following command on systems that ship curl (n
 ```sh
 curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.mjolnir:example.com/override_ratelimit
 ```
-
-You can obtain an access token for a homeserver admin account in the same way as you can do so for Mjolnir itself. If you have made Mjolnir an admin, you can just use the Mjolnir token.
 
 ### Create a management room
 
