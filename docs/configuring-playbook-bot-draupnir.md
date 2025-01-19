@@ -16,7 +16,7 @@ Using your own account, create a new invite only room that you will use to manag
 
 It is possible to make the management room encrypted (E2EE). If doing so, then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
 
-Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the room ID by going to the room's settings, clicking "Advanced", and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
+Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking "Advanced". The room ID will look something like `!qporfwt:example.com`.
 
 After running the installation command, you'll need to invite the bot to the management room. See the [Usage](#usage) section for details about it.
 
