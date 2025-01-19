@@ -78,7 +78,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
 
-### Make sure the account is free from rate limiting
+### Make sure the account is free from rate limiting (recommended)
 
 If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a heavily recomended step. If you do not configure it, Draupnir performance will be degraded.**
 
