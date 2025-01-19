@@ -84,6 +84,8 @@ If your homeserver's implementation is Synapse, you will need to prevent it from
 
 This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally.
 
+**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
+
 To expose the APIs publicly, add the following configuration to your `vars.yml` file:
 
 ```yaml
@@ -91,8 +93,6 @@ matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
 ```
 
 The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
-
-**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
 
 To disable rate limiting, run the following command on systems that ship curl (note that it does not work on outdated Windows 10). Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally. Before running it, make sure to replace `@bot.draupnir:example.com` with the MXID of your Draupnir:
 
