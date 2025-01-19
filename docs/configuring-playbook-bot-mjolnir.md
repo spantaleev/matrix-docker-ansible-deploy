@@ -72,7 +72,7 @@ Finally invite the `@bot.mjolnir:example.com` account you created earlier into t
 
 ## Adjusting the playbook configuration
 
-To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
+To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created just now.
 
 ```yaml
 # Enable Mjolnir

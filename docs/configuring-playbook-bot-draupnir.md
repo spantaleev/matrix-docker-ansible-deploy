@@ -40,7 +40,7 @@ To enable the native E2EE support, you need to obtain an access token for Draupn
 
 Note that native E2EE requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
-To enable the native E2EE support, add the following configuration to your `vars.yml` file:
+To enable the native E2EE support, add the following configuration to your `vars.yml` file. Make sure to replace `CLEAN_ACCESS_TOKEN_HERE` with the access token you obtained just now.
 
 ```yaml
 # Enables the native E2EE support
@@ -48,12 +48,12 @@ matrix_bot_draupnir_enable_experimental_rust_crypto: true
 
 # Access token which the bot will use for logging in.
 # Comment out `matrix_bot_draupnir_login_native` when using this option.
-matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
+matrix_bot_draupnir_access_token: "CLEAN_ACCESS_TOKEN_HERE"
 ```
 
 ## Adjusting the playbook configuration
 
-To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
+To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created earlier.
 
 ```yaml
 # Enable Draupnir
