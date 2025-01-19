@@ -12,7 +12,7 @@ If your migrating from Mjolnir skip to [this section](#migrating-from-mjolnir-on
 
 ### Create a management room
 
-Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room. Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
+Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room.
 
 It is possible to make the management room encrypted (E2EE). If doing so, then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
 
@@ -33,6 +33,8 @@ Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draup
 To enable the native E2EE support, you need to obtain an access token for Draupnir and set it on your `vars.yml` file.
 
 Note that native E2EE requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
+
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 To enable the native E2EE support, add the following configuration to your `vars.yml` file:
 
@@ -96,9 +98,7 @@ curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.exam
 
 ### Obtain an access token
 
-Manual access to Synapse's Admin API requires an access token. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
-
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+Manual access to Synapse's Admin APIs requires an access token. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
 ### Abuse Reports
 
@@ -166,6 +166,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ## Usage
 
 To use Draupnir, you need to invite the bot (`@bot.draupnir:example.com`) to its management room which you have created earlier.
+
+⚠️ **Warning**: anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
 You can refer to the upstream [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) for additional ways to use and configure Draupnir and for a more detailed usage guide.
 
