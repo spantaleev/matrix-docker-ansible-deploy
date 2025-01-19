@@ -30,10 +30,6 @@ This management room is used to control who has access to your D4A deployment. T
 
 ⚠️ **Warning**: anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
-### Set an alias to the management room
-
-Next, set an alias to the management room.
-
 ## Adjusting the playbook configuration
 
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ALIAS_HERE`.
