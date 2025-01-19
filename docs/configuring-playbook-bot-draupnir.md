@@ -28,12 +28,6 @@ To disable it, remove the configuration `matrix_bot_draupnir_pantalaimon_use: tr
 
 Since the bot user for E2EE is managed by Draupnir directly, it is safe to remove `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` variables. If you do not use Pantalaimon for other components, it is also safe to remove `matrix_pantalaimon_enabled: true` too.
 
-### End-to-End Encryption support
-
-Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without an E2EE capable device.
-
-Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
-
 ## Adjusting the playbook configuration
 
 To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created earlier.
@@ -47,11 +41,17 @@ matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 # matrix_bot_draupnir_login: bot.draupnir
 ```
 
+### End-to-End Encryption support
+
+Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without an E2EE capable device.
+
+Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
+
 If you would like to enable the E2EE support, move to [the next section](#configuration-with-e2ee-support). If you would not like to enable it, move to [the section below](#configuration-without-e2ee-support).
 
-### Configuration with E2EE support
+#### Configuration with E2EE support
 
-#### Create the bot user with a password
+##### Create the bot user with a password
 
 If you will enable the E2EE support, you need to obtain a fresh access token for the bot. To do so, by default you need to create the bot user first.
 
@@ -72,7 +72,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
 
-#### Obtain a fresh access token
+##### Obtain a fresh access token
 
 Since v2.0.0 Draupnir supports E2EE natively. Note that native E2EE requires a fresh access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
@@ -91,7 +91,7 @@ Replace `bot.draupnir` if you are setting your own user as the bot. Also, replac
 
 ⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
-#### Specify the access token to `vars.yml`
+##### Specify the access token to `vars.yml`
 
 After obtaining the fresh token, add the following configuration to your `vars.yml` file. Make sure to replace `FRESH_ACCESS_TOKEN_HERE` with the one created [above](#obtain-a-fresh-access-token).
 
@@ -102,11 +102,11 @@ matrix_bot_draupnir_enable_experimental_rust_crypto: true
 matrix_bot_draupnir_access_token: "FRESH_ACCESS_TOKEN_HERE"
 ```
 
-#### Comment out `matrix_bot_draupnir_password`
+##### Comment out `matrix_bot_draupnir_password`
 
 After setting the access token, you'd need to comment out `matrix_bot_draupnir_password` since it is no longer needed as long as the E2EE support is enabled.
 
-### Configuration without E2EE support
+#### Configuration without E2EE support
 
 To enable the bot without the E2EE support, add the following configuration to your `vars.yml` file. Make sure to specify either a password or access token for the bot. As E2EE support is not going to be enabled, the access token can be the one obtained via Element Web.
 
@@ -122,7 +122,7 @@ To enable the bot without the E2EE support, add the following configuration to y
 # matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
 ```
 
-#### Create the bot user
+##### Create the bot user
 
 Then, run the playbook with the following command to make sure that the bot user has been created.
 
