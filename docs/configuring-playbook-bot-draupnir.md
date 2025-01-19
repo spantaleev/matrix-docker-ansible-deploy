@@ -20,29 +20,29 @@ It is possible to make the management room encrypted (E2EE). If doing so, then y
 
 Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking "Advanced". The room ID will look something like `!qporfwt:example.com`.
 
-Finally invite the `@bot.draupnir:example.com` account that the playbook will create for you to the management room. Please note that clients can issue a warning that your attempting to invite a user that doesnt have a profile and might not exist. This warning is expected as your inviting the bot before its user account exists.
+Finally invite the `@bot.draupnir:example.com` account that the playbook will create for you to the management room. Please note that clients can issue a warning that you are attempting to invite a user that does not have a profile and might not exist. This warning is expected as your inviting the bot before its user account exists.
 
 ## End-to-End Encryption support
 
-Decide whether you want to support having an Encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
+Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
 
-Refer to Draupnir's [Documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more information on why you might or might not care about encryption support for protected rooms.
+Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
 
-**Note**: Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions.
+**Note**: since v2.0.0 Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions.
 
 ### Native E2EE support
 
-To enable the native E2EE support, you need to obtain an access token for Draupnir.
+To enable the native E2EE support, you need to obtain an access token for Draupnir and set it on your `vars.yml` file.
 
 Note that native E2EE requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
 To enable the native E2EE support, add the following configuration to your `vars.yml` file:
 
 ```yaml
-# Enables the native E2EE Support
+# Enables the native E2EE support
 matrix_bot_draupnir_enable_experimental_rust_crypto: true
 
-# Access Token the bot uses to login.
+# Access token which the bot will use for logging in.
 # Comment out `matrix_bot_draupnir_login_native` when using this option.
 matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
 ```
@@ -68,14 +68,15 @@ matrix_bot_draupnir_login_native: true
 matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
-Before Proceeding run the playbook with the following command to make sure the Draupnir user has been created.
+Before proceeding to the next step, run the playbook with the following command to make sure that the bot user has been created.
+
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
 ```
 
 ### Make sure the account is free from rate limiting
 
-If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a heavily recomended step. If you do not configure it, Draupnir performance will be degraded.**
+If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a highly recommended step. If you do not configure it, Draupnir performance will be degraded.**
 
 This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally.
 
@@ -114,7 +115,7 @@ matrix_bot_draupnir_abuse_reporting_enabled: true
 <!--
 NOTE: this is unsupported by the playbook due to the admin API being inaccessible from containers currently.
 
-The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below. 
+The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below.
 -->
 
 ### Extending the configuration
