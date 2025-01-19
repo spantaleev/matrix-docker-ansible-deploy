@@ -34,14 +34,6 @@ Decide whether you want to support having an encrypted management room or not. D
 
 Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
 
-#### Obtain a fresh access token
-
-If you will enable the E2EE support, you need to obtain a fresh access token for Draupnir.
-
-Since v2.0.0 Draupnir supports E2EE natively. Note that native E2EE requires a fresh access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
-
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
-
 ## Adjusting the playbook configuration
 
 To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created earlier.
@@ -55,9 +47,29 @@ matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 # matrix_bot_draupnir_login: bot.draupnir
 ```
 
+### Run the playbook
+
+Before proceeding to the next step, run the playbook with the following command to make sure that the bot user has been created.
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
+```
+
+The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
+
 ### Configuration with E2EE support
 
-To enable the bot with the E2EE support, add the following configuration to your `vars.yml` file. Make sure to replace `FRESH_ACCESS_TOKEN_HERE` with the one created [above](#obtain-a-fresh-access-token).
+#### Obtain a fresh access token
+
+If you will enable the E2EE support, you need to obtain a fresh access token for the bot you have just created.
+
+Since v2.0.0 Draupnir supports E2EE natively. Note that native E2EE requires a fresh access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
+
+⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
+#### Add the configuration
+
+After obtaining the fresh token, add the following configuration to your `vars.yml` file. Make sure to replace `FRESH_ACCESS_TOKEN_HERE` with the one created [above](#obtain-a-fresh-access-token).
 
 ```yaml
 # Enables the native E2EE support
@@ -81,16 +93,6 @@ To enable the bot without the E2EE support, add the following configuration to y
 #
 # matrix_bot_draupnir_access_token: "ACCESS_TOKEN_HERE"
 ```
-
-### Run the playbook
-
-Before proceeding to the next step, run the playbook with the following command to make sure that the bot user has been created.
-
-```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
-```
-
-The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
 
 ### Make sure the account is free from rate limiting (recommended)
 
