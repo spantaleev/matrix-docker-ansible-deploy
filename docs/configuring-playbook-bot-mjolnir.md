@@ -92,7 +92,7 @@ matrix_bot_mjolnir_enabled: true
 matrix_bot_mjolnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
-### End-to-End Encryption support
+### Enable End-to-End Encryption support (optional)
 
 Decide whether you want Mjolnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms.
 

@@ -20,7 +20,7 @@ Once you have created the room you need to copy the room ID so you can specify i
 
 After running the installation command, you'll need to invite the bot to the management room. See the [Usage](#usage) section for details about it.
 
-## End-to-End Encryption support
+## Enable End-to-End Encryption support (optional)
 
 Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
 
