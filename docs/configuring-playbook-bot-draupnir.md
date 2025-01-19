@@ -16,7 +16,7 @@ Using your own account, create a new invite only room that you will use to manag
 
 ⚠️ **Warning**: anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
-If you make the management room encrypted (E2EE), then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
+It is possible to make the management room encrypted (E2EE). If doing so, then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
 
 Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element Web you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
 
