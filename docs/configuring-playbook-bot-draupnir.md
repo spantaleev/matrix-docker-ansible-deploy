@@ -6,7 +6,7 @@ See the project's [documentation](https://the-draupnir-project.github.io/draupni
 
 This documentation page is about installing Draupnir in bot mode. As an alternative, you can run a multi-instance Draupnir deployment by installing [Draupnir in appservice mode](./configuring-playbook-appservice-draupnir-for-all.md) (called Draupnir-for-all) instead.
 
-If your migrating from Mjolnir skip to [this section](#migrating-from-mjolnir-only-required-if-migrating).
+If your migrating from [Mjolnir](configuring-playbook-bot-mjolnir.md), skip to [this section](#migrating-from-mjolnir-only-required-if-migrating).
 
 ## Prerequisites
 
