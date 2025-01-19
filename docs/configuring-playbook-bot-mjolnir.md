@@ -52,7 +52,9 @@ You can obtain an access token for a homeserver admin account in the same way as
 
 ### Create a management room
 
-Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room. Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
+Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room.
+
+⚠️ **Warning**: anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
 If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see [below](#configuration-with-e2ee-support)).
 
