@@ -6,7 +6,7 @@ See the project's [documentation](https://docs.conduit.rs/) to learn what it doe
 
 By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document.
 
-💡 **Note**: The playbook also supports installing a (currently) faster-moving Conduit fork called [Conduwuit](./configuring-playbook-conduwuit.md).
+💡 **Note**: The playbook also supports installing a (currently) faster-moving Conduit fork called [conduwuit](./configuring-playbook-conduwuit.md).
 
 ⚠️ **Warnings**:
 
