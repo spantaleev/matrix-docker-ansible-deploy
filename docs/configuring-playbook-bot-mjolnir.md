@@ -131,7 +131,11 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 
 ### Extending the configuration
 
-You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-mjolnir/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_mjolnir_configuration_extension_yaml` variable
 
 For example, to change Mjolnir's `recordIgnoredInvites` option to `true`, add the following configuration to your `vars.yml` file:
 
