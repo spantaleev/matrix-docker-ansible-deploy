@@ -20,8 +20,6 @@ It is possible to make the management room encrypted (E2EE). If doing so, then y
 
 Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking "Advanced". The room ID will look something like `!qporfwt:example.com`.
 
-Finally invite the `@bot.draupnir:example.com` account that the playbook will create for you to the management room. Please note that clients can issue a warning that you are attempting to invite a user that does not have a profile and might not exist. This warning is expected as your inviting the bot before its user account exists.
-
 ## End-to-End Encryption support
 
 Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
@@ -162,6 +160,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
 ## Usage
+
+To use Draupnir, you need to invite the bot (`@bot.draupnir:example.com`) to its management room which you have created earlier.
 
 You can refer to the upstream [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) for additional ways to use and configure Draupnir and for a more detailed usage guide.
 
