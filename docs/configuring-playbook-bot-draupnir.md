@@ -26,7 +26,13 @@ Decide whether you want to support having an encrypted management room or not. D
 
 Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
 
-**Note**: since v2.0.0 Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions.
+### Disable Pantalaimon for Draupnir (since v2.0.0; optional)
+
+It is known that running Draupnir along with Pantalaimon breaks all workflows that involve answering prompts with reactions.
+
+If you are updating Draupnir from v1.x.x and have enabled Pantalaimon for it, you can disable Pantalaimon in favor of the native E2EE support. To disable Pantalaimon, remove the configuration `matrix_bot_draupnir_pantalaimon_use: true` from your `vars.yml` file.
+
+**Note**: because the management room is still encrypted, disabling it without enabling the native E2EE support will break the management room.
 
 ### Native E2EE support
 
@@ -138,7 +144,7 @@ matrix_bot_draupnir_configuration_extension_yaml: |
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
 
-Note that Pantalaimon is unsupported by Draupnir so it is recommended to consult the instructions to enable [the native E2EE support](#native-e2ee-support).
+Note that Draupnir supports E2EE natively, so you can enable it instead of Pantalaimon. It is recommended to consult the instruction [here](#native-e2ee-support).
 
 That is all you need to do due to that Draupnir can complete migration on its own.
 
