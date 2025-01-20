@@ -34,7 +34,8 @@ traefik_dashboard_basicauth_user: YOUR_USERNAME_HERE
 traefik_dashboard_basicauth_password: YOUR_PASSWORD_HERE
 ```
 
-⚠️ **Warning**: Enabling the dashboard on a hostname you use for something else (like `matrix_server_fqn_matrix` in the configuration above) may cause conflicts. Enabling the Traefik Dashboard makes Traefik capture all `/dashboard` and `/api` requests and forward them to itself. If any of the services hosted on the same hostname requires any of these 2 URL prefixes, you will experience problems. So far, we're not aware of any playbook services which occupy these endpoints and are likely to cause conflicts.
+> [!WARNING]
+> Enabling the dashboard on a hostname you use for something else (like `matrix_server_fqn_matrix` in the configuration above) may cause conflicts. Enabling the Traefik Dashboard makes Traefik capture all `/dashboard` and `/api` requests and forward them to itself. If any of the services hosted on the same hostname requires any of these 2 URL prefixes, you will experience problems. So far, we're not aware of any playbook services which occupy these endpoints and are likely to cause conflicts.
 
 ## Additional configuration
 
@@ -134,7 +135,8 @@ Changing the `url` to one with an `http://` prefix would allow to connect to the
 
 With these changes, all TCP traffic will be reverse-proxied to the target system.
 
-⚠️ **Warning**: This configuration might lead to problems or need additional steps when a [certbot](https://certbot.eff.org/) behind Traefik also tries to manage [Let's Encrypt](https://letsencrypt.org/) certificates, as Traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```.
+> [!WARNING]
+> This configuration might lead to problems or need additional steps when a [certbot](https://certbot.eff.org/) behind Traefik also tries to manage [Let's Encrypt](https://letsencrypt.org/) certificates, as Traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```.
 
 ## Traefik behind a `proxy_protocol` reverse-proxy
 

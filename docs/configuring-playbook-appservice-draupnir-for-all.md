@@ -28,7 +28,8 @@ The management room has to be given an alias, and your bot has to be invited to 
 
 This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel.
 
-⚠️ **Warning**: anyone in this room can control the bot so it is important that you only invite trusted users to this room.
+> [!WARNING]
+> Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
 ## Adjusting the playbook configuration
 

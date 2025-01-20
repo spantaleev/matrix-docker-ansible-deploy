@@ -24,7 +24,8 @@ If you would like Mjolnir to be able to deactivate users, move aliases, shutdown
 
 The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ### Make sure the account is free from rate limiting
 
@@ -54,7 +55,8 @@ You can obtain an access token for a homeserver admin account in the same way as
 
 Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room.
 
-⚠️ **Warning**: anyone in this room can control the bot so it is important that you only invite trusted users to this room.
+> [!WARNING]
+> Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
 It is possible to make the management room encrypted (E2EE). If doing so, then you MUST enable and use Pantalaimon (see [below](#configuration-with-e2ee-support)).
 

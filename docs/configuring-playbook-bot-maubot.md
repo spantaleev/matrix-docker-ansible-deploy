@@ -100,4 +100,5 @@ This can be done via `mbc login` then `mbc auth` (see the [maubot documentation]
 
 Alternatively, you can refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md). Be aware that you'd better use the **Obtain an access token via curl** method (not **Obtain an access token via Element Web**) as the latter will causes issues to your bot in encrypted rooms. Read [more](https://docs.mau.fi/maubot/usage/basic.html#creating-clients).
 
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.

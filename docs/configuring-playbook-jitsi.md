@@ -72,7 +72,8 @@ jitsi_prosody_auth_internal_accounts:
 
 #### Authenticate using Matrix OpenID: Auth-Type `matrix`
 
-⚠️ **Warning**: this breaks the Jitsi instance on federated rooms probably and does not allow sharing conference links with guests.
+> [!WARNING]
+> This breaks the Jitsi instance on federated rooms probably and does not allow sharing conference links with guests.
 
 This authentication method requires [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service), which can be installed using this [playbook](configuring-playbook-user-verification-service.md). It verifies against Matrix openID, and requires a user-verification-service to run.
 
@@ -149,7 +150,8 @@ To enable the Gravatar service, add the following configuration to your `vars.ym
 jitsi_disable_gravatar: false
 ```
 
-⚠️ **Warning**: this will result in third party request leaking data to the Gravatar Service (`gravatar.com`, unless configured otherwise). Besides metadata, the Matrix user_id and possibly the room ID (via `referrer` header) will be also sent to the third party.
+> [!WARNING]
+> This will result in third party request leaking data to the Gravatar Service (`gravatar.com`, unless configured otherwise). Besides metadata, the Matrix user_id and possibly the room ID (via `referrer` header) will be also sent to the third party.
 
 ### Fine tune Jitsi (optional)
 

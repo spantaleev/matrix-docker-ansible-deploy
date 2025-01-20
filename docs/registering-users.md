@@ -42,7 +42,8 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=USERNAME_HE
 
 Feel free to register as many users (for friends, family, etc.) as you want. Still, perhaps you should grant full administrative access to your user account only (with `admin=yes`), and others should be created with `admin=no`.
 
-⚠️ **Warning**: If you're registering users against Matrix Authentication Service, do note that it [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user. Upon a user's first login, they will be asked to confirm their email address. This requires that email sending is [configured](./configuring-playbook-email.md). You can also consult the [Working around email deliverability issues](./configuring-playbook-matrix-authentication-service.md#working-around-email-deliverability-issues) section for more information.
+> [!WARNING]
+> If you're registering users against Matrix Authentication Service, do note that it [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user. Upon a user's first login, they will be asked to confirm their email address. This requires that email sending is [configured](./configuring-playbook-email.md). You can also consult the [Working around email deliverability issues](./configuring-playbook-matrix-authentication-service.md#working-around-email-deliverability-issues) section for more information.
 
 ### Registering users manually for Synapse
 
@@ -80,13 +81,15 @@ This `register-user` script actually invokes the `mas-cli manage register-user` 
 /matrix/matrix-authentication-service/bin/mas-cli manage register-user --help
 ```
 
-⚠️ **Warning**: Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user. Upon a user's first login, they will be asked to confirm their email address. This requires that email sending is [configured](./configuring-playbook-email.md). You can also consult the [Working around email deliverability issues](./configuring-playbook-matrix-authentication-service.md#working-around-email-deliverability-issues) section for more information.
+> [!WARNING]
+> Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user. Upon a user's first login, they will be asked to confirm their email address. This requires that email sending is [configured](./configuring-playbook-email.md). You can also consult the [Working around email deliverability issues](./configuring-playbook-matrix-authentication-service.md#working-around-email-deliverability-issues) section for more information.
 
 ## Managing users via a Web UI
 
 To manage users more easily (via a web user-interace), you can install [Synapse Admin](configuring-playbook-synapse-admin.md).
 
-⚠️ **Warning**: If you're using [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md), note that user management via synapse-admin is not fully working yet. See the [Expectations](configuring-playbook-matrix-authentication-service.md#expectations) section for more information.
+> [!WARNING]
+> If you're using [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md), note that user management via synapse-admin is not fully working yet. See the [Expectations](configuring-playbook-matrix-authentication-service.md#expectations) section for more information.
 
 ## Letting certain users register on your private server
 

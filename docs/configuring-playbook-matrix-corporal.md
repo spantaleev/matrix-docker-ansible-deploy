@@ -2,7 +2,8 @@
 
 <hr/>
 
-⚠️ **Warning**: This is an advanced feature! It requires prior experience with Matrix and a specific need for using [Matrix Corporal](https://github.com/devture/matrix-corporal). If you're unsure whether you have such a need, you most likely don't.
+> [!WARNING]
+> This is an advanced feature! It requires prior experience with Matrix and a specific need for using [Matrix Corporal](https://github.com/devture/matrix-corporal). If you're unsure whether you have such a need, you most likely don't.
 
 <hr/>
 
