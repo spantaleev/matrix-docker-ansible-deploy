@@ -1,22 +1,22 @@
-# Configuring Conduwuit (optional)
+# Configuring conduwuit (optional)
 
-The playbook can install and configure the [Conduwuit](https://conduwuit.puppyirl.gay/) Matrix server for you.
+The playbook can install and configure the [conduwuit](https://conduwuit.puppyirl.gay/) Matrix server for you.
 
 See the project's [documentation](https://conduwuit.puppyirl.gay/) to learn what it does and why it might be useful to you.
 
 By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document.
 
-💡 **Note**: Conduwuit is a fork of [Conduit](./configuring-playbook-conduit.md), which the playbook also supports. See [Differences from upstream Conduit](https://conduwuit.puppyirl.gay/differences.html).
+💡 **Note**: conduwuit is a fork of [Conduit](./configuring-playbook-conduit.md), which the playbook also supports. See [Differences from upstream Conduit](https://conduwuit.puppyirl.gay/differences.html).
 
 ⚠️ **Warnings**:
 
-- **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Conduwuit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
+- **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> conduwuit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
 
 - **Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
 
 ## Adjusting the playbook configuration
 
-To use Conduwuit, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:
+To use conduwuit, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:
 
 ```yaml
 matrix_homeserver_implementation: conduwuit
@@ -51,7 +51,7 @@ matrix_conduwuit_environment_variables_extension: |
 
 ## Creating the first user account
 
-Unlike other homeserver implementations (like Synapse and Dendrite), Conduwuit does not support creating users via the command line or via the playbook.
+Unlike other homeserver implementations (like Synapse and Dendrite), conduwuit does not support creating users via the command line or via the playbook.
 
 If you followed the instructions above (see [Adjusting the playbook configuration](#adjusting-the-playbook-configuration)), you should have registration enabled and protected by a registration token.
 
@@ -64,9 +64,9 @@ The **first user account that you create will be marked as an admin** and **will
 
 For other homeserver implementations (like Synapse and Dendrite), the playbook automatically registers appservices (for bridges, bots, etc.) with the homeserver.
 
-For Conduwuit, you will have to manually register appservices using the [`!admin appservices register` command](https://conduwuit.puppyirl.gay/appservices.html#set-up-the-appservice---general-instructions) sent to the server bot account.
+For conduwuit, you will have to manually register appservices using the [`!admin appservices register` command](https://conduwuit.puppyirl.gay/appservices.html#set-up-the-appservice---general-instructions) sent to the server bot account.
 
-The server's bot account has a Matrix ID of `@conduit:example.com` (not `@conduwuit:example.com`!) due to Conduwuit's historical legacy.
+The server's bot account has a Matrix ID of `@conduit:example.com` (not `@conduwuit:example.com`!) due to conduwuit's historical legacy.
 Your first user account would already have been invited to an admin room with this bot.
 
 Find the appservice file you'd like to register. This can be any `registration.yaml` file found in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`.
