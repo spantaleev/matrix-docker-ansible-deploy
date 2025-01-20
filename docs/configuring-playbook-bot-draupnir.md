@@ -189,7 +189,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components ([Pantalaimon](#disable-pantalaimon-for-draupnir-since-v2-0-0), for example), you'd need to run `just setup-all`, or these components will still remain installed.
 
-### Discharge rate limiting for Draupnir (recommended)
+### Disable rate limiting for Draupnir (recommended)
 
 If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a heavily recomended step. If you do not configure it, Draupnir performance will be degraded.**
 
@@ -219,7 +219,7 @@ Manual access to Synapse's Admin APIs requires an access token for a homeserver 
 
 #### Run the `curl` command
 
-After applying the configuration to the server and obtaining the access token for the admin account, run the following command on systems that ship curl to discharge rate limiting.
+After applying the configuration to the server and obtaining the access token for the admin account, run the following command on systems that ship curl to disable rate limiting.
 
 Before running it, make sure to replace:
 - `ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account

@@ -147,7 +147,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 - If you change the Pantalaimon's password (`matrix_bot_mjolnir_pantalaimon_password` in your `vars.yml` file) subsequently, its credentials on the homeserver won't be updated automatically. If you'd like to change the password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_mjolnir_pantalaimon_password` to let Pantalaimon know its new password.
 
-### Discharge rate limiting for Mjolnir
+### Disable rate limiting for Mjolnir
 
 If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a required step. If you do not configure it, Mjolnir will crash.**
 
@@ -179,7 +179,7 @@ If you have made Mjolnir an admin, you can just use the Mjolnir token.
 
 #### Run the `curl` command
 
-After applying the configuration to the server and obtaining the access token for the admin account, run the following command on systems that ship curl to discharge rate limiting.
+After applying the configuration to the server and obtaining the access token for the admin account, run the following command on systems that ship curl to disable rate limiting.
 
 Before running it, make sure to replace:
 - `ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account
