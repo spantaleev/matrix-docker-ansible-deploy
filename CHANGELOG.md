@@ -1,3 +1,18 @@
+# 2025-01-19
+
+## Conduwuit support
+
+Thanks to [Virkkunen](https://github.com/Virkkunen), we now have optional experimental [Conduwuit](https://conduwuit.puppyirl.gay/) homeserver support for new installations.
+
+Conduwuit is a fork of [Conduit](./docs/configuring-playbook-conduit.md), which the playbook also supports. See [Differences from upstream Conduit](https://conduwuit.puppyirl.gay/differences.html).
+
+Existing installations do **not** need to be updated. **Synapse is still the default homeserver implementation** installed by the playbook.
+
+To try out Conduwuit, we recommend that you **use a new server**. Refer to our [Configuring Conduwuit](./docs/configuring-playbook-conduwuit.md) guide for details.
+
+**The homeserver implementation of an existing server cannot be changed** (e.g. from Synapse/Conduit/Dendrite to Conduwuit) without data loss.
+
+
 # 2025-01-14
 
 ## (Backward Compatibility Break) Synapse v1.122.0 requires Postgres v13

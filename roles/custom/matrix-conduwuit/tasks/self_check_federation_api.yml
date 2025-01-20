@@ -1,0 +1,28 @@
+---
+
+- name: Check Matrix Federation API
+  ansible.builtin.uri:
+    url: "{{ matrix_synapse_federation_api_url_endpoint_public }}"
+    follow_redirects: none
+    validate_certs: "{{ matrix_synapse_self_check_validate_certificates }}"
+  register: result_matrix_synapse_federation_api
+  ignore_errors: true
+  check_mode: false
+  when: matrix_synapse_enabled | bool
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Fail if Matrix Federation API not working
+  ansible.builtin.fail:
+    msg: "Failed checking Matrix Federation API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_synapse_federation_api_url_endpoint_public }}`). Is Synapse running? Is port {{ matrix_federation_public_port }} open in your firewall? Full error: {{ result_matrix_synapse_federation_api }}"
+  when: "matrix_synapse_enabled | bool and matrix_synapse_federation_enabled | bool and (result_matrix_synapse_federation_api.failed or 'json' not in result_matrix_synapse_federation_api)"
+
+- name: Fail if Matrix Federation API unexpectedly enabled
+  ansible.builtin.fail:
+    msg: "Matrix Federation API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_synapse_federation_api_url_endpoint_public }}`) despite being disabled."
+  when: "matrix_synapse_enabled | bool and not matrix_synapse_federation_enabled | bool and not result_matrix_synapse_federation_api.failed"
+
+- name: Report working Matrix Federation API
+  ansible.builtin.debug:
+    msg: "The Matrix Federation API at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_synapse_federation_api_url_endpoint_public }}`) is working"
+  when: "matrix_synapse_enabled | bool and matrix_synapse_federation_enabled | bool"

@@ -6,6 +6,8 @@ See the project's [documentation](https://docs.conduit.rs/) to learn what it doe
 
 By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document.
 
+💡 **Note**: The playbook also supports installing a (currently) faster-moving Conduit fork called [Conduwuit](./configuring-playbook-conduwuit.md).
+
 ⚠️ **Warnings**:
 
 - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Conduit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
@@ -48,9 +50,9 @@ Since it is difficult to create the first user account on Conduit (see [famedly/
 
 ## Configuring bridges / appservices
 
-Automatic appservice setup is currently unsupported when using Conduit. After setting up the service as usual you may notice that it is unable to start.
+For other homeserver implementations (like Synapse and Dendrite), the playbook automatically registers appservices (for bridges, bots, etc.) with the homeserver.
 
-You will have to manually register appservices using the the [register-appservice](https://gitlab.com/famedly/conduit/-/blob/next/APPSERVICES.md) command.
+For Conduit, you will have to manually register appservices using the the [register-appservice](https://gitlab.com/famedly/conduit/-/blob/next/APPSERVICES.md) command.
 
 Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`, then pass the content to Conduit:
 
