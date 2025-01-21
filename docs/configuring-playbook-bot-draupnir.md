@@ -73,11 +73,17 @@ matrix_bot_draupnir_login_native: true
 matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
-Before proceeding to the next step, run the playbook with the following command to make sure that the bot user has been created.
+### Create and invite the bot to the management room
+
+Before proceeding to the next step, run the playbook with the following command to create the bot user.
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
 ```
+
+**Note**: the `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
+
+Then, invite the bot (`@bot.draupnir:example.com`) to its management room which you have created earlier.
 
 ### Make sure the account is free from rate limiting (optional, recommended)
 
@@ -167,17 +173,11 @@ After configuring the playbook, run it with [playbook tags](playbook-tags.md) as
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```
 
-**Notes**:
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
-- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
-
-- The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
-
-  `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
 ## Usage
-
-To use Draupnir, you need to invite the bot (`@bot.draupnir:example.com`) to its management room which you have created earlier.
 
 You can refer to the upstream [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) for additional ways to use and configure Draupnir and for a more detailed usage guide.
 
