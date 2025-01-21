@@ -31,6 +31,10 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 After installation, `synapse_auto_compressor` will run automatically every day at `00:00:00` (as defined in `matrix_synapse_auto_compressor_calendar` by default).
 
-## Manually start the tool
+## Manually execute compression
 
-For testing your setup it can be helpful to not wait until 00:00. If you want to run the tool immediately, log onto the server and run `systemctl start matrix-synapse-auto-compressor`. Running this command will not return control to your terminal until the compression run is done, which may take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
+Sometimes it can be helpful to execute compression as you'd like, avoiding to wait until 00:00, like when you test your configuration.
+
+If you want to execute it immediately, log in to the server with SSH and run `systemctl start matrix-synapse-auto-compressor`.
+
+This will not return until the compression is done, so it can possibly take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
