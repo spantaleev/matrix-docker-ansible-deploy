@@ -88,7 +88,7 @@ In theory (however currently untested), UVS can handle federation. To enable it,
 matrix_user_verification_service_uvs_pin_openid_verify_server_name: false
 ```
 
-This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via '.well-known/matrix/server' of the given domain.
+This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via `.well-known/matrix/server` of the given domain.
 
 ### Controlling the logging level (optional)
 
