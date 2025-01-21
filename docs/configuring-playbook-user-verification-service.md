@@ -43,7 +43,8 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=uvs passwor
 
 UVS requires an access token as an admin user to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ## Adjusting the playbook configuration
 

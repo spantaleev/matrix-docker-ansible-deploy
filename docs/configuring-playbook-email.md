@@ -6,7 +6,8 @@ The email server would attempt to deliver emails directly to their final destina
 
 By default, emails are sent from `matrix@matrix.example.com`, as specified by the `exim_relay_sender_address` playbook variable.
 
-⚠️ **Warning**: On some cloud providers (Google Cloud, etc.), [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible. You will need to [relay email through another SMTP server](#relaying-email-through-another-smtp-server).
+> [!WARNING]
+> On some cloud providers (Google Cloud, etc.), [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible. You will need to [relay email through another SMTP server](#relaying-email-through-another-smtp-server).
 
 💡 To improve deliverability, we recommend [relaying email through another SMTP server](#relaying-email-through-another-smtp-server) anyway.
 

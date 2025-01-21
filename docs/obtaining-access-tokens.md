@@ -2,7 +2,8 @@
 
 When setting up some optional features like bots and bridges you will need to provide an access token for some user. This document provides documentation on how to obtain such an access token.
 
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ## Prerequisites
 

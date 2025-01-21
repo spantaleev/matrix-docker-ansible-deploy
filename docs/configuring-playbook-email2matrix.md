@@ -36,7 +36,8 @@ Take note of the user's ID as it needs to be specified as `MatrixUserId` on your
 
 Email2Matrix requires an access token for the sender user to be able to send messages to the room. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ### Join to rooms as the sender user manually
 
