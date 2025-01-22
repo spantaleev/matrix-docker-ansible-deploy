@@ -138,6 +138,6 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 Sometimes it can be helpful to run the backup as you'd like, avoiding to wait until 4 a.m., like when you test your configuration.
 
-If you want to run the backup immediately, log in to the server with SSH and run `systemctl start matrix-backup-borg`.
+If you want to run it immediately, log in to the server with SSH and run `systemctl start matrix-backup-borg`.
 
 This will not return until the backup is done, so it can possibly take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
