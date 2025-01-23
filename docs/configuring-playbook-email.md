@@ -15,7 +15,9 @@ By default, emails are sent from `matrix@matrix.example.com`, as specified by th
 
 No matter whether you send email directly (the default) or you relay email through another host (see how below), you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
 
-## Relaying email through another SMTP server
+## Adjusting the playbook configuration
+
+### Relaying email through another SMTP server
 
 If you'd like to relay email through another SMTP server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
 
@@ -26,29 +28,34 @@ exim_relay_relay_host_name: "mail.example.com"
 exim_relay_relay_host_port: 587
 exim_relay_relay_auth: true
 exim_relay_relay_auth_username: "another.sender@example.com"
-exim_relay_relay_auth_password: "some-password"
+exim_relay_relay_auth_password: "PASSWORD_FOR_THE_RELAY_HERE"
 ```
 
 **Note**: only the secure submission protocol (using `STARTTLS`, usually on port `587`) is supported. **SMTPS** (encrypted SMTP, usually on port `465`) **is not supported**.
 
-### Configuations for sending emails using Sendgrid
+### Sending emails using Sendgrid
 
-An easy and free SMTP service to set up is [Sendgrid](https://sendgrid.com/), the free tier allows for up to 100 emails per day to be sent. In the settings below you can provide any email for `exim_relay_sender_address`.
+An easy and free SMTP service to set up is [Sendgrid](https://sendgrid.com/). Its free tier allows for up to 100 emails per day to be sent.
 
-The only other thing you need to change is the `exim_relay_relay_auth_password`, which you can generate at https://app.sendgrid.com/settings/api_keys. The API key password looks something like `SG.955oW1mLSfwds7i9Yd6IA5Q.q8GTaB8q9kGDzasegdG6u95fQ-6zkdwrPP8bOeuI`.
-
-Note that the `exim_relay_relay_auth_username` is literally the string `apikey`, it's always the same for Sendgrid.
+To set it up, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
-exim_relay_sender_address: "arbitrary@email.com"
+exim_relay_sender_address: "example@example.org"
 exim_relay_relay_use: true
 exim_relay_relay_host_name: "smtp.sendgrid.net"
 exim_relay_relay_host_port: 587
 exim_relay_relay_auth: true
+
+# This needs to be literally the string "apikey". It is always the same for Sendgrid.
 exim_relay_relay_auth_username: "apikey"
-exim_relay_relay_auth_password: "<your api key password>"
+
+# You can generate the API key password at this URL: https://app.sendgrid.com/settings/api_keys
+# The password looks something like `SG.955oW1mLSfwds7i9Yd6IA5Q.q8GTaB8q9kGDzasegdG6u95fQ-6zkdwrPP8bOeuI`.
+exim_relay_relay_auth_password: "YOUR_API_KEY_PASSWORD_HERE"
 ```
 
 ## Troubleshooting
 
-If you're having trouble with email not being delivered, it may be useful to inspect the mailer logs: `journalctl -f -u matrix-exim-relay`.
+If you're having trouble with email not being delivered, it may be useful to inspect the mailer logs.
+
+To do so, log in to the server with SSH and run `journalctl -f -u matrix-exim-relay`.
