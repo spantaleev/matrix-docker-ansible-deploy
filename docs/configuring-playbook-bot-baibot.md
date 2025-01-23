@@ -396,7 +396,7 @@ Send `!bai help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [baibot](https://github.com/etkecc/baibot) project's documentation.
 
-## Debugging
+## Troubleshooting
 
 As with all other services, you can find service logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running something like `journalctl -fu matrix-bot-baibot`
 

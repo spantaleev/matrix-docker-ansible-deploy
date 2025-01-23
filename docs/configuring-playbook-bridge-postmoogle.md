@@ -92,7 +92,7 @@ Send `!pm help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [documentation](https://github.com/etkecc/postmoogle).
 
-### Debug/Logs
+## Troubleshooting
 
 As with all other services, you can find their logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running something like `journalctl -fu matrix-postmoogle`
 
