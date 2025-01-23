@@ -55,6 +55,14 @@ matrix_postmoogle_password: PASSWORD_FOR_THE_BOT
 # matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-postmoogle/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -84,7 +92,7 @@ Send `!pm help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [documentation](https://github.com/etkecc/postmoogle).
 
-### Debug/Logs
+## Troubleshooting
 
 As with all other services, you can find their logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running something like `journalctl -fu matrix-postmoogle`
 
