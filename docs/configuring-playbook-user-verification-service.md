@@ -60,14 +60,14 @@ In the default configuration, the UVS Server is only reachable via the docker ne
 
 ### Custom Auth Token (optional)
 
-It is possible to set an API Auth Token to restrict access to the UVS. If this is enabled, anyone making a request to UVS must provide it via the header "Authorization: Bearer TOKEN"
+It is possible to set an API Auth Token to restrict access to the UVS. If this is enabled, anyone making a request to UVS must provide it via the header `Authorization: Bearer YOUR_TOKEN_HERE`.
 
-By default, the token will be derived from `matrix_homeserver_generic_secret_key` in `group_vars/matrix_servers`.
+By default, the token (`YOUR_TOKEN_HERE`) will be derived from `matrix_homeserver_generic_secret_key` in `group_vars/matrix_servers`.
 
-To set your own Token, add the following configuration to your `vars.yml` file:
+To set your own token, add the following configuration to your `vars.yml` file. Make sure to replace `YOUR_TOKEN_HERE` with your own.
 
 ```yaml
-matrix_user_verification_service_uvs_auth_token: "TOKEN"
+matrix_user_verification_service_uvs_auth_token: "YOUR_TOKEN_HERE"
 ```
 
 If a Jitsi instance is also managed by this playbook and [`matrix` authentication](configuring-playbook-jitsi.md#authenticate-using-matrix-openid-auth-type-matrix) is enabled there, this collection will automatically configure Jitsi to use the configured auth token.
