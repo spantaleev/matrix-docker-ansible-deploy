@@ -150,10 +150,13 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 If email address validation emails sent by ma1sd are not reaching you, you should look into [Adjusting email-sending settings](configuring-playbook-email.md).
 
-If you'd like additional logging information, temporarily enable verbose logging for ma1sd.
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-ma1sd`.
 
-To enable it, add the following configuration to your `vars.yml` file:
+### Increase logging verbosity
+
+If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
-matrix_ma1sd_verbose_logging: true
+# See: https://github.com/ma1uta/ma1sd/blob/master/docs/troubleshooting.md#increase-verbosity
+matrix_ma1sd_verbose_logging: false
 ```
