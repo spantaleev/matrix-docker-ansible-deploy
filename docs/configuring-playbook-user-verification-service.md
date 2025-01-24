@@ -56,25 +56,23 @@ matrix_user_verification_service_enabled: true
 matrix_user_verification_service_uvs_access_token: "ACCESS_TOKEN_HERE"
 ```
 
-Check the role's [defaults/main.yml](../roles/custom/matrix-user-verification-service/defaults/main.yml) for the full list of variables that you could override. Note that all the plugging happening in `group_vars/matrix_servers`.
-
 In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host. However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`.
 
 ### Custom Auth Token (optional)
 
-It is possible to set an API Auth Token to restrict access to the UVS. If this is enabled, anyone making a request to UVS must provide it via the header "Authorization: Bearer TOKEN"
+It is possible to set an API Auth Token to restrict access to the UVS. If this is enabled, anyone making a request to UVS must provide it via the header `Authorization: Bearer YOUR_TOKEN_HERE`.
 
-By default, the token will be derived from `matrix_homeserver_generic_secret_key` in `group_vars/matrix_servers`.
+By default, the token (`YOUR_TOKEN_HERE`) will be derived from `matrix_homeserver_generic_secret_key` in `group_vars/matrix_servers`.
 
-To set your own Token, add the following configuration to your `vars.yml` file:
+To set your own token, add the following configuration to your `vars.yml` file. Make sure to replace `YOUR_TOKEN_HERE` with your own.
 
 ```yaml
-matrix_user_verification_service_uvs_auth_token: "TOKEN"
+matrix_user_verification_service_uvs_auth_token: "YOUR_TOKEN_HERE"
 ```
 
 If a Jitsi instance is also managed by this playbook and [`matrix` authentication](configuring-playbook-jitsi.md#authenticate-using-matrix-openid-auth-type-matrix) is enabled there, this collection will automatically configure Jitsi to use the configured auth token.
 
-### Disable Auth (optional)
+### Disable Authorization (optional)
 
 Authorization is enabled by default. To disable it, add the following configuration to your `vars.yml` file:
 
@@ -90,19 +88,15 @@ In theory (however currently untested), UVS can handle federation. To enable it,
 matrix_user_verification_service_uvs_pin_openid_verify_server_name: false
 ```
 
-This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via '.well-known/matrix/server' of the given domain.
+This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via `.well-known/matrix/server` of the given domain.
 
-### Controlling the logging level (optional)
+### Extending the configuration
 
-To specify the logging level, add the following configuration to your `vars.yml` file:
+There are some additional things you may wish to configure about the component.
 
-```yaml
-UVS_LOG_LEVEL: info
-```
+Take a look at:
 
-Replace `info` with one of the choices (they can be checked [here](https://github.com/winstonjs/winston#logging-levels)) to control the verbosity of the logs generated.
-
-If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
+- `roles/custom/matrix-user-verification-service/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Installing
 
@@ -119,13 +113,24 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Troubleshooting
 
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-user-verification-service`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# See choices here: https://github.com/winstonjs/winston#logging-levels
+matrix_user_verification_service_uvs_log_level: debug
+```
+
 ### TLS Certificate Checking
 
 If the Matrix Homeserver does not provide a valid TLS certificate, UVS will fail with the following error message:
 
 > message: 'No response received: [object Object]',
 
-This also applies to self-signed and let's encrypt staging certificates.
+This also applies to self-signed and Let's Encrypt staging certificates.
 
 To disable certificate validation altogether (INSECURE! Not suitable for production use!) set: `NODE_TLS_REJECT_UNAUTHORIZED=0`
 
