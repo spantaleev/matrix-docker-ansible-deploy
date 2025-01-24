@@ -135,7 +135,7 @@ Unlinking doesn't only disconnect the bridge, but also makes the slackbot leave 
 
 ## Troubleshooting
 
-As always, check the logs: `journalctl -fu matrix-appservice-slack`
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-appservice-slack`.
 
 ### Linking: "Room is now pending-name"
 
