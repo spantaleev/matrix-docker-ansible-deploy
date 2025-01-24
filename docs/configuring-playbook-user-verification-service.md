@@ -121,7 +121,7 @@ The default logging level for this component is `info`. If you want to increase 
 
 ```yaml
 # See choices here: https://github.com/winstonjs/winston#logging-levels
-UVS_LOG_LEVEL: debug
+matrix_user_verification_service_uvs_log_level: debug
 ```
 
 ### TLS Certificate Checking
