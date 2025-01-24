@@ -130,7 +130,7 @@ If the Matrix Homeserver does not provide a valid TLS certificate, UVS will fail
 
 > message: 'No response received: [object Object]',
 
-This also applies to self-signed and let's encrypt staging certificates.
+This also applies to self-signed and Let's Encrypt staging certificates.
 
 To disable certificate validation altogether (INSECURE! Not suitable for production use!) set: `NODE_TLS_REJECT_UNAUTHORIZED=0`
 
