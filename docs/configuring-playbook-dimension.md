@@ -112,12 +112,14 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
-- After Dimension has been installed you may need to log out and log back in for it to pick up the new integration manager. Then you can access integrations in Element Web by opening a room, clicking the Room info button (`i`) button in the top right corner of the screen, and then clicking Add widgets, bridges & bots.
+## Usage
 
-## Jitsi domain
+After Dimension has been installed you may need to log out and log back in for it to pick up the new integration manager. Then you can access integrations in Element Web by opening a room, clicking the room info button (`i`) on the top right corner, and then clicking the "Add widgets, bridges, & bots" link.
+
+### Set up a Jitsi widget
 
 By default Dimension will use [jitsi.riot.im](https://jitsi.riot.im/) as the `conferenceDomain` of [Jitsi](https://jitsi.org/) audio/video conference widgets. For users running [a self-hosted Jitsi instance](configuring-playbook-jitsi.md), you will likely want the widget to use your own Jitsi instance.
 
 To set up the widget, an admin user needs to configure the domain via the admin UI once Dimension is running. In Element Web, go to *Manage Integrations* &rightarrow; *Settings* &rightarrow; *Widgets* &rightarrow; *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
 
-There is unfortunately no way to configure it via the playbook. See [this issue](https://github.com/turt2live/matrix-dimension/issues/345) for details.
+There is unfortunately no way to configure the widget via the playbook. See [this issue](https://github.com/turt2live/matrix-dimension/issues/345) for details.
