@@ -120,6 +120,6 @@ After Dimension has been installed you may need to log out and log back in for i
 
 By default Dimension will use [jitsi.riot.im](https://jitsi.riot.im/) as the `conferenceDomain` of [Jitsi](https://jitsi.org/) audio/video conference widgets. For users running [a self-hosted Jitsi instance](configuring-playbook-jitsi.md), you will likely want the widget to use your own Jitsi instance.
 
-To set up the widget, an admin user needs to configure the domain via the admin UI once Dimension is running. In Element Web, go to *Manage Integrations* &rightarrow; *Settings* &rightarrow; *Widgets* &rightarrow; *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
+To set up the widget, an admin user needs to configure the domain via the admin UI once Dimension is running. In Element Web, go to *Manage Integrations* → *Settings* → *Widgets* → *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
 
 There is unfortunately no way to configure the widget via the playbook. See [this issue](https://github.com/turt2live/matrix-dimension/issues/345) for details.
