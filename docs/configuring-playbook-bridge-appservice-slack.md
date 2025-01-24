@@ -143,8 +143,8 @@ This typically means that you haven't used the correct Slack channel ID. Unlink 
 
 ### Messages work from Matrix to Slack, but not the other way around
 
-Check you logs, if they say something like
+Check the logs, and if you find the message like below, unlink your room, reinvite the bot and re-link it again.
 
 `WARN SlackEventHandler Ignoring message from unrecognised Slack channel ID : %s (%s) <the channel ID> <some other ID>`
 
-then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link your room multiple times without unlinking it after each failed attempt.
+This may particularly hit you, if you tried to unsuccessfully link your room multiple times without unlinking it after each failed attempt.
