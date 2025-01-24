@@ -90,18 +90,6 @@ matrix_user_verification_service_uvs_pin_openid_verify_server_name: false
 
 This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via `.well-known/matrix/server` of the given domain.
 
-### Controlling the logging level (optional)
-
-To specify the logging level, add the following configuration to your `vars.yml` file:
-
-```yaml
-UVS_LOG_LEVEL: info
-```
-
-Replace `info` with one of the choices (they can be checked [here](https://github.com/winstonjs/winston#logging-levels)) to control the verbosity of the logs generated.
-
-If you have issues with a service, and are requesting support, the higher levels of logging will generally be more helpful.
-
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the component.
@@ -124,6 +112,17 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 `just install-service matrix-user-verification-service` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too.
 
 ## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-user-verification-service`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# See choices here: https://github.com/winstonjs/winston#logging-levels
+UVS_LOG_LEVEL: debug
+```
 
 ### TLS Certificate Checking
 
