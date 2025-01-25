@@ -4,6 +4,8 @@ The playbook can install and configure [Buscarron](https://github.com/etkecc/bus
 
 Buscarron is bot that receives HTTP POST submissions of web forms and forwards them to a Matrix room.
 
+See the project's [documentation](https://github.com/etkecc/buscarron/blob/main/README.md) to learn what it does and why it might be useful to you.
+
 ## Adjusting DNS records
 
 By default, this playbook installs Buscarron on the `buscarron.` subdomain (`buscarron.example.com`) and requires you to create a CNAME record for `buscarron`, which targets `matrix.example.com`.
@@ -102,8 +104,6 @@ Here is an example for the `contact` form:
 - `hasemail` is enabled for the form (like in the example above) and you don't submit an `email` field
 
 If you get banned, you'd need to restart the process by running the playbook with `--tags=start` or running `systemctl restart matrix-bot-buscarron` on the server.
-
-You can also refer to the upstream [documentation](https://github.com/etkecc/buscarron).
 
 ## Troubleshooting
 
