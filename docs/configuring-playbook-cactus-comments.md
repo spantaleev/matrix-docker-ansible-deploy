@@ -129,3 +129,18 @@ Make sure to replace `example.com` with your base domain before you include the 
 ```
 
 **Note**: if the `matrix_cactus_comments_client_hostname` and `matrix_cactus_comments_client_path_prefix` variables are tweaked, you would need to adjust the URLs of the assets accordingly.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-cactus-comments` for the backend appservice or `journalctl -fu matrix-cactus-comments-client` for the server serving the client assets, respectively.
+
+### Increase logging verbosity
+
+It is possible to increase logging verbosity for `matrix-cactus-comments-client`. The default logging level for this component is `error`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Controls the SERVER_LOG_LEVEL environment variable.
+# See: https://static-web-server.net/configuration/environment-variables/
+# Valid values: error, warn, info, debug, trace
+matrix_cactus_comments_client_environment_variable_server_log_level: debug
+```
