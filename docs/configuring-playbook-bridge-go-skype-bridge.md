@@ -60,6 +60,6 @@ As with all other services, you can find the logs in [systemd-journald](https://
 The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
-# Options: debug, info, warn, error, fatal
+# Valid values: fatal, error, warn, info, debug
 matrix_go_skype_bridge_log_level: 'info'
 ```
