@@ -167,3 +167,15 @@ docker exec -it matrix-media-repo \
 Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing.
 
 This should output a `msg="Import completed"` when finished successfully!
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-media-repo`.
+
+### Increase logging verbosity
+
+If you want to turn on sentry's built-in debugging, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_media_repo_sentry_debug: true
+```
