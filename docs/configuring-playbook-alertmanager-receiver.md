@@ -66,8 +66,6 @@ matrix_alertmanager_receiver_config_matrix_room_mapping:
   some-room-name: "!qporfwt:{{ matrix_domain }}"
 ```
 
-See `roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for additional configuration variables.
-
 ### Adjusting the matrix-alertmanager-receiver URL (optional)
 
 By tweaking the `matrix_alertmanager_receiver_hostname` and `matrix_alertmanager_receiver_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
@@ -83,6 +81,15 @@ matrix_alertmanager_receiver_path_prefix: /
 If you've changed the default hostname, you may need to create a CNAME record for the matrix-alertmanager-receiver domain (`alertmanager.example.com`), which targets `matrix.example.com`.
 
 When setting, replace `example.com` with your own.
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-alertmanager-receiver/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_alertmanager_receiver_configuration_extension_yaml` variable
 
 ## Installing
 
@@ -123,3 +130,16 @@ route:
 ```
 
 where `URL_HERE` looks like `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!qporfwt:example.com`.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-alertmanager-receiver`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: error, warn, info, debug
+matrix_alertmanager_receiver_container_process_argument_log_level: debug
+```
