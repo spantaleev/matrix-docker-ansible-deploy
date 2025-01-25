@@ -4,6 +4,8 @@ The playbook can install and configure [Buscarron](https://github.com/etkecc/bus
 
 Buscarron is bot that receives HTTP POST submissions of web forms and forwards them to a Matrix room.
 
+See the project's [documentation](https://github.com/etkecc/buscarron/blob/main/README.md) to learn what it does and why it might be useful to you.
+
 ## Adjusting DNS records
 
 By default, this playbook installs Buscarron on the `buscarron.` subdomain (`buscarron.example.com`) and requires you to create a CNAME record for `buscarron`, which targets `matrix.example.com`.
@@ -54,6 +56,14 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-buscarron/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -95,4 +105,14 @@ Here is an example for the `contact` form:
 
 If you get banned, you'd need to restart the process by running the playbook with `--tags=start` or running `systemctl restart matrix-bot-buscarron` on the server.
 
-You can also refer to the upstream [documentation](https://github.com/etkecc/buscarron).
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-buscarron`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_bot_buscarron_loglevel: DEBUG
+```
