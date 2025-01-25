@@ -50,3 +50,16 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ## Usage
 
 To use the bridge, you need to start a chat with `@skypebridgebot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-go-skype-bridge`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Options: debug, info, warn, error, fatal
+matrix_go_skype_bridge_log_level: 'info'
+```
