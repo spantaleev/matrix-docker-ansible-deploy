@@ -6,6 +6,8 @@ The playbook can install and configure [matrix-chatgpt-bot](https://github.com/m
 
 Talk to [ChatGPT](https://openai.com/blog/chatgpt/) via your favourite Matrix client!
 
+See the project's [documentation](https://github.com/matrixgpt/matrix-chatgpt-bot/blob/main/README.md) to learn what it does and why it might be useful to you.
+
 ## Prerequisites
 
 ### Obtain an OpenAI API key
@@ -83,4 +85,6 @@ To use the bot, invite it to the room you specified on your `vars.yml` file (`/i
 
 After the bot joins the room, you can send a message to it. When you do so, use the prefix if you configured it or mention the bot.
 
-You can also refer to the upstream [documentation](https://github.com/matrixgpt/matrix-chatgpt-bot).
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-chatgpt`.
