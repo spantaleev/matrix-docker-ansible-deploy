@@ -25,10 +25,6 @@ If you wish to adjust it, see the section [below](#adjusting-the-cactus-comments
 To enable Cactus Comments, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-#################
-## Cactus Comments ##
-#################
-
 # This enables the backend (appservice)
 matrix_cactus_comments_enabled: true
 
