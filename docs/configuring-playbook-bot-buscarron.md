@@ -104,3 +104,15 @@ Here is an example for the `contact` form:
 If you get banned, you'd need to restart the process by running the playbook with `--tags=start` or running `systemctl restart matrix-bot-buscarron` on the server.
 
 You can also refer to the upstream [documentation](https://github.com/etkecc/buscarron).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-buscarron`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_bot_buscarron_loglevel: DEBUG
+```
