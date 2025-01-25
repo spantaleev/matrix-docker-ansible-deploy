@@ -91,7 +91,7 @@ Upon starting Cactus Comments, a `bot.cactusbot` user account is created automat
 
 To get started, send `help` to the `@bot.cactusbot:example.com` bot to confirm it's working.
 
-Then, register a site by sending `register <YourSiteName>` (where `<YourSiteName>` is a unique identifier you choose. It does not have to match your domain). You will then be invited into a moderation room.
+Then, register a site by sending `register YOUR_SITE_NAME_HERE` (where `YOUR_SITE_NAME_HERE` is a unique identifier you choose. It does not have to match your domain). You will then be invited into a moderation room.
 
 Now you are good to go and can embed the comment section on your website!
 
@@ -105,7 +105,7 @@ After including the JavaScript and CSS asset files, insert a `<div>` where you'd
 <div id="comment-section"></div>
 ````
 
-Then, you need to initialize the comment section. Make sure to replace `example.com` with your base domain and `<YourSiteName>` with the one that has been registered above:
+Then, you need to initialize the comment section. Make sure to replace `example.com` with your base domain and `YOUR_SITE_NAME_HERE` with the one that has been registered above:
 
 ```html
 <script>
@@ -113,7 +113,7 @@ initComments({
   node: document.getElementById("comment-section"),
   defaultHomeserverUrl: "https://matrix.example.com:8448",
   serverName: "example.com",
-  siteName: "<YourSiteName>",
+  siteName: "YOUR_SITE_NAME_HERE",
   commentSectionId: "1"
 })
 </script>
