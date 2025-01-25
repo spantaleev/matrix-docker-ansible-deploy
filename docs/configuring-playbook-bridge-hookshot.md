@@ -153,6 +153,6 @@ As with all other services, you can find the logs in [systemd-journald](https://
 The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
-# Valid values: debug, info, warn, error
+# Valid values: error, warn, info, debug
 matrix_hookshot_logging_level: debug
 ```
