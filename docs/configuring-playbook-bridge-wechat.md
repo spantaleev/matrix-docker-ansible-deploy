@@ -43,3 +43,16 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 To use the bridge, you need to start a chat with `@wechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `help` to the bot to see the available commands.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bridge-wechat`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: debug, info, warn, error, fatal
+matrix_wechat_log_level: 'debug'
+```
