@@ -74,7 +74,7 @@ Services that run on the server to make the various parts of your installation w
 | ---- | -------- | ----------- | ------------- |
 | [PostgreSQL](https://www.postgresql.org/)| ✅ | Database for Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible. | [Link](docs/configuring-playbook-external-postgres.md) |
 | [coturn](https://github.com/coturn/coturn) | ✅ | STUN/TURN server for WebRTC audio/video calls | [Link](docs/configuring-playbook-turn.md) |
-| [Traefik](https://doc.traefik.io/traefik/) | ✅ | Web server, listening on ports 80, 443 and 8448 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md) | [Link](docs/configuring-playbook-traefik.md) |
+| [Traefik](https://doc.traefik.io/traefik/) | ✅ | Web server, listening on ports 80, 443 and 8448 - standing in front of all the other services. [Using your own webserver](docs/configuring-playbook-own-webserver.md) is also possible. | [Link](docs/configuring-playbook-traefik.md) |
 | [Let's Encrypt](https://letsencrypt.org/) | ✅ | Free SSL certificate, which secures the connection to all components | [Link](docs/configuring-playbook-ssl-certificates.md) |
 | [Exim](https://www.exim.org/) | ✅ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
 | [ma1sd](https://github.com/ma1uta/ma1sd) | ❌ | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
