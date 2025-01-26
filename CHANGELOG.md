@@ -2714,7 +2714,7 @@ To make your Jitsi server more private, see the [configure internal Jitsi authen
 
 Thanks to [Marcel Partap](https://github.com/eMPee584)'s efforts, the [mxisd](https://github.com/kamax-io/mxisd) identity server, which has been deprecated for a long time, has finally been replaced by [ma1sd](https://github.com/ma1uta/ma1sd), a compatible fork.
 
-**If you're using the default playbook configuration**, you don't need to do anything -- your mxisd installation will be replaced with ma1sd and all existing data will be migrated automatically the next time you run the playbook.
+**If you're using the default playbook configuration**, you don't need to do anything — your mxisd installation will be replaced with ma1sd and all existing data will be migrated automatically the next time you run the playbook.
 
 **If you're doing something more special** (defining custom `matrix_mxisd_*` variables), the playbook will ask you to rename them to `matrix_ma1sd_*`. You're also encouraged to test that ma1sd works well for such a more custom setup.
 
@@ -3352,7 +3352,7 @@ When using:
 
 ## Running container processes as non-root, without capabilities and read-only
 
-To improve security, this playbook no longer starts container processes as the `root` user. Most containers were dropping privileges anyway, but we were trusting them with `root` privileges until they would do that. Not anymore -- container processes now start as a non-root user (usually `matrix`) from the get-go.
+To improve security, this playbook no longer starts container processes as the `root` user. Most containers were dropping privileges anyway, but we were trusting them with `root` privileges until they would do that. Not anymore — container processes now start as a non-root user (usually `matrix`) from the get-go.
 
 For additional security, various capabilities are also dropped (see [why it's important](https://github.com/projectatomic/atomic-site/issues/203)) for all containers.
 

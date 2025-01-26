@@ -285,7 +285,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ### I don't use the base domain for anything. How am I supposed to set up Server Delegation for Matrix services?
 
-If you don't use your base domain for anything, then it's hard for you to "serve files over HTTPS" on it -- something we ask you to do for the [.well-known](configuring-well-known.md) setup (needed for [Server Delegation](howto-server-delegation.md)).
+If you don't use your base domain for anything, then it's hard for you to "serve files over HTTPS" on it — something we ask you to do for the [.well-known](configuring-well-known.md) setup (needed for [Server Delegation](howto-server-delegation.md)).
 
 Luckily, the playbook can set up your Matrix server (at `matrix.example.com`) to also handle traffic for the base domain (`example.com`).
 

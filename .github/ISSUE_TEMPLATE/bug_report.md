@@ -34,7 +34,7 @@ A clear and concise description of what you expected to happen.
 
 **Ansible:**
 If your problem appears to be with Ansible, tell us:
-- where you run Ansible -- e.g. on the Matrix server itself; on another computer (which OS? distro? standard installation or containerized Ansible?)
+- where you run Ansible — e.g. on the Matrix server itself; on another computer (which OS? distro? standard installation or containerized Ansible?)
 - what version of Ansible you're running (see `ansible --version`)
 
 <!--

@@ -92,7 +92,7 @@ server {
 	root /dev/null;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
-		# Client-server overrides -- These locations must go to the main Synapse process
+		# Client-server overrides — These locations must go to the main Synapse process
 		location ~ {{ matrix_synapse_reverse_proxy_companion_client_server_main_override_locations_regex }} {
 			{# FIXME: This block was copied from the main Synapse fallback below.  It would be better to have it in one place and avoid duplication. #}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
@@ -107,7 +107,7 @@ server {
 			proxy_max_temp_file_size 0;
 		}
 
-		# Client-server SSO overrides -- These locations must go to the main Synapse process
+		# Client-server SSO overrides — These locations must go to the main Synapse process
 		location ~ {{ matrix_synapse_reverse_proxy_companion_client_server_sso_override_locations_regex }} {
 			{# FIXME: This block was copied from the main Synapse fallback below.  It would be better to have it in one place and avoid duplication. #}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}
@@ -250,7 +250,7 @@ server {
 	root /dev/null;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
-		# Federation overrides -- These locations must go to the main Synapse process
+		# Federation overrides — These locations must go to the main Synapse process
 		location ~ {{ matrix_synapse_reverse_proxy_companion_federation_override_locations_regex }} {
 			{# FIXME: This block was copied from the fallback location below.  It would be better to have it in one place and avoid duplication. #}
 			{# Use the embedded DNS resolver in Docker containers to discover the service #}

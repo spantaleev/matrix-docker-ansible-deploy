@@ -201,7 +201,7 @@ To put it another way:
 
 ### Using no reverse-proxy on the Matrix side at all
 
-Instead of [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), you can also go another way -- completely disabling the playbook-managed Traefik reverse-proxy. You would then need to reverse-proxy from your own webserver directly to each individual Matrix service.
+Instead of [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), you can also go another way — completely disabling the playbook-managed Traefik reverse-proxy. You would then need to reverse-proxy from your own webserver directly to each individual Matrix service.
 
 This is more difficult, as you would need to handle the configuration for each service manually. Enabling additional services would come with extra manual work you need to do.
 
