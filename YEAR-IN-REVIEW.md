@@ -69,7 +69,7 @@ When it comes to the `matrix-docker-ansible-deploy` Ansible playbook, 2022 was t
 
 Support for the following new **bridges** was added:
 
-*   [Postmoogle](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#postmoogle-email-bridge-support) for bi-directional email bridging, which supersedes my old and simplistic [email2matrix](https://github.com/devture/email2matrix) one-way bridge-bot
+*   [Postmoogle](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#postmoogle-email-bridge-support) for bi-directional email bridging, which supersedes my old and simplistic [Email2Matrix](https://github.com/devture/email2matrix) one-way bridge-bot
 *   [mautrix-discord](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#mautrix-discord-support)
 *   [go-skype-bridge](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#go-skype-bridge-bridging-support)
 *   [matrix-appservice-kakaotalk](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#matrix-appservice-kakaotalk-support)

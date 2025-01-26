@@ -161,8 +161,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md)
 
-- [Setting up Email2Matrix](configuring-playbook-email2matrix.md)
-
 - [Setting up Postmoogle email bridging](configuring-playbook-bridge-postmoogle.md)
 
 - [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md)
@@ -243,6 +241,8 @@ Various services that don't fit any other categories.
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
 
 - [Setting up the Dimension integration manager](configuring-playbook-dimension.md) ([unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
+
+- [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (unmaintained; the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-postmoogle.md))
 
 - [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (unmaintained; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
 
