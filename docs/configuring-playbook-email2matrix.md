@@ -1,6 +1,6 @@
-# Setting up Email2Matrix (optional)
+# Setting up Email2Matrix (optional, deprecated)
 
-**Note**: email bridging can also happen via the [Postmoogle](configuring-playbook-bridge-postmoogle.md) bridge supported by the playbook. Postmoogle is much more powerful and easier to use, so we recommend that you use it, instead of Email2Matrix.
+**Note**: this component has been deprecated. We recommend not bothering with installing it. While not a 1:1 replacement, the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-postmoogle.md). Consider using that component instead of this one.
 
 The playbook can install and configure [Email2Matrix](https://github.com/devture/email2matrix) for you.
 
