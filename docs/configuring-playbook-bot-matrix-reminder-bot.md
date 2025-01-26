@@ -74,6 +74,6 @@ The default logging level for this component is `INFO`. If you want to increase 
 ```yaml
 matrix_bot_matrix_reminder_bot_configuration_extension_yaml: |
   logging:
-    # Allowed levels are 'INFO', 'WARNING', 'ERROR', 'DEBUG' where DEBUG is most verbose
-    level: INFO
+    # Valid values: ERROR, WARNING, INFO, DEBUG
+    level: DEBUG
 ```
