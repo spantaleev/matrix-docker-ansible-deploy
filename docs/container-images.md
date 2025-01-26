@@ -33,7 +33,7 @@ Services that run on the server to make the various parts of your installation w
 | [PostgreSQL](configuring-playbook-external-postgres.md) | [postgres](https://hub.docker.com/_/postgres/) | ✅ | Database for Synapse. [Using an external PostgreSQL server](configuring-playbook-external-postgres.md) is also possible. |
 | [coturn](configuring-playbook-turn.md) | [coturn/coturn](https://hub.docker.com/r/coturn/coturn/) | ✅ | STUN/TURN server for WebRTC audio/video calls |
 | [Traefik](configuring-playbook-traefik.md) | [Traefik](https://hub.docker.com/_/traefik/) | ✅ | Web server, listening on ports 80, 443 and 8448 — standing in front of all the other services. [Using your own webserver](configuring-playbook-own-webserver.md) is also possible. |
-| [Let's Encrypt](configuring-playbook-ssl-certificates.md) | [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) | ✅ | The [certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) |
+| [Let's Encrypt](configuring-playbook-ssl-certificates.md) | [certbot/certbot](https://hub.docker.com/r/certbot/certbot/) | ✅ | [Certbot](https://certbot.eff.org/) tool for obtaining SSL certificates from [Let's Encrypt](https://letsencrypt.org/) |
 | [Exim](configuring-playbook-email.md) | [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) | ✅ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) |
 | [ma1sd](configuring-playbook-ma1sd.md) | [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) | ❌ | Matrix Identity Server |
 | [ddclient](configuring-playbook-dynamic-dns.md) | [linuxserver/ddclient](https://hub.docker.com/r/linuxserver/ddclient) | ❌ | Update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider |
@@ -139,10 +139,10 @@ Various services that don't fit any other categories.
 | [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | ❌ | Cli tool that automatically compresses `state_groups` database table in background |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | ❌ | Reconciliator and gateway for a managed Matrix server |
 | [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | ❌ | Open source collaborative text editor |
-| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | ❌ | the [Jitsi](https://jitsi.org/) web UI |
-| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jicofo](https://hub.docker.com/r/jitsi/jicofo) | ❌ | the [Jitsi](https://jitsi.org/) Focus component |
-| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) | ❌ | the [Jitsi](https://jitsi.org/) Prosody XMPP server component |
-| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) | ❌ | the [Jitsi](https://jitsi.org/) Video Bridge component |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | ❌ | [Jitsi](https://jitsi.org/) web UI |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jicofo](https://hub.docker.com/r/jitsi/jicofo) | ❌ | [Jitsi](https://jitsi.org/) Focus component |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) | ❌ | [Jitsi](https://jitsi.org/) Prosody XMPP server component |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) | ❌ | [Jitsi](https://jitsi.org/) Video Bridge component |
 | [Cactus Comments](configuring-playbook-cactus-comments.md) | [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) | ❌ | Federated comment system built on Matrix |
 | [Cactus Comments](configuring-playbook-cactus-comments.md) | [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) | ❌ | Federated comment system built on Matrix |
 | [Pantalaimon](configuring-playbook-pantalaimon.md) | [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) | ❌ | E2EE aware proxy daemon |
