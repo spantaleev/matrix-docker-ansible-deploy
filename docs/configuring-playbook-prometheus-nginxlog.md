@@ -8,7 +8,7 @@ It will collect access logs from various nginx reverse-proxies which may be used
 
 **Note**: nginx is only used internally by this Ansible playbook. With Traefik being our default reverse-proxy, collecting nginx metrics is less relevant.
 
-To make use of this, you need to install [Prometheus](./configuring-playbook-prometheus-grafana.md) either via the playbook or externally. When using an external Prometheus, configuration adjustments are necessary - see [Save metrics on an external Prometheus server](#save-metrics-on-an-external-prometheus-server).
+To make use of this, you need to install [Prometheus](./configuring-playbook-prometheus-grafana.md) either via the playbook or externally. When using an external Prometheus, configuration adjustments are necessary — see [Save metrics on an external Prometheus server](#save-metrics-on-an-external-prometheus-server).
 
 If your setup includes [Grafana](./configuring-playbook-prometheus-grafana.md), a dedicated `NGINX PROXY` Grafana dashboard will be created.
 
@@ -48,7 +48,7 @@ Metrics and resulting graphs can contain a lot of information. NginX logs contai
 
 ## Save metrics on an external Prometheus server
 
-The playbook will automatically integrate the metrics into the [Prometheus](./configuring-playbook-prometheus-grafana.md) server provided with this playbook (if enabled). In such cases, the metrics endpoint is not exposed publicly - it's only available on the container network.
+The playbook will automatically integrate the metrics into the [Prometheus](./configuring-playbook-prometheus-grafana.md) server provided with this playbook (if enabled). In such cases, the metrics endpoint is not exposed publicly — it's only available on the container network.
 
 When using an external Prometheus server, you'll need to expose metrics publicly. See [Collecting metrics to an external Prometheus server](./configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server).
 

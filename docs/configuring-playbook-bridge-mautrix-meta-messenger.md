@@ -45,8 +45,8 @@ As mentioned above, the [mautrix-meta](https://github.com/mautrix/meta) bridge s
 The bridge can pull your Messenger messages via 3 different methods:
 
 - (`facebook`) Facebook via `facebook.com`
-- (`facebook-tor`) Facebook via `facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion` ([Tor](https://www.torproject.org/)) - does not currently proxy media downloads
-- (default) (`messenger`) Messenger via `messenger.com` - usable even without a Facebook account
+- (`facebook-tor`) Facebook via `facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion` ([Tor](https://www.torproject.org/)) — does not currently proxy media downloads
+- (default) (`messenger`) Messenger via `messenger.com` — usable even without a Facebook account
 
 You may switch the mode via the `matrix_mautrix_meta_messenger_meta_mode` variable. The playbook defaults to the `messenger` mode, because it's most universal (every Facebook user has a Messenger account, but the opposite is not true).
 

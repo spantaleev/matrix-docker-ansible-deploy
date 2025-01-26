@@ -100,7 +100,7 @@ To use the bridge, you need to send `/invite @slackbot:example.com` to invite th
 
 If Team Sync is not enabled, for each channel you would like to bridge, perform the following steps:
 
-- Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID - it will look something like `!qporfwt:example.com`.
+- Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID — it will look something like `!qporfwt:example.com`.
 - Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @matrixbot` for Slack and `/invite @slackbot:example.com` for Matrix.
 - Determine the "channel ID" that Slack uses to identify the channel. You can see it when you open a given Slack channel in a browser. The URL reads like this: `https://app.slack.com/client/XXX/<the channel ID>/details/`.
 - Issue a link command in the administration control room with these collected values as arguments:

@@ -56,10 +56,10 @@ By default, the playbook configured a `default` certificate resolver and multipl
 
 You need to configure 4 entrypoints for your Traefik server:
 
-- `web` (TCP port `80`) - used for redirecting to HTTPS (`web-secure`)
-- `web-secure` (TCP port `443`) - used for exposing the Matrix Client-Server API and all other services
-- `matrix-federation` (TCP port `8448`) - used for exposing the Matrix Federation API
-- `matrix-internal-matrix-client-api` (TCP port `8008`) - used internally for addon services (bridges, bots) to communicate with the homserver
+- `web` (TCP port `80`) — used for redirecting to HTTPS (`web-secure`)
+- `web-secure` (TCP port `443`) — used for exposing the Matrix Client-Server API and all other services
+- `matrix-federation` (TCP port `8448`) — used for exposing the Matrix Federation API
+- `matrix-internal-matrix-client-api` (TCP port `8008`) — used internally for addon services (bridges, bots) to communicate with the homserver
 
 Below is some configuration for running Traefik yourself, although we recommend using [Traefik managed by the playbook](#traefik-managed-by-the-playbook).
 
@@ -127,7 +127,7 @@ Doing this is possible, but requires manual work.
 
 There are 2 ways to go about it:
 
-- (recommended) [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) - using the playbook-managed reverse-proxy (Traefik), but disabling SSL termination for it, exposing this reverse-proxy on a few local ports (e.g. `127.0.0.1:81`, etc.) and forwarding traffic from your own webserver to those few ports
+- (recommended) [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) — using the playbook-managed reverse-proxy (Traefik), but disabling SSL termination for it, exposing this reverse-proxy on a few local ports (e.g. `127.0.0.1:81`, etc.) and forwarding traffic from your own webserver to those few ports
 
 - (difficult) [Using no reverse-proxy on the Matrix side at all](#using-no-reverse-proxy-on-the-matrix-side-at-all) disabling the playbook-managed reverse-proxy (Traefik), exposing services one by one using `_host_bind_port` variables and forwarding traffic from your own webserver to those ports
 

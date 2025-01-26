@@ -11,7 +11,7 @@ Both methods have their place and will continue to do so. You only need to use j
 
 For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file. However, that method may have some downsides that are not to your liking. Hence this guide about alternative ways to set up Server Delegation.
 
-**Note**: as an alternative, it is possible to install the server such that it uses only the `matrix.example.com` domain (instead of identifying as the shorter base domain - `example.com`). This should be helpful if you are not in control of anything on the base domain (`example.com`). In this case, you would not need to configure server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
+**Note**: as an alternative, it is possible to install the server such that it uses only the `matrix.example.com` domain (instead of identifying as the shorter base domain — `example.com`). This should be helpful if you are not in control of anything on the base domain (`example.com`). In this case, you would not need to configure server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
 
 ## Server Delegation via a well-known file
 

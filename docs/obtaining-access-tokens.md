@@ -9,7 +9,7 @@ When setting up some optional features like bots and bridges you will need to pr
 
 The user for whom you want to obtain an access token needs to already exist. You can use this playbook to [register a new user](registering-users.md), if you have not already.
 
-Below, we describe 2 ways to generate an access token for a user - using [Element Web](#obtain-an-access-token-via-element-web) or [curl](#obtain-an-access-token-via-curl). For both ways you need the user's password.
+Below, we describe 2 ways to generate an access token for a user — using [Element Web](#obtain-an-access-token-via-element-web) or [curl](#obtain-an-access-token-via-curl). For both ways you need the user's password.
 
 ## Obtain an access token via Element Web
 

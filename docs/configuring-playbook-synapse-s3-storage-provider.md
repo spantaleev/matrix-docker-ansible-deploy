@@ -17,7 +17,7 @@ The way media storage providers in Synapse work has some caveats:
 
 You may be thinking **if all files are stored locally as well, what's the point**?
 
-You can run some scripts to delete the local files once in a while (which we do automatically by default - see [Periodically cleaning up the local filesystem](#periodically-cleaning-up-the-local-filesystem)), thus freeing up local disk space. If these files are needed in the future (for serving them to users, etc.), Synapse will pull them from the media storage provider on demand.
+You can run some scripts to delete the local files once in a while (which we do automatically by default — see [Periodically cleaning up the local filesystem](#periodically-cleaning-up-the-local-filesystem)), thus freeing up local disk space. If these files are needed in the future (for serving them to users, etc.), Synapse will pull them from the media storage provider on demand.
 
 While you will need some local disk space around, it's only to accommodate usage, etc., and won't grow as large as your S3 store.
 
@@ -33,13 +33,13 @@ matrix_synapse_ext_synapse_s3_storage_provider_config_region_name: some-region-n
 matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url: https://s3.REGION_NAME.amazonaws.com # adjust this
 matrix_synapse_ext_synapse_s3_storage_provider_config_storage_class: STANDARD # or STANDARD_IA, etc.
 
-# Authentication Method 1 - (access key ID + secret)
+# Authentication Method 1 — (access key ID + secret)
 # This works on all providers (AWS and other compatible systems).
 # Uncomment the variables below to use it.
 # matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id: access-key-goes-here
 # matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key: secret-key-goes-here
 
-# Authentication Method 2 - EC2 instance profile which grants permission to access S3
+# Authentication Method 2 — EC2 instance profile which grants permission to access S3
 # This only works on AWS when your server is hosted on an EC2 instance with the correct instance profile set.
 # Uncomment the variable below to use it.
 # matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile: true
@@ -78,13 +78,13 @@ To copy your existing files, SSH into the server and run `/matrix/synapse/ext/s3
 
 This launches a Synapse container, which has access to the local media store, Postgres database, S3 store and has some convenient environment variables configured for you to use (`MEDIA_PATH`, `BUCKET`, `ENDPOINT`, `UPDATE_DB_DAYS`, etc).
 
-Then use the following commands (`$` values come from environment variables - they're **not placeholders** that you need to substitute):
+Then use the following commands (`$` values come from environment variables — they're **not placeholders** that you need to substitute):
 
-1. `s3_media_upload update-db $UPDATE_DB_DURATION` - create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
+1. `s3_media_upload update-db $UPDATE_DB_DURATION` — create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on
     - `$UPDATE_DB_DURATION` is influenced by the `matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count` variable (defaults to `0`)
     - `$UPDATE_DB_DURATION` defaults to `0d` (0 days), which means **include files which haven't been accessed for more than 0 days** (that is, **all files will be included**).
-2. `s3_media_upload check-deleted $MEDIA_PATH` - check whether files in the local cache still exist in the local media repository directory
-3. `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` - uploads locally-stored files to S3 and deletes them from the local media repository directory
+2. `s3_media_upload check-deleted $MEDIA_PATH` — check whether files in the local cache still exist in the local media repository directory
+3. `s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` — uploads locally-stored files to S3 and deletes them from the local media repository directory
 
 The `s3_media_upload upload` command may take a lot of time to complete.
 

@@ -257,7 +257,7 @@ matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_s
 #   - so that addon services (starting later) can communicte with the homeserver via Traefik's internal entrypoint
 #     (see `matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled`)
 # - core services (the homeserver) get a level of ~1000
-# - services that the homeserver depends on (database, Redis, ntfy, coturn, etc.) get a lower level - between 500 and 1000
+# - services that the homeserver depends on (database, Redis, ntfy, coturn, etc.) get a lower level — between 500 and 1000
 # - coturn gets a higher level if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
 #  - starting services one by one means that the service manager role waits for each service to fully start before proceeding to the next one
 #  - if coturn has a lower priority than the homeserver, it would be started before it
@@ -268,8 +268,8 @@ matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_s
 # - Matrix utility services (bridges, bots) get a level of 2000/2200, so that:
 #   - they can start before the reverse-proxy
 #   - so that, when the reverse-proxy is up (Matrix is up), all bots and bridges can be interacted with
-# - monitoring services (Prometheus, Grafana, …) get a level of 4000 - they can start later than all-of-Matrix
-# - services which aren't time-sensitive (various crons and timers) get a level of 5000 - they can start later than all-of-Matrix
+# - monitoring services (Prometheus, Grafana, …) get a level of 4000 — they can start later than all-of-Matrix
+# - services which aren't time-sensitive (various crons and timers) get a level of 5000 — they can start later than all-of-Matrix
 devture_systemd_service_manager_services_list_auto: |
   {{
     ([{'name': (backup_borg_identifier + '.timer'), 'priority': 5000, 'groups': ['matrix', 'backup', 'borg']}] if backup_borg_enabled else [])
@@ -5966,7 +5966,7 @@ matrix_user_verification_service_container_additional_networks: |
     ) | unique
   }}
 
-# If Jitsi is managed by this playbook we can use the docker network - no need to expose a port.
+# If Jitsi is managed by this playbook we can use the docker network — no need to expose a port.
 # If Jitsi is not managed by this playbook, or you otherwise have a need for it, you can expose
 # matrix-user-verfification-services's client-server port to port 3003.
 # By default Matrix-User-Verification-Service binds to port 3000, which collides with grafana, therefore this uses port 3003.

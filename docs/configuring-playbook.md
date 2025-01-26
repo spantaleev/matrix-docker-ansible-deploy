@@ -111,7 +111,7 @@ Use alternative file storage to the default `media_store` folder.
 
 Bridges can be used to connect your Matrix installation with third-party communication networks.
 
-- [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md) - a common guide for configuring mautrix bridges
+- [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md) — a common guide for configuring mautrix bridges
 
 - [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md)
 
@@ -145,7 +145,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md)
 
-- [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) - a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira).
+- [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) — a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira).
 
 - [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md)
 
@@ -175,23 +175,23 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 Bots provide various additional functionality to your installation.
 
-- [Setting up baibot](configuring-playbook-bot-baibot.md) - a bot through which you can talk to various [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) services ([OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) and [others](https://github.com/etkecc/baibot/blob/main/docs/providers.md))
+- [Setting up baibot](configuring-playbook-bot-baibot.md) — a bot through which you can talk to various [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) services ([OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) and [others](https://github.com/etkecc/baibot/blob/main/docs/providers.md))
 
-- [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) - a bot to remind you about stuff
+- [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) — a bot to remind you about stuff
 
-- [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) - a bot to create and manage registration tokens to invite users
+- [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) — a bot to create and manage registration tokens to invite users
 
-- [Setting up maubot](configuring-playbook-bot-maubot.md) - a plugin-based Matrix bot system
+- [Setting up maubot](configuring-playbook-bot-maubot.md) — a plugin-based Matrix bot system
 
-- [Setting up Honoroit](configuring-playbook-bot-honoroit.md) - a helpdesk bot
+- [Setting up Honoroit](configuring-playbook-bot-honoroit.md) — a helpdesk bot
 
-- [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) - a moderation tool/bot
+- [Setting up Mjolnir](configuring-playbook-bot-mjolnir.md) — a moderation tool/bot
 
-- [Setting up Draupnir](configuring-playbook-bot-draupnir.md) - a moderation tool/bot, forked from Mjolnir and maintained by its former leader developer
+- [Setting up Draupnir](configuring-playbook-bot-draupnir.md) — a moderation tool/bot, forked from Mjolnir and maintained by its former leader developer
 
-- [Setting up Draupnir for all/D4A](configuring-playbook-appservice-draupnir-for-all.md) - like the [Draupnir bot](configuring-playbook-bot-draupnir.md) mentioned above, but running in appservice mode and supporting multiple instances
+- [Setting up Draupnir for all/D4A](configuring-playbook-appservice-draupnir-for-all.md) — like the [Draupnir bot](configuring-playbook-bot-draupnir.md) mentioned above, but running in appservice mode and supporting multiple instances
 
-- [Setting up Buscarron](configuring-playbook-bot-buscarron.md) - a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
+- [Setting up Buscarron](configuring-playbook-bot-buscarron.md) — a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
 
 ### Administration
 
@@ -208,9 +208,9 @@ Services that help you in administrating and monitoring your Matrix installation
 - [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
 
 - Backups:
-  - [Setting up BorgBackup](configuring-playbook-backup-borg.md) - a full Matrix server backup solution, including the Postgres database
+  - [Setting up BorgBackup](configuring-playbook-backup-borg.md) — a full Matrix server backup solution, including the Postgres database
 
-  - [Setting up postgres backup](configuring-playbook-postgres-backup.md) - a Postgres-database backup solution (note: does not include other files)
+  - [Setting up postgres backup](configuring-playbook-postgres-backup.md) — a Postgres-database backup solution (note: does not include other files)
 
 ### Other specialized services
 
@@ -226,7 +226,7 @@ Various services that don't fit any other categories.
 
 - [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)
 
-- [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) - a federated comment system built on Matrix
+- [Setting up Cactus Comments](configuring-playbook-cactus-comments.md) — a federated comment system built on Matrix
 
 - [Setting up Pantalaimon (E2EE aware proxy daemon)](configuring-playbook-pantalaimon.md) (advanced)
 

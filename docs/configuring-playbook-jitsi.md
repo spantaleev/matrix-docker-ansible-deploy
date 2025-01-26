@@ -12,8 +12,8 @@ See the project's [documentation](https://jitsi.github.io/handbook/) to learn wh
 
 You may need to open the following ports to your server:
 
-- `4443/tcp` - RTP media fallback over TCP
-- `10000/udp` - RTP media over UDP. Depending on your firewall/NAT configuration, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml)).
+- `4443/tcp` — RTP media fallback over TCP
+- `10000/udp` — RTP media over UDP. Depending on your firewall/NAT configuration, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml)).
 
 ## Adjusting DNS records
 

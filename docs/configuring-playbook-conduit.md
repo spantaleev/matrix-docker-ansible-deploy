@@ -42,7 +42,7 @@ matrix_conduit_template_conduit_config: "{{ playbook_dir }}/inventory/host_vars/
 Since it is difficult to create the first user account on Conduit (see [famedly/conduit#276](https://gitlab.com/famedly/conduit/-/issues/276) and [famedly/conduit#354](https://gitlab.com/famedly/conduit/-/merge_requests/354)) and it does not support [registering users](registering-users.md) (via the command line or via the playbook) like Synapse and Dendrite do, we recommend the following procedure:
 
 1. Add `matrix_conduit_allow_registration: true` to your `vars.yml` the first time around, temporarily
-2. Run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start` - see [Installing](installing.md))
+2. Run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start` — see [Installing](installing.md))
 3. Create your first user via Element Web or any other client which supports creating users
 4. Get rid of `matrix_conduit_allow_registration: true` from your `vars.yml`
 5. Run the playbook again (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-conduit,start` would be enough this time)
