@@ -47,10 +47,10 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-synapse-rest-auth](configuring-playbook-rest-auth.md) | (N/A) | ❌ | REST authentication password provider module |
 | [matrix-synapse-shared-secret-auth](configuring-playbook-shared-secret-auth.md) | (N/A) | ❌ | Password provider module |
 | [matrix-synapse-ldap3](configuring-playbook-ldap-auth.md) (advanced) | (N/A) | ❌ | LDAP Auth password provider module |
-| [matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) | [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) | ❌ | A proxy that handles Matrix registration requests and forwards them to LDAP |
-| [matrix-registration](configuring-playbook-matrix-registration.md) | [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) | ❌ | A simple python application to have a token based Matrix registration |
+| [matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) | [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) | ❌ | Proxy that handles Matrix registration requests and forwards them to LDAP |
+| [matrix-registration](configuring-playbook-matrix-registration.md) | [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) | ❌ | Simple python application to have a token based Matrix registration |
 | [Matrix User Verification Service](configuring-playbook-user-verification-service.md) (UVS) | [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/atrixdotorg/matrix-user-verification-service) | ❌ | Service to verify details of a user based on an Open ID token |
-| [synapse-simple-antispam](configuring-playbook-synapse-simple-antispam.md) (advanced) | (N/A) | ❌ | A spam checker module |
+| [synapse-simple-antispam](configuring-playbook-synapse-simple-antispam.md) (advanced) | (N/A) | ❌ | Spam checker module |
 
 ## File Storage
 
@@ -102,13 +102,13 @@ Bots provide various additional functionality to your installation.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
-| [baibot](configuring-playbook-bot-baibot.md) | [etke.cc/baibot](https://ghcr.io/etkecc/baibot) | ❌ | A bot that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you |
+| [baibot](configuring-playbook-bot-baibot.md) | [etke.cc/baibot](https://ghcr.io/etkecc/baibot) | ❌ | Bot that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you |
 | [matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) | [anoa/matrix-reminder-bot](https://hub.docker.com/r/anoa/matrix-reminder-bot) | ❌ | Bot for scheduling one-off & recurring reminders and alarms |
 | [matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) | [moanos/matrix-registration-bot](https://hub.docker.com/r/moanos/matrix-registration-bot/) | ❌ | Bot for invitations by creating and managing registration tokens |
-| [maubot](configuring-playbook-bot-maubot.md) | [dock.mau.dev/maubot/maubot](https://mau.dev/maubot/maubot/container_registry) | ❌ | A plugin-based Matrix bot system |
-| [Honoroit](configuring-playbook-bot-honoroit.md) | [etke.cc/honoroit](https://github.com/etkecc/honoroit/container_registry) | ❌ | A helpdesk bot |
-| [Mjolnir](configuring-playbook-bot-mjolnir.md) | [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) | ❌ | A moderation tool for Matrix |
-| [Draupnir](configuring-playbook-bot-draupnir.md) | [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) | ❌ | A moderation tool for Matrix (Fork of Mjolnir) |
+| [maubot](configuring-playbook-bot-maubot.md) | [dock.mau.dev/maubot/maubot](https://mau.dev/maubot/maubot/container_registry) | ❌ | Plugin-based Matrix bot system |
+| [Honoroit](configuring-playbook-bot-honoroit.md) | [etke.cc/honoroit](https://github.com/etkecc/honoroit/container_registry) | ❌ | Helpdesk bot |
+| [Mjolnir](configuring-playbook-bot-mjolnir.md) | [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) | ❌ | Moderation tool for Matrix |
+| [Draupnir](configuring-playbook-bot-draupnir.md) | [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) | ❌ | Moderation tool for Matrix (Fork of Mjolnir) |
 | [Buscarron](configuring-playbook-bot-buscarron.md) | [etke.cc/buscarron](https://ghcr.io/etkecc/buscarron) | ❌ | Web forms (HTTP POST) to Matrix |
 
 ## Administration
@@ -119,7 +119,7 @@ Services that help you in administrating and monitoring your Matrix installation
 | ------- | --------------- | -------- | ----------- |
 | [matrix-alertmanager-receiver](configuring-playbook-alertmanager-receiver.md) | [metio/matrix-alertmanager-receiver](https://hub.docker.com/r/metio/matrix-alertmanager-receiver)  | ❌ | Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) client |
 | [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) | [element-hq/matrix-authentication-service](https://ghcr.io/element-hq/matrix-authentication-service) | ❌ | OAuth 2.0 and OpenID Provider server |
-| [synapse-admin](configuring-playbook-synapse-admin.md) | [etke.cc/synapse-admin](https://ghcr.io/etkecc/synapse-admin) | ❌ | A web UI tool for administrating users and rooms on your Matrix server |
+| [synapse-admin](configuring-playbook-synapse-admin.md) | [etke.cc/synapse-admin](https://ghcr.io/etkecc/synapse-admin) | ❌ | Web UI tool for administrating users and rooms on your Matrix server |
 | [Metrics and Graphs](configuring-playbook-prometheus-grafana.md) | [prom/prometheus](https://hub.docker.com/r/prom/prometheus/) | ❌ | [Prometheus](https://prometheus.io) time-series database server |
 | [Metrics and Graphs](configuring-playbook-prometheus-grafana.md) | [prom/node-exporter](https://hub.docker.com/r/prom/node-exporter/) | ❌ | Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter |
 | [Metrics and Graphs](configuring-playbook-prometheus-grafana.md) | [grafana/grafana](https://hub.docker.com/r/grafana/grafana/) | ❌ | Graphing tool that works well with the above two images. Our playbook also adds two dashboards for [Synapse](https://github.com/element-hq/synapse/tree/master/contrib/grafana) and [Node Exporter](https://github.com/rfrail3/grafana-dashboards) |
@@ -135,17 +135,17 @@ Various services that don't fit any other categories.
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | ❌ | Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync) |
-| [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | ❌ | A Synapse module to automatically accept invites |
-| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | ❌ | A cli tool that automatically compresses `state_groups` database table in background |
+| [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | ❌ | Synapse module to automatically accept invites |
+| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | ❌ | Cli tool that automatically compresses `state_groups` database table in background |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | ❌ | Reconciliator and gateway for a managed Matrix server |
-| [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | ❌ | An open source collaborative text editor |
+| [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | ❌ | Open source collaborative text editor |
 | [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | ❌ | the [Jitsi](https://jitsi.org/) web UI |
 | [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jicofo](https://hub.docker.com/r/jitsi/jicofo) | ❌ | the [Jitsi](https://jitsi.org/) Focus component |
 | [Jitsi](configuring-playbook-jitsi.md) | [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) | ❌ | the [Jitsi](https://jitsi.org/) Prosody XMPP server component |
 | [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) | ❌ | the [Jitsi](https://jitsi.org/) Video Bridge component |
-| [Cactus Comments](configuring-playbook-cactus-comments.md) | [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) | ❌ | A federated comment system built on Matrix |
-| [Cactus Comments](configuring-playbook-cactus-comments.md) | [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) | ❌ | A federated comment system built on Matrix |
-| [Pantalaimon](configuring-playbook-pantalaimon.md) | [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) | ❌ | An E2EE aware proxy daemon |
+| [Cactus Comments](configuring-playbook-cactus-comments.md) | [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) | ❌ | Federated comment system built on Matrix |
+| [Cactus Comments](configuring-playbook-cactus-comments.md) | [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) | ❌ | Federated comment system built on Matrix |
+| [Pantalaimon](configuring-playbook-pantalaimon.md) | [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) | ❌ | E2EE aware proxy daemon |
 | [Sygnal](configuring-playbook-sygnal.md) | [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) | ❌ | Reference Push Gateway for Matrix |
 | [ntfy](configuring-playbook-ntfy.md) | [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) | ❌ | Self-hosted, UnifiedPush-compatible push notifications server |
 
@@ -156,9 +156,9 @@ The list of the deprecated or unmaintained services is available [here](configur
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md) | [turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks) | ❌ | Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.) |
-| [Dimension](configuring-playbook-dimension.md) | [turt2live/matrix-dimension](https://hub.docker.com/r/turt2live/matrix-dimension) | ❌ | An open source integration manager for Matrix clients |
+| [Dimension](configuring-playbook-dimension.md) | [turt2live/matrix-dimension](https://hub.docker.com/r/turt2live/matrix-dimension) | ❌ | Open source integration manager for Matrix clients |
 | [Email2Matrix](configuring-playbook-email2matrix.md) | [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) | ❌ | Bridge for relaying emails to Matrix rooms |
-| [Go-NEB](configuring-playbook-bot-go-neb.md) | [matrixdotorg/go-neb](https://hub.docker.com/r/matrixdotorg/go-neb) | ❌ | A multi functional bot written in Go |
+| [Go-NEB](configuring-playbook-bot-go-neb.md) | [matrixdotorg/go-neb](https://hub.docker.com/r/matrixdotorg/go-neb) | ❌ | Multi functional bot written in Go |
 | [matrix-chatgpt-bot](configuring-playbook-bot-chatgpt.md) | [matrixgpt/matrix-chatgpt-bot](https://ghcr.io/matrixgpt/matrix-chatgpt-bot) | ❌ | Accessing ChatGPT via your favourite Matrix client |
 | [mautrix-facebook](configuring-playbook-bridge-mautrix-facebook.md) | [mautrix/facebook](https://mau.dev/mautrix/facebook/container_registry) | ❌ | Bridge to [Facebook](https://facebook.com/) |
 | [mautrix-hangouts](configuring-playbook-bridge-mautrix-hangouts.md) | [mautrix/hangouts](https://mau.dev/mautrix/hangouts/container_registry) | ❌ | Bridge to [Google Hangouts](https://en.wikipedia.org/wiki/Google_Hangouts) |
