@@ -47,7 +47,7 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-synapse-rest-auth](configuring-playbook-rest-auth.md) | (N/A) | ❌ | REST authentication password provider module |
 | [matrix-synapse-shared-secret-auth](configuring-playbook-shared-secret-auth.md) | (N/A) | ❌ | Password provider module |
 | [matrix-synapse-ldap3](configuring-playbook-ldap-auth.md) (advanced) | (N/A) | ❌ | LDAP Auth password provider module |
-| [matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) | [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) | ❌ | A proxy that handles Matrix registration requests and forwards them to LDAP. |
+| [matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) | [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) | ❌ | A proxy that handles Matrix registration requests and forwards them to LDAP |
 | [matrix-registration](configuring-playbook-matrix-registration.md) | [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) | ❌ | A simple python application to have a token based Matrix registration |
 | [Matrix User Verification Service](configuring-playbook-user-verification-service.md) (UVS) | [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/atrixdotorg/matrix-user-verification-service) | ❌ | Service to verify details of a user based on an Open ID token |
 | [synapse-simple-antispam](configuring-playbook-synapse-simple-antispam.md) (advanced) | (N/A) | ❌ | A spam checker module |
@@ -135,8 +135,8 @@ Various services that don't fit any other categories.
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
 | [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | ❌ | Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync) |
-| [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | ❌ | A Synapse module to automatically accept invites. |
-| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | ❌ | A cli tool that automatically compresses `state_groups` database table in background. |
+| [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | ❌ | A Synapse module to automatically accept invites |
+| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | ❌ | A cli tool that automatically compresses `state_groups` database table in background |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | ❌ | Reconciliator and gateway for a managed Matrix server |
 | [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | ❌ | An open source collaborative text editor |
 | [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | ❌ | the [Jitsi](https://jitsi.org/) web UI |
