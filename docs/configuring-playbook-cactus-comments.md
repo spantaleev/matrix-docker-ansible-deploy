@@ -32,6 +32,9 @@ matrix_cactus_comments_enabled: true
 # When the backend (appservice) is enabled, this is also enabled automatically, but we explicitly enable it here.
 matrix_cactus_comments_client_enabled: true
 
+# Uncomment and adjust this part if you'd like to use a username different than the default
+# matrix_cactus_comments_user_id: "bot.cactusbot"
+
 # To allow guest comments without users needing to log in, you need to have guest registration enabled.
 # To do this you need to uncomment one of the following lines (depending if you are using Synapse or Dendrite as a homeserver)
 # If you don't know which one you use: The default is Synapse ;)
