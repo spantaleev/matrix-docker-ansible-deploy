@@ -60,7 +60,7 @@ Use alternative file storage to the default `media_store` folder.
 | ------- | --------------- | -------- | ----------- |
 | [Goofys](configuring-playbook-s3-goofys.md) | [ewoutp/goofys](https://hub.docker.com/r/ewoutp/goofys/) | ❌ | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files |
 | [synapse-s3-storage-provider](configuring-playbook-s3.md) | (N/A) | ❌ | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files |
-| [matrix-media-repo](configuring-playbook-matrix-media-repo.md) | [t2bot/matrix-media-repo](https://ghcr.io/t2bot/matrix-media-repo) | ❌ | matrix-media-repo is a highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification. |
+| [matrix-media-repo](configuring-playbook-matrix-media-repo.md) | [t2bot/matrix-media-repo](https://ghcr.io/t2bot/matrix-media-repo) | ❌ | Highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification. |
 
 # Bridges
 
