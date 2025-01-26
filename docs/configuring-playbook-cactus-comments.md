@@ -8,9 +8,9 @@ See the project's [documentation](https://cactus.chat/docs/getting-started/intro
 
 The playbook contains 2 roles for configuring different pieces of the Cactus Comments system:
 
-- `matrix-cactus-comments` - the backend appservice integrating with the Matrix homeserver
+- `matrix-cactus-comments` &mdash; the backend appservice integrating with the Matrix homeserver
 
-- `matrix-cactus-comments-client` - a static website server serving the [cactus-client](https://cactus.chat/docs/client/introduction/) static assets (`cactus.js` and `styles.css`)
+- `matrix-cactus-comments-client` &mdash; a static website server serving the [cactus-client](https://cactus.chat/docs/client/introduction/) static assets (`cactus.js` and `styles.css`)
 
 You can enable whichever component you need (typically both).
 
