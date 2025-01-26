@@ -1673,7 +1673,7 @@ See our [Setting up Cactus Comments](docs/configuring-playbook-cactus-comments.m
 
 ## Postmoogle email bridge support
 
-Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the new [Postmoogle](https://github.com/etkecc/postmoogle) email bridge. Postmoogle is like the [email2matrix bridge](https://github.com/devture/email2matrix) (also [already supported by the playbook](docs/configuring-playbook-email2matrix.md)), but more capable and with the intention to soon support *sending* emails, not just receiving.
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook can now set up the new [Postmoogle](https://github.com/etkecc/postmoogle) email bridge. Postmoogle is like the [Email2Matrix bridge](https://github.com/devture/email2matrix) (also [already supported by the playbook](docs/configuring-playbook-email2matrix.md)), but more capable and with the intention to soon support *sending* emails, not just receiving.
 
 See our [Setting up Postmoogle email bridging](docs/configuring-playbook-bridge-postmoogle.md) documentation to get started.
 

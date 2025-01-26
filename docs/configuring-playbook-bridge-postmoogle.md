@@ -1,6 +1,6 @@
 # Setting up Postmoogle email bridging (optional)
 
-**Note**: email bridging can also happen via the [email2matrix](configuring-playbook-email2matrix.md) bridge supported by the playbook.
+**Note**: email bridging can also happen via the [Email2Matrix](configuring-playbook-email2matrix.md) bridge supported by the playbook.
 
 The playbook can install and configure [Postmoogle](https://github.com/etkecc/postmoogle) for you.
 
