@@ -64,7 +64,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 **matrix-registration** gets exposed at `https://matrix.example.com/matrix-registration`
 
-It provides various [APIs](https://github.com/ZerataX/matrix-registration/wiki/api) - for creating registration tokens, listing tokens, disabling tokens, etc. To make use of all of its capabilities, consider using `curl`.
+It provides various [APIs](https://github.com/ZerataX/matrix-registration/wiki/api) — for creating registration tokens, listing tokens, disabling tokens, etc. To make use of all of its capabilities, consider using `curl`.
 
 We make the most common APIs easy to use via the playbook (see below).
 

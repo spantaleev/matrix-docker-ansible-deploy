@@ -1,7 +1,7 @@
 # Importing an existing Postgres database from another installation (optional)
 
 Run this if you'd like to import your database from a previous installation.
-(don't forget to import your Synapse `media_store` files as well - see [the importing-synape-media-store guide](importing-synapse-media-store.md)).
+(don't forget to import your Synapse `media_store` files as well — see [the importing-synape-media-store guide](importing-synapse-media-store.md)).
 
 ## Prerequisites
 
@@ -64,7 +64,7 @@ It can be worked around by changing the username to `synapse`, for example by us
 $ sed -i "s/OWNER TO synapse_user;/OWNER TO synapse;/g" homeserver.sql
 ```
 
-This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` - replacing `matrix` only would… well - you can imagine.
+This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` — replacing `matrix` only would… well — you can imagine.
 
 Note that if the previous import failed with an error it may have made changes which are incompatible with re-running the import task right away; if you do so it may fail with an error such as:
 

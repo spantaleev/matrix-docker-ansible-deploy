@@ -60,10 +60,10 @@ matrix_media_repo_admins: []
 # To disable this datastore, making it readonly, specify `forKinds: []`.
 #
 # The kinds available are:
-#   thumbnails    - Used to store thumbnails of media (local and remote).
-#   remote_media  - Original copies of remote media (servers not configured by this repo).
-#   local_media   - Original uploads for local media.
-#   archives      - Archives of content (GDPR and similar requests).
+#   thumbnails    — Used to store thumbnails of media (local and remote).
+#   remote_media  — Original copies of remote media (servers not configured by this repo).
+#   local_media   — Original uploads for local media.
+#   archives      — Archives of content (GDPR and similar requests).
 matrix_media_repo_datastore_file_for_kinds: ["thumbnails", "remote_media", "local_media", "archives"]
 matrix_media_repo_datastore_s3_for_kinds: []
 

@@ -27,23 +27,23 @@ NOTE:
 
 You can check useful documentation for configuring components here: [Configuring the playbook](configuring-playbook.md)
 
-- [Administration](configuring-playbook.md#administration) - services that help you in administrating and monitoring your Matrix installation
+- [Administration](configuring-playbook.md#administration) — services that help you in administrating and monitoring your Matrix installation
 
-- [Authentication and user-related](configuring-playbook.md#authentication-and-user-related) - extend and modify how users are authenticated on your homeserver
+- [Authentication and user-related](configuring-playbook.md#authentication-and-user-related) — extend and modify how users are authenticated on your homeserver
 
-- [Bots](configuring-playbook.md#bots) - bots provide various additional functionality to your installation
+- [Bots](configuring-playbook.md#bots) — bots provide various additional functionality to your installation
 
-- [Bridges](configuring-playbook.md#bridging-other-networks) - bridges can be used to connect your Matrix installation with third-party communication networks
+- [Bridges](configuring-playbook.md#bridging-other-networks) — bridges can be used to connect your Matrix installation with third-party communication networks
 
-- [Clients](configuring-playbook.md#clients) - web clients for Matrix that you can host on your own domains
+- [Clients](configuring-playbook.md#clients) — web clients for Matrix that you can host on your own domains
 
-- [Core service adjustments](configuring-playbook.md#core-service-adjustments) - backbone of your Matrix system
+- [Core service adjustments](configuring-playbook.md#core-service-adjustments) — backbone of your Matrix system
 
-- [File Storage](configuring-playbook.md#file-storage) - use alternative file storage to the default `media_store` folder
+- [File Storage](configuring-playbook.md#file-storage) — use alternative file storage to the default `media_store` folder
 
 <!-- NOTE: sort list items above alphabetically -->
 
-- [Other specialized services](configuring-playbook.md#other-specialized-services) - various services that don't fit any other categories
+- [Other specialized services](configuring-playbook.md#other-specialized-services) — various services that don't fit any other categories
 
 ## 👨‍🔧 Maintenance
 
@@ -63,7 +63,7 @@ If your server and services experience issues, feel free to come to [our support
 
 ## Other documentation pages <!-- NOTE: this header's title and the section below need optimization -->
 
-- ℹ️ **[FAQ](faq.md)** - various Frequently Asked Questions about Matrix, with a focus on this Ansible playbook
+- ℹ️ **[FAQ](faq.md)** — various Frequently Asked Questions about Matrix, with a focus on this Ansible playbook
 
 <!-- NOTE: sort list items under faq.md alphabetically -->
 

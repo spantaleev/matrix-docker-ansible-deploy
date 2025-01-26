@@ -193,7 +193,7 @@ You should be able to log in to it with your own [Element Web](configuring-playb
 
 **If you successfully logged in to your account, installing and configuring is complete**🎉
 
-Come say Hi👋 in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
+Come say Hi👋 in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 
 ## Things to do next
 

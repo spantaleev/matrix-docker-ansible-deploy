@@ -65,15 +65,15 @@ If you'd like to change the default email templates used by ma1sd, take a look a
 
 To use the [Registration](https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md) feature of ma1sd, you can make use of the following variables:
 
-- `matrix_synapse_enable_registration` - to enable user-initiated registration in Synapse
+- `matrix_synapse_enable_registration` — to enable user-initiated registration in Synapse
 
-- `matrix_synapse_enable_registration_captcha` - to validate registering users using reCAPTCHA, as described in the [enabling reCAPTCHA](configuring-captcha.md) documentation.
+- `matrix_synapse_enable_registration_captcha` — to validate registering users using reCAPTCHA, as described in the [enabling reCAPTCHA](configuring-captcha.md) documentation.
 
-- `matrix_synapse_registrations_require_3pid` - a list of 3pid types (among `'email'`, `'msisdn'`) required by the Synapse server for registering
+- `matrix_synapse_registrations_require_3pid` — a list of 3pid types (among `'email'`, `'msisdn'`) required by the Synapse server for registering
 
-- variables prefixed with `matrix_ma1sd_container_labels_` (e.g. `matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled`) - to configure the Traefik reverse-proxy to capture and send registration requests to ma1sd (instead of Synapse), so it can apply its additional functionality
+- variables prefixed with `matrix_ma1sd_container_labels_` (e.g. `matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled`) — to configure the Traefik reverse-proxy to capture and send registration requests to ma1sd (instead of Synapse), so it can apply its additional functionality
 
-- `matrix_ma1sd_configuration_extension_yaml` - to configure ma1sd as required. See the [Registration feature's docs](https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_ma1sd_configuration_extension_yaml`.
+- `matrix_ma1sd_configuration_extension_yaml` — to configure ma1sd as required. See the [Registration feature's docs](https://github.com/ma1uta/ma1sd/blob/master/docs/features/registration.md) for inspiration. Also see the [Additional features](#additional-features) section below to learn more about how to use `matrix_ma1sd_configuration_extension_yaml`.
 
 **Note**: For this to work, either the homeserver needs to [federate](configuring-playbook-federation.md) or the `openid` APIs need to exposed on the federation port. When federation is disabled and ma1sd is enabled, we automatically expose the `openid` APIs (only!) on the federation port. Make sure the federation port (usually `https://matrix.example.com:8448`) is whitelisted in your firewall (even if you don't actually use/need federation).
 

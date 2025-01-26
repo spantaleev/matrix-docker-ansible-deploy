@@ -89,14 +89,14 @@ matrix_email2matrix_matrix_mappings:
 
 where:
 
-* MailboxName - local-part of the email address, through which emails are bridged to the room whose ID is defined with MatrixRoomId
-* MatrixRoomId - internal ID of the room, to which received emails are sent as Matrix message
-* MatrixHomeserverUrl - URL of your Matrix homeserver, through which to send Matrix messages. You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable
-* MatrixUserId - the full ID of the sender user which sends bridged messages to the room. On this configuration it is `@email2matrix1:example.com` and `@email2matrix2:example.com` (where `example.com` is your base domain, not the `matrix.` domain)
-* MatrixAccessToken - sender user's access token
-* IgnoreSubject - if set to "true", the subject is not bridged to Matrix
-* IgnoreBody - if set to "true", the message body is not bridged to Matrix
-* SkipMarkdown - if set to "true", emails are bridged as plain text Matrix message instead of Markdown (actually HTML)
+* MailboxName — local-part of the email address, through which emails are bridged to the room whose ID is defined with MatrixRoomId
+* MatrixRoomId — internal ID of the room, to which received emails are sent as Matrix message
+* MatrixHomeserverUrl — URL of your Matrix homeserver, through which to send Matrix messages. You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable
+* MatrixUserId — the full ID of the sender user which sends bridged messages to the room. On this configuration it is `@email2matrix1:example.com` and `@email2matrix2:example.com` (where `example.com` is your base domain, not the `matrix.` domain)
+* MatrixAccessToken — sender user's access token
+* IgnoreSubject — if set to "true", the subject is not bridged to Matrix
+* IgnoreBody — if set to "true", the message body is not bridged to Matrix
+* SkipMarkdown — if set to "true", emails are bridged as plain text Matrix message instead of Markdown (actually HTML)
 
 Refer to the official documentation [here](https://github.com/devture/email2matrix/blob/master/docs/configuration.md).
 

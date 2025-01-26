@@ -123,7 +123,7 @@ Configuring `matrix_bot_baibot_config_initial_global_config_user_patterns` is op
 
 You are **not required** to define agents [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration) via Ansible. **To get started quickly**, you can **skip this section and define agents at runtime via chat commands** (following the bot's guidance).
 
-Privileged users (like the [👮‍♂️ Administrator](#️-administrator-configuration), but potentially others too - see the upstream [🔒 access](https://github.com/etkecc/baibot/blob/main/docs/access.md) documentation) can **define agents dynamically at any time** via chat commands.
+Privileged users (like the [👮‍♂️ Administrator](#️-administrator-configuration), but potentially others too — see the upstream [🔒 access](https://github.com/etkecc/baibot/blob/main/docs/access.md) documentation) can **define agents dynamically at any time** via chat commands.
 
 The Ansible role includes preset variables for easily enabling some [🤖 agents](https://github.com/etkecc/baibot/blob/main/docs/agents.md) on various [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md) (e.g. OpenAI, etc).
 
@@ -250,7 +250,7 @@ You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot
 
 This provider allows you to use OpenAI-compatible API services like [OpenRouter](https://github.com/etkecc/baibot/blob/main/docs/providers.md#openrouter), [Together AI](https://github.com/etkecc/baibot/blob/main/docs/providers.md#together-ai), etc.
 
-Some of these popular services already have **shortcut** providers (see [supported providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md#supported-providers) leading to this one behind the scenes - this make it easier to get started.
+Some of these popular services already have **shortcut** providers (see [supported providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md#supported-providers) leading to this one behind the scenes — this make it easier to get started.
 
 As of this moment, the playbook does not include presets for any of these services, so you'll need to [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset).
 
@@ -305,7 +305,7 @@ Because these are [statically](https://github.com/etkecc/baibot/blob/main/docs/c
 
 💡 To figure out what to put in the `config` section, refer to the [☁️ provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md) page, which contains **sample configuration YAML for each provider**.
 
-As with any [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md), defining them means they exist. To actually make use of them, they need to be configured as handlers globally or in a specific room - see [Mixing & matching models](https://github.com/etkecc/baibot/blob/main/docs/features.md#mixing--matching-models).
+As with any [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md), defining them means they exist. To actually make use of them, they need to be configured as handlers globally or in a specific room — see [Mixing & matching models](https://github.com/etkecc/baibot/blob/main/docs/features.md#mixing--matching-models).
 
 💡 You may also wish to use these new agents for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
 

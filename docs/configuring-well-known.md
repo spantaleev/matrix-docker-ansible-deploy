@@ -6,11 +6,11 @@ This documentation page explains how to configure Service discovery via `/.well-
 
 There are 3 types of well-known service discovery mechanism that Matrix makes use of:
 
-- (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. With the default playbook configuration specified on the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), this is necessary for federation to work. Without a proper configuration, your server will effectively not be part of the Matrix network.
+- (important) **Federation Server discovery** (`/.well-known/matrix/server`) — assists other servers in the Matrix network with finding your server. With the default playbook configuration specified on the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), this is necessary for federation to work. Without a proper configuration, your server will effectively not be part of the Matrix network.
 
-- (less important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
+- (less important) **Client Server discovery** (`/.well-known/matrix/client`) — assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
 
-- (optional) **Support service discovery** (`/.well-known/matrix/support`) -- returns server admin contact and support page of the domain.
+- (optional) **Support service discovery** (`/.well-known/matrix/support`) — returns server admin contact and support page of the domain.
 
 ### Federation Server Discovery
 
@@ -67,7 +67,7 @@ To implement the service discovery mechanisms, your base domain's server (e.g. `
 
 If you don't have a server for your base domain at all, you can use the Matrix server for this. If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it.
 
-**This is the easiest way to set up well-known serving** -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.) and take care to serve the appropriate well-known files automatically.
+**This is the easiest way to set up well-known serving** — letting the playbook handle the whole base domain for you (including SSL certificates, etc.) and take care to serve the appropriate well-known files automatically.
 
 If you decide to go this route, you don't need to read ahead in this document. Instead, go to [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
 

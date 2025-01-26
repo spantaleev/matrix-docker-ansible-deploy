@@ -143,8 +143,8 @@ where:
 
 If you're using the integrated Postgres server and not an [external Postgres server](configuring-playbook-external-postgres.md), you can launch a Postgres into the `synapse` database by:
 
-- running `/matrix/postgres/bin/cli` - to launch [`psql`](https://www.postgresql.org/docs/current/app-psql.html)
-- running `\c synapse` - to change to the `synapse` database
+- running `/matrix/postgres/bin/cli` — to launch [`psql`](https://www.postgresql.org/docs/current/app-psql.html)
+- running `\c synapse` — to change to the `synapse` database
 
 You can then proceed to run the query above.
 

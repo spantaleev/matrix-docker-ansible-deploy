@@ -22,9 +22,9 @@ By default, this enables the `one-of-each` [worker preset](#worker-presets), but
 
 We support a few configuration presets (`matrix_synapse_workers_preset: one-of-each` being the default configuration right now):
 
-- (federation-only) `little-federation-helper` - a very minimal worker configuration to improve federation performance
-- (generic) `one-of-each` - defaults to one worker of each supported type - no smart routing, just generic workers
-- (specialized) `specialized-workers` - defaults to one worker of each supported type, but disables generic workers and uses [specialized workers](#specialized-workers) instead
+- (federation-only) `little-federation-helper` — a very minimal worker configuration to improve federation performance
+- (generic) `one-of-each` — defaults to one worker of each supported type — no smart routing, just generic workers
+- (specialized) `specialized-workers` — defaults to one worker of each supported type, but disables generic workers and uses [specialized workers](#specialized-workers) instead
 
 These presets represent a few common configurations. There are many worker types which can be mixed and matched based on your needs.
 
@@ -34,20 +34,20 @@ Previously, the playbook only supported the most basic type of load-balancing. W
 
 This is **still the default load-balancing method (preset) used by the playbook**.
 
-To use generic load-balancing, do not specify `matrix_synapse_workers_preset` to make it use the default value (`one-of-each`), or better yet - explicitly set it as `one-of-each`.
+To use generic load-balancing, do not specify `matrix_synapse_workers_preset` to make it use the default value (`one-of-each`), or better yet — explicitly set it as `one-of-each`.
 
 You may also consider [tweaking the number of workers of each type](#controlling-the-number-of-worker-instances) from the default (one of each).
 
 ##### Specialized workers
 
-The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requestor's IP adddress, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** - the access token (username) of the requestor and/or on the resource (room, etc.) being requested.
+The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requestor's IP adddress, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** — the access token (username) of the requestor and/or on the resource (room, etc.) being requested.
 
 The playbook supports these **4 types** of specialized workers:
 
-- Room workers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) & [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs dedicated to handling specific rooms
-- Sync workers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs related to synchronization (most notably [the `/sync` endpoint](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3sync))
-- Client readers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs which are not for specific rooms (handled by **room workers**) or for synchronization (handled by **sync workers**)
-- Federation readers - handles various [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs which are not for specific rooms (handled by **room workers**)
+- Room workers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) & [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs dedicated to handling specific rooms
+- Sync workers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs related to synchronization (most notably [the `/sync` endpoint](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3sync))
+- Client readers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs which are not for specific rooms (handled by **room workers**) or for synchronization (handled by **sync workers**)
+- Federation readers — handles various [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs which are not for specific rooms (handled by **room workers**)
 
 To use specialized load-balancing, consider enabling the `specialized-workers` [worker preset](#worker-presets) and potentially [tweaking the number of workers of each type](#controlling-the-number-of-worker-instances) from the default (one of each).
 

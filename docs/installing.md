@@ -27,7 +27,7 @@ If you **don't** use SSH keys for authentication, but rather a regular password,
 
 If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands.
 
-There 2 ways to start the installation process - depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
+There 2 ways to start the installation process — depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
 
 **Note**: if you are migrating from an old server to a new one, take a look at [this guide](maintenance-migrating.md) instead. This is an easier and more straightforward way than installing a server and importing old data into it.
 
@@ -130,7 +130,7 @@ After finilizing the installation, you can:
 - or learn how to [maintain your server](faq.md#maintenance)
 - or join some Matrix rooms:
   * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
-  * or come say Hi in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
+  * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
 
 ### Maintaining your setup in the future
