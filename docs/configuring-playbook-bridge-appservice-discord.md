@@ -108,3 +108,18 @@ There's the Discord bridge's guide for [setting privileges on bridge managed roo
 docker exec -it matrix-appservice-discord \
 /bin/sh -c 'cp /cfg/registration.yaml /tmp/discord-registration.yaml && cd /tmp && node /build/tools/adminme.js -c /cfg/config.yaml -m "!qporfwt:example.com" -u "@alice:example.com" -p 100'
 ```
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-appservice-discord`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file (adapt to your needs) and re-run the playbook:
+
+```yaml
+matrix_appservice_discord_configuration_extension_yaml: |
+  logging:
+    # What level should the logger output to the console at.
+    console: "info" #silly, verbose, info, http, warn, error, silent
+```
