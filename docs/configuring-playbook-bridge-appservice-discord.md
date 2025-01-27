@@ -121,5 +121,5 @@ The default logging level for this component is `warn`. If you want to increase 
 matrix_appservice_discord_configuration_extension_yaml: |
   logging:
     # What level should the logger output to the console at.
-    console: "info" #silly, verbose, info, http, warn, error, silent
+    console: "info" # Valid values: silent, error, warn, http, info, verbose, silly
 ```
