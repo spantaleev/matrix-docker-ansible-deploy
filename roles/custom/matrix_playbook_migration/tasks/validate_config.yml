@@ -182,6 +182,34 @@
           We found usage of the following variables: {{ matrix_playbook_migration_redis_migration_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_redis_migration_vars | length > 0"
 
+- when: matrix_playbook_migration_redis_valkey_migration_validation_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_redis_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'redis_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_redis variables
+      ansible.builtin.fail:
+        msg: >-
+          The Redis role that used to be part of this playbook has been superseded by https://github.com/mother-of-all-self-hosting/ansible-role-valkey.
+          Please change your configuration (vars.yml) to rename all variables (`redis_` -> `valkey_`).
+          We found usage of the following variables: {{ matrix_playbook_migration_redis_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_redis_migration_vars | length > 0"
+
+- when: matrix_playbook_migration_keydb_valkey_migration_validation_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_keydb_migration_vars: |-
+          {{ vars | dict2items | selectattr('key', 'match', 'keydb_.*') | list | items2dict }}
+
+    - name: (Deprecation) Catch and report matrix_redis variables
+      ansible.builtin.fail:
+        msg: >-
+          The KeyDB role that used to be part of this playbook has been superseded by https://github.com/mother-of-all-self-hosting/ansible-role-valkey.
+          Please change your configuration (vars.yml) to rename all variables (`keydb_` -> `valkey_`).
+          We found usage of the following variables: {{ matrix_playbook_migration_keydb_migration_vars.keys() | join(', ') }}
+      when: "matrix_playbook_migration_keydb_migration_vars | length > 0"
+
 - when: matrix_playbook_migration_matrix_etherpad_migration_validation_enabled | bool
   block:
     - ansible.builtin.set_fact:

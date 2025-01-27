@@ -432,10 +432,6 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-prometheus-nginxlog-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus-exporters', 'prometheus-nginxlog-exporter']}] if matrix_prometheus_nginxlog_exporter_enabled else [])
     +
-    ([{'name': (redis_identifier + '.service'), 'priority': 750, 'groups': ['matrix', 'redis']}] if redis_enabled else [])
-    +
-    ([{'name': (keydb_identifier + '.service'), 'priority': 750, 'groups': ['matrix', 'keydb']}] if keydb_enabled else [])
-    +
     ([{'name': (valkey_identifier + '.service'), 'priority': 750, 'groups': ['matrix', 'valkey']}] if valkey_enabled else [])
     +
     ([{'name': 'matrix-pantalaimon.service', 'priority': 4000, 'groups': ['matrix', 'pantalaimon']}] if matrix_pantalaimon_enabled else [])
@@ -2215,17 +2211,13 @@ matrix_hookshot_systemd_wanted_services_list: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_cache_redis_host == redis_identifier else [])
-    +
-    ([(keydb_identifier + '.service')] if keydb_enabled and matrix_hookshot_cache_redis_host == keydb_identifier else [])
-    +
     ([(valkey_identifier + '.service')] if valkey_enabled and matrix_hookshot_cache_redis_host == valkey_identifier else [])
   }}
 
 # Hookshot's experimental encryption feature (and possibly others) may benefit from Redis, if available.
 # We only connect to Redis if encryption is enabled (not for everyone who has Redis enabled),
 # because connectivity is still potentially troublesome and is to be investigated.
-matrix_hookshot_cache_redis_host: "{{ valkey_identifier if valkey_enabled else (redis_identifier if redis_enabled else (keydb_identifier if keydb_enabled else '')) }}"
+matrix_hookshot_cache_redis_host: "{{ valkey_identifier if valkey_enabled else '' }}"
 
 matrix_hookshot_container_network: "{{ matrix_addons_container_network }}"
 
@@ -2233,10 +2225,6 @@ matrix_hookshot_container_additional_networks_auto: |
   {{
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([redis_container_network] if redis_enabled and matrix_hookshot_cache_redis_host == redis_identifier else [])
-      +
-      ([keydb_container_network] if keydb_enabled and matrix_hookshot_cache_redis_host == keydb_identifier else [])
       +
       ([valkey_container_network] if valkey_enabled and matrix_hookshot_cache_redis_host == valkey_identifier else [])
       +
@@ -4411,57 +4399,6 @@ ntfy_visitor_request_limit_exempt_hosts_hostnames_auto: |
 #
 ######################################################################
 
-######################################################################
-#
-# redis
-#
-######################################################################
-
-redis_enabled: "{{ not (keydb_enabled or valkey_enabled) and (matrix_synapse_workers_enabled or (matrix_hookshot_enabled and matrix_hookshot_encryption_enabled)) }}"
-
-redis_identifier: matrix-redis
-
-redis_uid: "{{ matrix_user_uid }}"
-redis_gid: "{{ matrix_user_gid }}"
-
-redis_base_path: "{{ matrix_base_data_path }}/redis"
-
-######################################################################
-#
-# /redis
-#
-######################################################################
-
-######################################################################
-#
-# keydb
-#
-######################################################################
-
-keydb_enabled: false
-
-keydb_identifier: matrix-keydb
-
-keydb_uid: "{{ matrix_user_uid }}"
-keydb_gid: "{{ matrix_user_gid }}"
-
-keydb_base_path: "{{ matrix_base_data_path }}/keydb"
-
-keydb_arch: |-
-  {{
-    ({
-      'amd64': 'x86_64',
-      'arm32': 'arm32',
-      'arm64': 'arm64',
-    })[matrix_architecture]
-  }}
-
-######################################################################
-#
-# keydb
-#
-######################################################################
-
 
 ######################################################################
 #
@@ -4705,10 +4642,6 @@ matrix_synapse_container_additional_networks_auto: |
       +
       ([postgres_container_network] if (postgres_enabled and postgres_container_network != matrix_synapse_container_network and matrix_synapse_database_host == postgres_connection_hostname) else [])
       +
-      ([redis_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
-      +
-      ([keydb_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == keydb_identifier else [])
-      +
       ([valkey_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == valkey_identifier else [])
       +
       ([exim_relay_container_network] if (exim_relay_enabled and matrix_synapse_email_enabled and matrix_synapse_email_smtp_host == exim_relay_identifier and matrix_synapse_container_network != exim_relay_container_network) else [])
@@ -4794,10 +4727,6 @@ matrix_synapse_systemd_required_services_list_auto: |
   {{
     ([postgres_identifier ~ '.service'] if (postgres_enabled and postgres_container_network != matrix_synapse_container_network and matrix_synapse_database_host == postgres_connection_hostname) else [])
     +
-    ([redis_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
-    +
-    ([keydb_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == keydb_identifier else [])
-    +
     ([valkey_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == valkey_identifier else [])
     +
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
@@ -4813,9 +4742,9 @@ matrix_synapse_systemd_wanted_services_list_auto: |
   }}
 
 # Synapse workers (used for parallel load-scaling) need Redis for IPC.
-matrix_synapse_redis_enabled: "{{ redis_enabled or keydb_enabled or valkey_enabled }}"
-matrix_synapse_redis_host: "{{ valkey_identifier if valkey_enabled else (redis_identifier if redis_enabled else (keydb_identifier if keydb_enabled else '')) }}"
-matrix_synapse_redis_password: "{{ valkey_connection_password if valkey_enabled else (redis_connection_password if redis_enabled else (keydb_connection_password if keydb_enabled else '')) }}"
+matrix_synapse_redis_enabled: "{{ valkey_enabled }}"
+matrix_synapse_redis_host: "{{ valkey_identifier if valkey_enabled else '' }}"
+matrix_synapse_redis_password: "{{ valkey_connection_password if valkey_enabled else '' }}"
 
 matrix_synapse_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"

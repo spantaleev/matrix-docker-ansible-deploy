@@ -1,3 +1,26 @@
+# 2025-01-27
+
+## Redis and KeyDB are no longer part of the playbook
+
+**TLDR**: The playbook now exclusively uses Valkey as its Redis-compatible memorystore implementation, removing support for Redis and KeyDB. Most users are unaffected by this change unless they explicitly configured Redis or KeyDB variables. Only users that were explicitly definining `redis_*` or `keydb_*` variables will need to update their configuration to use `valkey_*` variables instead.
+
+The playbook has gone through several iterations of memorystore implementations:
+
+1. It initially used Redis, auto-installing it when needed by features/services
+2. [Switched to KeyDB](#backward-compatibility-break-the-playbook-now-defaults-to-keydb-instead-of-redis) as the default, while keeping Redis support for those who wished to remain on Redis
+3. [Switched to Valkey](#backward-compatibility-break-the-playbook-now-defaults-to-valkey-instead-of-keydb) due to [KeyDB issues](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3544), while keeping Redis and KeyDB support, for those who wished to remain on them
+
+To reduce configuration complexity and maintenance overhead, we are now:
+
+- removing Redis and KeyDB support entirely
+- using Valkey as the sole Redis-compatible memorystore implementation
+
+To update your configuration:
+
+- **Most users** don't need to do anything
+- **Users that were explicitly sticking to Redis/KeyDB** need to update their `vars.yml` to use `valkey_*` variables instead
+
+
 # 2025-01-19
 
 ## conduwuit support
