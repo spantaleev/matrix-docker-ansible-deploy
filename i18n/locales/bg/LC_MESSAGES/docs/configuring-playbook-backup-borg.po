@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-22 17:53+0900\n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: bg\n"
@@ -34,109 +34,161 @@ msgid "BorgBackup is a deduplicating backup program with optional compression an
 msgstr ""
 
 #: ../../../docs/configuring-playbook-backup-borg.md:7
-msgid "You will need a remote server where BorgBackup will store the backups. There are hosted, BorgBackup compatible solutions available, such as [BorgBase](https://www.borgbase.com)."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-backup-borg.md:9
-msgid "The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-backup-borg.md:11
-msgid "By default, if you're using the integrated Postgres database server (as opposed to [an external Postgres server](configuring-playbook-external-postgres.md)), backups with BorgBackup will also include dumps of your Postgres database. An alternative solution for backing up the Postgres database is [postgres backup](configuring-playbook-postgres-backup.md). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-backup-borg.md:13
-msgid "**Note**: the component is not managed by this repository but its [own repository](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg)."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-backup-borg.md:15
 msgid "Prerequisites"
 msgstr ""
 
+#: ../../../docs/configuring-playbook-backup-borg.md:9
+msgid "Set up a remote server for storing backups"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:11
+msgid "You will need a remote server where BorgBackup will store the backups. There are hosted, BorgBackup compatible solutions available, such as [BorgBase](https://www.borgbase.com)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:13
+msgid "Check the Postgres version"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:15
+msgid "By default, if you're using the integrated Postgres database server (as opposed to [an external Postgres server](configuring-playbook-external-postgres.md)), backups with BorgBackup will also include dumps of your Postgres database."
+msgstr ""
+
 #: ../../../docs/configuring-playbook-backup-borg.md:17
-msgid "If you do not disable Postgres-backup support, make sure that the Postgres version of your homeserver's database is compatible with borgmatic."
+msgid "Unless you disable the Postgres-backup support, make sure that the Postgres version of your homeserver's database is compatible with borgmatic. You can check the compatible versions [here](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/main/defaults/main.yml)."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-backup-borg.md:19
-msgid "Create a new SSH key:"
+msgid "An alternative solution for backing up the Postgres database is [postgres backup](configuring-playbook-postgres-backup.md). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:25
-msgid "This can be done on any machine and you don't need to place the key in the `.ssh` folder. It will be added to the Ansible config later."
+#: ../../../docs/configuring-playbook-backup-borg.md:21
+msgid "Create a new SSH key"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:27
-msgid "Add the **public** part of this SSH key (the `matrix-borg-backup.pub` file) to your BorgBackup provider/server:"
+#: ../../../docs/configuring-playbook-backup-borg.md:23
+msgid "Run the command below on any machine to create a new SSH key:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-backup-borg.md:29
-msgid "If you plan to use a hosted solution, follow their instructions. If you have your own server, copy the key over:"
+msgid "You don't need to place the key in the `.ssh` folder."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:39
+#: ../../../docs/configuring-playbook-backup-borg.md:31
+msgid "Add the public key"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:33
+msgid "Next, add the **public** part of this SSH key (the `matrix-borg-backup.pub` file) to your BorgBackup provider/server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:35
+msgid "If you are using a hosted solution, follow their instructions. If you have your own server, copy the key to it with the command like below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:45
+msgid "The **private** key needs to be added to `backup_borg_ssh_key_private` on your `inventory/host_vars/matrix.example.com/vars.yml` file as below."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:47
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:41
-msgid "Minimal working configuration (`inventory/host_vars/matrix.example.com/vars.yml`) to enable BorgBackup:"
+#: ../../../docs/configuring-playbook-backup-borg.md:49
+msgid "To enable BorgBackup, add the following configuration to your `vars.yml` file (adapt to your needs):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:58
-msgid "where:"
+#: ../../../docs/configuring-playbook-backup-borg.md:76
+msgid "**Note**: `REPO` will be initialized on backup start, for example: `matrix`. See [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls) for the syntax."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:60
-msgid "USER - SSH user of a provider/server"
+#: ../../../docs/configuring-playbook-backup-borg.md:78
+msgid "Set backup archive name (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:61
-msgid "HOST - SSH host of a provider/server"
+#: ../../../docs/configuring-playbook-backup-borg.md:80
+msgid "You can specify the backup archive name format. To set it, add the following configuration to your `vars.yml` file (adapt to your needs):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:62
-msgid "REPO - BorgBackup repository name, it will be initialized on backup start, eg: `matrix`, regarding Syntax see [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls)"
+#: ../../../docs/configuring-playbook-backup-borg.md:86
+msgid "Configure retention policy (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:63
-msgid "PASSPHRASE - passphrase used for encrypting backups. You can create one with a command like `pwgen -s 64 1`."
+#: ../../../docs/configuring-playbook-backup-borg.md:88
+msgid "It is also possible to configure a retention strategy. To configure it, add the following configuration to your `vars.yml` file (adapt to your needs):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:64
-msgid "PRIVATE KEY - the content of the **private** part of the SSH key you created before. The whole key (all of its belonging lines) under `backup_borg_ssh_key_private` needs to be indented with 2 spaces"
+#: ../../../docs/configuring-playbook-backup-borg.md:98
+msgid "Edit the backup schedule (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:66
-msgid "To backup without encryption, add `backup_borg_encryption: 'none'` to your vars. This will also enable the `backup_borg_unknown_unencrypted_repo_access_is_ok` variable."
+#: ../../../docs/configuring-playbook-backup-borg.md:100
+msgid "By default the backup will run 4 a.m. every day based on the `backup_borg_schedule` variable. It is defined in the format of systemd timer calendar."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:68
-msgid "`backup_borg_location_source_directories` defines the list of directories to back up: it's set to `{{ matrix_base_data_path }}` by default, which is the base directory for every service's data, such as Synapse, Postgres and the bridges. You might want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable."
+#: ../../../docs/configuring-playbook-backup-borg.md:102
+msgid "To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:70
-msgid "Check the [backup_borg role](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg)'s [defaults/main.yml](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/main/defaults/main.yml) file for the full list of available options."
+#: ../../../docs/configuring-playbook-backup-borg.md:108
+msgid "**Note**: the actual job may run with a delay. See `backup_borg_schedule_randomized_delay_sec` [here](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/f5d5b473d48c6504be10b3d946255ef5c186c2a6/defaults/main.yml#L50) for its default value."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:72
+#: ../../../docs/configuring-playbook-backup-borg.md:110
+msgid "Set include and/or exclude directories (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:112
+msgid "`backup_borg_location_source_directories` defines the list of directories to back up. It's set to `{{ matrix_base_data_path }}` by default, which is the base directory for every service's data, such as Synapse, Postgres and the bridges."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:114
+msgid "You might also want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:116
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:118
+msgid "There are some additional things you may wish to configure about the component."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:120
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:122
+msgid "[backup_borg role](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `backup_borg_configuration_extension_yaml` variable"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:124
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:74
+#: ../../../docs/configuring-playbook-backup-borg.md:126
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:81
+#: ../../../docs/configuring-playbook-backup-borg.md:133
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:83
+#: ../../../docs/configuring-playbook-backup-borg.md:135
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:85
+#: ../../../docs/configuring-playbook-backup-borg.md:137
 msgid "Manually start a backup"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-backup-borg.md:87
-msgid "For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server and run `systemctl start matrix-backup-borg`. This will not return until the backup is done, so possibly a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable."
+#: ../../../docs/configuring-playbook-backup-borg.md:139
+msgid "Sometimes it can be helpful to run the backup as you'd like, avoiding to wait until 4 a.m., like when you test your configuration."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:141
+msgid "If you want to run it immediately, log in to the server with SSH and run `systemctl start matrix-backup-borg`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-backup-borg.md:143
+msgid "This will not return until the backup is done, so it can possibly take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable."
 msgstr ""
