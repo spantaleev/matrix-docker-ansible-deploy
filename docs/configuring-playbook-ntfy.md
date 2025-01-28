@@ -24,10 +24,6 @@ ntfy_enabled: true
 
 # Uncomment to enable the ntfy web app (disabled by default)
 # ntfy_web_root: app  # defaults to "disable"
-
-# Uncomment and change to inject additional configuration options.
-# ntfy_configuration_extension_yaml: |
-#   log_level: DEBUG
 ```
 
 ### Adjusting the ntfy URL (optional)
@@ -113,9 +109,9 @@ The web app is disabled in this playbook by default as the expectation is that m
 
 ## Troubleshooting
 
-First check that the Matrix client app you are using supports UnifiedPush. There may well be different variants of the app.
+### Check a client application
 
-Set the ntfy server's log level to 'DEBUG', as shown in the example settings above, and watch the server's logs with `sudo journalctl -fu matrix-ntfy`.
+First check that the Matrix client app you are using supports UnifiedPush. There may well be different variants of the app.
 
 To check if UnifiedPush is correctly configured on the client device, look at "Settings -> Notifications -> Notification Targets" in Element Android or SchildiChat Android, or "Settings -> Notifications -> Devices" in FluffyChat. There should be one entry for each Matrix client app that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL.
 
@@ -124,3 +120,16 @@ In the "Notification Targets" screen in Element Android or SchildiChat Android, 
 If it is not working, useful tools are "Settings -> Notifications -> Re-register push distributor" and "Settings -> Notifications -> Troubleshoot Notifications" in SchildiChat Android (possibly also Element Android). In particular the "Endpoint/FCM" step of that troubleshooter should display your ntfy server's URL that it has discovered from the ntfy client app.
 
 The simple [UnifiedPush troubleshooting](https://unifiedpush.org/users/troubleshooting/) app [UP-Example](https://f-droid.org/en/packages/org.unifiedpush.example/) can be used to manually test UnifiedPush registration and operation on an Android device.
+
+### Check the service's logs
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-ntfy`.
+
+#### Increase logging verbosity
+
+If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+ntfy_configuration_extension_yaml: |
+  log_level: DEBUG
+```
