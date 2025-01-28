@@ -65,7 +65,7 @@ You can also refer to the upstream [Usage documentation](https://github.com/anoa
 
 ## Troubleshooting
 
-As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-reminder-bot`.
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-matrix-reminder-bot`.
 
 ### Increase logging verbosity
 
