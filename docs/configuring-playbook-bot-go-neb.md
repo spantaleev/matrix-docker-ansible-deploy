@@ -255,3 +255,7 @@ Basic usage is like this: `!echo hi` or `!imgur puppies` or `!giphy matrix`
 If you enabled the github_cmd service, send `!github help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [Documentation](https://github.com/matrix-org/go-neb).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-go-neb`.
