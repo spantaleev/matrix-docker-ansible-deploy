@@ -23,6 +23,15 @@ matrix_bot_matrix_reminder_bot_matrix_user_password: PASSWORD_FOR_THE_BOT
 matrix_bot_matrix_reminder_bot_reminders_timezone: Europe/London
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-matrix-reminder-bot/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bot-matrix-reminder-bot/templates/config.yaml.j2` for the bot's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_matrix_reminder_bot_configuration_extension_yaml` variable
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -53,3 +62,18 @@ Basic usage is like this: `!remindme in 2 minutes; This is a test`
 Send `!help reminders` to the room to see the bot's help menu for additional commands.
 
 You can also refer to the upstream [Usage documentation](https://github.com/anoadragon453/matrix-reminder-bot#usage).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-matrix-reminder-bot`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_bot_matrix_reminder_bot_configuration_extension_yaml: |
+  logging:
+    # Valid values: ERROR, WARNING, INFO, DEBUG
+    level: DEBUG
+```
