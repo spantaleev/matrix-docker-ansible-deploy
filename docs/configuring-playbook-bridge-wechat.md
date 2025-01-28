@@ -12,6 +12,15 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_wechat_enabled: true
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-wechat/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-wechat/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_wechat_configuration_extension_yaml` variable
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -34,3 +43,16 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 To use the bridge, you need to start a chat with `@wechatbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 Send `help` to the bot to see the available commands.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bridge-wechat`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: fatal, error, warn, info, debug
+matrix_wechat_log_level: 'debug'
+```
