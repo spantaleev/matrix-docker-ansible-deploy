@@ -158,5 +158,5 @@ If you want to increase the verbosity, add the following configuration to your `
 
 ```yaml
 # See: https://github.com/ma1uta/ma1sd/blob/master/docs/troubleshooting.md#increase-verbosity
-matrix_ma1sd_verbose_logging: false
+matrix_ma1sd_verbose_logging: true
 ```
