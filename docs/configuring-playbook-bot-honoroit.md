@@ -81,3 +81,15 @@ After the bot joins the room, any Matrix user can send a message to it to start 
 Send `!ho help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [documentation](https://github.com/etkecc/honoroit#features).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-honoroit`.
+
+### Increase logging verbosity
+
+If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_bot_honoroit_loglevel: 'DEBUG'
+```
