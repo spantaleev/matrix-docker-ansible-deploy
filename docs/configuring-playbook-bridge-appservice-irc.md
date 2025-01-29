@@ -101,7 +101,8 @@ The default logging level for this component is `debug`, and the log is output t
 ```yaml
 matrix_appservice_irc_configuration_extension_yaml: |
   logging:
-    # Level to log on console/logfile. One of error|warn|info|debug
+    # Level to log on console/logfile.
+    # Valid values: error, warn, info, debug
     level: "debug"
     # The file location to log to. This is relative to the project directory.
     logfile: "debug.log"
