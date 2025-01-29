@@ -111,3 +111,16 @@ Alternatively, you can refer to the documentation on [how to obtain an access to
 
 > [!WARNING]
 > Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-maubot`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: CRITICAL, ERROR, WARNING, INFO, DEBUG
+matrix_bot_maubot_logging_level: DEBUG
+```
