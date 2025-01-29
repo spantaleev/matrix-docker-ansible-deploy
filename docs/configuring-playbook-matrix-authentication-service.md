@@ -437,7 +437,9 @@ If successful, you should see some output that looks like this:
 ✅ The legacy login API at "https://matrix.example.com/_matrix/client/v3/login" is reachable and is handled by MAS.
 ```
 
-## Management
+## Usage
+
+### Management
 
 You can use the [`mas-cli` command-line tool](https://element-hq.github.io/matrix-authentication-service/reference/cli/index.html) (exposed via the `/matrix/matrix-authentication-service/bin/mas-cli` script) to perform administrative tasks against MAS.
 
@@ -449,13 +451,13 @@ This documentation page already mentions:
 
 There are other sub-commands available. Run `/matrix/matrix-authentication-service/bin/mas-cli` to get an overview.
 
-## User registration
+### User registration
 
 After Matrix Authentication Service is [installed](#installing), users need to be managed there (unless you're managing them in an [upstream OAuth2 provider](#upstream-oauth2-configuration)).
 
 You can register users new users as described in the [Registering users](./registering-users.md) documentation (via `mas-cli manage register-user` or the Ansible playbook's `register-user` tag).
 
-## Working around email deliverability issues
+### Working around email deliverability issues
 
 Because Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user, you may need to work around email deliverability issues if [your email-sending configuration](./configuring-playbook-email.md) is not working.
 
