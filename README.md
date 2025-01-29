@@ -74,7 +74,7 @@ Services that run on the server to make the various parts of your installation w
 | ---- | -------- | ----------- | ------------- |
 | [PostgreSQL](https://www.postgresql.org/)| ✅ | Database for Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible. | [Link](docs/configuring-playbook-external-postgres.md) |
 | [coturn](https://github.com/coturn/coturn) | ✅ | STUN/TURN server for WebRTC audio/video calls | [Link](docs/configuring-playbook-turn.md) |
-| [Traefik](https://doc.traefik.io/traefik/) | ✅ | Web server, listening on ports 80, 443 and 8448 - standing in front of all the other services. Using your own webserver [is possible](docs/configuring-playbook-own-webserver.md) | [Link](docs/configuring-playbook-traefik.md) |
+| [Traefik](https://doc.traefik.io/traefik/) | ✅ | Web server, listening on ports 80, 443 and 8448 - standing in front of all the other services. [Using your own webserver](docs/configuring-playbook-own-webserver.md) is also possible. | [Link](docs/configuring-playbook-traefik.md) |
 | [Let's Encrypt](https://letsencrypt.org/) | ✅ | Free SSL certificate, which secures the connection to all components | [Link](docs/configuring-playbook-ssl-certificates.md) |
 | [Exim](https://www.exim.org/) | ✅ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
 | [ma1sd](https://github.com/ma1uta/ma1sd) | ❌ | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
@@ -89,10 +89,10 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-synapse-rest-auth](https://github.com/ma1uta/matrix-synapse-rest-password-provider) (advanced) | ❌ | REST authentication password provider module | [Link](docs/configuring-playbook-rest-auth.md) |
 |[matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) (advanced) | ❌ | Password provider module | [Link](docs/configuring-playbook-shared-secret-auth.md) |
 | [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) (advanced) | ❌ | LDAP Auth password provider module | [Link](docs/configuring-playbook-ldap-auth.md) |
-| [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) (advanced) | ❌ | A proxy that handles Matrix registration requests and forwards them to LDAP. | [Link](docs/configuring-playbook-matrix-ldap-registration-proxy.md) |
-| [matrix-registration](https://github.com/ZerataX/matrix-registration) | ❌ | A simple python application to have a token based Matrix registration | [Link](docs/configuring-playbook-matrix-registration.md) |
+| [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) (advanced) | ❌ | Proxy that handles Matrix registration requests and forwards them to LDAP | [Link](docs/configuring-playbook-matrix-ldap-registration-proxy.md) |
+| [matrix-registration](https://github.com/ZerataX/matrix-registration) | ❌ | Simple python application to have a token based Matrix registration | [Link](docs/configuring-playbook-matrix-registration.md) |
 | [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (UVS) | ❌ | Service to verify details of a user based on an Open ID token | [Link](docs/configuring-playbook-user-verification-service.md) |
-| [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) (advanced) | ❌ | A spam checker module | [Link](docs/configuring-playbook-synapse-simple-antispam.md) |
+| [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) (advanced) | ❌ | Spam checker module | [Link](docs/configuring-playbook-synapse-simple-antispam.md) |
 
 ### File Storage
 
@@ -102,7 +102,7 @@ Use alternative file storage to the default `media_store` folder.
 | ---- | -------- | ----------- | ------------- |
 | [Goofys](https://github.com/kahing/goofys) | ❌ | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files | [Link](docs/configuring-playbook-s3-goofys.md) |
 | [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) | ❌ | [Amazon S3](https://aws.amazon.com/s3/) (or other S3-compatible object store) storage for Synapse's content repository (`media_store`) files | [Link](docs/configuring-playbook-s3.md) |
-| [matrix-media-repo](https://github.com/turt2live/matrix-media-repo) | ❌ | matrix-media-repo is a highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification. | [Link](docs/configuring-playbook-matrix-media-repo.md) |
+| [matrix-media-repo](https://github.com/turt2live/matrix-media-repo) | ❌ | Highly customizable multi-domain media repository for Matrix. Intended for medium to large deployments, this media repo de-duplicates media while being fully compliant with the specification. | [Link](docs/configuring-playbook-matrix-media-repo.md) |
 
 ### Bridges
 
@@ -144,13 +144,13 @@ Bots provide various additional functionality to your installation.
 
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
-| [baibot](https://github.com/etkecc/baibot) | ❌ | A bot that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you | [Link](docs/configuring-playbook-bot-baibot.md) |
+| [baibot](https://github.com/etkecc/baibot) | ❌ | Bot that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you | [Link](docs/configuring-playbook-bot-baibot.md) |
 | [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) | ❌ | Bot for scheduling one-off & recurring reminders and alarms | [Link](docs/configuring-playbook-bot-matrix-reminder-bot.md) |
 | [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) | ❌ | Bot for invitations by creating and managing registration tokens | [Link](docs/configuring-playbook-bot-matrix-registration-bot.md) |
-| [maubot](https://github.com/maubot/maubot) | ❌ | A plugin-based Matrix bot system | [Link](docs/configuring-playbook-bot-maubot.md) |
-| [Honoroit](https://github.com/etkecc/honoroit) | ❌ | A helpdesk bot | [Link](docs/configuring-playbook-bot-honoroit.md) |
-| [Mjolnir](https://github.com/matrix-org/mjolnir) | ❌ | A moderation tool for Matrix | [Link](docs/configuring-playbook-bot-mjolnir.md) |
-| [Draupnir](https://github.com/the-draupnir-project/Draupnir) | ❌ | A moderation tool for Matrix (Fork of Mjolnir) | [Link](docs/configuring-playbook-bot-draupnir.md) (for [appservice mode](docs/configuring-playbook-appservice-draupnir-for-all.md))|
+| [maubot](https://github.com/maubot/maubot) | ❌ | Plugin-based Matrix bot system | [Link](docs/configuring-playbook-bot-maubot.md) |
+| [Honoroit](https://github.com/etkecc/honoroit) | ❌ | Helpdesk bot | [Link](docs/configuring-playbook-bot-honoroit.md) |
+| [Mjolnir](https://github.com/matrix-org/mjolnir) | ❌ | Moderation tool for Matrix | [Link](docs/configuring-playbook-bot-mjolnir.md) |
+| [Draupnir](https://github.com/the-draupnir-project/Draupnir) | ❌ | Moderation tool for Matrix (Fork of Mjolnir) | [Link](docs/configuring-playbook-bot-draupnir.md) (for [appservice mode](docs/configuring-playbook-appservice-draupnir-for-all.md))|
 | [Buscarron](https://github.com/etkecc/buscarron) | ❌ | Web forms (HTTP POST) to Matrix | [Link](docs/configuring-playbook-bot-buscarron.md) |
 
 ### Administration
@@ -161,7 +161,7 @@ Services that help you in administrating and monitoring your Matrix installation
 | ---- | -------- | ----------- | ------------- |
 | [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) | ❌ | Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) client | [Link](docs/configuring-playbook-alertmanager-receiver.md) |
 | [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service/) | ❌ | OAuth 2.0 and OpenID Provider server | [Link](docs/configuring-playbook-matrix-authentication-service.md) |
-| [synapse-admin](https://github.com/etkecc/synapse-admin) | ❌ | A web UI tool for administrating users and rooms on your Matrix server | [Link](docs/configuring-playbook-synapse-admin.md) |
+| [synapse-admin](https://github.com/etkecc/synapse-admin) | ❌ | Web UI tool for administrating users and rooms on your Matrix server | [Link](docs/configuring-playbook-synapse-admin.md) |
 | Metrics and Graphs | ❌ | Consists of the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI, with [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) being available too | [Link](docs/configuring-playbook-prometheus-grafana.md) (for [prometheus-nginxlog-exporter](docs/configuring-playbook-prometheus-nginxlog.md)) |
 | [Borg](https://borgbackup.org) | ❌ | Backups | [Link](docs/configuring-playbook-backup-borg.md) |
 | [rageshake](https://github.com/matrix-org/rageshake) | ❌ | Bug report server | [Link](docs/configuring-playbook-rageshake.md) |
@@ -174,13 +174,13 @@ Various services that don't fit any other categories.
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
 | [sliding-sync](https://github.com/matrix-org/sliding-sync)| ❌ | (Superseded by Simplified Sliding Sync integrated into Synapse > `1.114` and Conduit > `0.6.0`) Sliding Sync support for clients which require it (e.g. old Element X versions before Simplified Sliding Sync was developed) | [Link](docs/configuring-playbook-sliding-sync-proxy.md) |
-| [synapse_auto_accept_invite](https://github.com/matrix-org/synapse-auto-accept-invite) | ❌ | A Synapse module to automatically accept invites. | [Link](docs/configuring-playbook-synapse-auto-accept-invite.md) |
-| [synapse_auto_compressor](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) | ❌ | A cli tool that automatically compresses `state_groups` database table in background. | [Link](docs/configuring-playbook-synapse-auto-compressor.md) |
+| [synapse_auto_accept_invite](https://github.com/matrix-org/synapse-auto-accept-invite) | ❌ | Synapse module to automatically accept invites | [Link](docs/configuring-playbook-synapse-auto-accept-invite.md) |
+| [synapse_auto_compressor](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) | ❌ | Cli tool that automatically compresses `state_groups` database table in background | [Link](docs/configuring-playbook-synapse-auto-compressor.md) |
 | [Matrix Corporal](https://github.com/devture/matrix-corporal) (advanced) | ❌ | Reconciliator and gateway for a managed Matrix server | [Link](docs/configuring-playbook-matrix-corporal.md) |
-| [Etherpad](https://etherpad.org) | ❌ | An open source collaborative text editor | [Link](docs/configuring-playbook-etherpad.md) |
-| [Jitsi](https://jitsi.org/) | ❌ | An open source video-conferencing platform | [Link](docs/configuring-playbook-jitsi.md) |
-| [Cactus Comments](https://cactus.chat) | ❌ | A federated comment system built on Matrix | [Link](docs/configuring-playbook-cactus-comments.md) |
-| [Pantalaimon](https://github.com/matrix-org/pantalaimon) | ❌ | An E2EE aware proxy daemon | [Link](docs/configuring-playbook-pantalaimon.md) |
+| [Etherpad](https://etherpad.org) | ❌ | Open source collaborative text editor | [Link](docs/configuring-playbook-etherpad.md) |
+| [Jitsi](https://jitsi.org/) | ❌ | Open source video-conferencing platform | [Link](docs/configuring-playbook-jitsi.md) |
+| [Cactus Comments](https://cactus.chat) | ❌ | Federated comment system built on Matrix | [Link](docs/configuring-playbook-cactus-comments.md) |
+| [Pantalaimon](https://github.com/matrix-org/pantalaimon) | ❌ | E2EE aware proxy daemon | [Link](docs/configuring-playbook-pantalaimon.md) |
 | [Sygnal](https://github.com/matrix-org/sygnal) | ❌ | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | ❌ | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
 
