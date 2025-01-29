@@ -94,3 +94,16 @@ If you're using the [Dimension integration manager](configuring-playbook-dimensi
 To configure it, open the Dimension integration manager, and go to "Settings" and "Bridges", then select edit action for "Webhook Bridge".
 
 On the UI, press "Add self-hosted Bridge" button and populate "Provisioning URL"  and "Shared Secret" values from `/matrix/appservice-webhooks/config/config.yaml` file's homeserver URL value and provisioning secret value, respectively.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-appservice-webhooks`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: info, verbose
+matrix_appservice_webhooks_log_level: 'verbose'
+```
