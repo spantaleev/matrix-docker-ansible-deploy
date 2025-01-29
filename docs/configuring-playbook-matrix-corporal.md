@@ -149,3 +149,15 @@ The following local filesystem paths are mounted in the `matrix-corporal` contai
 - `/matrix/corporal/cache` is mounted at `/var/cache/matrix-corporal` (read and write)
 
 As an example: you can create your own configuration files in `/matrix/corporal/config` and they will appear in `/etc/matrix-corporal` in the Docker container. Your configuration (stuff in `matrix_corporal_policy_provider_config`) needs to refer to these files via the local container paths — `/etc/matrix-corporal` (read-only), `/var/matrix-corporal` (read and write), `/var/cache/matrix-corporal` (read and write).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-corporal`.
+
+### Increase logging verbosity
+
+If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_corporal_debug: true
+```
