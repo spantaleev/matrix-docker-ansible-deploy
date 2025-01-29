@@ -466,3 +466,7 @@ Matrix Authentication Service attempts to verify email addresses by sending a ve
 If email delivery is not working, **you can retrieve the email configuration code from the Matrix Authentication Service's logs** (`journalctl -fu matrix-authentication-service`).
 
 Alternatively, you can use the [`mas-cli` management tool](#management) to manually verify email addresses for users. Example: `/matrix/matrix-authentication-service/bin/mas-cli manage verify-email some.username email@example.com`
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-authentication-service`.
