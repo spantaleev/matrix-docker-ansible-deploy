@@ -173,3 +173,18 @@ This playbook allows you to enable Synapse metrics, which can provide insight in
 To enable Synapse runtime metrics see: [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
 
 To enable Synapse usage metrics, see: [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse`.
+
+### Increase logging verbosity
+
+Because the [Synapse](https://github.com/element-hq/synapse) Matrix server is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`.
+
+If you'd like to debug an issue or [report a Synapse bug](https://github.com/element-hq/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increase the logging verbosity to `INFO`. To do so, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_synapse_log_level: "INFO"
+matrix_synapse_storage_sql_log_level: "INFO"
+matrix_synapse_root_log_level: "INFO"
