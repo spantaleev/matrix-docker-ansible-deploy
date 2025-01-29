@@ -49,3 +49,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 Additional resources:
 
 - https://matrix.org/docs/guides/free-small-matrix-server
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dynamic-dns`.
