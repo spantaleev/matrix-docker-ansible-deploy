@@ -124,7 +124,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files
 
 After finilizing the installation, you can:
 
-- [check if services work](maintenance-checking-services.md)
+- [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 - or [set up additional services](configuring-playbook.md#other-configuration-options) (bridges to other chat networks, bots, etc.)
 - or learn how to [upgrade services when new versions are released](maintenance-upgrading-services.md)
 - or learn how to [maintain your server](faq.md#maintenance)

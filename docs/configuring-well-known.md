@@ -185,4 +185,4 @@ No matter which method you've used to set up the well-known files, if you've don
 - `https://example.com/.well-known/matrix/client`
 - `https://example.com/.well-known/matrix/support`
 
-You can also check if everything is configured correctly, by [checking if services work](maintenance-checking-services.md).
+You can also check if everything is configured correctly, by [checking if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work).
