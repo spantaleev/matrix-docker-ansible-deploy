@@ -65,3 +65,7 @@ You can either use `matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled
 Whichever way you go with, this service will expose its metrics endpoint **without password-protection** at `https://matrix.example.com/metrics/nginxlog` by default.
 
 For password-protection, use (`matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`) or (`matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled` and `matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users`).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-prometheus-nginxlog-exporter`.
