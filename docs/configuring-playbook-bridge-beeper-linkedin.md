@@ -55,6 +55,16 @@ You then need to send `login YOUR_LINKEDIN_EMAIL_ADDRESS` to the bridge bot to e
 
 ## Troubleshooting
 
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-beeper-linkedin`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_beeper_linkedin_logging_level: DEBUG
+```
+
 ### Bridge asking for 2FA even if you don't have 2FA enabled
 
 If you don't have 2FA enabled and are logging in from a strange IP for the first time, LinkedIn will send an email with a one-time code. You can use this code to authorize the bridge session. In my experience, once the IP is authorized, you will not be asked again.
