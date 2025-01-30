@@ -72,3 +72,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 After installation, Synapse Admin will be accessible at: `https://matrix.example.com/synapse-admin/`
 
 To use Synapse Admin, you need to have [registered at least one administrator account](registering-users.md) on your server.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse-admin`.
