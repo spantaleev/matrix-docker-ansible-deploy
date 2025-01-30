@@ -72,3 +72,16 @@ To clean the cache (session & encryption data) after you changed the bot's usern
 ```sh
 just run-tags bot-matrix-registration-bot-clean-cache
 ```
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-registration-bot`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: ERROR, INFO, DEBUG
+matrix_bot_matrix_registration_bot_logging_level: DEBUG
+```
