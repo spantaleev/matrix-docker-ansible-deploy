@@ -123,3 +123,7 @@ By default Dimension will use [jitsi.riot.im](https://jitsi.riot.im/) as the `co
 To set up the widget, an admin user needs to configure the domain via the admin UI once Dimension is running. In Element Web, go to *Manage Integrations* → *Settings* → *Widgets* → *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
 
 There is unfortunately no way to configure the widget via the playbook. See [this issue](https://github.com/turt2live/matrix-dimension/issues/345) for details.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dimension`.
