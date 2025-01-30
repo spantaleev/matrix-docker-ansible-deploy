@@ -56,3 +56,15 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 To use the bridge, you need to start a chat with `@kakaotalkbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 You then need to send `login --save EMAIL_OR_PHONE_NUMBER` to the bridge bot to enable bridging for your Kakaotalk account. The `--save` flag may be omitted, if you'd rather not save your password.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-appservice-kakaotalk`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_appservice_kakaotalk_logging_level: DEBUG
+```
