@@ -80,3 +80,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 ## Usage
 
 Refer to the project's [documentation](https://github.com/matrix-org/rageshake/blob/main/README.md) for available APIs, etc.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-rageshake`.
