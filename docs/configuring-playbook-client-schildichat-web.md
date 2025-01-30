@@ -24,11 +24,20 @@ matrix_client_schildichat_enabled: true
 
 ### Themes
 
-You can change the look of SchildiChat Web by pulling themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project or defining your own themes manually.
+#### Change the default theme
+
+You can change the default theme from `light` to `dark`. To do so, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+# Controls the default theme
+matrix_client_schildichat_default_theme: 'dark'
+```
 
 #### Use themes by `element-themes`
 
-To pull the themes from the `element-themes` project and use them for your SchildiChat Web instance, add the following configuration to your `vars.yml` file:
+You can change the look of SchildiChat Web by pulling themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project or defining your own themes manually.
+
+To pull the themes and use them for your SchildiChat Web instance, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_client_schildichat_themes_enabled: true
