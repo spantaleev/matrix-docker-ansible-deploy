@@ -14,13 +14,13 @@ sudo systemctl status matrix-synapse
 
 Docker containers that the playbook configures are supervised by [systemd](https://wiki.archlinux.org/title/Systemd) and their logs are configured to go to [systemd-journald](https://wiki.archlinux.org/title/Systemd/Journal).
 
-To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs`.
-
-To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/journalctl.1), run a command like this:
+To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/journalctl.1), log in to the server with SSH and run a command like this:
 
 ```sh
 sudo journalctl -fu matrix-synapse
 ```
+
+**Note**: to prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs`.
 
 ## How to check if services work
 
@@ -40,7 +40,7 @@ Besides this self-check, you can also check whether your server federates with t
 
 ## Remove unused Docker data
 
-You can free some disk space from Docker, see [docker system prune](https://docs.docker.com/engine/reference/commandline/system_prune/) for more information.
+You can free some disk space from Docker by removing its unused data. See [docker system prune](https://docs.docker.com/engine/reference/commandline/system_prune/) for more information.
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune
