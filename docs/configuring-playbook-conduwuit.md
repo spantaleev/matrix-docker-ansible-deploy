@@ -8,11 +8,9 @@ By default, the playbook installs [Synapse](https://github.com/element-hq/synaps
 
 💡 **Note**: conduwuit is a fork of [Conduit](./configuring-playbook-conduit.md), which the playbook also supports. See [Differences from upstream Conduit](https://conduwuit.puppyirl.gay/differences.html).
 
-⚠️ **Warnings**:
-
-- **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> conduwuit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
-
-- **Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
+> [!WARNING]
+> - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> conduwuit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
+> - **Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
 
 ## Adjusting the playbook configuration
 

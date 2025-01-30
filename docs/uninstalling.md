@@ -1,10 +1,8 @@
 # Uninstalling
 
-⚠️ **Warnings**:
-- If your server federates with others, make sure to **leave any federated rooms before nuking your Matrix server's data**. Otherwise, the next time you set up a Matrix server for this domain (regardless of the installation method you use), you'll encounter trouble federating.
-- If you have some trouble with your installation, you can just [re-run the playbook](installing.md) and it will try to set things up again. **Uninstalling and then installing anew rarely solves anything**.
-
------------------
+> [!WARNING]
+> - If your server federates with others, make sure to **leave any federated rooms before nuking your Matrix server's data**. Otherwise, the next time you set up a Matrix server for this domain (regardless of the installation method you use), you'll encounter trouble federating.
+> - If you have some trouble with your installation, you can just [re-run the playbook](installing.md) and it will try to set things up again. **Uninstalling and then installing anew rarely solves anything**.
 
 ## Uninstalling using a script
 
