@@ -46,3 +46,7 @@ Sometimes it can be helpful to execute compression as you'd like, avoiding to wa
 If you want to execute it immediately, log in to the server with SSH and run `systemctl start matrix-synapse-auto-compressor`.
 
 This will not return until the compression is done, so it can possibly take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse-auto-compressor`.
