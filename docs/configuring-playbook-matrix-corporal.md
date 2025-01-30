@@ -1,11 +1,7 @@
 # Setting up Matrix Corporal (optional, advanced)
 
-<hr/>
-
 > [!WARNING]
 > This is an advanced feature! It requires prior experience with Matrix and a specific need for using [Matrix Corporal](https://github.com/devture/matrix-corporal). If you're unsure whether you have such a need, you most likely don't.
-
-<hr/>
 
 The playbook can install and configure [matrix-corporal](https://github.com/devture/matrix-corporal) for you.
 
