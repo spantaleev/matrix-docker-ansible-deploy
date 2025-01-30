@@ -22,15 +22,6 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 matrix_prometheus_nginxlog_exporter_enabled: true
 ```
 
-### Docker Image Compatibility (optional)
-
-At the moment of writing only images for `amd64` and `arm64` architectures are available. The playbook currently does not support [self-building](./self-building.md) a container image on other architectures. You can however use a custom-build image by setting:
-
-```yaml
-matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
-matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
-```
-
 ### Save metrics on an external Prometheus server (optional)
 
 > [!WARNING]
@@ -45,6 +36,15 @@ You can either use `matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled
 Whichever way you go with, this service will expose its metrics endpoint **without password-protection** at `https://matrix.example.com/metrics/nginxlog` by default.
 
 For password-protection, use (`matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`) or (`matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled` and `matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users`).
+
+### Docker Image Compatibility (optional)
+
+At the moment of writing only images for `amd64` and `arm64` architectures are available. The playbook currently does not support [self-building](./self-building.md) a container image on other architectures. You can however use a custom-build image by setting:
+
+```yaml
+matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
+matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
+```
 
 ### Extending the configuration
 
