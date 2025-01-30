@@ -92,9 +92,11 @@ You can also refer to the upstream [documentation](https://github.com/etkecc/pos
 
 ## Troubleshooting
 
-As with all other services, you can find their logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running something like `journalctl -fu matrix-postmoogle`
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-postmoogle`.
 
-The default logging level for this bridge is `INFO`, but you can increase it to `DEBUG` with the following additional configuration:
+### Increase logging verbosity
+
+The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
 matrix_postmoogle_loglevel: 'DEBUG'
