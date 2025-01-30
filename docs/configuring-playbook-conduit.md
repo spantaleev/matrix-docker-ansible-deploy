@@ -75,3 +75,7 @@ Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/ma
     sender_localpart: _bot_signalbot
     url: http://matrix-mautrix-signal:29328
     ```
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-conduit`.
