@@ -14,6 +14,16 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 matrix_synapse_auto_compressor_enabled: true
 ```
 
+### Edit the schedule (optional)
+
+By default the task will run 0 a.m. every day based on the `matrix_synapse_auto_compressor_calendar` variable. It is defined in the format of systemd timer calendar.
+
+To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+matrix_synapse_auto_compressor_calendar: "*-*-* 00:00:00"
+```
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the component.
@@ -39,7 +49,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 After installation, `synapse_auto_compressor` will run automatically every day at `00:00:00` (as defined in `matrix_synapse_auto_compressor_calendar` by default).
 
-## Manually execute compression
+### Manually start the task
 
 Sometimes it can be helpful to execute compression as you'd like, avoiding to wait until 00:00, like when you test your configuration.
 
