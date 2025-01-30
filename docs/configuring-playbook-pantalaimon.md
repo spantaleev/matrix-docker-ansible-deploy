@@ -42,6 +42,6 @@ As with all other services, you can find the logs in [systemd-journald](https://
 The default logging level for this component is `Warning`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
-# Pantalaimon log level, case-insensitive (Error, Warning, Info, Debug)
+# Valid values: Error, Warning, Info, Debug
 matrix_pantalaimon_log_level: Debug
 ```
