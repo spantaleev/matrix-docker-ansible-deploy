@@ -22,11 +22,19 @@ To enable SchildiChat Web, add the following configuration to your `inventory/ho
 matrix_client_schildichat_enabled: true
 ```
 
+### Set the country code for phone number inputs
+
+You can change the country code (default: `GB`) to use when showing phone number inputs. To change it to `FR` for example, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_client_schildichat_default_country_code: "FR"
+```
+
 ### Themes
 
 #### Change the default theme
 
-You can change the default theme from `light` to `dark`. To do so, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+You can change the default theme from `light` to `dark`. To do so, add the following configuration to your `vars.yml` file:
 
 ```yaml
 # Controls the default theme
