@@ -71,3 +71,16 @@ If you'd like to bridge guilds, send `guilds status` to see the list of guilds, 
 After bridging, spaces will be created automatically, and rooms will be created if necessary when messages are received. You can also pass `--entire` to the bridge command to immediately create all rooms.
 
 If you want to manually bridge channels, invite the bot to the room you want to bridge, and run `!discord bridge CHANNEL_ID_HERE` to bridge the room. Make sure to replace `CHANNEL_ID_HERE` with the channel's ID.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-discord`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: fatal, error, warn, info, debug, trace
+matrix_mautrix_discord_logging_level: 'debug'
+```

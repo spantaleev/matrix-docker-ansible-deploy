@@ -56,3 +56,16 @@ You can then follow instructions on the bridge's [official documentation on Auth
 Approximately in a minute after logging in, the bridge will create portal rooms for recent chats.
 
 **Note**: your linked devices will be logged out if you don’t use your phone for over 14 days (see the official FAQ entry [here](https://faq.whatsapp.com/general/download-and-installation/about-linked-devices)). The bridge will warn you if it doesn't receive any data from the phone over 12 days.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-whatsapp`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: fatal, error, warn, info, debug, trace
+matrix_mautrix_whatsapp_logging_level: 'debug'
+```
