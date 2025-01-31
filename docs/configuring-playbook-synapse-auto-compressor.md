@@ -16,12 +16,12 @@ matrix_synapse_auto_compressor_enabled: true
 
 ### Edit the schedule (optional)
 
-By default the task will run 0 a.m. every day based on the `matrix_synapse_auto_compressor_calendar` variable. It is defined in the format of systemd timer calendar.
+By default the task will run 0 a.m. every day based on the `matrix_synapse_auto_compressor_schedule` variable. It is defined in the format of systemd timer calendar.
 
 To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
-matrix_synapse_auto_compressor_calendar: "*-*-* 00:00:00"
+matrix_synapse_auto_compressor_schedule: "*-*-* 00:00:00"
 ```
 
 ### Extending the configuration
@@ -47,7 +47,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-After installation, `synapse_auto_compressor` will run automatically every day at `00:00:00` (as defined in `matrix_synapse_auto_compressor_calendar` by default).
+After installation, `synapse_auto_compressor` will run automatically every day at `00:00:00` (as defined in `matrix_synapse_auto_compressor_schedule` by default).
 
 ### Manually start the task
 
