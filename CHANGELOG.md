@@ -1246,8 +1246,6 @@ Unless we have some regression, **existing `matrix-nginx-proxy` users should be 
 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
-
-traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 ```
 
 You may still need to keep certain old `matrix_nginx_proxy_*` variables (like `matrix_nginx_proxy_base_domain_serving_enabled`), even when using Traefik. For now, we recommend keeping all `matrix_nginx_proxy_*` variables just in case. In the future, reliance on `matrix-nginx-proxy` will be removed.

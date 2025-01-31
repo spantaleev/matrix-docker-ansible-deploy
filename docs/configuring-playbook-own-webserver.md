@@ -18,8 +18,6 @@ To have the playbook install and use Traefik, add the following configuration to
 
 ```yaml
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
-
-traefik_config_certificatesResolvers_acme_email: YOUR_EMAIL_ADDRESS
 ```
 
 Traefik will manage SSL certificates for all services seamlessly.

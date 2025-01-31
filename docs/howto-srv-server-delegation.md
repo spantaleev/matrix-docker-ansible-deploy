@@ -64,7 +64,6 @@ traefik_configuration_extension_yaml: |
       acme:
         # To use a staging endpoint for testing purposes, uncomment the line below.
         # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-        email: {{ traefik_config_certificatesResolvers_acme_email | to_json }}
         dnsChallenge:
           provider: cloudflare
           resolvers:
@@ -124,7 +123,6 @@ matrix_coturn_container_additional_volumes: |
 ```yaml
 # Choosing the reverse proxy implementation
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
-traefik_config_certificatesResolvers_acme_email: redacted@example.com
 
 # To serve the federation from any domain, as long as the path matches
 matrix_synapse_container_labels_public_federation_api_traefik_rule: PathPrefix(`/_matrix/federation`)
@@ -141,7 +139,6 @@ traefik_configuration_extension_yaml: |
       acme:
         # To use a staging endpoint for testing purposes, uncomment the line below.
         # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-        email: {{ traefik_config_certificatesResolvers_acme_email | to_json }}
         dnsChallenge:
           provider: cloudflare
           resolvers:
