@@ -4,6 +4,9 @@ The playbook can install and configure [matrix-wechat](https://github.com/duo/ma
 
 See the project's [documentation](https://github.com/duo/matrix-wechat/blob/master/README.md) to learn what it does and why it might be useful to you.
 
+> [!WARNING]
+> This bridge does not work against newer versions of Synapse anymore. See [this issue](https://github.com/duo/matrix-wechat/issues/33). Don't even bother installing it. Unless bridge maintenance is resumed and fixes this issue, we have no choice but to remove it from the playbook.
+
 ## Adjusting the playbook configuration
 
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
