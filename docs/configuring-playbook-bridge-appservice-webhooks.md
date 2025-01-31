@@ -24,6 +24,15 @@ matrix_appservice_webhooks_api_secret: '<your_secret>'
 #   use_appservice_legacy_authorization: true
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-appservice-webhooks/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-appservice-webhooks/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_webhooks_configuration_extension_yaml` variable
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -85,3 +94,16 @@ If you're using the [Dimension integration manager](configuring-playbook-dimensi
 To configure it, open the Dimension integration manager, and go to "Settings" and "Bridges", then select edit action for "Webhook Bridge".
 
 On the UI, press "Add self-hosted Bridge" button and populate "Provisioning URL"  and "Shared Secret" values from `/matrix/appservice-webhooks/config/config.yaml` file's homeserver URL value and provisioning secret value, respectively.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-appservice-webhooks`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: info, verbose
+matrix_appservice_webhooks_log_level: 'verbose'
+```

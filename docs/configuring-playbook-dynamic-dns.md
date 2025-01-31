@@ -23,6 +23,14 @@ matrix_dynamic_dns_domain_configurations:
     domain: "{{ matrix_domain }}"
 ```
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-dynamic-dns/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -41,3 +49,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 Additional resources:
 
 - https://matrix.org/docs/guides/free-small-matrix-server
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dynamic-dns`.

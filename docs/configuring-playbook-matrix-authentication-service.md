@@ -276,6 +276,15 @@ matrix_authentication_service_config_upstream_oauth2_providers:
 - go through the [migrating an existing homeserver](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) process
 - remove all Synapse OIDC-related configuration (`matrix_synapse_oidc_*`) to prevent it being in conflict with the MAS OIDC configuration
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-authentication-service/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-authentication-service/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_authentication_service_configuration_extension_yaml` variable
+
 ## Installing
 
 Now that you've [adjusted the playbook configuration](#adjusting-the-playbook-configuration) and [your DNS records](#adjusting-dns-records), you can run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -428,7 +437,9 @@ If successful, you should see some output that looks like this:
 ✅ The legacy login API at "https://matrix.example.com/_matrix/client/v3/login" is reachable and is handled by MAS.
 ```
 
-## Management
+## Usage
+
+### Management
 
 You can use the [`mas-cli` command-line tool](https://element-hq.github.io/matrix-authentication-service/reference/cli/index.html) (exposed via the `/matrix/matrix-authentication-service/bin/mas-cli` script) to perform administrative tasks against MAS.
 
@@ -440,13 +451,13 @@ This documentation page already mentions:
 
 There are other sub-commands available. Run `/matrix/matrix-authentication-service/bin/mas-cli` to get an overview.
 
-## User registration
+### User registration
 
 After Matrix Authentication Service is [installed](#installing), users need to be managed there (unless you're managing them in an [upstream OAuth2 provider](#upstream-oauth2-configuration)).
 
 You can register users new users as described in the [Registering users](./registering-users.md) documentation (via `mas-cli manage register-user` or the Ansible playbook's `register-user` tag).
 
-## Working around email deliverability issues
+### Working around email deliverability issues
 
 Because Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user, you may need to work around email deliverability issues if [your email-sending configuration](./configuring-playbook-email.md) is not working.
 
@@ -455,3 +466,7 @@ Matrix Authentication Service attempts to verify email addresses by sending a ve
 If email delivery is not working, **you can retrieve the email configuration code from the Matrix Authentication Service's logs** (`journalctl -fu matrix-authentication-service`).
 
 Alternatively, you can use the [`mas-cli` management tool](#management) to manually verify email addresses for users. Example: `/matrix/matrix-authentication-service/bin/mas-cli manage verify-email some.username email@example.com`
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-authentication-service`.

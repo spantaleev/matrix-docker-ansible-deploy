@@ -47,6 +47,15 @@ If you've changed the default hostname, you may need to create a CNAME record fo
 
 When setting, replace `example.com` with your own.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-registration/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-registration/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_registration_configuration_extension_yaml` variable
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -92,3 +101,7 @@ ansible-playbook -i inventory/hosts setup.yml \
 ```
 
 The shortcut command with `just` program is also available: `just run-tags list-matrix-registration-tokens`
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-registration`.

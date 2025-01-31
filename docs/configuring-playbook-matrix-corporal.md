@@ -116,6 +116,15 @@ aux_file_definitions:
 
 To learn more about what the policy configuration, see the matrix-corporal documentation on [policy](https://github.com/devture/matrix-corporal/blob/master/docs/policy.md).
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-corporal/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-corporal/templates/config.json.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_corporal_configuration_extension_json` variable
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -140,3 +149,15 @@ The following local filesystem paths are mounted in the `matrix-corporal` contai
 - `/matrix/corporal/cache` is mounted at `/var/cache/matrix-corporal` (read and write)
 
 As an example: you can create your own configuration files in `/matrix/corporal/config` and they will appear in `/etc/matrix-corporal` in the Docker container. Your configuration (stuff in `matrix_corporal_policy_provider_config`) needs to refer to these files via the local container paths — `/etc/matrix-corporal` (read-only), `/var/matrix-corporal` (read and write), `/var/cache/matrix-corporal` (read and write).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-corporal`.
+
+### Increase logging verbosity
+
+If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_corporal_debug: true
+```

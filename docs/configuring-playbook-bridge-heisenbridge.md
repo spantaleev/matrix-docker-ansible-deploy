@@ -43,6 +43,14 @@ If you've changed the default hostname, you may need to create a CNAME record fo
 
 When setting, replace `example.com` with your own.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-heisenbridge/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -69,3 +77,7 @@ Help is available for all commands with the `-h` switch.
 You can also learn the basics by watching [this demonstration video](https://www.youtube.com/watch?v=nQk1Bp4tk4I).
 
 If you encounter issues or feel lost you can join the project room at [#heisenbridge:vi.fi](https://matrix.to/#/#heisenbridge:vi.fi) for help.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-heisenbridge`.
