@@ -66,6 +66,6 @@ The shortcut command with `just` program is also available: `just run-tags insta
 
 ### Check if services work
 
-After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-checking-services.md)
+After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 
 Having make sure that both services and federation work as expected, you can safely shutdown the old server.

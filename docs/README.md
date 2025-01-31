@@ -51,8 +51,6 @@ If your server and services experience issues, feel free to come to [our support
 
 <!-- NOTE: sort list items alphabetically -->
 
-- [Checking if services work](maintenance-checking-services.md)
-
 - [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
 
 - [PostgreSQL maintenance](maintenance-postgres.md)

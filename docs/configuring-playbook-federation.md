@@ -2,7 +2,7 @@
 
 By default, your server federates with the whole Matrix network. That is, people on your server can communicate with people on any other Matrix server.
 
-**Note**: in the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user ID like `@alice:example.com` instead of `@alice:matrix.example.com` and set up [server delegation](howto-server-delegation.md) / redirection. Without a proper configuration, your server will effectively not be part of the Matrix network. If you find your server is not federated, make sure to [check whether services work](maintenance-checking-services.md) and your server is properly delegated.
+**Note**: in the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user ID like `@alice:example.com` instead of `@alice:matrix.example.com` and set up [server delegation](howto-server-delegation.md) / redirection. Without a proper configuration, your server will effectively not be part of the Matrix network. If you find your server is not federated, make sure to [check whether services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work) and your server is properly delegated.
 
 ## Federating only with select servers
 
