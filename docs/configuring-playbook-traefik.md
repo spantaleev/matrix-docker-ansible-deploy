@@ -16,7 +16,7 @@ traefik_config_log_level: DEBUG
 
 ## Disable access logs
 
-This will disable access logging.
+To disable access logging, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 traefik_config_accessLog_enabled: false
@@ -24,7 +24,7 @@ traefik_config_accessLog_enabled: false
 
 ## Enable Traefik Dashboard
 
-This will enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.example.com/dashboard/` (note the trailing `/`).
+To enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.example.com/dashboard/` (note the trailing `/`), add the following configuration to your `vars.yml` file:
 
 ```yaml
 traefik_dashboard_enabled: true
@@ -140,7 +140,7 @@ With these changes, all TCP traffic will be reverse-proxied to the target system
 
 ## Traefik behind a `proxy_protocol` reverse-proxy
 
-If you run a reverse-proxy which speaks `proxy_protocol`, add the following to your configuration file:
+If you run a reverse-proxy which speaks `proxy_protocol`, add the following configuration to your `vars.yml` file:
 
 ```yaml
 traefik_configuration_extension_yaml: |
