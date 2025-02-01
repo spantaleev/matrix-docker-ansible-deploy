@@ -425,7 +425,7 @@ After verifying that everything still works after the Postgres upgrade, you can 
 
 ### I get "Error response from daemon: configured logging driver does not support reading" when I run `docker logs matrix-synapse`. Why?
 
-To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs matrix-*`.
+To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you cannot view logs using `docker logs matrix-*`.
 
 See [this section](maintenance-and-troubleshooting.md#how-to-see-the-logs) on the page for maintenance and troubleshooting for more details to see the logs.
 
