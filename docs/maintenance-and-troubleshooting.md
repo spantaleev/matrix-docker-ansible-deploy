@@ -12,15 +12,36 @@ sudo systemctl status matrix-synapse
      Active: active (running) since Sun 2024-01-14 09:13:06 UTC; 1h 31min ago
 ```
 
+## How to see the logs
+
 Docker containers that the playbook configures are supervised by [systemd](https://wiki.archlinux.org/title/Systemd) and their logs are configured to go to [systemd-journald](https://wiki.archlinux.org/title/Systemd/Journal).
 
-To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/journalctl.1), log in to the server with SSH and run a command like this:
+For example, you can find the logs of `matrix-synapse` in `systemd-journald` by logging in to the server with SSH and running the command as below:
 
 ```sh
 sudo journalctl -fu matrix-synapse
 ```
 
-**Note**: to prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs matrix-*`.
+Available service names can be seen by doing `ls /etc/systemd/system/matrix*.service` on the server. Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that.
+
+We just simply delegate logging to journald and it takes care of persistence and expiring old data.
+
+### Enable systemd/journald logs persistence
+
+On some distros, the journald logs are just in-memory and not persisted to disk.
+
+Consult (and feel free to adjust) your distro's journald logging configuration in `/etc/systemd/journald.conf`.
+
+To enable persistence and put some limits on how large the journal log files can become, adjust your configuration like this:
+
+```ini
+[Journal]
+RuntimeMaxUse=200M
+SystemMaxUse=1G
+RateLimitInterval=0
+RateLimitBurst=0
+Storage=persistent
+```
 
 ## How to check if services work
 

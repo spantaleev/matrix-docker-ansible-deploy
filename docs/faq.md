@@ -407,40 +407,9 @@ If you're running Ansible from within a container (one of the possibilities we l
 
 ### I get "Error response from daemon: configured logging driver does not support reading" when I do `docker logs matrix-synapse`.
 
-See [How can I see the logs?](#how-can-i-see-the-logs).
-
-### How can I see the logs?
-
-We utilize [systemd/journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html#Description) for logging.
-
-To see logs for Synapse, run `journalctl -fu matrix-synapse.service`. You may wish to see the [manual page for journalctl](https://www.commandlinux.com/man-page/man1/journalctl.1.html).
-
-Available service names can be seen by doing `ls /etc/systemd/system/matrix*.service` on the server.
-
-Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that.
-
 To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs matrix-*`.
 
-We just simply delegate logging to journald and it takes care of persistence and expiring old data.
-
-Also see: [How long do systemd/journald logs persist for?](#how-long-do-systemdjournald-logs-persist-for)
-
-### How long do systemd/journald logs persist for?
-
-On some distros, the journald logs are just in-memory and not persisted to disk.
-
-Consult (and feel free to adjust) your distro's journald logging configuration in `/etc/systemd/journald.conf`.
-
-To enable persistence and put some limits on how large the journal log files can become, adjust your configuration like this:
-
-```ini
-[Journal]
-RuntimeMaxUse=200M
-SystemMaxUse=1G
-RateLimitInterval=0
-RateLimitBurst=0
-Storage=persistent
-```
+See [this section](maintenance-and-troubleshooting.md#how-to-see-the-logs) on the page for maintenance and troubleshooting for more details to see the logs.
 
 ## Maintenance
 
