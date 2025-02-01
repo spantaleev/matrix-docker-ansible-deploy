@@ -419,7 +419,7 @@ Available service names can be seen by doing `ls /etc/systemd/system/matrix*.ser
 
 Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that.
 
-We also disable Docker logging, so you can't use `docker logs matrix-*` either. We do this to prevent useless double (or even triple) logging and to avoid having to rotate log files.
+To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs matrix-*`.
 
 We just simply delegate logging to journald and it takes care of persistence and expiring old data.
 

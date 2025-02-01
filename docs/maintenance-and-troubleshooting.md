@@ -20,7 +20,7 @@ To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/j
 sudo journalctl -fu matrix-synapse
 ```
 
-**Note**: to prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs`.
+**Note**: to prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs matrix-*`.
 
 ## How to check if services work
 
