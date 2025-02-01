@@ -6,14 +6,16 @@ It allows you to export the usage statistics of a Synapse homeserver to this con
 
 Synapse does not include usage statistics in its Prometheus metrics. They can be reported to an HTTP `PUT` endpoint 5 minutes after startup and from then on at a fixed interval of once every three hours. This role integrates a simple [Flask](https://flask.palletsprojects.com) project that offers an HTTP `PUT` endpoint and holds the most recent received record available to be scraped by Prometheus.
 
+See the project's [documentation](https://github.com/loelkes/synapse-usage-exporter/blob/main/README.md) to learn what it does and why it might be useful to you.
+
+## What does it do?
+
 Enabling this service will automatically:
 
 - install the synapse-usage-exporter service
 - re-configure Synapse to push (via HTTP `PUT`) usage statistics information to synapse-usage-exporter
 - re-configure [Prometheus](./configuring-playbook-prometheus-grafana.md) (if Prometheus is enabled), to periodically scrape metrics from synapse-usage-exporter
 - add a new [Grafana](./configuring-playbook-prometheus-grafana.md) dashboard (if Grafana is enabled) containing Synapse usage statistics
-
-See the project's [documentation](https://github.com/loelkes/synapse-usage-exporter/blob/main/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting DNS records (optional)
 
