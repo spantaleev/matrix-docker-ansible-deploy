@@ -69,3 +69,16 @@ To use the bridge, you need to start a chat with `@instagrambot:example.com` (wh
 You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/meta/authentication.html).
 
 After logging in, the bridge will sync recent chats.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-meta-instagram`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# This bridge uses zerolog, so valid levels are: panic, fatal, error, warn, info, debug, trace
+matrix_mautrix_meta_instagram_logging_min_level: debug
+```
