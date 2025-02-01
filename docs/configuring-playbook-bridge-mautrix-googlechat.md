@@ -55,3 +55,15 @@ To use the bridge, you need to start a chat with `@googlechatbot:example.com` (w
 You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/googlechat/authentication.html).
 
 After logging in, the bridge will create portal rooms for some recent chats. Portal rooms for other chats will be created as you receive messages.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-googlechat`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_mautrix_googlechat_logging_level: DEBUG
+```

@@ -59,6 +59,16 @@ If you run into trouble, check the [Troubleshooting](#troubleshooting) section b
 
 ## Troubleshooting
 
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-facebook`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_mautrix_facebook_logging_level: DEBUG
+```
+
 ### Facebook rejecting login attempts and forcing you to change password
 
 If your Matrix server is in a wildly different location than where you usually use your Facebook account from, the bridge's login attempts may be outright rejected by Facebook. Along with that, Facebook may even force you to change the account's password.

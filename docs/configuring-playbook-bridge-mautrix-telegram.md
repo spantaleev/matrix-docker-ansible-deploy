@@ -93,3 +93,15 @@ To use the bridge, you need to start a chat with `@telegrambot:example.com` (whe
 You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/telegram/authentication.html).
 
 After logging in, the bridge will create portal rooms for all of your Telegram groups and invite you to them. Note that the bridge won't automatically create rooms for private chats.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-telegram`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_mautrix_telegram_logging_level: DEBUG
+```
