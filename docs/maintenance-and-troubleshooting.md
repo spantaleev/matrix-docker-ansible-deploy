@@ -29,7 +29,11 @@ The shortcut command with `just` program is also available: `just run-tags run-d
 
 ### Postgres
 
-See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
+See the dedicated [PostgreSQL maintenance](maintenance-postgres.md) documentation page.
+
+### Synapse
+
+See the dedicated [Synapse maintenance](maintenance-synapse.md) documentation page.
 
 ## Troubleshooting
 
