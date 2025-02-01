@@ -3,13 +3,9 @@
 This document shows you how to perform various maintenance tasks related to the Synapse chat server.
 
 Table of contents:
-
 - [Purging old data with the Purge History API](#purging-old-data-with-the-purge-history-api), for when you wish to delete in-use (but old) data from the Synapse database
-
 - [Compressing state with rust-synapse-compress-state](#compressing-state-with-rust-synapse-compress-state)
-
 - [Browse and manipulate the database](#browse-and-manipulate-the-database), for when you really need to take matters into your own hands
-
 - [Make Synapse faster](#make-synapse-faster)
 
 💡 See this page for details about configuring Synapse: [Configuring Synapse](configuring-playbook-synapse.md)
