@@ -8,12 +8,6 @@ This Ansible role support various configuration options. Feel free to consult it
 
 See the dedicated [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) documentation page.
 
-## Increase logging verbosity
-
-```yaml
-traefik_config_log_level: DEBUG
-```
-
 ## Disable access logs
 
 To disable access logging, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -173,4 +167,16 @@ traefik_configuration_extension_yaml: |
             - "127.0.0.1/32"
             - "<proxy internal IPv4>/32"
             - "<proxy IPv6>/128"
+```
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-traefik`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+traefik_config_log_level: DEBUG
 ```
