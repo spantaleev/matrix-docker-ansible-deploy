@@ -423,7 +423,7 @@ When you [perform a major Postgres upgrade](maintenance-postgres.md#upgrading-po
 
 After verifying that everything still works after the Postgres upgrade, you can safely delete `/matrix/postgres/data-auto-upgrade-backup`
 
-### I get "Error response from daemon: configured logging driver does not support reading" when I do `docker logs matrix-synapse`.
+### I get "Error response from daemon: configured logging driver does not support reading" when I run `docker logs matrix-synapse`. Why?
 
 To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs matrix-*`.
 
