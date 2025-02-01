@@ -2,6 +2,8 @@
 
 By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case. If that's okay, you can skip this document.
 
+💡 See this page for details about maintaining Synapse: [Synapse maintenance](maintenance-synapse.md)
+
 ## Adjusting the playbook configuration
 
 ### Load balancing with workers
