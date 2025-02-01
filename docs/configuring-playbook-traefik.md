@@ -1,6 +1,6 @@
 # Configuring the Traefik reverse-proxy (optional, advanced)
 
-By default, this playbook installs and manages a [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server, powered by the [ansible-role-traefik](https://github.com/mother-of-all-self-hosting/ansible-role-traefik) Ansible role.
+By default, this playbook installs and manages a [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server, powered by the [ansible-role-traefik](https://github.com/mother-of-all-self-hosting/ansible-role-traefik) Ansible role for you. If that's okay, you can skip this document.
 
 This Ansible role support various configuration options. Feel free to consult its `default/main.yml` variables file.
 
