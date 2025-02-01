@@ -403,15 +403,7 @@ It can perform a local connection instead. Just set `ansible_connection=local` a
 
 If you're running Ansible from within a container (one of the possibilities we list on our [dedicated Ansible documentation page](ansible.md)), then using `ansible_connection=local` is not possible.
 
-## Troubleshooting
-
-### I get "Error response from daemon: configured logging driver does not support reading" when I do `docker logs matrix-synapse`.
-
-To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs matrix-*`.
-
-See [this section](maintenance-and-troubleshooting.md#how-to-see-the-logs) on the page for maintenance and troubleshooting for more details to see the logs.
-
-## Maintenance
+## Maintenance and Troubleshooting
 
 ### Do I need to do anything to keep my Matrix server updated?
 
@@ -430,6 +422,12 @@ If your previous installation is done in some other way (not using this Ansible 
 When you [perform a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql), we save the the old data files in `/matrix/postgres/data-auto-upgrade-backup`, just so you could easily restore them should something have gone wrong.
 
 After verifying that everything still works after the Postgres upgrade, you can safely delete `/matrix/postgres/data-auto-upgrade-backup`
+
+### I get "Error response from daemon: configured logging driver does not support reading" when I do `docker logs matrix-synapse`.
+
+To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs matrix-*`.
+
+See [this section](maintenance-and-troubleshooting.md#how-to-see-the-logs) on the page for maintenance and troubleshooting for more details to see the logs.
 
 ## Miscellaneous
 
