@@ -1,3 +1,14 @@
+# 2025-02-03
+
+## The mautrix-hangouts bridge has been removed from the playbook
+
+The [mautrix-hangouts](./docs/configuring-playbook-bridge-mautrix-hangouts.md) bridge has been deprecated in the playbook since December 2024 and finally got completely removed from the playbook in February 2025.
+
+This is because Google Hangouts has been discontinued since the 1st of November 2022.
+
+The playbook will let you know if you're using any `matrix_mautrix_hangouts_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mautrix-hangouts.md#uninstalling-the-bridge-manually).
+
+
 # 2025-01-27
 
 ## Redis and KeyDB are no longer part of the playbook

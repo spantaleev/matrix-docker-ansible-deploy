@@ -452,3 +452,16 @@
 
       The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | map (attribute='key') | join(', ') }}
   when: "vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | list | items2dict"
+
+- name: (Deprecation) Catch and report mautrix-hangouts variables
+  ansible.builtin.fail:
+    msg: |-
+      The Google Hangouts service was discontinued on 1st of November 2022.
+      The mautrix-hangouts bridge has been deprecated in the playbook since December 2024 and was completely removed from the playbook in February 2025.
+
+      Please change your configuration (`vars.yml`) to remove all `matrix_mautrix_hangouts_*` variables.
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mautrix-hangouts.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_mautrix_hangouts_.*') | map (attribute='key') | join(', ') }}
+  when: "vars | dict2items | selectattr('key', 'match', 'matrix_mautrix_hangouts_.*') | list | items2dict"
