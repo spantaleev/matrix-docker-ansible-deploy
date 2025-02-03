@@ -30,10 +30,10 @@ grafana_anonymous_access: false
 
 # This has no relation to your Matrix user ID. It can be any username you'd like.
 # Changing the username subsequently won't work.
-grafana_default_admin_user: "some_username_chosen_by_you"
+grafana_default_admin_user: "USERNAME_HERE"
 
 # Changing the password subsequently won't work.
-grafana_default_admin_password: "some_strong_password_chosen_by_you"
+grafana_default_admin_password: "PASSWORD_HERE"
 ```
 
 The retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
