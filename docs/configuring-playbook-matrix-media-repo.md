@@ -1,20 +1,18 @@
 # Storing Matrix media files using matrix-media-repo (optional)
 
-[matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated "MMR") is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
+The playbook can install and configure [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated "MMR") for you.
 
-Smaller/individual homeservers can still make use of this project's features, though it may be difficult to set up or have higher than expected resource consumption. Please do your research before deploying this as this project may not be useful for your environment.
+MMR is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
 
-For a simpler alternative (which allows you to offload your media repository storage to S3, etc.), you can [configure S3 storage](configuring-playbook-s3.md) instead of setting up matrix-media-repo.
+**Notes**:
 
-| **Table of Contents**                                                                       |
-| :------------------------------------------------------------------------------------------ |
-| [Quickstart](#quickstart)                                                                   |
-| [Additional configuration options](#configuring-the-media-repo)                             |
-| [Importing data from an existing media store](#importing-data-from-an-existing-media-store) |
+- Smaller/individual homeservers can still make use of this project's features, though it may be difficult to set up or have higher than expected resource consumption. Please do your research before deploying this as this project may not be useful for your environment.
 
-## Quickstart
+- For a simpler alternative (which allows you to offload your media repository storage to S3, etc.), you can [configure S3 storage](configuring-playbook-s3.md) instead of setting up matrix-media-repo.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file and [re-run the installation process](./installing.md) for the playbook:
+## Adjusting the playbook configuration
+
+To enable matrix-media-repo, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_media_repo_enabled: true
@@ -27,12 +25,17 @@ The repo is pre-configured for integrating with the Postgres database, Traefik p
 
 By default, the media-repo will use the local filesystem for data storage. You can alternatively use a `s3` cloud backend as well. Access token caching is also enabled by default since the logout endpoints are proxied through the media repo.
 
-## Configuring the media-repo
+### Extending the configuration
 
-Additional common configuration options:
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-media-repo/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
+Here is a list of additional common configuration options:
 
 ```yaml
-
 # The postgres database pooling options
 
 # The maximum number of connects to hold open. More of these allow for more concurrent
@@ -85,10 +88,7 @@ matrix_media_repo_datastore_s3_opts_bucket_name: "your-media-bucket"
 # An optional storage class for tuning how the media is stored at s3.
 # See https://aws.amazon.com/s3/storage-classes/ for details; uncomment to use.
 # matrix_media_repo_datastore_s3_opts_storage_class: "STANDARD"
-
 ```
-
-Full list of configuration options with documentation can be found in [`roles/custom/matrix-media-repo/defaults/main.yml`](../roles/custom/matrix-media-repo/defaults/main.yml)
 
 ## Signing Keys
 
@@ -161,3 +161,15 @@ docker exec -it matrix-media-repo \
 Enter `1` for the Machine ID when prompted (you are not doing any horizontal scaling) unless you know what you're doing.
 
 This should output a `msg="Import completed"` when finished successfully!
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-media-repo`.
+
+### Increase logging verbosity
+
+If you want to turn on sentry's built-in debugging, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_media_repo_sentry_debug: true
+```
