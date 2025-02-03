@@ -63,7 +63,7 @@ The preferred way to reverse-proxy additional services behind Traefik would be t
 
 However, if your service does not run on a container or runs on another machine, the following configuration might be what you are looking for.
 
-### Reverse-proxying a remote HTTP/HTTPS service behind Traefik
+#### Reverse-proxying a remote HTTP/HTTPS service behind Traefik
 
 If you want to host another webserver would be reachable via `my-fancy-website.example.net` from the internet and via `https://<internal webserver IP address>:<internal port>` from inside your network, you can make the playbook's integrated Traefik instance reverse-proxy the traffic to the correct host.
 
@@ -118,7 +118,7 @@ aux_file_definitions:
 ```
 Changing the `url` to one with an `http://` prefix would allow to connect to the server via HTTP.
 
-### Reverse-proxying another service behind Traefik without terminating SSL
+#### Reverse-proxying another service behind Traefik without terminating SSL
 
 If you do not want to terminate SSL at the Traefik instance (for example, because you're already terminating SSL at other webserver), you need to adjust the static configuration in the same way as in the previous chapter in order to be able to add our own dynamic configuration files. Afterwards, you can add the following configuration to your `vars.yml` configuration file:
 
@@ -146,7 +146,7 @@ With these changes, all TCP traffic will be reverse-proxied to the target system
 > [!WARNING]
 > This configuration might lead to problems or need additional steps when a [certbot](https://certbot.eff.org/) behind Traefik also tries to manage [Let's Encrypt](https://letsencrypt.org/) certificates, as Traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```.
 
-### Traefik behind a `proxy_protocol` reverse-proxy
+#### Traefik behind a `proxy_protocol` reverse-proxy
 
 If you run a reverse-proxy which speaks `proxy_protocol`, add the following configuration to your `vars.yml` file:
 
