@@ -12,6 +12,8 @@ Table of contents:
 
 - [Make Synapse faster](#make-synapse-faster)
 
+💡 See this page for details about configuring Synapse: [Configuring Synapse](configuring-playbook-synapse.md)
+
 ## Purging old data with the Purge History API
 
 You can use the **[Purge History API](https://github.com/element-hq/synapse/blob/master/docs/admin_api/purge_history_api.md)** to delete old messages on a per-room basis. **This is destructive** (especially for non-federated rooms), because it means **people will no longer have access to history past a certain point**.

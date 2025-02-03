@@ -22,22 +22,6 @@ To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/j
 sudo journalctl -fu matrix-synapse
 ```
 
-## Increase logging verbosity
-
-Because the [Synapse](https://github.com/element-hq/synapse) Matrix server is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`.
-
-If you'd like to debug an issue or [report a Synapse bug](https://github.com/element-hq/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increasing the logging level to `INFO`.
-
-Example configuration (`inventory/host_vars/matrix.example.com/vars.yml`):
-
-```yaml
-matrix_synapse_log_level: "INFO"
-matrix_synapse_storage_sql_log_level: "INFO"
-matrix_synapse_root_log_level: "INFO"
-```
-
-Re-run the playbook after making these configuration changes.
-
 ## How to check if services work
 
 The playbook can perform a check to ensure that you've configured things correctly and that services are running.
