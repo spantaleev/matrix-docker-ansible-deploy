@@ -403,46 +403,9 @@ It can perform a local connection instead. Just set `ansible_connection=local` a
 
 If you're running Ansible from within a container (one of the possibilities we list on our [dedicated Ansible documentation page](ansible.md)), then using `ansible_connection=local` is not possible.
 
-## Troubleshooting
+## Maintenance and Troubleshooting
 
-### I get "Error response from daemon: configured logging driver does not support reading" when I do `docker logs matrix-synapse`.
-
-See [How can I see the logs?](#how-can-i-see-the-logs).
-
-### How can I see the logs?
-
-We utilize [systemd/journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html#Description) for logging.
-
-To see logs for Synapse, run `journalctl -fu matrix-synapse.service`. You may wish to see the [manual page for journalctl](https://www.commandlinux.com/man-page/man1/journalctl.1.html).
-
-Available service names can be seen by doing `ls /etc/systemd/system/matrix*.service` on the server.
-
-Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that.
-
-We also disable Docker logging, so you can't use `docker logs matrix-*` either. We do this to prevent useless double (or even triple) logging and to avoid having to rotate log files.
-
-We just simply delegate logging to journald and it takes care of persistence and expiring old data.
-
-Also see: [How long do systemd/journald logs persist for?](#how-long-do-systemdjournald-logs-persist-for)
-
-### How long do systemd/journald logs persist for?
-
-On some distros, the journald logs are just in-memory and not persisted to disk.
-
-Consult (and feel free to adjust) your distro's journald logging configuration in `/etc/systemd/journald.conf`.
-
-To enable persistence and put some limits on how large the journal log files can become, adjust your configuration like this:
-
-```ini
-[Journal]
-RuntimeMaxUse=200M
-SystemMaxUse=1G
-RateLimitInterval=0
-RateLimitBurst=0
-Storage=persistent
-```
-
-## Maintenance
+💡 Also see this page for generic information about maintaining the services and troubleshooting: [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
 
 ### Do I need to do anything to keep my Matrix server updated?
 
@@ -456,34 +419,17 @@ If you have an existing installation done using this Ansible playbook, you can e
 
 If your previous installation is done in some other way (not using this Ansible playbook), see [I installed Synapse some other way. Can I migrate such a setup to the playbook?](#i-installed-synapse-some-other-way-can-i-migrate-such-a-setup-to-the-playbook).
 
-### How do I back up the data on my server?
-
-We haven't documented this properly yet, but the general advice is to:
-
-- back up Postgres by making a database dump. See [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql)
-
-- back up all `/matrix` files, except for `/matrix/postgres/data` (you already have a dump) and `/matrix/postgres/data-auto-upgrade-backup` (this directory may exist and contain your old data if you've [performed a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql)).
-
-You can later restore these by:
-
-- Restoring the `/matrix` directory and files on the new server manually
-- Following the instruction described on [Installing a server into which you'll import old data](installing.md#installing-a-server-into-which-youll-import-old-data)
-
-If your server's IP address has changed, you may need to [set up DNS](configuring-dns.md) again.
-
 ### What is this `/matrix/postgres/data-auto-upgrade-backup` directory that is taking up so much space?
 
 When you [perform a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql), we save the the old data files in `/matrix/postgres/data-auto-upgrade-backup`, just so you could easily restore them should something have gone wrong.
 
 After verifying that everything still works after the Postgres upgrade, you can safely delete `/matrix/postgres/data-auto-upgrade-backup`
 
-### How do I debug or force SSL certificate renewal?
+### I get "Error response from daemon: configured logging driver does not support reading" when I run `docker logs matrix-synapse`. Why?
 
-SSL certificates are managed automatically by the [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server.
+To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you cannot view logs using `docker logs matrix-*`.
 
-If you're having trouble with SSL certificate renewal, check the Traefik logs (`journalctl -fu matrix-traefik`).
-
-If you're [using your own webserver](configuring-playbook-own-webserver.md) instead of the integrated one (Traefik), you should investigate in another way.
+See [this section](maintenance-and-troubleshooting.md#how-to-see-the-logs) on the page for maintenance and troubleshooting for more details to see the logs.
 
 ## Miscellaneous
 
