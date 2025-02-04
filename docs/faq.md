@@ -405,6 +405,8 @@ If you're running Ansible from within a container (one of the possibilities we l
 
 ## Maintenance and Troubleshooting
 
+💡 Also see this page for generic information about maintaining the services and troubleshooting: [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
+
 ### Do I need to do anything to keep my Matrix server updated?
 
 Yes. We don't update anything for you automatically.
