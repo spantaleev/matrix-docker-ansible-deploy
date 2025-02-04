@@ -36,8 +36,6 @@ Below, we'll try to **highlight some potential reasons for switching** to Matrix
 
 - ⚠️ the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default for this playbook). Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating wtih Matrix Authentication Service yet.
 
-- ⚠️ **email sending** configured (see [Adjusting email-sending settings](./configuring-playbook-email.md)), because **Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user** going through the new SSO-based login flow. It's also possible to [work around email deliverability issues](#working-around-email-deliverability-issues) if your email configuration is not working.
-
 - ❌ **disabling all password providers** for Synapse (things like [shared-secret-auth](./configuring-playbook-shared-secret-auth.md), [rest-auth](./configuring-playbook-rest-auth.md), [LDAP auth](./configuring-playbook-ldap-auth.md), etc.) More details about this are available in the [Expectations](#expectations) section below.
 
 ## Expectations
@@ -59,8 +57,6 @@ This section details what you can expect when switching to the Matrix Authentica
 
 - ❌ **Encrypted appservices** do not work yet (related to [MSC4190](https://github.com/matrix-org/matrix-spec-proposals/pull/4190) and [PR 17705 for Synapse](https://github.com/element-hq/synapse/pull/17705)), so all bridges/bots that rely on encryption will fail to start (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3658) for Hookshot). You can use these bridges/bots only if you **keep end-to-bridge encryption disabled** (which is the default setting).
 
-- ⚠️ **You will need to have email sending configured** (see [Adjusting email-sending settings](./configuring-playbook-email.md)), because **Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user** going through the new SSO-based login flow. It's also possible to [work around email deliverability issues](#working-around-email-deliverability-issues) if your email configuration is not working.
-
 - ⚠️ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) is **possible**, but requires **some playbook-assisted manual work**. Migration is **reversible with no or minor issues if done quickly enough**, but as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
 
 - ⚠️ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) does not currently seem to preserve the "admin" flag for users (as found in the Synapse database). All users are imported as non-admin — see [element-hq/matrix-authentication-service#3440](https://github.com/element-hq/matrix-authentication-service/issues/3440). You may need update the Matrix Authentication Service's database manually and adjust the `can_request_admin` column in the `users` table to `true` for users that need to be administrators (e.g. `UPDATE users SET can_request_admin = true WHERE username = 'someone';`)
@@ -75,7 +71,7 @@ This section details what you can expect when switching to the Matrix Authentica
 
 - ✅ Various clients ([Cinny](./configuring-playbook-client-cinny.md), [Element Web](./configuring-playbook-client-element-web.md), Element X, FluffyChat) will be able to use the **new SSO-based login flow** provided by Matrix Authentication Service
 
-- ✅ The **old login flow** (called `m.login.password`) **will still continue to work**, so clients (old Element Web, etc.) and bridges/bots that don't support the new OIDC-based login flow will still work. Going through the old login flow does not require users to have a verified email address, as [is the case](https://github.com/element-hq/matrix-authentication-service/issues/1505) for the new SSO-based login flow.
+- ✅ The **old login flow** (called `m.login.password`) **will still continue to work**, so clients (old Element Web, etc.) and bridges/bots that don't support the new OIDC-based login flow will still work
 
 - ✅ [Registering users](./registering-users.md) via **the playbook's `register-user` tag remains unchanged**. The playbook automatically does the right thing regardless of homeserver implementation (Synapse, Dendrite, etc.) and whether MAS is enabled or not. When MAS is enabled, the playbook will forward user-registration requests to MAS. Registering users via the command-line is no longer done via the `/matrix/synapse/bin/register` script, but via `/matrix/matrix-authentication-service/bin/register-user`.
 
@@ -459,11 +455,15 @@ You can register users new users as described in the [Registering users](./regis
 
 ### Working around email deliverability issues
 
-Because Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user, you may need to work around email deliverability issues if [your email-sending configuration](./configuring-playbook-email.md) is not working.
+Matrix Authentication Service only sends emails when:
 
-Matrix Authentication Service attempts to verify email addresses by sending a verification email to the address specified by the user whenever they log in to an account without a verified email address.
+- it verifies email addresses for users who are self-registering with a password
 
-If email delivery is not working, **you can retrieve the email configuration code from the Matrix Authentication Service's logs** (`journalctl -fu matrix-authentication-service`).
+- a user tries to add an email to their account
+
+If Matrix Authentication Service tries to send an email and it fails because [your email-sending configuration](./configuring-playbook-email.md) is not working, you may need to work around email deliverability.
+
+If email delivery is not working, **you can retrieve the email verification code from the Matrix Authentication Service's logs** (`journalctl -fu matrix-authentication-service`).
 
 Alternatively, you can use the [`mas-cli` management tool](#management) to manually verify email addresses for users. Example: `/matrix/matrix-authentication-service/bin/mas-cli manage verify-email some.username email@example.com`
 
