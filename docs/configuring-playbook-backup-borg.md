@@ -95,9 +95,9 @@ backup_borg_retention_keep_monthly: 12
 backup_borg_retention_keep_yearly: 2
 ```
 
-### Edit the backup schedule (optional)
+### Edit the schedule (optional)
 
-By default the backup will run 4 a.m. every day based on the `backup_borg_schedule` variable. It is defined in the format of systemd timer calendar.
+By default the task will run 4 a.m. every day based on the `backup_borg_schedule` variable. It is defined in the format of systemd timer calendar.
 
 To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
 
@@ -134,10 +134,18 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
-## Manually start a backup
+## Usage
+
+After installation, `backup-borg` will run automatically every day at `04:00:00` (as defined in `backup_borg_schedule` by default).
+
+### Manually start the task
 
 Sometimes it can be helpful to run the backup as you'd like, avoiding to wait until 4 a.m., like when you test your configuration.
 
 If you want to run it immediately, log in to the server with SSH and run `systemctl start matrix-backup-borg`.
 
 This will not return until the backup is done, so it can possibly take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu backup-borg`.

@@ -14,6 +14,24 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 matrix_synapse_auto_compressor_enabled: true
 ```
 
+### Edit the schedule (optional)
+
+By default the task will run 0 a.m. every day based on the `matrix_synapse_auto_compressor_schedule` variable. It is defined in the format of systemd timer calendar.
+
+To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+matrix_synapse_auto_compressor_schedule: "*-*-* 00:00:00"
+```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-synapse-auto-compressor/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -29,12 +47,16 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-After installation, `synapse_auto_compressor` will run automatically every day at `00:00:00` (as defined in `matrix_synapse_auto_compressor_calendar` by default).
+After installation, `synapse_auto_compressor` will run automatically every day at `00:00:00` (as defined in `matrix_synapse_auto_compressor_schedule` by default).
 
-## Manually execute compression
+### Manually start the task
 
 Sometimes it can be helpful to execute compression as you'd like, avoiding to wait until 00:00, like when you test your configuration.
 
 If you want to execute it immediately, log in to the server with SSH and run `systemctl start matrix-synapse-auto-compressor`.
 
 This will not return until the compression is done, so it can possibly take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse-auto-compressor`.
