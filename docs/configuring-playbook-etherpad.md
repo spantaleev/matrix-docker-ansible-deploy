@@ -105,3 +105,19 @@ Once the plugin is installed, you should have a "Manage pads" section in the UI.
 **Note**: this is how it works in Element Web. It might work quite similar with other clients:
 
 To integrate a standalone Etherpad in a room, create your pad by visiting `https://etherpad.example.com`. When the pad opens, copy the URL and send a command like this to the room: `/addwidget URL`. You will then find your integrated Etherpad within the right sidebar in the `Widgets` section.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-etherpad`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `WARN`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: ERROR, WARN, INFO, DEBUG
+etherpad_configuration_extension_json: |
+ {
+  "loglevel": "DEBUG",
+ }
+```
