@@ -64,6 +64,18 @@ jitsi_web_stun_servers:
 
 You can put multiple host/port combinations if you'd like to.
 
+### Edit the reloading schedule (optional)
+
+By default the service is reloaded on 6:30 a.m. every day based on the `matrix_coturn_reload_schedule` variable so that new SSL certificates can kick in. It is defined in the format of systemd timer calendar.
+
+To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+matrix_coturn_reload_schedule: "*-*-* 06:30:00"
+```
+
+**Note**: the actual job may run with a delay. See `matrix_coturn_reload_schedule_randomized_delay_sec` for its default value.
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the TURN server.
