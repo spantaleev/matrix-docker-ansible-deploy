@@ -152,3 +152,9 @@ By default, we periodically ensure that all local files are uploaded to S3 and a
 - … triggered by the `matrix-synapse-s3-storage-provider-migrate.timer` timer, every day at 05:00
 
 So… you don't need to perform any maintenance yourself.
+
+The schedule is defined in the format of systemd timer calendar. To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+matrix_synapse_ext_synapse_s3_storage_provider_periodic_migration_schedule: "*-*-* 05:00:00"
+```
