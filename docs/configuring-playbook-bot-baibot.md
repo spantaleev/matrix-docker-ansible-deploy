@@ -400,7 +400,9 @@ You can also refer to the upstream [baibot](https://github.com/etkecc/baibot) pr
 
 As with all other services, you can find service logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running something like `journalctl -fu matrix-bot-baibot`
 
-The default logging level for this service is `info`, but you can increase it to `debug` (or even `trace`) with the following additional configuration:
+### Increase logging verbosity
+
+The default logging level for this service is `info`. If you want to increase the verbosity to `debug` (or even `trace`), add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
 # Adjust the bot's own logging level.
