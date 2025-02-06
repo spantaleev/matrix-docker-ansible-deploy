@@ -29,6 +29,15 @@ matrix_synapse_registration_requires_token: true
 
 The bot account will be created automatically.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-matrix-registration-bot/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bot-matrix-registration-bot/templates/config.yaml.j2` for the bridge's default configuration
+
 ## Installing
 
 After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
@@ -62,4 +71,17 @@ To clean the cache (session & encryption data) after you changed the bot's usern
 
 ```sh
 just run-tags bot-matrix-registration-bot-clean-cache
+```
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-registration-bot`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: ERROR, INFO, DEBUG
+matrix_bot_matrix_registration_bot_logging_level: DEBUG
 ```
