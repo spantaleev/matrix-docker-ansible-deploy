@@ -124,3 +124,7 @@ After making the backup, follow one of the guides below for a migration path fro
 7. You're done! Verify that loading existing (old) media files works and that you can upload new ones.
 
 8. When confident that it all works, get rid of the local media store directory: `rm -rf /matrix/synapse/storage/media-store-local-backup`
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-goofys`.
