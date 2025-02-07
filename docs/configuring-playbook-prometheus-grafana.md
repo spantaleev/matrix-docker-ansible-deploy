@@ -34,6 +34,7 @@ Grafana is an open source visualization and analytics software. To enable it, ad
 ```yaml
 grafana_enabled: true
 
+# Allow viewing Grafana without logging in.
 grafana_anonymous_access: false
 
 # This has no relation to your Matrix user ID. It can be any username you'd like.
@@ -56,7 +57,7 @@ Name | Description
 `matrix_prometheus_nginxlog_exporter_enabled`|[nginx Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose nginx logs to Prometheus.
 `grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.example.com` subdomain) the dashboards with the graphs that we're interested in.
 `grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
-`grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here.
+`grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. You are asked to change the credentials on first login. If you feel this is insecure and you want to change them beforehand, you can do that here.
 
 ### Adjusting the Grafana URL (optional)
 
