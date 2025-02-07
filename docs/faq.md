@@ -415,7 +415,7 @@ See our [documentation page about upgrading services](maintenance-upgrading-serv
 
 ### How do I move my existing installation to another (VM) server?
 
-If you have an existing installation done using this Ansible playbook, you can easily migrate that to another server using [our dedicated server migration guide](maintenance-migrating.md).
+If you have an existing installation done using this Ansible playbook, you can easily migrate that to another server following [our dedicated server migration guide](maintenance-migrating.md).
 
 If your previous installation is done in some other way (not using this Ansible playbook), see [I installed Synapse some other way. Can I migrate such a setup to the playbook?](#i-installed-synapse-some-other-way-can-i-migrate-such-a-setup-to-the-playbook).
 

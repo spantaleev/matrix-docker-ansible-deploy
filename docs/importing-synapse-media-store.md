@@ -1,6 +1,6 @@
 # Importing `media_store` data files from an existing Synapse installation (optional)
 
-Run this if you'd like to import your `media_store` files from a previous installation of Synapse.
+You can manually import your `media_store` files from a previous installation of Synapse.
 
 ## Prerequisites
 

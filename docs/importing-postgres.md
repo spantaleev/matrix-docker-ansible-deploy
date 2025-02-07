@@ -1,7 +1,10 @@
 # Importing an existing Postgres database from another installation (optional)
 
-Run this if you'd like to import your database from a previous installation.
-(don't forget to import your Synapse `media_store` files as well — see [the importing-synape-media-store guide](importing-synapse-media-store.md)).
+You can manually import your database from a previous default installation of Synapse.
+
+**Notes**:
+- Don't forget to import your Synapse `media_store` files as well — see [the importing-synapse-media-store guide](importing-synapse-media-store.md) for more details.
+- If you have an existing installation done using this Ansible playbook, you can easily migrate that to another server following [our dedicated server migration guide](maintenance-migrating.md).
 
 ## Prerequisites
 
