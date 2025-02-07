@@ -53,6 +53,14 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 **Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about Prometheus.
+
+Take a look at:
+
+- [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
