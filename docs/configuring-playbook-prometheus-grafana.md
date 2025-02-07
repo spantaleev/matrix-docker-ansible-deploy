@@ -17,14 +17,14 @@ Prometheus is an open-source systems monitoring and alerting toolkit. To enable 
 ```yaml
 prometheus_enabled: true
 
-# You can remove this, if unnecessary.
-prometheus_node_exporter_enabled: true
+# Uncomment to enable Node Exporter.
+# prometheus_node_exporter_enabled: true
 
-# You can remove this, if unnecessary.
-prometheus_postgres_exporter_enabled: true
+# Uncomment to enable Postgres Exporter.
+# prometheus_postgres_exporter_enabled: true
 
-# You can remove this, if unnecessary.
-matrix_prometheus_nginxlog_exporter_enabled: true
+# Uncomment to enable nginx Log Exporter.
+# matrix_prometheus_nginxlog_exporter_enabled: true
 ```
 
 ### Configure Grafana
