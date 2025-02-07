@@ -27,6 +27,15 @@ prometheus_enabled: true
 # matrix_prometheus_nginxlog_exporter_enabled: true
 ```
 
+Name | Description
+-----|----------
+`prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
+`prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures.
+`prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
+`matrix_prometheus_nginxlog_exporter_enabled`|[nginx Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose nginx logs to Prometheus.
+
+The retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
+
 ### Configure Grafana
 
 Grafana is an open source visualization and analytics software. To enable it, add the following configuration to your `vars.yml` file:
@@ -45,16 +54,8 @@ grafana_default_admin_user: "USERNAME_HERE"
 grafana_default_admin_password: "PASSWORD_HERE"
 ```
 
-The retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
-
-### What does it do?
-
 Name | Description
 -----|----------
-`prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
-`prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures.
-`prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
-`matrix_prometheus_nginxlog_exporter_enabled`|[nginx Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose nginx logs to Prometheus.
 `grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.example.com` subdomain) the dashboards with the graphs that we're interested in.
 `grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. You are asked to change the credentials on first login. If you feel this is insecure and you want to change them beforehand, you can do that here.
