@@ -10,7 +10,9 @@ When setting, replace `example.com` with your own.
 
 ## Adjusting the playbook configuration
 
-To enable Grafana and/or Prometheus, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+### Configure Prometheus
+
+Prometheus is an open-source systems monitoring and alerting toolkit. To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 prometheus_enabled: true
@@ -23,7 +25,13 @@ prometheus_postgres_exporter_enabled: true
 
 # You can remove this, if unnecessary.
 matrix_prometheus_nginxlog_exporter_enabled: true
+```
 
+### Configure Grafana
+
+Grafana is an open source visualization and analytics software. To enable it, add the following configuration to your `vars.yml` file:
+
+```yaml
 grafana_enabled: true
 
 grafana_anonymous_access: false
