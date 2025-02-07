@@ -30,7 +30,6 @@ matrix_sms_bridge_provider_android_password: supeSecretPassword
 # (optional) if your android-sms-gateway-server uses a self signed vertificate, the bridge needs a "truststore". This can be the certificate itself.
 matrix_sms_bridge_provider_android_truststore_local_path: android-sms-gateway-server.p12
 matrix_sms_bridge_provider_android_truststore_password: 123
-
 ```
 
 ### Extending the configuration

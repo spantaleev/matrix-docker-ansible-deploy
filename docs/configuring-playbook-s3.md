@@ -84,9 +84,7 @@ The `keyID` value is your **Access Key** and `applicationKey` is your **Secret K
 For configuring [Goofys](configuring-playbook-s3-goofys.md) or [s3-synapse-storage-provider](configuring-playbook-synapse-s3-storage-provider.md) you will need:
 
 - **Endpoint URL** — this is the  **Endpoint** value you saw above, but prefixed with `https://`
-
 - **Region** — use the value you see in the Endpoint (e.g. `us-west-002`)
-
 - **Storage Class** — use `STANDARD`. Backblaze B2 does not have different storage classes, so it doesn't make sense to use any other value.
 
 ## Other providers
