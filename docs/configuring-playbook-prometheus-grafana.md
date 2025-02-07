@@ -155,6 +155,12 @@ scrape_configs:
           index: 18111
 ```
 
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running the commands below:
+- `journalctl -fu matrix-prometheus` for Prometheus
+- `journalctl -fu matrix-grafana` for Grafana
+
 ## More information
 
 - [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
