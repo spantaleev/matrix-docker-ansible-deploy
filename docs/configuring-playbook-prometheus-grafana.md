@@ -34,8 +34,8 @@ Grafana is an open source visualization and analytics software. To enable it, ad
 ```yaml
 grafana_enabled: true
 
-# Allow viewing Grafana without logging in.
-grafana_anonymous_access: false
+# Uncomment to allow viewing Grafana without logging in.
+# grafana_anonymous_access: true
 
 # This has no relation to your Matrix user ID. It can be any username you'd like.
 # Changing the username subsequently won't work.
