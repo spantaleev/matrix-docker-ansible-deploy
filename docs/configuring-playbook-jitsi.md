@@ -382,6 +382,12 @@ ansible-playbook -i inventory/hosts --limit jitsi_jvb_servers jitsi_jvb.yml --ta
 
 ## Troubleshooting
 
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running the commands below:
+- `journalctl -fu matrix-jitsi-web`
+- `journalctl -fu matrix-jitsi-prosody`
+- `journalctl -fu matrix-jitsi-jicofo`
+- `journalctl -fu matrix-jitsi-jvb`
+
 ### `Error: Account creation/modification not supported`
 
 If you get an error like `Error: Account creation/modification not supported` with authentication enabled, it's likely that you had previously installed Jitsi without auth/guest support.
