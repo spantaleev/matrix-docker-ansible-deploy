@@ -14,9 +14,6 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_appservice_webhooks_enabled: true
 matrix_appservice_webhooks_api_secret: '<your_secret>'
 
-# Uncomment to increase the verbosity of logging via `journalctl -fu matrix-appservice-webhooks.service`
-# matrix_appservice_webhooks_log_level: 'verbose'
-
 # As of Synapse 1.90.0, uncomment to enable the backwards compatibility (https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs.
 # Note: This deprecated method is considered insecure.
 #

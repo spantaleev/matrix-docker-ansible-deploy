@@ -84,3 +84,16 @@ You can then follow instructions on the bridge's [official documentation on Auth
 After logging in, the bridge will sync recent chats.
 
 **Note**: given that the bot is configured in `messenger` [bridge mode](#bridge-mode) by default, you will need to log in to [messenger.com](https://messenger.com/) (not `facebook.com`!) and obtain the cookies from there.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-meta-messenger`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# This bridge uses zerolog, so valid levels are: panic, fatal, error, warn, info, debug, trace
+matrix_mautrix_meta_messenger_logging_min_level: debug
+```

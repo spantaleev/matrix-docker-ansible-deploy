@@ -63,3 +63,16 @@ To use the bridge, you need to start a chat with `@slackbot:example.com` (where 
 You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/slack/authentication.html).
 
 If you authenticated using a token, the recent chats will be bridged automatically (depending on the `conversation_count` setting). Otherwise (i.e. logging with the Discord application), the chats the bot is in will be bridged automatically.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-slack`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: fatal, error, warn, info, debug, trace
+matrix_mautrix_slack_logging_level: 'debug'
+```
