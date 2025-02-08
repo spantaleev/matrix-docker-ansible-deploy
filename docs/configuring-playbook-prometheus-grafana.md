@@ -36,6 +36,14 @@ Name | Description
 
 **Note**: the retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
 
+#### Extending the configuration
+
+There are some additional things you may wish to configure about Prometheus.
+
+Take a look at:
+
+- [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
+
 ### Configure Grafana
 
 Grafana is an open source visualization and analytics software. To enable it, add the following configuration to your `vars.yml` file:
@@ -60,7 +68,7 @@ Name | Description
 `grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. You are asked to change the credentials on first login. If you feel this is insecure and you want to change them beforehand, you can do that here.
 
-### Adjusting the Grafana URL (optional)
+#### Adjusting the Grafana URL (optional)
 
 By tweaking the `grafana_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
@@ -74,14 +82,6 @@ grafana_hostname: grafana.example.com
 After changing the domain, **you may need to adjust your DNS** records to point the Grafana domain to the Matrix server.
 
 **Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
-
-### Extending the configuration
-
-There are some additional things you may wish to configure about Prometheus.
-
-Take a look at:
-
-- [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
 
 ## Installing
 
