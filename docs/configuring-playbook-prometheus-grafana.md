@@ -46,7 +46,11 @@ Take a look at:
 
 ### Configure Grafana
 
-Grafana is an open source visualization and analytics software. To enable it, add the following configuration to your `vars.yml` file:
+Grafana is an open source visualization and analytics software. To enable it, add the following configuration to your `vars.yml` file. Make sure to replace `USERNAME_HERE` and `PASSWORD_HERE`.
+
+**Notes**:
+- `grafana_default_admin_user` has nothing to do with your Matrix user ID. It can be any string you'd like.
+- Changing the username/password subsequently won't work.
 
 ```yaml
 grafana_enabled: true
@@ -54,11 +58,7 @@ grafana_enabled: true
 # Uncomment to allow viewing Grafana without logging in.
 # grafana_anonymous_access: true
 
-# This has no relation to your Matrix user ID. It can be any username you'd like.
-# Changing the username subsequently won't work.
 grafana_default_admin_user: "USERNAME_HERE"
-
-# Changing the password subsequently won't work.
 grafana_default_admin_password: "PASSWORD_HERE"
 ```
 
