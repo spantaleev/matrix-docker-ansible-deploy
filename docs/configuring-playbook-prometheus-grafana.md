@@ -8,6 +8,8 @@ By default, this playbook installs Grafana web user-interface on the `stats.` su
 
 When setting, replace `example.com` with your own.
 
+**Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
+
 ## Adjusting the playbook configuration
 
 ### Configure Prometheus
@@ -80,8 +82,6 @@ grafana_hostname: grafana.example.com
 ```
 
 After changing the domain, **you may need to adjust your DNS** records to point the Grafana domain to the Matrix server.
-
-**Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
 
 ## Installing
 
