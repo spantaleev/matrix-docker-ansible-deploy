@@ -55,18 +55,18 @@ Grafana is an open source visualization and analytics software. To enable it, ad
 ```yaml
 grafana_enabled: true
 
-# Uncomment to allow viewing Grafana without logging in.
-# grafana_anonymous_access: true
-
 grafana_default_admin_user: "USERNAME_HERE"
 grafana_default_admin_password: "PASSWORD_HERE"
+
+# Uncomment to allow viewing Grafana without logging in.
+# grafana_anonymous_access: true
 ```
 
 Name | Description
 -----|----------
 `grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.example.com` subdomain) the dashboards with the graphs that we're interested in.
-`grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 `grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. You are asked to change the credentials on first login. If you feel this is insecure and you want to change them beforehand, you can do that here.
+`grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 
 #### Adjusting the Grafana URL (optional)
 
