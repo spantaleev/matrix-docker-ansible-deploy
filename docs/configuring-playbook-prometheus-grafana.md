@@ -21,17 +21,23 @@ Prometheus is an open-source systems monitoring and alerting toolkit. To enable 
 
 ```yaml
 prometheus_enabled: true
-
-# Uncomment to enable Node Exporter.
-# prometheus_node_exporter_enabled: true
 ```
 
 Name | Description
 -----|----------
 `prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
-`prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures.
 
 **Note**: the retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
+
+### Enable metrics and graphs for generic system information (optional)
+
+You can enable the [Node Exporter](https://prometheus.io/docs/guides/node-exporter/), an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures.
+
+To enable it, add the following configuration to your `vars.yml` file:
+
+```yaml
+prometheus_node_exporter_enabled: true
+```
 
 ### Enable metrics and graphs for Postgres (optional)
 
