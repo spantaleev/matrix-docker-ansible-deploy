@@ -8,7 +8,7 @@ By default, this playbook installs Grafana web user-interface on the `stats.` su
 
 When setting, replace `example.com` with your own.
 
-**Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
+**Note**: It is possible to install Prometheus without installing Grafana. In this case it is not required to create the CNAME record.
 
 ## Adjusting the playbook configuration
 
