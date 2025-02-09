@@ -84,11 +84,12 @@ matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
 
 ### Extending the configuration
 
-There are some additional things you may wish to configure about Prometheus.
+There are some additional things you may wish to configure about Prometheus and its add-on.
 
 Take a look at:
 
 - [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
+- `roles/custom/matrix-prometheus-nginxlog-exporter/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Adjusting the playbook configuration — Grafana
 
@@ -208,6 +209,7 @@ As with all other services, you can find the logs in [systemd-journald](https://
 - `journalctl -fu matrix-prometheus` for Prometheus
 - `journalctl -fu matrix-prometheus-node-exporter` for Node Exporter
 - `journalctl -fu matrix-prometheus-postgres-exporter` for PostgreSQL Server Exporter
+- `journalctl -fu matrix-prometheus-nginxlog-exporter` for prometheus-nginxlog-exporter
 - `journalctl -fu matrix-grafana` for Grafana
 
 ## More information
