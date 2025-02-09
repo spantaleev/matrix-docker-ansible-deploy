@@ -59,7 +59,7 @@ prometheus_postgres_exporter_enabled: true
 
 Name | Description
 -----|----------
-`prometheus_postgres_exporter_enabled`|Enable the Postgres Prometheus exporter. This sets up the docker container, connects it to the database and adds a 'job' to the Prometheus config which tells Prometheus about this new exporter. The default is 'false'
+`prometheus_postgres_exporter_enabled`|Enable the Postgres Prometheus exporter. This sets up the docker container, connects it to the database and adds a 'job' to the Prometheus config which tells Prometheus about this new exporter.
 `prometheus_postgres_exporter_container_labels_traefik_enabled`|If set to `true`, exposes the Postgres exporter metrics on `https://matrix.example.com/metrics/postgres-exporter` for usage with an [external Prometheus server](#collecting-metrics-to-an-external-prometheus-server). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` below.
 
 ### Extending the configuration
