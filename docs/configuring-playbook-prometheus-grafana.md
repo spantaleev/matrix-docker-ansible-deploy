@@ -36,7 +36,7 @@ Name | Description
 
 #### Enable metrics and graphs for Postgres (optional)
 
-Expanding on the metrics exposed by the Synapse exporter and the Node exporter, the playbook can also install and configure the [postgres exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your postgres database.
+Expanding on the metrics exposed by the Synapse exporter and the Node exporter, the playbook can also install and configure the [PostgreSQL Server Exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your Postgres database.
 
 To enable it, add the following configuration to your `vars.yml` file:
 
@@ -56,7 +56,7 @@ prometheus_postgres_exporter_enabled: true
 
 Name | Description
 -----|----------
-`prometheus_postgres_exporter_enabled`|Enable the postgres prometheus exporter. This sets up the docker container, connects it to the database and adds a 'job' to the prometheus config which tells prometheus about this new exporter. The default is 'false'
+`prometheus_postgres_exporter_enabled`|Enable the Postgres Prometheus exporter. This sets up the docker container, connects it to the database and adds a 'job' to the Prometheus config which tells Prometheus about this new exporter. The default is 'false'
 `prometheus_postgres_exporter_container_labels_traefik_enabled`|If set to `true`, exposes the Postgres exporter metrics on `https://matrix.example.com/metrics/postgres-exporter` for usage with an [external Prometheus server](#collecting-metrics-to-an-external-prometheus-server). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` below.
 
 #### Extending the configuration
@@ -199,4 +199,4 @@ As with all other services, you can find the logs in [systemd-journald](https://
 - [The Prometheus scraping rules](https://github.com/element-hq/synapse/tree/master/contrib/prometheus) (we use v2)
 - [The Synapse Grafana dashboard](https://github.com/element-hq/synapse/tree/master/contrib/grafana)
 - [The Node Exporter dashboard](https://github.com/rfrail3/grafana-dashboards) (for generic non-synapse performance graphs)
-- [The PostgresSQL dashboard](https://grafana.com/grafana/dashboards/9628) (generic postgres dashboard)
+- [The PostgresSQL dashboard](https://grafana.com/grafana/dashboards/9628) (generic Postgres dashboard)
