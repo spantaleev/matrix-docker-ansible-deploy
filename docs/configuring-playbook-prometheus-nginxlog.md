@@ -8,27 +8,11 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Enabling metrics and graphs for nginx logs (optional)
 
-The playbook can install and configure the [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) service for you, in order to make it possible to have some (visual) insight into [nginx](https://nginx.org/) logs.
-
-It will collect access logs from various nginx reverse-proxies which may be used internally (e.g. `matrix-synapse-reverse-proxy-companion`, if Synapse workers are enabled) and will make them available at a Prometheus-compatible `/metrics` endpoint.
-
-See the project's [documentation](https://github.com/martin-helmich/prometheus-nginxlog-exporter/blob/master/README.adoc) to learn what it does and why it might be useful to you.
-
-**Note**: nginx is only used internally by this Ansible playbook. With Traefik being our default reverse-proxy, collecting nginx metrics is less relevant.
-
 ## Prerequisite
 
 To make use of this, you need to install [Prometheus](./configuring-playbook-prometheus-grafana.md) either via the playbook or externally. When using an external Prometheus, configuration adjustments are necessary — see [Save metrics on an external Prometheus server](#save-metrics-on-an-external-prometheus-server).
 
-If your setup includes [Grafana](./configuring-playbook-prometheus-grafana.md), a dedicated `NGINX PROXY` Grafana dashboard will be created.
-
 ## Adjusting the playbook configuration
-
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
-
-```yaml
-matrix_prometheus_nginxlog_exporter_enabled: true
-```
 
 ### Save metrics on an external Prometheus server (optional)
 
@@ -39,11 +23,7 @@ The playbook will automatically integrate the metrics into the [Prometheus](./co
 
 When using an external Prometheus server, you'll need to expose metrics publicly. See [Collecting metrics to an external Prometheus server](./configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server).
 
-You can either use `matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled: true` to expose just this one service, or `matrix_metrics_exposure_enabled: true` to expose all services.
-
-Whichever way you go with, this service will expose its metrics endpoint **without password-protection** at `https://matrix.example.com/metrics/nginxlog` by default.
-
-For password-protection, use (`matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`) or (`matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled` and `matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users`).
+For password-protection, use or (`matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled` and `matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users`).
 
 ### Docker Image Compatibility (optional)
 
