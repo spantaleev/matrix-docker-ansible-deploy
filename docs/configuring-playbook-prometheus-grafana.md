@@ -151,16 +151,18 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 When you'd like **to collect metrics from an external Prometheus server**, you need to expose service metrics outside of the container network.
 
-The playbook provides a single endpoint (`https://matrix.example.com/metrics/*`), under which various services may expose their metrics (e.g. `/metrics/node-exporter`, `/metrics/postgres-exporter`, `/metrics/nginxlog`, `/metrics/hookshot`, etc). To expose all services on this `/metrics/*` feature, use `matrix_metrics_exposure_enabled`. To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), see `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` below.
+The playbook provides a single endpoint (`https://matrix.example.com/metrics/*`), under which various services may expose their metrics (e.g. `/metrics/node-exporter`, `/metrics/postgres-exporter`, `/metrics/nginxlog`, `/metrics/hookshot`, etc).
 
-When using `matrix_metrics_exposure_enabled`, you don't need to expose metrics for individual services one by one.
+To expose all services on this `/metrics/*` feature, you can use `matrix_metrics_exposure_enabled`. When using it, you don't need to expose metrics for individual services one by one. If you think this is too much, refer [this section](#expose-metrics-of-other-services-roles) for details about exposing metrics on a per-service basis.
+
+To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`. When enabled, all endpoints beneath `/metrics` will be protected with the same credentials.
 
 The following variables may be of interest:
 
 Name | Description
 -----|----------
-`matrix_metrics_exposure_enabled`|Set this to `true` to **enable metrics exposure for all services** on `https://matrix.example.com/metrics/*`. If you think this is too much, refer [this section](#expose-metrics-of-other-services-roles) for exposing metrics on a per-service basis.
-`matrix_metrics_exposure_http_basic_auth_enabled`|Set this to `true` to protect all `https://matrix.example.com/metrics/*` endpoints with [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) (see the other variables below for supplying the actual credentials). When enabled, all endpoints beneath `/metrics` will be protected with the same credentials.
+`matrix_metrics_exposure_enabled`|Set this to `true` to **enable metrics exposure for all services** on `https://matrix.example.com/metrics/*`.
+`matrix_metrics_exposure_http_basic_auth_enabled`|Set this to `true` to protect all `https://matrix.example.com/metrics/*` endpoints with [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) (see the other variables below for supplying the actual credentials).
 `matrix_metrics_exposure_http_basic_auth_users`|Set this to the Basic Authentication credentials (raw `htpasswd` file content) used to protect `/metrics/*`. This htpasswd-file needs to be generated with the `htpasswd` tool and can include multiple username/password pairs.
 `prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network).
 `prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
