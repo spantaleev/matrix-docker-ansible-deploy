@@ -73,6 +73,15 @@ If you enable Grafana, a dedicated `NGINX PROXY` Grafana dashboard will be creat
 
 **Note**: nginx is only used internally by this Ansible playbook. With Traefik being our default reverse-proxy, collecting nginx metrics is less relevant.
 
+#### Docker image compatibility (optional)
+
+At the moment of writing only images for `amd64` and `arm64` architectures are available. The playbook currently does not support [self-building](./self-building.md) a container image on other architectures. You can however use a custom-build image by setting:
+
+```yaml
+matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
+matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
+```
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about Prometheus.
