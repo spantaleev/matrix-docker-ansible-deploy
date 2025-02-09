@@ -184,6 +184,8 @@ scrape_configs:
 
 As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running the commands below:
 - `journalctl -fu matrix-prometheus` for Prometheus
+- `journalctl -fu matrix-prometheus-node-exporter` for Node Exporter
+- `journalctl -fu matrix-prometheus-postgres-exporter` for PostgreSQL Server Exporter
 - `journalctl -fu matrix-grafana` for Grafana
 
 ## More information
