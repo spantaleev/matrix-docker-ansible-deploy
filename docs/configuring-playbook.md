@@ -199,8 +199,6 @@ Services that help you in administrating and monitoring your Matrix installation
 
 - [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
 
-- [Enabling metrics and graphs for nginx logs](configuring-playbook-prometheus-nginxlog.md)
-
 - [Setting up the rageshake bug report server](configuring-playbook-rageshake.md)
 
 - [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
