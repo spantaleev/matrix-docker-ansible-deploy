@@ -155,7 +155,7 @@ The playbook provides a single endpoint (`https://matrix.example.com/metrics/*`)
 
 To expose all services on this `/metrics/*` feature, you can use `matrix_metrics_exposure_enabled`. When using it, you don't need to expose metrics for individual services one by one. If you think this is too much, refer [this section](#expose-metrics-of-other-services-roles) for details about exposing metrics on a per-service basis.
 
-To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`. When enabled, all endpoints beneath `/metrics` will be protected with the same credentials.
+To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`. When enabled, all endpoints beneath `/metrics` will be protected with the same credentials. Alternatively, you can protect each endpoint with dedicated credentials. Refer [the section](#expose-metrics-of-other-services-roles) below for details about it.
 
 The following variables may be of interest:
 
