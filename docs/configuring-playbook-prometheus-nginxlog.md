@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2022 ikkemaniac
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Enabling metrics and graphs for nginx logs (optional)
 
 The playbook can install and configure the [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) service for you, in order to make it possible to have some (visual) insight into [nginx](https://nginx.org/) logs.
