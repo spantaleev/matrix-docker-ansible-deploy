@@ -2,6 +2,11 @@
 
 The playbook can install [Prometheus](https://prometheus.io/) with [Grafana](https://grafana.com/) and configure performance metrics of your homeserver with graphs for you.
 
+> [!WARNING]
+> Metrics and resulting graphs can contain a lot of information. This includes system specs but also usage patterns. This applies especially to small personal/family scale homeservers. Someone might be able to figure out when you wake up and go to sleep by looking at the graphs over time. Think about this before enabling anonymous access. And you should really not forget to change your Grafana password.
+>
+> Most of our docker containers run with limited system access, but the `prometheus-node-exporter` has access to the host network stack and (readonly) root filesystem. This is required to report on them. If you don't like that, you can set `prometheus_node_exporter_enabled: false` (which is actually the default). You will still get Synapse metrics with this container disabled. Both of the dashboards will always be enabled, so you can still look at historical data after disabling either source.
+
 ## Adjusting DNS records
 
 By default, this playbook installs Grafana web user-interface on the `stats.` subdomain (`stats.example.com`) and requires you to create a CNAME record for `stats`, which targets `matrix.example.com`.
@@ -116,12 +121,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
 `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
-
-## Security and privacy
-
-Metrics and resulting graphs can contain a lot of information. This includes system specs but also usage patterns. This applies especially to small personal/family scale homeservers. Someone might be able to figure out when you wake up and go to sleep by looking at the graphs over time. Think about this before enabling anonymous access. And you should really not forget to change your Grafana password.
-
-Most of our docker containers run with limited system access, but the `prometheus-node-exporter` has access to the host network stack and (readonly) root filesystem. This is required to report on them. If you don't like that, you can set `prometheus_node_exporter_enabled: false` (which is actually the default). You will still get Synapse metrics with this container disabled. Both of the dashboards will always be enabled, so you can still look at historical data after disabling either source.
 
 ## Collecting metrics to an external Prometheus server
 
