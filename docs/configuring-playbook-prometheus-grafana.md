@@ -22,9 +22,6 @@ prometheus_enabled: true
 # Uncomment to enable Node Exporter.
 # prometheus_node_exporter_enabled: true
 
-# Uncomment to enable Postgres Exporter.
-# prometheus_postgres_exporter_enabled: true
-
 # Uncomment to enable nginx Log Exporter.
 # matrix_prometheus_nginxlog_exporter_enabled: true
 ```
@@ -33,16 +30,15 @@ Name | Description
 -----|----------
 `prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
 `prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures.
-`prometheus_postgres_exporter_enabled`|[Postgres Exporter](#enabling-metrics-and-graphs-for-postgres-optional) is an addon of sorts to expose Postgres database metrics to Prometheus.
 `matrix_prometheus_nginxlog_exporter_enabled`|[nginx Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose nginx logs to Prometheus.
 
 **Note**: the retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
 
-#### Enabling metrics and graphs for Postgres (optional)
+#### Enable metrics and graphs for Postgres (optional)
 
-Expanding on the metrics exposed by the [synapse exporter and the node exporter](configuring-playbook-prometheus-grafana.md), the playbook enables the [postgres exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your postgres database.
+Expanding on the metrics exposed by the Synapse exporter and the Node exporter, the playbook can also install and configure the [postgres exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your postgres database.
 
-To enable the postgres exporter, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable it, add the following configuration to your `vars.yml` file:
 
 ```yaml
 prometheus_postgres_exporter_enabled: true
@@ -140,8 +136,8 @@ Name | Description
 `matrix_synapse_metrics_proxying_enabled`|Set this to `true` to expose Synapse's metrics on `https://matrix.example.com/metrics/synapse/main-process` and `https://matrix.example.com/metrics/synapse/worker/TYPE-ID`. Read [below](#collecting-synapse-worker-metrics-to-an-external-prometheus-server) if you're running a Synapse worker setup (`matrix_synapse_workers_enabled: true`). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network).
 `prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
-`prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](#enabling-metrics-and-graphs-for-postgres-optional) (locally, on the container network).
-`prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](#enabling-metrics-and-graphs-for-postgres-optional) metrics on `https://matrix.example.com/metrics/postgres-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
+`prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) (locally, on the container network).
+`prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) metrics on `https://matrix.example.com/metrics/postgres-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [nginx Log exporter](configuring-playbook-prometheus-nginxlog.md) (locally, on the container network).
 `matrix_sliding_sync_metrics_enabled`|Set this to `true` to make [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) expose metrics (locally, on the container network).
 `matrix_sliding_sync_metrics_proxying_enabled`|Set this to `true` to expose the [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) metrics on `https://matrix.example.com/metrics/sliding-sync`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
