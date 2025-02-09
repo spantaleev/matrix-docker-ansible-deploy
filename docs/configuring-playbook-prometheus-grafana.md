@@ -8,37 +8,69 @@ By default, this playbook installs Grafana web user-interface on the `stats.` su
 
 When setting, replace `example.com` with your own.
 
+**Note**: It is possible to install Prometheus without installing Grafana. In this case it is not required to create the CNAME record.
+
 ## Adjusting the playbook configuration
 
-To enable Grafana and/or Prometheus, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+### Configure Prometheus
+
+Prometheus is an open-source systems monitoring and alerting toolkit. To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 prometheus_enabled: true
 
-# You can remove this, if unnecessary.
-prometheus_node_exporter_enabled: true
+# Uncomment to enable Node Exporter.
+# prometheus_node_exporter_enabled: true
 
-# You can remove this, if unnecessary.
-prometheus_postgres_exporter_enabled: true
+# Uncomment to enable Postgres Exporter.
+# prometheus_postgres_exporter_enabled: true
 
-# You can remove this, if unnecessary.
-matrix_prometheus_nginxlog_exporter_enabled: true
-
-grafana_enabled: true
-
-grafana_anonymous_access: false
-
-# This has no relation to your Matrix user ID. It can be any username you'd like.
-# Changing the username subsequently won't work.
-grafana_default_admin_user: "some_username_chosen_by_you"
-
-# Changing the password subsequently won't work.
-grafana_default_admin_password: "some_strong_password_chosen_by_you"
+# Uncomment to enable nginx Log Exporter.
+# matrix_prometheus_nginxlog_exporter_enabled: true
 ```
 
-The retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
+Name | Description
+-----|----------
+`prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
+`prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures.
+`prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
+`matrix_prometheus_nginxlog_exporter_enabled`|[nginx Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose nginx logs to Prometheus.
 
-### Adjusting the Grafana URL (optional)
+**Note**: the retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
+
+#### Extending the configuration
+
+There are some additional things you may wish to configure about Prometheus.
+
+Take a look at:
+
+- [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
+
+### Configure Grafana
+
+Grafana is an open source visualization and analytics software. To enable it, add the following configuration to your `vars.yml` file. Make sure to replace `USERNAME_HERE` and `PASSWORD_HERE`.
+
+**Notes**:
+- `grafana_default_admin_user` has nothing to do with your Matrix user ID. It can be any string you'd like.
+- Changing the username/password subsequently won't work.
+
+```yaml
+grafana_enabled: true
+
+grafana_default_admin_user: "USERNAME_HERE"
+grafana_default_admin_password: "PASSWORD_HERE"
+
+# Uncomment to allow viewing Grafana without logging in.
+# grafana_anonymous_access: true
+```
+
+Name | Description
+-----|----------
+`grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.example.com` subdomain) the dashboards with the graphs that we're interested in.
+`grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. You are asked to change the credentials on first login. If you feel this is insecure and you want to change them beforehand, you can do that here.
+`grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
+
+#### Adjusting the Grafana URL (optional)
 
 By tweaking the `grafana_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
@@ -50,16 +82,6 @@ grafana_hostname: grafana.example.com
 ```
 
 After changing the domain, **you may need to adjust your DNS** records to point the Grafana domain to the Matrix server.
-
-**Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
-
-### Extending the configuration
-
-There are some additional things you may wish to configure about Prometheus.
-
-Take a look at:
-
-- [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
 
 ## Installing
 
@@ -73,18 +95,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
 `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
-
-## What does it do?
-
-Name | Description
------|----------
-`prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
-`prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures.
-`prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
-`matrix_prometheus_nginxlog_exporter_enabled`|[nginx Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose nginx logs to Prometheus.
-`grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.example.com` subdomain) the dashboards with the graphs that we're interested in.
-`grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
-`grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here.
 
 ## Security and privacy
 
