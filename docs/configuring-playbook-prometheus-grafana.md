@@ -1,6 +1,6 @@
 # Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server (optional)
 
-The playbook can install [Grafana](https://grafana.com/) with [Prometheus](https://prometheus.io/) and configure performance metrics of your homeserver with graphs for you.
+The playbook can install [Prometheus](https://prometheus.io/) with [Grafana](https://grafana.com/) and configure performance metrics of your homeserver with graphs for you.
 
 ## Adjusting DNS records
 
