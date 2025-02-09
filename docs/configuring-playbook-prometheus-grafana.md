@@ -15,9 +15,7 @@ When setting, replace `example.com` with your own.
 
 **Note**: It is possible to install Prometheus without installing Grafana. In this case it is not required to create the CNAME record.
 
-## Adjusting the playbook configuration
-
-### Configure Prometheus
+## Adjusting the playbook configuration — Prometheus
 
 Prometheus is an open-source systems monitoring and alerting toolkit. To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
@@ -39,7 +37,7 @@ Name | Description
 
 **Note**: the retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
 
-#### Enable metrics and graphs for Postgres (optional)
+### Enable metrics and graphs for Postgres (optional)
 
 Expanding on the metrics exposed by the Synapse exporter and the Node exporter, the playbook can also install and configure the [PostgreSQL Server Exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your Postgres database.
 
@@ -64,7 +62,7 @@ Name | Description
 `prometheus_postgres_exporter_enabled`|Enable the Postgres Prometheus exporter. This sets up the docker container, connects it to the database and adds a 'job' to the Prometheus config which tells Prometheus about this new exporter. The default is 'false'
 `prometheus_postgres_exporter_container_labels_traefik_enabled`|If set to `true`, exposes the Postgres exporter metrics on `https://matrix.example.com/metrics/postgres-exporter` for usage with an [external Prometheus server](#collecting-metrics-to-an-external-prometheus-server). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` below.
 
-#### Extending the configuration
+### Extending the configuration
 
 There are some additional things you may wish to configure about Prometheus.
 
@@ -72,7 +70,7 @@ Take a look at:
 
 - [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
 
-### Configure Grafana
+## Adjusting the playbook configuration — Grafana
 
 Grafana is an open source visualization and analytics software. To enable it, add the following configuration to your `vars.yml` file. Make sure to replace `USERNAME_HERE` and `PASSWORD_HERE`.
 
@@ -96,7 +94,7 @@ Name | Description
 `grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. You are asked to change the credentials on first login. If you feel this is insecure and you want to change them beforehand, you can do that here.
 `grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
 
-#### Adjusting the Grafana URL (optional)
+### Adjusting the Grafana URL (optional)
 
 By tweaking the `grafana_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
