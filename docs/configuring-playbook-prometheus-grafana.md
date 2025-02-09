@@ -41,6 +41,8 @@ Name | Description
 
 Expanding on the metrics exposed by the Synapse exporter and the Node exporter, the playbook can also install and configure the [PostgreSQL Server Exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your Postgres database.
 
+Enabling the exporter sets up the docker container, connects it to the database and adds a 'job' to the Prometheus config which tells Prometheus about this new exporter.
+
 To enable it, add the following configuration to your `vars.yml` file:
 
 **Note**: `prometheus_postgres_exporter_database_username` has nothing to do with your Matrix user ID. It can be any string you'd like.
@@ -56,11 +58,6 @@ prometheus_postgres_exporter_enabled: true
 # Uncomment and adjust this part if you'd like to set the password by yourself.
 # prometheus_postgres_exporter_database_password: "PASSWORD_HERE"
 ```
-
-Name | Description
------|----------
-`prometheus_postgres_exporter_enabled`|Enable the Postgres Prometheus exporter. This sets up the docker container, connects it to the database and adds a 'job' to the Prometheus config which tells Prometheus about this new exporter.
-`prometheus_postgres_exporter_container_labels_traefik_enabled`|If set to `true`, exposes the Postgres exporter metrics on `https://matrix.example.com/metrics/postgres-exporter` for usage with an [external Prometheus server](#collecting-metrics-to-an-external-prometheus-server). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` below.
 
 ### Extending the configuration
 
