@@ -174,6 +174,7 @@ Name | Description
 `matrix_synapse_metrics_enabled`|Set this to `true` to make Synapse expose metrics (locally, on the container network).
 `matrix_synapse_metrics_proxying_enabled`|Set this to `true` to expose Synapse's metrics on `https://matrix.example.com/metrics/synapse/main-process` and `https://matrix.example.com/metrics/synapse/worker/TYPE-ID`. Read [below](#collecting-synapse-worker-metrics-to-an-external-prometheus-server) if you're running a Synapse worker setup (`matrix_synapse_workers_enabled: true`). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
 `matrix_media_repo_metrics_enabled`|Set this to `true` to make media-repo expose metrics (locally, on the container network).
+`matrix_media_repo_metrics_proxying_enabled`|Set this to `true` to expose media-repo's metrics on `https://matrix.example.com/metrics/matrix-media-repo`.
 
 ### Collecting Synapse worker metrics to an external Prometheus server
 
