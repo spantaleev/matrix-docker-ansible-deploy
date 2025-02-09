@@ -25,7 +25,7 @@ matrix_prometheus_nginxlog_exporter_enabled: true
 ### Save metrics on an external Prometheus server (optional)
 
 > [!WARNING]
-> Metrics and resulting graphs can contain a lot of information. nginx logs contain information like IP address, URLs, UserAgents and more. This information can reveal usage patterns and could be considered Personally Identifiable Information (PII). Think about this before enabling (anonymous) access. Please make sure you change the default Grafana password.
+> Metrics and resulting graphs can contain a lot of information. nginx logs contain information like IP address, URLs, UserAgents and more. This information can reveal usage patterns and could be considered Personally Identifiable Information (PII). Think about this before enabling (anonymous) access. And you should really not forget to change your Grafana password.
 
 The playbook will automatically integrate the metrics into the [Prometheus](./configuring-playbook-prometheus-grafana.md) server provided with this playbook (if enabled). In such cases, the metrics endpoint is not exposed publicly — it's only available on the container network.
 
