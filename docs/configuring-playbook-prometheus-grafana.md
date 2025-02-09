@@ -17,15 +17,13 @@ When setting, replace `example.com` with your own.
 
 ## Adjusting the playbook configuration — Prometheus
 
-Prometheus is an open-source systems monitoring and alerting toolkit. To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Prometheus is an open-source systems monitoring and alerting toolkit. It is a time series database, which holds all the data we're going to talk about.
+
+To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 prometheus_enabled: true
 ```
-
-Name | Description
------|----------
-`prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
 
 **Note**: the retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
 
