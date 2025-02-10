@@ -15,12 +15,7 @@ To enable matrix-media-repo, add the following configuration to your `inventory/
 
 ```yaml
 matrix_media_repo_enabled: true
-
-# (optional) Turned off by default
-# matrix_media_repo_metrics_enabled: true
 ```
-
-The repo is pre-configured for integrating with the Postgres database, Traefik proxy and [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) (if metrics enabled) from this playbook for all the available homeserver roles.
 
 By default, the media-repo will use the local filesystem for data storage. You can alternatively use a `s3` cloud backend as well. Access token caching is also enabled by default since the logout endpoints are proxied through the media repo.
 
