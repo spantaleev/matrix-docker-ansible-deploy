@@ -29,23 +29,23 @@ To enable the metrics, add the following configuration to your `vars.yml` file:
 
 ```yaml
 # Expose metrics (locally, on the container network).
-matrix_hookshot_metrics_enabled: true
+matrix_media_repo_metrics_enabled: true
 ```
 
-**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/hookshot` by adding the following configuration to your `vars.yml` file:
+**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/matrix-media-repo` by adding the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_hookshot_metrics_proxying_enabled: true
+matrix_media_repo_metrics_proxying_enabled: true
 ```
 
 By default metrics are exposed publicly **without** password-protection. To password-protect the metrics with dedicated credentials, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: true
-matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: ''
+matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_enabled: true
+matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users: ''
 ```
 
-To `matrix_hookshot_container_labels_metrics_middleware_basic_auth_users`, set the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint. See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users for details about it.
+To `matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users`, set the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint. See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users for details about it.
 
 **Note**: alternatively, you can use `matrix_metrics_exposure_enabled` to expose all services on this `/metrics/*` feature, and you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` to password-protect the metrics of them. See [this section](configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) for more information.
 
