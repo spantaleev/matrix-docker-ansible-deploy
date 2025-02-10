@@ -197,22 +197,6 @@ matrix_synapse_metrics_enabled: true
 # matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users: ''
 ```
 
-If you wish to enable and expose metrics for [matrix-media-repo](configuring-playbook-matrix-media-repo.md) protecting them with dedicated credentials, you can add the following configuration to your `vars.yml` file in a similar way:
-
-```yaml
-# Expose metrics (locally, on the container network).
-matrix_media_repo_metrics_enabled: true
-
-# Uncomment to expose metrics on https://matrix.example.com/metrics/matrix-media-repo.
-# matrix_media_repo_metrics_proxying_enabled: true
-
-# Uncomment to password-protect the metrics for matrix-media-repo.
-# matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_enabled: true
-
-# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint.
-# matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users: ''
-```
-
 ### Collecting Synapse worker metrics to an external Prometheus server
 
 If you are using workers (`matrix_synapse_workers_enabled: true`) and have enabled `matrix_synapse_metrics_proxying_enabled` as described above, the playbook will also automatically expose all Synapse worker threads' metrics to `https://matrix.example.com/metrics/synapse/worker/ID`, where `ID` corresponds to the worker `id` as exemplified in `matrix_synapse_workers_enabled_list`.
