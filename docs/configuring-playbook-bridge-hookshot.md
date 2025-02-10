@@ -161,6 +161,12 @@ To `matrix_hookshot_container_labels_metrics_middleware_basic_auth_users`, set t
 
 **Note**: alternatively, you can use `matrix_metrics_exposure_enabled` to expose all services on this `/metrics/*` feature, and you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` to password-protect the metrics of them. See [this section](configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) for more information.
 
+#### Enable Grafana (optional)
+
+Probably you wish to enable Grafana along with Prometheus for generating graphs of the metics.
+
+To enable Grafana, see [this section](configuring-playbook-prometheus-grafana.md#adjusting-the-playbook-configuration-grafana) for instructions.
+
 ## Troubleshooting
 
 As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-hookshot`.
