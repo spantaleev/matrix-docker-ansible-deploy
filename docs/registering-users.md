@@ -3,7 +3,6 @@
 This documentation page tells you how to create user accounts on your Matrix server.
 
 Table of contents:
-
 - [Registering users](#registering-users)
 	- [Registering users manually](#registering-users-manually)
 	- [Managing users via a Web UI](#managing-users-via-a-web-ui)
