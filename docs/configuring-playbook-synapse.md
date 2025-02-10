@@ -172,7 +172,7 @@ The playbook can install and configure Synapse Admin for you. For details about 
 
 This playbook allows you to enable Synapse metrics, which can provide insight into the performance and activity of Synapse.
 
-To enable Synapse runtime metrics see: [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
+To enable Synapse runtime metrics, see: [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) and [its subsection](configuring-playbook-prometheus-grafana.md#expose-metrics-of-other-services-roles)
 
 To enable Synapse usage metrics, see: [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
 

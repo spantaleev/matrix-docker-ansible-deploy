@@ -5,9 +5,8 @@ The playbook can install and configure [matrix-media-repo](https://docs.t2bot.io
 MMR is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
 
 **Notes**:
-
+- If MMR is enabled, other media store roles should be disabled (if using Synapse with other media store roles).
 - Smaller/individual homeservers can still make use of this project's features, though it may be difficult to set up or have higher than expected resource consumption. Please do your research before deploying this as this project may not be useful for your environment.
-
 - For a simpler alternative (which allows you to offload your media repository storage to S3, etc.), you can [configure S3 storage](configuring-playbook-s3.md) instead of setting up matrix-media-repo.
 
 ## Adjusting the playbook configuration
@@ -16,14 +15,45 @@ To enable matrix-media-repo, add the following configuration to your `inventory/
 
 ```yaml
 matrix_media_repo_enabled: true
-
-# (optional) Turned off by default
-# matrix_media_repo_metrics_enabled: true
 ```
 
-The repo is pre-configured for integrating with the Postgres database, Traefik proxy and [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) (if metrics enabled) from this playbook for all the available homeserver roles. When the media repo is enabled, other media store roles should be disabled (if using Synapse with other media store roles).
-
 By default, the media-repo will use the local filesystem for data storage. You can alternatively use a `s3` cloud backend as well. Access token caching is also enabled by default since the logout endpoints are proxied through the media repo.
+
+### Enable metrics
+
+The playbook can enable and configure the metrics of the service for you.
+
+Metrics are **only enabled by default** if the builtin [Prometheus](configuring-playbook-prometheus-grafana.md) is enabled (by default, Prometheus isn't enabled). If so, metrics will automatically be collected by Prometheus and made available in Grafana. You will, however, need to set up your own Dashboard for displaying them.
+
+To enable the metrics, add the following configuration to your `vars.yml` file:
+
+```yaml
+# Expose metrics (locally, on the container network).
+matrix_media_repo_metrics_enabled: true
+```
+
+**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/matrix-media-repo` by adding the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_media_repo_metrics_proxying_enabled: true
+```
+
+By default metrics are exposed publicly **without** password-protection. To password-protect the metrics with dedicated credentials, add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_enabled: true
+matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users: ''
+```
+
+To `matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users`, set the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint. See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users for details about it.
+
+**Note**: alternatively, you can use `matrix_metrics_exposure_enabled` to expose all services on this `/metrics/*` feature, and you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` to password-protect the metrics of them. See [this section](configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) for more information.
+
+#### Enable Grafana (optional)
+
+Probably you wish to enable Grafana along with Prometheus for generating graphs of the metics.
+
+To enable Grafana, see [this section](configuring-playbook-prometheus-grafana.md#adjusting-the-playbook-configuration-grafana) for instructions.
 
 ### Extending the configuration
 
