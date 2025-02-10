@@ -170,8 +170,6 @@ Name | Description
 `prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) metrics on `https://matrix.example.com/metrics/postgres-exporter`.
 `matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) (locally, on the container network).
 `matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled`|Set this to `true` to expose the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) metrics on `https://matrix.example.com/metrics/nginxlog`.
-`matrix_synapse_metrics_enabled`|Set this to `true` to make Synapse expose metrics (locally, on the container network).
-`matrix_synapse_metrics_proxying_enabled`|Set this to `true` to expose Synapse's metrics on `https://matrix.example.com/metrics/synapse/main-process` and `https://matrix.example.com/metrics/synapse/worker/TYPE-ID`. Read [below](#collecting-synapse-worker-metrics-to-an-external-prometheus-server) if you're running a Synapse worker setup (`matrix_synapse_workers_enabled: true`).
 
 ### Expose metrics of other services/roles
 
@@ -181,7 +179,25 @@ To password-protect the metrics of a specific role, you can use `matrix_SERVICE_
 
 **Note**: alternatively you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` in order to password-protect the metrics of all services.
 
-For example, you can enable and expose metrics for [Hookshot](configuring-playbook-bridge-hookshot.md) protecting them with dedicated credentials by adding the following configuration to your `vars.yml` file:
+For example, you can enable and expose metrics for Synapse protecting them with dedicated credentials by adding the following configuration to your `vars.yml` file:
+
+```yaml
+# Expose metrics (locally, on the container network).
+matrix_synapse_metrics_enabled: true
+
+# Uncomment to expose metrics on https://matrix.example.com/metrics/synapse/main-process and https://matrix.example.com/metrics/synapse/worker/TYPE-ID.
+# Read the section below ("Collecting Synapse worker metrics to an external Prometheus server") if you're running a Synapse worker setup by setting `matrix_synapse_workers_enabled` to true.
+# matrix_synapse_metrics_proxying_enabled: true
+
+# Uncomment to password-protect the metrics for Synapse.
+# matrix_synapse_container_labels_public_metrics_middleware_basic_auth_enabled: true
+
+# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoints.
+# See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+# matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users: ''
+```
+
+You can enable and expose metrics for [Hookshot](configuring-playbook-bridge-hookshot.md) protecting them with dedicated credentials by adding the following configuration to your `vars.yml` file:
 
 ```yaml
 # Expose metrics (locally, on the container network).
@@ -193,7 +209,7 @@ matrix_hookshot_metrics_enabled: true
 # Uncomment to password-protect the metrics for Hookshot.
 # matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: true
 
-# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect `/metrics/hookshot`.
+# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint.
 # See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
 # matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: ''
 ```
@@ -210,8 +226,7 @@ matrix_media_repo_metrics_enabled: true
 # Uncomment to password-protect the metrics for matrix-media-repo.
 # matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_enabled: true
 
-# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect `/metrics/matrix-media-repo`.
-# See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint.
 # matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users: ''
 ```
 
