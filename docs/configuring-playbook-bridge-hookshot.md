@@ -127,18 +127,35 @@ For more information, see the documentation in the [default configuration of the
 
 The provisioning API will be enabled automatically if you set `matrix_dimension_enabled: true` and provided a `matrix_hookshot_provisioning_secret`, unless you override it either way. To use hookshot with Dimension, you will need to enter as "Provisioning URL": `http://matrix-hookshot:9002`, which is made up of the variables `matrix_hookshot_container_url` and `matrix_hookshot_provisioning_port`.
 
-### Metrics
+### Enable metrics
+
+The playbook can enable and configure the metrics of the service for you.
 
 Metrics are **only enabled by default** if the builtin [Prometheus](configuring-playbook-prometheus-grafana.md) is enabled (by default, Prometheus isn't enabled). If so, metrics will automatically be collected by Prometheus and made available in Grafana. You will, however, need to set up your own Dashboard for displaying them.
 
-To explicitly enable metrics, use `matrix_hookshot_metrics_enabled: true`. This only exposes metrics over the container network, however.
+To enable the metrics, add the following configuration to your `vars.yml` file:
 
-**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/hookshot` by:
+```yaml
+# Expose metrics (locally, on the container network).
+matrix_hookshot_metrics_enabled: true
+```
 
-- either enabling metrics exposure for Hookshot via `matrix_hookshot_metrics_proxying_enabled: true`
-- or enabling metrics exposure for all services via `matrix_metrics_exposure_enabled: true`
+**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/hookshot` by adding the following configuration to your `vars.yml` file:
 
-Whichever one you go with, by default metrics are exposed publicly **without** password-protection. See [the Prometheus and Grafana docs](configuring-playbook-prometheus-grafana.md) for details about password-protection for metrics.
+```yaml
+matrix_hookshot_metrics_proxying_enabled: true
+```
+
+By default metrics are exposed publicly **without** password-protection. To password-protect the metrics with dedicated credentials, add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: true
+matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: ''
+```
+
+To `matrix_hookshot_container_labels_metrics_middleware_basic_auth_users`, set the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint. See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users for details about it.
+
+**Note**: alternatively, you can use `matrix_metrics_exposure_enabled` to expose all services on this `/metrics/*` feature, and you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` to password-protect the metrics of them. See [this section](configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) for more information.
 
 ### Collision with matrix-appservice-webhooks
 

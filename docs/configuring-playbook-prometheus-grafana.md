@@ -197,23 +197,6 @@ matrix_synapse_metrics_enabled: true
 # matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users: ''
 ```
 
-You can enable and expose metrics for [Hookshot](configuring-playbook-bridge-hookshot.md) protecting them with dedicated credentials by adding the following configuration to your `vars.yml` file:
-
-```yaml
-# Expose metrics (locally, on the container network).
-matrix_hookshot_metrics_enabled: true
-
-# Uncomment to expose metrics on https://matrix.example.com/metrics/hookshot.
-# matrix_hookshot_metrics_proxying_enabled: true
-
-# Uncomment to password-protect the metrics for Hookshot.
-# matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: true
-
-# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint.
-# See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
-# matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: ''
-```
-
 If you wish to enable and expose metrics for [matrix-media-repo](configuring-playbook-matrix-media-repo.md) protecting them with dedicated credentials, you can add the following configuration to your `vars.yml` file in a similar way:
 
 ```yaml
