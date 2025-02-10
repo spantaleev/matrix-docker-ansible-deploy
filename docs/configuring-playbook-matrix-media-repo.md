@@ -5,9 +5,8 @@ The playbook can install and configure [matrix-media-repo](https://docs.t2bot.io
 MMR is a highly customizable multi-domain media repository for Matrix. Intended for medium to large environments consisting of several homeservers, this media repo de-duplicates media (including remote media) while being fully compliant with the specification.
 
 **Notes**:
-
+- If MMR is enabled, other media store roles should be disabled (if using Synapse with other media store roles).
 - Smaller/individual homeservers can still make use of this project's features, though it may be difficult to set up or have higher than expected resource consumption. Please do your research before deploying this as this project may not be useful for your environment.
-
 - For a simpler alternative (which allows you to offload your media repository storage to S3, etc.), you can [configure S3 storage](configuring-playbook-s3.md) instead of setting up matrix-media-repo.
 
 ## Adjusting the playbook configuration
@@ -21,7 +20,7 @@ matrix_media_repo_enabled: true
 # matrix_media_repo_metrics_enabled: true
 ```
 
-The repo is pre-configured for integrating with the Postgres database, Traefik proxy and [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) (if metrics enabled) from this playbook for all the available homeserver roles. When the media repo is enabled, other media store roles should be disabled (if using Synapse with other media store roles).
+The repo is pre-configured for integrating with the Postgres database, Traefik proxy and [Prometheus/Grafana](configuring-playbook-prometheus-grafana.md) (if metrics enabled) from this playbook for all the available homeserver roles.
 
 By default, the media-repo will use the local filesystem for data storage. You can alternatively use a `s3` cloud backend as well. Access token caching is also enabled by default since the logout endpoints are proxied through the media repo.
 
