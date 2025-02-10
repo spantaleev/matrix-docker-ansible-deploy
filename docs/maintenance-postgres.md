@@ -3,15 +3,10 @@
 This document shows you how to perform various maintenance tasks related to the Postgres database server used by Matrix.
 
 Table of contents:
-
 - [Getting a database terminal](#getting-a-database-terminal), for when you wish to execute SQL queries
-
 - [Vacuuming PostgreSQL](#vacuuming-postgresql), for when you wish to run a Postgres [VACUUM](https://www.postgresql.org/docs/current/sql-vacuum.html) (optimizing disk space)
-
 - [Backing up PostgreSQL](#backing-up-postgresql), for when you wish to make a backup
-
 - [Upgrading PostgreSQL](#upgrading-postgresql), for upgrading to new major versions of PostgreSQL. Such **manual upgrades are sometimes required**.
-
 - [Tuning PostgreSQL](#tuning-postgresql) to make it run faster
 
 ## Getting a database terminal
@@ -28,7 +23,8 @@ To change to another database (for example `synapse`), run `\connect synapse` (o
 
 You can then proceed to write queries. Example: `SELECT COUNT(*) FROM users;`
 
-**Be careful**. Modifying the database directly (especially as services are running) is dangerous and may lead to irreversible database corruption. When in doubt, consider [making a backup](#backing-up-postgresql).
+> [!WARNING]
+> **Modifying the database directly (especially as services are running) is dangerous and may lead to irreversible database corruption.** When in doubt, consider [making a backup](#backing-up-postgresql).
 
 ## Vacuuming PostgreSQL
 
