@@ -28,7 +28,8 @@ To change to another database (for example `synapse`), run `\connect synapse` (o
 
 You can then proceed to write queries. Example: `SELECT COUNT(*) FROM users;`
 
-**Be careful**. Modifying the database directly (especially as services are running) is dangerous and may lead to irreversible database corruption. When in doubt, consider [making a backup](#backing-up-postgresql).
+> [!WARNING]
+> **Modifying the database directly (especially as services are running) is dangerous and may lead to irreversible database corruption.** When in doubt, consider [making a backup](#backing-up-postgresql).
 
 ## Vacuuming PostgreSQL
 
