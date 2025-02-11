@@ -22,7 +22,7 @@ You will need a remote server where BorgBackup will store the backups. There are
 
 ### Check the Postgres version
 
-By default, if you're using the integrated Postgres database server (as opposed to [an external Postgres server](configuring-playbook-external-postgres.md)), backups with BorgBackup will also include dumps of your Postgres database.
+If you're using the integrated Postgres database server (as opposed to [an external Postgres server](configuring-playbook-external-postgres.md)), backups with BorgBackup will also include dumps of your Postgres database by default.
 
 Unless you disable the Postgres-backup support, make sure that the Postgres version of your homeserver's database is compatible with borgmatic. You can check the compatible versions [here](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/main/defaults/main.yml).
 
