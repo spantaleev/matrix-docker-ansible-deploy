@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2021 foxcris
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up postgres backup (optional)
 
 The playbook can install and configure [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local) for you via the [ansible-role-postgres-backup](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup) Ansible role.
