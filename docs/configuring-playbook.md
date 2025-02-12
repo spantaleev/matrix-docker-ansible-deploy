@@ -206,7 +206,7 @@ Services that help you in administrating and monitoring your Matrix installation
 - Backups:
   - [Setting up BorgBackup](configuring-playbook-backup-borg.md) — a full Matrix server backup solution, including the Postgres database
 
-  - [Setting up postgres backup](configuring-playbook-postgres-backup.md) — a Postgres-database backup solution (note: does not include other files)
+  - [Setting up Postgres backup](configuring-playbook-postgres-backup.md) — a Postgres-database backup solution (note: does not include other files)
 
 ### Other specialized services
 

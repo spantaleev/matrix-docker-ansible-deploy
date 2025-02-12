@@ -47,7 +47,7 @@ Example playbook invocations:
 
 ## Backing up PostgreSQL
 
-To automatically make Postgres database backups on a fixed schedule, see [Setting up postgres backup](configuring-playbook-postgres-backup.md).
+To automatically make Postgres database backups on a fixed schedule, see [Setting up Postgres backup](configuring-playbook-postgres-backup.md).
 
 To make a one off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
 
