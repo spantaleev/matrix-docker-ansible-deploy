@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2021 Béla Becker
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 pushytoxin
+SPDX-FileCopyrightText: 2022 Jim Myhrberg
+SPDX-FileCopyrightText: 2022 Nikita Chernyi
+SPDX-FileCopyrightText: 2022 felixx9
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Etherpad (optional)
 
 The playbook can install and configure [Etherpad](https://etherpad.org) for you.
