@@ -49,6 +49,11 @@ matrix_synapse_admin_container_labels_traefik_priority: 0
 matrix_synapse_admin_container_labels_traefik_entrypoints: web-secure
 matrix_synapse_admin_container_labels_traefik_tls: "{{ matrix_synapse_admin_container_labels_traefik_entrypoints != 'web' }}"
 matrix_synapse_admin_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+# This setting is to define a list ip addresses to allow access to synapse-admin.
+# Each IP address should be in CIDR format, e.g. xxx.xxx.xxx.xxx/xx.
+# For more information, see: https://doc.traefik.io/traefik/middlewares/http/ipallowlist/
+# If the list is empty, all IP addresses are allowed.
+matrix_synapse_admin_container_labels_traefik_ipallowlist_sourcerange: []  # noqa var-naming
 
 # Controls which additional headers to attach to all HTTP responses.
 # To add your own headers, use `matrix_synapse_admin_container_labels_traefik_additional_response_headers_custom`
@@ -216,8 +221,3 @@ matrix_synapse_admin_config_asManagedUsers_custom: []  # noqa var-naming
 # WARNING: you want to use matrix_synapse_admin_config_asManagedUsers_custom instead of this variable.
 matrix_synapse_admin_config_asManagedUsers: "{{ matrix_synapse_admin_config_asManagedUsers_auto + matrix_synapse_admin_config_asManagedUsers_custom }}"  # noqa var-naming
 
-# This setting is to define a list ip addresses to allow access to synapse-admin.
-# Each IP address should be in CIDR format, e.g. xxx.xxx.xxx.xxx/xx.
-# For more information, see: https://doc.traefik.io/traefik/middlewares/http/ipallowlist/
-# If the list is empty, all IP addresses are allowed.
-matrix_synapse_admin_container_labels_traefik_ipallowlist: []
