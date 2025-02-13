@@ -2144,7 +2144,7 @@ matrix_coturn_tls_v1_1_enabled: true
 
 Thanks to [foxcris](https://github.com/foxcris), the playbook can now make automated local Postgres backups on a fixed schedule using [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local).
 
-Additional details are available in [Setting up postgres backup](docs/configuring-playbook-postgres-backup.md).
+Additional details are available in [Setting up Postgres backup](docs/configuring-playbook-postgres-backup.md).
 
 
 # 2021-04-03

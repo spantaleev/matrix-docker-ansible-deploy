@@ -66,7 +66,7 @@ Take a look at:
 Here is a list of additional common configuration options:
 
 ```yaml
-# The postgres database pooling options
+# The Postgres database pooling options
 
 # The maximum number of connects to hold open. More of these allow for more concurrent
 # processes to happen.

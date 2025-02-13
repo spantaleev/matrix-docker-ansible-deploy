@@ -22,7 +22,7 @@ You can manually generate the password hash by using the command-line after **SS
 docker exec -it matrix-synapse /usr/local/bin/hash_password -c /data/homeserver.yaml
 ```
 
-and then connecting to the postgres server and executing:
+and then connecting to the Postgres server and executing:
 
 ```sql
 UPDATE users SET password_hash = '<password-hash>' WHERE name = '@alice:example.com';
