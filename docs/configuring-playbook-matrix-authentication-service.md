@@ -242,7 +242,7 @@ matrix_authentication_service_config_upstream_oauth2_providers:
         #action: force
         #template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
       # The display name is the user's display name.
-      displayname:
+      #displayname:
         #action: suggest
         #template: "{% raw %}{{ user.name }}{% endraw %}"
       # An email address to import.
