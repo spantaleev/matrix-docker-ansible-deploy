@@ -48,9 +48,17 @@ etherpad_enabled: true
 
 As the most of the necessary settings for the role have been taken care of by the playbook, you can enable Etherpad on your Matrix server with this minimum configuration.
 
-For details about configuring Etherpad per your preference (such as [enabling the admin web UI](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md#enable-admin-web-ui-optional)), you can check them via:
+For details about configuring Etherpad per your preference, you can check them via:
 - [the role's document on the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md)
 - `roles/galaxy/etherpad/docs/configuring-etherpad.md` locally, if you have fetched the Ansible roles
+
+### Create admin user (optional)
+
+You probably might want to enable authentication to disallow anonymous access to your Etherpad.
+
+It is possible to enable HTTP basic authentication by **creating an admin user** with `etherpad_admin_username` and `etherpad_admin_password` variables. The admin user account is also used by plugins for authentication and authorization.
+
+See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md#create-admin-user-optional) on the role's document for details about how to create the admin user.
 
 ### Adjusting the Etherpad URL (optional)
 
