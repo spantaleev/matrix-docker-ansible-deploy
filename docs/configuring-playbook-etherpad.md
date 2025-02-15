@@ -18,6 +18,8 @@ Etherpad is an open source collaborative text editor. It can not only be integra
 
 When enabled together with the Jitsi audio/video conferencing system (see [our docs on Jitsi](configuring-playbook-jitsi.md)), it will be made available as an option during the conferences.
 
+This Ansible role for Etherpad is developed and maintained by [MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad).
+
 ## Adjusting DNS records
 
 By default, this playbook installs Etherpad on the `etherpad.` subdomain (`etherpad.example.com`) and requires you to create a CNAME record for `etherpad`, which targets `matrix.example.com`.
@@ -29,12 +31,34 @@ When setting, replace `example.com` with your own.
 To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
+########################################################################
+#                                                                      #
+# etherpad                                                             #
+#                                                                      #
+########################################################################
+
 etherpad_enabled: true
 
-# Uncomment and adjust this part if you'd like to enable the admin web UI
-# etherpad_admin_username: YOUR_USERNAME_HERE
-# etherpad_admin_password: YOUR_PASSWORD_HERE
+########################################################################
+#                                                                      #
+# /etherpad                                                            #
+#                                                                      #
+########################################################################
 ```
+
+As the most of the necessary settings for the role have been taken care of by the playbook, you can enable Etherpad on your Matrix server with this minimum configuration.
+
+For details about configuring Etherpad per your preference, you can check them via:
+- [the role's document on the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md)
+- `roles/galaxy/etherpad/docs/configuring-etherpad.md` locally, if you have fetched the Ansible roles
+
+### Create admin user (optional)
+
+You probably might want to enable authentication to disallow anonymous access to your Etherpad.
+
+It is possible to enable HTTP basic authentication by **creating an admin user** with `etherpad_admin_username` and `etherpad_admin_password` variables. The admin user account is also used by plugins for authentication and authorization.
+
+See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md#create-admin-user-optional) on the role's document for details about how to create the admin user.
 
 ### Adjusting the Etherpad URL (optional)
 
@@ -55,30 +79,6 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
-### Configure the default text (optional)
-
-You can also edit the default text on a new pad with the variable `etherpad_default_pad_text`.
-
-To do so, add the following configuration to your `vars.yml` file (adapt to your needs):
-
-```yaml
-# Note: the whole text (all of its belonging lines) under the variable needs to be indented with 2 spaces.
-etherpad_default_pad_text: |
-  Welcome to Etherpad!
-
-  This pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!
-
-  Get involved with Etherpad at https://etherpad.org
-```
-
-### Extending the configuration
-
-There are some additional things you may wish to configure about the component.
-
-Take a look at:
-
-- [etherpad role](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `etherpad_configuration_extension_json` variable
-
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -96,21 +96,13 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-- If you change the Etherpad admin user's password (`etherpad_admin_password` in your `vars.yml` file) subsequently, the admin user's credentials on the homeserver won't be updated automatically. If you'd like to change the admin user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `etherpad_admin_password` to let the admin user know its new password.
-
 ## Usage
 
-The Etherpad UI should be available at `https://etherpad.example.com`, while the admin UI (if enabled) should then be available at `https://etherpad.example.com/admin`.
+By default, the Etherpad UI should be available at `https://etherpad.example.com`, while the admin UI (if enabled) should then be available at `https://etherpad.example.com/admin`.
 
 If you've [decided on another hostname or path-prefix](#adjusting-the-etherpad-url-optional) (e.g. `https://matrix.example.com/etherpad`), adjust these URLs accordingly before using it.
 
-### Managing / Deleting old pads
-
-If you want to manage and remove old unused pads from Etherpad, you will first need to create the Etherpad admin user as described above.
-
-After logging in to the admin web UI, go to the plugin manager page, and install the `adminpads2` plugin.
-
-Once the plugin is installed, you should have a "Manage pads" section in the UI.
+💡 For more information about usage, take a look at [this section](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md#usage) on the role's document.
 
 ### Integrating a Etherpad widget in a room
 
@@ -120,16 +112,4 @@ To integrate a standalone Etherpad in a room, create your pad by visiting `https
 
 ## Troubleshooting
 
-As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-etherpad`.
-
-### Increase logging verbosity
-
-The default logging level for this component is `WARN`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
-
-```yaml
-# Valid values: ERROR, WARN, INFO, DEBUG
-etherpad_configuration_extension_json: |
- {
-  "loglevel": "DEBUG",
- }
-```
+See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md#troubleshooting) on the role's document for details.
