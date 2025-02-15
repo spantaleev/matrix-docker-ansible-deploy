@@ -31,7 +31,19 @@ When setting, replace `example.com` with your own.
 To enable Etherpad, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
+########################################################################
+#                                                                      #
+# etherpad                                                             #
+#                                                                      #
+########################################################################
+
 etherpad_enabled: true
+
+########################################################################
+#                                                                      #
+# /etherpad                                                            #
+#                                                                      #
+########################################################################
 ```
 
 As the most of the necessary settings for the role have been taken care of by the playbook, you can enable Etherpad on your Matrix server with this minimum configuration.
