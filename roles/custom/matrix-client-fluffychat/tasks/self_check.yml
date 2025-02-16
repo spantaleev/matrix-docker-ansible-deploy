@@ -3,7 +3,7 @@
 - ansible.builtin.set_fact:
     matrix_client_fluffychat_url_endpoint_public: "{{ matrix_client_fluffychat_scheme }}://{{ matrix_client_fluffychat_hostname }}/"
 
-- name: Check fluffychat Web
+- name: Check FluffyChat Web
   ansible.builtin.uri:
     url: "{{ matrix_client_fluffychat_url_endpoint_public }}"
     follow_redirects: none
@@ -14,11 +14,11 @@
   delegate_to: 127.0.0.1
   become: false
 
-- name: Fail if fluffychat Web not working
+- name: Fail if FluffyChat Web not working
   ansible.builtin.fail:
-    msg: "Failed checking fluffychat Web is up at `{{ matrix_server_fqn_fluffychat }}` (checked endpoint: `{{ matrix_client_fluffychat_url_endpoint_public }}`). Is fluffychat Web running? Is port 443 open in your firewall? Full error: {{ matrix_client_fluffychat_self_check_result }}"
+    msg: "Failed checking FluffyChat Web is up at `{{ matrix_server_fqn_fluffychat }}` (checked endpoint: `{{ matrix_client_fluffychat_url_endpoint_public }}`). Is FluffyChat Web running? Is port 443 open in your firewall? Full error: {{ matrix_client_fluffychat_self_check_result }}"
   when: "matrix_client_fluffychat_self_check_result.failed or 'json' not in matrix_client_fluffychat_self_check_result"
 
-- name: Report working fluffychat Web
+- name: Report working FluffyChat Web
   ansible.builtin.debug:
-    msg: "fluffychat Web at `{{ matrix_server_fqn_fluffychat }}` is working (checked endpoint: `{{ matrix_client_fluffychat_url_endpoint_public }}`)"
+    msg: "FluffyChat Web at `{{ matrix_server_fqn_fluffychat }}` is working (checked endpoint: `{{ matrix_client_fluffychat_url_endpoint_public }}`)"
