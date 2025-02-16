@@ -52,6 +52,10 @@
       dest: "{{ matrix_static_files_public_well_known_matrix_path }}/support"
       when: "{{ matrix_static_files_file_matrix_support_enabled }}"
 
+    - content: "{{ matrix_static_files_file_matrix_mautrix_configuration | to_nice_json }}"
+      dest: "{{ matrix_static_files_public_well_known_matrix_path }}/mautrix"
+      when: "{{ matrix_static_files_file_matrix_mautrix_enabled }}"
+
     # This one will not be deleted if `matrix_static_files_file_index_html_enabled` flips to `false`.
     # See the comment for `matrix_static_files_file_index_html_enabled` to learn why.
     - content: "{{ matrix_static_files_file_index_html_template }}"
@@ -69,6 +73,12 @@
     path: "{{ matrix_static_files_public_well_known_matrix_path }}/support"
     state: absent
   when: "not matrix_static_files_file_matrix_support_enabled | bool"
+
+- name: Ensure /.well-known/matrix/mautrix file deleted if not enabled
+  ansible.builtin.file:
+    path: "{{ matrix_static_files_public_well_known_matrix_path }}/mautrix"
+    state: absent
+  when: "not matrix_static_files_file_matrix_mautrix_enabled | bool"
 
 - name: Ensure matrix-static-files container image is pulled
   community.docker.docker_image:
