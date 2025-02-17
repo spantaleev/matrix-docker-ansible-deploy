@@ -22,7 +22,9 @@ matrix_client_fluffychat_container_network: ''
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to a reverse proxy, which runs in a different container network.
-matrix_client_fluffychat_container_additional_networks: []
+matrix_client_fluffychat_container_additional_networks: "{{ matrix_client_fluffychat_container_additional_networks_auto + matrix_client_fluffychat_container_additional_networks_custom }}"
+matrix_client_fluffychat_container_additional_networks_auto: []
+matrix_client_fluffychat_container_additional_networks_custom: []
 
 # Controls whether the matrix-client-fluffychat container exposes its HTTP port (tcp/8080 in the container).
 #
