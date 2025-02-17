@@ -18,7 +18,9 @@ Etherpad is an open source collaborative text editor. It can not only be integra
 
 When enabled together with the Jitsi audio/video conferencing system (see [our docs on Jitsi](configuring-playbook-jitsi.md)), it will be made available as an option during the conferences.
 
-This Ansible role for Etherpad is developed and maintained by [MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad).
+The Ansible role for Etherpad is developed and maintained by [MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad). For details about configuring Etherpad, you can check them via:
+- [the role's document at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md)
+- `roles/galaxy/etherpad/docs/configuring-etherpad.md` locally, if you have fetched the Ansible roles
 
 ## Adjusting DNS records
 
@@ -48,9 +50,7 @@ etherpad_enabled: true
 
 As the most of the necessary settings for the role have been taken care of by the playbook, you can enable Etherpad on your Matrix server with this minimum configuration.
 
-For details about configuring Etherpad per your preference, you can check them via:
-- [the role's document on the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md)
-- `roles/galaxy/etherpad/docs/configuring-etherpad.md` locally, if you have fetched the Ansible roles
+See the role's document for details about configuring Etherpad per your preference (such as [the name of the instance](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md#set-the-name-of-the-instance-optional) and [the default pad text](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md#set-the-default-text-optional)).
 
 ### Create admin user (optional)
 
