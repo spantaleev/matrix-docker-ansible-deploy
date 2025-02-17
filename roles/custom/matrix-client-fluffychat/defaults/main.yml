@@ -74,7 +74,10 @@ matrix_client_fluffychat_container_labels_additional_labels: ''
 matrix_client_fluffychat_container_extra_arguments: []
 
 # List of systemd services that matrix-client-fluffychat.service depends on
-matrix_client_fluffychat_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_client_fluffychat_systemd_required_services_list: "{{ matrix_client_fluffychat_systemd_required_services_list_default + matrix_client_fluffychat_systemd_required_services_list_auto + matrix_client_fluffychat_systemd_required_services_list_custom }}"
+matrix_client_fluffychat_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_client_fluffychat_systemd_required_services_list_auto: []
+matrix_client_fluffychat_systemd_required_services_list_custom: []
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
