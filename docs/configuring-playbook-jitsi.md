@@ -104,7 +104,9 @@ You can use the self-hosted Jitsi server in multiple ways:
 
 - **by adding a widget to a room via Element Web** (the one configured by the playbook at `https://element.example.com`). Just start a voice or a video call in a room containing more than 2 members and that would create a Jitsi widget which utilizes your self-hosted Jitsi server.
 
-- **directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`
+- **directly (without any Matrix integration)**. Just go to `https://jitsi.example.com`, and you can start a videoconference.
+
+Note that you'll need to log in to your Jitsi's account to start a conference if you have configured authentication with `internal` auth.
 
 ### Set up additional JVBs for more video-conferences (optional)
 
