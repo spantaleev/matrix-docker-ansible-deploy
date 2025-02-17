@@ -20,9 +20,9 @@ The playbook can install and configure the [Jitsi](https://jitsi.org/) video-con
 
 Jitsi can not only be integrated with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS) as a widget, but also be used as standalone web app.
 
-See the project's [documentation](https://jitsi.github.io/handbook/) to learn what it does and why it might be useful to you.
-
-**Note**: the configuration by the playbook is similar to the one by [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet). You can refer to the official documentation for Docker deployment [here](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker/).
+The Ansible role for Jitsi is developed and maintained by [MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi). For details about configuring Jitsi, you can check them via:
+- [the role's document at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md)
+- `roles/galaxy/jitsi/docs/configuring-jitsi.md` locally, if you have fetched the Ansible roles
 
 ## Prerequisites
 
