@@ -74,9 +74,9 @@ See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ji
 
 In the default Jisti Meet configuration, `gravatar.com` is enabled as an avatar service.
 
-Since the Element clients send the URL of configured Matrix avatars to the Jitsi instance, our default configuration has disabled the Gravatar service.
+Since the Element clients send the URL of configured Matrix avatars to the Jitsi instance, our configuration has disabled the Gravatar service.
 
-To enable the Gravatar service, add the following configuration to your `vars.yml` file:
+To enable the Gravatar service nevertheless, add the following configuration to your `vars.yml` file:
 
 ```yaml
 jitsi_disable_gravatar: false
