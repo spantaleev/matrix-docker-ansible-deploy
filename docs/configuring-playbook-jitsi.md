@@ -112,27 +112,4 @@ Check [the official user guide](https://jitsi.github.io/handbook/docs/category/u
 
 ## Troubleshooting
 
-As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running the commands below:
-- `journalctl -fu matrix-jitsi-web`
-- `journalctl -fu matrix-jitsi-prosody`
-- `journalctl -fu matrix-jitsi-jicofo`
-- `journalctl -fu matrix-jitsi-jvb`
-
-### `Error: Account creation/modification not supported`
-
-If you get an error like `Error: Account creation/modification not supported` with authentication enabled, it's likely that you had previously installed Jitsi without auth/guest support.
-
-In this case, you should consider to rebuild your Jitsi installation.
-
-### Rebuilding your Jitsi installation
-
-If you ever run into any trouble or if you have changed configuration (`jitsi_*` variables) too much, you can rebuild your Jitsi installation.
-
-We normally don't recommend manual intervention, but Jitsi services tend to generate a lot of configuration files, and it is often wise to start afresh setting the services up, rather than messing with the existing configuration files. Since not all of those files are managed by Ansible (at least not yet), you may sometimes need to delete them by yourself manually.
-
-To rebuild your Jitsi configuration, follow the procedure below:
-
-- run this command locally to stop all Jitsi services: `just run-tags stop-group --extra-vars=group=jitsi`
-- log in the server with SSH
-- run this command remotely to remove all Jitsi configuration & data: `rm -rf /matrix/jitsi`
-- run this command locally to set up Jitsi anew and restart services: `just install-service jitsi`
+See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md#troubleshooting) on the role's document for details.
