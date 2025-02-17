@@ -20,7 +20,7 @@ When enabled together with the Jitsi video-conferencing platform (see [our docs 
 
 The Ansible role for Etherpad is developed and maintained by the [MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad). For details about configuring Etherpad, you can check them via:
 - [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md)
-- `roles/galaxy/etherpad/docs/configuring-etherpad.md` locally, if you have fetched the Ansible roles
+- `roles/galaxy/etherpad/docs/configuring-etherpad.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 
 ## Adjusting DNS records
 

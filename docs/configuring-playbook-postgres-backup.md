@@ -12,6 +12,6 @@ The playbook can install and configure [docker-postgres-backup-local](https://gi
 
 For details about configuring and installing it, you can check them via:
 - [the role's documentation on the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup/blob/main/docs/configuring-postgres-backup.md)
-- `roles/galaxy/postgres_backup/docs/configuring-postgres-backup.md` locally, if you have fetched the Ansible roles
+- `roles/galaxy/postgres_backup/docs/configuring-postgres-backup.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 
 **Note**: for a more complete backup solution (one that includes not only Postgres, but also other configuration/data files), you may wish to look into [BorgBackup](configuring-playbook-backup-borg.md) instead.

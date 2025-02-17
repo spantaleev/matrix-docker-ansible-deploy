@@ -16,4 +16,4 @@ BorgBackup is a deduplicating backup program with optional compression and encry
 
 For details about configuring and installing it, you can check them via:
 - [the role's documentation on the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/main/docs/configuring-backup-borg.md)
-- `roles/galaxy/backup_borg/docs/configuring-backup-borg.md` locally, if you have fetched the Ansible roles
+- `roles/galaxy/backup_borg/docs/configuring-backup-borg.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
