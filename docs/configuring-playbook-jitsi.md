@@ -41,8 +41,24 @@ When setting, replace `example.com` with your own.
 To enable Jitsi, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
+########################################################################
+#                                                                      #
+# jitsi                                                                #
+#                                                                      #
+########################################################################
+
 jitsi_enabled: true
+
+########################################################################
+#                                                                      #
+# /jitsi                                                               #
+#                                                                      #
+########################################################################
 ```
+
+As the most of the necessary settings for the role have been taken care of by the playbook, you can enable Jitsi on your Matrix server with this minimum configuration.
+
+See the role's document for details about configuring Jitsi per your preference (such as [authentication and guests mode](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md#configure-jitsi-authentication-and-guests-mode-optional) and [the environment variable for running Jitsi in a LAN](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md#configure-jvb_advertise_ips-for-running-behind-nat-or-on-a-lan-environment-optional)).
 
 ### Adjusting the Jitsi URL (optional)
 
