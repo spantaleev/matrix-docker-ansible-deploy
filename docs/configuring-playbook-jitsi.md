@@ -108,6 +108,8 @@ You can use the self-hosted Jitsi server in multiple ways:
 
 Note that you'll need to log in to your Jitsi's account to start a conference if you have configured authentication with `internal` auth.
 
+Check [the official user guide](https://jitsi.github.io/handbook/docs/category/user-guide) for details about how to use Jitsi.
+
 ### Set up additional JVBs for more video-conferences (optional)
 
 By default, a single JVB ([Jitsi VideoBridge](https://github.com/jitsi/jitsi-videobridge)) is deployed on the same host as the Matrix server. To allow more video-conferences to happen at the same time, you'd need to provision additional JVB services on other hosts.
