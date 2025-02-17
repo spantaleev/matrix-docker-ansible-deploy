@@ -26,10 +26,9 @@ The Ansible role for Jitsi is developed and maintained by [MASH (mother-of-all-s
 
 ## Prerequisites
 
-You may need to open the following ports to your server:
+Before proceeding, make sure to check server's requirements recommended by [the official deployment guide](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-requirements).
 
-- `4443/tcp` — RTP media fallback over TCP
-- `10000/udp` — RTP media over UDP. Depending on your firewall/NAT configuration, incoming RTP packets on port `10000` may have the external IP of your firewall as destination address, due to the usage of STUN in JVB (see [`jitsi_jvb_stun_servers`](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/defaults/main.yml)).
+You may need to open some ports to your server, if you use another firewall in front of the server. Refer [the role's document](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md#prerequisites) to check which ones to be configured.
 
 ## Adjusting DNS records
 
