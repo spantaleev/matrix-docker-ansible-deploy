@@ -2,7 +2,7 @@
 
 The playbook can install and configure the [FluffyChat Web](https://github.com/krille-chan/fluffychat) Matrix client for you.
 
-FluffyChat Web is a cute messenger for Matrix based.
+FluffyChat Web is a cute cross-platform (web, iOS, Android) messenger for Matrix written in [Flutter](https://flutter.dev/).
 
 💡 **Note**: the latest version of FluffyChat Web is also available on the web, hosted by 3rd parties. If you trust giving your credentials to the following 3rd party Single Page Application, you can consider using it from there:
 

@@ -1,3 +1,12 @@
+# 2025-02-17
+
+## FluffyChat Web suport
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook now supports [FluffyChat Web](https://github.com/krille-chan/fluffychat) as an additional Matrix client you can self-host.
+
+To learn more, see our [Setting up FluffyChat Web](docs/configuring-playbook-client-fluffychat-web.md) documentation page.
+
+
 # 2025-02-03
 
 ## The mautrix-hangouts bridge has been removed from the playbook
