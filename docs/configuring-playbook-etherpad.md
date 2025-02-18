@@ -19,7 +19,7 @@ Etherpad is an open source collaborative text editor. It can not only be integra
 When enabled together with the Jitsi video-conferencing platform (see [our docs on Jitsi](configuring-playbook-jitsi.md)), it will be made available as an option during the conferences.
 
 The Ansible role for Etherpad is developed and maintained by the [MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad). For details about configuring Etherpad, you can check them via:
-- 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md)
+- 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md) online
 - 📁 `roles/galaxy/etherpad/docs/configuring-etherpad.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 
 ## Adjusting DNS records
