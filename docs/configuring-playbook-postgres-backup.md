@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 The playbook can install and configure [docker-postgres-backup-local](https://github.com/prodrigestivill/docker-postgres-backup-local) for you.
 
-The Ansible role for docker-postgres-backup-local is developed and maintained by [MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup). For details about configuring docker-postgres-backup-local, you can check them via:
+The Ansible role for docker-postgres-backup-local is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup). For details about configuring docker-postgres-backup-local, you can check them via:
 - 📄 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup/blob/main/docs/configuring-postgres-backup.md)
 - 📁 `roles/galaxy/postgres_backup/docs/configuring-postgres-backup.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 
