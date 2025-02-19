@@ -35,6 +35,18 @@ For details about configuration, refer [this section](https://github.com/mother-
 
 💡 To improve deliverability, we recommend relaying email through another SMTP server anyway.
 
+### Disable mail service (optional)
+
+For a low-power server you might probably want to disable exim-relay. To do so, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+exim_relay_enabled: false
+```
+
+Note that disabling exim-relay will stop email-notifications and other similar functions from working.
+
+See [this entry on the FAQ](faq.md#how-do-i-optimize-this-setup-for-a-low-power-server) for other possible optimizations for a low-power server.
+
 ## Troubleshooting
 
 See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md#troubleshooting) on the role's documentation for details.
