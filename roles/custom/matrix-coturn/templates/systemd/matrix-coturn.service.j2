@@ -24,13 +24,17 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--tmpfs=/var/tmp:rw,noexec,nosuid,size=100m \
 			--network={{ matrix_coturn_container_network }} \
-			{% if matrix_coturn_container_stun_plain_host_bind_port != '' %}
-			-p {{ matrix_coturn_container_stun_plain_host_bind_port }}:3478 \
-			-p {{ matrix_coturn_container_stun_plain_host_bind_port }}:3478/udp \
+			{% if matrix_coturn_container_stun_plain_host_bind_port_tcp != '' %}
+			-p {{ matrix_coturn_container_stun_plain_host_bind_port_tcp }}:3478 \
 			{% endif %}
-			{% if matrix_coturn_container_stun_tls_host_bind_port != '' %}
-			-p {{ matrix_coturn_container_stun_tls_host_bind_port }}:5349 \
-			-p {{ matrix_coturn_container_stun_tls_host_bind_port }}:5349/udp \
+			{% if matrix_coturn_container_stun_plain_host_bind_port_udp != '' %}
+			-p {{ matrix_coturn_container_stun_plain_host_bind_port_udp }}:3478/udp \
+			{% endif %}
+			{% if matrix_coturn_container_stun_tls_host_bind_port_tcp != '' %}
+			-p {{ matrix_coturn_container_stun_tls_host_bind_port_tcp }}:5349 \
+			{% endif %}
+			{% if matrix_coturn_container_stun_tls_host_bind_port_udp != '' %}
+			-p {{ matrix_coturn_container_stun_tls_host_bind_port_udp }}:5349/udp \
 			{% endif %}
 			{% if matrix_coturn_container_turn_range_listen_interface is not in [none, 'none'] %}
 			-p {{ matrix_coturn_container_turn_range_listen_interface }}{{ ':' if matrix_coturn_container_turn_range_listen_interface else '' }}{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \

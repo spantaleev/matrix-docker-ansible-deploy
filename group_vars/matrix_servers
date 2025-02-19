@@ -3615,8 +3615,8 @@ jitsi_web_framing_enabled: true
 jitsi_turn_credentials: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 jitsi_turn_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
 jitsi_turns_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
-jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port.split(':')[-1] if matrix_coturn_enabled else '' }}"
-jitsi_turns_port: "{{ matrix_coturn_container_stun_tls_host_bind_port.split(':')[-1] if matrix_coturn_enabled else '' }}"
+jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port_tcp.split(':')[-1] if matrix_coturn_enabled else '' }}"
+jitsi_turns_port: "{{ matrix_coturn_container_stun_tls_host_bind_port_tcp.split(':')[-1] if matrix_coturn_enabled else '' }}"
 
 # If the self-hosted Etherpad instance is available, it will also show up in Jitsi conferences,
 # unless explicitly disabled by setting `jitsi_etherpad_enabled` to false.

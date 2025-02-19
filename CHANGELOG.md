@@ -1,3 +1,25 @@
+# 2025-02-19
+
+## The playbook now defaults to exposing the Coturn STUN port (3478) only over TCP
+
+We've previously done some work to **decrease the severity** of DDoS amplification attacks done through the [Coturn](./docs/configuring-playbook-turn.md)'s STUN port (2.8x -> 1.6x) as reported in [coturn: Lower DDoS amplification/reflection factor from 2.8 to 1.6 #2592](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2592).
+
+To **completely eliminate the problem** of DDoS amplification attacks done through the [Coturn](./docs/configuring-playbook-turn.md) STUN port even further (read more about this in [this article](https://stormwall.network/resources/blog/protect-against-ddos-based-on-stun-exploit)), the playbook now **disables exposure of the Coturn STUN port (`3478`) over UDP**. This is a bit heavy-handed, but is probably the only way to completely eliminate the problem.
+
+The playbook now **only exposes the Coturn STUN port (`3478`) over TCP by default**.
+
+💡 Users may wish to further remove the (now unnnecessary) firewall rule allowing access to `3478/udp`.
+
+If you'd like the Coturn STUN port to be exposed over UDP like before, you can revert to the previous behavior by using the following configuration in your `vars.yml` file:
+
+```yaml
+matrix_coturn_container_stun_plain_host_bind_port_udp: "3478"
+```
+
+> [!WARNING]
+> People running Coturn directly on the `host` network (using `matrix_coturn_container_network: host`) will still have the STUN port exposed over UDP, as port exposure is done directly via Coturn and not via Docker. In such cases, the playbook cannot prevent `3478/udp` port exposure and you'd need to do it in another way (separate firewall rule, etc).
+
+
 # 2025-02-17
 
 ## FluffyChat Web suport
