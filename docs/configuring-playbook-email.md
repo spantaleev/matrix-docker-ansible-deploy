@@ -21,6 +21,8 @@ The Ansible role for exim-relay is developed and maintained by [the MASH (mother
 
 No matter whether you send email directly (the default) or you relay email through another host, you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
 
+Docker automatically opens these ports in the server's firewall, so you likely don't need to do anything. If you use another firewall in front of the server, you may need to adjust it.
+
 ## Adjusting the playbook configuration
 
 ### Relaying email through another SMTP server (optional)
