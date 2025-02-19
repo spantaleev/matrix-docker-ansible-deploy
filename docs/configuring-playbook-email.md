@@ -9,9 +9,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Adjusting email-sending settings (optional)
 
-By default, this playbook sets up an [Exim](https://www.exim.org/) email server through which all Matrix services send emails.
+By default, this playbook sets up an [Exim](https://www.exim.org/) relay SMTP mailer service (powered by [exim-relay](https://github.com/devture/exim-relay) and the [ansible-role-exim-relay](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay) Ansible role), through which all Matrix services send emails.
 
-By default, emails are sent from `matrix@matrix.example.com`, as specified by the `exim_relay_sender_address` playbook variable.
+**With the default setting, exim-relay attempts to deliver emails directly with the address `matrix@matrix.example.com`**, as specified by the `exim_relay_sender_address` playbook variable. See below if you want to configure the playbook to relay email through another SMTP server.
 
 The Ansible role for exim-relay is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay). For details about configuring exim-relay, you can check them via:
 - 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md) online
@@ -19,7 +19,7 @@ The Ansible role for exim-relay is developed and maintained by [the MASH (mother
 
 ## Firewall settings
 
-No matter whether you send email directly (the default) or you relay email through another host (see how below), you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
+No matter whether you send email directly (the default) or you relay email through another host, you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
 
 ## Adjusting the playbook configuration
 
