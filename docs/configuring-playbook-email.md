@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 Eduardo Beltrame
+SPDX-FileCopyrightText: 2020 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Adjusting email-sending settings (optional)
 
 By default, this playbook sets up an [Exim](https://www.exim.org/) email server through which all Matrix services send emails.
