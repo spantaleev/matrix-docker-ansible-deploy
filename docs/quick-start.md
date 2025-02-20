@@ -56,7 +56,7 @@ It might take some time for the DNS records to propagate after creation.
 
 ## Get the playbook
 
-<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Getting the playbook](getting-the-playbook.md)</sup>
+<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Getting the playbook](getting-playbook.md)</sup>
 
 Next, let's **get the playbook's source code**.
 

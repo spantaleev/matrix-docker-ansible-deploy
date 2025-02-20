@@ -1,6 +1,6 @@
 # Configuring your DNS settings
 
-<sup>[Prerequisites](prerequisites.md) > Configuring your DNS settings > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
+<sup>[Prerequisites](prerequisites.md) > Configuring your DNS settings > [Getting the playbook](getting-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 To set up Matrix on your domain, you'd need to do some DNS configuration.
 
@@ -40,4 +40,4 @@ On the other hand, if you choose this method (setting up a DNS SRV record), you 
 
 ---------------------------------------------
 
-[▶️](getting-the-playbook.md) When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md).
+[▶️](getting-playbook.md) When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-playbook.md).

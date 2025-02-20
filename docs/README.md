@@ -12,7 +12,7 @@ There are two installation guides available for beginners and advanced users.
 
     - [Configuring your DNS settings](configuring-dns.md)
 
-    - [Getting the playbook](getting-the-playbook.md)
+    - [Getting the playbook](getting-playbook.md)
 
     - [Configuring the playbook](configuring-playbook.md)
 
