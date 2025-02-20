@@ -296,9 +296,6 @@ See [Serving the base domain](configuring-playbook-base-domain-serving.md).
 You can disable some not-so-important services to save on memory.
 
 ```yaml
-# An identity server is not a must.
-matrix_ma1sd_enabled: false
-
 # Disabling this will prevent email-notifications and other such things from working.
 exim_relay_enabled: false
 
