@@ -116,6 +116,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md) — a common guide for configuring mautrix bridges
 
+- [Setting up Mautrix Bluesky bridging](configuring-playbook-bridge-mautrix-bluesky.md)
+
 - [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md)
 
 - [Setting up Mautrix Telegram bridging](configuring-playbook-bridge-mautrix-telegram.md)

@@ -1,3 +1,12 @@
+# 2025-02-21
+
+## Support for bridging to Bluesky via mautrix-bluesky
+
+Thanks to [Zepmann](https://github.com/Zepmann), the playbook now supports bridging to [Bluesky](https://bsky.app/) via [mautrix-bluesky](https://github.com/mautrix/bluesky).
+
+To learn more, see our [Setting up mautrix-bluesky](./docs/configuring-playbook-bridge-mautrix-bluesky.md) documentation page.
+
+
 # 2025-02-19
 
 ## The playbook now defaults to exposing the Coturn STUN port (3478) only over TCP
