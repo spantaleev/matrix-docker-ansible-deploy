@@ -750,9 +750,33 @@ matrix_synapse_password_providers_enabled: false
 # to load message content directly from the homeserver.
 matrix_synapse_push_include_content: true
 
-# If url previews should be generated. This will cause a request from Synapse to
-# URLs shared by users.
+# If url previews should be generated. This will cause a request from Synapse to URLs shared by users.
+# Also see `matrix_synapse_url_preview_ip_range_blacklist`.
 matrix_synapse_url_preview_enabled: true
+
+# List of IP address CIDR ranges that the URL preview spider is denied from accessing.
+# Note: The value is ignored when an HTTP proxy is in use
+# See the comment about this setting in `templates/synapse/homeserver.yaml.j2` for more details.
+matrix_synapse_url_preview_ip_range_blacklist:
+  - '127.0.0.0/8'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+  - '100.64.0.0/10'
+  - '192.0.0.0/24'
+  - '169.254.0.0/16'
+  - '192.88.99.0/24'
+  - '198.18.0.0/15'
+  - '192.0.2.0/24'
+  - '198.51.100.0/24'
+  - '203.0.113.0/24'
+  - '224.0.0.0/4'
+  - '::1/128'
+  - 'fe80::/10'
+  - 'fc00::/7'
+  - '2001:db8::/32'
+  - 'ff00::/8'
+  - 'fec0::/10'
 
 # A list of values for the Accept-Language HTTP header used when downloading webpages during URL preview generation
 matrix_url_preview_accept_language: ['en-US', 'en']
