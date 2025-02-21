@@ -469,7 +469,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (matrix_static_files_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'matrix-static-files']}] if matrix_static_files_enabled else [])
     +
-    ([{'name': (devture_container_socket_proxy_identifier + '.service'), 'priority': 200, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if devture_container_socket_proxy_enabled else [])
+    ([{'name': (container_socket_proxy_identifier + '.service'), 'priority': 200, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if container_socket_proxy_enabled else [])
     +
     ([{'name': (traefik_identifier + '.service'), 'priority': 250, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if traefik_enabled else [])
     +
@@ -6018,25 +6018,25 @@ matrix_static_files_self_check_hostname_identity: "{{ matrix_domain }}"
 
 ########################################################################
 #                                                                      #
-# com.devture.ansible.role.container_socket_proxy                      #
+# container-socket-proxy                                               #
 #                                                                      #
 ########################################################################
 
-devture_container_socket_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
+container_socket_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
 
-devture_container_socket_proxy_identifier: matrix-container-socket-proxy
+container_socket_proxy_identifier: matrix-container-socket-proxy
 
-devture_container_socket_proxy_base_path: "{{ matrix_base_data_path }}/container-socket-proxy"
+container_socket_proxy_base_path: "{{ matrix_base_data_path }}/container-socket-proxy"
 
-devture_container_socket_proxy_uid: "{{ matrix_user_uid }}"
-devture_container_socket_proxy_gid: "{{ matrix_user_gid }}"
+container_socket_proxy_uid: "{{ matrix_user_uid }}"
+container_socket_proxy_gid: "{{ matrix_user_gid }}"
 
 # Traefik requires read access to the containers APIs to do its job
-devture_container_socket_proxy_api_containers_enabled: true
+container_socket_proxy_api_containers_enabled: true
 
 ########################################################################
 #                                                                      #
-# /com.devture.ansible.role.container_socket_proxy                     #
+# /container-socket-proxy                                              #
 #                                                                      #
 ########################################################################
 
@@ -6067,18 +6067,18 @@ traefik_additional_entrypoints_auto: |
     ([matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition] if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else [])
   }}
 
-traefik_config_providers_docker_endpoint: "{{ devture_container_socket_proxy_endpoint if devture_container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
+traefik_config_providers_docker_endpoint: "{{ container_socket_proxy_endpoint if container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
 
 traefik_container_additional_networks_auto: |
   {{
-    ([devture_container_socket_proxy_container_network] if devture_container_socket_proxy_enabled else [])
+    ([container_socket_proxy_container_network] if container_socket_proxy_enabled else [])
   }}
 
 traefik_systemd_required_services_list: |
   {{
     ([devture_systemd_docker_base_docker_service_name])
     +
-    ([devture_container_socket_proxy_identifier + '.service'] if devture_container_socket_proxy_enabled else [])
+    ([container_socket_proxy_identifier + '.service'] if container_socket_proxy_enabled else [])
   }}
 
 ########################################################################

@@ -453,6 +453,17 @@
       The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | map (attribute='key') | join(', ') }}
   when: "vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | list | items2dict"
 
+- name: (Deprecation) Catch and report devture_container_socket_proxy variables
+  ansible.builtin.fail:
+    msg: |-
+      The container-socket-proxy role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-container-socket-proxy).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please change your configuration (vars.yml) to rename all `devture_container_socket_proxy_`-prefixed variables (`devture_container_socket_proxy_*` -> `container_socket_proxy_*`).
+
+      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_container_socket_proxy_.*') | map (attribute='key') | join(', ') }}
+  when: "vars | dict2items | selectattr('key', 'match', 'devture_container_socket_proxy_.*') | list | items2dict"
+
 - name: (Deprecation) Catch and report mautrix-hangouts variables
   ansible.builtin.fail:
     msg: |-
