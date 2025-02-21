@@ -1,5 +1,37 @@
 # 2025-02-21
 
+## Docker daemon options are no longer adjusted when IPv6 is enabled
+
+We landed [initial IPv6 support](#initial-work-on-ipv6-support) in the past via a `devture_systemd_docker_base_ipv6_enabled` variable that one had to toggle to `true`.
+
+This variable did **2 different things at once**:
+
+- ensured that container networks were created with IPv6 being enabled
+- adjusted the Docker daemon's configuration to set `experimental: true` and `ip6tables: true` (a necessary prerequisite for creating IPv6-enabled networks)
+
+Since Docker 27.0.1's [changes to how it handles IPv6](https://docs.docker.com/engine/release-notes/27/#ipv6), **adjusting the Docker daemon's configuration is no longer necessary**, because:
+- `ip6tables` defaults to `true` for everyone
+- `ip6tables` is out of the experimental phase, so `experimental` is no longer necessary
+
+In light of this, we're introducing a new variable (`devture_systemd_docker_base_ipv6_daemon_options_changing_enabled`) for controlling if IPv6 should be force-enabled in the Docker daemon's configuration options.
+Since most people should be on a modern enough Docker daemon version which doesn't require such changes, this variable defaults to `false`.
+
+This change affects you like this:
+
+- ✅ if you're **not explicitly enabling IPv6** (via `devture_systemd_docker_base_ipv6_enabled` in your configuration): you're unaffected
+- ❓ if you're **explicitly enabling IPv6** (via `devture_systemd_docker_base_ipv6_enabled` in your configuration):
+  - ✅ .. and you're on a modern enough Docker version (which you most likely are): the playbook will no longer mess with your Docker daemon options. You're unaffected.
+  - 🔧 .. and you're on an old Docker version, you **are affected** and need to use the following configuration to restore the old behavior:
+
+    ```yml
+    # Force-enable IPv6 by changing the Docker daemon's options.
+    # This is necessary for Docker < 27.0.1, but not for newer versions.
+    devture_systemd_docker_base_ipv6_daemon_options_changing_enabled: true
+
+    # Request that individual container networks are created with IPv6 enabled.
+    devture_systemd_docker_base_ipv6_enabled: true
+    ```
+
 ## Support for bridging to Bluesky via mautrix-bluesky
 
 Thanks to [Zepmann](https://github.com/Zepmann), the playbook now supports bridging to [Bluesky](https://bsky.app/) via [mautrix-bluesky](https://github.com/mautrix/bluesky).

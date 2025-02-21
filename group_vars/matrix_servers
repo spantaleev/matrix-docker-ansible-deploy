@@ -21,17 +21,18 @@ matrix_playbook_docker_installation_enabled: true
 
 matrix_playbook_docker_installation_daemon_options: "{{ matrix_playbook_docker_installation_daemon_options_auto | combine(matrix_playbook_docker_installation_daemon_options_custom, recursive=True) }}"
 
-matrix_playbook_docker_installation_daemon_options_auto:
-  # Since Docker 27.0.1:
-  # - `experimental` is no longer required to enable `ip6tables`
-  # - `ip6tables` defaults to enabled
-  #
-  # See: https://docs.docker.com/engine/release-notes/27/#ipv6
-  #
-  # Still, we intend to keep these around a while longer to benefit people who are still on older versions.
-  # In the future, we won't be specifying any of these options by default.
-  experimental: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-  ip6tables: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+# Since Docker 27.0.1, Docker daemon options do not need to be changed to enable IPv6 support on the daemon side.
+# See: https://docs.docker.com/engine/release-notes/27/#ipv6
+# We only enable `ip6tables` and `experimental` for people who explicitly request it (perhaps due to running an old Docker version).
+#
+# Despite IPv6-enablement at the Docker level being a thing, for IPv6 to work for containers
+# networks need to be created with IPv6 explicitly enabled.
+# This is controlled by the `devture_systemd_docker_base_ipv6_enabled` variable and it's up to the various roles to
+# respect this variable when creating their networks.
+matrix_playbook_docker_installation_daemon_options_auto: |
+  {{
+    ({'experimental': true, 'ip6tables': true} if devture_systemd_docker_base_ipv6_daemon_options_changing_enabled else {})
+  }}
 
 matrix_playbook_docker_installation_daemon_options_custom: {}
 
