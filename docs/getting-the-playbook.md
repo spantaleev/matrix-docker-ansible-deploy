@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2019 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Getting the playbook
 
 <sup>[Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > Getting the playbook > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>

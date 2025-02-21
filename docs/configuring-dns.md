@@ -1,3 +1,20 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2019 Edgars Voroboks
+SPDX-FileCopyrightText: 2020 - 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2020 Rónán Duddy
+SPDX-FileCopyrightText: 2021 Yannick Goossens
+SPDX-FileCopyrightText: 2022 Nikita Chernyi
+SPDX-FileCopyrightText: 2022 Julian Foad
+SPDX-FileCopyrightText: 2023 Johan Swetzén
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring your DNS settings
 
 <sup>[Prerequisites](prerequisites.md) > Configuring your DNS settings > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
