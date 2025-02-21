@@ -1141,8 +1141,9 @@ url_preview_ip_range_blacklist: {{ matrix_synapse_url_preview_ip_range_blacklist
 # target IP ranges - e.g. for enabling URL previews for a specific private
 # website only visible in your network.
 #
-#url_preview_ip_range_whitelist:
-#   - '192.168.1.1'
+{% if matrix_synapse_url_preview_enabled %}
+url_preview_ip_range_whitelist: {{ matrix_synapse_url_preview_ip_range_whitelist | to_json }}
+{% endif %}
 
 # Optional list of URL matches that the URL preview spider is
 # denied from accessing.  You should use url_preview_ip_range_blacklist
