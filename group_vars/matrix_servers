@@ -3532,7 +3532,7 @@ matrix_dimension_database_password: "{{ '%s' | format(matrix_homeserver_generic_
 
 ######################################################################
 #
-# etke/etherpad
+# etherpad
 #
 ######################################################################
 
@@ -3554,7 +3554,7 @@ etherpad_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_i
 
 etherpad_container_network: "{{ matrix_addons_container_network }}"
 
-etherpad_container_additional_networks: |
+etherpad_container_additional_networks_auto: |
   {{
     (
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
@@ -3568,10 +3568,8 @@ etherpad_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_pr
 etherpad_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 etherpad_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-etherpad_systemd_required_services_list: |
+etherpad_systemd_required_services_list_auto: |
   {{
-    [devture_systemd_docker_base_docker_service_name]
-    +
     ([postgres_identifier ~ '.service'] if postgres_enabled else [])
   }}
 
@@ -3582,7 +3580,7 @@ etherpad_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_k
 
 ######################################################################
 #
-# /etke/etherpad
+# /etherpad
 #
 ######################################################################
 
