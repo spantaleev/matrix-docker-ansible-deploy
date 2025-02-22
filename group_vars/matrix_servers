@@ -4746,19 +4746,7 @@ matrix_synapse_email_smtp_port: 8025
 matrix_synapse_email_smtp_require_transport_security: false
 matrix_synapse_email_notif_from: "Matrix <{{ exim_relay_sender_address }}>"
 
-matrix_synapse_turn_uris: |
-  {{
-    ([
-      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else [])
-    +
-    ([
-      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled else [])
-  }}
-
+matrix_synapse_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
 matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 matrix_synapse_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 matrix_synapse_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
@@ -5673,20 +5661,7 @@ matrix_dendrite_database_hostname: "{{ postgres_connection_hostname if postgres_
 
 matrix_dendrite_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.db', rounds=655555) | to_uuid }}"
 
-# Even if TURN doesn't support TLS (it does by default),
-# it doesn't hurt to try a secure connection anyway.
-matrix_dendrite_client_api_turn_uris: |
-  {{
-    [
-      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ]
-    if matrix_coturn_enabled
-    else []
-  }}
-
+matrix_dendrite_client_api_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
 matrix_dendrite_client_api_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 matrix_dendrite_client_api_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 matrix_dendrite_client_api_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
@@ -5755,19 +5730,7 @@ matrix_conduit_container_labels_public_federation_api_traefik_tls: "{{ matrix_fe
 matrix_conduit_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_conduit_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
-matrix_conduit_turn_uris: |
-  {{
-    ([
-      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else [])
-    +
-    ([
-      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled else [])
-  }}
-
+matrix_conduit_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
 matrix_conduit_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 matrix_conduit_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 matrix_conduit_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
@@ -5815,19 +5778,7 @@ matrix_conduwuit_container_labels_public_federation_api_traefik_tls: "{{ matrix_
 matrix_conduwuit_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_conduwuit_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
-matrix_conduwuit_config_turn_uris: |
-  {{
-    ([
-      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else [])
-    +
-    ([
-      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled else [])
-  }}
-
+matrix_conduwuit_config_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
 matrix_conduwuit_config_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 matrix_conduwuit_config_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 matrix_conduwuit_config_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
