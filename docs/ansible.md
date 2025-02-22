@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Hanno J. Gödecke
+SPDX-FileCopyrightText: 2020 Aaron Raimist
+SPDX-FileCopyrightText: 2022 Kai Biebel
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 
 # Running this playbook
 
@@ -49,7 +58,7 @@ Once you have a working Docker installation on the server, **clone the playbook*
 
 You would then need to add `ansible_connection=community.docker.nsenter` to the host line in `inventory/hosts`. This tells Ansible to connect to the "remote" machine by switching Linux namespaces with [nsenter](https://man7.org/linux/man-pages/man1/nsenter.1.html), instead of using SSH.
 
-Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `ansible-playbook --connection=community.docker.nsenter …`
+Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `just install-all --connection=community.docker.nsenter` (or `ansible-playbook --connection=community.docker.nsenter …`).
 
 Run this from the playbook's directory:
 
@@ -67,7 +76,7 @@ Once you execute the above command, you'll be dropped into a `/work` directory i
 
 First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues).
 
-Finally, you can execute `ansible-playbook …` (or `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now.
+Finally, you can execute `just` or `ansible-playbook …` (e.g. `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now.
 
 ### Running Ansible in a container on another computer (not the Matrix server)
 
@@ -88,7 +97,7 @@ Once you execute the above command, you'll be dropped into a `/work` directory i
 
 First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues).
 
-Finally, you execute `ansible-playbook …` commands as per normal now.
+Finally, you execute `just` or `ansible-playbook …` commands as per normal now.
 
 #### If you don't use SSH keys for authentication
 
@@ -100,7 +109,7 @@ To authenticate at your server using a password, you need to add a package. So, 
 apk add sshpass
 ```
 
-Then, to be asked for the password whenever running an  `ansible-playbook` command add `--ask-pass` to the arguments of the command.
+Then, to be asked for the password whenever running an `ansible-playbook` command add `--ask-pass` to the arguments of the command.
 
 #### Resolve directory ownership issues
 
