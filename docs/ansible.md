@@ -109,7 +109,7 @@ To authenticate at your server using a password, you need to add a package. So, 
 apk add sshpass
 ```
 
-Then, to be asked for the password whenever running an  `ansible-playbook` command add `--ask-pass` to the arguments of the command.
+Then, to be asked for the password whenever running an `ansible-playbook` command add `--ask-pass` to the arguments of the command.
 
 #### Resolve directory ownership issues
 
