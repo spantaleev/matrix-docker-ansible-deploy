@@ -13,7 +13,7 @@ In addition, we have added support for running commands via [`just`](https://git
 
 The `just` utility executes shortcut commands (called as "recipes"), which invoke `ansible-playbook`, `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru) (depending on what is available in your system). The targets of the recipes are defined in [`justfile`](../justfile). Most of the just recipes have no corresponding `Makefile` targets.
 
-For some recipes such as `just update`, our `justfile` recommends installing [`agru`](https://github.com/etkecc/agru) (a faster alternative to `ansible-galaxy`) to speed up the process.
+For some recipes such as `just update`, our `justfile` recommends installing `agru` (a faster alternative to `ansible-galaxy`) to speed up the process.
 
 Here are some examples of shortcuts:
 
