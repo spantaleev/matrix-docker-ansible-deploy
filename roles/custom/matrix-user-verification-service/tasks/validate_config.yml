@@ -32,3 +32,12 @@
   with_items:
     - {'name': 'matrix_user_verification_service_uvs_homeserver_url', when: true}
     - {'name': 'matrix_user_verification_service_container_network', when: true}
+
+- name: (Deprecation) Catch and report renamed matrix-user-verification-service variables
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_user_verification_service_docker_image_name_prefix', 'new': 'matrix_user_verification_service_docker_image_registry_prefix'}

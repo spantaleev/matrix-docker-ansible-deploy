@@ -312,7 +312,7 @@ If you'd like to switch back to the original synapse-admin software, you can do 
 
 ```yaml
 matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
-matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else 'docker.io/' }}"
 
 matrix_synapse_admin_version: 0.10.3
 

@@ -30,7 +30,9 @@ matrix_synapse_reverse_proxy_companion_systemd_wanted_services_list: ['matrix-sy
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
 # that is frequently out of date.
-matrix_synapse_reverse_proxy_companion_container_image: "{{ matrix_container_global_registry_prefix }}nginx:{{ matrix_synapse_reverse_proxy_companion_version }}"
+matrix_synapse_reverse_proxy_companion_container_image: "{{ matrix_synapse_reverse_proxy_companion_container_image_registry_prefix }}nginx:{{ matrix_synapse_reverse_proxy_companion_container_image_tag }}"
+matrix_synapse_reverse_proxy_companion_container_image_registry_prefix: docker.io/
+matrix_synapse_reverse_proxy_companion_container_image_tag: "{{ matrix_synapse_reverse_proxy_companion_version }}"
 matrix_synapse_reverse_proxy_companion_container_image_force_pull: "{{ matrix_synapse_reverse_proxy_companion_container_image.endswith(':latest') }}"
 
 matrix_synapse_reverse_proxy_companion_container_network: ""
