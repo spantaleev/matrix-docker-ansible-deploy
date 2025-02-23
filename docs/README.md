@@ -91,3 +91,5 @@ If your server and services experience issues, feel free to come to [our support
 - [Uninstalling](uninstalling.md)
 
 - [Updating users passwords](updating-users-passwords.md)
+
+- [Using Ansible for the playbook](ansible.md)
