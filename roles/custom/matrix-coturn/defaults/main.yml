@@ -60,9 +60,10 @@ matrix_coturn_container_stun_plain_host_bind_port_tcp: "{{ '3478' if matrix_cotu
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:3478"), or empty string to not expose.
 #
-# This is not done by default to decrease the risk of DDoS amplification attacks.
+# Ideally, we'd like to set this to "" to avoid exposing this port and decrease the risk of DDoS amplification attacks.
 # See: https://stormwall.network/resources/blog/protect-against-ddos-based-on-stun-exploit
-matrix_coturn_container_stun_plain_host_bind_port_udp: ""
+# In practice, old Element clients only support talking to the STUN port over UDP, not TCP, so we need to keep this enabled for now.
+matrix_coturn_container_stun_plain_host_bind_port_udp: "{{ '3478' if matrix_coturn_container_network != 'host' else '' }}"
 
 # Controls whether the coturn container exposes its TLS STUN port (tcp/5349 in the container) over TCP.
 #

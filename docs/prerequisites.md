@@ -60,6 +60,7 @@ We will be using `example.com` as the domain in the following instruction. Pleas
   - `80/tcp`: HTTP webserver
   - `443/tcp` and `443/udp`: HTTPS webserver
   - `3478/tcp`: STUN/TURN over TCP (used by [coturn](./docs/configuring-playbook-turn.md))
+  - `3478/udp`: STUN/TURN over TCP (used by [coturn](./docs/configuring-playbook-turn.md))
   - `5349/tcp`: TURN over TCP (used by [coturn](./docs/configuring-playbook-turn.md))
   - `5349/udp`: TURN over UDP (used by [coturn](./docs/configuring-playbook-turn.md))
   - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. Some components like [Matrix User Verification Service](configuring-playbook-user-verification-service.md#open-matrix-federation-port) require this port to be opened **even with federation disabled**.

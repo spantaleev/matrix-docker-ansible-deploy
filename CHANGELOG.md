@@ -1,3 +1,28 @@
+# 2025-02-23
+
+## The playbook defaults to exposing the Coturn STUN port (3478) over UDP once again
+
+Recently, we made the playbook [default to exposing the Coturn STUN port (3478) only over TCP](#the-playbook-now-defaults-to-exposing-the-coturn-stun-port-3478-only-over-tcp) to reduce the severity of DDoS amplification/reflection attacks.
+
+It seems like old Element clients on mobile devices only support talking to the STUN port over UDP, not TCP.
+To accommodate such ancient clients, we're now **reversing this change** and **defaulting to exposing the Coturn STUN port (3478) over UDP once again**.
+
+In light of this new information, you have 2 options:
+
+1. **If you already adapted to the previous change and would like to adapt to this change one again**:
+
+- make sure the `3478/udp` port is whitelisted in your external firewall (if you have one) once again.
+
+2. **If you don't care about old Element clients and wish to reduce the severity of DDoS amplification/reflection attacks**:
+
+- Consider closing the STUN/UDP port with the following configuration:
+
+  ```yaml
+  matrix_coturn_container_stun_plain_host_bind_port_udp: ""
+  ```
+
+- Consider keeping `3478/udp` blocked in your external firewall (if you have one)
+
 # 2025-02-21
 
 ## Docker daemon options are no longer adjusted when IPv6 is enabled
