@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2020 Hugues Morisset
+SPDX-FileCopyrightText: 2020 - 2021 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Panagiotis Vasilopoulos
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up MX Puppet Steam bridging (optional)
 
 The playbook can install and configure [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) for you.
