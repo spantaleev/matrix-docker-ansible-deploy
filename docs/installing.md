@@ -134,9 +134,11 @@ After configuring the playbook, run the command below:
 ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
+**If an error is not returned, the installation has completed and the services have been started successfully**🎉
+
 ## Things to do next
 
-After finilizing the installation, you can:
+After completing the installation, you can:
 
 - [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 - or [set up additional services](configuring-playbook.md#other-configuration-options) (bridges to other chat networks, bots, etc.)
@@ -147,7 +149,7 @@ After finilizing the installation, you can:
   * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
 
-### Maintaining your setup in the future
+### ⚠️ Keep the playbook and services up-to-date
 
 While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**.
 
