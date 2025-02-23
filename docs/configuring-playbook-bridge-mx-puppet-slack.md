@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2020 Rodrigo Belem
+SPDX-FileCopyrightText: 2020 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Marcel Ackermann
+SPDX-FileCopyrightText: 2022 Jim Myhrberg
+SPDX-FileCopyrightText: 2022 Nikita Chernyi
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up MX Puppet Slack bridging (optional)
 
 **Note**: bridging to [Slack](https://slack.com) can also happen via the [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) and [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) bridges supported by the playbook. Note that `matrix-appservice-slack` is not available for new installation unless you have already created a classic Slack application, because the creation of classic Slack applications, which this bridge makes use of, has been discontinued.

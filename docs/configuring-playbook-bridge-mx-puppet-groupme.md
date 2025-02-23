@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2021 Cody Neiman
+SPDX-FileCopyrightText: 2021 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Cody Wyatt Neiman
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up MX Puppet GroupMe bridging (optional)
 
 The playbook can install and configure [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) for you.
