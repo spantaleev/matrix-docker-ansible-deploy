@@ -25,10 +25,10 @@ To set up Matrix on your domain, you'd need to do some DNS configuration.
 
 To serve the base domain (`example.com`) and [Element Web](configuring-playbook-client-element-web.md) with the default subdomain, adjust DNS records as below.
 
-| Type  | Host                         | Priority | Weight | Port | Target               |
-| ----- | ---------------------------- | -------- | ------ | ---- | ---------------------|
-| A     | `matrix`                     | -        | -      | -    | `matrix-server-IP`   |
-| CNAME | `element`                    | -        | -      | -    | `matrix.example.com` |
+| Type  | Host      | Priority | Weight | Port | Target               |
+| ----- | --------- | -------- | ------ | ---- | ---------------------|
+| A     | `matrix`  | -        | -      | -    | `matrix-server-IP`   |
+| CNAME | `element` | -        | -      | -    | `matrix.example.com` |
 
 As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IP address (DNS `A` record or `CNAME` record is fine).
 
