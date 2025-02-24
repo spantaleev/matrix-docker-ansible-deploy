@@ -1,3 +1,18 @@
+<!--
+SPDX-FileCopyrightText: 2019 Edgars Voroboks
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Chris van Dijk
+SPDX-FileCopyrightText: 2020 jens quade
+SPDX-FileCopyrightText: 2022 Kim Brose
+SPDX-FileCopyrightText: 2022 Yan Minagawa
+SPDX-FileCopyrightText: 2022 Travis Ralston
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Dimension integration manager (optional, unmaintained)
 
 **Notes**:

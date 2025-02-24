@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Nikita Chernyi
+SPDX-FileCopyrightText: 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Email2Matrix (optional, deprecated)
 
 **Note**: this component has been deprecated. We recommend not bothering with installing it. While not a 1:1 replacement, the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-postmoogle.md). Consider using that component instead of this one.
