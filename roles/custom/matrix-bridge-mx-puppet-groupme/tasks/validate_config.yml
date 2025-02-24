@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Cody Neiman
-# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -16,3 +16,11 @@
     - {'name': 'matrix_mx_puppet_groupme_homeserver_token', when: true}
     - {'name': 'matrix_mx_puppet_groupme_database_hostname', when: "{{ matrix_mx_puppet_groupme_database_engine == 'postgres' }}"}
     - {'name': 'matrix_mx_puppet_groupme_container_network', when: true}
+
+- name: (Deprecation) Catch and report renamed mx-puppet-groupme variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_mx_puppet_groupme_docker_image_name_prefix', 'new': 'matrix_mx_puppet_groupme_docker_image_registry_prefix'}

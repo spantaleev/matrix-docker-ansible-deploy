@@ -14,8 +14,10 @@ matrix_appservice_webhooks_container_image_self_build_repo_version: "{{ 'master'
 matrix_appservice_webhooks_container_image_self_build_repo_dockerfile_path: "Dockerfile"
 
 matrix_appservice_webhooks_version: v1.0.3-01
-matrix_appservice_webhooks_docker_image: "{{ matrix_appservice_webhooks_docker_image_name_prefix }}redoonetworks/matrix-appservice-webhooks:{{ matrix_appservice_webhooks_version }}"
-matrix_appservice_webhooks_docker_image_name_prefix: "{{ 'localhost/' if matrix_appservice_webhooks_container_image_self_build else 'docker.io/' }}"
+matrix_appservice_webhooks_docker_image: "{{ matrix_appservice_webhooks_docker_image_registry_prefix }}redoonetworks/matrix-appservice-webhooks:{{ matrix_appservice_webhooks_version }}"
+matrix_appservice_webhooks_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_webhooks_container_image_self_build else matrix_appservice_webhooks_docker_image_registry_prefix_upstream }}"
+matrix_appservice_webhooks_docker_image_registry_prefix_upstream: "{{ matrix_appservice_webhooks_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_webhooks_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_appservice_webhooks_docker_image_force_pull: "{{ matrix_appservice_webhooks_docker_image.endswith(':latest') }}"
 
 matrix_appservice_webhooks_base_path: "{{ matrix_base_data_path }}/appservice-webhooks"

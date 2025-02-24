@@ -11,8 +11,10 @@ matrix_mautrix_instagram_container_image_self_build_repo_version: "{{ 'master' i
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/instagram
 matrix_mautrix_instagram_version: v0.3.1
 # See: https://mau.dev/tulir/mautrix-instagram/container_registry
-matrix_mautrix_instagram_docker_image: "{{ matrix_mautrix_instagram_docker_image_name_prefix }}mautrix/instagram:{{ matrix_mautrix_instagram_version }}"
-matrix_mautrix_instagram_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_instagram_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_instagram_docker_image: "{{ matrix_mautrix_instagram_docker_image_registry_prefix }}mautrix/instagram:{{ matrix_mautrix_instagram_version }}"
+matrix_mautrix_instagram_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_instagram_container_image_self_build else matrix_mautrix_instagram_docker_image_registry_prefix_upstream }}"
+matrix_mautrix_instagram_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_instagram_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_instagram_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_mautrix_instagram_docker_image_force_pull: "{{ matrix_mautrix_instagram_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_instagram_base_path: "{{ matrix_base_data_path }}/mautrix-instagram"

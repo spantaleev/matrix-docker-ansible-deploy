@@ -10,8 +10,10 @@ matrix_pantalaimon_container_image_self_build: false
 matrix_pantalaimon_container_image_self_build_repo: "https://github.com/matrix-org/pantalaimon.git"
 matrix_pantalaimon_container_image_self_build_repo_version: "{{ 'main' if matrix_pantalaimon_version == 'latest' else matrix_pantalaimon_version }}"
 
-matrix_pantalaimon_docker_image: "{{ matrix_pantalaimon_docker_image_name_prefix }}matrixdotorg/pantalaimon:v{{ matrix_pantalaimon_version }}"
-matrix_pantalaimon_docker_image_name_prefix: "{{ 'localhost/' if matrix_pantalaimon_container_image_self_build else 'docker.io/' }}"
+matrix_pantalaimon_docker_image: "{{ matrix_pantalaimon_docker_image_registry_prefix }}matrixdotorg/pantalaimon:v{{ matrix_pantalaimon_version }}"
+matrix_pantalaimon_docker_image_registry_prefix: "{{ 'localhost/' if matrix_pantalaimon_container_image_self_build else matrix_pantalaimon_docker_image_registry_prefix_upstream }}"
+matrix_pantalaimon_docker_image_registry_prefix_upstream: "{{ matrix_pantalaimon_docker_image_registry_prefix_upstream_default }}"
+matrix_pantalaimon_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_pantalaimon_docker_image_force_pull: "{{ matrix_pantalaimon_docker_image.endswith(':latest') }}"
 
 matrix_pantalaimon_base_path: "{{ matrix_base_data_path }}/pantalaimon"

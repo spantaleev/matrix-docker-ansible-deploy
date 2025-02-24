@@ -10,8 +10,10 @@ matrix_appservice_draupnir_for_all_version: "v2.1.0"
 matrix_appservice_draupnir_for_all_container_image_self_build: false
 matrix_appservice_draupnir_for_all_container_image_self_build_repo: "https://github.com/the-draupnir-project/Draupnir.git"
 
-matrix_appservice_draupnir_for_all_docker_image: "{{ matrix_appservice_draupnir_for_all_docker_image_name_prefix }}gnuxie/draupnir:{{ matrix_appservice_draupnir_for_all_version }}"
-matrix_appservice_draupnir_for_all_docker_image_name_prefix: "{{ 'localhost/' if matrix_appservice_draupnir_for_all_container_image_self_build else 'docker.io/' }}"
+matrix_appservice_draupnir_for_all_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_draupnir_for_all_container_image_self_build else matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream }}"
+matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream: "{{ matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream_default: "docker.io/"
+matrix_appservice_draupnir_for_all_docker_image: "{{ matrix_appservice_draupnir_for_all_docker_image_registry_prefix }}gnuxie/draupnir:{{ matrix_appservice_draupnir_for_all_version }}"
 matrix_appservice_draupnir_for_all_docker_image_force_pull: "{{ matrix_appservice_draupnir_for_all_docker_image.endswith(':latest') }}"
 
 matrix_appservice_draupnir_for_all_base_path: "{{ matrix_base_data_path }}/draupnir-for-all"

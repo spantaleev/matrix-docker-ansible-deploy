@@ -11,9 +11,11 @@ matrix_dynamic_dns_daemon_interval: '300'
 matrix_dynamic_dns_version: 4.0.0
 
 # The docker container to use when in mode
-matrix_dynamic_dns_docker_image: "{{ matrix_dynamic_dns_docker_image_name_prefix }}linuxserver/ddclient:{{ matrix_dynamic_dns_version }}"
+matrix_dynamic_dns_docker_image: "{{ matrix_dynamic_dns_docker_image_registry_prefix }}linuxserver/ddclient:{{ matrix_dynamic_dns_version }}"
 
-matrix_dynamic_dns_docker_image_name_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else 'docker.io/' }}"
+matrix_dynamic_dns_docker_image_registry_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else matrix_dynamic_dns_docker_image_registry_prefix_upstream }}"
+matrix_dynamic_dns_docker_image_registry_prefix_upstream: "{{ matrix_dynamic_dns_docker_image_registry_prefix_upstream_default }}"
+matrix_dynamic_dns_docker_image_registry_prefix_upstream_default: docker.io/
 
 # The image to force pull
 matrix_dynamic_dns_docker_image_force_pull: "{{ matrix_dynamic_dns_docker_image.endswith(':latest') }}"

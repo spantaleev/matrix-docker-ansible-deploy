@@ -11,11 +11,12 @@ matrix_bot_chatgpt_container_image_self_build: false
 matrix_bot_chatgpt_container_image_self_build_repo: "https://github.com/matrixgpt/matrix-chatgpt-bot"
 matrix_bot_chatgpt_container_image_self_build_repo_version: "{{ 'main' if matrix_bot_chatgpt_version == 'latest' else matrix_bot_chatgpt_version }}"
 
-matrix_bot_chatgpt_container_image: "{{ matrix_bot_chatgpt_container_image_name_prefix }}matrixgpt/matrix-chatgpt-bot:{{ matrix_bot_chatgpt_container_image_tag }}"
-matrix_bot_chatgpt_container_image_name_prefix: "{{ 'localhost/' if matrix_bot_chatgpt_container_image_self_build else matrix_bot_chatgpt_container_image_registry_prefix }}"
+matrix_bot_chatgpt_container_image: "{{ matrix_bot_chatgpt_container_image_registry_prefix }}matrixgpt/matrix-chatgpt-bot:{{ matrix_bot_chatgpt_container_image_tag }}"
+matrix_bot_chatgpt_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_chatgpt_container_image_self_build else matrix_bot_chatgpt_container_image_registry_prefix_upstream }}"
+matrix_bot_chatgpt_container_image_registry_prefix_upstream: "{{ matrix_bot_chatgpt_container_image_registry_prefix_upstream_default }}"
+matrix_bot_chatgpt_container_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_bot_chatgpt_container_image_tag: "{{ matrix_bot_chatgpt_version }}"
 matrix_bot_chatgpt_container_image_force_pull: "{{ matrix_bot_chatgpt_container_image.endswith(':latest') }}"
-matrix_bot_chatgpt_container_image_registry_prefix: ghcr.io/
 
 matrix_bot_chatgpt_base_path: "{{ matrix_base_data_path }}/chatgpt"
 matrix_bot_chatgpt_config_path: "{{ matrix_bot_chatgpt_base_path }}/config"

@@ -13,7 +13,6 @@ matrix_user_verification_service_container_image_self_build: "{{ matrix_architec
 matrix_user_verification_service_container_image_self_build_repo: "https://github.com/matrix-org/matrix-user-verification-service"
 matrix_user_verification_service_container_image_self_build_branch: "{{ 'master' if matrix_registration_version == 'latest' else matrix_user_verification_service_version }}"
 
-# Fix version tag
 # renovate: datasource=docker depName=matrixdotorg/matrix-user-verification-service
 matrix_user_verification_service_version: "v3.0.0"
 
@@ -25,7 +24,9 @@ matrix_user_verification_service_docker_src_files_path: "{{ matrix_user_verifica
 
 # Docker
 matrix_user_verification_service_docker_image: "{{ matrix_user_verification_service_docker_image_registry_prefix }}matrixdotorg/matrix-user-verification-service:{{ matrix_user_verification_service_version }}"
-matrix_user_verification_service_docker_image_registry_prefix: docker.io/
+matrix_user_verification_service_docker_image_registry_prefix: "{{ 'localhost/' if matrix_user_verification_service_container_image_self_build else matrix_user_verification_service_docker_image_registry_prefix_upstream }}"
+matrix_user_verification_service_docker_image_registry_prefix_upstream: "{{ matrix_user_verification_service_docker_image_registry_prefix_upstream_default }}"
+matrix_user_verification_service_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_user_verification_service_docker_image_force_pull: "{{ matrix_user_verification_service_docker_image.endswith(':latest') }}"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.

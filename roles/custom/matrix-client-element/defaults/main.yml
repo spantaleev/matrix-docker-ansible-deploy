@@ -13,8 +13,10 @@ matrix_client_element_container_image_self_build_low_memory_system_patch_enabled
 # renovate: datasource=docker depName=vectorim/element-web
 matrix_client_element_version: v1.11.92
 
-matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_name_prefix }}vectorim/element-web:{{ matrix_client_element_version }}"
-matrix_client_element_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else 'docker.io/' }}"
+matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_registry_prefix }}vectorim/element-web:{{ matrix_client_element_version }}"
+matrix_client_element_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else matrix_client_element_docker_image_registry_prefix_upstream }}"
+matrix_client_element_docker_image_registry_prefix_upstream: "{{ matrix_client_element_docker_image_registry_prefix_upstream_default }}"
+matrix_client_element_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_client_element_docker_image_force_pull: "{{ matrix_client_element_docker_image.endswith(':latest') }}"
 
 matrix_client_element_data_path: "{{ matrix_base_data_path }}/client-element"

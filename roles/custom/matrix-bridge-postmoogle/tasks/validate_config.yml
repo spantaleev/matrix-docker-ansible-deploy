@@ -10,3 +10,11 @@
     - {'name': 'matrix_postmoogle_container_network', when: true}
     - {'name': 'matrix_postmoogle_homeserver', when: true}
     - {'name': 'matrix_postmoogle_database_hostname', when: "{{ matrix_postmoogle_database_engine == 'postgres' }}"}
+
+- name: (Deprecation) Catch and report renamed Postmoogle variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_postmoogle_docker_image_name_prefix', 'new': 'matrix_postmoogle_docker_image_registry_prefix'}

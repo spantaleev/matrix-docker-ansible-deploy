@@ -10,6 +10,14 @@
     - {'name': 'matrix_client_hydrogen_container_network', when: true}
     - {'name': 'matrix_client_hydrogen_container_labels_traefik_compression_middleware_name', when: "{{ matrix_client_hydrogen_container_labels_traefik_compression_middleware_enabled }}"}
 
+- name: (Deprecation) Catch and report renamed Hydrogen variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_client_hydrogen_container_image_name_prefix', 'new': 'matrix_client_hydrogen_container_image_registry_prefix'}
+
 - when: matrix_client_hydrogen_container_labels_traefik_enabled | bool
   block:
     - name: Fail if required matrix-client-hydrogen Traefik settings not defined

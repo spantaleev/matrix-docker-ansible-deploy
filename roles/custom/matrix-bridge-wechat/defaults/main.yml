@@ -7,8 +7,10 @@ matrix_wechat_enabled: true
 
 # renovate: datasource=docker depName=lxduo/matrix-wechat
 matrix_wechat_version: 0.2.4
-matrix_wechat_container_image: "{{ matrix_wechat_container_image_name_prefix }}lxduo/matrix-wechat:{{ matrix_wechat_version }}"
-matrix_wechat_container_image_name_prefix: "{{ 'localhost/' if matrix_wechat_container_image_self_build else 'docker.io/' }}"
+matrix_wechat_container_image: "{{ matrix_wechat_container_image_registry_prefix }}lxduo/matrix-wechat:{{ matrix_wechat_version }}"
+matrix_wechat_container_image_registry_prefix: "{{ 'localhost/' if matrix_wechat_container_image_self_build else matrix_wechat_container_image_registry_prefix_upstream }}"
+matrix_wechat_container_image_registry_prefix_upstream: "{{ matrix_wechat_container_image_registry_prefix_upstream_default }}"
+matrix_wechat_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_wechat_container_image_force_pull: "{{ matrix_wechat_container_image.endswith(':latest') }}"
 
 matrix_wechat_container_image_self_build: false

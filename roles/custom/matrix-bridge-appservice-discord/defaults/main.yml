@@ -7,8 +7,10 @@ matrix_appservice_discord_container_image_self_build: false
 
 # renovate: datasource=docker depName=ghcr.io/matrix-org/matrix-appservice-discord
 matrix_appservice_discord_version: v4.0.0
-matrix_appservice_discord_docker_image: "{{ matrix_appservice_discord_docker_image_name_prefix }}matrix-org/matrix-appservice-discord:{{ matrix_appservice_discord_version }}"
-matrix_appservice_discord_docker_image_name_prefix: "{{ 'localhost/' if matrix_appservice_discord_container_image_self_build else 'ghcr.io/' }}"
+matrix_appservice_discord_docker_image: "{{ matrix_appservice_discord_docker_image_registry_prefix }}matrix-org/matrix-appservice-discord:{{ matrix_appservice_discord_version }}"
+matrix_appservice_discord_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_discord_container_image_self_build else matrix_appservice_discord_docker_image_registry_prefix_upstream }}"
+matrix_appservice_discord_docker_image_registry_prefix_upstream: "{{ matrix_appservice_discord_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_discord_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_appservice_discord_docker_image_force_pull: "{{ matrix_appservice_discord_docker_image.endswith(':latest') }}"
 
 matrix_appservice_discord_base_path: "{{ matrix_base_data_path }}/appservice-discord"

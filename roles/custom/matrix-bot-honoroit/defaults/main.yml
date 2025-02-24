@@ -22,8 +22,10 @@ matrix_bot_honoroit_docker_src_files_path: "{{ matrix_base_data_path }}/honoroit
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/honoroit
 matrix_bot_honoroit_version: v0.9.27
-matrix_bot_honoroit_docker_image: "{{ matrix_bot_honoroit_docker_image_name_prefix }}etkecc/honoroit:{{ matrix_bot_honoroit_version }}"
-matrix_bot_honoroit_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_honoroit_container_image_self_build else 'ghcr.io/' }}"
+matrix_bot_honoroit_docker_image: "{{ matrix_bot_honoroit_docker_image_registry_prefix }}etkecc/honoroit:{{ matrix_bot_honoroit_version }}"
+matrix_bot_honoroit_docker_image_registry_prefix: "{{ 'localhost/' if matrix_bot_honoroit_container_image_self_build else matrix_bot_honoroit_docker_image_registry_prefix_upstream }}"
+matrix_bot_honoroit_docker_image_registry_prefix_upstream: "{{ matrix_bot_honoroit_docker_image_registry_prefix_upstream_default }}"
+matrix_bot_honoroit_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_bot_honoroit_docker_image_force_pull: "{{ matrix_bot_honoroit_docker_image.endswith(':latest') }}"
 
 matrix_bot_honoroit_base_path: "{{ matrix_base_data_path }}/honoroit"

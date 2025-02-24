@@ -12,3 +12,11 @@
     - {'name': 'matrix_alertmanager_receiver_container_network', when: true}
     - {'name': 'matrix_alertmanager_receiver_metrics_proxying_hostname', when: "{{ matrix_alertmanager_receiver_metrics_proxying_enabled }}"}
     - {'name': 'matrix_alertmanager_receiver_metrics_proxying_path_prefix', when: "{{ matrix_alertmanager_receiver_metrics_proxying_enabled }}"}
+
+- name: (Deprecation) Catch and report renamed matrix-alertmanager-receiver variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_alertmanager_receiver_container_image_name_prefix', 'new': 'matrix_alertmanager_receiver_container_image_registry_prefix'}

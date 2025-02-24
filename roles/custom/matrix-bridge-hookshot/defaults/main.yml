@@ -19,8 +19,10 @@ matrix_hookshot_container_additional_networks_custom: []
 # renovate: datasource=docker depName=halfshot/matrix-hookshot
 matrix_hookshot_version: 6.0.2
 
-matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_name_prefix }}matrix-org/matrix-hookshot:{{ matrix_hookshot_version }}"
-matrix_hookshot_docker_image_name_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else 'ghcr.io/' }}"
+matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_registry_prefix }}matrix-org/matrix-hookshot:{{ matrix_hookshot_version }}"
+matrix_hookshot_docker_image_registry_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_hookshot_docker_image_registry_prefix_upstream }}"
+matrix_hookshot_docker_image_registry_prefix_upstream: "{{ matrix_hookshot_docker_image_registry_prefix_upstream_default }}"
+matrix_hookshot_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_hookshot_docker_image_force_pull: "{{ matrix_hookshot_docker_image.endswith(':latest') }}"
 
 matrix_hookshot_base_path: "{{ matrix_base_data_path }}/hookshot"

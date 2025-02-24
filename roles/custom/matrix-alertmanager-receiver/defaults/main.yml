@@ -25,11 +25,12 @@ matrix_alertmanager_receiver_container_image_self_build_repo: https://github.com
 matrix_alertmanager_receiver_container_image_self_build_repo_version: "{{ 'main' if matrix_alertmanager_receiver_version == 'main' else matrix_alertmanager_receiver_version }}"
 matrix_alertmanager_receiver_container_src_path: "{{ matrix_alertmanager_receiver_base_path }}/container-src"
 
-matrix_alertmanager_receiver_container_image: "{{ matrix_alertmanager_receiver_container_image_name_prefix }}metio/matrix-alertmanager-receiver:{{ matrix_alertmanager_receiver_container_image_tag }}"
-matrix_alertmanager_receiver_container_image_name_prefix: "{{ 'localhost/' if matrix_alertmanager_receiver_container_image_self_build else matrix_alertmanager_receiver_container_image_registry_prefix }}"
+matrix_alertmanager_receiver_container_image: "{{ matrix_alertmanager_receiver_container_image_registry_prefix }}metio/matrix-alertmanager-receiver:{{ matrix_alertmanager_receiver_container_image_tag }}"
 matrix_alertmanager_receiver_container_image_tag: "{{ matrix_alertmanager_receiver_version }}"
 matrix_alertmanager_receiver_container_image_force_pull: "{{ matrix_alertmanager_receiver_container_image.endswith(':main') }}"
-matrix_alertmanager_receiver_container_image_registry_prefix: docker.io/
+matrix_alertmanager_receiver_container_image_registry_prefix: "{{ matrix_alertmanager_receiver_container_image_registry_prefix_upstream }}"
+matrix_alertmanager_receiver_container_image_registry_prefix_upstream: "{{ matrix_alertmanager_receiver_container_image_registry_prefix_upstream_default }}"
+matrix_alertmanager_receiver_container_image_registry_prefix_upstream_default: "docker.io/"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 matrix_alertmanager_receiver_container_network: ''

@@ -14,10 +14,11 @@ matrix_appservice_irc_docker_src_files_path: "{{ matrix_base_data_path }}/appser
 # renovate: datasource=docker depName=docker.io/matrixdotorg/matrix-appservice-irc
 matrix_appservice_irc_version: 1.0.1
 matrix_appservice_irc_docker_image: "{{ matrix_appservice_irc_docker_image_registry_prefix }}matrixdotorg/matrix-appservice-irc:{{ matrix_appservice_irc_docker_image_tag }}"
-matrix_appservice_irc_docker_image_registry_prefix: docker.io/
+matrix_appservice_irc_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_irc_container_image_self_build else matrix_appservice_irc_docker_image_registry_prefix_upstream }}"
+matrix_appservice_irc_docker_image_registry_prefix_upstream: "{{ matrix_appservice_irc_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_irc_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_appservice_irc_docker_image_tag: "{{ 'latest' if matrix_appservice_irc_version == 'latest' else ('release-' + matrix_appservice_irc_version) }}"
 matrix_appservice_irc_docker_image_force_pull: "{{ matrix_appservice_irc_docker_image.endswith(':latest') }}"
-matrix_appservice_irc_docker_image_name_prefix: "{{ 'localhost/' if matrix_appservice_irc_container_image_self_build else 'docker.io/' }}"
 
 matrix_appservice_irc_base_path: "{{ matrix_base_data_path }}/appservice-irc"
 matrix_appservice_irc_config_path: "{{ matrix_appservice_irc_base_path }}/config"

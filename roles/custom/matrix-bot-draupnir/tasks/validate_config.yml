@@ -35,3 +35,12 @@
               "Note: Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions. To enable E2EE for Draupnir, it is recommended to use matrix_bot_draupnir_enable_experimental_rust_crypto instead. This warning can be disabled by setting matrix_bot_draupnir_pantalaimon_breakage_ignore to true."
             ]
           }}
+
+- name: (Deprecation) Catch and report renamed Draupnir settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_bot_draupnir_container_image_name_prefix', 'new': 'matrix_bot_draupnir_container_image_registry_prefix'}

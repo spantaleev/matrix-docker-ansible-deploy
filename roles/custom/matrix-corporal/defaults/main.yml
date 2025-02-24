@@ -81,8 +81,10 @@ matrix_corporal_systemd_required_services_list_default: "{{ [devture_systemd_doc
 matrix_corporal_systemd_required_services_list_auto: []
 matrix_corporal_systemd_required_services_list_custom: []
 
-matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_name_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
-matrix_corporal_docker_image_name_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else 'docker.io/' }}"
+matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_registry_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
+matrix_corporal_docker_image_registry_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else matrix_corporal_docker_image_registry_prefix_upstream }}"
+matrix_corporal_docker_image_registry_prefix_upstream: "{{ matrix_corporal_docker_image_registry_prefix_upstream_default }}"
+matrix_corporal_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_corporal_docker_image_tag: "{{ matrix_corporal_version }}"  # for backward-compatibility
 matrix_corporal_docker_image_force_pull: "{{ matrix_corporal_docker_image.endswith(':latest') }}"
 

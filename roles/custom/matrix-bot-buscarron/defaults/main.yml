@@ -29,8 +29,10 @@ matrix_bot_buscarron_docker_repo: "https://github.com/etkecc/buscarron.git"
 matrix_bot_buscarron_docker_repo_version: "{{ matrix_bot_buscarron_version }}"
 matrix_bot_buscarron_docker_src_files_path: "{{ matrix_base_data_path }}/buscarron/docker-src"
 
-matrix_bot_buscarron_docker_image: "{{ matrix_bot_buscarron_docker_image_name_prefix }}etkecc/buscarron:{{ matrix_bot_buscarron_version }}"
-matrix_bot_buscarron_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_buscarron_container_image_self_build else 'ghcr.io/' }}"
+matrix_bot_buscarron_docker_image: "{{ matrix_bot_buscarron_docker_image_registry_prefix }}etkecc/buscarron:{{ matrix_bot_buscarron_version }}"
+matrix_bot_buscarron_docker_image_registry_prefix: "{{ 'localhost/' if matrix_bot_buscarron_container_image_self_build else matrix_bot_buscarron_docker_image_registry_prefix_upstream }}"
+matrix_bot_buscarron_docker_image_registry_prefix_upstream: "{{ matrix_bot_buscarron_docker_image_registry_prefix_upstream_default }}"
+matrix_bot_buscarron_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_bot_buscarron_docker_image_force_pull: "{{ matrix_bot_buscarron_docker_image.endswith(':latest') }}"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.

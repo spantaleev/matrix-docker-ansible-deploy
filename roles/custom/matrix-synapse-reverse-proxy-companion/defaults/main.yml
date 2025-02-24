@@ -31,7 +31,9 @@ matrix_synapse_reverse_proxy_companion_systemd_wanted_services_list: ['matrix-sy
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
 # that is frequently out of date.
 matrix_synapse_reverse_proxy_companion_container_image: "{{ matrix_synapse_reverse_proxy_companion_container_image_registry_prefix }}nginx:{{ matrix_synapse_reverse_proxy_companion_container_image_tag }}"
-matrix_synapse_reverse_proxy_companion_container_image_registry_prefix: docker.io/
+matrix_synapse_reverse_proxy_companion_container_image_registry_prefix: "{{ matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream }}"
+matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream: "{{ matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream_default }}"
+matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_synapse_reverse_proxy_companion_container_image_tag: "{{ matrix_synapse_reverse_proxy_companion_version }}"
 matrix_synapse_reverse_proxy_companion_container_image_force_pull: "{{ matrix_synapse_reverse_proxy_companion_container_image.endswith(':latest') }}"
 

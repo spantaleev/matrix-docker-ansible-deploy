@@ -13,3 +13,11 @@
   when: "item.when | bool and vars[item.name] == ''"
   with_items:
     - {'name': 'matrix_email2matrix_container_network', when: true}
+
+- name: (Deprecation) Catch and report renamed Email2Matrix variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_email2matrix_docker_image_name_prefix', 'new': 'matrix_email2matrix_docker_image_registry_prefix'}

@@ -9,3 +9,11 @@
     - {'name': 'matrix_conduit_hostname', when: true}
     - {'name': 'matrix_conduit_container_network', when: true}
     - {'name': 'matrix_conduit_container_labels_internal_client_api_traefik_entrypoints', when: "{{ matrix_conduit_container_labels_internal_client_api_enabled }}"}
+
+- name: (Deprecation) Catch and report renamed Conduit variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_conduit_container_image_name_prefix', 'new': 'matrix_conduit_docker_image_registry_prefix'}

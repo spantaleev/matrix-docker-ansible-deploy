@@ -1,8 +1,16 @@
 ---
 
-- name: Fail if required variables are undefined
+- name: Fail if required Pantalaimon variables are undefined
   ansible.builtin.fail:
     msg: "The `{{ item }}` variable must be defined and have a non-null value."
   with_items:
     - "matrix_pantalaimon_homeserver_url"
   when: "vars[item] == '' or vars[item] is none"
+
+- name: (Deprecation) Catch and report renamed Pantalaimon variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_pantalaimon_docker_image_name_prefix', 'new': 'matrix_pantalaimon_docker_image_registry_prefix'}

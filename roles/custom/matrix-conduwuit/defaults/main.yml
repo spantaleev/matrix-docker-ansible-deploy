@@ -8,11 +8,12 @@ matrix_conduwuit_enabled: true
 matrix_conduwuit_hostname: ''
 
 matrix_conduwuit_docker_image: "{{ matrix_conduwuit_docker_image_registry_prefix }}girlbossceo/conduwuit:{{ matrix_conduwuit_docker_image_tag }}"
-matrix_conduwuit_docker_image_name_prefix: "docker.io/"
 # renovate: datasource=docker depName=ghcr.io/girlbossceo/conduwuit
 matrix_conduwuit_docker_image_tag: v0.4.6-8f7ade4c22533a3177bfd8f175e178573ba6c1d4
 matrix_conduwuit_docker_image_force_pull: "{{ matrix_conduwuit_docker_image.endswith(':latest') }}"
-matrix_conduwuit_docker_image_registry_prefix: ghcr.io/
+matrix_conduwuit_docker_image_registry_prefix: "{{ matrix_conduwuit_docker_image_registry_prefix_upstream }}"
+matrix_conduwuit_docker_image_registry_prefix_upstream: "{{ matrix_conduwuit_docker_image_registry_prefix_upstream_default }}"
+matrix_conduwuit_docker_image_registry_prefix_upstream_default: ghcr.io/
 
 matrix_conduwuit_base_path: "{{ matrix_base_data_path }}/conduwuit"
 matrix_conduwuit_config_path: "{{ matrix_conduwuit_base_path }}/config"

@@ -25,7 +25,9 @@ matrix_static_files_systemd_wanted_services_list_auto: []
 matrix_static_files_systemd_wanted_services_list_custom: []
 
 matrix_static_files_container_image: "{{ matrix_static_files_container_image_registry_prefix }}joseluisq/static-web-server:{{ matrix_static_files_container_image_tag }}"
-matrix_static_files_container_image_registry_prefix: docker.io/
+matrix_static_files_container_image_registry_prefix: "{{ matrix_static_files_container_image_registry_prefix_upstream }}"
+matrix_static_files_container_image_registry_prefix_upstream: "{{ matrix_static_files_container_image_registry_prefix_upstream_default }}"
+matrix_static_files_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_static_files_container_image_tag: "{{ 'latest' if matrix_static_files_version == 'latest' else (matrix_static_files_version + '-alpine') }}"
 matrix_static_files_container_image_force_pull: "{{ matrix_static_files_container_image.endswith(':latest') }}"
 

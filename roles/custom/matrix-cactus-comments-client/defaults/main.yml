@@ -16,7 +16,9 @@ matrix_cactus_comments_client_public_path_file_permissions: "0644"
 matrix_cactus_comments_client_version: 2.36.0
 
 matrix_cactus_comments_client_container_image: "{{ matrix_cactus_comments_client_container_image_registry_prefix }}joseluisq/static-web-server:{{ matrix_cactus_comments_client_container_image_tag }}"
-matrix_cactus_comments_client_container_image_registry_prefix: docker.io/
+matrix_cactus_comments_client_container_image_registry_prefix: "{{ matrix_cactus_comments_client_container_image_registry_prefix_upstream }}"
+matrix_cactus_comments_client_container_image_registry_prefix_upstream: "{{ matrix_cactus_comments_client_container_image_registry_prefix_upstream_default }}"
+matrix_cactus_comments_client_container_image_registry_prefix_upstream_default: docker.io/
 matrix_cactus_comments_client_container_image_tag: "{{ 'latest' if matrix_cactus_comments_client_version == 'latest' else (matrix_cactus_comments_client_version + '-alpine') }}"
 matrix_cactus_comments_client_container_image_force_pull: "{{ matrix_cactus_comments_client_container_image.endswith(':latest') }}"
 

@@ -13,8 +13,10 @@ matrix_email2matrix_container_image_self_build_branch: "{{ matrix_email2matrix_v
 
 # renovate: datasource=docker depName=devture/email2matrix
 matrix_email2matrix_version: 1.1.0
-matrix_email2matrix_docker_image_prefix: "{{ 'localhost/' if matrix_email2matrix_container_image_self_build else 'docker.io/' }}"
-matrix_email2matrix_docker_image: "{{ matrix_email2matrix_docker_image_prefix }}devture/email2matrix:{{ matrix_email2matrix_version }}"
+matrix_email2matrix_docker_image: "{{ matrix_email2matrix_docker_image_registry_prefix }}devture/email2matrix:{{ matrix_email2matrix_version }}"
+matrix_email2matrix_docker_image_registry_prefix: "{{ 'localhost/' if matrix_email2matrix_container_image_self_build else matrix_email2matrix_docker_image_registry_prefix_upstream }}"
+matrix_email2matrix_docker_image_registry_prefix_upstream: "{{ matrix_email2matrix_docker_image_registry_prefix_upstream_default }}"
+matrix_email2matrix_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_email2matrix_docker_image_force_pull: "{{ matrix_email2matrix_docker_image.endswith(':latest') }}"
 
 matrix_email2matrix_container_network: ""

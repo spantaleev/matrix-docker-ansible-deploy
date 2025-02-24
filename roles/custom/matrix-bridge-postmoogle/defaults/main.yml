@@ -11,8 +11,10 @@ matrix_postmoogle_docker_src_files_path: "{{ matrix_base_data_path }}/postmoogle
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/postmoogle
 matrix_postmoogle_version: v0.9.24
-matrix_postmoogle_docker_image: "{{ matrix_postmoogle_docker_image_name_prefix }}etkecc/postmoogle:{{ matrix_postmoogle_version }}"
-matrix_postmoogle_docker_image_name_prefix: "{{ 'localhost/' if matrix_postmoogle_container_image_self_build else 'ghcr.io/' }}"
+matrix_postmoogle_docker_image: "{{ matrix_postmoogle_docker_image_registry_prefix }}etkecc/postmoogle:{{ matrix_postmoogle_version }}"
+matrix_postmoogle_docker_image_registry_prefix: "{{ 'localhost/' if matrix_postmoogle_container_image_self_build else matrix_postmoogle_docker_image_registry_prefix_upstream }}"
+matrix_postmoogle_docker_image_registry_prefix_upstream: "{{ matrix_postmoogle_docker_image_registry_prefix_upstream_default }}"
+matrix_postmoogle_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_postmoogle_docker_image_force_pull: "{{ matrix_postmoogle_docker_image.endswith(':latest') }}"
 
 matrix_postmoogle_base_path: "{{ matrix_base_data_path }}/postmoogle"

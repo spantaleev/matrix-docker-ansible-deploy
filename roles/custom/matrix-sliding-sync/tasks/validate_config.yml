@@ -13,3 +13,11 @@
     - {'name': 'matrix_sliding_sync_container_network', when: true}
     - {'name': 'matrix_sliding_sync_metrics_proxying_hostname', when: "{{ matrix_sliding_sync_metrics_proxying_enabled }}"}
     - {'name': 'matrix_sliding_sync_metrics_proxying_path_prefix', when: "{{ matrix_sliding_sync_metrics_proxying_enabled }}"}
+
+- name: (Deprecation) Catch and report renamed matrix-sliding-sync variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_sliding_sync_container_image_name_prefix', 'new': 'matrix_sliding_sync_container_image_registry_prefix'}

@@ -14,8 +14,10 @@ matrix_ma1sd_container_image_self_build_branch: "{{ matrix_ma1sd_version }}"
 # renovate: datasource=docker depName=ma1uta/ma1sd
 matrix_ma1sd_version: "2.5.0"
 
-matrix_ma1sd_docker_image: "{{ matrix_ma1sd_docker_image_name_prefix }}ma1uta/ma1sd:{{ matrix_ma1sd_version }}"
-matrix_ma1sd_docker_image_name_prefix: "{{ 'localhost/' if matrix_ma1sd_container_image_self_build else 'docker.io/' }}"
+matrix_ma1sd_docker_image: "{{ matrix_ma1sd_docker_image_registry_prefix }}ma1uta/ma1sd:{{ matrix_ma1sd_version }}"
+matrix_ma1sd_docker_image_registry_prefix: "{{ 'localhost/' if matrix_ma1sd_container_image_self_build else matrix_ma1sd_docker_image_registry_prefix_upstream }}"
+matrix_ma1sd_docker_image_registry_prefix_upstream: "{{ matrix_ma1sd_docker_image_registry_prefix_upstream_default }}"
+matrix_ma1sd_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_ma1sd_docker_image_force_pull: "{{ matrix_ma1sd_docker_image.endswith(':latest') }}"
 
 matrix_ma1sd_base_path: "{{ matrix_base_data_path }}/ma1sd"

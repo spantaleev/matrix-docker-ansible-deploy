@@ -10,8 +10,10 @@ matrix_dendrite_container_image_self_build: false
 matrix_dendrite_container_image_self_build_repo: "https://github.com/matrix-org/dendrite.git"
 
 matrix_dendrite_docker_image_path: "matrixdotorg/dendrite-monolith"
-matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}{{ matrix_dendrite_docker_image_path }}:{{ matrix_dendrite_docker_image_tag }}"
-matrix_dendrite_docker_image_name_prefix: "{{ 'localhost/' if matrix_dendrite_container_image_self_build else 'docker.io/' }}"
+matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_registry_prefix }}{{ matrix_dendrite_docker_image_path }}:{{ matrix_dendrite_docker_image_tag }}"
+matrix_dendrite_docker_image_registry_prefix: "{{ 'localhost/' if matrix_dendrite_container_image_self_build else matrix_dendrite_docker_image_registry_prefix_upstream }}"
+matrix_dendrite_docker_image_registry_prefix_upstream: "{{ matrix_dendrite_docker_image_registry_prefix_upstream_default }}"
+matrix_dendrite_docker_image_registry_prefix_upstream_default: docker.io/
 # renovate: datasource=docker depName=matrixdotorg/dendrite-monolith
 matrix_dendrite_docker_image_tag: "v0.14.1"
 matrix_dendrite_docker_image_force_pull: "{{ matrix_dendrite_docker_image.endswith(':latest') }}"

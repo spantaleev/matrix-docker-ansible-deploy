@@ -8,8 +8,10 @@ matrix_client_hydrogen_container_image_self_build_repo: "https://github.com/elem
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/hydrogen-web
 matrix_client_hydrogen_version: v0.5.1
-matrix_client_hydrogen_docker_image: "{{ matrix_client_hydrogen_docker_image_name_prefix }}element-hq/hydrogen-web:{{ matrix_client_hydrogen_version }}"
-matrix_client_hydrogen_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_hydrogen_container_image_self_build else 'ghcr.io/' }}"
+matrix_client_hydrogen_docker_image: "{{ matrix_client_hydrogen_docker_image_registry_prefix }}element-hq/hydrogen-web:{{ matrix_client_hydrogen_version }}"
+matrix_client_hydrogen_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_hydrogen_container_image_self_build else matrix_client_hydrogen_docker_image_registry_prefix_upstream }}"
+matrix_client_hydrogen_docker_image_registry_prefix_upstream: "{{ matrix_client_hydrogen_docker_image_registry_prefix_upstream_default }}"
+matrix_client_hydrogen_docker_image_registry_prefix_upstream_default: ghcr.io/
 matrix_client_hydrogen_docker_image_force_pull: "{{ matrix_client_hydrogen_docker_image.endswith(':latest') }}"
 
 matrix_client_hydrogen_data_path: "{{ matrix_base_data_path }}/client-hydrogen"

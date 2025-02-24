@@ -21,8 +21,10 @@ matrix_bot_maubot_docker_repo_version: "{{ 'master' if matrix_bot_maubot_version
 
 # renovate: datasource=docker depName=dock.mau.dev/maubot/maubot
 matrix_bot_maubot_version: v0.5.1
-matrix_bot_maubot_docker_image: "{{ matrix_bot_maubot_docker_image_name_prefix }}maubot/maubot:{{ matrix_bot_maubot_version }}"
-matrix_bot_maubot_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_maubot_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_bot_maubot_docker_image: "{{ matrix_bot_maubot_docker_image_registry_prefix }}maubot/maubot:{{ matrix_bot_maubot_version }}"
+matrix_bot_maubot_docker_image_registry_prefix: "{{ 'localhost/' if matrix_bot_maubot_container_image_self_build else matrix_bot_maubot_docker_image_registry_prefix_upstream }}"
+matrix_bot_maubot_docker_image_registry_prefix_upstream: "{{ matrix_bot_maubot_docker_image_registry_prefix_upstream_default }}"
+matrix_bot_maubot_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_bot_maubot_docker_image_force_pull: "{{ matrix_bot_maubot_docker_image.endswith(':latest') }}"
 
 # matrix_bot_maubot_docker_image_customized is the name of the locally built maubot image
