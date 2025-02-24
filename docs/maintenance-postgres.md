@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 - 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2020 Hardy Erlinger
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Marc Leuser
+SPDX-FileCopyrightText: 2024 Kim Brose
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # PostgreSQL maintenance
 
 This document shows you how to perform various maintenance tasks related to the Postgres database server used by Matrix.
