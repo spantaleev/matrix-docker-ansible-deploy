@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2020 Björn Marten
+SPDX-FileCopyrightText: 2020 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 iLyas Bakouch
+SPDX-FileCopyrightText: 2022 Kim Brose
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Appservice Webhooks bridging (optional, deprecated)
 
 **Note**: This bridge has been deprecated. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bridge instead of this one.
