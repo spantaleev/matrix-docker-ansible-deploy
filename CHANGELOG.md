@@ -787,7 +787,7 @@ If you were using these values as a way to stay away from Traefik, you now have 
 
 Now that `matrix-nginx-proxy` is not in the mix, it became easier to clear out some other long-overdue technical debt.
 
-Since the very beginning of this playbook, all playbook services were connected to a single (shared) `matrix` container network. Later on, some additional container networks appeared, but most services (database, etc.) still remained in the `matrix` container network.  This meant that any random container in this network could try to talk (or attack) the Postgres database operating in the same `matrix` network.
+Since the very beginning of this playbook, all playbook services were connected to a single (shared) `matrix` container network. Later on, some additional container networks appeared, but most services (database, etc.) still remained in the `matrix` container network. This meant that any random container in this network could try to talk (or attack) the Postgres database operating in the same `matrix` network.
 
 Moving components (especially the database) into other container networks was difficult — it required changes to many other components to ensure correct connectivity.
 
@@ -2799,12 +2799,12 @@ Until the issue gets fixed, we're making User Directory search not go to ma1sd b
 
 ## Newer IRC bridge (with potential breaking change)
 
-This upgrades matrix-appservice-irc from 0.14.1 to 0.16.0.  Upstream
-made a change to how you define manual mappings.  If you added a
+This upgrades matrix-appservice-irc from 0.14.1 to 0.16.0. Upstream
+made a change to how you define manual mappings. If you added a
 `mapping` to your configuration, you will need to update it accoring
 to the [upstream
 instructions](https://github.com/matrix-org/matrix-appservice-irc/blob/master/CHANGELOG.md#0150-2020-02-05). If you did not include `mappings` in your configuration for IRC, no
-change is necessary.  `mappings` is not part of the default
+change is necessary. `mappings` is not part of the default
 configuration.
 
 

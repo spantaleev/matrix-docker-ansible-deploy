@@ -6,7 +6,7 @@ Using the [UnifiedPush](https://unifiedpush.org) standard, ntfy enables self-hos
 
 This role is intended to support UnifiedPush notifications for use with the Matrix and Matrix-related services that this playbook installs. This role is not intended to support all of ntfy's other features.
 
-**Note**: In contrast to push notifications using Google's FCM or Apple's APNs, the use of UnifiedPush allows each end-user to choose the push notification server that they prefer.  As a consequence, deploying this ntfy server does not by itself ensure any particular user or device or client app will use it.
+**Note**: In contrast to push notifications using Google's FCM or Apple's APNs, the use of UnifiedPush allows each end-user to choose the push notification server that they prefer. As a consequence, deploying this ntfy server does not by itself ensure any particular user or device or client app will use it.
 
 ## Adjusting DNS records
 
