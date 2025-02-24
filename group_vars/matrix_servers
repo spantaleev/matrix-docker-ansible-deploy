@@ -3306,7 +3306,7 @@ backup_borg_username: "{{ matrix_user_username }}"
 backup_borg_uid: "{{ matrix_user_uid }}"
 backup_borg_gid: "{{ matrix_user_gid }}"
 
-backup_borg_docker_image_registry_prefix_upstream: "{{ backup_borg_docker_image_registry_prefix_upstream_default }}"
+backup_borg_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else backup_borg_docker_image_registry_prefix_upstream_default }}"
 
 backup_borg_container_network: "{{ postgres_container_network if postgres_enabled else backup_borg_identifier }}"
 
@@ -3658,7 +3658,7 @@ etherpad_framing_enabled: "{{ matrix_dimension_enabled or jitsi_enabled }}"
 
 etherpad_hostname: "{{ matrix_server_fqn_etherpad }}"
 
-etherpad_container_image_registry_prefix_upstream: "{{ etherpad_container_image_registry_prefix_upstream_default }}"
+etherpad_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else etherpad_container_image_registry_prefix_upstream_default }}"
 
 etherpad_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
 
@@ -3765,7 +3765,7 @@ jitsi_gid: "{{ matrix_user_gid }}"
 
 jitsi_user_username: "{{ matrix_user_username }}"
 
-jitsi_web_container_image_registry_prefix_upstream: "{{ jitsi_web_container_image_registry_prefix_upstream_default }}"
+jitsi_web_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else jitsi_web_container_image_registry_prefix_upstream_default }}"
 
 jitsi_web_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -3774,7 +3774,7 @@ jitsi_web_container_additional_networks_auto: |
     ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
   }}
 
-jitsi_jvb_container_image_registry_prefix_upstream: "{{ jitsi_jvb_container_image_registry_prefix_upstream_default }}"
+jitsi_jvb_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else jitsi_jvb_container_image_registry_prefix_upstream_default }}"
 
 jitsi_jvb_container_colibri_ws_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13090') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -3783,7 +3783,7 @@ jitsi_jvb_container_additional_networks_auto: |
     ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
   }}
 
-jitsi_prosody_container_image_registry_prefix_upstream: "{{ jitsi_prosody_container_image_registry_prefix_upstream_default }}"
+jitsi_prosody_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else jitsi_prosody_container_image_registry_prefix_upstream_default }}"
 
 jitsi_prosody_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '5280') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -3792,7 +3792,7 @@ jitsi_prosody_container_additional_networks_auto: |
     ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
   }}
 
-jitsi_jicofo_container_image_registry_prefix_upstream: "{{ jitsi_jicofo_container_image_registry_prefix_upstream_default }}"
+jitsi_jicofo_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else jitsi_jicofo_container_image_registry_prefix_upstream_default }}"
 
 jitsi_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 jitsi_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
@@ -3913,7 +3913,7 @@ exim_relay_hostname: "{{ matrix_server_fqn_matrix }}"
 
 exim_relay_sender_address: "matrix@{{ exim_relay_hostname }}"
 
-exim_relay_container_image_registry_prefix_upstream: "{{ exim_relay_container_image_registry_prefix_upstream_default }}"
+exim_relay_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else exim_relay_container_image_registry_prefix_upstream_default }}"
 
 exim_relay_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
@@ -4128,8 +4128,9 @@ postgres_systemd_services_to_stop_for_maintenance_list_auto: "{{ devture_systemd
 
 postgres_max_connections: "{{ 500 if matrix_synapse_workers_enabled else 200 }}"
 
-postgres_container_image_registry_prefix_upstream: "{{ postgres_container_image_registry_prefix_upstream_default }}"
-postgres_pgloader_container_image_registry_prefix_upstream: "{{ postgres_pgloader_container_image_registry_prefix_upstream_default }}"
+postgres_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else postgres_container_image_registry_prefix_upstream_default }}"
+
+postgres_pgloader_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else postgres_pgloader_container_image_registry_prefix_upstream_default }}"
 
 postgres_managed_databases_auto: |
   {{
@@ -4451,7 +4452,7 @@ postgres_backup_systemd_required_services_list_auto: |
     ([(postgres_identifier + '.service')] if (postgres_enabled and postgres_backup_connection_hostname == postgres_connection_hostname) else [])
   }}
 
-postgres_backup_container_image_registry_prefix_upstream: "{{ postgres_backup_container_image_registry_prefix_upstream_default }}"
+postgres_backup_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else postgres_backup_container_image_registry_prefix_upstream_default }}"
 
 postgres_backup_container_network: "{{ (postgres_container_network if (postgres_enabled and postgres_backup_connection_hostname == postgres_connection_hostname) else postgres_backup_identifier) }}"
 
@@ -4529,7 +4530,7 @@ ntfy_gid: "{{ matrix_user_gid }}"
 
 ntfy_hostname: "{{ matrix_server_fqn_ntfy }}"
 
-ntfy_container_image_registry_prefix_upstream: "{{ ntfy_container_image_registry_prefix_upstream_default }}"
+ntfy_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else ntfy_container_image_registry_prefix_upstream_default }}"
 
 ntfy_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
@@ -4569,7 +4570,7 @@ valkey_base_path: "{{ matrix_base_data_path }}/valkey"
 
 valkey_arch: "{{ matrix_architecture }}"
 
-valkey_container_image_registry_prefix_upstream: "{{ valkey_container_image_registry_prefix_upstream_default }}"
+valkey_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else valkey_container_image_registry_prefix_upstream_default }}"
 
 ######################################################################
 #
@@ -5336,7 +5337,7 @@ prometheus_node_exporter_gid: "{{ matrix_user_gid }}"
 
 prometheus_node_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
-prometheus_node_exporter_docker_image_registry_prefix_upstream: "{{ prometheus_node_exporter_docker_image_registry_prefix_upstream_default }}"
+prometheus_node_exporter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else prometheus_node_exporter_docker_image_registry_prefix_upstream_default }}"
 
 prometheus_node_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
@@ -5374,7 +5375,7 @@ prometheus_postgres_exporter_gid: "{{ matrix_user_gid }}"
 
 prometheus_postgres_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
-prometheus_postgres_exporter_docker_image_registry_prefix_upstream: "{{ prometheus_postgres_exporter_docker_image_registry_prefix_upstream_default }}"
+prometheus_postgres_exporter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else prometheus_postgres_exporter_docker_image_registry_prefix_upstream_default }}"
 
 prometheus_postgres_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
@@ -5466,7 +5467,7 @@ prometheus_base_path: "{{ matrix_base_data_path }}/prometheus"
 prometheus_uid: "{{ matrix_user_uid }}"
 prometheus_gid: "{{ matrix_user_gid }}"
 
-prometheus_container_image_registry_prefix_upstream: "{{ prometheus_container_image_registry_prefix_upstream_default }}"
+prometheus_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else prometheus_container_image_registry_prefix_upstream_default }}"
 
 prometheus_container_network: "{{ matrix_monitoring_container_network }}"
 
@@ -5577,7 +5578,7 @@ grafana_hostname: "{{ matrix_server_fqn_grafana }}"
 
 grafana_base_path: "{{ matrix_base_data_path }}/grafana"
 
-grafana_container_image_registry_prefix_upstream: "{{ grafana_container_image_registry_prefix_upstream_default }}"
+grafana_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else grafana_container_image_registry_prefix_upstream_default }}"
 
 grafana_container_network: "{{ matrix_monitoring_container_network }}"
 
@@ -6172,7 +6173,7 @@ container_socket_proxy_gid: "{{ matrix_user_gid }}"
 # Traefik requires read access to the containers APIs to do its job
 container_socket_proxy_api_containers_enabled: true
 
-container_socket_proxy_container_image_registry_prefix_upstream: "{{ container_socket_proxy_container_image_registry_prefix_upstream_default }}"
+container_socket_proxy_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else container_socket_proxy_container_image_registry_prefix_upstream_default }}"
 
 ########################################################################
 #                                                                      #
@@ -6209,7 +6210,7 @@ traefik_additional_entrypoints_auto: |
 
 traefik_config_providers_docker_endpoint: "{{ container_socket_proxy_endpoint if container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
 
-traefik_container_image_registry_prefix_upstream: "{{ traefik_container_image_registry_prefix_upstream_default }}"
+traefik_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else traefik_container_image_registry_prefix_upstream_default }}"
 
 traefik_container_additional_networks_auto: |
   {{
@@ -6247,7 +6248,7 @@ traefik_certs_dumper_gid: "{{ matrix_user_gid }}"
 
 traefik_certs_dumper_ssl_dir_path: "{{ traefik_ssl_dir_path if traefik_enabled else '' }}"
 
-traefik_certs_dumper_container_image_registry_prefix_upstream: "{{ traefik_certs_dumper_container_image_registry_prefix_upstream_default }}"
+traefik_certs_dumper_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else traefik_certs_dumper_container_image_registry_prefix_upstream_default }}"
 
 ########################################################################
 #                                                                      #
