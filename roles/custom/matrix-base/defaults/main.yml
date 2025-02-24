@@ -136,6 +136,13 @@ matrix_architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ('arm6
 # We just remap from our `matrix_architecture` values to what Debian and possibly other distros call things.
 matrix_debian_arch: "{{ 'armhf' if matrix_architecture == 'arm32' else matrix_architecture }}"
 
+# If specified, the playbook will override the default registry prefix for all components.
+#
+# This is to be used when you've mirrored all the necessary container images (from their respective registries) by yourself.
+#
+# Example value: "registry.example.com/" (note the trailing `/`).
+matrix_container_global_registry_prefix_override: ""
+
 matrix_user_username: "matrix"
 matrix_user_groupname: "matrix"
 
