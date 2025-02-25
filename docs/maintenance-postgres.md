@@ -5,7 +5,7 @@ SPDX-FileCopyrightText: 2020 Hardy Erlinger
 SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
 SPDX-FileCopyrightText: 2021 Marc Leuser
 SPDX-FileCopyrightText: 2024 Kim Brose
-SPDX-FileCopyrightText: 2024 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -23,7 +23,7 @@ Table of contents:
 
 ## Getting a database terminal
 
-You can use the `/matrix/postgres/bin/cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/11/app-psql.html)) to the PostgreSQL server.
+You can use the `/matrix/postgres/bin/cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/current/app-psql.html)) to the PostgreSQL server.
 
 If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above tool will not be available.
 
@@ -59,9 +59,9 @@ Example playbook invocations:
 
 ## Backing up PostgreSQL
 
-To automatically make Postgres database backups on a fixed schedule, see [Setting up Postgres backup](configuring-playbook-postgres-backup.md).
+To automatically make Postgres database backups on a fixed schedule, consider enabling the [Postgres Backup](configuring-playbook-postgres-backup.md) service.
 
-To make a one off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
+To make a one-off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
 
 ```sh
 /usr/bin/docker exec \
