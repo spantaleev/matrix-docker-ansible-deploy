@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 Noah Fleischmann
+SPDX-FileCopyrightText: 2019 - 2020 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2020 Justin Croonenberghs
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up ma1sd Identity Server (optional)
 
 **⚠️Note**: ma1sd itself has also been unmaintained for years (the latest commit and release being from 2021). The role of identity servers in the Matrix specification also has an uncertain future. **We recommend not bothering with installing it unless it's the only way you can do what you need to do**. For example, certain things like LDAP integration can also be implemented via [the LDAP provider module for Synapse](./configuring-playbook-ldap-auth.md).
