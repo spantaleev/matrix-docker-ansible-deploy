@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2019 Hugues Morisset
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2022 László Várady
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Facebook bridging (optional, deprecated)
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
