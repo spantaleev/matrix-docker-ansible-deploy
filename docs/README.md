@@ -19,7 +19,7 @@ There are two installation guides available for beginners and advanced users.
 
     - [Prerequisites](prerequisites.md)
 
-    - [Configuring your DNS settings](configuring-dns.md)
+    - [Configuring DNS settings](configuring-dns.md)
 
     - [Getting the playbook](getting-the-playbook.md)
 
