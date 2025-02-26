@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring conduwuit (optional)
 
 The playbook can install and configure the [conduwuit](https://conduwuit.puppyirl.gay/) Matrix server for you.

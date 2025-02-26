@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2025 Nikita Chernyi
+SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up FluffyChat Web (optional)
 
 The playbook can install and configure the [FluffyChat Web](https://github.com/krille-chan/fluffychat) Matrix client for you.
