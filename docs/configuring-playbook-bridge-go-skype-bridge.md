@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2022 Vladimir Panteleev
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Go Skype Bridge bridging (optional)
 
 The playbook can install and configure [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) for you, for bridging to [Skype](https://www.skype.com/). This bridge was created based on [mautrix-whatsapp](https://github.com/mautrix/whatsapp) and can be configured in a similar way to it.
