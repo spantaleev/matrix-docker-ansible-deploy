@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Cactus Comments (optional)
 
 The playbook can install and configure the [Cactus Comments](https://cactus.chat) system for you.
