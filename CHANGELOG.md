@@ -1,3 +1,12 @@
+# 2025-02-26
+
+## 🪦 Bye-bye, Email2Matrix
+
+The [Email2Matrix](./docs/configuring-playbook-email2matrix.md) service has been superseded by the [Postmoogle](./docs/configuring-playbook-bridge-postmoogle.md) bridge for a long time now and was completely removed from the playbook today.
+
+If you still have the Email2Matrix component installed on your Matrix server, the playbook can no longer help you uninstall it and you will need to do it manually as described in the [Uninstalling Email2Matrix manually](./docs/configuring-playbook-email2matrix.md#uninstalling-email2matrix-manually) section of the documentation. The playbook will warn you if there are any `matrix_email2matrix_*` variables still remaining in your configuration.
+
+
 # 2025-02-23
 
 ## The playbook defaults to exposing the Coturn STUN port (3478) over UDP once again

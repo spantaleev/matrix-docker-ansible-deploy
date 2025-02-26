@@ -38,7 +38,6 @@ Possibly outdated list of roles where self-building the Docker image is currentl
 - `matrix-bot-honoroit`
 - `matrix-bot-matrix-reminder-bot`
 - `matrix-bot-maubot`
-- `matrix-email2matrix`
 - `matrix-pantalaimon`
 
 Adding self-building support to other roles is welcome. Feel free to contribute!

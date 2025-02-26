@@ -3716,36 +3716,6 @@ matrix_dynamic_dns_container_network: matrix-dynamic-dns
 
 ######################################################################
 #
-# matrix-email2matrix
-#
-######################################################################
-
-matrix_email2matrix_enabled: false
-
-matrix_email2matrix_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-  }}
-
-matrix_email2matrix_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_email2matrix_docker_image_registry_prefix_upstream_default }}"
-
-matrix_email2matrix_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
-
-matrix_email2matrix_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_email2matrix_container_additional_networks_auto: |-
-  {{
-    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-  }}
-
-######################################################################
-#
-# /matrix-email2matrix
-#
-######################################################################
-
-######################################################################
-#
 # jitsi
 #
 ######################################################################
