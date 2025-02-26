@@ -2919,20 +2919,23 @@ media_instance_running_background_jobs: {{ matrix_synapse_media_instance_running
 redis:
   # Uncomment the below to enable Redis support.
   #
-  enabled: {{ matrix_synapse_redis_enabled }}
+  enabled: {{ matrix_synapse_redis_enabled | to_json }}
 
   # Optional host and port to use to connect to redis. Defaults to
   # localhost and 6379
   #
-  host: {{ matrix_synapse_redis_host }}
-  port: {{ matrix_synapse_redis_port }}
+  host: {{ matrix_synapse_redis_host | to_json }}
+  port: {{ matrix_synapse_redis_port | to_json }}
 
   # Optional database ID to connect to. Defaults to 0.
-  dbid: {{ matrix_synapse_redis_dbid }}
+  dbid: {{ matrix_synapse_redis_dbid | to_json }}
 
   # Optional password if configured on the Redis instance
-  #
-  password: {{ matrix_synapse_redis_password }}
+  {% if matrix_synapse_redis_password %}
+  password: {{ matrix_synapse_redis_password | to_json }}
+  {% endif %}
+
+  use_tls: {{ matrix_synapse_redis_use_tls | to_json }}
 
 
 ## Background Updates ##
