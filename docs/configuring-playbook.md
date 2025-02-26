@@ -257,15 +257,15 @@ Various services that don't fit any other categories.
 
 - [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like old Element X versions, before it got switched to Simplified Sliding Sync)
 
-- [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
+- [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md))
 
 - [Setting up the Dimension integration manager](configuring-playbook-dimension.md) ([unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
 
-- [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (removed; the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-postmoogle.md))
+- [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (removed; the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-postmoogle.md))
 
-- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (unmaintained; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
+- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (unmaintained; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md))
 
-- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bot-baibot.md))
+- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bot-baibot.md))
 
 - [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-messenger](configuring-playbook-bridge-mautrix-meta-messenger.md))
 

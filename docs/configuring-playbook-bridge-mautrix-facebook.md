@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
-**Note**: This bridge has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, which can be installed using [this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md). Consider using that bridge instead of this one.
+**Note**: This bridge has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, which can be [installed using this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md). Consider using that bridge instead of this one.
 
 The playbook can install and configure [mautrix-facebook](https://github.com/mautrix/facebook) for you.
 

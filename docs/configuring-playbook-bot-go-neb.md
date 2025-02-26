@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Setting up Go-NEB (optional, unmaintained)
 
-**Note**: [Go-NEB](https://github.com/matrix-org/go-neb) is now an archived (**unmaintained**) project. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bot instead of this one.
+**Note**: [Go-NEB](https://github.com/matrix-org/go-neb) is now an archived (**unmaintained**) project. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bot instead of this one.
 
 The playbook can install and configure [Go-NEB](https://github.com/matrix-org/go-neb) for you.
 
