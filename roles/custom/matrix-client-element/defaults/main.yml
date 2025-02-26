@@ -10,13 +10,13 @@ matrix_client_element_container_image_self_build_repo: "https://github.com/eleme
 # - https://github.com/element-hq/element-web/issues/19544
 matrix_client_element_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_memtotal_mb < 4096 }}"
 
-# renovate: datasource=docker depName=vectorim/element-web
+# renovate: datasource=docker depName=ghcr.io/element-hq/element-web
 matrix_client_element_version: v1.11.93
 
-matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_registry_prefix }}vectorim/element-web:{{ matrix_client_element_version }}"
+matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_registry_prefix }}element-hq/element-web:{{ matrix_client_element_version }}"
 matrix_client_element_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else matrix_client_element_docker_image_registry_prefix_upstream }}"
 matrix_client_element_docker_image_registry_prefix_upstream: "{{ matrix_client_element_docker_image_registry_prefix_upstream_default }}"
-matrix_client_element_docker_image_registry_prefix_upstream_default: docker.io/
+matrix_client_element_docker_image_registry_prefix_upstream_default: ghcr.io/
 matrix_client_element_docker_image_force_pull: "{{ matrix_client_element_docker_image.endswith(':latest') }}"
 
 matrix_client_element_data_path: "{{ matrix_base_data_path }}/client-element"
