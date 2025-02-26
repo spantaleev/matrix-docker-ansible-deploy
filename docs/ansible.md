@@ -38,7 +38,7 @@ If using the `pip` method, do note that the `ansible-playbook` binary may not be
 
 ## Using Ansible via Docker
 
-Alternatively, you can run Ansible inside a Docker container (powered by the [devture/ansible](https://hub.docker.com/r/devture/ansible/) Docker image).
+Alternatively, you can run Ansible inside a Docker container (powered by the [ghcr.io/devture/ansible](https://github.com/devture/docker-ansible/pkgs/container/ansible) Docker image).
 
 This ensures that:
 
@@ -63,13 +63,15 @@ Alternatively, you can leave your `inventory/hosts` as is and specify the connec
 Run this from the playbook's directory:
 
 ```sh
-docker run -it --rm \
+docker run \
+-it \
+--rm \
 --privileged \
 --pid=host \
 -w /work \
--v `pwd`:/work \
+--mount type=bind,src=`pwd`,dst=/work \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.18.1-r0-2
+ghcr.io/devture/ansible:11.1.0-r0-0
 ```
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code.
@@ -83,15 +85,17 @@ Finally, you can execute `just` or `ansible-playbook …` (e.g. `ansible-playboo
 Run this from the playbook's directory:
 
 ```sh
-docker run -it --rm \
+docker run \
+-it \
+--rm \
 -w /work \
--v `pwd`:/work \
--v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
+--mount type=bind,src=`pwd`,dst=/work \
+--mount type=bind,src$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.18.1-r0-2
+ghcr.io/devture/ansible:11.1.0-r0-0
 ```
 
-The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`). If your SSH key is at a different path (not in `$HOME/.ssh/id_rsa`), adjust that part.
+The above command tries to mount an SSH key (`$HOME/.ssh/id_ed25519`) into the container (at `/root/.ssh/id_ed25519`). If your SSH key is at a different path (not in `$HOME/.ssh/id_ed25519`), adjust that part.
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code.
 
@@ -101,7 +105,7 @@ Finally, you execute `just` or `ansible-playbook …` commands as per normal now
 
 #### If you don't use SSH keys for authentication
 
-If you don't use SSH keys for authentication, simply remove that whole line (`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro`).
+If you don't use SSH keys for authentication, simply remove that whole line (`--mount type=bind,src$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro`).
 
 To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (the previously used `docker run -it …` command), run:
 
