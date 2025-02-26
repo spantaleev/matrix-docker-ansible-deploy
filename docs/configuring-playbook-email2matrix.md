@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2025 Slavi Pantaleev
 SPDX-FileCopyrightText: 2022 Dennis Ciba
 SPDX-FileCopyrightText: 2022 Nikita Chernyi
 SPDX-FileCopyrightText: 2024 MDAD project contributors
@@ -8,7 +8,7 @@ SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Setting up Email2Matrix (optional, deprecated)
+# Setting up Email2Matrix (optional, removed)
 
 🪦 The playbook used to be able to install and configure [Email2Matrix](https://github.com/devture/email2matrix), but no longer includes this component.
 
