@@ -1,3 +1,20 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2022 Aaron Raimist
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Cody Neiman
+SPDX-FileCopyrightText: 2021 Dan Arnfield
+SPDX-FileCopyrightText: 2021 Marcus Proest
+SPDX-FileCopyrightText: 2021 Matthew Cengia
+SPDX-FileCopyrightText: 2022 Cody Wyatt Neiman
+SPDX-FileCopyrightText: 2022 Julian Foad
+SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2023 Shreyas Ajjarapu
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Container images used by the playbook
 
 This page summarizes the container ([Docker](https://www.docker.com/)) images used by the playbook when setting up your server.
