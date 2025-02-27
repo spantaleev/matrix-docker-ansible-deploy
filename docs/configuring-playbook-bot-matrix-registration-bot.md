@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2022 - 2023 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Erick Wibben
+SPDX-FileCopyrightText: 2022 Kolja Lampe
+SPDX-FileCopyrightText: 2023 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up matrix-registration-bot (optional)
 
 The playbook can install and configure [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) for you.

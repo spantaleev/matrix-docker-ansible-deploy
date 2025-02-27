@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Marko Weltzer
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mjolnir (optional)
 
 The playbook can install and configure the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot for you.
