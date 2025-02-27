@@ -1,3 +1,21 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020 - 2021 Agustin Ferrario
+SPDX-FileCopyrightText: 2020 Eneko Nieto
+SPDX-FileCopyrightText: 2020 Julian Foad
+SPDX-FileCopyrightText: 2020 Tomas Strand
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2021 Colin Shea
+SPDX-FileCopyrightText: 2022 François Darveau
+SPDX-FileCopyrightText: 2022 Jaden Down
+SPDX-FileCopyrightText: 2023 - 2024 Jost Alemann
+SPDX-FileCopyrightText: 2023 Tilo Spannagel
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Using your own webserver, instead of this playbook's Traefik reverse-proxy (optional, advanced)
 
 By default, this playbook installs its own [Traefik](https://traefik.io/) reverse-proxy server (in a Docker container) which listens on ports 80 and 443. If that's okay, you can skip this document.
