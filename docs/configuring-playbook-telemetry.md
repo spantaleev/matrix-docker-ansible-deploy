@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Aki Salminen
+SPDX-FileCopyrightText: 2022 Aaron Raimist
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Enabling Telemetry for your Matrix server (optional)
 
 By default, this playbook configures your Matrix homeserver to not send any telemetry data anywhere.
