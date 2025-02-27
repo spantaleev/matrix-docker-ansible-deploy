@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the Sygnal push gateway (optional)
 
 The playbook can install and configure the [Sygnal](https://github.com/matrix-org/sygnal) push gateway for you.
