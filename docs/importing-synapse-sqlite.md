@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Importing an existing SQLite database from another Synapse installation (optional)
 
 You can manually import your database from a previous default installation of Synapse.
