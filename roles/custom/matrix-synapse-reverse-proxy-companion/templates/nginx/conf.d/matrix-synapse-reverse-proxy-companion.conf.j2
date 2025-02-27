@@ -29,7 +29,6 @@
 	{% for location in locations %}
 	location ~ {{ location }} {
 		proxy_pass http://{{ upstream_name }}$request_uri;
-		proxy_set_header Host $host;
 		proxy_http_version 1.1;
 		proxy_set_header Connection "";
 	}
@@ -96,6 +95,7 @@ server {
 
 	proxy_buffering on;
 	proxy_max_temp_file_size 0;
+	proxy_set_header Host $host;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
 		# Client-server overrides — These locations must go to the main Synapse process
@@ -105,8 +105,6 @@ server {
 			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
 			proxy_pass http://$backend;
-
-			proxy_set_header Host $host;
 		}
 
 		# Client-server SSO overrides — These locations must go to the main Synapse process
@@ -116,8 +114,6 @@ server {
 			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
 			proxy_pass http://$backend;
-
-			proxy_set_header Host $host;
 		}
 
 		# QR code login (`rendezvous`) locations need to go to the same Synapse process.
@@ -129,8 +125,6 @@ server {
 			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
 			proxy_pass http://$backend;
-
-			proxy_set_header Host $host;
 		}
 
 		{# Workers redirects BEGIN #}
@@ -191,7 +185,6 @@ server {
 			{% for location in matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://media_repository_workers_upstream$request_uri;
-				proxy_set_header Host $host;
 
 				{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
 					proxy_cache            {{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_name }};
@@ -220,8 +213,6 @@ server {
 		resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
 		set $backend "{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}";
 		proxy_pass http://$backend;
-
-		proxy_set_header Host $host;
 	}
 }
 
@@ -238,6 +229,7 @@ server {
 
 	proxy_buffering on;
 	proxy_max_temp_file_size 0;
+	proxy_set_header Host $host;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
 		# Federation overrides — These locations must go to the main Synapse process
@@ -247,8 +239,6 @@ server {
 			resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
 			set $backend "{{ matrix_synapse_reverse_proxy_companion_federation_api_addr }}";
 			proxy_pass http://$backend;
-
-			proxy_set_header Host $host;
 		}
 
 		{% if room_workers | length > 0 %}
@@ -266,7 +256,6 @@ server {
 			{% for location in matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations %}
 			location ~ {{ location }} {
 				proxy_pass http://media_repository_workers_upstream$request_uri;
-				proxy_set_header Host $host;
 
 				{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
 					proxy_buffering        on;
@@ -303,8 +292,6 @@ server {
 		resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
 		set $backend "{{ matrix_synapse_reverse_proxy_companion_federation_api_addr }}";
 		proxy_pass http://$backend;
-
-		proxy_set_header Host $host;
 	}
 }
 {% endif %}
