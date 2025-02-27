@@ -203,14 +203,26 @@ matrix_synapse_reverse_proxy_companion_hostname: "matrix-synapse-reverse-proxy-c
 
 # matrix_synapse_reverse_proxy_companion_client_api_addr specifies the address where the Client-Server API is
 matrix_synapse_reverse_proxy_companion_client_api_addr: 'matrix-synapse:{{ matrix_synapse_container_client_api_port }}'
+
+# The maximum body size for client requests to any of the endpoints on the Client-Server API.
 # This needs to be equal or higher than the maximum upload size accepted by Synapse.
-matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb: 50
+matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb: 100
+
+# The buffer size for client requests to any of the endpoints on the Client-Server API.
+matrix_synapse_reverse_proxy_companion_client_api_client_body_buffer_size_mb: "{{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}"
 
 # matrix_synapse_reverse_proxy_companion_federation_api_enabled specifies whether reverse proxying for the Federation (Server-Server) API should be done
 matrix_synapse_reverse_proxy_companion_federation_api_enabled: true
 # matrix_synapse_reverse_proxy_companion_federation_api_addr specifies the address where the Federation (Server-Server) API is
 matrix_synapse_reverse_proxy_companion_federation_api_addr: 'matrix-synapse:{{ matrix_synapse_container_federation_api_plain_port }}'
-matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb: "{{ (matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb | int) * 3 }}"
+
+# The maximum body size for client requests to any of the endpoints on the Federation API.
+# We auto-calculate this based on the Client-Server API's maximum body size, but use a minimum value to ensure we don't go to low.
+matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb: "{{ [matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb_minimum, (matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb | int) * 3] | max }}"
+matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb_minimum: 100
+
+# The buffer size for client requests to any of the endpoints on the Federation API.
+matrix_synapse_reverse_proxy_companion_federation_api_client_body_buffer_size_mb: "{{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}"
 
 # A list of strings containing additional configuration blocks to add to the nginx vhost handling the Synapse Client-Server API
 matrix_synapse_reverse_proxy_companion_synapse_client_api_additional_server_configuration_blocks: []

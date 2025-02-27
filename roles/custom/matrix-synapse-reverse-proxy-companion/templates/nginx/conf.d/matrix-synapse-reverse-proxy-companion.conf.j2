@@ -91,6 +91,12 @@ server {
 	server_tokens off;
 	root /dev/null;
 
+	client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
+	client_body_buffer_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_body_buffer_size_mb }}M;
+
+	proxy_buffering on;
+	proxy_max_temp_file_size 0;
+
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
 		# Client-server overrides — These locations must go to the main Synapse process
 		location ~ {{ matrix_synapse_reverse_proxy_companion_client_server_main_override_locations_regex }} {
@@ -101,10 +107,6 @@ server {
 			proxy_pass http://$backend;
 
 			proxy_set_header Host $host;
-
-			client_body_buffer_size 25M;
-			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
-			proxy_max_temp_file_size 0;
 		}
 
 		# Client-server SSO overrides — These locations must go to the main Synapse process
@@ -116,10 +118,6 @@ server {
 			proxy_pass http://$backend;
 
 			proxy_set_header Host $host;
-
-			client_body_buffer_size 25M;
-			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
-			proxy_max_temp_file_size 0;
 		}
 
 		# QR code login (`rendezvous`) locations need to go to the same Synapse process.
@@ -133,10 +131,6 @@ server {
 			proxy_pass http://$backend;
 
 			proxy_set_header Host $host;
-
-			client_body_buffer_size 25M;
-			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
-			proxy_max_temp_file_size 0;
 		}
 
 		{# Workers redirects BEGIN #}
@@ -199,12 +193,7 @@ server {
 				proxy_pass http://media_repository_workers_upstream$request_uri;
 				proxy_set_header Host $host;
 
-				client_body_buffer_size 25M;
-				client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
-				proxy_max_temp_file_size 0;
-
 				{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
-					proxy_buffering        on;
 					proxy_cache            {{ matrix_synapse_reverse_proxy_companion_synapse_cache_keys_zone_name }};
 					proxy_cache_valid      any {{ matrix_synapse_reverse_proxy_companion_synapse_cache_proxy_cache_valid_time }};
 					proxy_force_ranges on;
@@ -233,10 +222,6 @@ server {
 		proxy_pass http://$backend;
 
 		proxy_set_header Host $host;
-
-		client_body_buffer_size 25M;
-		client_max_body_size {{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}M;
-		proxy_max_temp_file_size 0;
 	}
 }
 
@@ -246,8 +231,13 @@ server {
 	server_name {{ matrix_synapse_reverse_proxy_companion_hostname }};
 
 	server_tokens off;
-
 	root /dev/null;
+
+	client_max_body_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}M;
+	client_body_buffer_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_body_buffer_size_mb }}M;
+
+	proxy_buffering on;
+	proxy_max_temp_file_size 0;
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
 		# Federation overrides — These locations must go to the main Synapse process
@@ -259,10 +249,6 @@ server {
 			proxy_pass http://$backend;
 
 			proxy_set_header Host $host;
-
-			client_body_buffer_size 25M;
-			client_max_body_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}M;
-			proxy_max_temp_file_size 0;
 		}
 
 		{% if room_workers | length > 0 %}
@@ -281,10 +267,6 @@ server {
 			location ~ {{ location }} {
 				proxy_pass http://media_repository_workers_upstream$request_uri;
 				proxy_set_header Host $host;
-
-				client_body_buffer_size 25M;
-				client_max_body_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}M;
-				proxy_max_temp_file_size 0;
 
 				{% if matrix_synapse_reverse_proxy_companion_synapse_cache_enabled %}
 					proxy_buffering        on;
@@ -323,10 +305,6 @@ server {
 		proxy_pass http://$backend;
 
 		proxy_set_header Host $host;
-
-		client_body_buffer_size 25M;
-		client_max_body_size {{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}M;
-		proxy_max_temp_file_size 0;
 	}
 }
 {% endif %}
