@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Appservice Double Puppet (optional)
 
 The playbook can install and configure the Appservice Double Puppet service for you. It is a homeserver appservice through which bridges (and potentially other services) can impersonate any user on the homeserver.
