@@ -11,7 +11,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v1.4.1
+matrix_bot_baibot_version: v1.5.0
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_registry_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else matrix_bot_baibot_container_image_registry_prefix_upstream }}"
 matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
@@ -88,6 +88,10 @@ matrix_bot_baibot_config_user_encryption_recovery_reset_allowed: false
 # Controls the `command_prefix` configuration setting.
 # If you leave this empty, the bot will use the default (!bai).
 matrix_bot_baibot_config_command_prefix: "!bai"
+
+# Controls the `room.post_join_self_introduction_enabled` configuration setting.
+# Influences whether the bot should send an introduction message after joining a room.
+matrix_bot_baibot_config_room_post_join_self_introduction_enabled: true
 
 # Controls the `access.admin_patterns` configuration setting.
 # A space-separated list of MXID patterns which specify who is an admin.
@@ -366,6 +370,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation
 # See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_temperature: 1.0
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_response_tokens: 16384
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_completion_tokens: ~
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_context_tokens: 128000
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_enabled: true
