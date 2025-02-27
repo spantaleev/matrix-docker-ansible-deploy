@@ -1,3 +1,17 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Horvath Gergely
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
+SPDX-FileCopyrightText: 2022 Arthur Brugière
+SPDX-FileCopyrightText: 2023 Shreyas Ajjarapu
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Self-building
 
 **Caution: self-building does not have to be used on its own. See the [Alternative Architectures](alternative-architectures.md) page.**
