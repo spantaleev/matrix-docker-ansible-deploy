@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Jim Myhrberg
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Appservice Discord bridging (optional)
 
 **Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) bridges supported by the playbook.
