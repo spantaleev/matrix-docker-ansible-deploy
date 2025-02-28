@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Kim Brose
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Paul Tötterman
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up matrix-hookshot (optional)
 
 The playbook can install and configure [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) for you.

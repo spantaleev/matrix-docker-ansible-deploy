@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2020 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Matrix SMS bridging (optional)
 
 The playbook can install and configure [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) for you.

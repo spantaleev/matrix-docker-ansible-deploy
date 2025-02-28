@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2020 Scott Crossen
+SPDX-FileCopyrightText: 2020 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Dynamic DNS (optional)
 
 The playbook can configure Dynamic DNS with [ddclient⁠](https://github.com/ddclient/ddclient) for you. It is a Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider.
