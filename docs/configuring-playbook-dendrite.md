@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Dendrite (optional)
 
 The playbook can install and configure the [Dendrite](https://github.com/element-hq/dendrite) Matrix server for you.
