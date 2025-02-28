@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2019 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2020 Marcel Partap
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the REST authentication password provider module (optional, advanced)
 
 The playbook can install and configure [matrix-synapse-rest-auth](https://github.com/ma1uta/matrix-synapse-rest-password-provider) for you.

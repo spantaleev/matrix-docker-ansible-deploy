@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2020 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the Shared Secret Auth password provider module (optional, advanced)
 
 The playbook can install and configure [matrix-synapse-shared-secret-auth](https://github.com/devture/matrix-synapse-shared-secret-auth) for you.

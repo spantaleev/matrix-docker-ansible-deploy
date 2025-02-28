@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the LDAP authentication password provider module (optional, advanced)
 
 The playbook can install and configure the [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) LDAP Auth password provider for you.
