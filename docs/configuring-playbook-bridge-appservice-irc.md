@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2021 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Lee Verberne
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Appservice IRC bridging (optional)
 
 **Note**: bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) can also happen via the [Heisenbridge](configuring-playbook-bridge-heisenbridge.md) bridge supported by the playbook.
