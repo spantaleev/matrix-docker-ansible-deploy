@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2021 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Google Chat bridging (optional)
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>

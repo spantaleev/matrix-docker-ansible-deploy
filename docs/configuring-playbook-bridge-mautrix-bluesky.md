@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Bluesky bridging (optional)
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
