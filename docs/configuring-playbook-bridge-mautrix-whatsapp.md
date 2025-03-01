@@ -1,3 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 Hugues Morisset
+SPDX-FileCopyrightText: 2021 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Marko Weltzer
+SPDX-FileCopyrightText: 2023 James Collier
+SPDX-FileCopyrightText: 2023 Kuba Orlik
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Whatsapp bridging (optional)
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
