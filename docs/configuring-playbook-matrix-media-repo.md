@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Michael Hollister
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Storing Matrix media files using matrix-media-repo (optional)
 
 The playbook can install and configure [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/) (often abbreviated "MMR") for you.
