@@ -1,3 +1,19 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 Hugues Morisset
+SPDX-FileCopyrightText: 2020 - 2021 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Sabine Laszakovits
+SPDX-FileCopyrightText: 2021 Julian Foad
+SPDX-FileCopyrightText: 2021 Wolfgang Winter
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Marko Weltzer
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Benjamin Kampmann
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Signal bridging (optional)
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
