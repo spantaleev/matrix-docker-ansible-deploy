@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2019 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Synapse Simple Antispam (optional, advanced)
 
 The playbook can install and configure [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) for you.
