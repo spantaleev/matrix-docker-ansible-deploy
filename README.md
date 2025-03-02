@@ -92,7 +92,7 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) (advanced) | ❌ | LDAP Auth password provider module | [Link](docs/configuring-playbook-ldap-auth.md) |
 | [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) (advanced) | ❌ | Proxy that handles Matrix registration requests and forwards them to LDAP | [Link](docs/configuring-playbook-matrix-ldap-registration-proxy.md) |
 | [matrix-registration](https://github.com/ZerataX/matrix-registration) | ❌ | Simple python application to have a token based Matrix registration | [Link](docs/configuring-playbook-matrix-registration.md) |
-| [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (UVS) | ❌ | Service to verify details of a user based on an Open ID token | [Link](docs/configuring-playbook-user-verification-service.md) |
+| [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) | ❌ | Service to verify details of a user based on an Open ID token | [Link](docs/configuring-playbook-user-verification-service.md) |
 | [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) (advanced) | ❌ | Spam checker module | [Link](docs/configuring-playbook-synapse-simple-antispam.md) |
 
 ### File Storage
