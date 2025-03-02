@@ -85,6 +85,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
+| [mautrix-bluesky](configuring-playbook-bridge-mautrix-bluesky.md) | [mautrix/bluesky](https://mau.dev/mautrix/bluesky/container_registry) | ❌ | Bridge to [Bluesky](https://bsky.social/about) |
 | [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) | [mautrix/discord](https://mau.dev/mautrix/discord/container_registry) | ❌ | Bridge to [Discord](https://discord.com/) |
 | [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) | [mautrix/slack](https://mau.dev/mautrix/slack/container_registry) | ❌ | Bridge to [Slack](https://slack.com/) |
 | [mautrix-telegram](configuring-playbook-bridge-mautrix-telegram.md) | [mautrix/telegram](https://mau.dev/mautrix/telegram/container_registry) | ❌ | Bridge to [Telegram](https://telegram.org/) |
