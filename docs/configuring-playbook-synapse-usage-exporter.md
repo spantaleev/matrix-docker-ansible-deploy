@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Michael Hollister
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Enabling synapse-usage-exporter for Synapse usage statistics (optional)
 
 The playbook can install and configure [synapse-usage-exporter](https://github.com/loelkes/synapse-usage-exporter) for you.
