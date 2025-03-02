@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2022 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2023 Cody Wyatt Neiman
+SPDX-FileCopyrightText: 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider (optional)
 
 If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse.
