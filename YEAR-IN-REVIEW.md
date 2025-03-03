@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # 2023
 
 2023 was a year filled with many changes for matrix-docker-ansible-deploy. In this post, we're looking backward at some of the major changes that happened this year, as well as taking a glimpse of what's ahead in 2024.
