@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2021 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Sergei Shikalov
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Daniel Vinci
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Synapse (optional)
 
 By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case. If that's okay, you can skip this document.
