@@ -120,11 +120,13 @@ Extend and modify how users are authenticated on your homeserver.
 
 Use alternative file storage to the default `media_store` folder.
 
-- [Storing Synapse media files on Amazon S3 with Goofys](configuring-playbook-s3-goofys.md)
+- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
 - [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
 
-- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
+- [Storing Synapse media files on Amazon S3 with Goofys](configuring-playbook-s3-goofys.md)
+
+- [Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md)
 
 ### Bridging other networks
 
