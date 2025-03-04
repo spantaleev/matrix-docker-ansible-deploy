@@ -2,16 +2,20 @@
 SPDX-FileCopyrightText: 2022 - 2023 Slavi Pantaleev
 SPDX-FileCopyrightText: 2023 Cody Wyatt Neiman
 SPDX-FileCopyrightText: 2023 MDAD project contributors
-SPDX-FileCopyrightText: 2024 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 # Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider (optional)
 
-If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse.
+The playbook can install and configure the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) for you.
 
-An alternative (which has worse performance) is to use [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md).
+It is a media provider module for Synapse to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service) object storage.
+
+See the project's [documentation](https://github.com/matrix-org/synapse-s3-storage-provider/blob/main/README.md) to learn what it does and why it might be useful to you.
+
+**Note**: alternatively you can use [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md) despite worse performance.
 
 ## How it works?
 
@@ -61,6 +65,19 @@ There are some additional things you may wish to configure about the server.
 Take a look at:
 
 - `roles/custom/matrix-synapse/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
+## Installing
+
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
+
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
