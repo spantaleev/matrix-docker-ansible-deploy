@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Ed Geraghty
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring the Traefik reverse-proxy (optional, advanced)
 
 By default, this playbook installs and manages a [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server, powered by the [ansible-role-traefik](https://github.com/mother-of-all-self-hosting/ansible-role-traefik) Ansible role for you. If that's okay, you can skip this document.
