@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2023 Kim Brose
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Draupnir (optional)
 
 The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.

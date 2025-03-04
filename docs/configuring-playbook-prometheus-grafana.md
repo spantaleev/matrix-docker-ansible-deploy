@@ -1,3 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2021 Kim Brose
+SPDX-FileCopyrightText: 2021 Luca Di Carlo
+SPDX-FileCopyrightText: 2022 Olivér Falvai
+SPDX-FileCopyrightText: 2023 Michael Hollister
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server (optional)
 
 The playbook can install [Prometheus](https://prometheus.io/) with [Grafana](https://grafana.com/) and configure performance metrics of your homeserver with graphs for you.
