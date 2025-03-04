@@ -5,7 +5,7 @@ SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Storing Matrix media files on Amazon S3 with Goofys (optional)
+# Storing Synapse media files on Amazon S3 with Goofys (optional)
 
 The playbook can install and configure [Goofys](https://github.com/kahing/goofys) for you.
 
