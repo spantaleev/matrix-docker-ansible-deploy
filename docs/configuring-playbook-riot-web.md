@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Riot-web (optional)
 
 By default, this playbook **used to install** the [Riot-web](https://github.com/element-hq/riot-web) Matrix client web application.
