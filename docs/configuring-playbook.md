@@ -30,7 +30,7 @@ If you've configured your DNS records and retrieved the playbook's source code t
 
 5. edit the inventory hosts file (`inventory/hosts`) to your liking
 
-6. (optional, advanced) you may wish to keep your `inventory` directory under version control with [git](https://git-scm.com/) or any other version-control system.
+6. (optional, advanced) you may wish to keep your `inventory` directory under version control with [git](https://git-scm.com/) or any other version-control system. The `inventory` directory path is ignored via `.gitignore`, so it won't be part of the playbook repository. You can safely create a new git repository inside that directory with `git init`, etc.
 
 7. (optional, advanced) to run Ansible against multiple servers with different `sudo` credentials, you can copy the sample inventory hosts yaml file for each of your hosts: (`cp examples/host.yml inventory/my_host1.yml` …) and use the [`ansible-all-hosts.sh`](../bin/ansible-all-hosts.sh) script [in the installation step](installing.md).
 
