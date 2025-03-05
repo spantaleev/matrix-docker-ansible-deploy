@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2020 Hugues Morisset
 SPDX-FileCopyrightText: 2020 - 2021 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Hugues Morisset
 SPDX-FileCopyrightText: 2020 Panagiotis Vasilopoulos
 SPDX-FileCopyrightText: 2024 Suguru Hirahara
 

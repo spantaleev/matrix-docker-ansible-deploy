@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
 SPDX-FileCopyrightText: 2018 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
 SPDX-FileCopyrightText: 2020 Sabine Laszakovits
 SPDX-FileCopyrightText: 2021 Cody Neiman
 SPDX-FileCopyrightText: 2021 Matthew Cengia

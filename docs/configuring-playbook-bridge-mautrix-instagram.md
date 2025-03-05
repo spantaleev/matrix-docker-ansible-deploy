@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2021 Marcus Proest
 SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Marcus Proest
 SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 

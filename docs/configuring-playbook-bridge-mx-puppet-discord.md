@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2020 Hugues Morisset
 SPDX-FileCopyrightText: 2020 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Hugues Morisset
 SPDX-FileCopyrightText: 2022 MDAD project contributors
 SPDX-FileCopyrightText: 2024 Suguru Hirahara
 

@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2020 Björn Marten
 SPDX-FileCopyrightText: 2020 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Björn Marten
 SPDX-FileCopyrightText: 2020 Slavi Pantaleev
 SPDX-FileCopyrightText: 2020 iLyas Bakouch
 SPDX-FileCopyrightText: 2022 Kim Brose

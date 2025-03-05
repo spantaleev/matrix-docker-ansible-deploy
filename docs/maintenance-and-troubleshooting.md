@@ -1,7 +1,7 @@
 <!--
 SPDX-FileCopyrightText: 2018 Aaron Raimist
-SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2019 - 2020 MDAD project contributors
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2019 Noah Fleischmann
 SPDX-FileCopyrightText: 2020 Marcel Partap
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara

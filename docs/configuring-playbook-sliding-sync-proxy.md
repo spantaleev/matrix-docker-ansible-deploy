@@ -1,11 +1,11 @@
 <!--
 SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2023 Justin Croonenberghs
-SPDX-FileCopyrightText: 2023 Samuel Meenzen
 SPDX-FileCopyrightText: 2023 Kuba Orlik
 SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
-SPDX-FileCopyrightText: 2024 Fabio Bonelli
+SPDX-FileCopyrightText: 2023 Samuel Meenzen
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Fabio Bonelli
 SPDX-FileCopyrightText: 2024 MDAD project contributors
 
 SPDX-License-Identifier: AGPL-3.0-or-later
