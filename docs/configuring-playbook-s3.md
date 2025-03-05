@@ -26,7 +26,7 @@ You can create [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible 
 
 Amazon S3, Backblaze B2, and Storj are pay-as-you with no minimum charges for storing too little data.
 
-All these providers have different prices, with Storj appearing to be the cheapest (as of 2024-10, storage fee is $0.004 per GB/month, and egress fee is $0.007 per GB). Backblaze egress is free, but for only certain users for up to 3x the amount of data stored. Beyond that you will pay $0.01/GB of egress.
+All these providers have different prices, with Storj appearing to be the cheapest (as of 2024-10, storage fee is $0.004 per GB/month, and egress fee is $0.007 per GB; check actual pricing [here](https://storj.dev/dcs/pricing)). Backblaze egress is free, but for only certain users for up to 3x the amount of data stored. Beyond that you will pay $0.01/GB of egress.
 
 Wasabi has a minimum charge of 1TB if you're storing less than 1TB, which becomes expensive if you need to store less data than that. Likewise, Digital Ocean Spaces has also a minimum charge of 250GB ($5/month as of 2022-10).
 
@@ -97,9 +97,9 @@ For configuring [Goofys](configuring-playbook-s3-goofys.md) or [s3-synapse-stora
 
 ## Other providers
 
-For other S3-compatible providers, you may not need to configure security policies, etc. (just like for [Backblaze B2](#backblaze-b2)).
+For other S3-compatible providers, you most likely just need to create an S3 bucket and get some credentials (access key and secret key) for accessing the bucket in a read/write manner. You may not need to configure security policies, etc.
 
-You most likely just need to create an S3 bucket and get some credentials (access key and secret key) for accessing the bucket in a read/write manner.
+For details about setting up a bucket at Storj, please see the instruction [here](https://storj.dev/dcs/getting-started) to get started.
 
 ## Setting up
 
