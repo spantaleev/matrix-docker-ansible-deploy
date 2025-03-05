@@ -72,7 +72,7 @@
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_synapse_email_riot_base_url', 'new': '<superseded by client_base_url>'}
@@ -115,7 +115,7 @@
   ansible.builtin.fail:
     msg: >-
       Your matrix_synapse_configuration_extension_yaml configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "item.old in matrix_synapse_configuration_extension"
   with_items:
     - {'old': 'federation_ip_range_blacklist', 'new': 'ip_range_blacklist'}
