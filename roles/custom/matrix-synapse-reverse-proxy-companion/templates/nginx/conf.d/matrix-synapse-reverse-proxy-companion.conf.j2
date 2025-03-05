@@ -16,10 +16,18 @@
 {% macro render_worker_upstream(name, workers, load_balance) %}
 {% if workers | length > 0 %}
 	upstream {{ name }} {
+		{#
+			We need to use a zone so that the upstream is stored in shared memory,
+			otherwise we can't use `resolve` below, as reported by nginx:
+			> resolving names at run time requires upstream ".." in ... to be in shared memory
+		#}
+		zone {{ name }} 64k;
+
 		{{ load_balance }}
 		keepalive {{ ((workers | length) * 2) | string }};
+		resolver {{ matrix_synapse_reverse_proxy_companion_http_level_resolver }} valid=5s;
 		{% for worker in workers %}
-			server "{{ worker.name }}:{{ worker.port }}";
+			server "{{ worker.name }}:{{ worker.port }}" resolve;
 		{% endfor %}
 	}
 {% endif %}
