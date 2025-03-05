@@ -425,8 +425,10 @@
       ansible.builtin.fail:
         msg: >-
           The matrix-nginx-proxy role that used to be part of this playbook has been removed.
-          You should remove all its variables (`matrix_nginx_proxy_*`) from your vars.yml file.
-          We found usage of the following variables: {{ matrix_playbook_migration_nginx_proxy_migration_vars.keys() | join(', ') }}
+
+          You should remove all its variables (`matrix_nginx_proxy_*`) from your configuration file (vars.yml).
+
+          The following variables in your configuration should be renamed: {{ matrix_playbook_migration_nginx_proxy_migration_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_nginx_proxy_migration_vars | length > 0"
 
 - when: matrix_playbook_migration_matrix_ssl_leftover_variable_checks_enabled | bool
@@ -439,8 +441,10 @@
       ansible.builtin.fail:
         msg: >-
           The matrix-nginx-proxy role that used to be part of this playbook has been removed.
-          You should remove all its variables (`matrix_ssl_*`) from your vars.yml file.
-          We found usage of the following variables: {{ matrix_playbook_migration_ssl_migration_vars.keys() | join(', ') }}
+
+          You should remove all its variables (`matrix_ssl_*`) from your configuration file (vars.yml).
+
+          The following variables in your configuration should be renamed: {{ matrix_playbook_migration_ssl_migration_vars.keys() | join(', ') }}
       when: "matrix_playbook_migration_ssl_migration_vars | length > 0"
 
 - block:
