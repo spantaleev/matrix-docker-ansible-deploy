@@ -2,9 +2,9 @@
 SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
 SPDX-FileCopyrightText: 2019 - 2022 Aaron Raimist
 SPDX-FileCopyrightText: 2019 - 2023 MDAD project contributors
-SPDX-FileCopyrightText: 2024 Nikita Chernyi
-SPDX-FileCopyrightText: 2024 Fabio Bonelli
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Fabio Bonelli
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->

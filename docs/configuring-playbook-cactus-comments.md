@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
 SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
 SPDX-FileCopyrightText: 2023 MDAD project contributors
 SPDX-FileCopyrightText: 2024 Suguru Hirahara
 

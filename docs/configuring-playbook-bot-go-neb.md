@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2021 Yannick Goossens
 SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Yannick Goossens
 SPDX-FileCopyrightText: 2022 Dennis Ciba
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-FileCopyrightText: 2025 MDAD project contributors
