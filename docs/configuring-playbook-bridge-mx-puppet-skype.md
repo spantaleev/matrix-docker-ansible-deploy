@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2020 Rodrigo Belem
 SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Rodrigo Belem
 SPDX-FileCopyrightText: 2024 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later

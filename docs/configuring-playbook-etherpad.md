@@ -1,6 +1,6 @@
 <!--
-SPDX-FileCopyrightText: 2021 Béla Becker
 SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Béla Becker
 SPDX-FileCopyrightText: 2021 pushytoxin
 SPDX-FileCopyrightText: 2022 Jim Myhrberg
 SPDX-FileCopyrightText: 2022 Nikita Chernyi

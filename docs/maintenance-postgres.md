@@ -4,8 +4,8 @@ SPDX-FileCopyrightText: 2020 - 2021 Aaron Raimist
 SPDX-FileCopyrightText: 2020 Hardy Erlinger
 SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
 SPDX-FileCopyrightText: 2021 Marc Leuser
-SPDX-FileCopyrightText: 2024 Kim Brose
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Kim Brose
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
