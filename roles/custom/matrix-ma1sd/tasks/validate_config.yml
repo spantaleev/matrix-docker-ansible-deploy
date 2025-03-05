@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2020 Marcel Partap
 # SPDX-FileCopyrightText: 2021 boris runakov
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -66,7 +67,7 @@
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_ma1sd_container_expose_port', 'new': '<superseded by matrix_ma1sd_container_http_host_bind_port>'}
@@ -81,7 +82,7 @@
     msg: >-
       mxisd is deprecated and has been replaced with ma1sd (https://github.com/ma1uta/ma1sd), a compatible fork.
       The playbook will migrate your existing mxisd configuration and data automatically, but you need to adjust variable names.
-      Please change your configuration (vars.yml) to rename all mxisd variables (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "vars | dict2items | selectattr('key', 'match', item.old) | list | items2dict"
   with_items:
     - {'old': 'matrix_mxisd_.*', 'new': 'matrix_ma1sd_.*'}

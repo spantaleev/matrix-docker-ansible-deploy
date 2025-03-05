@@ -29,7 +29,7 @@
     msg: >-
       Riot has been renamed to Element (https://element.io/blog/welcome-to-element/).
       The playbook will migrate your existing configuration and data automatically, but you need to adjust variable names.
-      Please change your configuration (vars.yml) to rename all riot-web variables (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
       Also note that DNS configuration changes may be necessary.
   when: "vars | dict2items | selectattr('key', 'match', item.old) | list | items2dict"
   with_items:
@@ -39,7 +39,7 @@
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_client_element_showLabsSettings', 'new': 'matrix_client_element_show_lab_settings'}

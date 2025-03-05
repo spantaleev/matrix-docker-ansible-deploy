@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -26,7 +27,7 @@
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_corporal_container_expose_ports', 'new': '<superseded by matrix_corporal_container_http_gateway_host_bind_port and matrix_corporal_container_http_api_host_bind_port>'}
