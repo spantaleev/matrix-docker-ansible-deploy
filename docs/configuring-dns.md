@@ -33,7 +33,7 @@ To serve the base domain (`example.com`) and [Element Web](configuring-playbook-
 
 As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IPv4/IPv6 address.
 
-If you don't have IPv6 connectivity yet, you can skip the `AAAA` record. For more details about IPv6, see the [Configuring IPv6](./configuring-playbook-ipv6.md) documentation page.
+If you don't have IPv6 connectivity yet, you can skip the `AAAA` record. For more details about IPv6, see the [Configuring IPv6](./configuring-ipv6.md) documentation page.
 
 The `element.example.com` subdomain is necessary, because this playbook installs the [Element Web](https://github.com/element-hq/element-web) client for you by default. If you'd rather instruct the playbook not to install Element Web (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record.
 

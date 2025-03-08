@@ -57,7 +57,7 @@ To configure Matrix services in the default settings, go to your DNS service pro
 
 As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IPv4/IPv6 address.
 
-If you don't have IPv6 connectivity yet, you can skip the `AAAA` record. For more details about IPv6, see the [Configuring IPv6](./configuring-playbook-ipv6.md) documentation page.
+If you don't have IPv6 connectivity yet, you can skip the `AAAA` record. For more details about IPv6, see the [Configuring IPv6](./configuring-ipv6.md) documentation page.
 
 It might take some time for the DNS records to propagate after creation.
 

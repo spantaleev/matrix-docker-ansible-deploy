@@ -43,7 +43,7 @@ You can enable IPv6 support for all components' Docker container networks by usi
 #
 # People managing Docker themselves and running an older Docker version will need additional configuration.
 #
-# Learn more in `docs/configuring-playbook-ipv6.md`.
+# Learn more in `docs/configuring-ipv6.md`.
 devture_systemd_docker_base_ipv6_enabled: true
 ```
 
