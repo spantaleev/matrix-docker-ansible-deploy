@@ -77,6 +77,8 @@ For a more custom setup, see the [Other configuration options](#other-configurat
 
   - [Controlling Matrix federation](configuring-playbook-federation.md)
 
+  - [Configuring IPv6](./configuring-playbook-ipv6.md)
+
 ### Clients
 
 Web clients for Matrix that you can host on your own domains.

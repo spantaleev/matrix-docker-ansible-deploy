@@ -1,3 +1,21 @@
+# 2025-03-08
+
+## 6️⃣ IPv6 support enablement recommended by default
+
+Our [default example configuration](./examples/vars.yml) and [Configuring DNS](./docs/configuring-dns.md) guides now recommend enabling [IPv6](https://en.wikipedia.org/wiki/IPv6) support. We recommend that everyone enables IPv6 support for their Matrix server, even if they don't have IPv6 connectivity yet.
+
+Our new [Configuring IPv6](./docs/configuring-playbook-ipv6.md) documentation page has more details about the playbook's IPv6 support.
+
+**Existing playbook users** will **need to do some manual work** to enable IPv6 support. This consists of:
+
+- enabling IPv6 support for the Docker container networks:
+	- add `devture_systemd_docker_base_ipv6_enabled: true` to their `vars.yml` configuration file
+	- stop all services (`just stop-all`)
+	- delete all container networks on the server: `docker network rm $(docker network ls -q)`
+	- re-run the playbook fully: `just install-all`
+
+- [configuring IPv6 (`AAAA`) DNS records](./docs/configuring-playbook-ipv6.md#configuring-dns-records-for-ipv6)
+
 # 2025-02-26
 
 ## 🪦 Bye-bye, Email2Matrix

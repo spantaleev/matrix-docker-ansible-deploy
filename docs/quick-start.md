@@ -51,10 +51,13 @@ To configure Matrix services in the default settings, go to your DNS service pro
 
 | Type  | Host      | Priority | Weight | Port | Target               |
 | ----- | ----------| -------- | ------ | ---- | ---------------------|
-| A     | `matrix`  | -        | -      | -    | `matrix-server-IP`   |
+| A     | `matrix`  | -        | -      | -    | `matrix-server-IPv4` |
+| AAAA  | `matrix`  | -        | -      | -    | `matrix-server-IPv6` |
 | CNAME | `element` | -        | -      | -    | `matrix.example.com` |
 
-As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IP address (DNS `A` record or `CNAME` record is fine).
+As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IPv4/IPv6 address.
+
+If you don't have IPv6 connectivity yet, you can skip the `AAAA` record. For more details about IPv6, see the [Configuring IPv6](./configuring-playbook-ipv6.md) documentation page.
 
 It might take some time for the DNS records to propagate after creation.
 

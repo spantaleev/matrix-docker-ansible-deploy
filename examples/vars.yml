@@ -28,10 +28,29 @@ matrix_homeserver_generic_secret_key: ''
 # For alternatives, see `docs/configuring-playbook-own-webserver.md`.
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
 
+# Controls whether container networks will be created with IPv6 support.
+#
+# If you also have IPv6 support on your server/network and AAAA DNS records pointing to the server,
+# enabling this will effectively give you full public IPv6 connectivity (powered by NAT66).
+#
+# We recommend leaving this enabled even if you don't currently have IPv6 connectivity on your server/network.
+# This way, once you eventually get IPv6 connectivity, you won't have to change anything (besides DNS records).
+#
+# Flipping this setting later on requires manual work (stopping services, deleting and recreating all container networks).
+#
+# In the future, this setting will likely default to `true`, so if you really want IPv6 disabled, explicitly set this to `false`.
+#
+# People managing Docker themselves and running an older Docker version will need additional configuration.
+#
+# Learn more in `docs/configuring-playbook-ipv6.md`.
+devture_systemd_docker_base_ipv6_enabled: true
+
 # A Postgres password to use for the superuser Postgres user (called `matrix` by default).
 #
-# The playbook creates additional Postgres users and databases (one for each enabled service)
-# using this superuser account.
+# The playbook creates additional Postgres users and databases (one for each enabled service) using this superuser account.
+#
+# Changing this value subsequently requires manual work.
+# The value used here must be shorter than 100 characters.
 postgres_connection_password: ''
 
 # By default, we configure coturn's external IP address using the value specified for `ansible_host` in your `inventory/hosts` file.
