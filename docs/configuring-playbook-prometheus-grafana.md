@@ -6,7 +6,7 @@ SPDX-FileCopyrightText: 2021 Kim Brose
 SPDX-FileCopyrightText: 2021 Luca Di Carlo
 SPDX-FileCopyrightText: 2022 Olivér Falvai
 SPDX-FileCopyrightText: 2023 Michael Hollister
-SPDX-FileCopyrightText: 2024 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -16,9 +16,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 The playbook can install [Prometheus](https://prometheus.io/) with [Grafana](https://grafana.com/) and configure performance metrics of your homeserver with graphs for you.
 
 > [!WARNING]
-> Metrics and resulting graphs can contain a lot of information. This includes system specs but also usage patterns. This applies especially to small personal/family scale homeservers. Someone might be able to figure out when you wake up and go to sleep by looking at the graphs over time. Think about this before enabling (anonymous) access. And you should really not forget to change your Grafana password.
+> Metrics and graphs contain a lot of information, and anyone who has access to them can make an educated guess about your server usage patterns. This especially applies to small personal/family scale homeservers, where the number of samples is fairly limited. Analyzing the metrics over time, one might be able to figure out your life cycle, such as when you wake up, go to bed, etc. Before enabling (anonymous) access, you should carefully evaluate the risk, and if you do enable it, it is highly recommended to change your Grafana password from the default one.
 >
-> Most of our docker containers run with limited system access, but the `prometheus-node-exporter` has access to the host network stack and (readonly) root filesystem. This is required to report on them. If you don't like that, you can set `prometheus_node_exporter_enabled: false` (which is actually the default). You will still get Synapse metrics with this container disabled. Both of the dashboards will always be enabled, so you can still look at historical data after disabling either source.
+> Most of our Docker containers run with limited system access, but the `prometheus-node-exporter` can access the host network stack and (readonly) root filesystem. If it is fine, you can enable it and have it capture metrics about them (see [below](#enable-metrics-and-graphs-for-generic-system-information-optional) for the instruction). Even if `prometheus-node-exporter` is not enabled, you will still get Synapse homeserver metrics. Note that both of these dashboards are always be enabled, so you can still see historical data even after disabling either source.
 
 ## Adjusting DNS records
 
