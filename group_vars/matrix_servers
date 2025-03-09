@@ -21,8 +21,6 @@ matrix_playbook_docker_installation_enabled: true
 
 matrix_playbook_docker_installation_daemon_options: "{{ matrix_playbook_docker_installation_daemon_options_auto | combine(matrix_playbook_docker_installation_daemon_options_custom, recursive=True) }}"
 
-matrix_playbook_docker_installation_daemon_options_file_path: /etc/docker/daemon.json
-
 # Since Docker 27.0.1, Docker daemon options do not need to be changed to enable IPv6 support on the daemon side.
 # See: https://docs.docker.com/engine/release-notes/27/#ipv6
 # We only enable `ip6tables` and `experimental` for people who explicitly request it (perhaps due to running an old Docker version).
@@ -37,6 +35,8 @@ matrix_playbook_docker_installation_daemon_options_auto: |
   }}
 
 matrix_playbook_docker_installation_daemon_options_custom: {}
+
+matrix_playbook_docker_installation_daemon_options_file_path: /etc/docker/daemon.json
 
 # Controls whether to attach Traefik labels to services.
 # This is separate from `traefik_enabled`, because you may wish to disable Traefik installation by the playbook,
