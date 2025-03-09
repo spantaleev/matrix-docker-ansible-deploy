@@ -28,6 +28,15 @@
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/debian_docker_trusted_gpg_d_migration_migration.yml"
 
+- when: matrix_playbook_docker_installation_enabled | bool
+  tags:
+    - setup-all
+    - install-all
+    - setup-docker
+    - install-docker
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/docker_daemon_options_file_cleanup.yml"
+
 - tags:
     - setup-all
     - install-all
