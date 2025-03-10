@@ -13,7 +13,7 @@ By default, this playbook sets up an [Exim](https://www.exim.org/) relay SMTP ma
 
 **With the default setting, exim-relay attempts to deliver emails directly with the address `matrix@matrix.example.com`**, as specified by the `exim_relay_sender_address` playbook variable. See below if you want to configure the playbook to relay email through another SMTP server.
 
-The Ansible role for exim-relay is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay). For details about configuring exim-relay, you can check them via:
+The [Ansible role for exim-relay](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay) is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting). For details about configuring exim-relay, you can check them via:
 - 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md) online
 - 📁 `roles/galaxy/exim_relay/docs/configuring-exim-relay.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 

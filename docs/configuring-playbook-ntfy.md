@@ -20,7 +20,7 @@ See the project's [documentation](https://docs.ntfy.sh/) to learn what it does a
 - To make use of your ntfy installation, you need installing `ntfy` app on your device and configuring your UnifiedPush-compatible Matrix client. **Otherwise your device will not receive push notifications from the ntfy server.** Refer [this section](#usage) for details.
 - This playbook focuses on setting up a ntfy server for getting it send UnifiedPush notifications to Matrix-related services that this playbook installs, while the installed server will be available for other non-Matrix apps as well like [Tusky](https://tusky.app/) and [DAVx⁵](https://www.davx5.com/). This playbook does not intend to support all of ntfy's features.
 
-The Ansible role for ntfy is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy). For details about configuring ntfy, you can check them via:
+The [Ansible role for ntfy](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy) is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting). For details about configuring ntfy, you can check them via:
 - 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md) online
 - 📁 `roles/galaxy/ntfy/docs/configuring-ntfy.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 
