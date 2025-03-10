@@ -52,7 +52,7 @@ ntfy_enabled: true
 
 As the most of the necessary settings for the role have been taken care of by the playbook, you can enable ntfy on your Matrix server with this minimum configuration.
 
-See the role's documentation for details about configuring ntfy per your preference (such as [its web app](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#enable-web-app-optional)).
+See the role's documentation for details about configuring ntfy per your preference (such as [setting access control with authentication](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#enable-access-control-with-authentication-optional)).
 
 ### Adjusting the ntfy URL (optional)
 
@@ -66,6 +66,18 @@ ntfy_hostname: push.example.com
 ```
 
 After changing the domain, **you may need to adjust your DNS** records to point the ntfy domain to the Matrix server.
+
+### Enable web app (optional)
+
+ntfy also has a web app to subscribe to and push to topics from the browser. This may be helpful to troubleshoot notification issues or to use ntfy for other purposes than getting ntfy send UnifiedPush notifications to your Matrix-related services.
+
+To enable the web app, add the following configuration to your `vars.yml` file:
+
+```yaml
+ntfy_web_root: app
+```
+
+See [the official documentation](https://docs.ntfy.sh/subscribe/web/) for details about how to use it.
 
 ## Installing
 
@@ -113,14 +125,6 @@ Steps needed for specific Matrix clients:
 If the Matrix client asks, "Choose a distributor: FCM Fallback or ntfy", then choose "ntfy".
 
 If the Matrix client doesn't seem to pick it up, try restarting it and try the Troubleshooting section below.
-
-### Web App
-
-ntfy also has a web app to subscribe to and push to topics from the browser. This may be helpful to further troubleshoot UnifiedPush problems or to use ntfy for other purposes.
-
-The web app is disabled in this playbook by default as the expectation is that most users won't use it. You can host it yourself or use the [official hosted one](https://ntfy.sh/app) if self-hosting is not possible (the official app supports using other public reachable ntfy instances).
-
-See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#enable-web-app-optional) on the role's documentation for details about enabling the web app.
 
 ## Troubleshooting
 
