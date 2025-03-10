@@ -97,8 +97,7 @@ After installing the `ntfy` app, install any UnifiedPush-enabled Matrix client o
 
 Steps needed for specific Matrix clients:
 
-* FluffyChat-android:
-  - Should auto-detect and use it. No manual settings.
+* FluffyChat-android: this should auto-detect and use the app. No manual settings required.
 
 * SchildiChat-android:
   1. enable `Settings` -> `Notifications` -> `UnifiedPush: Force custom push gateway`.
