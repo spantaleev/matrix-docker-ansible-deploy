@@ -89,7 +89,7 @@ To receive push notifications from your ntfy server, you need to set up these tw
 * [the `ntfy` app](https://docs.ntfy.sh/subscribe/phone/)
 * a UnifiedPush-compatible Matrix client
 
-For details about installing and configuring the `ntfy` app, take a look at [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#usage) on the role's documentation.
+For details about installing and configuring the `ntfy` app, take a look at [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#setting-up-the-ntfy-android-app) on the role's documentation.
 
 ### Setting up a UnifiedPush-compatible Matrix client
 
