@@ -114,9 +114,11 @@ If the Matrix client doesn't seem to pick it up, try restarting it and try the T
 
 ### Web App
 
-ntfy also has a web app to subscribe to and push to topics from the browser. This may be helpful to further troubleshoot UnifiedPush problems or to use ntfy for other purposes. The web app only runs in the browser locally (after downloading the JavaScript).
+ntfy also has a web app to subscribe to and push to topics from the browser. This may be helpful to further troubleshoot UnifiedPush problems or to use ntfy for other purposes.
 
-The web app is disabled in this playbook by default as the expectation is that most users won't use it. You can either use the [official hosted one](https://ntfy.sh/app) (it supports using other public reachable ntfy instances) or host it yourself by setting `ntfy_web_root: "app"` and re-running Ansible.
+The web app is disabled in this playbook by default as the expectation is that most users won't use it. You can host it yourself or use the [official hosted one](https://ntfy.sh/app) if self-hosting is not possible (the official app supports using other public reachable ntfy instances).
+
+See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#enable-web-app-optional) on the role's documentation for details about enabling the web app.
 
 ## Troubleshooting
 
