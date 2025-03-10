@@ -142,4 +142,4 @@ The simple [UnifiedPush troubleshooting](https://unifiedpush.org/users/troublesh
 
 ### Check the service's logs
 
-See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-etherpad/blob/main/docs/configuring-etherpad.md#check-the-service-s-logs) on the role's documentation for details.
+See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#check-the-services-logs) on the role's documentation for details.
