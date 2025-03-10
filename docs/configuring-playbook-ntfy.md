@@ -91,6 +91,8 @@ To receive push notifications from your ntfy server, you need to set up these tw
 
 For details about installing and configuring the `ntfy` app, take a look at [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#setting-up-the-ntfy-android-app) on the role's documentation.
 
+**Note**: on the app you do not need to subscribe to a notification topic by yourself, as UnifiedPush will do that automatically.
+
 ### Setting up a UnifiedPush-compatible Matrix client
 
 After installing the `ntfy` app, install any UnifiedPush-enabled Matrix client on that same device. The Matrix client will learn from the `ntfy` app that you have configured UnifiedPush on this device, and then it will tell your Matrix server to use it.
