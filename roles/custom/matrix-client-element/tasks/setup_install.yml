@@ -95,11 +95,16 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
     - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
+    - {src: "{{ role_path }}/templates/env.j2", name: "env"}
     - {src: "{{ matrix_client_element_page_template_welcome_path }}", name: "welcome.html"}
     - {src: "{{ matrix_client_element_embedded_pages_home_path }}", name: "home.html"}
   when: "item.src is not none"
+
+- name: Ensure Element Web nginx.conf file is removed
+  ansible.builtin.file:
+    path: "{{ matrix_client_element_data_path }}/nginx.conf"
+    state: absent
 
 - name: Ensure Element Web config files removed
   ansible.builtin.file:
