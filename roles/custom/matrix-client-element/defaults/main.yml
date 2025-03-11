@@ -29,7 +29,7 @@ matrix_client_element_container_image_self_build_repo: "https://github.com/eleme
 matrix_client_element_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_memtotal_mb < 4096 }}"
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/element-web
-matrix_client_element_version: v1.11.94
+matrix_client_element_version: v1.11.95
 
 matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_registry_prefix }}element-hq/element-web:{{ matrix_client_element_version }}"
 matrix_client_element_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else matrix_client_element_docker_image_registry_prefix_upstream }}"
@@ -109,6 +109,14 @@ matrix_client_element_container_extra_arguments: []
 
 # List of systemd services that matrix-client-element.service depends on
 matrix_client_element_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+
+# Controls the healthcheck command for the container.
+#
+# Leave empty to use the default (upstream) command.
+#
+# The default command is a patch until https://github.com/element-hq/element-web/pull/29471
+# lands in a release.
+matrix_client_element_container_healthcheck_cmd: "wget -q --spider http://localhost:$ELEMENT_WEB_PORT/config.json"
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.

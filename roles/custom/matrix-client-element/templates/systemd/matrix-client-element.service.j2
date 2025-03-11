@@ -13,6 +13,10 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-element 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-element 2>/dev/null || true'
 
+{#
+	The custom healthcheck command is a patch until https://github.com/element-hq/element-web/pull/29471
+	lands in a release.
+#}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-client-element \
@@ -40,6 +44,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--mount type=bind,src={{ matrix_client_element_data_path }}/home.html,dst=/app/home.html,ro \
 			{% endif %}
 			--mount type=bind,src={{ matrix_client_element_data_path }}/welcome.html,dst=/app/welcome.html,ro \
+			{% if matrix_client_element_container_healthcheck_cmd %}
+			--health-cmd="{{ matrix_client_element_container_healthcheck_cmd }}" \
+			{% endif %}
 			{% for arg in matrix_client_element_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
