@@ -25,13 +25,6 @@ traefik.http.middlewares.{{ livekit_server_identifier }}-strip-prefix.stripprefi
 {% set middlewares = middlewares + [livekit_server_identifier + '-strip-prefix'] %}
 {% endif %}
 
-{% if livekit_server_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
-{% for name, value in livekit_server_container_labels_traefik_additional_response_headers.items() %}
-traefik.http.middlewares.{{ livekit_server_identifier }}-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
-{% endfor %}
-{% set middlewares = middlewares + [livekit_server_identifier + '-add-headers'] %}
-{% endif %}
-
 traefik.http.routers.{{ livekit_server_identifier }}.rule={{ livekit_server_container_labels_traefik_rule }}
 
 {% if livekit_server_container_labels_traefik_priority | int > 0 %}

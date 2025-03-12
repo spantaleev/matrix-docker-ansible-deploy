@@ -65,21 +65,6 @@ livekit_server_container_labels_traefik_entrypoints: web-secure
 livekit_server_container_labels_traefik_tls: "{{ livekit_server_container_labels_traefik_entrypoints != 'web' }}"
 livekit_server_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls which additional headers to attach to all HTTP responses.
-# To add your own headers, use `livekit_server_container_labels_traefik_additional_response_headers_custom`
-livekit_server_container_labels_traefik_additional_response_headers: "{{ livekit_server_container_labels_traefik_additional_response_headers_auto | combine(livekit_server_container_labels_traefik_additional_response_headers_custom) }}"
-livekit_server_container_labels_traefik_additional_response_headers_auto: |
-  {{
-    {}
-    | combine ({'X-XSS-Protection': livekit_server_http_header_xss_protection} if livekit_server_http_header_xss_protection else {})
-    | combine ({'X-Frame-Options': livekit_server_http_header_frame_options} if livekit_server_http_header_frame_options else {})
-    | combine ({'X-Content-Type-Options': livekit_server_http_header_content_type_options} if livekit_server_http_header_content_type_options else {})
-    | combine ({'Content-Security-Policy': livekit_server_http_header_content_security_policy} if livekit_server_http_header_content_security_policy else {})
-    | combine ({'Permission-Policy': livekit_server_http_header_content_permission_policy} if livekit_server_http_header_content_permission_policy else {})
-    | combine ({'Strict-Transport-Security': livekit_server_http_header_strict_transport_security} if livekit_server_http_header_strict_transport_security and livekit_server_container_labels_traefik_tls else {})
-  }}
-livekit_server_container_labels_traefik_additional_response_headers_custom: {}
-
 # livekit_server_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
 #
@@ -97,57 +82,6 @@ livekit_server_systemd_required_services_list: "{{ livekit_server_systemd_requir
 livekit_server_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 livekit_server_systemd_required_services_list_auto: []
 livekit_server_systemd_required_services_list_custom: []
-
-# Specifies the value of the `X-XSS-Protection` header
-# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
-#
-# Learn more about it is here:
-# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
-# - https://portswigger.net/web-security/cross-site-scripting/reflected
-livekit_server_http_header_xss_protection: ''
-
-# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-livekit_server_http_header_frame_options: ''
-
-# Specifies the value of the `X-Content-Type-Options` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
-livekit_server_http_header_content_type_options: ''
-
-# Specifies the value of the `Content-Security-Policy` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-livekit_server_http_header_content_security_policy: ''
-
-# Specifies the value of the `Permission-Policy` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
-livekit_server_http_header_content_permission_policy: ''
-
-# Specifies the value of the `Strict-Transport-Security` header.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-livekit_server_http_header_strict_transport_security: ''
-
-# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
-#
-# Learn more about what it is here:
-# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
-# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
-# - https://amifloced.org/
-#
-# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
-# See: `livekit_server_content_permission_policy`
-livekit_server_floc_optout_enabled: false
-
-# Controls if HSTS preloading is enabled
-#
-# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
-# indicates a willingness to be "preloaded" into browsers:
-# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
-# For more information visit:
-# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
-# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-# - https://hstspreload.org/#opt-in
-# See: `livekit_server_http_header_strict_transport_security`
-livekit_server_hsts_preload_enabled: true
 
 # Holds the final LiveKit Server configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `livekit_server_configuration_yaml` or `livekit_server_configuration_extension_yaml`.
