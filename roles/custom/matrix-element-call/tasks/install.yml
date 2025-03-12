@@ -1,7 +1,7 @@
 ---
 # roles/custom/matrix-element-call/tasks/install.yml
 
-- name: Ensure matrix-element-call paths exist
+- name: Ensure Element Call paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -20,7 +20,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure matrix-element-call Docker labels file is in place
+- name: Ensure Element Call container labels file is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ matrix_element_call_base_path }}/labels"
@@ -28,7 +28,7 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-- name: Ensure matrix-element-call Docker image is pulled
+- name: Ensure Element Call container image is pulled
   community.docker.docker_image:
     name: "{{ matrix_element_call_container_image }}"
     source: pull
@@ -38,14 +38,14 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: element_call_image_result is not failed
 
-- name: Ensure matrix-element-call container network is created
+- name: Ensure Element Call container network is created
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_element_call_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
-- name: Ensure matrix-element-call systemd service is installed
+- name: Ensure Element Call systemd service is installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-element-call.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"

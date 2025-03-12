@@ -1,20 +1,25 @@
 ---
 
-- name: Stop and remove matrix-element-call container
-  community.docker.docker_container:
-    name: "matrix-element-call"
-    state: absent
-
-- name: Remove matrix-element-call systemd service
-  ansible.builtin.file:
+- name: Check existence of matrix-element-call service
+  ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
-    state: absent
+  register: matrix_element_call_service_stat
 
-- name: Remove matrix-element-call configuration files
-  ansible.builtin.file:
-    path: "{{ matrix_element_call_base_path }}"
-    state: absent
+- when: matrix_element_call_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-element-call is stopped
+      ansible.builtin.service:
+        name: matrix-element-call
+        state: stopped
+        enabled: false
+        daemon_reload: true
 
-- name: Reload systemd daemon
-  ansible.builtin.systemd:
-    daemon_reload: true
+    - name: Ensure matrix-element-call.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
+        state: absent
+
+    - name: Ensure Element Call paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_element_call_base_path }}"
+        state: absent
