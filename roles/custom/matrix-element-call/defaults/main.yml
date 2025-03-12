@@ -78,7 +78,10 @@ matrix_element_call_container_labels_additional_labels: ''
 matrix_element_call_container_extra_arguments: []
 
 # List of systemd services that matrix-element-call.service depends on
-matrix_element_call_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_element_call_systemd_required_services_list: "{{ matrix_element_call_systemd_required_services_list_default + matrix_element_call_systemd_required_services_list_auto + matrix_element_call_systemd_required_services_list_custom }}"
+matrix_element_call_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_element_call_systemd_required_services_list_auto: []
+matrix_element_call_systemd_required_services_list_custom: []
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
