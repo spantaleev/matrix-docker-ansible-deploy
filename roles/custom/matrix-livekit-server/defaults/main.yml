@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2022 MDAD project contributors
 # SPDX-FileCopyrightText: 2024 wjbeckett
-# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -49,8 +49,10 @@ livekit_server_container_repo: "https://github.com/livekit/livekit.git"
 livekit_server_container_repo_version: "{{ 'main' if livekit_server_version == 'latest' else livekit_server_version }}"
 livekit_server_container_src_files_path: "{{ livekit_server_base_path }}/container-src"
 
-livekit_server_container_image: "{{ livekit_server_container_image_name_prefix }}livekit/livekit-server:{{ livekit_server_version }}"
-livekit_server_container_image_name_prefix: "{{ 'localhost/' if livekit_server_container_image_self_build else 'docker.io/' }}"
+livekit_server_container_image: "{{ livekit_server_container_image_registry_prefix }}livekit/livekit-server:{{ livekit_server_version }}"
+livekit_server_container_image_registry_prefix: "{{ 'localhost/' if livekit_server_container_image_self_build else livekit_server_container_image_registry_prefix_upstream }}"
+livekit_server_container_image_registry_prefix_upstream: "{{ livekit_server_container_image_registry_prefix_upstream_default }}"
+livekit_server_container_image_registry_prefix_upstream_default: docker.io/
 livekit_server_container_image_force_pull: "{{ livekit_server_container_image.endswith(':latest') }}"
 
 livekit_server_container_labels_traefik_enabled: true

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2022 MDAD project contributors
 # SPDX-FileCopyrightText: 2024 wjbeckett
-# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -32,8 +32,10 @@ matrix_livekit_jwt_service_container_repo: "https://github.com/element-hq/lk-jwt
 matrix_livekit_jwt_service_container_repo_version: "{{ 'main' if matrix_livekit_jwt_service_version in ['latest', 'latest-ci'] else livekit_server_version }}"
 matrix_livekit_jwt_service_container_src_files_path: "{{ matrix_livekit_jwt_service_base_path }}/container-src"
 
-matrix_livekit_jwt_service_container_image: "{{ matrix_livekit_jwt_service_container_image_name_prefix }}element-hq/lk-jwt-service:{{ matrix_livekit_jwt_service_version }}"
-matrix_livekit_jwt_service_container_image_name_prefix: "{{ 'localhost/' if matrix_livekit_jwt_service_container_image_self_build else 'ghcr.io/' }}"
+matrix_livekit_jwt_service_container_image: "{{ matrix_livekit_jwt_service_container_image_registry_prefix }}element-hq/lk-jwt-service:{{ matrix_livekit_jwt_service_version }}"
+matrix_livekit_jwt_service_container_image_registry_prefix: "{{ 'localhost/' if matrix_livekit_jwt_service_container_image_self_build else matrix_livekit_jwt_service_container_image_registry_prefix_upstream }}"
+matrix_livekit_jwt_service_container_image_registry_prefix_upstream: "{{ matrix_livekit_jwt_service_container_image_registry_prefix_upstream_default }}"
+matrix_livekit_jwt_service_container_image_registry_prefix_upstream_default: ghcr.io/
 matrix_livekit_jwt_service_container_image_force_pull: "{{ matrix_livekit_jwt_service_container_image.endswith(':latest') }}"
 
 matrix_livekit_jwt_service_container_labels_traefik_enabled: true
