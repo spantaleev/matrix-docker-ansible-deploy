@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2024 wjbeckett
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up LiveKit (optional)
 
 The playbook can install and configure [LiveKit](https://github.com/livekit/livekit) for you.

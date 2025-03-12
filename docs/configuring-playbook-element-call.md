@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2024 wjbeckett
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Element Call (optional)
 
 The playbook can install and configure [Element Call](https://github.com/vector-im/element-call) for you.
