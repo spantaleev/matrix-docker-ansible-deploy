@@ -24,8 +24,10 @@ matrix_wechat_container_image_self_build_branch: "{{ 'master' if matrix_wechat_v
 
 # renovate: datasource=docker depName=lxduo/matrix-wechat-agent
 matrix_wechat_agent_version: 0.0.1
-matrix_wechat_agent_container_image: "{{ matrix_wechat_agent_container_image_name_prefix }}lxduo/matrix-wechat-agent:{{ matrix_wechat_agent_version }}"
-matrix_wechat_agent_container_image_name_prefix: "{{ 'localhost/' if matrix_wechat_agent_container_image_self_build else 'docker.io/' }}"
+matrix_wechat_agent_container_image: "{{ matrix_wechat_agent_container_image_registry_prefix }}lxduo/matrix-wechat-agent:{{ matrix_wechat_agent_version }}"
+matrix_wechat_agent_container_image_registry_prefix: "{{ 'localhost/' if matrix_wechat_agent_container_image_self_build else matrix_wechat_agent_container_image_registry_prefix_upstream }}"
+matrix_wechat_agent_container_image_registry_prefix_upstream: "{{ matrix_wechat_agent_container_image_registry_prefix_upstream_default }}"
+matrix_wechat_agent_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_wechat_agent_container_image_force_pull: "{{ matrix_wechat_agent_container_image.endswith(':latest') }}"
 
 # The agent needs to write to /home/user/.vnc.

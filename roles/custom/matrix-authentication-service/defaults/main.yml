@@ -563,8 +563,10 @@ matrix_authentication_service_syn2mas_dry_run: false
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/matrix-authentication-service/syn2mas
 matrix_authentication_service_syn2mas_version: 0.14.1
-matrix_authentication_service_syn2mas_container_image: "{{ matrix_authentication_service_syn2mas_container_image_name_prefix }}element-hq/matrix-authentication-service/syn2mas:{{ matrix_authentication_service_syn2mas_version }}"
-matrix_authentication_service_syn2mas_container_image_name_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else 'ghcr.io/' }}"
+matrix_authentication_service_syn2mas_container_image: "{{ matrix_authentication_service_syn2mas_container_image_registry_prefix }}element-hq/matrix-authentication-service/syn2mas:{{ matrix_authentication_service_syn2mas_version }}"
+matrix_authentication_service_syn2mas_container_image_registry_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else matrix_authentication_service_syn2mas_container_image_registry_prefix_upstream }}"
+matrix_authentication_service_syn2mas_container_image_registry_prefix_upstream: "{{ matrix_authentication_service_syn2mas_container_image_registry_prefix_upstream_default }}"
+matrix_authentication_service_syn2mas_container_image_registry_prefix_upstream_default: ghcr.io/
 matrix_authentication_service_syn2mas_container_image_force_pull: "{{ matrix_authentication_service_syn2mas_container_image.endswith(':latest') }}"
 
 matrix_authentication_service_syn2mas_container_image_self_build: "{{ matrix_authentication_service_container_image_self_build }}"
