@@ -4928,6 +4928,8 @@ matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
 matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
 matrix_synapse_report_stats_endpoint: "http://{{ matrix_synapse_usage_exporter_identifier }}:{{ matrix_synapse_usage_exporter_container_port | string }}/report-usage-stats/push"
 
+matrix_synapse_experimental_features_msc3266_enabled: "{{ matrix_element_call_enabled }}"
+
 matrix_synapse_experimental_features_msc3861_enabled: "{{ matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress }}"
 matrix_synapse_experimental_features_msc3861_issuer: "{{ matrix_authentication_service_http_base_container_url if matrix_authentication_service_enabled else '' }}"
 matrix_synapse_experimental_features_msc3861_client_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'syn.ngauth.cs', rounds=655555) | to_uuid }}"
@@ -4935,6 +4937,10 @@ matrix_synapse_experimental_features_msc3861_admin_token: "{{ matrix_authenticat
 matrix_synapse_experimental_features_msc3861_account_management_url: "{{ matrix_authentication_service_account_management_url if matrix_authentication_service_enabled else '' }}"
 
 matrix_synapse_experimental_features_msc4108_enabled: "{{ matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress }}"
+
+matrix_synapse_experimental_features_msc4140_enabled: "{{ matrix_element_call_enabled }}"
+
+matrix_synapse_experimental_features_msc4222_enabled: "{{ matrix_element_call_enabled }}"
 
 # Disable password authentication when delegating authentication to Matrix Authentication Service.
 # Unless this is done, Synapse fails on startup with:

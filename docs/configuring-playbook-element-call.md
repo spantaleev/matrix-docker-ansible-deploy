@@ -13,6 +13,9 @@ Element Call is a native Matrix video conferencing application developed by [Ele
 
 See the project's [documentation](https://github.com/element-hq/element-call) to learn more.
 
+> [!WARNING]
+>  Because Element Call [requires](https://github.com/element-hq/element-call/blob/93ae2aed9841e0b066d515c56bd4c122d2b591b2/docs/self-hosting.md#a-matrix-homeserver) a few experimental features in the Matrix protocol, it's <strong>very likely that it only works with the Synapse homeserver</strong>.
+
 ## Decide on a domain and path
 
 By default, Element Call is configured to be served on the `call.element.DOMAIN` domain, controlled by the `matrix_element_call_hostname` variable.
@@ -38,7 +41,11 @@ Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.
 matrix_element_call_enabled: true
 ```
 
-💡 Enabling Element Call will automatically enable the [LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) and [Livekit Server](configuring-playbook-livekit-server.md) services.
+💡 Enabling Element Call will automatically:
+
+- enable the [LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) and [Livekit Server](configuring-playbook-livekit-server.md) services
+
+- enable a few experimental features in Synapse that Element Call [requires](https://github.com/element-hq/element-call/blob/93ae2aed9841e0b066d515c56bd4c122d2b591b2/docs/self-hosting.md#a-matrix-homeserver)
 
 ## Installing
 
