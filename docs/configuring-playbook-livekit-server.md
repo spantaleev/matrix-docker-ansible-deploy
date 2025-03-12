@@ -45,8 +45,8 @@ To ensure the services function correctly, the following firewall rules and port
 
 LiveKit:
 
-	•	Forward UDP ports 50100:50200 to the Docker instance running LiveKit.
-	•	Forward TCP port 7881 to the Docker instance running LiveKit.
+- Forward UDP ports 50100:50200 to the Docker instance running LiveKit.
+- Forward TCP port 7881 to the Docker instance running LiveKit.
 
 Ensure these ports are open and forwarded appropriately to allow traffic to flow correctly between the services.
 

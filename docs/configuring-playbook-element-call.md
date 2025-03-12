@@ -50,12 +50,12 @@ To ensure the services function correctly, the following firewall rules and port
 
 LiveKit:
 
-	•	Forward UDP ports 50100:50120 to the Docker instance running LiveKit.
-	•	Forward TCP port 7881 to the Docker instance running LiveKit.
+- Forward UDP ports 50100:50120 to the Docker instance running LiveKit.
+- Forward TCP port 7881 to the Docker instance running LiveKit.
 
 Element Call:
 
-	•	Forward TCP port 443 to the server running Traefik (for Element Call).
+- Forward TCP port 443 to the server running Traefik (for Element Call).
 
 Ensure these ports are open and forwarded appropriately to allow traffic to flow correctly between the services.
 
