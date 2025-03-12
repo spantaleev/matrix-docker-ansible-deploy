@@ -25,7 +25,7 @@ See the project's [documentation](https://github.com/element-hq/element-call) to
 
 ## Decide on a domain and path
 
-By default, Element Call is configured to be served on the `call.element.DOMAIN` domain.
+By default, Element Call is configured to be served on the `call.element.example.com` domain.
 
 If you'd like to run Element Call on another hostname, see the [Adjusting the Element Call URL](#adjusting-the-element-call-url-optional) section below.
 
@@ -43,7 +43,7 @@ In addition to the HTTP/HTTPS ports (which you've already exposed as per the [pr
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.DOMAIN/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_element_call_enabled: true
