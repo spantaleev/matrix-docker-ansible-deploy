@@ -41,6 +41,13 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: element_call_image_result is not failed
 
+- name: Ensure matrix-element-call container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_element_call_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
 # Systemd Services for Element Call
 - name: Ensure matrix-element-call systemd service is installed
   ansible.builtin.template:
