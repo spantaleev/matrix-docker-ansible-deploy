@@ -37,11 +37,15 @@ done
 sed --in-place 's/matrix_mautrix_meta_instagram_meta_mode: \(.*\)/matrix_mautrix_meta_instagram_meta_mode: instagram/g' $instagram_role_path/defaults/main.yml
 sed --in-place 's/matrix_mautrix_meta_instagram_identifier: \(.*\)/matrix_mautrix_meta_instagram_identifier: matrix-mautrix-meta-instagram/g' $instagram_role_path/defaults/main.yml
 
-echo "<!--" > $instagram_role_path/README.md
-echo "SPDX-FileCopyrightText: 2024 - 2025 MDAD Contributors" >> $instagram_role_path/README.md
-echo "" >> $instagram_role_path/README.md
-echo "SPDX-License-Identifier: AGPL-3.0-or-later" >> $instagram_role_path/README.md
-echo "-->" >> $instagram_role_path/README.md
+# Create the README.md file with the license header
+cat > $instagram_role_path/README.md << 'EOF'
+<!--
+SPDX-FileCopyrightText: 2024 - 2025 MDAD Contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+EOF
+
 echo "" >> $instagram_role_path/README.md
 echo "# matrix-mautrix-meta-instagram" >> $instagram_role_path/README.md
 echo "" >> $instagram_role_path/README.md
