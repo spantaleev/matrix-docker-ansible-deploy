@@ -86,7 +86,7 @@ matrix_element_call_systemd_required_services_list_custom: []
 # Learn more about it is here:
 # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
 # - https://portswigger.net/web-security/cross-site-scripting/reflected
-matrix_element_call_http_header_xss_protection: ''
+matrix_element_call_http_header_xss_protection: "1; mode=block"
 
 # Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
@@ -94,19 +94,19 @@ matrix_element_call_http_header_frame_options: ''
 
 # Specifies the value of the `X-Content-Type-Options` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
-matrix_element_call_http_header_content_type_options: ''
+matrix_element_call_http_header_content_type_options: nosniff
 
 # Specifies the value of the `Content-Security-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-matrix_element_call_http_header_content_security_policy: ''
+matrix_element_call_http_header_content_security_policy: frame-ancestors *
 
 # Specifies the value of the `Permission-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
-matrix_element_call_http_header_content_permission_policy: ''
+matrix_element_call_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_element_call_floc_optout_enabled else '' }}"
 
 # Specifies the value of the `Strict-Transport-Security` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-matrix_element_call_http_header_strict_transport_security: ''
+matrix_element_call_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_element_call_hsts_preload_enabled else '' }}"
 
 # Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
 #
@@ -117,7 +117,7 @@ matrix_element_call_http_header_strict_transport_security: ''
 #
 # Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
 # See: `matrix_element_call_content_permission_policy`
-matrix_element_call_floc_optout_enabled: false
+matrix_element_call_floc_optout_enabled: true
 
 # Controls if HSTS preloading is enabled
 #
