@@ -237,11 +237,11 @@ Services that help you in administrating and monitoring your Matrix installation
 
 Various services that don't fit any other categories.
 
-- [Setting up the Element Call server](configuring-playbook-element-call.md) (optional)
+- [Setting up Element Call](configuring-playbook-element-call.md) - a native Matrix video conferencing application (optional)
 
-- [Setting up the LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) (optional)
+- [Setting up LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) (optional)
 
-- [Setting up the Livekit server](configuring-playbook-livekit-server.md) (optional)
+- [Setting up LiveKit Server](configuring-playbook-livekit-server.md) (optional)
 
 - [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md)
 
