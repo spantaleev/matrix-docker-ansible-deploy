@@ -4912,7 +4912,7 @@ matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
 
 # Enable Synapse statistics reporting when using synapse-usage-exporter
 matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
-matrix_synapse_report_stats_endpoint: "http://{{ matrix_synapse_usage_exporter_identifier }}:{{ matrix_synapse_usage_exporter_container_port | string }}/report-usage-stats/push"
+matrix_synapse_report_stats_endpoint: "{{ (('http://' + matrix_synapse_usage_exporter_identifier + ':' + matrix_synapse_usage_exporter_container_port | string + '/report-usage-stats/push') if matrix_synapse_usage_exporter_enabled else '') }}"
 
 matrix_synapse_experimental_features_msc3861_enabled: "{{ matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress }}"
 matrix_synapse_experimental_features_msc3861_issuer: "{{ matrix_authentication_service_http_base_container_url if matrix_authentication_service_enabled else '' }}"
