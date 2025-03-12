@@ -1,7 +1,6 @@
 {% if matrix_element_call_container_labels_traefik_enabled %}
 traefik.enable=true
 
-# Network configuration for Traefik
 {% if matrix_element_call_container_labels_traefik_docker_network %}
 traefik.docker.network={{ matrix_element_call_container_labels_traefik_docker_network }}
 {% endif %}
@@ -10,7 +9,6 @@ traefik.http.services.matrix-element-call.loadbalancer.server.port=8080
 
 {% set middlewares = [] %}
 
-# Path prefix handling for Element Call
 {% if matrix_element_call_container_labels_traefik_path_prefix != '/' %}
 traefik.http.middlewares.matrix-element-call-slashless-redirect.redirectregex.regex=({{ matrix_element_call_container_labels_traefik_path_prefix | quote }})$
 traefik.http.middlewares.matrix-element-call-slashless-redirect.redirectregex.replacement=${1}/

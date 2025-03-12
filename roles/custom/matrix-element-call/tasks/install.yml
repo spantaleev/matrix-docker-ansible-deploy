@@ -1,7 +1,6 @@
 ---
 # roles/custom/matrix-element-call/tasks/install.yml
 
-# Ensure Required Directories Exist
 - name: Ensure matrix-element-call paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -13,7 +12,6 @@
     - path: "{{ matrix_element_call_base_path }}"
     - path: "{{ matrix_base_data_path }}/static-files/public/.well-known/element"  # Directory for element.json
 
-# Ensure Configuration Files are in Place
 - name: Ensure Element Call config.json is in place
   ansible.builtin.template:
     src: "{{ role_path }}/templates/config.json.j2"
@@ -30,7 +28,6 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
 
-# Ensure Docker Images are Pulled
 - name: Ensure matrix-element-call Docker image is pulled
   community.docker.docker_image:
     name: "{{ matrix_element_call_container_image }}"
@@ -48,7 +45,6 @@
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
-# Systemd Services for Element Call
 - name: Ensure matrix-element-call systemd service is installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-element-call.service.j2"
