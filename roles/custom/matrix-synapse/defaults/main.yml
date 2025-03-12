@@ -416,8 +416,8 @@ matrix_synapse_root_log_level: "WARNING"
 
 # Rate limits
 matrix_synapse_rc_message:
-  per_second: 0.2
-  burst_count: 10
+  per_second: 0.5
+  burst_count: 30
 
 matrix_synapse_rc_registration:
   per_second: 0.17
@@ -1260,6 +1260,28 @@ matrix_synapse_experimental_features_msc4108_enabled: false
 # https://github.com/deepbluev7/matrix-doc/blob/room-summaries/proposals/3266-room-summary.md#client-server-api
 # Set this to false if you still want to disable to API for some reason. Note that doing so breaks Element X compatibility though.
 matrix_synapse_experimental_features_msc3266_enabled: true
+
+# Controls whether to enable the "Delayed Events" experimental feature.
+# Delayed events are required for proper call (Element Call) participation signalling.
+# If disabled it is very likely that you end up with stuck calls in Matrix rooms.
+#
+# Related to `matrix_synapse_max_event_delay_duration`
+#
+# See https://github.com/matrix-org/matrix-spec-proposals/pull/4140
+matrix_synapse_experimental_features_msc4140_enabled: false
+
+# Controls the maximum allowed duration by which sent events can be delayed, as per MSC4140.
+#
+# See `matrix_synapse_experimental_features_msc4140_enabled`.
+matrix_synapse_max_event_delay_duration: 24h
+
+# Controls whether to enable the MSC4222 experimental feature (adding `state_after` to sync v2).
+#
+# Allow clients to opt-in to a change of the sync v2 API that allows them to correctly track the state of the room.
+# This is required by Element Call to track room state reliably.
+#
+# See https://github.com/matrix-org/matrix-spec-proposals/pull/4222
+matrix_synapse_experimental_features_msc4222_enabled: false
 
 # Enable this to activate the REST auth password provider module.
 # See: https://github.com/ma1uta/matrix-synapse-rest-password-provider
