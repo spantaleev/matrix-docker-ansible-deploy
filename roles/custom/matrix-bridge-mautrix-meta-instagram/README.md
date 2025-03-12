@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 MDAD Contributors
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->

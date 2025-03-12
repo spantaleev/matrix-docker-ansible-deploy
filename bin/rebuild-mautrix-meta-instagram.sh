@@ -37,7 +37,13 @@ done
 sed --in-place 's/matrix_mautrix_meta_instagram_meta_mode: \(.*\)/matrix_mautrix_meta_instagram_meta_mode: instagram/g' $instagram_role_path/defaults/main.yml
 sed --in-place 's/matrix_mautrix_meta_instagram_identifier: \(.*\)/matrix_mautrix_meta_instagram_identifier: matrix-mautrix-meta-instagram/g' $instagram_role_path/defaults/main.yml
 
-echo "# matrix-mautrix-meta-instagram" > $instagram_role_path/README.md
+echo "<!--" > $instagram_role_path/README.md
+echo "SPDX-FileCopyrightText: 2024 - 2025 MDAD Contributors" >> $instagram_role_path/README.md
+echo "" >> $instagram_role_path/README.md
+echo "SPDX-License-Identifier: AGPL-3.0-or-later" >> $instagram_role_path/README.md
+echo "-->" >> $instagram_role_path/README.md
+echo "" >> $instagram_role_path/README.md
+echo "# matrix-mautrix-meta-instagram" >> $instagram_role_path/README.md
 echo "" >> $instagram_role_path/README.md
 echo "This bridge role is derived from the matrix-mautrix-meta-messenger Ansible role via automatic changes (see \`just rebuild-mautrix-meta-instagram\` or \`bin/rebuild-mautrix-meta-instagram.sh\`)." >> $instagram_role_path/README.md
 echo "" >> $instagram_role_path/README.md
