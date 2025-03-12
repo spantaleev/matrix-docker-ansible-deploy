@@ -39,23 +39,23 @@ livekit_server_enabled: true
 livekit_server_dev_key: 'your-secure-livekit-key'
 ```
 
+## Adjusting firewall rules
+
+To ensure the services function correctly, the following firewall rules and port forwarding settings are required:
+
+- `7881/tcp`: ICE/TCP (used by [LiveKit Server](./docs/configuring-playbook-livekit-server.md) for [Element Call](./docs/configuring-playbook-element-call.md))
+
+- `7882/udp`: ICE/UDP Mux (used by [LiveKit Server](./docs/configuring-playbook-livekit-server.md) for [Element Call](./docs/configuring-playbook-element-call.md))
+
+💡 The suggestions above are inspired by the upstream [Ports and Firewall](https://docs.livekit.io/home/self-hosting/ports-firewall/) documentation based on how LiveKit is configured in the playbook. If you've using custom configuration for the LiveKit Server role, you may need to adjust the firewall rules accordingly.
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
+
 Once installed, and in conjunction with Element Call and JWT Service, Livekit will become the WebRTC backend for all Element client calls.
-
-## Required Firewall and Port Forwarding Rules
-
-To ensure the services function correctly, the following firewall rules and port forwarding settings are required:
-
-LiveKit:
-
-- Forward UDP ports 50100:50200 to the Docker instance running LiveKit.
-- Forward TCP port 7881 to the Docker instance running LiveKit.
-
-Ensure these ports are open and forwarded appropriately to allow traffic to flow correctly between the services.
 
 ## Additional Information
 

@@ -31,18 +31,17 @@ livekit_server_container_additional_networks: "{{ livekit_server_container_addit
 livekit_server_container_additional_networks_auto: []
 livekit_server_container_additional_networks_custom: []
 
-# Controls whether the LiveKit Server container exposes its RCT TCP port (`livekit_server_config_rtc_tcp_port`)
-#
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:5349"), or empty string to not expose.
-livekit_server_container_rtc_tcp_host_bind_port: "{{ livekit_server_config_rtc_tcp_port if livekit_server_container_network != 'host' else '' }}"
-
-# Controls whether the LiveKit Server container exposes its RTC UDP port range and which interface to do it on.
+# Controls whether the LiveKit Server container exposes its RTC ports and which interface to do it on.
 #
 # Takes an interface "<ip address>" (e.g. "127.0.0.1"), or empty string to listen on all interfaces.
 # Takes a null/none value (`~`) or 'none' (as a string) to prevent listening.
+livekit_server_container_rtc_listen_interface: "{{ '' if livekit_server_container_network != 'host' else 'none' }}"
+
+# Controls whether the LiveKit Server container exposes its TURN ports and which interface to do it on.
 #
-# The UDP port-range itself is specified using `livekit_server_config_rtc_port_range_start` and `livekit_server_config_rtc_port_range_end`.
-livekit_server_container_rtc_range_listen_interface: "{{ '' if livekit_server_container_network != 'host' else 'none' }}"
+# Takes an interface "<ip address>" (e.g. "127.0.0.1"), or empty string to listen on all interfaces.
+# Takes a null/none value (`~`) or 'none' (as a string) to prevent listening.
+livekit_server_container_turn_listen_interface: "{{ '' if livekit_server_container_network != 'host' else 'none' }}"
 
 livekit_server_container_image_self_build: false
 livekit_server_container_repo: "https://github.com/livekit/livekit.git"
@@ -178,21 +177,88 @@ livekit_server_configuration_extension_yaml: |
 livekit_server_configuration_extension: "{{ livekit_server_configuration_extension_yaml | from_yaml if livekit_server_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Controls the `port` configuration property.
+# See: https://docs.livekit.io/home/self-hosting/ports-firewall/
 livekit_server_config_port: 7880
 
+########################################################################################
+#                                                                                      #
+# RTC                                                                                  #
+#                                                                                      #
+########################################################################################
+
 # Controls the `rtc.tcp_port` configuration property
+# See: https://docs.livekit.io/home/self-hosting/ports-firewall/
 livekit_server_config_rtc_tcp_port: 7881
 
-# Controls the `rtc.port_range_start` configuration property
-livekit_server_config_rtc_port_range_start: 50100
+# Controls the `rtc.port_range_start` configuration property.
+# This must be defined together with `livekit_server_config_rtc_port_range_end`,
+# or alternatively `livekit_server_config_rtc_udp_port` can be defined as a single port that handles all traffic.
+# Example: 50100
+# See: https://docs.livekit.io/home/self-hosting/ports-firewall/
+livekit_server_config_rtc_port_range_start: ''
 
-# Controls the `rtc.port_range_end` configuration property
-livekit_server_config_rtc_port_range_end: 50120
+# Controls the `rtc.port_range_end` configuration property.
+# This must be defined together with `livekit_server_config_rtc_port_range_start`,
+# or alternatively `livekit_server_config_rtc_udp_port` can be defined as a single port that handles all traffic.
+# Example: 50200
+# See: https://docs.livekit.io/home/self-hosting/ports-firewall/
+livekit_server_config_rtc_port_range_end: ''
+
+# Controls the `rtc.udp_port` configuration property.
+# As an alternative to this, one may define both `livekit_server_config_rtc_port_range_start` and `livekit_server_config_rtc_port_range_end`.
+# Example: 7882
+# See: https://docs.livekit.io/home/self-hosting/ports-firewall/
+livekit_server_config_rtc_udp_port: 7882
 
 # Controls the `rtc.use_external_ip` configuration property.
 # When set to true, attempts to discover the host's public IP via STUN.
 # This is useful for cloud environments such as AWS & Google where hosts have an internal IP that maps to an external one.
 livekit_server_config_rtc_use_external_ip: true
+
+########################################################################################
+#                                                                                      #
+# /RTC                                                                                 #
+#                                                                                      #
+########################################################################################
+
+########################################################################################
+#                                                                                      #
+# TURN                                                                                 #
+#                                                                                      #
+########################################################################################
+
+# Controls the `turn.enabled` configuration property.
+# When set to true, enables TURN server.
+livekit_server_config_turn_enabled: false
+
+# Controls the `turn.domain` configuration property.
+# Example: livekit.example.com
+livekit_server_config_turn_domain: "{{ livekit_server_hostname }}"
+
+# Controls the `turn.cert_file` configuration property.
+# Path to the TLS certificate file.
+livekit_server_config_turn_cert_file: ''
+
+# Controls the `turn.key_file` configuration property.
+# Path to the TLS key file.
+livekit_server_config_turn_key_file: ''
+
+# Controls the `turn.external_tls` configuration property.
+livekit_server_config_turn_external_tls: false
+
+# Controls the `turn.tls_port` configuration property.
+# See: https://docs.livekit.io/home/self-hosting/ports-firewall/
+livekit_server_config_turn_tls_port: 5349
+
+# Controls the `turn.udp_port` configuration property.
+# See: https://docs.livekit.io/home/self-hosting/ports-firewall/
+livekit_server_config_turn_udp_port: 3478
+
+########################################################################################
+#                                                                                      #
+# /TURN                                                                                #
+#                                                                                      #
+########################################################################################
 
 # Controls the `keys` configuration property.
 livekit_server_config_keys: "{{ livekit_server_config_keys_auto | combine(livekit_server_config_keys_custom, recursive=True) }}"

@@ -18,11 +18,9 @@ See the project's [documentation](https://github.com/element-hq/element-call) to
 
 ## Decide on a domain and path
 
-By default, Element Call is configured to be served on the `call.element.DOMAIN` domain, controlled by the `matrix_element_call_hostname` variable.
+By default, Element Call is configured to be served on the `call.element.DOMAIN` domain.
 
-This makes it easy to set it up, **without** having to adjust your DNS records manually.
-
-If you'd like to run Element Call on another hostname or path, use the `matrix_element_call_hostname` and `matrix_element_call_path_prefix` variables.
+If you'd like to run Element Call on another hostname or path, use the `matrix_element_call_hostname` variable. A `matrix_element_call_path_prefix` variable is also available to set a path prefix for the Element Call service, but Element Call does not support running under a sub-path yet.
 
 ## Adjusting DNS records
 
@@ -31,7 +29,12 @@ If you've changed the default hostname, **you may need to adjust your DNS** reco
 Ensure that the following DNS names have a public IP/FQDN:
 - `call.element.example.com`
 - `livekit.example.com`
-- `sfu-jwt.example.com`
+
+## Adjusting firewall rules
+
+All services are exposed via HTTP/HTTPS as per usual, ports for which you've already opened as described in the [prerequisites](prerequisites.md) document.
+
+In addition to that, you'll also need to open ports required by LiveKit Server as described in its own [Adjusting firewall rules](configuring-playbook-livekit-server.md#adjusting-firewall-rules) section.
 
 ## Adjusting the playbook configuration
 
@@ -49,29 +52,8 @@ matrix_element_call_enabled: true
 
 ## Installing
 
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records) and [adjusting firewall rules](#adjusting-firewall-rules), run the [installation](installing.md) command: `just install-all` or `just setup-all`
 
 ## Usage
 
-Once installed, Element Call integrates seamlessly with Matrix clients like [Element Web](configuring-playbook-client-element-web.md). When the Element Call service is installed, the `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc4143.rtc_foci` section is added to point to your LiveKit JWT service URL (e.g., `https://matrix.example.com/livekit-jwt-service`).
-
-Additionally, the `/.well-known/element/element.json` file is created to help Element clients discover the Element Call URL (e.g., `https://call.element.example.com`).
-
-## Required Firewall and Port Forwarding Rules
-
-To ensure the services function correctly, the following firewall rules and port forwarding settings are required:
-
-LiveKit:
-
-- Forward UDP ports 50100:50120 to the Docker instance running LiveKit.
-- Forward TCP port 7881 to the Docker instance running LiveKit.
-
-Element Call:
-
-- Forward TCP port 443 to the server running Traefik (for Element Call).
-
-Ensure these ports are open and forwarded appropriately to allow traffic to flow correctly between the services.
-
-## Additional Information
-
-Refer to the Element Call documentation for more details on configuring and using Element Call.
+Once installed, Element Call integrates seamlessly with Matrix clients like [Element Web](configuring-playbook-client-element-web.md).

@@ -16,3 +16,16 @@
     - {'name': 'livekit_server_identifier', when: true}
     - {'name': 'livekit_server_uid', when: true}
     - {'name': 'livekit_server_gid', when: true}
+    - {'name': 'livekit_server_config_turn_domain', when: "{{ livekit_server_config_turn_enabled | bool }}"}
+    - {'name': 'livekit_server_config_turn_cert_file', when: "{{ livekit_server_config_turn_enabled | bool }}"}
+    - {'name': 'livekit_server_config_turn_key_file', when: "{{ livekit_server_config_turn_enabled | bool }}"}
+
+- name: Fail if LiveKit Server port range configuration is invalid
+  ansible.builtin.fail:
+    msg: >
+      You need to either define both port range settings (livekit_server_config_rtc_port_range_start and livekit_server_config_rtc_port_range_end)
+      or define a single UDP port (livekit_server_config_rtc_udp_port).
+  when: >
+    (livekit_server_config_rtc_port_range_start | string | length > 0 and livekit_server_config_rtc_port_range_end | string | length == 0) or
+    (livekit_server_config_rtc_port_range_start | string | length == 0 and livekit_server_config_rtc_port_range_end | string | length > 0) or
+    (livekit_server_config_rtc_port_range_start | string | length == 0 and livekit_server_config_rtc_port_range_end | string | length == 0 and livekit_server_config_rtc_udp_port | string | length == 0)
