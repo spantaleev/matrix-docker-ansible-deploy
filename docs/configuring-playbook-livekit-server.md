@@ -5,11 +5,11 @@ SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Setting up LiveKit (optional)
+# Setting up LiveKit Server (optional)
 
-The playbook can install and configure [LiveKit](https://github.com/livekit/livekit) for you.
+The playbook can install and configure [LiveKit Server](https://github.com/livekit/livekit) for you.
 
-LiveKit is an open source project that provides scalable, multi-user conferencing based on WebRTC. It's designed to provide everything you need to build real-time video audio data capabilities in your applications.
+LiveKit Server is an open source project that provides scalable, multi-user conferencing based on WebRTC. It's designed to provide everything you need to build real-time video audio data capabilities in your applications.
 
 💡 LiveKit Server is automatically installed and configured when [Element Call](configuring-playbook-element-call.md) is enabled, so you don't need to do anything extra.
 
