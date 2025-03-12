@@ -46,9 +46,9 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 
 ## Usage
 
-Once installed, Element Call integrates seamlessly with Matrix clients like [Element Web](configuring-playbook-client-element-web.md). When the Element Call service is installed, the `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc4143.rtc_foci` section is added to point to your LiveKit JWT service URL (e.g., `https://matrix.example.com/lk-jwt-service`).
+Once installed, Element Call integrates seamlessly with Matrix clients like [Element Web](configuring-playbook-client-element-web.md). When the Element Call service is installed, the `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc4143.rtc_foci` section is added to point to your LiveKit JWT service URL (e.g., `https://matrix.example.com/livekit-jwt-service`).
 
-Additionally, the `/.well-known/element/element.json` file is created to help Element clients discover the Element Call URL (e.g., `https://call.example.com`).
+Additionally, the `/.well-known/element/element.json` file is created to help Element clients discover the Element Call URL (e.g., `https://call.element.example.com`).
 
 ## Required Firewall and Port Forwarding Rules
 

@@ -18,7 +18,7 @@ See the project's [documentation](https://github.com/element-hq/lk-jwt-service/)
 By default, JWT Service is configured to be served:
 
 - on the Matrix domain (`matrix.example.com`), configurable via `matrix_livekit_jwt_service_hostname`
-- under a `/lk-jwt-service` path prefix, configurable via `matrix_livekit_jwt_service_path_prefix`
+- under a `/livekit-jwt-service` path prefix, configurable via `matrix_livekit_jwt_service_path_prefix`
 
 This makes it easy to set it up, **without** having to adjust your DNS records manually.
 
@@ -40,7 +40,7 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 
 ## Usage
 
-Once installed, a new `org.matrix.msc4143.rtc_foci` section is added to the Element Web client to point to your JWT service URL (e.g., `https://matrix.example.com/lk-jwt-service`).
+Once installed, a new `org.matrix.msc4143.rtc_foci` section is added to the Element Web client to point to your JWT service URL (e.g., `https://matrix.example.com/livekit-jwt-service`).
 
 ## Additional Information
 
