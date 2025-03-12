@@ -363,8 +363,8 @@ If upstream synapse-admin picks up the pace and improves, the etke.cc fork may d
 If you'd like to switch back to the original synapse-admin software, you can do so by adding the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
-matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else 'docker.io/' }}"
+matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
+matrix_synapse_admin_docker_image_registry_prefix_upstream: docker.io/
 
 matrix_synapse_admin_version: 0.10.3
 
