@@ -1,26 +1,39 @@
 # SPDX-FileCopyrightText: 2022 MDAD project contributors
 # SPDX-FileCopyrightText: 2024 wjbeckett
-# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# Enable or disable matrix-element-call deployment
+
+# Element Call is a native Matrix video conferencing application developed by Element.
+# Project source code URL: https://github.com/element-hq/element-call
+
 matrix_element_call_enabled: false
 
-matrix_element_call_scheme: https
-matrix_element_call_hostname: "call.{{ matrix_domain }}"
+matrix_element_call_version: v0.7.2
 
-# Base path configuration
+matrix_element_call_scheme: https
+
+matrix_element_call_hostname: "call.element.{{ matrix_domain }}"
+matrix_element_call_path_prefix: /
+
 matrix_element_call_base_path: "{{ matrix_base_data_path }}/element-call"
 
-# Docker network configuration
-matrix_element_call_container_network: ''
-matrix_element_call_container_http_host_bind_port: ''
-matrix_element_call_container_additional_networks: []  # No additional networks by default
+matrix_element_call_container_image: "{{ matrix_element_call_container_image_registry_prefix }}element-hq/element-call:{{ matrix_element_call_container_image_tag }}"
+matrix_element_call_container_image_registry_prefix: "{{ matrix_element_call_container_image_registry_prefix_upstream }}"
+matrix_element_call_container_image_registry_prefix_upstream: "{{ matrix_element_call_container_image_registry_prefix_upstream_default }}"
+matrix_element_call_container_image_registry_prefix_upstream_default: ghcr.io/
+matrix_element_call_container_image_tag: "{{ matrix_element_call_version }}"
+matrix_element_call_container_image_force_pull: "{{ matrix_element_call_container_image.endswith(':latest') }}"
 
-# Docker images
-matrix_element_call_image: "ghcr.io/element-hq/element-call:latest"
+matrix_element_call_container_network: matrix-element-call
+
+matrix_element_call_container_http_host_bind_port: ''
+
+matrix_element_call_container_additional_networks: "{{ matrix_element_call_container_additional_networks_auto + matrix_element_call_container_additional_networks_custom }}"
+matrix_element_call_container_additional_networks_auto: []
+matrix_element_call_container_additional_networks_custom: []
 
 # Ports
 matrix_element_call_port: "8093"

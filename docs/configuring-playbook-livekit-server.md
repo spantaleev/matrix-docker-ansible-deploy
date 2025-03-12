@@ -26,7 +26,7 @@ If you'd like to run Livekit on another hostname or path, use the `livekit_serve
 If you've changed the default hostname, **you may need to adjust your DNS** records accordingly to point to the correct server.
 
 Ensure that the following DNS names have a public IP/FQDN:
-- `sfu.example.com`
+- `livekit.example.com`
 
 ## Adjusting the playbook configuration
 

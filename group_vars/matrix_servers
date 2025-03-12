@@ -6261,21 +6261,10 @@ matrix_element_call_enabled: false
 
 matrix_element_call_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
-matrix_element_call_version: "latest"  # Default version; can be overridden in host_vars
-
-matrix_element_call_hostname: "call.{{ matrix_domain }}"  # Default hostname; should be overridden in host_vars if different
-matrix_element_call_path_prefix: "/"  # Path prefix for Element Call
-matrix_element_call_base_path: "{{ matrix_base_data_path }}/element-call"  # Base path for storing Element Call-related files
-matrix_element_call_container_image: "ghcr.io/element-hq/element-call:{{ matrix_element_call_version }}"
-matrix_element_call_container_image_name_prefix: ghcr.io/
-matrix_element_call_container_image_registry_prefix: ghcr.io/
-matrix_element_call_container_image_force_pull: true
-
-# Docker network configuration for Element Call
 matrix_element_call_container_network: "{{ matrix_addons_container_network }}"
-matrix_element_call_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_element_call_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
 
-# Traefik Configuration for Element Call
+matrix_element_call_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_element_call_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+
 matrix_element_call_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_element_call_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_element_call_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
@@ -6302,7 +6291,7 @@ livekit_server_gid: "{{ matrix_user_gid }}"
 
 livekit_server_base_path: "{{ matrix_base_data_path }}/livekit-server"
 
-livekit_server_hostname: "sfu.{{ matrix_domain }}"
+livekit_server_hostname: "livekit.{{ matrix_domain }}"
 
 livekit_server_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
