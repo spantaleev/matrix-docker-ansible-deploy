@@ -19,7 +19,7 @@ traefik.http.services.{{ livekit_server_identifier }}.loadbalancer.server.port={
 {% if livekit_server_container_labels_traefik_path_prefix != '/' %}
 traefik.http.middlewares.{{ livekit_server_identifier }}-slashless-redirect.redirectregex.regex=({{ livekit_server_container_labels_traefik_path_prefix | quote }})$
 traefik.http.middlewares.{{ livekit_server_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
-{% set middlewares = middlewares + [livekit_server_identifier + '-server-slashless-redirect'] %}
+{% set middlewares = middlewares + [livekit_server_identifier + '-slashless-redirect'] %}
 
 traefik.http.middlewares.{{ livekit_server_identifier }}-strip-prefix.stripprefix.prefixes={{ livekit_server_container_labels_traefik_path_prefix }}
 {% set middlewares = middlewares + [livekit_server_identifier + '-strip-prefix'] %}
