@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # 2023
 
 2023 was a year filled with many changes for matrix-docker-ansible-deploy. In this post, we're looking backward at some of the major changes that happened this year, as well as taking a glimpse of what's ahead in 2024.
@@ -52,7 +59,7 @@ Hopefully, Synapse defaults would also change the same way and we'd see the numb
 
 With this configuration change in place, projects like [MatrixRooms.info](https://matrixrooms.info/) (made by [etke.cc](https://etke.cc/)) and potentially others in the future, can discover, index the metadata (room address, title, topic, number of users, etc.) and make public rooms browsable & searchable across the whole Matrix Federation. It'd be great if users joining Matrix could more easily find interesting communities that match their interests!
 
-On the **media side of things**, besides Jitsi getting better Matrix integration (via the aforementioned Matrix User Verification Service), we've also had some [Coturn security tightening](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#backward-compatibility-tightening-coturn-security-can-lead-to-connectivity-issues) as well as [performance optimizations](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#coturn-can-now-use-host-networking) for configurations exposing lots of network ports.
+On the **media side of things**, besides Jitsi getting better Matrix integration (via the aforementioned Matrix User Verification Service), we've also had some [coturn security tightening](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#backward-compatibility-tightening-coturn-security-can-lead-to-connectivity-issues) as well as [performance optimizations](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#coturn-can-now-use-host-networking) for configurations exposing lots of network ports.
 
 [Element Call](https://github.com/element-hq/element-call) seems to have become a nice and polished product lately (as proclaimed in [The Matrix Holiday Update 2023](https://matrix.org/blog/2023/12/25/the-matrix-holiday-update-2023/)), so 2024 is likely the year we'll see support for it in the playbook. Element Call depends on the [LiveKit](https://livekit.io/) streaming server (which is also useful to developers even by itself), so the first step is likely to see LiveKit support in mash-playbook via a reusable Ansible role. Such a LiveKit Ansible role could later easily land in matrix-docker-ansible-deploy and an Element Call static website could be hooked to it.
 
@@ -69,7 +76,7 @@ When it comes to the `matrix-docker-ansible-deploy` Ansible playbook, 2022 was t
 
 Support for the following new **bridges** was added:
 
-*   [Postmoogle](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#postmoogle-email-bridge-support) for bi-directional email bridging, which supersedes my old and simplistic [email2matrix](https://github.com/devture/email2matrix) one-way bridge-bot
+*   [Postmoogle](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#postmoogle-email-bridge-support) for bi-directional email bridging, which supersedes my old and simplistic [Email2Matrix](https://github.com/devture/email2matrix) one-way bridge-bot
 *   [mautrix-discord](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#mautrix-discord-support)
 *   [go-skype-bridge](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#go-skype-bridge-bridging-support)
 *   [matrix-appservice-kakaotalk](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#matrix-appservice-kakaotalk-support)

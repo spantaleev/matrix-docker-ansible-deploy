@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # matrix-authentication-service (MAS) is an OAuth 2.0 and OpenID Provider server for Matrix.
@@ -17,9 +22,11 @@ matrix_authentication_service_container_repo_version: "{{ 'main' if matrix_authe
 matrix_authentication_service_container_src_files_path: "{{ matrix_base_data_path }}/matrix-authentication-service/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/matrix-authentication-service
-matrix_authentication_service_version: 0.12.0
-matrix_authentication_service_container_image: "{{ matrix_authentication_service_container_image_name_prefix }}element-hq/matrix-authentication-service:{{ matrix_authentication_service_version }}"
-matrix_authentication_service_container_image_name_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else 'ghcr.io/' }}"
+matrix_authentication_service_version: 0.14.1
+matrix_authentication_service_container_image_registry_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else matrix_authentication_service_container_image_registry_prefix_upstream }}"
+matrix_authentication_service_container_image_registry_prefix_upstream: "{{ matrix_authentication_service_container_image_registry_prefix_upstream_default }}"
+matrix_authentication_service_container_image_registry_prefix_upstream_default: "ghcr.io/"
+matrix_authentication_service_container_image: "{{ matrix_authentication_service_container_image_registry_prefix }}element-hq/matrix-authentication-service:{{ matrix_authentication_service_version }}"
 matrix_authentication_service_container_image_force_pull: "{{ matrix_authentication_service_container_image.endswith(':latest') }}"
 
 matrix_authentication_service_base_path: "{{ matrix_base_data_path }}/matrix-authentication-service"
@@ -161,13 +168,13 @@ matrix_authentication_service_config_email_reply_to_address: "{{ matrix_authenti
 
 # Controls the `email.transport` configuration setting.
 #
-# Valid options are: blackhole, smtp, aws_ses
+# Valid values: blackhole, smtp, aws_ses
 # Upstream reports that `sendmail` is supported as well,
 # but this is not true when running it in a container image due to the `sendmail` binary not being included.
 matrix_authentication_service_config_email_transport: blackhole
 
 # Controls the `email.mode` configuration setting for SMTP.
-# Options are 'plain', 'tls', or 'starttls'.
+# Valid values: plain, tls, starttls
 matrix_authentication_service_config_email_mode: plain
 
 # Controls the `email.hostname` configuration setting for SMTP.
@@ -220,7 +227,7 @@ matrix_authentication_service_config_account_password_change_allowed: true
 
 # Controls the `account.password_recovery_enabled` configuration setting.
 #
-# Whether email-based password recovery is enabled
+# Whether email-based password recovery is enabled.
 # This has no effect if password login is disabled.
 matrix_authentication_service_config_account_password_recovery_enabled: false
 
@@ -340,7 +347,7 @@ matrix_authentication_service_config_http_trusted_proxies:
 matrix_authentication_service_config_matrix_homeserver: ""
 
 # Controls the `matrix.endpoint` configuration setting.
-# URL to which the homeserver is accessible from the service
+# URL to which the homeserver is accessible from the service.
 matrix_authentication_service_config_matrix_endpoint: ""
 
 # Controls the `matrix.secret` configuration setting.
@@ -361,20 +368,20 @@ matrix_authentication_service_config_matrix_secret: ""
 
 # Controls the `passwords.enabled` configuration setting.
 # Whether to enable the password database.
-# If disabled, users will only be able to log in using upstream OIDC providers
+# If disabled, users will only be able to log in using upstream OIDC providers.
 matrix_authentication_service_config_passwords_enabled: true
 
 # Controls the `passwords.schemes` configuration setting.
 # List of password hashing schemes being used.
-# Only change this if you know what you're doing
+# Only change this if you know what you're doing.
 matrix_authentication_service_config_passwords_schemes:
   - version: 1
     algorithm: argon2id
 
 # Controls the `passwords.minimum_complexity` configuration setting.
-# Minimum complexity required for passwords, estimated by the zxcvbn algorithm
-# Must be between 0 and 4, default is 3
-# See https://github.com/dropbox/zxcvbn#usage for more information
+# Minimum complexity required for passwords, estimated by the zxcvbn algorithm.
+# Must be between 0 and 4. Default is 3.
+# See https://github.com/dropbox/zxcvbn#usage for more information.
 matrix_authentication_service_config_passwords_minimum_complexity: 3
 
 ########################################################################################
@@ -502,7 +509,7 @@ matrix_authentication_service_container_labels_public_main_tls_certResolver: "{{
 # - https://element-hq.github.io/matrix-authentication-service/setup/reverse-proxy.html#compatibility-layer
 #
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
-# See `matrix_authentication_service_container_labels_traefik_enabled`
+# See `matrix_authentication_service_container_labels_traefik_enabled`.
 matrix_authentication_service_container_labels_public_compatibility_layer_enabled: false
 matrix_authentication_service_container_labels_public_compatibility_layer_hostname: ""
 matrix_authentication_service_container_labels_public_compatibility_layer_path_regexp: "^/_matrix/client/(?P<version>([^/]+))/(?P<endpoint>(login|logout|refresh))"
@@ -555,7 +562,7 @@ matrix_authentication_service_syn2mas_start_wait_time_seconds: 5
 matrix_authentication_service_syn2mas_dry_run: false
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/matrix-authentication-service/syn2mas
-matrix_authentication_service_syn2mas_version: 0.12.0
+matrix_authentication_service_syn2mas_version: 0.14.1
 matrix_authentication_service_syn2mas_container_image: "{{ matrix_authentication_service_container_image_name_prefix }}element-hq/matrix-authentication-service/syn2mas:{{ matrix_authentication_service_syn2mas_version }}"
 matrix_authentication_service_syn2mas_container_image_name_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else 'ghcr.io/' }}"
 matrix_authentication_service_syn2mas_container_image_force_pull: "{{ matrix_authentication_service_syn2mas_container_image.endswith(':latest') }}"

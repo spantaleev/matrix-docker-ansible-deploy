@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Fail if required WeChat settings not defined
@@ -17,3 +21,11 @@
   when: matrix_architecture not in ['amd64']
   ansible.builtin.fail:
     msg: "The WeChat Agent does not support the '{{ matrix_architecture }}' architecture yet. Its Dockerfile downloads amd64 binaries and does not work on arm64."
+
+- name: (Deprecation) Catch and report renamed WeChat variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_wechat_container_image_name_prefix', 'new': 'matrix_wechat_container_image_registry_prefix'}

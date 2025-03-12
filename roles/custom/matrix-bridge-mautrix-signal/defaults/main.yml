@@ -1,3 +1,19 @@
+# SPDX-FileCopyrightText: 2020 - 2021 Sabine Laszakovits
+# SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2021 Wolfgang Winter
+# SPDX-FileCopyrightText: 2022 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 László Várady
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Matthew Cengia
+# SPDX-FileCopyrightText: 2023 - 2024 Pierre 'McFly' Marty
+# SPDX-FileCopyrightText: 2023 Adrien le Maire
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2023 Yousef Amar
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # mautrix-signal is a Matrix <-> Signal bridge
 # Project source code URL: https://github.com/mautrix/signal
@@ -9,12 +25,14 @@ matrix_mautrix_signal_container_image_self_build_repo: "https://mau.dev/mautrix/
 matrix_mautrix_signal_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_signal_version == 'latest' else matrix_mautrix_signal_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/signal
-matrix_mautrix_signal_version: v0.7.3
+matrix_mautrix_signal_version: v0.8.0
 
 # See: https://mau.dev/mautrix/signal/container_registry
-matrix_mautrix_signal_docker_image: "{{ matrix_mautrix_signal_docker_image_name_prefix }}mautrix/signal:{{ matrix_mautrix_signal_docker_image_tag }}"
+matrix_mautrix_signal_docker_image: "{{ matrix_mautrix_signal_docker_image_registry_prefix }}mautrix/signal:{{ matrix_mautrix_signal_docker_image_tag }}"
 matrix_mautrix_signal_docker_image_tag: "{{ matrix_mautrix_signal_version }}"
-matrix_mautrix_signal_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_signal_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_signal_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_signal_container_image_self_build else matrix_mautrix_signal_docker_image_registry_prefix_upstream }}"
+matrix_mautrix_signal_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_signal_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_signal_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_mautrix_signal_docker_image_force_pull: "{{ matrix_mautrix_signal_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_signal_base_path: "{{ matrix_base_data_path }}/mautrix-signal"
@@ -93,7 +111,7 @@ matrix_mautrix_signal_homeserver_token: ''
 matrix_mautrix_signal_appservice_bot_username: signalbot
 
 # Minimum severity of journal log messages.
-# Options: debug, info, warn, error, fatal
+# Valid values: fatal, error, warn, info, debug, trace
 matrix_mautrix_signal_logging_level: 'warn'
 
 # Whether or not created rooms should have federation enabled.

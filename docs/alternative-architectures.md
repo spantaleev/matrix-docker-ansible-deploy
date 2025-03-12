@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Horvath Gergely
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Alternative architectures
 
 As stated in the [Prerequisites](prerequisites.md), currently only `amd64` (`x86_64`) is fully supported.
@@ -9,7 +17,6 @@ The playbook automatically determines the target server's architecture (the `mat
 - `arm64`
 
 Some tools and container images can be built on the host or other measures can be used to install on that architecture.
-
 
 ## Implementation details
 

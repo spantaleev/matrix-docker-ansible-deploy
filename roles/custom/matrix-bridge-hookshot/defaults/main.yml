@@ -1,3 +1,15 @@
+# SPDX-FileCopyrightText: 2022 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Arthur Brugière
+# SPDX-FileCopyrightText: 2022 Kim Brose
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Kris Watson
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # A bridge between Matrix and multiple project management services, such as GitHub, GitLab and JIRA.
@@ -17,10 +29,12 @@ matrix_hookshot_container_additional_networks_auto: []
 matrix_hookshot_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=halfshot/matrix-hookshot
-matrix_hookshot_version: 5.4.1
+matrix_hookshot_version: 6.0.3
 
-matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_name_prefix }}halfshot/matrix-hookshot:{{ matrix_hookshot_version }}"
-matrix_hookshot_docker_image_name_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_registry_prefix }}matrix-org/matrix-hookshot:{{ matrix_hookshot_version }}"
+matrix_hookshot_docker_image_registry_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_hookshot_docker_image_registry_prefix_upstream }}"
+matrix_hookshot_docker_image_registry_prefix_upstream: "{{ matrix_hookshot_docker_image_registry_prefix_upstream_default }}"
+matrix_hookshot_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_hookshot_docker_image_force_pull: "{{ matrix_hookshot_docker_image.endswith(':latest') }}"
 
 matrix_hookshot_base_path: "{{ matrix_base_data_path }}/hookshot"
@@ -29,6 +43,9 @@ matrix_hookshot_docker_src_files_path: "{{ matrix_hookshot_base_path }}/docker-s
 
 matrix_hookshot_homeserver_address: ""
 matrix_hookshot_container_url: 'matrix-hookshot'
+
+# Sets the localpart of the Matrix ID for the hookshot bot
+matrix_hookshot_bot_localpart: "hookshot"
 
 matrix_hookshot_public_scheme: https
 matrix_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
@@ -46,17 +63,18 @@ matrix_hookshot_appservice_hostname: "{{ matrix_hookshot_public_hostname }}"
 matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
 
 # The variables below control the Redis cache parameters.
-# Using caching is required when experimental encryption is enabled (`matrix_hookshot_experimental_encryption_enabled`)
+# Using caching is required when encryption is enabled (`matrix_hookshot_encryption_enabled`)
 # but may also speed up Hookshot startup, etc.
 matrix_hookshot_cache_redis_host: ''
 matrix_hookshot_cache_redis_port: "6379"
 matrix_hookshot_cache_redisUri: "{{ ('redis://' + matrix_hookshot_cache_redis_host + ':' + matrix_hookshot_cache_redis_port) if matrix_hookshot_cache_redis_host else '' }}"  # noqa var-naming
 
-# Controls whether the experimental end-to-bridge encryption support is enabled.
+# Controls whether the end-to-bridge encryption support is enabled.
 # This requires that:
 # - support to also be enabled in the homeserver, see the documentation of Hookshot.
 # - Hookshot to be pointed at a Redis instance via the `matrix_hookshot_cache_redis*` variables.
-matrix_hookshot_experimental_encryption_enabled: false
+# See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
+matrix_hookshot_encryption_enabled: false
 
 # Controls whether metrics are enabled in the bridge configuration.
 # Enabling them is usually enough for a local (in-container) Prometheus to consume them.
@@ -86,7 +104,7 @@ matrix_hookshot_github_auth_id: ''
 # Set this variable to the contents of the generated and downloaded GitHub private key:
 # matrix_hookshot_github_private_key: |
 #   -----BEGIN RSA PRIVATE KEY-----
-#   0123456789ABCDEF...
+#   0123456789ABCDEF…
 #   -----END RSA PRIVATE KEY-----
 # Alternatively, leave it empty and do it manually or use matrix-aux instead, see docs/matrix-bridge-hookshot.md for info.
 matrix_hookshot_github_private_key: ''
@@ -174,12 +192,12 @@ matrix_hookshot_provisioning_enabled: false
 # There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
 matrix_hookshot_provisioning_port: 9002
 matrix_hookshot_provisioning_secret: ''
-# Provisioning will be automatically enabled if dimension is enabled and you have provided a provisioning secret, unless you override it
+# Provisioning will be automatically enabled if Dimension is enabled and you have provided a provisioning secret, unless you override it
 matrix_hookshot_provisioning_internal: "/v1"
 matrix_hookshot_provisioning_hostname: "{{ matrix_hookshot_public_hostname }}"
 matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ matrix_hookshot_provisioning_internal }}"
 
-# Valid logging levels are: debug, info, warn, error
+# Valid values: error, warn, info, debug
 matrix_hookshot_logging_level: warn
 
 matrix_hookshot_widgets_enabled: true
@@ -326,7 +344,7 @@ matrix_hookshot_homeserver_token: ''
 #
 # For a more advanced customization, you can extend the default (see `matrixhookshot_configuration_extension_yaml`)
 # or completely replace this variable with your own template.
-matrix_hookshot_configuration_yaml: "{{ lookup('template', 'templates/config.yml.j2') }}"
+matrix_hookshot_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
 matrix_hookshot_configuration_extension_yaml: |
   # Your custom YAML configuration goes here.

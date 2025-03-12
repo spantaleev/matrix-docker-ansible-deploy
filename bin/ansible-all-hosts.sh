@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2022 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 #
 # Run the playbook on multiple hosts with different credentials with this script
 # It defaults to ansible tags "setup-all,start". You can pass alternative tags

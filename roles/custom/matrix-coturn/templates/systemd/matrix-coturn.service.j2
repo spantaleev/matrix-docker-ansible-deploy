@@ -1,6 +1,6 @@
 #jinja2: lstrip_blocks: "True"
 [Unit]
-Description=Matrix Coturn server
+Description=Matrix coturn server
 {% for service in matrix_coturn_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
@@ -10,7 +10,7 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-coturn 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-coturn 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-coturn 2>/dev/null || true'
 
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
@@ -24,13 +24,17 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--tmpfs=/var/tmp:rw,noexec,nosuid,size=100m \
 			--network={{ matrix_coturn_container_network }} \
-			{% if matrix_coturn_container_stun_plain_host_bind_port != '' %}
-			-p {{ matrix_coturn_container_stun_plain_host_bind_port }}:3478 \
-			-p {{ matrix_coturn_container_stun_plain_host_bind_port }}:3478/udp \
+			{% if matrix_coturn_container_stun_plain_host_bind_port_tcp != '' %}
+			-p {{ matrix_coturn_container_stun_plain_host_bind_port_tcp }}:3478 \
 			{% endif %}
-			{% if matrix_coturn_container_stun_tls_host_bind_port != '' %}
-			-p {{ matrix_coturn_container_stun_tls_host_bind_port }}:5349 \
-			-p {{ matrix_coturn_container_stun_tls_host_bind_port }}:5349/udp \
+			{% if matrix_coturn_container_stun_plain_host_bind_port_udp != '' %}
+			-p {{ matrix_coturn_container_stun_plain_host_bind_port_udp }}:3478/udp \
+			{% endif %}
+			{% if matrix_coturn_container_stun_tls_host_bind_port_tcp != '' %}
+			-p {{ matrix_coturn_container_stun_tls_host_bind_port_tcp }}:5349 \
+			{% endif %}
+			{% if matrix_coturn_container_stun_tls_host_bind_port_udp != '' %}
+			-p {{ matrix_coturn_container_stun_tls_host_bind_port_udp }}:5349/udp \
 			{% endif %}
 			{% if matrix_coturn_container_turn_range_listen_interface is not in [none, 'none'] %}
 			-p {{ matrix_coturn_container_turn_range_listen_interface }}{{ ':' if matrix_coturn_container_turn_range_listen_interface else '' }}{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \
@@ -51,7 +55,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network conne
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-coturn
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-coturn 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-coturn 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-coturn 2>/dev/null || true'
 
 # This only reloads certificates (not other configuration).

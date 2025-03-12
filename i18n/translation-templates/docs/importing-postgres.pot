@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/importing-postgres.md:1
+msgid "Importing an existing Postgres database from another installation (optional)"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:3
+msgid "Run this if you'd like to import your database from a previous installation. (don't forget to import your Synapse `media_store` files as well — see [the importing-synape-media-store guide](importing-synapse-media-store.md))."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:6
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:8
+msgid "For this to work, **the database name in Postgres must match** what this playbook uses. This playbook uses a Postgres database name of `synapse` by default (controlled by the `matrix_synapse_database_database` variable). If your database name differs, be sure to change `matrix_synapse_database_database` to your desired name and to re-run the playbook before proceeding."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:10
+msgid "The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`). Importing multiple databases (as dumped by `pg_dumpall`) is also supported."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:12
+msgid "The migration might be a good moment, to \"reset\" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, …)"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:14
+msgid "Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay)."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:16
+msgid "Importing"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:18
+msgid "To import, run this command (make sure to replace `SERVER_PATH_TO_POSTGRES_DUMP_FILE` with a file path on your server):"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:26
+msgid "**Notes**:"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:28
+msgid "`SERVER_PATH_TO_POSTGRES_DUMP_FILE` must be a file path to a Postgres dump file on the server (not on your local machine!)"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:29
+msgid "`postgres_default_import_database` defaults to `matrix`, which is useful for importing multiple databases (for dumps made with `pg_dumpall`). If you're importing a single database (e.g. `synapse`), consider changing `postgres_default_import_database` accordingly"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:30
+msgid "after importing a large database, it's a good idea to run [an `ANALYZE` operation](https://www.postgresql.org/docs/current/sql-analyze.html) to make Postgres rebuild its database statistics and optimize its query planner. You can easily do this via the playbook by running `just run-tags run-postgres-vacuum -e postgres_vacuum_preset=analyze` (see [Vacuuming PostgreSQL](maintenance-postgres.md#vacuuming-postgresql) for more details)."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:32
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:34
+msgid "Table Ownership"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:36
+msgid "A table ownership issue can occur if you are importing from a Synapse installation which was both:"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:38
+msgid "migrated from SQLite to Postgres, and"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:39
+msgid "used a username other than 'synapse'"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:41
+msgid "In this case you may run into the following error during the import task:"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:47
+msgid "where `synapse_user` is the database username from the previous Synapse installation."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:49
+msgid "This can be verified by examining the dump for ALTER TABLE statements which set OWNER TO that username:"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:61
+msgid "It can be worked around by changing the username to `synapse`, for example by using `sed`:"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:67
+msgid "This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` — replacing `matrix` only would… well — you can imagine."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:69
+msgid "Note that if the previous import failed with an error it may have made changes which are incompatible with re-running the import task right away; if you do so it may fail with an error such as:"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:75
+msgid "Repeat import"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:77
+msgid "In this case you can use the command suggested in the import task to clear the database before retrying the import:"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:85
+msgid "Now on your local machine run `just run-tags setup-postgres` to prepare the database roles etc."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:87
+msgid "If not, you probably get this error. `synapse` is the correct table owner, but the role is missing in database."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:93
+msgid "Once the database is clear and the ownership of the tables has been fixed in the SQL file, the import task should succeed."
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:95
+msgid "Check, if `--dbname` is set to `synapse` (not `matrix`) and replace paths (or even better, copy this line from your terminal)"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:101
+msgid "Hints"
+msgstr ""
+
+#: ../../../docs/importing-postgres.md:103
+msgid "To open psql terminal run `/matrix/postgres/bin/cli`"
+msgstr ""

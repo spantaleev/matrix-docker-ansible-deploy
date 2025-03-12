@@ -1,81 +1,162 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2021 Kim Brose
+SPDX-FileCopyrightText: 2021 Luca Di Carlo
+SPDX-FileCopyrightText: 2022 Olivér Falvai
+SPDX-FileCopyrightText: 2023 Michael Hollister
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server (optional)
 
-The playbook can install [Grafana](https://grafana.com/) with [Prometheus](https://prometheus.io/) and configure performance metrics of your homeserver with graphs for you.
+The playbook can install [Prometheus](https://prometheus.io/) with [Grafana](https://grafana.com/) and configure performance metrics of your homeserver with graphs for you.
 
-## Adjusting the playbook configuration
+> [!WARNING]
+> Metrics and graphs contain a lot of information, and anyone who has access to them can make an educated guess about your server usage patterns. This especially applies to small personal/family scale homeservers, where the number of samples is fairly limited. Analyzing the metrics over time, one might be able to figure out your life cycle, such as when you wake up, go to bed, etc. Before enabling (anonymous) access, you should carefully evaluate the risk, and if you do enable it, it is highly recommended to change your Grafana password from the default one.
+>
+> Most of our Docker containers run with limited system access, but the `prometheus-node-exporter` can access the host network stack and (readonly) root filesystem. If it is fine, you can enable it and have it capture metrics about them (see [below](#enable-metrics-and-graphs-for-generic-system-information-optional) for the instruction). Even if `prometheus-node-exporter` is not enabled, you will still get Synapse homeserver metrics. Note that both of these dashboards are always be enabled, so you can still see historical data even after disabling either source.
 
-To enable Grafana and/or Prometheus, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+## Adjusting DNS records
+
+By default, this playbook installs Grafana web user-interface on the `stats.` subdomain (`stats.example.com`) and requires you to create a CNAME record for `stats`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
+
+**Note**: It is possible to install Prometheus without installing Grafana. In this case it is not required to create the CNAME record.
+
+## Adjusting the playbook configuration — Prometheus
+
+Prometheus is an open-source systems monitoring and alerting toolkit. It is a time series database, which holds all the data we're going to talk about.
+
+To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 prometheus_enabled: true
-
-# You can remove this, if unnecessary.
-prometheus_node_exporter_enabled: true
-
-# You can remove this, if unnecessary.
-prometheus_postgres_exporter_enabled: true
-
-# You can remove this, if unnecessary.
-matrix_prometheus_nginxlog_exporter_enabled: true
-
-grafana_enabled: true
-
-grafana_anonymous_access: false
-
-# This has no relation to your Matrix user ID. It can be any username you'd like.
-# Changing the username subsequently won't work.
-grafana_default_admin_user: "some_username_chosen_by_you"
-
-# Changing the password subsequently won't work.
-grafana_default_admin_password: "some_strong_password_chosen_by_you"
 ```
 
-The retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
+**Note**: the retention policy of Prometheus metrics is [15 days by default](https://prometheus.io/docs/prometheus/latest/storage/#operational-aspects). Older data gets deleted automatically.
 
-### Adjusting the Grafana URL
+### Enable metrics and graphs for generic system information (optional)
 
-By default, this playbook installs Grafana web user-interface on the `stats.` subdomain (`stats.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+You can enable the [Node Exporter](https://prometheus.io/docs/guides/node-exporter/), an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures.
+
+To enable it, add the following configuration to your `vars.yml` file:
+
+```yaml
+prometheus_node_exporter_enabled: true
+```
+
+### Enable metrics and graphs for Postgres (optional)
+
+Expanding on the metrics exposed by the Synapse exporter and the Node exporter, the playbook can also install and configure the [PostgreSQL Server Exporter](https://github.com/prometheus-community/postgres_exporter) that exposes more detailed information about what's happening on your Postgres database.
+
+Enabling the exporter sets up the docker container, connects it to the database and adds a 'job' to the Prometheus config which tells Prometheus about this new exporter.
+
+To enable it, add the following configuration to your `vars.yml` file:
+
+**Note**: `prometheus_postgres_exporter_database_username` has nothing to do with your Matrix user ID. It can be any string you'd like.
+
+```yaml
+prometheus_postgres_exporter_enabled: true
+
+# The username for the user that the exporter uses to connect to the database.
+# Uncomment and adjust this part if you'd like to use a username different than the default.
+# prometheus_postgres_exporter_database_username: "matrix_prometheus_postgres_exporter"
+
+# The password for the user that the exporter uses to connect to the database. By default, this is auto-generated by the playbook.
+# Uncomment and adjust this part if you'd like to set the password by yourself.
+# prometheus_postgres_exporter_database_password: "PASSWORD_HERE"
+```
+
+### Enable metrics and graphs for nginx logs (optional)
+
+The playbook can also install and configure the [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) service for you.
+
+It is an addon of sorts to expose nginx logs to Prometheus. The exporter will collect access logs from various nginx reverse-proxies which may be used internally (e.g. `matrix-synapse-reverse-proxy-companion`, if Synapse workers are enabled) and will make them available at a Prometheus-compatible `/metrics` endpoint.
+
+See the project's [documentation](https://github.com/martin-helmich/prometheus-nginxlog-exporter/blob/master/README.adoc) to learn what it does and why it might be useful to you.
+
+To enable it, add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_prometheus_nginxlog_exporter_enabled: true
+```
+
+If you enable Grafana, a dedicated `NGINX PROXY` Grafana dashboard will be created.
+
+**Note**: nginx is only used internally by this Ansible playbook. With Traefik being our default reverse-proxy, collecting nginx metrics is less relevant.
+
+#### Docker image compatibility (optional)
+
+At the moment of writing only images for `amd64` and `arm64` architectures are available. The playbook currently does not support [self-building](./self-building.md) a container image on other architectures. You can however use a custom-build image by setting:
+
+```yaml
+matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
+matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
+```
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about Prometheus and its add-on.
+
+Take a look at:
+
+- [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
+- `roles/custom/matrix-prometheus-nginxlog-exporter/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
+## Adjusting the playbook configuration — Grafana
+
+Grafana is an open source visualization and analytics software. To enable it, add the following configuration to your `vars.yml` file. Make sure to replace `USERNAME_HERE` and `PASSWORD_HERE`.
+
+**Notes**:
+- `grafana_default_admin_user` has nothing to do with your Matrix user ID. It can be any string you'd like.
+- Changing the username/password subsequently won't work.
+
+```yaml
+grafana_enabled: true
+
+grafana_default_admin_user: "USERNAME_HERE"
+grafana_default_admin_password: "PASSWORD_HERE"
+
+# Uncomment to allow viewing Grafana without logging in.
+# grafana_anonymous_access: true
+```
+
+Name | Description
+-----|----------
+`grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.example.com` subdomain) the dashboards with the graphs that we're interested in.
+`grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. You are asked to change the credentials on first login. If you feel this is insecure and you want to change them beforehand, you can do that here.
+`grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
+
+### Adjusting the Grafana URL (optional)
 
 By tweaking the `grafana_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname
 grafana_hostname: grafana.example.com
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain, **you may need to adjust your DNS** records to point the Grafana domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `stats`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
-
-**Note**: It is possible to install Prometheus without installing Grafana. This case it is not required to create the CNAME record.
+After changing the domain, **you may need to adjust your DNS** records to point the Grafana domain to the Matrix server.
 
 ## Installing
 
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
 
-## What does it do?
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
-Name | Description
------|----------
-`prometheus_enabled`|[Prometheus](https://prometheus.io) is a time series database. It holds all the data we're going to talk about.
-`prometheus_node_exporter_enabled`|[Node Exporter](https://prometheus.io/docs/guides/node-exporter/) is an addon of sorts to Prometheus that collects generic system information such as CPU, memory, filesystem, and even system temperatures
-`prometheus_postgres_exporter_enabled`|[Postgres Exporter](configuring-playbook-prometheus-postgres.md) is an addon of sorts to expose Postgres database metrics to Prometheus.
-`matrix_prometheus_nginxlog_exporter_enabled`|[NGINX Log Exporter](configuring-playbook-prometheus-nginxlog.md) is an addon of sorts to expose NGINX logs to Prometheus.
-`grafana_enabled`|[Grafana](https://grafana.com/) is the visual component. It shows (on the `stats.example.com` subdomain) the dashboards with the graphs that we're interested in
-`grafana_anonymous_access`|By default you need to log in to see graphs. If you want to publicly share your graphs (e.g. when asking for help in [`#synapse:matrix.org`](https://matrix.to/#/#synapse:matrix.org?via=matrix.org&via=privacytools.io&via=mozilla.org)) you'll want to enable this option.
-`grafana_default_admin_user`<br>`grafana_default_admin_password`|By default Grafana creates a user with `admin` as the username and password. If you feel this is insecure and you want to change it beforehand, you can do that here
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
-
-## Security and privacy
-
-Metrics and resulting graphs can contain a lot of information. This includes system specs but also usage patterns. This applies especially to small personal/family scale homeservers. Someone might be able to figure out when you wake up and go to sleep by looking at the graphs over time. Think about this before enabling anonymous access. And you should really not forget to change your Grafana password.
-
-Most of our docker containers run with limited system access, but the `prometheus-node-exporter` has access to the host network stack and (readonly) root filesystem. This is required to report on them. If you don't like that, you can set `prometheus_node_exporter_enabled: false` (which is actually the default). You will still get Synapse metrics with this container disabled. Both of the dashboards will always be enabled, so you can still look at historical data after disabling either source.
-
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Collecting metrics to an external Prometheus server
 
@@ -83,36 +164,58 @@ Most of our docker containers run with limited system access, but the `prometheu
 
 When you'd like **to collect metrics from an external Prometheus server**, you need to expose service metrics outside of the container network.
 
-The playbook provides a single endpoint (`https://matrix.example.com/metrics/*`), under which various services may expose their metrics (e.g. `/metrics/node-exporter`, `/metrics/postgres-exporter`, `/metrics/hookshot`, etc). To expose all services on this `/metrics/*` feature, use `matrix_metrics_exposure_enabled`. To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), see `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` below.
+The playbook provides a single endpoint (`https://matrix.example.com/metrics/*`), under which various services may expose their metrics (e.g. `/metrics/node-exporter`, `/metrics/postgres-exporter`, `/metrics/nginxlog`, `/metrics/hookshot`, etc).
 
-When using `matrix_metrics_exposure_enabled`, you don't need to expose metrics for individual services one by one.
+To expose all services on this `/metrics/*` feature, you can use `matrix_metrics_exposure_enabled`. When using it, you don't need to expose metrics for individual services one by one. If you think this is too much, refer [this section](#expose-metrics-of-other-services-roles) for details about exposing metrics on a per-service basis.
+
+To protect access using [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication), you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users`. When enabled, all endpoints beneath `/metrics` will be protected with the same credentials. Alternatively, you can protect each endpoint with dedicated credentials. Refer [the section](#expose-metrics-of-other-services-roles) below for details about it.
 
 The following variables may be of interest:
 
 Name | Description
 -----|----------
-`matrix_metrics_exposure_enabled`|Set this to `true` to **enable metrics exposure for all services** on `https://matrix.example.com/metrics/*`. If you think this is too much, refer to the helpful (but nonexhaustive) list of individual `matrix_SERVICE_metrics_proxying_enabled` (or similar) variables below for exposing metrics on a per-service basis.
-`matrix_metrics_exposure_http_basic_auth_enabled`|Set this to `true` to protect all `https://matrix.example.com/metrics/*` endpoints with [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) (see the other variables below for supplying the actual credentials). When enabled, all endpoints beneath `/metrics` will be protected with the same credentials
+`matrix_metrics_exposure_enabled`|Set this to `true` to **enable metrics exposure for all services** on `https://matrix.example.com/metrics/*`.
+`matrix_metrics_exposure_http_basic_auth_enabled`|Set this to `true` to protect all `https://matrix.example.com/metrics/*` endpoints with [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) (see the other variables below for supplying the actual credentials).
 `matrix_metrics_exposure_http_basic_auth_users`|Set this to the Basic Authentication credentials (raw `htpasswd` file content) used to protect `/metrics/*`. This htpasswd-file needs to be generated with the `htpasswd` tool and can include multiple username/password pairs.
-`matrix_synapse_metrics_enabled`|Set this to `true` to make Synapse expose metrics (locally, on the container network)
-`matrix_synapse_metrics_proxying_enabled`|Set this to `true` to expose Synapse's metrics on `https://matrix.example.com/metrics/synapse/main-process` and `https://matrix.example.com/metrics/synapse/worker/TYPE-ID`. Read [below](#collecting-synapse-worker-metrics-to-an-external-prometheus-server) if you're running a Synapse worker setup (`matrix_synapse_workers_enabled: true`). To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
-`prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network)
-`prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
-`prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](configuring-playbook-prometheus-postgres.md) (locally, on the container network)
-`prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](configuring-playbook-prometheus-postgres.md) metrics on `https://matrix.example.com/metrics/postgres-exporter`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
-`matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [NGINX Log exporter](configuring-playbook-prometheus-nginxlog.md) (locally, on the container network)
-`matrix_sliding_sync_metrics_enabled`|Set this to `true` to make [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) expose metrics (locally, on the container network)
-`matrix_sliding_sync_metrics_proxying_enabled`|Set this to `true` to expose the [Sliding Sync](configuring-playbook-sliding-sync-proxy.md) metrics on `https://matrix.example.com/metrics/sliding-sync`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
-`matrix_bridge_hookshot_metrics_enabled`|Set this to `true` to make [Hookshot](configuring-playbook-bridge-hookshot.md) expose metrics (locally, on the container network)
-`matrix_bridge_hookshot_metrics_proxying_enabled`|Set this to `true` to expose the [Hookshot](configuring-playbook-bridge-hookshot.md) metrics on `https://matrix.example.com/metrics/hookshot`. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above.
-`matrix_SERVICE_metrics_proxying_enabled`|Various other services/roles may provide similar `_metrics_enabled` and `_metrics_proxying_enabled` variables for exposing their metrics. Refer to each role for details. To password-protect the metrics, see `matrix_metrics_exposure_http_basic_auth_users` above or `matrix_SERVICE_container_labels_metrics_middleware_basic_auth_enabled`/`matrix_SERVICE_container_labels_metrics_middleware_basic_auth_users` variables provided by each role.
-`matrix_media_repo_metrics_enabled`|Set this to `true` to make media-repo expose metrics (locally, on the container network)
+`prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network).
+`prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`.
+`prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) (locally, on the container network).
+`prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) metrics on `https://matrix.example.com/metrics/postgres-exporter`.
+`matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) (locally, on the container network).
+`matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled`|Set this to `true` to expose the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) metrics on `https://matrix.example.com/metrics/nginxlog`.
+
+### Expose metrics of other services/roles
+
+Various other services/roles may provide similar `_metrics_enabled` and `_metrics_proxying_enabled` variables for exposing their metrics. Refer to each role for details.
+
+To password-protect the metrics of a specific role, you can use `matrix_SERVICE_container_labels_metrics_middleware_basic_auth_enabled` and `matrix_SERVICE_container_labels_metrics_middleware_basic_auth_users` variables provided by the role.
+
+**Note**: alternatively you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` in order to password-protect the metrics of all services.
+
+For example, you can enable and expose metrics for Synapse protecting them with dedicated credentials by adding the following configuration to your `vars.yml` file:
+
+```yaml
+# Expose metrics (locally, on the container network).
+matrix_synapse_metrics_enabled: true
+
+# Uncomment to expose metrics on https://matrix.example.com/metrics/synapse/main-process and https://matrix.example.com/metrics/synapse/worker/TYPE-ID.
+# Read the section below ("Collecting Synapse worker metrics to an external Prometheus server") if you're running a Synapse worker setup by setting `matrix_synapse_workers_enabled` to true.
+# matrix_synapse_metrics_proxying_enabled: true
+
+# Uncomment to password-protect the metrics for Synapse.
+# matrix_synapse_container_labels_public_metrics_middleware_basic_auth_enabled: true
+
+# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoints.
+# See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+# matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users: ''
+```
 
 ### Collecting Synapse worker metrics to an external Prometheus server
 
 If you are using workers (`matrix_synapse_workers_enabled: true`) and have enabled `matrix_synapse_metrics_proxying_enabled` as described above, the playbook will also automatically expose all Synapse worker threads' metrics to `https://matrix.example.com/metrics/synapse/worker/ID`, where `ID` corresponds to the worker `id` as exemplified in `matrix_synapse_workers_enabled_list`.
 
 The playbook also generates an exemplary config file (`/matrix/synapse/external_prometheus.yml.template`) with all the correct paths which you can copy to your Prometheus server and adapt to your needs. Make sure to edit the specified `password_file` path and contents and path to your `synapse-v2.rules`. It will look a bit like this:
+
 ```yaml
 scrape_configs:
   - job_name: 'synapse'
@@ -139,6 +242,14 @@ scrape_configs:
           index: 18111
 ```
 
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running the commands below:
+- `journalctl -fu matrix-prometheus` for Prometheus
+- `journalctl -fu matrix-prometheus-node-exporter` for Node Exporter
+- `journalctl -fu matrix-prometheus-postgres-exporter` for PostgreSQL Server Exporter
+- `journalctl -fu matrix-prometheus-nginxlog-exporter` for prometheus-nginxlog-exporter
+- `journalctl -fu matrix-grafana` for Grafana
 
 ## More information
 
@@ -147,3 +258,4 @@ scrape_configs:
 - [The Prometheus scraping rules](https://github.com/element-hq/synapse/tree/master/contrib/prometheus) (we use v2)
 - [The Synapse Grafana dashboard](https://github.com/element-hq/synapse/tree/master/contrib/grafana)
 - [The Node Exporter dashboard](https://github.com/rfrail3/grafana-dashboards) (for generic non-synapse performance graphs)
+- [The PostgresSQL dashboard](https://grafana.com/grafana/dashboards/9628) (generic Postgres dashboard)

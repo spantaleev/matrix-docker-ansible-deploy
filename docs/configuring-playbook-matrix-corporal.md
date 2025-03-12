@@ -1,19 +1,25 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Matrix Corporal (optional, advanced)
 
--------------------------------------
-
-**WARNING**: This is an advanced feature! It requires prior experience with Matrix and a specific need for using [Matrix Corporal](https://github.com/devture/matrix-corporal). If you're unsure whether you have such a need, you most likely don't.
-
--------------------------------------
+> [!WARNING]
+> This is an advanced feature! It requires prior experience with Matrix and a specific need for using [Matrix Corporal](https://github.com/devture/matrix-corporal). If you're unsure whether you have such a need, you most likely don't.
 
 The playbook can install and configure [matrix-corporal](https://github.com/devture/matrix-corporal) for you.
 
-In short, it's a sort of automation and firewalling service, which is helpful if you're instaling Matrix services in a controlled corporate environment. See that project's documentation to learn what it does and why it might be useful to you.
+In short, it's a sort of automation and firewalling service, which is helpful if you're instaling Matrix services in a controlled corporate environment.
+
+See the project's [documentation](https://github.com/devture/matrix-corporal/blob/main/README.md) to learn what it does and why it might be useful to you.
 
 If you decide that you'd like to let this playbook install it for you, you'd need to also:
 - (required) [set up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md)
 - (optional, but encouraged) [set up the REST authentication password provider module](configuring-playbook-rest-auth.md)
-
 
 ## Adjusting the playbook configuration
 
@@ -47,7 +53,7 @@ matrix_corporal_policy_provider_config: |
     "TimeoutMilliseconds": 300
   }
 
-# If you also want to enable Matrix Corporal's HTTP API..
+# If you also want to enable Matrix Corporal's HTTP API…
 matrix_corporal_http_api_enabled: true
 matrix_corporal_http_api_auth_token: "AUTH_TOKEN_HERE"
 
@@ -114,10 +120,27 @@ aux_file_definitions:
 
 To learn more about what the policy configuration, see the matrix-corporal documentation on [policy](https://github.com/devture/matrix-corporal/blob/master/docs/policy.md).
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-corporal/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-corporal/templates/config.json.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_corporal_configuration_extension_json` variable
+
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command (`--tags=setup-all,start` or `--tags=setup-aux-files,setup-corporal,start`).
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+The shortcut commands with the [`just` program](just.md) are also available: `just run-tags setup-aux-files,setup-corporal,start` or `just setup-all`
+
+`just run-tags setup-aux-files,setup-corporal,start` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too.
 
 ## Matrix Corporal files
 
@@ -129,4 +152,16 @@ The following local filesystem paths are mounted in the `matrix-corporal` contai
 
 - `/matrix/corporal/cache` is mounted at `/var/cache/matrix-corporal` (read and write)
 
-As an example: you can create your own configuration files in `/matrix/corporal/config` and they will appear in `/etc/matrix-corporal` in the Docker container. Your configuration (stuff in `matrix_corporal_policy_provider_config`) needs to refer to these files via the local container paths - `/etc/matrix-corporal` (read-only), `/var/matrix-corporal` (read and write), `/var/cache/matrix-corporal` (read and write).
+As an example: you can create your own configuration files in `/matrix/corporal/config` and they will appear in `/etc/matrix-corporal` in the Docker container. Your configuration (stuff in `matrix_corporal_policy_provider_config`) needs to refer to these files via the local container paths — `/etc/matrix-corporal` (read-only), `/var/matrix-corporal` (read and write), `/var/cache/matrix-corporal` (read and write).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-corporal`.
+
+### Increase logging verbosity
+
+If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_corporal_debug: true
+```

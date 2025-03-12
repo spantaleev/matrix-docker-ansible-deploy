@@ -1,126 +1,198 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2023 Kim Brose
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Draupnir (optional)
 
 The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you.
 
-See the project's [documentation](https://github.com/the-draupnir-project/Draupnir) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) to learn what it does and why it might be useful to you.
 
 This documentation page is about installing Draupnir in bot mode. As an alternative, you can run a multi-instance Draupnir deployment by installing [Draupnir in appservice mode](./configuring-playbook-appservice-draupnir-for-all.md) (called Draupnir-for-all) instead.
 
+If your migrating from [Mjolnir](configuring-playbook-bot-mjolnir.md), skip to [this section](#migrating-from-mjolnir-only-required-if-migrating).
 
-If your migrating from Mjolnir skip to step 5b.
+## Prerequisites
 
-## 1. Register the bot account
+### Create a management room
 
-The playbook does not automatically create users for you. The bot requires an access token to be able to connect to your homeserver.
+Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room.
 
-You **need to register the bot user manually** before setting up the bot.
+> [!WARNING]
+> Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
-Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
+It is possible to make the management room encrypted (E2EE). If doing so, then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
 
-You can use the playbook to [register a new user](registering-users.md):
+Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking "Advanced". The room ID will look something like `!qporfwt:example.com`.
 
-```
-ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.draupnir password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
-```
+## End-to-End Encryption support
 
-If you would like Draupnir to be able to deactivate users, move aliases, shutdown rooms, show abuse reports ([see below](#abuse-reports)), etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above.
+Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled.
 
+Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms.
 
-## 2. Get an access token
+### Disable Pantalaimon for Draupnir (since v2.0.0; optional)
 
-Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+It is known that running Draupnir along with Pantalaimon breaks all workflows that involve answering prompts with reactions.
 
+If you are updating Draupnir from v1.x.x and have enabled Pantalaimon for it, you can disable Pantalaimon in favor of the native E2EE support. To disable Pantalaimon, remove the configuration `matrix_bot_draupnir_pantalaimon_use: true` from your `vars.yml` file.
 
-## 3. Make sure the account is free from rate limiting
+**Note**: because the management room is still encrypted, disabling it without enabling the native E2EE support will break the management room.
 
-You will need to prevent Synapse from rate limiting the bot's account. This is not an optional step. If you do not do this step Draupnir will crash. This can be done using Synapse's [admin API](https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). Please ask for help if you are uncomfortable with these steps or run into issues.
+### Native E2EE support
 
-If your Synapse Admin API is exposed to the internet for some reason like running the Synapse Admin Role [Link](configuring-playbook-synapse-admin.md) or running `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` in your playbook config. If your API is not externally exposed you should still be able to on the local host for your synapse run these commands.
+To enable the native E2EE support, you need to obtain an access token for Draupnir and set it on your `vars.yml` file.
 
-The following command works on semi up to date Windows 10 installs and All Windows 11 installations and other systems that ship curl. `curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@example:example.com/override_ratelimit` Replace `@example:example.com` with the MXID of your Draupnir and example.com with your homeserver domain. You can easily obtain an access token for a homeserver admin account the same way you can obtain an access token for Draupnir itself. If you made Draupnir Admin you can just use the Draupnir token.
+Note that native E2EE requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
 
-
-
-## 4. Create a management room
-
-Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room. Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
-
-If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see below).
-
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element Web you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
-
-Finally invite the `@bot.draupnir:example.com` account you created earlier into the room.
-
-
-## 5. Adjusting the playbook configuration
-
-Decide whether you want Draupnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms. To support E2EE, Draupnir needs to [use Pantalaimon](configuring-playbook-pantalaimon.md).
-
-### 5a. Configuration with E2EE support
-
-When using Pantalaimon, Draupnir will log in to its bot account itself through Pantalaimon, so configure its username and password.
-
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+To enable the native E2EE support, add the following configuration to your `vars.yml` file. Make sure to replace `CLEAN_ACCESS_TOKEN_HERE` with the access token you obtained just now.
 
 ```yaml
-# Enable Pantalaimon. See docs/configuring-playbook-pantalaimon.md
-matrix_pantalaimon_enabled: true
+# Enables the native E2EE support
+matrix_bot_draupnir_enable_experimental_rust_crypto: true
 
+# Access token which the bot will use for logging in.
+# Comment out `matrix_bot_draupnir_login_native` when using this option.
+matrix_bot_draupnir_access_token: "CLEAN_ACCESS_TOKEN_HERE"
+```
+
+## Adjusting the playbook configuration
+
+To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created earlier.
+
+```yaml
 # Enable Draupnir
 matrix_bot_draupnir_enabled: true
 
-# Tell Draupnir to use Pantalaimon
-matrix_bot_draupnir_pantalaimon_use: true
+# Uncomment and adjust this part if you'd like to use a username different than the default
+# matrix_bot_draupnir_login: bot.draupnir
 
-# User name and password for the bot. Required when using Pantalaimon.
-matrix_bot_draupnir_pantalaimon_username: "DRAUPNIR_USERNAME_FROM_STEP_1"
-matrix_bot_draupnir_pantalaimon_password: ### you should create a secure password for the bot account
+# Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
+# If creating the user on your own and using `matrix_bot_draupnir_access_token` to login you can comment out this line.
+matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
 
-matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
+# Comment out if using `matrix_bot_draupnir_enable_experimental_rust_crypto: true` or `matrix_bot_draupnir_access_token` to login.
+matrix_bot_draupnir_login_native: true
+
+matrix_bot_draupnir_management_room: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
-The playbook's `group_vars` will configure other required settings. If using this role separately without the playbook, you also need to configure the two URLs that Draupnir uses to reach the homeserver, one through Pantalaimon and one "raw". This example is taken from the playbook's `group_vars`:
+### Create and invite the bot to the management room
+
+Before proceeding to the next step, run the playbook with the following command to create the bot user.
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created
+```
+
+**Note**: the `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
+
+Then, invite the bot (`@bot.draupnir:example.com`) to its management room which you have created earlier.
+
+### Make sure the account is free from rate limiting (optional, recommended)
+
+If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a highly recommended step. If you do not configure it, Draupnir performance will be degraded.**
+
+This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally.
+
+**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
+
+The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+
+#### Add the configuration
+
+To expose the APIs publicly, add the following configuration to your `vars.yml` file:
 
 ```yaml
-# Endpoint URL that Draupnir uses to interact with the Matrix homeserver (client-server API).
-# Set this to the pantalaimon URL if you're using that.
-matrix_bot_draupnir_homeserver_url: "{{ 'http://matrix-pantalaimon:8009' if matrix_bot_draupnir_pantalaimon_use else matrix_addons_homeserver_client_api_url }}"
-
-# Endpoint URL that Draupnir could use to fetch events related to reports (client-server API and /_synapse/),
-# only set this to the public-internet homeserver client API URL, do NOT set this to the pantalaimon URL.
-matrix_bot_draupnir_raw_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
 ```
 
-### 5b. Configuration without E2EE support
+#### Obtain an access token for admin account
 
-When NOT using Pantalaimon, Draupnir does not log in by itself and you must give it an access token for its bot account.
+Manual access to Synapse's Admin APIs requires an access token for a homeserver admin account. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
-You must replace `ACCESS_TOKEN_FROM_STEP_2_GOES_HERE` and `ROOM_ID_FROM_STEP_4_GOES_HERE` with the your own values.
+#### Run the `curl` command
+
+To disable rate limiting, run the following command on systems that ship curl. Before running it, make sure to replace:
+
+- `ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account
+- `example.com` with your base domain
+- `@bot.draupnir:example.com` with the MXID of your Draupnir bot user
+
+```sh
+curl --header "Authorization: Bearer ADMIN_ACCESS_TOKEN_HERE" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.draupnir:example.com/override_ratelimit
+```
+
+**Notes**:
+- This does not work on outdated Windows 10 as curl is not available there.
+- Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally.
+
+### Abuse Reports
+
+Draupnir can receive reports in the management room.
+
+The bot can intercept the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using Traefik, this playbook can set this up for you:
 
 ```yaml
-matrix_bot_draupnir_enabled: true
-
-matrix_bot_draupnir_access_token: "ACCESS_TOKEN_FROM_STEP_2_GOES_HERE"
-
-matrix_bot_draupnir_management_room: "ROOM_ID_FROM_STEP_4_GOES_HERE"
+matrix_bot_draupnir_abuse_reporting_enabled: true
 ```
 
-### 5c. Migrating from Mjolnir (Only required if migrating.)
+<!--
+NOTE: this is unsupported by the playbook due to the admin API being inaccessible from containers currently.
+
+The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below.
+-->
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-draupnir/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_draupnir_configuration_extension_yaml` variable
+
+For example, to change Draupnir's `acceptInvitesFromSpace` option to `!qporfwt:example.com`, add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_bot_draupnir_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_draupnir_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_draupnir_configuration_yaml`.
+  acceptInvitesFromSpace: "!qporfwt:example.com"
+```
+
+### Migrating from Mjolnir (Only required if migrating)
 
 Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration.
 
+Note that Draupnir supports E2EE natively, so you can enable it instead of Pantalaimon. It is recommended to consult the instruction [here](#native-e2ee-support).
+
 That is all you need to do due to that Draupnir can complete migration on its own.
 
-## 6. Installing
+## Installing
 
-After configuring the playbook, run the [installation](installing.md) command:
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
 ```
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
-```
 
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
 ## Usage
 
@@ -166,7 +238,7 @@ The simplest and most useful entity to target is `user`. Below are a few example
 
 To create rules, you run commands in the Management Room (**not** in the policy list room).
 
-- (ban a single user on a given homeserver): `!draupnir ban @someone:example.com my-bans Rude to others`
+- (ban a single user on a given homeserver): `!draupnir ban @charles:example.com my-bans Rude to others`
 - (ban all users on a given homeserver by using a [wildcard](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#wildcards)): `!draupnir ban @*:example.org my-bans Spam server - all users are fake`
 
 As a result of running these commands, you may observe:
@@ -182,46 +254,10 @@ You can also **turn on various built-in [protections](https://the-draupnir-proje
 
 To **see which protections are available and which are enabled**, send a `!draupnir protections` command to the Management Room.
 
-To **see the configuration options for a given protection**, send a `!draupnir config get PROTECTION_NAME` (e.g. `!draupnir config get JoinWaveShortCircuit`).
+To **see the configuration options for a given protection**, send a `!draupnir protections show PROTECTION_NAME` (e.g. `!draupnir protections show JoinWaveShortCircuit`).
 
 To **set a specific option for a given protection**, send a command like this: `!draupnir config set PROTECTION_NAME.OPTION VALUE` (e.g. `!draupnir config set JoinWaveShortCircuit.timescaleMinutes 30`).
 
 To **enable a given protection**, send a command like this: `!draupnir enable PROTECTION_NAME` (e.g. `!draupnir enable JoinWaveShortCircuit`).
 
 To **disable a given protection**, send a command like this: `!draupnir disable PROTECTION_NAME` (e.g. `!draupnir disable JoinWaveShortCircuit`).
-
-
-## Extending the configuration
-
-You can configure additional options by adding the `matrix_bot_draupnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
-
-For example to change Draupnir's `recordIgnoredInvites` option to `true` you would add the following to your `vars.yml` file.
-
-```yaml
-matrix_bot_draupnir_configuration_extension_yaml: |
-  # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_bot_draupnir_configuration_yaml`).
-  #
-  # You can override individual variables from the default configuration, or introduce new ones.
-  #
-  # If you need something more special, you can take full control by
-  # completely redefining `matrix_bot_draupnir_configuration_yaml`.
-  recordIgnoredInvites: true
-```
-
-## Abuse Reports
-
-Draupnir supports two methods to receive reports in the management room.
-
-The first method intercepts the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using traefik, this playbook can set this up for you:
-
-```yaml
-matrix_bot_draupnir_abuse_reporting_enabled: true
-```
-
-The other method polls an synapse admin API endpoint and is hence only available when using synapse and when the Draupnir user is an admin user (see step 1). To enable it, set `pollReports: true` in Draupnir's config:
-
-```yaml
-matrix_bot_draupnir_configuration_extension_yaml: |
-  pollReports: true
-```

@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.119.0
+matrix_synapse_version: v1.126.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -48,6 +48,10 @@ matrix_synapse_container_image_customizations_enabled: |-
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_s3_storage_provider_version`.
 matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"
 
+# Controls whether to install an old version of boto3 and botocore, to work around the following issue:
+# https://github.com/aws/aws-cli/issues/9214
+matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled: true
+
 # Controls whether custom build steps will be added to the Dockerfile for installing auto-accept-invite module.
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_auto_accept_invite_version`.
 matrix_synapse_container_image_customizations_auto_accept_invite_installation_enabled: "{{ matrix_synapse_ext_synapse_auto_accept_invite_enabled }}"
@@ -56,7 +60,7 @@ matrix_synapse_container_image_customizations_auto_accept_invite_installation_en
 #
 # Example usage:
 #
-# ```yml
+# ```yaml
 # matrix_synapse_container_image_customizations_templates_enabled: true
 # # The templates are expected to be in a `templates/` subdirectory in
 # matrix_synapse_container_image_customizations_templates_in_container_template_files_relative_path: templates/
@@ -78,7 +82,9 @@ matrix_synapse_container_image_customizations_templates_git_repository_keyscan_h
 
 # matrix_synapse_container_image_customizations_dockerfile_body contains your custom Dockerfile steps
 # for building your customized Synapse image based on the original (upstream) image (`matrix_synapse_docker_image`).
-# A `FROM ...` clause is included automatically so you don't have to.
+# A `FROM …` clause is included automatically so you don't have to.
+#
+# For this to take effect, you need to enable customizations (`matrix_synapse_container_image_customizations_enabled: true`).
 #
 # Example:
 # matrix_synapse_container_image_customizations_dockerfile_body_custom: |
@@ -87,12 +93,13 @@ matrix_synapse_container_image_customizations_templates_git_repository_keyscan_h
 #  RUN echo 'You do NOT need to include a FROM clause yourself.'
 matrix_synapse_container_image_customizations_dockerfile_body_custom: ''
 
-matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}{{ matrix_synapse_docker_image_name }}:{{ matrix_synapse_docker_image_tag }}"
-matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_synapse_docker_image_registry_prefix }}"
+matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_registry_prefix }}{{ matrix_synapse_docker_image_name }}:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name: "{{ matrix_synapse_github_org_and_repo }}"
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
-matrix_synapse_docker_image_registry_prefix: ghcr.io/
+matrix_synapse_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_synapse_docker_image_registry_prefix_upstream }}"
+matrix_synapse_docker_image_registry_prefix_upstream: "{{ matrix_synapse_docker_image_registry_prefix_upstream_default }}"
+matrix_synapse_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 
 # matrix_synapse_docker_image_customized is the name of the locally built Synapse image
 # which adds various customizations on top of the original (upstream) Synapse image.
@@ -509,7 +516,7 @@ matrix_synapse_allow_public_rooms_without_auth: false
 #
 # For private servers, you may wish to forbid it to align yourself with upstream defaults.
 # However, disabling federation completely (see `matrix_synapse_federation_enabled`) is a better way to make your server private,
-# instead of relying on security-by-obscurity -- federating with others, having your public rooms joinable by anyone,
+# instead of relying on security-by-obscurity — federating with others, having your public rooms joinable by anyone,
 # but hiding them and thinking you've secured them.
 matrix_synapse_allow_public_rooms_over_federation: true
 
@@ -744,9 +751,36 @@ matrix_synapse_password_providers_enabled: false
 # to load message content directly from the homeserver.
 matrix_synapse_push_include_content: true
 
-# If url previews should be generated. This will cause a request from Synapse to
-# URLs shared by users.
+# If url previews should be generated. This will cause a request from Synapse to URLs shared by users.
+# Also see `matrix_synapse_url_preview_ip_range_blacklist`.
 matrix_synapse_url_preview_enabled: true
+
+# List of IP address CIDR ranges that the URL preview spider is denied from accessing.
+# Note: The value is ignored when an HTTP proxy is in use
+# See the comment about this setting in `templates/synapse/homeserver.yaml.j2` for more details.
+matrix_synapse_url_preview_ip_range_blacklist:
+  - '127.0.0.0/8'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+  - '100.64.0.0/10'
+  - '192.0.0.0/24'
+  - '169.254.0.0/16'
+  - '192.88.99.0/24'
+  - '198.18.0.0/15'
+  - '192.0.2.0/24'
+  - '198.51.100.0/24'
+  - '203.0.113.0/24'
+  - '224.0.0.0/4'
+  - '::1/128'
+  - 'fe80::/10'
+  - 'fc00::/7'
+  - '2001:db8::/32'
+  - 'ff00::/8'
+  - 'fec0::/10'
+
+# List of IP address CIDR ranges that the URL preview spider is allowed to access even if they are specified in `matrix_synapse_url_preview_ip_range_blacklist`.
+matrix_synapse_url_preview_ip_range_whitelist: []
 
 # A list of values for the Accept-Language HTTP header used when downloading webpages during URL preview generation
 matrix_url_preview_accept_language: ['en-US', 'en']
@@ -1010,10 +1044,10 @@ matrix_synapse_workers_media_repository_workers_container_arguments: []
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_enable_media_repo: "{{ not matrix_synapse_ext_media_repo_enabled and (not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length == 0)) }}"
 
-# matrix_synapse_enable_authenticated_media controls if authenticated media is enabled. If enabled all "old" media remains accessible over the legacy endpoints but new media is blocked.
+# matrix_synapse_enable_authenticated_media controls if authenticated media is enabled.
+# If enabled all "old" media remains accessible over the legacy endpoints but new media is blocked.
 # while this option is enabled all media access and downloads have to be done via authenticated endpoints.
-# FIX_ME_WHEN_DEFAULT_TRUE: This option is going to become set to default true in Synapse at a later date.
-matrix_synapse_enable_authenticated_media: false
+matrix_synapse_enable_authenticated_media: true
 
 # matrix_synapse_media_instance_running_background_jobs populates the `media_instance_running_background_jobs` Synapse configuration used when Synapse workers are in use (`matrix_synapse_workers_enabled`).
 # `media_instance_running_background_jobs` is meant to point to a single media-repository worker, which is dedicated to running background tasks that maintain the media repository.
@@ -1111,12 +1145,13 @@ matrix_synapse_redis_host: ""
 matrix_synapse_redis_port: 6379
 matrix_synapse_redis_password: ""
 matrix_synapse_redis_dbid: 0
+matrix_synapse_redis_use_tls: false
 
 # Controls whether Synapse starts a replication listener necessary for workers.
 #
 # If Redis is available, we prefer to use that, instead of talking over Synapse's custom replication protocol.
 #
-# matrix_synapse_replication_listener_enabled: "{{ matrix_synapse_workers_enabled and not redis_enabled }}"
+# matrix_synapse_replication_listener_enabled: "{{ matrix_synapse_workers_enabled and matrix_synapse_redis_enabled }}"
 # We force-enable this listener for now until we debug why communication via Redis fails.
 matrix_synapse_replication_listener_enabled: true
 
@@ -1216,6 +1251,15 @@ matrix_synapse_experimental_features_msc4108_enabled: false
 #
 ################################################################################
 
+
+# Controls whether to enable the "room summary API" experimental feature.
+# See https://github.com/matrix-org/matrix-spec-proposals/pull/3266
+# Despite being experimental, this feature is mandatory for the next-generation Element X clients, which is why it is enabled by default:
+# https://github.com/element-hq/element-x-ios/issues/3713#issuecomment-2620958291
+# If you're worried about the privacy implications of this unauthenticated API, see:
+# https://github.com/deepbluev7/matrix-doc/blob/room-summaries/proposals/3266-room-summary.md#client-server-api
+# Set this to false if you still want to disable to API for some reason. Note that doing so breaks Element X compatibility though.
+matrix_synapse_experimental_features_msc3266_enabled: true
 
 # Enable this to activate the REST auth password provider module.
 # See: https://github.com/ma1uta/matrix-synapse-rest-password-provider
@@ -1377,8 +1421,10 @@ matrix_synapse_ext_media_repo_enabled: false
 
 matrix_s3_media_store_enabled: false
 matrix_s3_media_store_custom_endpoint_enabled: false
-matrix_s3_goofys_docker_image: "{{ matrix_s3_goofys_docker_image_name_prefix }}ewoutp/goofys:latest"
-matrix_s3_goofys_docker_image_name_prefix: "docker.io/"
+matrix_s3_goofys_docker_image: "{{ matrix_s3_goofys_docker_image_registry_prefix }}ewoutp/goofys:latest"
+matrix_s3_goofys_docker_image_registry_prefix: "{{ matrix_s3_goofys_docker_image_registry_prefix_upstream }}"
+matrix_s3_goofys_docker_image_registry_prefix_upstream: "{{ matrix_s3_goofys_docker_image_registry_prefix_upstream_default }}"
+matrix_s3_goofys_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_s3_goofys_docker_image_force_pull: "{{ matrix_s3_goofys_docker_image.endswith(':latest') }}"
 matrix_s3_media_store_custom_endpoint: "your-custom-endpoint"
 matrix_s3_media_store_bucket_name: "your-bucket-name"
@@ -1411,6 +1457,7 @@ matrix_synapse_default_room_version: "10"
 
 # Controls whether leaving a room will automatically forget it.
 # The upstream default is `false`, but we try to make Synapse less wasteful of resources, so we do things differently.
+# Also see: `matrix_synapse_forgotten_room_retention_period`
 matrix_synapse_forget_rooms_on_leave: true
 
 # Controls the Synapse `modules` list.
@@ -1439,7 +1486,7 @@ matrix_synapse_media_storage_providers_auto: |
 # matrix_synapse_media_storage_providers_custom:
 # - module: module.SomeModule
 #   store_local: True
-#   # ...
+#   # …
 matrix_synapse_media_storage_providers_custom: []
 
 matrix_synapse_encryption_enabled_by_default_for_room_type: "off"
@@ -1451,8 +1498,9 @@ matrix_synapse_redaction_retention_period: 7d
 
 # Controls how long to keep locally forgotten rooms before purging them from the DB.
 # Defaults to `null`, meaning it's disabled.
+# Also see: `matrix_synapse_forget_rooms_on_leave`
 # Example value: 28d
-matrix_synapse_forgotten_room_retention_period: ~
+matrix_synapse_forgotten_room_retention_period: 28d
 
 matrix_synapse_user_ips_max_age: 28d
 

@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-own-webserver.md:1
+msgid "Using your own webserver, instead of this playbook's Traefik reverse-proxy (optional, advanced)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:3
+msgid "By default, this playbook installs its own [Traefik](https://traefik.io/) reverse-proxy server (in a Docker container) which listens on ports 80 and 443. If that's okay, you can skip this document."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:5
+msgid "Traefik"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:7
+msgid "[Traefik](https://traefik.io/) is the default reverse-proxy for the playbook since [2023-02-26](../CHANGELOG.md/#2023-02-26) and serves **2 purposes**:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:9
+msgid "serving public traffic and providing SSL-termination with certificates obtained from [Let's Encrypt](https://letsencrypt.org/). See [Adjusting SSL certificate retrieval](./configuring-playbook-ssl-certificates.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:11
+msgid "assists internal communication between addon services (briges, bots, etc.) and the homeserver via an internal entrypoint (`matrix-internal-matrix-client-api`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:13
+msgid "There are 2 ways to use Traefik with this playbook, as described below."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:15
+msgid "Traefik managed by the playbook"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:17
+msgid "To have the playbook install and use Traefik, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:25
+msgid "Traefik will manage SSL certificates for all services seamlessly."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:27
+msgid "Traefik managed by you"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:53
+msgid "In this mode all roles will still have Traefik labels attached. You will, however, need to configure your Traefik instance and its entrypoints."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:55
+msgid "By default, the playbook configured a `default` certificate resolver and multiple entrypoints."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:57
+msgid "You need to configure 4 entrypoints for your Traefik server:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:59
+msgid "`web` (TCP port `80`) — used for redirecting to HTTPS (`web-secure`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:60
+msgid "`web-secure` (TCP port `443`) — used for exposing the Matrix Client-Server API and all other services"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:61
+msgid "`matrix-federation` (TCP port `8448`) — used for exposing the Matrix Federation API"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:62
+msgid "`matrix-internal-matrix-client-api` (TCP port `8008`) — used internally for addon services (bridges, bots) to communicate with the homserver"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:64
+msgid "Below is some configuration for running Traefik yourself, although we recommend using [Traefik managed by the playbook](#traefik-managed-by-the-playbook)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:66
+msgid "Note that this configuration on its own does **not** redirect traffic on port 80 (plain HTTP) to port 443 for HTTPS. If you are not already doing this in Traefik, it can be added to Traefik in a [file provider](https://docs.traefik.io/v2.0/providers/file/) as follows:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:86
+msgid "You can use the following `docker-compose.yml` as example to launch Traefik."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:122
+msgid "Another webserver"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:124
+msgid "If you don't wish to use Traefik, you can also use your own webserver."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:126
+msgid "Doing this is possible, but requires manual work."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:128
+msgid "There are 2 ways to go about it:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:130
+msgid "(recommended) [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) — using the playbook-managed reverse-proxy (Traefik), but disabling SSL termination for it, exposing this reverse-proxy on a few local ports (e.g. `127.0.0.1:81`, etc.) and forwarding traffic from your own webserver to those few ports"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:132
+msgid "(difficult) [Using no reverse-proxy on the Matrix side at all](#using-no-reverse-proxy-on-the-matrix-side-at-all) disabling the playbook-managed reverse-proxy (Traefik), exposing services one by one using `_host_bind_port` variables and forwarding traffic from your own webserver to those ports"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:134
+msgid "Fronting the integrated reverse-proxy webserver with another reverse-proxy"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:136
+msgid "This method is about leaving the integrated reverse-proxy webserver be, but making it not get in the way (using up important ports, trying to retrieve SSL certificates, etc.)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:138
+msgid "If you wish to use another webserver, the integrated reverse-proxy webserver usually gets in the way because it attempts to fetch SSL certificates and binds to ports 80, 443 and 8448 (if Matrix Federation is enabled)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:140
+msgid "You can disable such behavior and make the integrated reverse-proxy webserver only serve traffic locally on the host itself (or over a local network)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:142
+msgid "This is the recommended way for using another reverse-proxy, because the integrated one would act as a black box and wire all Matrix services correctly. You would then only need to reverse-proxy a few individual domains and ports over to it."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:144
+msgid "To front Traefik with another reverse-proxy, you would need some configuration like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:194
+msgid "Such a configuration would expose all services on a local port `81` and Matrix Federation on a local port `8449`. Your reverse-proxy configuration needs to send traffic to these ports. [`examples/reverse-proxies`](../examples/reverse-proxies/) contains examples for various webservers such as Apache2, Caddy, HAproxy, nginx and Nginx Proxy Manager."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:196
+msgid "It's important that these webservers proxy-pass requests to the correct `ip:port` and also set the `Host` HTTP header appropriately. If you don't pass the `Host` header correctly, Traefik will return a `404 - not found` error."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:198
+msgid "To put it another way:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:199
+msgid "`curl http://127.0.0.1:81` will result in a `404 - not found` error"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:200
+msgid "but `curl -H 'Host: matrix.example.com' http://127.0.0.1:81` should work."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:202
+msgid "Using no reverse-proxy on the Matrix side at all"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:204
+msgid "Instead of [Fronting the integrated reverse-proxy webserver with another reverse-proxy](#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy), you can also go another way — completely disabling the playbook-managed Traefik reverse-proxy. You would then need to reverse-proxy from your own webserver directly to each individual Matrix service."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:206
+msgid "This is more difficult, as you would need to handle the configuration for each service manually. Enabling additional services would come with extra manual work you need to do."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:208
+msgid "Also, the Traefik reverse-proxy, besides fronting everything is also serving a 2nd purpose of allowing addons services to communicate with the Matrix homeserver thanks to its `matrix-internal-matrix-client-api` entrypoint (read more about it above). Disabling Traefik completely means the playbook would wire services to directly talk to the homeserver. This can work for basic setups, but not for more complex setups involving [matrix-media-repo](./configuring-playbook-matrix-media-repo.md), [matrix-corporal](./configuring-playbook-matrix-corporal.md) or other such services that need to \"steal routes\" from the homeserver."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-own-webserver.md:210
+msgid "If your webserver is on the same machine, ensure your web server user (something like `http`, `apache`, `www-data`, `nginx`) is part of the `matrix` group. You should run something like this: `usermod -a -G matrix nginx`. This allows your webserver user to access files owned by the `matrix` group, so that it can serve static files from `/matrix/static-files`."
+msgstr ""

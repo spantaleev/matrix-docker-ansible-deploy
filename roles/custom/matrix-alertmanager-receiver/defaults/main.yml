@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # matrix-alertmanager-receiver is a service which receives webhook payloads from Prometheus' Alertmanager and forwards them to a Matrix room.
@@ -6,7 +11,7 @@
 matrix_alertmanager_receiver_enabled: true
 
 # renovate: datasource=docker depName=docker.io/metio/matrix-alertmanager-receiver
-matrix_alertmanager_receiver_version: 2024.11.20
+matrix_alertmanager_receiver_version: 2025.3.5
 
 matrix_alertmanager_receiver_scheme: https
 
@@ -25,11 +30,12 @@ matrix_alertmanager_receiver_container_image_self_build_repo: https://github.com
 matrix_alertmanager_receiver_container_image_self_build_repo_version: "{{ 'main' if matrix_alertmanager_receiver_version == 'main' else matrix_alertmanager_receiver_version }}"
 matrix_alertmanager_receiver_container_src_path: "{{ matrix_alertmanager_receiver_base_path }}/container-src"
 
-matrix_alertmanager_receiver_container_image: "{{ matrix_alertmanager_receiver_container_image_name_prefix }}metio/matrix-alertmanager-receiver:{{ matrix_alertmanager_receiver_container_image_tag }}"
-matrix_alertmanager_receiver_container_image_name_prefix: "{{ 'localhost/' if matrix_alertmanager_receiver_container_image_self_build else matrix_alertmanager_receiver_container_image_registry_prefix }}"
+matrix_alertmanager_receiver_container_image: "{{ matrix_alertmanager_receiver_container_image_registry_prefix }}metio/matrix-alertmanager-receiver:{{ matrix_alertmanager_receiver_container_image_tag }}"
 matrix_alertmanager_receiver_container_image_tag: "{{ matrix_alertmanager_receiver_version }}"
 matrix_alertmanager_receiver_container_image_force_pull: "{{ matrix_alertmanager_receiver_container_image.endswith(':main') }}"
-matrix_alertmanager_receiver_container_image_registry_prefix: docker.io/
+matrix_alertmanager_receiver_container_image_registry_prefix: "{{ matrix_alertmanager_receiver_container_image_registry_prefix_upstream }}"
+matrix_alertmanager_receiver_container_image_registry_prefix_upstream: "{{ matrix_alertmanager_receiver_container_image_registry_prefix_upstream_default }}"
+matrix_alertmanager_receiver_container_image_registry_prefix_upstream_default: "docker.io/"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 matrix_alertmanager_receiver_container_network: ''
@@ -218,7 +224,7 @@ matrix_alertmanager_receiver_config_templating_resolved_template: |-
 #
 # For a more advanced customization, you can extend the default (see `matrix_alertmanager_receiver_configuration_extension_yaml`)
 # or completely replace this variable with your own template.
-matrix_alertmanager_receiver_configuration_yaml: "{{ lookup('template', 'templates/config.yml.j2') }}"
+matrix_alertmanager_receiver_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
 matrix_alertmanager_receiver_configuration_extension_yaml: |
   # Your custom YAML configuration for matrix-alertmanager-receiver goes here.

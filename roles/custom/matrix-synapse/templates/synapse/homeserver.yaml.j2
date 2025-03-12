@@ -30,7 +30,7 @@ modules: {{ matrix_synapse_modules|to_json }}
 #
 # The server_name name will appear at the end of usernames and room addresses
 # created on this server. For example if the server_name was example.com,
-# usernames on this server would be in the format @user:example.com
+# usernames on this server would be in the format @alice:example.com
 #
 # In most cases you should avoid using a Matrix specific subdomain such as
 # matrix.example.com or synapse.example.com as the server_name for the same
@@ -55,7 +55,7 @@ pid_file: /homeserver.pid
 #web_client_location: https://riot.example.com/
 
 # The public-facing base URL that clients use to access this Homeserver (not
-# including _matrix/...). This is the same URL a user might enter into the
+# including _matrix/…). This is the same URL a user might enter into the
 # 'Custom Homeserver URL' field on their client. If you use Synapse with a
 # reverse proxy, this should be the URL to reach Synapse via the proxy.
 # Otherwise, it should be the URL to reach Synapse's client HTTP listener (see
@@ -837,7 +837,7 @@ caches:
 # before reconnecting. Defaults to 0, which means no limit.
 #
 # 'allow_unsafe_locale' is an option specific to Postgres. Under the default behavior, Synapse will refuse to
-# start if the postgres db is set to a non-C locale. You can override this behavior (which is *not* recommended)
+# start if the Postgres db is set to a non-C locale. You can override this behavior (which is *not* recommended)
 # by setting 'allow_unsafe_locale' to true. Note that doing so may corrupt your database. You can find more information
 # here: https://matrix-org.github.io/synapse/latest/postgres.html#fixing-incorrect-collate-or-ctype and here:
 # https://wiki.postgresql.org/wiki/Locale_data_changes
@@ -1131,26 +1131,9 @@ url_preview_enabled: {{ matrix_synapse_url_preview_enabled|to_json }}
 #
 # Note: The value is ignored when an HTTP proxy is in use
 #
-url_preview_ip_range_blacklist:
-  - '127.0.0.0/8'
-  - '10.0.0.0/8'
-  - '172.16.0.0/12'
-  - '192.168.0.0/16'
-  - '100.64.0.0/10'
-  - '192.0.0.0/24'
-  - '169.254.0.0/16'
-  - '192.88.99.0/24'
-  - '198.18.0.0/15'
-  - '192.0.2.0/24'
-  - '198.51.100.0/24'
-  - '203.0.113.0/24'
-  - '224.0.0.0/4'
-  - '::1/128'
-  - 'fe80::/10'
-  - 'fc00::/7'
-  - '2001:db8::/32'
-  - 'ff00::/8'
-  - 'fec0::/10'
+{% if matrix_synapse_url_preview_enabled %}
+url_preview_ip_range_blacklist: {{ matrix_synapse_url_preview_ip_range_blacklist | to_json }}
+{% endif %}
 
 # List of IP address CIDR ranges that the URL preview spider is allowed
 # to access even if they are specified in url_preview_ip_range_blacklist.
@@ -1158,8 +1141,9 @@ url_preview_ip_range_blacklist:
 # target IP ranges - e.g. for enabling URL previews for a specific private
 # website only visible in your network.
 #
-#url_preview_ip_range_whitelist:
-#   - '192.168.1.1'
+{% if matrix_synapse_url_preview_enabled %}
+url_preview_ip_range_whitelist: {{ matrix_synapse_url_preview_ip_range_whitelist | to_json }}
+{% endif %}
 
 # Optional list of URL matches that the URL preview spider is
 # denied from accessing.  You should use url_preview_ip_range_blacklist
@@ -2462,34 +2446,34 @@ email:
     #
     # Subject to use to notify about one message from one or more user(s) in a
     # room which has a name.
-    #message_from_person_in_room: "[%(app)s] You have a message on %(app)s from %(person)s in the %(room)s room..."
+    #message_from_person_in_room: "[%(app)s] You have a message on %(app)s from %(person)s in the %(room)s room…"
     #
     # Subject to use to notify about one message from one or more user(s) in a
     # room which doesn't have a name.
-    #message_from_person: "[%(app)s] You have a message on %(app)s from %(person)s..."
+    #message_from_person: "[%(app)s] You have a message on %(app)s from %(person)s…"
     #
     # Subject to use to notify about multiple messages from one or more users in
     # a room which doesn't have a name.
-    #messages_from_person: "[%(app)s] You have messages on %(app)s from %(person)s..."
+    #messages_from_person: "[%(app)s] You have messages on %(app)s from %(person)s…"
     #
     # Subject to use to notify about multiple messages in a room which has a
     # name.
-    #messages_in_room: "[%(app)s] You have messages on %(app)s in the %(room)s room..."
+    #messages_in_room: "[%(app)s] You have messages on %(app)s in the %(room)s room…"
     #
     # Subject to use to notify about multiple messages in multiple rooms.
-    #messages_in_room_and_others: "[%(app)s] You have messages on %(app)s in the %(room)s room and others..."
+    #messages_in_room_and_others: "[%(app)s] You have messages on %(app)s in the %(room)s room and others…"
     #
     # Subject to use to notify about multiple messages from multiple persons in
     # multiple rooms. This is similar to the setting above except it's used when
     # the room in which the notification was triggered has no name.
-    #messages_from_person_and_others: "[%(app)s] You have messages on %(app)s from %(person)s and others..."
+    #messages_from_person_and_others: "[%(app)s] You have messages on %(app)s from %(person)s and others…"
     #
     # Subject to use to notify about an invite to a room which has a name.
-    #invite_from_person_to_room: "[%(app)s] %(person)s has invited you to join the %(room)s room on %(app)s..."
+    #invite_from_person_to_room: "[%(app)s] %(person)s has invited you to join the %(room)s room on %(app)s…"
     #
     # Subject to use to notify about an invite to a room which doesn't have a
     # name.
-    #invite_from_person: "[%(app)s] %(person)s has invited you to chat on %(app)s..."
+    #invite_from_person: "[%(app)s] %(person)s has invited you to chat on %(app)s…"
 
     # Subject for emails related to account administration.
     #
@@ -2846,8 +2830,8 @@ opentracing:
     # By default, the list is empty.
     #
     #force_tracing_for_users:
-    #  - "@user1:server_name"
-    #  - "@user2:server_name"
+    #  - "@alice:server_name"
+    #  - "@bob:server_name"
 
     # Jaeger can be configured to sample traces at different rates.
     # All configuration options provided by Jaeger can be set here.
@@ -2935,20 +2919,23 @@ media_instance_running_background_jobs: {{ matrix_synapse_media_instance_running
 redis:
   # Uncomment the below to enable Redis support.
   #
-  enabled: {{ matrix_synapse_redis_enabled }}
+  enabled: {{ matrix_synapse_redis_enabled | to_json }}
 
   # Optional host and port to use to connect to redis. Defaults to
   # localhost and 6379
   #
-  host: {{ matrix_synapse_redis_host }}
-  port: {{ matrix_synapse_redis_port }}
+  host: {{ matrix_synapse_redis_host | to_json }}
+  port: {{ matrix_synapse_redis_port | to_json }}
 
   # Optional database ID to connect to. Defaults to 0.
-  dbid: {{ matrix_synapse_redis_dbid }}
+  dbid: {{ matrix_synapse_redis_dbid | to_json }}
 
   # Optional password if configured on the Redis instance
-  #
-  password: {{ matrix_synapse_redis_password }}
+  {% if matrix_synapse_redis_password %}
+  password: {{ matrix_synapse_redis_password | to_json }}
+  {% endif %}
+
+  use_tls: {{ matrix_synapse_redis_use_tls | to_json }}
 
 
 ## Background Updates ##
@@ -2996,6 +2983,9 @@ experimental_features:
   {% endif %}
   {% if matrix_synapse_experimental_features_msc4108_enabled %}
   msc4108_enabled: true
+  {% endif %}
+  {% if matrix_synapse_experimental_features_msc3266_enabled %}
+  msc3266_enabled: true
   {% endif %}
 
 # vim:ft=yaml

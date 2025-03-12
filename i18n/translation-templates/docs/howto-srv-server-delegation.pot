@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/howto-srv-server-delegation.md:1
+msgid "Server Delegation via a DNS SRV record (advanced)"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:3
+msgid "**Reminder** : unless you are affected by the [Downsides of well-known-based Server Delegation](howto-server-delegation.md#downsides-of-well-known-based-server-delegation), we suggest you **stay on the simple/default path**: [Server Delegation](howto-server-delegation.md) by [configuring well-known files](configuring-well-known.md) at the base domain."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:5
+msgid "This guide is about configuring Server Delegation using DNS SRV records (for the [Traefik](https://doc.traefik.io/traefik/) webserver). This method has special requirements when it comes to SSL certificates, so various changes are required."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:7
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:9
+msgid "SRV delegation while still using the playbook provided Traefik to get / renew the certificate requires a wildcard certificate."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:11
+msgid "To obtain / renew one from [Let's Encrypt](https://letsencrypt.org/), one needs to use a [DNS-01 challenge](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge) method instead of the default [HTTP-01](https://letsencrypt.org/docs/challenge-types/#http-01-challenge)."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:13
+msgid "This means that this is **limited to the list of DNS providers supported by Traefik**, unless you bring in your own certificate."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:15
+msgid "The up-to-date list can be accessed on [traefik's documentation](https://doc.traefik.io/traefik/https/acme/#providers)"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:17
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:19
+msgid "**Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:21
+msgid "if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [conduwuit](./configuring-playbook-conduwuit.md) or [Dendrite](./configuring-playbook-dendrite.md))"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:22
+msgid "if you're using [Synapse with workers enabled](./configuring-playbook-synapse.md#load-balancing-with-workers) (`matrix_synapse_workers_enabled: true`). In that case, it's actually the `matrix-synapse-reverse-proxy-companion` service which has Traefik labels attached"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:24
+msgid "Also, all instructions below are from an older version of the playbook and may not work anymore."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:26
+msgid "Federation Endpoint"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:33
+msgid "This is because with SRV federation, some servers / tools (one of which being the federation tester) try to access the federation API using the resolved IP address instead of the domain name (or they are not using SNI). This change will make Traefik route all traffic for which the path match this rule go to the federation endpoint."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:35
+msgid "Tell Traefik which certificate to serve for the federation endpoint"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:37
+msgid "Now that the federation endpoint is not bound to a domain anymore we need to explicitely tell Traefik to use a wildcard certificate in addition to one containing the base name."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:39
+msgid "This is because the Matrix specification expects the federation endpoint to be served using a certificate compatible with the base domain, however, the other resources on the endpoint still need a valid certificate to work."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:48
+msgid "Configure the DNS-01 challenge for let's encrypt"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:50
+msgid "Since we're now requesting a wildcard certificate, we need to change the ACME challenge method. To request a wildcard certificate from Let's Encrypt we are required to use the DNS-01 challenge."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:52
+msgid "This will need 3 changes:"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:53
+msgid "Add a new certificate resolver that works with DNS-01"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:54
+msgid "Configure the resolver to allow access to the DNS zone to configure the records to answer the challenge (refer to [Traefik's documentation](https://doc.traefik.io/traefik/https/acme/#providers) to know which environment variables to set)"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:55
+msgid "Tell the playbook to use the new resolver as default"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:57
+msgid "We cannot just disable the default resolver as that would disable SSL in quite a few places in the playbook."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:86
+msgid "Adjust coturn's configuration"
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:88
+msgid "The last step is to alter the generated coturn configuration."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:90
+msgid "By default, coturn is configured to wait on the certificate for the `matrix.` subdomain using an [instantiated systemd service](https://www.freedesktop.org/software/systemd/man/systemd.service.html#Service%20Templates) using the domain name as the parameter for this service. However, we need to serve the wildcard certificate, which is incompatible with systemd, it will try to expand the `*`, which will break and prevent coturn from starting."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:92
+msgid "We also need to indicate to coturn where the wildcard certificate is."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:94
+msgid "⚠️ **Warning** : On first start of the services, coturn might still fail to start because Traefik is still in the process of obtaining the certificates. If you still get an error, make sure Traefik obtained the certificates and restart the coturn service (`just start-group coturn`)."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:96
+msgid "This should not happen again afterwards as Traefik will renew certificates well before their expiry date, and the coturn service is setup to restart periodically."
+msgstr ""
+
+#: ../../../docs/howto-srv-server-delegation.md:122
+msgid "Full example of a working configuration"
+msgstr ""

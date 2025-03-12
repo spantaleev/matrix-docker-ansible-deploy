@@ -1,62 +1,74 @@
 #jinja2: lstrip_blocks: "True"
-# Homeserver details.
+# Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    address: {{ matrix_beeper_linkedin_homeserver_address }}
+    address: {{ matrix_beeper_linkedin_homeserver_address | to_json }}
     # The domain of the homeserver (for MXIDs, etc).
-    domain: {{ matrix_beeper_linkedin_homeserver_domain }}
+    domain: {{ matrix_beeper_linkedin_homeserver_domain | to_json }}
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
     verify_ssl: true
-    # Whether or not the homeserver supports asmux-specific endpoints,
-    # such as /_matrix/client/unstable/net.maunium.asmux/dms for atomically
-    # updating m.direct.
-    asmux: false
+    # What software is the homeserver running?
+    # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
+    software: standard
     # Number of retries for all HTTP requests if the homeserver isn't reachable.
     http_retry_count: 4
+    # The URL to push real-time bridge status to.
+    # If set, the bridge will make POST requests to this URL whenever a user's Signal connection state changes.
+    # The bridge will use the appservice as_token to authorize requests.
+    status_endpoint: null
+    # Endpoint for reporting per-message status.
+    message_send_checkpoint_endpoint: null
+    # Whether asynchronous uploads via MSC2246 should be enabled for media.
+    # Requires a media repo that supports MSC2246.
+    async_media: false
 
-
+# Application service host/registration related details
+# Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    address: {{ matrix_beeper_linkedin_appservice_address }}
+    address: {{ matrix_beeper_linkedin_appservice_address | to_json }}
 
     # The hostname and port where this appservice should listen.
     hostname: 0.0.0.0
     port: 29319
-
     # The maximum body size of appservice API requests (from the homeserver) in mebibytes
     # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
     max_body_size: 1
 
-    # The full URI to the database. Only Postgres is currently supported.
-    database: {{ matrix_beeper_linkedin_appservice_database_uri|to_json }}
-    # Additional arguments for asyncpg.create_pool()
+    # The full URI to the database. SQLite and Postgres are supported.
+    # Format examples:
+    #   SQLite:   sqlite:filename.db
+    #   Postgres: postgres://username:password@hostname/dbname
+    database: {{ matrix_beeper_linkedin_appservice_database_uri | to_json }}
+    # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
     # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
+    # https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
+    # For sqlite, min_size is used as the connection thread pool size and max_size is ignored.
+    # Additionally, SQLite supports init_commands as an array of SQL queries to run on connect (e.g. to set PRAGMAs).
     database_opts:
-        min_size: 5
+        min_size: 1
         max_size: 10
 
     # Provisioning API part of the web server for automated portal creation and fetching information.
     # Used by things like mautrix-manager (https://github.com/tulir/mautrix-manager).
     provisioning:
         # Whether or not the provisioning API should be enabled.
-        enabled: true
+        enabled: {{ matrix_beeper_linkedin_provisioning_enabled | to_json }}
         # The prefix to use in the provisioning API endpoints.
         prefix: /_matrix/provision/v1
         # The shared secret to authorize users of the API.
         # Set to "generate" to generate and save a new token.
-        shared_secret: generate
+        shared_secret: {{ matrix_beeper_linkedin_provisioning_shared_secret | to_json }}
 
     # The unique ID of this appservice.
     id: beeper_linkedin
-    # Appservice bot details.
-    bot:
-        # Username of the appservice bot.
-        username: {{ matrix_beeper_linkedin_appservice_bot_username|to_json }}
-        # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
-        # to leave display name/avatar as-is.
-        displayname: LinkedIn bridge bot
-        avatar: mxc://sumnerevans.com/XMtwdeUBnxYvWNFFrfeTSHqB
+    # Username of the appservice bot.
+    bot_username: {{ matrix_beeper_linkedin_appservice_bot_username | to_json }}
+    # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+    # to leave display name/avatar as-is.
+    bot_displayname: {{ matrix_beeper_linkedin_appservice_bot_displayname | to_json }}
+    bot_avatar: {{ matrix_beeper_linkedin_appservice_bot_avatar | to_json }}
 
     # Whether or not to receive ephemeral events via appservice transactions.
     # Requires MSC2409 support (i.e. Synapse 1.22+).
@@ -64,9 +76,17 @@ appservice:
     ephemeral_events: false
 
     # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
-    as_token: "{{ matrix_beeper_linkedin_appservice_token }}"
-    hs_token: "{{ matrix_beeper_linkedin_homeserver_token }}"
+    as_token: {{ matrix_beeper_linkedin_appservice_token | to_json }}
+    hs_token: {{ matrix_beeper_linkedin_homeserver_token | to_json }}
 
+# Segment-compatible analytics endpoint for tracking some events, like provisioning API login and encryption errors.
+analytics:
+    # Hostname of the tracking server. The path is hardcoded to /v1/track
+    host: api.segment.io
+    # API key to send with tracking requests. Tracking is disabled if this is null.
+    token: null
+    # Optional user ID for tracking events. If null, defaults to using Matrix user ID.
+    user_id: null
 
 # Prometheus telemetry config. Requires prometheus-client to be installed.
 metrics:
@@ -84,30 +104,41 @@ manhole:
     whitelist:
     - 0
 
-
 # Bridge config
 bridge:
     # Localpart template of MXIDs for LinkedIn users.
-    # {userid} is replaced with the user ID of the LinkedIn user
+    # {userid} is replaced with the user ID of the LinkedIn user.
     username_template: "linkedin_{userid}"
     # Settings for creating a space for every user.
     space_support:
         # Whether or not to enable creating a space per user and inviting the
         # user (as well as all of the puppets) to that space.
-        enable: {{ matrix_beeper_linkedin_bridge_space_support_enable|to_json }}
+        enable: {{ matrix_beeper_linkedin_bridge_space_support_enable | to_json }}
         # The name of the space
         name: "LinkedIn"
-
     # Displayname template for LinkedIn users.
     # {displayname} is replaced with the display name of the LinkedIn user
     #               as defined below in displayname_preference.
     # Keys available for displayname_preference are also available here.
     displayname_template: "{displayname} (LinkedIn)"
+    # Available keys:
+    # "name" (full name)
+    # "first_name"
+    # "last_name"
+    displayname_preference:
+    - name
+    - first_name
+
+    # Whether or not to set the topic on DMs to the user's occupation and a
+    # link to their profile.
+    set_topic_on_dms: true
+
+    # The prefix for commands. Only required in non-management rooms.
+    command_prefix: {{ matrix_beeper_linkedin_command_prefix | to_json }}
 
     # Number of chats to sync (and create portals for) on startup/login.
     # Set 0 to disable automatic syncing.
-    initial_chat_sync: 10
-
+    initial_chat_sync: 20
     # Whether or not the LinkedIn users of logged in Matrix users should be
     # invited to private chats when the user sends a message from another client.
     invite_own_puppet_to_pm: false
@@ -119,65 +150,112 @@ bridge:
     # and is therefore prone to race conditions.
     sync_direct_chat_list: false
     # Servers to always allow double puppeting from
-    double_puppet_server_map: {}
-    #    example.com: https://example.com
+    double_puppet_server_map: {{ matrix_beeper_linkedin_bridge_double_puppet_server_map | to_json }}
     # Allow using double puppeting from any server with a valid client .well-known file.
-
-    # Maximum number of seconds since last message in chat to skip
-    # syncing the chat in any case. This setting will take priority
-    # over both recovery_chat_sync_limit and initial_chat_sync_count.
-    # Default is 3 days = 259200 seconds
-    sync_max_chat_age: 259200
-
-    # Whether or not to sync with custom puppets to receive EDUs that
-    # are not normally sent to appservices.
-    sync_with_custom_puppets: true
-    # Shared secret for https://github.com/devture/matrix-synapse-shared-secret-auth
+    double_puppet_allow_discovery: false
+    # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
     #
     # If set, custom puppets will be enabled automatically for local users
     # instead of users having to find an access token and run `login-matrix`
     # manually.
-    login_shared_secret: {{ matrix_beeper_linkedin_login_shared_secret|to_json }}
-
-    # Allow using double puppeting from any server with a valid client .well-known file.
-    double_puppet_allow_discovery: false
-
+    # If using this for other servers than the bridge's server,
+    # you must also set the URL in the double_puppet_server_map.
+    login_shared_secret_map: {{ matrix_beeper_linkedin_bridge_login_shared_secret_map | to_json }}
     # Whether or not to bridge presence in both directions. LinkedIn allows users not to broadcast
     # presence, but then it won't send other users' presence to the client.
-    presence: {{ matrix_beeper_linkedin_bridge_presence|to_json }}
+    presence: {{ matrix_beeper_linkedin_bridge_presence | to_json }}
     # Whether or not to update avatars when syncing all contacts at startup.
     update_avatar_initial_sync: true
+    # Whether or not created rooms should have federation enabled.
+    # If false, created portal rooms will never be federated.
+    federate_rooms: true
+    # Whether to explicitly set the avatar and room name for private chat portal rooms.
+    # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
+    # If set to `always`, all DM rooms will have explicit names and avatars set.
+    # If set to `never`, DM rooms will never have names and avatars set.
+    private_chat_portal_meta: default
 
-
-    # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
-    # and login_shared_secret to be configured in order to get a device for the bridge bot.
+    # End-to-bridge encryption support options.
     #
-    # Additionally, https://github.com/matrix-org/synapse/pull/5758 is required if using a normal
-    # application service.
+    # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: {{ matrix_beeper_linkedin_bridge_encryption_allow|to_json }}
+        allow: {{ matrix_beeper_linkedin_bridge_encryption_allow | to_json }}
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
-        default: {{ matrix_beeper_linkedin_bridge_encryption_default|to_json }}
-        # Options for automatic key sharing.
-        key_sharing:
-            # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
-            # You must use a client that supports requesting keys from other users to use this feature.
-            allow: {{ matrix_beeper_linkedin_bridge_encryption_key_sharing_allow|to_json }}
-            # Require the requesting device to have a valid cross-signing signature?
-            # This doesn't require that the bridge has verified the device, only that the user has verified it.
-            # Not yet implemented.
-            require_cross_signing: false
-            # Require devices to be verified by the bridge?
-            # Verification by the bridge is not yet implemented.
-            require_verification: true
+        default: {{ matrix_beeper_linkedin_bridge_encryption_default | to_json }}
+        # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
+        appservice: {{ matrix_beeper_linkedin_bridge_encryption_appservice | to_json }}
+        # Require encryption, drop any unencrypted messages.
+        require: {{ matrix_beeper_linkedin_bridge_encryption_require | to_json }}
+        # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+        # You must use a client that supports requesting keys from other users to use this feature.
+        allow_key_sharing: {{ matrix_beeper_linkedin_bridge_encryption_key_sharing_allow | to_json }}
+        # Options for deleting megolm sessions from the bridge.
+        delete_keys:
+            # Beeper-specific: delete outbound sessions when hungryserv confirms
+            # that the user has uploaded the key to key backup.
+            delete_outbound_on_ack: false
+            # Don't store outbound sessions in the inbound table.
+            dont_store_outbound: false
+            # Ratchet megolm sessions forward after decrypting messages.
+            ratchet_on_decrypt: false
+            # Delete fully used keys (index >= max_messages) after decrypting messages.
+            delete_fully_used_on_decrypt: false
+            # Delete previous megolm sessions from same device when receiving a new one.
+            delete_prev_on_new_session: false
+            # Delete megolm sessions received from a device when the device is deleted.
+            delete_on_device_delete: false
+            # Periodically delete megolm sessions when 2x max_age has passed since receiving the session.
+            periodically_delete_expired: false
+            # Delete inbound megolm sessions that don't have the received_at field used for
+            # automatic ratcheting and expired session deletion. This is meant as a migration
+            # to delete old keys prior to the bridge update.
+            delete_outdated_inbound: false
+        # What level of device verification should be required from users?
+        #
+        # Valid levels:
+        #   unverified - Send keys to all device in the room.
+        #   cross-signed-untrusted - Require valid cross-signing, but trust all cross-signing keys.
+        #   cross-signed-tofu - Require valid cross-signing, trust cross-signing keys on first use (and reject changes).
+        #   cross-signed-verified - Require valid cross-signing, plus a valid user signature from the bridge bot.
+        #                           Note that creating user signatures from the bridge bot is not currently possible.
+        #   verified - Require manual per-device verification
+        #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
+        verification_levels:
+            # Minimum level for which the bridge should send keys to when bridging messages from Telegram to Matrix.
+            receive: unverified
+            # Minimum level that the bridge should accept for incoming Matrix messages.
+            send: unverified
+            # Minimum level that the bridge should require for accepting key requests.
+            share: cross-signed-tofu
+        # Options for Megolm room key rotation. These options allow you to
+        # configure the m.room.encryption event content. See:
+        # https://spec.matrix.org/v1.3/client-server-api/#mroomencryption for
+        # more information about that event.
+        rotation:
+            # Enable custom Megolm room key rotation settings. Note that these
+            # settings will only apply to rooms created after this option is
+            # set.
+            enable_custom: false
+            # The maximum number of milliseconds a session should be used
+            # before changing it. The Matrix spec recommends 604800000 (a week)
+            # as the default.
+            milliseconds: 604800000
+            # The maximum number of messages that should be sent with a given a
+            # session before changing it. The Matrix spec recommends 100 as the
+            # default.
+            messages: 100
+
+            # Disable rotating keys when a user's devices change?
+            # You should not enable this option unless you understand all the implications.
+            disable_device_change_key_rotation: false
+
     # Whether or not the bridge should send a read receipt from the bridge bot when a message has
     # been sent to LinkedIn.
     delivery_receipts: false
     # Whether to allow inviting arbitrary mxids to portal rooms
     allow_invites: false
-
     # Settings for backfilling messages from LinkedIn.
     backfill:
         # Whether or not the LinkedIn users of logged in Matrix users should be
@@ -194,6 +272,10 @@ bridge:
         # If using double puppeting, should notifications be disabled
         # while the initial backfill is in progress?
         disable_notifications: false
+        # If this value is greater than 0, then (on backfill) if the
+        # conversation's last message was more than this number of hours ago,
+        # then the conversation will automatically be marked it as read.
+        unread_hours_threshold: 0
     periodic_reconnect:
         # TODO needed?
         # Interval in seconds in which to automatically reconnect all users.
@@ -224,23 +306,20 @@ bridge:
     # Whether or not mute status and tags should only be bridged when the portal room is created.
     tag_only_on_create: true
 
-
-    # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "{{ matrix_beeper_linkedin_command_prefix }}"
-
     # Permissions for using the bridge.
     # Permitted values:
-    #     user - Access to use the bridge to chat with a Linkedin account.
-    #    admin - User level and some additional administration tools
+    #       user - Use the bridge with puppeting.
+    #      admin - Use and administrate the bridge.
     # Permitted keys:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions: {{ matrix_beeper_linkedin_bridge_permissions|to_json }}
+    permissions: {{ matrix_beeper_linkedin_bridge_permissions | to_json }}
 
-
-
-# Logging config.
+# Python logging configuration.
+#
+# See section 16.7.2 of the Python documentation for more info:
+# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
 logging:
     version: 1
     formatters:
@@ -256,10 +335,8 @@ logging:
     loggers:
         mau:
             level: {{ matrix_beeper_linkedin_logging_level|to_json }}
-        paho:
-            level: {{ matrix_beeper_linkedin_logging_level|to_json }}
         aiohttp:
             level: {{ matrix_beeper_linkedin_logging_level|to_json }}
     root:
-        level: {{ matrix_beeper_linkedin_logging_level|to_json }}
+        level: DEBUG
         handlers: [console]

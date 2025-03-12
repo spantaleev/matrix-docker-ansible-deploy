@@ -1,0 +1,277 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: jp\n"
+"Language-Team: jp <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:1
+msgid "Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:3
+msgid "If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can use the [synapse-s3-storage-provider](https://github.com/matrix-org/synapse-s3-storage-provider) media provider module for Synapse."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:5
+msgid "An alternative (which has worse performance) is to use [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:7
+msgid "How it works?"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:9
+msgid "Summarized writings here are inspired by [this article](https://quentin.dufour.io/blog/2021-09-14/matrix-synapse-s3-storage/)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:11
+msgid "The way media storage providers in Synapse work has some caveats:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:13
+msgid "Synapse still continues to use locally-stored files (for creating thumbnails, serving files, etc)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:14
+msgid "the media storage provider is just an extra storage mechanism (in addition to the local filesystem)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:15
+msgid "all files are stored locally at first, and then copied to the media storage provider (either synchronously or asynchronously)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:16
+msgid "if a file is not available on the local filesystem, it's pulled from a media storage provider"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:18
+msgid "You may be thinking **if all files are stored locally as well, what's the point**?"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:20
+msgid "You can run some scripts to delete the local files once in a while (which we do automatically by default — see [Periodically cleaning up the local filesystem](#periodically-cleaning-up-the-local-filesystem)), thus freeing up local disk space. If these files are needed in the future (for serving them to users, etc.), Synapse will pull them from the media storage provider on demand."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:22
+msgid "While you will need some local disk space around, it's only to accommodate usage, etc., and won't grow as large as your S3 store."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:24
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:26
+msgid "After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:48
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:50
+msgid "There are some additional things you may wish to configure about the server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:52
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:54
+msgid "`roles/custom/matrix-synapse/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:56
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:58
+msgid "If you have existing files in Synapse's media repository (`/matrix/synapse/storage/media-store/…`):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:60
+msgid "new files will start being stored both locally and on the S3 store"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:61
+msgid "the existing files will remain on the local filesystem only until [migrating them to the S3 store](#migrating-your-existing-media-files-to-the-s3-store)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:62
+msgid "at some point (and periodically in the future), you can delete local files which have been uploaded to the S3 store already"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:64
+msgid "Regardless of whether you need to [Migrate your existing files to the S3 store](#migrating-your-existing-media-files-to-the-s3-store) or not, make sure you've familiarized yourself with [How it works?](#how-it-works) above and [Periodically cleaning up the local filesystem](#periodically-cleaning-up-the-local-filesystem) below."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:66
+msgid "Migrating your existing media files to the S3 store"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:68
+msgid "Migrating your existing data can happen in multiple ways:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:70
+msgid "[using the `s3_media_upload` script from `synapse-s3-storage-provider`](#using-the-s3_media_upload-script-from-synapse-s3-storage-provider) (very slow when dealing with lots of data)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:71
+msgid "[using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload) (quicker when dealing with lots of data)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:73
+msgid "💡 **Note**: instead of using `s3_media_upload` directly, which is very slow and painful for an initial data migration, we recommend [using another tool in combination with `s3_media_upload`](#using-another-tool-in-combination-with-s3_media_upload)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:75
+msgid "Using the `s3_media_upload` script from `synapse-s3-storage-provider`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:77
+msgid "To copy your existing files, SSH into the server and run `/matrix/synapse/ext/s3-storage-provider/bin/shell`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:79
+msgid "This launches a Synapse container, which has access to the local media store, Postgres database, S3 store and has some convenient environment variables configured for you to use (`MEDIA_PATH`, `BUCKET`, `ENDPOINT`, `UPDATE_DB_DAYS`, etc)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:81
+msgid "Then use the following commands (`$` values come from environment variables — they're **not placeholders** that you need to substitute):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:83
+msgid "`s3_media_upload update-db $UPDATE_DB_DURATION` — create a local SQLite database (`cache.db`) with a list of media repository files (from the `synapse` Postgres database) eligible for operating on"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:84
+msgid "`$UPDATE_DB_DURATION` is influenced by the `matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count` variable (defaults to `0`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:85
+msgid "`$UPDATE_DB_DURATION` defaults to `0d` (0 days), which means **include files which haven't been accessed for more than 0 days** (that is, **all files will be included**)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:86
+msgid "`s3_media_upload check-deleted $MEDIA_PATH` — check whether files in the local cache still exist in the local media repository directory"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:87
+msgid "`s3_media_upload upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT` — uploads locally-stored files to S3 and deletes them from the local media repository directory"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:89
+msgid "The `s3_media_upload upload` command may take a lot of time to complete."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:91
+msgid "Instead of running the above commands manually in the shell, you can also run the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` script which will run the same commands automatically. We demonstrate how to do it manually, because:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:93
+msgid "it's what the upstream project demonstrates and it teaches you how to use the `s3_media_upload` tool"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:94
+msgid "allows you to check and verify the output of each command, to catch mistakes"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:95
+msgid "includes progress bars and detailed output for each command"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:96
+msgid "allows you to easily interrupt slow-running commands, etc. (the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` starts a container without interactive TTY support, so `Ctrl+C` may not work and you and require killing via `docker kill …`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:98
+msgid "Using another tool in combination with `s3_media_upload`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:100
+msgid "To migrate your existing local data to S3, we recommend to:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:102
+msgid "**first** use another tool ([`aws s3`](#copying-data-to-amazon-s3) or [`b2 sync`](#copying-data-to-backblaze-b2), etc.) to copy the local files to the S3 bucket"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:104
+msgid "**only then** [use the `s3_media_upload` tool to finish the migration](#using-the-s3_media_upload-script-from-synapse-s3-storage-provider) (this checks to ensure all files are uploaded and then deletes the local files)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:106
+msgid "Copying data to Amazon S3"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:108
+msgid "To copy to AWS S3, start a container on the Matrix server like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:120
+msgid "Copying data to an S3 alternative using the aws-s3 tool"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:122
+msgid "To copy to a provider other than AWS S3 (e.g. Storj, Wasabi, Digital Ocean Spaces, etc.), you can use the command for [Copying data to Amazon S3](#copying-data-to-amazon-s3) with an added `--endpoint-url=$ENDPOINT` argument."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:124
+msgid "Add this argument to the command **as-is** (`$ENDPOINT` is an environment variable corresponding to `matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url`, so you don't need to touch it). Make sure to add the argument **before** the final quote (`'`) of the command."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:126
+msgid "Copying data to Backblaze B2"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:128
+msgid "You can copy files to Backblaze B2 either by following the [Copying data to an S3 alternative using the aws-s3 tool](#copying-data-to-an-s3-alternative-using-the-aws-s3-tool) or by using the B2-specific [b2 command-line tool](https://www.backblaze.com/b2/docs/quick_command_line.html) as described below."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:130
+msgid "To copy the data using the `b2` tool, start a container on the Matrix server like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:144
+msgid "Periodically cleaning up the local filesystem"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:146
+msgid "As described in [How it works?](#how-it-works) above, when new media is uploaded to the Synapse homeserver, it's first stored locally and then also stored on the remote S3 storage."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:148
+msgid "By default, we periodically ensure that all local files are uploaded to S3 and are then removed from the local filesystem. This is done automatically using:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:150
+msgid "the `/matrix/synapse/ext/s3-storage-provider/bin/migrate` script"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:151
+msgid "… invoked via the `matrix-synapse-s3-storage-provider-migrate.service` service"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:152
+msgid "… triggered by the `matrix-synapse-s3-storage-provider-migrate.timer` timer, every day at 05:00"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-s3-storage-provider.md:154
+msgid "So… you don't need to perform any maintenance yourself."
+msgstr ""

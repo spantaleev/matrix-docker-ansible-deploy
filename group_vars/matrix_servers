@@ -21,18 +21,29 @@ matrix_playbook_docker_installation_enabled: true
 
 matrix_playbook_docker_installation_daemon_options: "{{ matrix_playbook_docker_installation_daemon_options_auto | combine(matrix_playbook_docker_installation_daemon_options_custom, recursive=True) }}"
 
-matrix_playbook_docker_installation_daemon_options_auto:
-  experimental: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-  ip6tables: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+# Since Docker 27.0.1, Docker daemon options do not need to be changed to enable IPv6 support on the daemon side.
+# See: https://docs.docker.com/engine/release-notes/27/#ipv6
+# We only enable `ip6tables` and `experimental` for people who explicitly request it (perhaps due to running an old Docker version).
+#
+# Despite IPv6-enablement at the Docker level being a thing, for IPv6 to work for containers
+# networks need to be created with IPv6 explicitly enabled.
+# This is controlled by the `devture_systemd_docker_base_ipv6_enabled` variable and it's up to the various roles to
+# respect this variable when creating their networks.
+matrix_playbook_docker_installation_daemon_options_auto: |
+  {{
+    ({'experimental': true, 'ip6tables': true} if devture_systemd_docker_base_ipv6_daemon_options_changing_enabled else {})
+  }}
 
 matrix_playbook_docker_installation_daemon_options_custom: {}
+
+matrix_playbook_docker_installation_daemon_options_file_path: /etc/docker/daemon.json
 
 # Controls whether to attach Traefik labels to services.
 # This is separate from `traefik_enabled`, because you may wish to disable Traefik installation by the playbook,
 # yet still use Traefik installed in another way.
 matrix_playbook_traefik_labels_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 
-matrix_playbook_reverse_proxy_container_network: "{{ traefik_container_network if traefik_enabled else 'traefik' }}"
+matrix_playbook_reverse_proxy_container_network: "{{ traefik_container_network if traefik_enabled else 'traefik' if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] else '' }}"
 matrix_playbook_reverse_proxy_hostname: "{{ traefik_identifier if traefik_enabled else 'traefik' }}"
 
 matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled: "{{ traefik_config_http_middlewares_compression_enabled if (traefik_enabled and traefik_config_http_middlewares_compression_enabled) else false }}"
@@ -107,6 +118,8 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_hookshot_base_path + '/registration.yml,dst=/hookshot-registration.yml,ro'] if matrix_hookshot_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_mautrix_bluesky_config_path + '/registration.yaml,dst=/matrix-mautrix-bluesky-registration.yaml,ro'] if matrix_mautrix_bluesky_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_mautrix_discord_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_slack_config_path + '/registration.yaml,dst=/matrix-mautrix-slack-registration.yaml,ro'] if matrix_mautrix_slack_enabled else [])
@@ -114,8 +127,6 @@ matrix_homeserver_container_extra_arguments_auto: |
     (['--mount type=bind,src=' + matrix_mautrix_facebook_config_path + '/registration.yaml,dst=/matrix-mautrix-facebook-registration.yaml,ro'] if matrix_mautrix_facebook_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_googlechat_config_path + '/registration.yaml,dst=/matrix-mautrix-googlechat-registration.yaml,ro'] if matrix_mautrix_googlechat_enabled else [])
-    +
-    (['--mount type=bind,src=' + matrix_mautrix_hangouts_config_path + '/registration.yaml,dst=/matrix-mautrix-hangouts-registration.yaml,ro'] if matrix_mautrix_hangouts_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_instagram_config_path + '/registration.yaml,dst=/matrix-mautrix-instagram-registration.yaml,ro'] if matrix_mautrix_instagram_enabled else [])
     +
@@ -180,6 +191,8 @@ matrix_homeserver_app_service_config_files_auto: |
     +
     (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
     +
+    (['/matrix-mautrix-bluesky-registration.yaml'] if matrix_mautrix_bluesky_enabled else [])
+    +
     (['/matrix-mautrix-discord-registration.yaml'] if matrix_mautrix_discord_enabled else [])
     +
     (['/matrix-mautrix-slack-registration.yaml'] if matrix_mautrix_slack_enabled else [])
@@ -187,8 +200,6 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-mautrix-facebook-registration.yaml'] if matrix_mautrix_facebook_enabled else [])
     +
     (['/matrix-mautrix-googlechat-registration.yaml'] if matrix_mautrix_googlechat_enabled else [])
-    +
-    (['/matrix-mautrix-hangouts-registration.yaml'] if matrix_mautrix_hangouts_enabled else [])
     +
     (['/matrix-mautrix-instagram-registration.yaml'] if matrix_mautrix_instagram_enabled else [])
     +
@@ -232,7 +243,7 @@ matrix_addons_homeserver_client_api_url: "{{ ('http://' + matrix_playbook_revers
 matrix_addons_homeserver_systemd_services_list: "{{ ([traefik_identifier + '.service'] if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else []) if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_systemd_services_list }}"
 
 # Starting from version `0.6.0` Conduit natively supports some sync v3 (sliding-sync) features.
-matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit'] else '') }}"
+matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit', 'conduwuit'] else '') }}"
 
 ########################################################################
 #                                                                      #
@@ -249,7 +260,7 @@ matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_s
 
 # This list is not exhaustive and final.
 # Synapse workers are still injected into the list at runtime.
-# Additional JVB workers (jitsi_jvb.yml -- roles/galaxy/jitsi/tasks/init_additional_jvb.yml) override this variable at runtime as well.
+# Additional JVB workers (jitsi_jvb.yml — roles/galaxy/jitsi/tasks/init_additional_jvb.yml) override this variable at runtime as well.
 #
 # Priority levels are like this:
 # - Traefik starts first with a level of 250, so that:
@@ -257,19 +268,19 @@ matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_s
 #   - so that addon services (starting later) can communicte with the homeserver via Traefik's internal entrypoint
 #     (see `matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled`)
 # - core services (the homeserver) get a level of ~1000
-# - services that the homeserver depends on (database, Redis, ntfy, Coturn, etc.) get a lower level - between 500 and 1000
-# - Coturn gets a higher level if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
+# - services that the homeserver depends on (database, Redis, ntfy, coturn, etc.) get a lower level — between 500 and 1000
+# - coturn gets a higher level if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
 #  - starting services one by one means that the service manager role waits for each service to fully start before proceeding to the next one
-#  - if Coturn has a lower priority than the homeserver, it would be started before it
-#  - since Coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.example.com` certificate
-#  - thus, Coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
+#  - if coturn has a lower priority than the homeserver, it would be started before it
+#  - since coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.example.com` certificate
+#  - thus, coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
 #  - only later, when the homeserver actually starts, would that certificate be fetched and dumped
 # - reverse-proxying services get level 3000
 # - Matrix utility services (bridges, bots) get a level of 2000/2200, so that:
 #   - they can start before the reverse-proxy
 #   - so that, when the reverse-proxy is up (Matrix is up), all bots and bridges can be interacted with
-# - monitoring services (Prometheus, Grafana, ..) get a level of 4000 - they can start later than all-of-Matrix
-# - services which aren't time-sensitive (various crons and timers) get a level of 5000 - they can start later than all-of-Matrix
+# - monitoring services (Prometheus, Grafana, …) get a level of 4000 — they can start later than all-of-Matrix
+# - services which aren't time-sensitive (various crons and timers) get a level of 5000 — they can start later than all-of-Matrix
 devture_systemd_service_manager_services_list_auto: |
   {{
     ([{'name': (backup_borg_identifier + '.timer'), 'priority': 5000, 'groups': ['matrix', 'backup', 'borg']}] if backup_borg_enabled else [])
@@ -324,6 +335,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-hookshot.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'hookshot', 'bridge-hookshot']}] if matrix_hookshot_enabled else [])
     +
+    ([{'name': 'matrix-mautrix-bluesky.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-bluesky']}] if matrix_mautrix_bluesky_enabled else [])
+    +
     ([{'name': 'matrix-mautrix-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-discord']}] if matrix_mautrix_discord_enabled else [])
     +
     ([{'name': 'matrix-mautrix-slack.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-slack']}] if matrix_mautrix_slack_enabled else [])
@@ -331,8 +344,6 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-mautrix-facebook.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-facebook']}] if matrix_mautrix_facebook_enabled else [])
     +
     ([{'name': 'matrix-mautrix-googlechat.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-googlechat']}] if matrix_mautrix_googlechat_enabled else [])
-    +
-    ([{'name': 'matrix-mautrix-hangouts.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-hangouts']}] if matrix_mautrix_hangouts_enabled else [])
     +
     ([{'name': 'matrix-mautrix-instagram.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-instagram']}] if matrix_mautrix_instagram_enabled else [])
     +
@@ -382,6 +393,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-client-schildichat.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'schildichat', 'client-schildichat']}] if matrix_client_schildichat_enabled else [])
     +
+    ([{'name': 'matrix-client-fluffychat.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'fluffychat', 'client-fluffychat']}] if matrix_client_fluffychat_enabled else [])
+    +
     ([{'name': ('matrix-' + matrix_homeserver_implementation + '.service'), 'priority': 1000, 'groups': ['matrix', 'homeservers', matrix_homeserver_implementation]}] if matrix_homeserver_enabled else [])
     +
     ([{'name': 'matrix-corporal.service', 'priority': 1500, 'groups': ['matrix', 'corporal']}] if matrix_corporal_enabled else [])
@@ -395,8 +408,6 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-dimension.service', 'priority': 4000, 'groups': ['matrix', 'integration-managers', 'dimension']}] if matrix_dimension_enabled else [])
     +
     ([{'name': 'matrix-dynamic-dns.service', 'priority': 5000, 'groups': ['matrix', 'dynamic-dns']}] if matrix_dynamic_dns_enabled else [])
-    +
-    ([{'name': 'matrix-email2matrix.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'email2matrix']}] if matrix_email2matrix_enabled else [])
     +
     ([{'name': (etherpad_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'etherpad']}] if etherpad_enabled else [])
     +
@@ -432,10 +443,6 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-prometheus-nginxlog-exporter.service', 'priority': 3900, 'groups': ['matrix', 'monitoring', 'prometheus-exporters', 'prometheus-nginxlog-exporter']}] if matrix_prometheus_nginxlog_exporter_enabled else [])
     +
-    ([{'name': (redis_identifier + '.service'), 'priority': 750, 'groups': ['matrix', 'redis']}] if redis_enabled else [])
-    +
-    ([{'name': (keydb_identifier + '.service'), 'priority': 750, 'groups': ['matrix', 'keydb']}] if keydb_enabled else [])
-    +
     ([{'name': (valkey_identifier + '.service'), 'priority': 750, 'groups': ['matrix', 'valkey']}] if valkey_enabled else [])
     +
     ([{'name': 'matrix-pantalaimon.service', 'priority': 4000, 'groups': ['matrix', 'pantalaimon']}] if matrix_pantalaimon_enabled else [])
@@ -468,7 +475,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (matrix_static_files_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'matrix-static-files']}] if matrix_static_files_enabled else [])
     +
-    ([{'name': (devture_container_socket_proxy_identifier + '.service'), 'priority': 200, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if devture_container_socket_proxy_enabled else [])
+    ([{'name': (container_socket_proxy_identifier + '.service'), 'priority': 200, 'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy']}] if container_socket_proxy_enabled else [])
     +
     ([{'name': (traefik_identifier + '.service'), 'priority': 250, 'groups': ['matrix', 'traefik', 'reverse-proxies']}] if traefik_enabled else [])
     +
@@ -559,6 +566,7 @@ matrix_homeserver_container_client_api_endpoint: |-
       'synapse': ('matrix-synapse-reverse-proxy-companion:8008' if matrix_synapse_reverse_proxy_companion_enabled | default(false) else ('matrix-synapse:'+ matrix_synapse_container_client_api_port | default('8008') | string)),
       'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port | default('8008') | string),
       'conduit': ('matrix-conduit:' + matrix_conduit_port_number | default('8008') | string),
+      'conduwuit': ('matrix-conduwuit:' + matrix_conduwuit_config_port_number | default('8008') | string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -568,6 +576,7 @@ matrix_homeserver_container_federation_api_endpoint: |-
       'synapse': ('matrix-synapse-reverse-proxy-companion:8048' if matrix_synapse_reverse_proxy_companion_enabled else ('matrix-synapse:'+ matrix_synapse_container_federation_api_plain_port | default('8008') | string)),
       'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port | default('8008') | string),
       'conduit': ('matrix-conduit:' + matrix_conduit_port_number | default('8008') | string),
+      'conduwuit': ('matrix-conduwuit:' + matrix_conduwuit_config_port_number | default('8008') | string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -589,6 +598,8 @@ matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if m
 
 # We don't enable this by default.
 matrix_alertmanager_receiver_enabled: false
+
+matrix_alertmanager_receiver_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_alertmanager_receiver_container_image_registry_prefix_upstream_default }}"
 
 matrix_alertmanager_receiver_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
@@ -673,6 +684,8 @@ matrix_authentication_service_config_email_port: "{{ 8025 if exim_relay_enabled 
 matrix_authentication_service_config_email_mode: "{{ 'plain' if exim_relay_enabled else 'starttls' }}"
 matrix_authentication_service_config_email_from_address: "{{ exim_relay_sender_address }}"
 
+matrix_authentication_service_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_authentication_service_container_image_registry_prefix_upstream_default }}"
+
 matrix_authentication_service_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_authentication_service_container_network: "{{ matrix_homeserver_container_network }}"
@@ -745,6 +758,8 @@ matrix_appservice_discord_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_discord_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_appservice_discord_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_discord_docker_image_registry_prefix_upstream_default }}"
+
 matrix_appservice_discord_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9005') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_appservice_discord_container_network: "{{ matrix_addons_container_network }}"
@@ -759,7 +774,7 @@ matrix_appservice_discord_container_additional_networks_auto: |-
   }}
 
 # If the homeserver disables presence, it's likely better (less wasteful) to also disable presence on the bridge side.
-matrix_appservice_discord_bridge_disablePresence: "{{ not matrix_synapse_presence_enabled }}"
+matrix_appservice_discord_bridge_disablePresence: "{{ (not matrix_synapse_presence_enabled) if matrix_homeserver_implementation == 'synapse' else false }}"
 
 matrix_appservice_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'discord.as.token', rounds=655555) | to_uuid }}"
 
@@ -793,6 +808,8 @@ matrix_appservice_webhooks_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
   }}
+
+matrix_appservice_webhooks_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_webhooks_docker_image_registry_prefix_upstream_default }}"
 
 matrix_appservice_webhooks_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
@@ -845,6 +862,8 @@ matrix_appservice_slack_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_slack_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_appservice_slack_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_slack_docker_image_registry_prefix_upstream_default }}"
 
 matrix_appservice_slack_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -903,6 +922,8 @@ matrix_appservice_irc_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_irc_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_appservice_irc_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_irc_docker_image_registry_prefix_upstream_default }}"
+
 matrix_appservice_irc_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_appservice_irc_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9999') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
@@ -920,7 +941,7 @@ matrix_appservice_irc_container_additional_networks_auto: |-
 
 # The IRC bridge docs say that if homeserver presence is disabled, it's better to also disable
 # IRC bridge presence, for performance reasons.
-matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_presence_enabled }}"
+matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_presence_enabled if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_appservice_irc_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'irc.as.token', rounds=655555) | to_uuid }}"
 
@@ -953,6 +974,10 @@ matrix_appservice_kakaotalk_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_kakaotalk_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream_default }}"
+
+matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream_default }}"
 
 matrix_appservice_kakaotalk_container_network: "{{ matrix_addons_container_network }}"
 
@@ -999,6 +1024,8 @@ matrix_beeper_linkedin_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_beeper_linkedin_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_beeper_linkedin_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_beeper_linkedin_docker_image_registry_prefix_upstream_default }}"
+
 matrix_beeper_linkedin_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
 
 matrix_beeper_linkedin_container_network: "{{ matrix_addons_container_network }}"
@@ -1017,18 +1044,20 @@ matrix_beeper_linkedin_appservice_token: "{{ '%s' | format(matrix_homeserver_gen
 matrix_beeper_linkedin_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_beeper_linkedin_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'linked.hs.token', rounds=655555) | to_uuid }}"
 
-matrix_beeper_linkedin_login_shared_secret: |-
+matrix_beeper_linkedin_bridge_login_shared_secret_map_auto: |-
   {{
-    ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
+    ({
+      matrix_beeper_linkedin_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
+    })
     if matrix_appservice_double_puppet_enabled
     else (
-      matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled
+      {matrix_beeper_linkedin_homeserver_domain: matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret}
       if matrix_synapse_ext_password_provider_shared_secret_auth_enabled
-      else ""
+      else {}
     )
   }}
 
-matrix_beeper_linkedin_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
+matrix_beeper_linkedin_bridge_presence: "{{ (matrix_synapse_presence_enabled if matrix_synapse_enabled else true) if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_beeper_linkedin_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_beeper_linkedin_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maulinkedin.db', rounds=655555) | to_uuid }}"
@@ -1055,6 +1084,8 @@ matrix_go_skype_bridge_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_go_skype_bridge_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_go_skype_bridge_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_go_skype_bridge_docker_image_registry_prefix_upstream_default }}"
 
 matrix_go_skype_bridge_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -1087,6 +1118,77 @@ matrix_go_skype_bridge_database_password: "{{ '%s' | format(matrix_homeserver_ge
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-bridge-mautrix-bluesky
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_mautrix_bluesky_enabled: false
+
+matrix_mautrix_bluesky_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+    +
+    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_bluesky_database_hostname == postgres_connection_hostname) else [])
+  }}
+
+matrix_mautrix_bluesky_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_bluesky_docker_image_registry_prefix_upstream_default }}"
+
+matrix_mautrix_bluesky_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+matrix_mautrix_bluesky_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_mautrix_bluesky_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      ([postgres_container_network] if (postgres_enabled and matrix_mautrix_bluesky_database_hostname == postgres_connection_hostname and matrix_mautrix_bluesky_container_network != postgres_container_network) else [])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_bluesky_container_labels_traefik_enabled else [])
+    ) | unique
+  }}
+
+matrix_mautrix_bluesky_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_mautrix_bluesky_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_mautrix_bluesky_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_bluesky_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_mautrix_bluesky_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_mautrix_bluesky_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
+matrix_mautrix_bluesky_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'bsky.as.token', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_bluesky_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_mautrix_bluesky_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'bsky.hs.token', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_bluesky_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.bsky.prov', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_bluesky_double_puppet_secrets_auto: |-
+  {{
+    ({
+      matrix_mautrix_bluesky_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
+    })
+    if matrix_appservice_double_puppet_enabled
+    else {}
+  }}
+
+matrix_mautrix_bluesky_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
+
+matrix_mautrix_bluesky_metrics_proxying_enabled: "{{ matrix_mautrix_bluesky_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_mautrix_bluesky_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_mautrix_bluesky_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-bluesky"
+
+matrix_mautrix_bluesky_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_mautrix_bluesky_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twt.db', rounds=655555) | to_uuid if postgres_enabled else '' }}"
+
+######################################################################
+#
+# /matrix-bridge-mautrix-bluesky
+#
+######################################################################
 
 ######################################################################
 #
@@ -1096,6 +1198,8 @@ matrix_go_skype_bridge_database_password: "{{ '%s' | format(matrix_homeserver_ge
 
 # We don't enable bridges by default.
 matrix_mautrix_discord_enabled: false
+
+matrix_mautrix_discord_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_discord_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mautrix_discord_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -1107,8 +1211,15 @@ matrix_mautrix_discord_container_additional_networks_auto: |-
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([postgres_container_network] if postgres_enabled and matrix_mautrix_facebook_database_hostname == postgres_connection_hostname else [])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_discord_container_labels_traefik_enabled) else [])
     ) | unique
   }}
+
+matrix_mautrix_discord_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_mautrix_discord_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_mautrix_discord_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_mautrix_discord_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_discord_systemd_required_services_list_auto: |
   {{
@@ -1120,8 +1231,12 @@ matrix_mautrix_discord_systemd_required_services_list_auto: |
 matrix_mautrix_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.as.tok', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_discord_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_discord_homeserver_public_address: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_matrix }}"
 matrix_mautrix_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.hs.tok', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_discord_bridge_avatar_proxy_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.avatar', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_discord_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_mautrix_discord_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
 matrix_mautrix_discord_bridge_login_shared_secret_map_auto: |-
   {{
@@ -1163,6 +1278,8 @@ matrix_mautrix_slack_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_slack_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_mautrix_slack_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_slack_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mautrix_slack_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -1222,6 +1339,8 @@ matrix_mautrix_facebook_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_facebook_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_mautrix_facebook_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_facebook_docker_image_registry_prefix_upstream_default }}"
+
 matrix_mautrix_facebook_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_mautrix_facebook_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9008') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
@@ -1259,7 +1378,7 @@ matrix_mautrix_facebook_appservice_public_prefix: "/{{ '%s' | format(matrix_home
 
 matrix_mautrix_facebook_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_facebook_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
+matrix_mautrix_facebook_bridge_presence: "{{ (matrix_synapse_presence_enabled if matrix_synapse_enabled else true) if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_mautrix_facebook_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
@@ -1295,6 +1414,8 @@ matrix_mautrix_googlechat_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_googlechat_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_mautrix_googlechat_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_googlechat_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mautrix_googlechat_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -1357,73 +1478,6 @@ matrix_mautrix_googlechat_database_password: "{{ '%s' | format(matrix_homeserver
 ######################################################################
 
 
-######################################################################
-#
-# matrix-bridge-mautrix-hangouts
-#
-######################################################################
-
-# We don't enable bridges by default.
-matrix_mautrix_hangouts_enabled: false
-
-matrix_mautrix_hangouts_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_hangouts_database_hostname == postgres_connection_hostname) else [])
-  }}
-
-matrix_mautrix_hangouts_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
-
-matrix_mautrix_hangouts_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9007') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
-
-matrix_mautrix_hangouts_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_mautrix_hangouts_container_additional_networks_auto: |-
-  {{
-    (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([postgres_container_network] if (postgres_enabled and matrix_mautrix_hangouts_database_hostname == postgres_connection_hostname and matrix_mautrix_hangouts_container_network != postgres_container_network) else [])
-      +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_gmessages_container_labels_traefik_enabled) else [])
-    ) | unique
-  }}
-
-matrix_mautrix_hangouts_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_mautrix_hangouts_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_hangouts_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_mautrix_hangouts_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
-matrix_mautrix_hangouts_container_labels_public_endpoint_hostname: "{{ matrix_server_fqn_matrix }}"
-
-matrix_mautrix_hangouts_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_mautrix_hangouts_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
-
-matrix_mautrix_hangouts_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ho.as.token', rounds=655555) | to_uuid }}"
-
-matrix_mautrix_hangouts_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_hangouts_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ho.hs.token', rounds=655555) | to_uuid }}"
-
-matrix_mautrix_hangouts_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
-
-matrix_mautrix_hangouts_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
-
-matrix_mautrix_hangouts_metrics_proxying_enabled: "{{ matrix_mautrix_hangouts_metrics_enabled and matrix_metrics_exposure_enabled }}"
-matrix_mautrix_hangouts_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
-matrix_mautrix_hangouts_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-hangouts"
-
-# Postgres is the default, except if not using internal Postgres server
-matrix_mautrix_hangouts_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
-matrix_mautrix_hangouts_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_hangouts_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.hangouts.db', rounds=655555) | to_uuid }}"
-
-######################################################################
-#
-# /matrix-bridge-mautrix-hangouts
-#
-######################################################################
-
 
 ######################################################################
 #
@@ -1440,6 +1494,8 @@ matrix_mautrix_instagram_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_instagram_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_mautrix_instagram_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_instagram_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mautrix_instagram_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -1471,7 +1527,7 @@ matrix_mautrix_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver_g
 
 matrix_mautrix_instagram_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_mautrix_instagram_bridge_presence: "{{ matrix_synapse_presence_enabled if matrix_synapse_enabled else true }}"
+matrix_mautrix_instagram_bridge_presence: "{{ (matrix_synapse_presence_enabled if matrix_synapse_enabled else true) if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_mautrix_instagram_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
@@ -1506,6 +1562,8 @@ matrix_mautrix_signal_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_signal_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_mautrix_signal_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_signal_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mautrix_signal_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -1581,6 +1639,8 @@ matrix_mautrix_meta_messenger_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_meta_messenger_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_mautrix_meta_messenger_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_meta_messenger_container_image_registry_prefix_upstream_default }}"
+
 matrix_mautrix_meta_messenger_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_mautrix_meta_messenger_container_network: "{{ matrix_addons_container_network }}"
@@ -1654,6 +1714,8 @@ matrix_mautrix_meta_instagram_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_meta_instagram_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_mautrix_meta_instagram_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_meta_instagram_container_image_registry_prefix_upstream_default }}"
 
 matrix_mautrix_meta_instagram_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -1731,10 +1793,14 @@ matrix_mautrix_telegram_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_telegram_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix_upstream_default }}"
+
+matrix_mautrix_telegram_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_telegram_docker_image_registry_prefix_upstream_default }}"
+
 # Images are multi-arch (amd64 and arm64, but not arm32).
 matrix_mautrix_telegram_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
-matrix_telegram_lottieconverter_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
-matrix_telegram_lottieconverter_container_image_self_build_mask_arch: "{{ matrix_architecture != 'amd64' }}"
+matrix_mautrix_telegram_lottieconverter_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+matrix_mautrix_telegram_lottieconverter_container_image_self_build_mask_arch: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_mautrix_telegram_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9006') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -1811,6 +1877,8 @@ matrix_mautrix_twitter_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_twitter_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_mautrix_twitter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_twitter_docker_image_registry_prefix_upstream_default }}"
+
 matrix_mautrix_twitter_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_mautrix_twitter_container_network: "{{ matrix_addons_container_network }}"
@@ -1839,17 +1907,15 @@ matrix_mautrix_twitter_appservice_token: "{{ '%s' | format(matrix_homeserver_gen
 matrix_mautrix_twitter_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'twt.hs.token', rounds=655555) | to_uuid }}"
 
-matrix_mautrix_twitter_bridge_login_shared_secret_map_auto: |-
+matrix_mautrix_twitter_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twit.prov', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_twitter_double_puppet_secrets_auto: |-
   {{
     ({
       matrix_mautrix_twitter_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
     })
     if matrix_appservice_double_puppet_enabled
-    else (
-      {matrix_mautrix_twitter_homeserver_domain: matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret}
-      if matrix_synapse_ext_password_provider_shared_secret_auth_enabled
-      else {}
-    )
+    else {}
   }}
 
 matrix_mautrix_twitter_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
@@ -1882,6 +1948,8 @@ matrix_mautrix_gmessages_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_facebook_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_mautrix_gmessages_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_gmessages_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mautrix_gmessages_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -1960,6 +2028,8 @@ matrix_mautrix_wsproxy_hostname: "wsproxy.{{ matrix_mautrix_wsproxy_homeserver_d
 
 matrix_mautrix_wsproxy_syncproxy_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
+matrix_mautrix_wsproxy_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_wsproxy_docker_image_registry_prefix_upstream_default }}"
+
 matrix_mautrix_wsproxy_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_mautrix_wsproxy_container_additional_networks: |
@@ -2002,6 +2072,8 @@ matrix_wechat_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_wechat_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_wechat_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_wechat_container_image_registry_prefix_upstream_default }}"
 
 matrix_wechat_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -2046,6 +2118,8 @@ matrix_wechat_database_password: "{{ '%s' | format(matrix_homeserver_generic_sec
 
 # We don't enable bridges by default.
 matrix_mautrix_whatsapp_enabled: false
+
+matrix_mautrix_whatsapp_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_whatsapp_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mautrix_whatsapp_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -2124,6 +2198,8 @@ matrix_sms_bridge_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_facebook_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_sms_bridge_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_sms_bridge_docker_image_registry_prefix_upstream_default }}"
+
 matrix_sms_bridge_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_sms_bridge_container_additional_networks_auto: |-
@@ -2158,6 +2234,8 @@ matrix_heisenbridge_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
   }}
+
+matrix_heisenbridge_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_heisenbridge_docker_image_registry_prefix_upstream_default }}"
 
 matrix_heisenbridge_container_network: "{{ matrix_addons_container_network }}"
 
@@ -2196,6 +2274,8 @@ matrix_heisenbridge_homeserver_url: "{{ matrix_addons_homeserver_client_api_url 
 # We don't enable bridges by default.
 matrix_hookshot_enabled: false
 
+matrix_hookshot_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_hookshot_docker_image_registry_prefix_upstream_default }}"
+
 matrix_hookshot_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.as.tok', rounds=655555) | to_uuid }}"
@@ -2208,17 +2288,13 @@ matrix_hookshot_systemd_wanted_services_list: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([(redis_identifier + '.service')] if redis_enabled and matrix_hookshot_cache_redis_host == redis_identifier else [])
-    +
-    ([(keydb_identifier + '.service')] if keydb_enabled and matrix_hookshot_cache_redis_host == keydb_identifier else [])
-    +
     ([(valkey_identifier + '.service')] if valkey_enabled and matrix_hookshot_cache_redis_host == valkey_identifier else [])
   }}
 
 # Hookshot's experimental encryption feature (and possibly others) may benefit from Redis, if available.
 # We only connect to Redis if encryption is enabled (not for everyone who has Redis enabled),
 # because connectivity is still potentially troublesome and is to be investigated.
-matrix_hookshot_cache_redis_host: "{{ valkey_identifier if valkey_enabled else (redis_identifier if redis_enabled else (keydb_identifier if keydb_enabled else '')) }}"
+matrix_hookshot_cache_redis_host: "{{ valkey_identifier if valkey_enabled else '' }}"
 
 matrix_hookshot_container_network: "{{ matrix_addons_container_network }}"
 
@@ -2226,10 +2302,6 @@ matrix_hookshot_container_additional_networks_auto: |
   {{
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([redis_container_network] if redis_enabled and matrix_hookshot_cache_redis_host == redis_identifier else [])
-      +
-      ([keydb_container_network] if keydb_enabled and matrix_hookshot_cache_redis_host == keydb_identifier else [])
       +
       ([valkey_container_network] if valkey_enabled and matrix_hookshot_cache_redis_host == valkey_identifier else [])
       +
@@ -2288,6 +2360,8 @@ matrix_mx_puppet_slack_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_slack_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_mx_puppet_slack_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_slack_docker_image_registry_prefix_upstream_default }}"
+
 matrix_mx_puppet_slack_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_mx_puppet_slack_container_network: "{{ matrix_addons_container_network }}"
@@ -2345,6 +2419,8 @@ matrix_mx_puppet_twitter_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_twitter_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_mx_puppet_twitter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_twitter_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mx_puppet_twitter_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
@@ -2405,6 +2481,8 @@ matrix_mx_puppet_instagram_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_instagram_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_mx_puppet_instagram_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_instagram_docker_image_registry_prefix_upstream_default }}"
+
 matrix_mx_puppet_instagram_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_mx_puppet_instagram_container_network: "{{ matrix_addons_container_network }}"
@@ -2454,6 +2532,8 @@ matrix_mx_puppet_discord_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_discord_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_mx_puppet_discord_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_discord_docker_image_registry_prefix_upstream_default }}"
+
 matrix_mx_puppet_discord_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_mx_puppet_discord_container_network: "{{ matrix_addons_container_network }}"
@@ -2502,6 +2582,8 @@ matrix_mx_puppet_steam_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_steam_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_mx_puppet_steam_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_steam_docker_image_registry_prefix_upstream_default }}"
 
 matrix_mx_puppet_steam_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -2553,6 +2635,8 @@ matrix_mx_puppet_groupme_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_groupme_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_mx_puppet_groupme_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_groupme_docker_image_registry_prefix_upstream_default }}"
+
 matrix_mx_puppet_groupme_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_mx_puppet_groupme_container_network: "{{ matrix_addons_container_network }}"
@@ -2594,6 +2678,8 @@ matrix_mx_puppet_groupme_database_password: "{{ '%s' | format(matrix_homeserver_
 
 # We don't enable bridges by default.
 matrix_postmoogle_enabled: false
+
+matrix_postmoogle_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_postmoogle_docker_image_registry_prefix_upstream_default }}"
 
 matrix_postmoogle_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -2678,6 +2764,8 @@ matrix_bot_matrix_reminder_bot_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_bot_matrix_reminder_bot_database_hostname == postgres_connection_hostname else [])
   }}
 
+matrix_bot_matrix_reminder_bot_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_matrix_reminder_bot_docker_image_registry_prefix_upstream_default }}"
+
 matrix_bot_matrix_reminder_bot_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_bot_matrix_reminder_bot_container_network: "{{ matrix_addons_container_network }}"
@@ -2723,16 +2811,20 @@ matrix_bot_matrix_registration_bot_systemd_required_services_list_auto: |
     matrix_addons_homeserver_systemd_services_list
   }}
 
+matrix_bot_matrix_registration_bot_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_matrix_registration_bot_docker_image_registry_prefix_upstream_default }}"
+
 matrix_bot_matrix_registration_bot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
 
 matrix_bot_matrix_registration_bot_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_bot_matrix_registration_bot_container_additional_networks_auto: |-
   {{
-    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+    ([matrix_homeserver_container_network] if matrix_bot_matrix_registration_bot_container_network != matrix_homeserver_container_network else [])
   }}
 
-matrix_bot_matrix_registration_bot_matrix_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+# Using `matrix_addons_homeserver_client_api_url` would not work here,
+# because `matrix-traefik:8008` (matrix-internal-client-api) does not expose any `/_synapse` paths.
+matrix_bot_matrix_registration_bot_api_base_url: "{{ matrix_homeserver_container_url }}"
 
 ######################################################################
 #
@@ -2767,6 +2859,8 @@ matrix_bot_maubot_homeserver_secret: |-
       'dendrite': matrix_dendrite_client_api_registration_shared_secret | default(''),
     }[matrix_homeserver_implementation] | default('')
   }}
+
+matrix_bot_maubot_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_maubot_docker_image_registry_prefix_upstream_default }}"
 
 matrix_bot_maubot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
 
@@ -2824,6 +2918,8 @@ matrix_bot_honoroit_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_bot_honoroit_database_hostname == postgres_connection_hostname else [])
   }}
 
+matrix_bot_honoroit_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_honoroit_docker_image_registry_prefix_upstream_default }}"
+
 matrix_bot_honoroit_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_bot_honoroit_container_additional_networks: |
@@ -2878,6 +2974,8 @@ matrix_bot_buscarron_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_bot_buscarron_database_hostname == postgres_connection_hostname) else [])
   }}
 
+matrix_bot_buscarron_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_buscarron_docker_image_registry_prefix_upstream_default }}"
+
 matrix_bot_buscarron_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_bot_buscarron_container_network: "{{ matrix_addons_container_network }}"
@@ -2921,6 +3019,8 @@ matrix_bot_buscarron_database_password: "{{ '%s' | format(matrix_homeserver_gene
 # We don't enable bots by default.
 matrix_bot_baibot_enabled: false
 
+matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
+
 matrix_bot_baibot_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_bot_baibot_systemd_required_services_list_auto: |
@@ -2953,6 +3053,8 @@ matrix_bot_baibot_container_additional_networks_auto: |-
 
 # We don't enable bots by default.
 matrix_bot_chatgpt_enabled: false
+
+matrix_bot_chatgpt_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_chatgpt_container_image_registry_prefix_upstream_default }}"
 
 matrix_bot_chatgpt_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -2987,6 +3089,8 @@ matrix_bot_go_neb_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
   }}
+
+matrix_bot_go_neb_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_go_neb_container_image_registry_prefix_upstream_default }}"
 
 matrix_bot_go_neb_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '4050') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -3029,6 +3133,8 @@ matrix_bot_mjolnir_systemd_required_services_list_auto: |
     (['matrix-pantalaimon.service'] if matrix_bot_mjolnir_pantalaimon_use else [])
   }}
 
+matrix_bot_mjolnir_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_mjolnir_docker_image_registry_prefix_upstream_default }}"
+
 matrix_bot_mjolnir_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_bot_mjolnir_container_network: "{{ matrix_addons_container_network }}"
@@ -3064,6 +3170,8 @@ matrix_bot_draupnir_systemd_required_services_list_auto: |
     +
     (['matrix-pantalaimon.service'] if matrix_bot_draupnir_pantalaimon_use else [])
   }}
+
+matrix_bot_draupnir_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_draupnir_docker_image_registry_prefix_upstream_default }}"
 
 matrix_bot_draupnir_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -3112,6 +3220,8 @@ matrix_appservice_draupnir_for_all_systemd_required_services_list_auto: |
     +
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_draupnir_for_all_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream_default }}"
 
 matrix_appservice_draupnir_for_all_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -3170,6 +3280,8 @@ matrix_pantalaimon_systemd_required_services_list_auto: |
     matrix_addons_homeserver_systemd_services_list
   }}
 
+matrix_pantalaimon_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_pantalaimon_docker_image_registry_prefix_upstream_default }}"
+
 matrix_pantalaimon_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_pantalaimon_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
@@ -3192,7 +3304,6 @@ matrix_pantalaimon_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }
 backup_borg_enabled: false
 
 backup_borg_identifier: matrix-backup-borg
-backup_borg_retention_prefix: matrix-
 backup_borg_storage_archive_name_format: matrix-{now:%Y-%m-%d-%H%M%S}
 
 backup_borg_base_path: "{{ matrix_base_data_path }}/backup-borg"
@@ -3200,6 +3311,8 @@ backup_borg_base_path: "{{ matrix_base_data_path }}/backup-borg"
 backup_borg_username: "{{ matrix_user_username }}"
 backup_borg_uid: "{{ matrix_user_uid }}"
 backup_borg_gid: "{{ matrix_user_gid }}"
+
+backup_borg_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else backup_borg_docker_image_registry_prefix_upstream_default }}"
 
 backup_borg_container_network: "{{ postgres_container_network if postgres_enabled else backup_borg_identifier }}"
 
@@ -3212,14 +3325,14 @@ backup_borg_postgresql_databases_hostname: "{{ postgres_connection_hostname if p
 backup_borg_postgresql_databases_username: "{{ postgres_connection_username if postgres_enabled else '' }}"
 backup_borg_postgresql_databases_password: "{{ postgres_connection_password if postgres_enabled else '' }}"
 backup_borg_postgresql_databases_port: "{{ postgres_connection_port if postgres_enabled else 5432 }}"
-backup_borg_postgresql_databases: "{{ postgres_managed_databases | map(attribute='name') if postgres_enabled else [] }}"
+backup_borg_postgresql_databases_auto: "{{ postgres_managed_databases | map(attribute='name') if postgres_enabled else [] }}"
 
 backup_borg_location_source_directories:
   - "{{ matrix_base_data_path }}"
 
 backup_borg_location_exclude_patterns: |
   {{
-    ([matrix_synapse_media_store_path + '/local_thumbnails', matrix_synapse_media_store_path + '/remote_thumbnail', matrix_synapse_media_store_path + '/url_cache', matrix_synapse_media_store_path + '/url_cache_thumbnails'] if matrix_homeserver_implementation == 'synapse' else [])
+    ([matrix_synapse_media_store_path + '/remote_content', matrix_synapse_media_store_path + '/local_thumbnails', matrix_synapse_media_store_path + '/remote_thumbnail', matrix_synapse_media_store_path + '/url_cache', matrix_synapse_media_store_path + '/url_cache_thumbnails'] if matrix_homeserver_implementation == 'synapse' else [])
     +
     ([postgres_data_path] if postgres_enabled else [])
   }}
@@ -3251,6 +3364,8 @@ matrix_cactus_comments_systemd_required_services_list_auto: |
     matrix_addons_homeserver_systemd_services_list
   }}
 
+matrix_cactus_comments_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_cactus_comments_docker_image_registry_prefix_upstream_default }}"
+
 matrix_cactus_comments_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
 
 matrix_cactus_comments_container_network: "{{ matrix_addons_container_network }}"
@@ -3280,6 +3395,8 @@ matrix_cactus_comments_homeserver_url: "{{ matrix_addons_homeserver_client_api_u
 matrix_cactus_comments_client_enabled: "{{ matrix_cactus_comments_enabled }}"
 
 matrix_cactus_comments_client_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_cactus_comments_client_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_cactus_comments_client_container_image_registry_prefix_upstream_default }}"
 
 matrix_cactus_comments_client_container_network: "{{ matrix_addons_container_network }}"
 
@@ -3314,7 +3431,9 @@ matrix_corporal_systemd_required_services_list_auto: |
     (['matrix-' + matrix_homeserver_implementation + '.service'])
   }}
 
-matrix_corporal_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+matrix_corporal_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_corporal_docker_image_registry_prefix_upstream_default }}"
+
+matrix_corporal_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 matrix_corporal_container_http_gateway_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '41080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 matrix_corporal_container_http_api_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '41081') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
@@ -3366,6 +3485,8 @@ matrix_rageshake_container_image_self_build: "{{ matrix_architecture not in ['am
 
 matrix_rageshake_hostname: "{{ matrix_server_fqn_rageshake }}"
 
+matrix_rageshake_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_rageshake_container_image_registry_prefix_upstream_default }}"
+
 matrix_rageshake_container_network: matrix-rageshake
 
 matrix_rageshake_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
@@ -3390,6 +3511,8 @@ matrix_rageshake_container_labels_traefik_tls_certResolver: "{{ traefik_certReso
 ######################################################################
 
 matrix_coturn_enabled: true
+
+matrix_coturn_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_coturn_docker_image_registry_prefix_upstream_default }}"
 
 matrix_coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
@@ -3462,10 +3585,12 @@ matrix_coturn_systemd_required_services_list: |
 
 matrix_dimension_enabled: false
 
-matrix_dimension_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
-
 matrix_dimension_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 matrix_dimension_hostname: "{{ matrix_server_fqn_dimension }}"
+
+matrix_dimension_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_dimension_docker_image_registry_prefix_upstream_default }}"
+
+matrix_dimension_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
 matrix_dimension_container_network: "{{ matrix_addons_container_network }}"
 
@@ -3523,7 +3648,7 @@ matrix_dimension_database_password: "{{ '%s' | format(matrix_homeserver_generic_
 
 ######################################################################
 #
-# etke/etherpad
+# etherpad
 #
 ######################################################################
 
@@ -3539,13 +3664,15 @@ etherpad_framing_enabled: "{{ matrix_dimension_enabled or jitsi_enabled }}"
 
 etherpad_hostname: "{{ matrix_server_fqn_etherpad }}"
 
+etherpad_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else etherpad_container_image_registry_prefix_upstream_default }}"
+
 etherpad_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
 
 etherpad_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9001') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 etherpad_container_network: "{{ matrix_addons_container_network }}"
 
-etherpad_container_additional_networks: |
+etherpad_container_additional_networks_auto: |
   {{
     (
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
@@ -3559,10 +3686,8 @@ etherpad_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_pr
 etherpad_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 etherpad_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-etherpad_systemd_required_services_list: |
+etherpad_systemd_required_services_list_auto: |
   {{
-    [devture_systemd_docker_base_docker_service_name]
-    +
     ([postgres_identifier ~ '.service'] if postgres_enabled else [])
   }}
 
@@ -3573,7 +3698,7 @@ etherpad_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_k
 
 ######################################################################
 #
-# /etke/etherpad
+# /etherpad
 #
 ######################################################################
 
@@ -3585,39 +3710,13 @@ etherpad_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_k
 
 matrix_dynamic_dns_enabled: false
 
+matrix_dynamic_dns_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_dynamic_dns_docker_image_registry_prefix_upstream_default }}"
+
 matrix_dynamic_dns_container_network: matrix-dynamic-dns
 
 ######################################################################
 #
 # /matrix-dynamic-dns
-#
-######################################################################
-
-######################################################################
-#
-# matrix-email2matrix
-#
-######################################################################
-
-matrix_email2matrix_enabled: false
-
-matrix_email2matrix_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-  }}
-
-matrix_email2matrix_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
-
-matrix_email2matrix_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_email2matrix_container_additional_networks_auto: |-
-  {{
-    ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-  }}
-
-######################################################################
-#
-# /matrix-email2matrix
 #
 ######################################################################
 
@@ -3642,12 +3741,16 @@ jitsi_gid: "{{ matrix_user_gid }}"
 
 jitsi_user_username: "{{ matrix_user_username }}"
 
+jitsi_web_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else jitsi_web_container_image_registry_prefix_upstream_default }}"
+
 jitsi_web_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 jitsi_web_container_additional_networks_auto: |
   {{
     ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
   }}
+
+jitsi_jvb_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else jitsi_jvb_container_image_registry_prefix_upstream_default }}"
 
 jitsi_jvb_container_colibri_ws_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '13090') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -3656,12 +3759,16 @@ jitsi_jvb_container_additional_networks_auto: |
     ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
   }}
 
+jitsi_prosody_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else jitsi_prosody_container_image_registry_prefix_upstream_default }}"
+
 jitsi_prosody_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '5280') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 jitsi_prosody_container_additional_networks_auto: |
   {{
     ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
   }}
+
+jitsi_jicofo_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else jitsi_jicofo_container_image_registry_prefix_upstream_default }}"
 
 jitsi_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
 jitsi_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
@@ -3685,13 +3792,13 @@ jitsi_web_stun_servers: |
 # The Jitsi instance installed by this playbook is meant for embedding into Matrix clients, so framing is allowed.
 jitsi_web_framing_enabled: true
 
-# Jitsi (Prosody) only seems to support authenticating with Coturn using `auth-secret`, not `lt-cred-mech`.
+# Jitsi (Prosody) only seems to support authenticating with coturn using `auth-secret`, not `lt-cred-mech`.
 # See: https://prosody.im/doc/coturn
 jitsi_turn_credentials: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 jitsi_turn_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
 jitsi_turns_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
-jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port.split(':')[-1] if matrix_coturn_enabled else '' }}"
-jitsi_turns_port: "{{ matrix_coturn_container_stun_tls_host_bind_port.split(':')[-1] if matrix_coturn_enabled else '' }}"
+jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port_tcp.split(':')[-1] if matrix_coturn_enabled else '' }}"
+jitsi_turns_port: "{{ matrix_coturn_container_stun_tls_host_bind_port_tcp.split(':')[-1] if matrix_coturn_enabled else '' }}"
 
 # If the self-hosted Etherpad instance is available, it will also show up in Jitsi conferences,
 # unless explicitly disabled by setting `jitsi_etherpad_enabled` to false.
@@ -3736,6 +3843,8 @@ matrix_ldap_registration_proxy_systemd_required_services_list_auto: |
     matrix_addons_homeserver_systemd_services_list
   }}
 
+matrix_ldap_registration_proxy_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_ldap_registration_proxy_docker_image_registry_prefix_upstream_default }}"
+
 matrix_ldap_registration_proxy_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_ldap_registration_proxy_container_additional_networks_auto: |-
@@ -3776,11 +3885,13 @@ exim_relay_base_path: "{{ matrix_base_data_path }}/exim-relay"
 exim_relay_uid: "{{ matrix_user_uid }}"
 exim_relay_gid: "{{ matrix_user_gid }}"
 
-exim_relay_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
-
 exim_relay_hostname: "{{ matrix_server_fqn_matrix }}"
 
 exim_relay_sender_address: "matrix@{{ exim_relay_hostname }}"
+
+exim_relay_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else exim_relay_container_image_registry_prefix_upstream_default }}"
+
+exim_relay_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
 ########################################################################
 #                                                                      #
@@ -3808,6 +3919,8 @@ matrix_ma1sd_enabled: false
 
 matrix_ma1sd_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 matrix_ma1sd_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_ma1sd_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_ma1sd_docker_image_registry_prefix_upstream_default }}"
 
 matrix_ma1sd_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
@@ -3882,6 +3995,8 @@ matrix_ma1sd_database_password: "{{ '%s' | format(matrix_homeserver_generic_secr
 ######################################################################
 
 matrix_media_repo_enabled: false
+
+matrix_media_repo_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_media_repo_docker_image_registry_prefix_upstream_default }}"
 
 matrix_media_repo_container_network: "{{ matrix_homeserver_container_network }}"
 
@@ -3988,6 +4103,10 @@ postgres_db_name: matrix
 postgres_systemd_services_to_stop_for_maintenance_list_auto: "{{ devture_systemd_service_manager_services_list_auto | map(attribute='name') | reject('equalto', (postgres_identifier + '.service')) }}"
 
 postgres_max_connections: "{{ 500 if matrix_synapse_workers_enabled else 200 }}"
+
+postgres_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else postgres_container_image_registry_prefix_upstream_default }}"
+
+postgres_pgloader_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else postgres_pgloader_container_image_registry_prefix_upstream_default }}"
 
 postgres_managed_databases_auto: |
   {{
@@ -4138,16 +4257,16 @@ postgres_managed_databases_auto: |
     }] if (matrix_wechat_enabled and matrix_wechat_database_engine == 'postgres' and matrix_wechat_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
+      'name': matrix_mautrix_bluesky_database_name,
+      'username': matrix_mautrix_bluesky_database_username,
+      'password': matrix_mautrix_bluesky_database_password,
+    }] if (matrix_mautrix_bluesky_enabled and matrix_mautrix_bluesky_database_engine == 'postgres' and matrix_mautrix_bluesky_database_hostname == postgres_connection_hostname) else [])
+    +
+    ([{
       'name': matrix_mautrix_facebook_database_name,
       'username': matrix_mautrix_facebook_database_username,
       'password': matrix_mautrix_facebook_database_password,
     }] if (matrix_mautrix_facebook_enabled and matrix_mautrix_facebook_database_engine == 'postgres' and matrix_mautrix_facebook_database_hostname == postgres_connection_hostname) else [])
-    +
-    ([{
-      'name': matrix_mautrix_hangouts_database_name,
-      'username': matrix_mautrix_hangouts_database_username,
-      'password': matrix_mautrix_hangouts_database_password,
-    }] if (matrix_mautrix_hangouts_enabled and matrix_mautrix_hangouts_database_engine == 'postgres' and matrix_mautrix_hangouts_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
       'name': matrix_mautrix_googlechat_database_name,
@@ -4309,6 +4428,8 @@ postgres_backup_systemd_required_services_list_auto: |
     ([(postgres_identifier + '.service')] if (postgres_enabled and postgres_backup_connection_hostname == postgres_connection_hostname) else [])
   }}
 
+postgres_backup_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else postgres_backup_container_image_registry_prefix_upstream_default }}"
+
 postgres_backup_container_network: "{{ (postgres_container_network if (postgres_enabled and postgres_backup_connection_hostname == postgres_connection_hostname) else postgres_backup_identifier) }}"
 
 postgres_backup_container_additional_networks_auto: |-
@@ -4327,7 +4448,7 @@ postgres_backup_connection_password: "{{ postgres_connection_password if postgre
 postgres_backup_postgres_data_path: "{{ postgres_data_path if postgres_enabled else '' }}"
 postgres_backup_postgres_role_include_name: galaxy/postgres
 
-postgres_backup_databases: "{{ postgres_managed_databases | map(attribute='name') if postgres_enabled else [] }}"
+postgres_backup_databases_auto: "{{ postgres_managed_databases | map(attribute='name') if postgres_enabled else [] }}"
 
 ########################################################################
 #                                                                      #
@@ -4349,6 +4470,8 @@ matrix_sygnal_metrics_prometheus_enabled: "{{ prometheus_enabled or matrix_metri
 
 matrix_sygnal_hostname: "{{ matrix_server_fqn_sygnal }}"
 
+matrix_sygnal_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_sygnal_docker_image_registry_prefix_upstream_default }}"
+
 matrix_sygnal_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_sygnal_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
@@ -4368,7 +4491,7 @@ matrix_sygnal_container_labels_traefik_tls_certResolver: "{{ traefik_certResolve
 
 ######################################################################
 #
-# etke/ntfy
+# ntfy
 #
 ######################################################################
 
@@ -4383,7 +4506,9 @@ ntfy_gid: "{{ matrix_user_gid }}"
 
 ntfy_hostname: "{{ matrix_server_fqn_ntfy }}"
 
-ntfy_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+ntfy_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else ntfy_container_image_registry_prefix_upstream_default }}"
+
+ntfy_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
 ntfy_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '2586') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
@@ -4399,58 +4524,7 @@ ntfy_visitor_request_limit_exempt_hosts_hostnames_auto: |
 
 ######################################################################
 #
-# /etky/ntfy
-#
-######################################################################
-
-######################################################################
-#
-# redis
-#
-######################################################################
-
-redis_enabled: "{{ not (keydb_enabled or valkey_enabled) and (matrix_synapse_workers_enabled or (matrix_hookshot_enabled and matrix_hookshot_experimental_encryption_enabled)) }}"
-
-redis_identifier: matrix-redis
-
-redis_uid: "{{ matrix_user_uid }}"
-redis_gid: "{{ matrix_user_gid }}"
-
-redis_base_path: "{{ matrix_base_data_path }}/redis"
-
-######################################################################
-#
-# /redis
-#
-######################################################################
-
-######################################################################
-#
-# keydb
-#
-######################################################################
-
-keydb_enabled: false
-
-keydb_identifier: matrix-keydb
-
-keydb_uid: "{{ matrix_user_uid }}"
-keydb_gid: "{{ matrix_user_gid }}"
-
-keydb_base_path: "{{ matrix_base_data_path }}/keydb"
-
-keydb_arch: |-
-  {{
-    ({
-      'amd64': 'x86_64',
-      'arm32': 'arm32',
-      'arm64': 'arm64',
-    })[matrix_architecture]
-  }}
-
-######################################################################
-#
-# keydb
+# /ntfy
 #
 ######################################################################
 
@@ -4461,7 +4535,7 @@ keydb_arch: |-
 #
 ######################################################################
 
-valkey_enabled: "{{ matrix_synapse_workers_enabled or (matrix_hookshot_enabled and matrix_hookshot_experimental_encryption_enabled) or matrix_element_call_enabled }}"
+valkey_enabled: "{{ matrix_synapse_workers_enabled or (matrix_hookshot_enabled and matrix_hookshot_encryption_enabled) or matrix_element_call_enabled }}"
 
 valkey_identifier: matrix-valkey
 
@@ -4471,6 +4545,8 @@ valkey_gid: "{{ matrix_user_gid }}"
 valkey_base_path: "{{ matrix_base_data_path }}/valkey"
 
 valkey_arch: "{{ matrix_architecture }}"
+
+valkey_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else valkey_container_image_registry_prefix_upstream_default }}"
 
 ######################################################################
 #
@@ -4490,6 +4566,8 @@ valkey_arch: "{{ matrix_architecture }}"
 matrix_client_element_enabled: true
 
 matrix_client_element_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+matrix_client_element_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_client_element_docker_image_registry_prefix_upstream_default }}"
 
 matrix_client_element_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -4551,6 +4629,8 @@ matrix_client_element_element_call_url: "{{ matrix_element_call_public_url if ma
 
 matrix_client_hydrogen_enabled: false
 
+matrix_client_hydrogen_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_client_hydrogen_docker_image_registry_prefix_upstream_default }}"
+
 matrix_client_hydrogen_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_client_hydrogen_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8768') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
@@ -4586,6 +4666,8 @@ matrix_client_hydrogen_self_check_validate_certificates: "{{ matrix_playbook_ssl
 ######################################################################
 
 matrix_client_cinny_enabled: false
+
+matrix_client_cinny_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_client_cinny_docker_image_registry_prefix_upstream_default }}"
 
 matrix_client_cinny_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -4624,6 +4706,8 @@ matrix_client_cinny_self_check_validate_certificates: "{{ matrix_playbook_ssl_en
 matrix_client_schildichat_enabled: false
 
 matrix_client_schildichat_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+matrix_client_schildichat_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_client_schildichat_docker_image_registry_prefix_upstream_default }}"
 
 matrix_client_schildichat_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -4668,6 +4752,39 @@ matrix_client_schildichat_jitsi_preferred_domain: "{{ matrix_server_fqn_jitsi if
 
 ######################################################################
 #
+# matrix-client-fluffychat
+#
+######################################################################
+
+matrix_client_fluffychat_enabled: false
+
+matrix_client_fluffychat_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+matrix_client_fluffychat_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_client_fluffychat_docker_image_registry_prefix_upstream_default }}"
+
+matrix_client_fluffychat_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+
+matrix_client_fluffychat_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8770') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_client_fluffychat_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_client_fluffychat_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_client_fluffychat_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+
+matrix_client_fluffychat_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_client_fluffychat_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_client_fluffychat_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_client_fluffychat_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_client_fluffychat_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
+
+######################################################################
+#
+# /matrix-client-fluffychat
+#
+######################################################################
+
+######################################################################
+#
 # matrix-synapse
 #
 ######################################################################
@@ -4679,6 +4796,10 @@ matrix_synapse_uid: "{{ matrix_user_uid }}"
 matrix_synapse_gid: "{{ matrix_user_gid }}"
 
 matrix_synapse_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
+
+matrix_synapse_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_docker_image_registry_prefix_upstream_default }}"
+
+matrix_s3_goofys_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_s3_goofys_docker_image_registry_prefix_upstream_default }}"
 
 matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -4704,10 +4825,6 @@ matrix_synapse_container_additional_networks_auto: |
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_synapse_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
       +
       ([postgres_container_network] if (postgres_enabled and postgres_container_network != matrix_synapse_container_network and matrix_synapse_database_host == postgres_connection_hostname) else [])
-      +
-      ([redis_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
-      +
-      ([keydb_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == keydb_identifier else [])
       +
       ([valkey_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == valkey_identifier else [])
       +
@@ -4771,19 +4888,7 @@ matrix_synapse_email_smtp_port: 8025
 matrix_synapse_email_smtp_require_transport_security: false
 matrix_synapse_email_notif_from: "Matrix <{{ exim_relay_sender_address }}>"
 
-matrix_synapse_turn_uris: |
-  {{
-    ([
-      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else [])
-    +
-    ([
-      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled else [])
-  }}
-
+matrix_synapse_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
 matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 matrix_synapse_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 matrix_synapse_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
@@ -4793,10 +4898,6 @@ matrix_synapse_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled
 matrix_synapse_systemd_required_services_list_auto: |
   {{
     ([postgres_identifier ~ '.service'] if (postgres_enabled and postgres_container_network != matrix_synapse_container_network and matrix_synapse_database_host == postgres_connection_hostname) else [])
-    +
-    ([redis_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == redis_identifier else [])
-    +
-    ([keydb_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == keydb_identifier else [])
     +
     ([valkey_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == valkey_identifier else [])
     +
@@ -4813,9 +4914,9 @@ matrix_synapse_systemd_wanted_services_list_auto: |
   }}
 
 # Synapse workers (used for parallel load-scaling) need Redis for IPC.
-matrix_synapse_redis_enabled: "{{ redis_enabled or keydb_enabled or valkey_enabled }}"
-matrix_synapse_redis_host: "{{ valkey_identifier if valkey_enabled else (redis_identifier if redis_enabled else (keydb_identifier if keydb_enabled else '')) }}"
-matrix_synapse_redis_password: "{{ valkey_connection_password if valkey_enabled else (redis_connection_password if redis_enabled else (keydb_connection_password if keydb_enabled else '')) }}"
+matrix_synapse_redis_enabled: "{{ valkey_enabled }}"
+matrix_synapse_redis_host: "{{ valkey_identifier if valkey_enabled else '' }}"
+matrix_synapse_redis_password: "{{ valkey_connection_password if valkey_enabled else '' }}"
 
 matrix_synapse_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
@@ -4864,6 +4965,8 @@ matrix_synapse_auto_compressor_gid: "{{ matrix_user_gid }}"
 
 matrix_synapse_auto_compressor_postgres_image: "{{ postgres_container_image_to_use }}"
 
+matrix_synapse_auto_compressor_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_auto_compressor_container_image_registry_prefix_upstream_default }}"
+
 matrix_synapse_auto_compressor_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
 
 matrix_synapse_auto_compressor_container_network: "{{ (postgres_container_network if (postgres_enabled and matrix_synapse_auto_compressor_database_hostname == matrix_synapse_database_host and matrix_synapse_database_host == postgres_connection_hostname) else 'matrix-synapse-auto-compressor') }}"
@@ -4893,6 +4996,8 @@ matrix_synapse_auto_compressor_systemd_required_services_list_auto: |
 ######################################################################
 
 matrix_synapse_reverse_proxy_companion_enabled: "{{ matrix_synapse_enabled and matrix_synapse_workers_enabled }}"
+
+matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream_default }}"
 
 matrix_synapse_reverse_proxy_companion_container_network: "{{ matrix_synapse_container_network }}"
 
@@ -4964,6 +5069,8 @@ matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port
 
 matrix_synapse_admin_enabled: false
 
+matrix_synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_admin_docker_image_registry_prefix_upstream_default }}"
+
 matrix_synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
@@ -4994,6 +5101,10 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     ([
       '^@'+(matrix_bot_buscarron_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
     ] if matrix_bot_buscarron_enabled else [])
+    +
+    ([
+      '^@'+(matrix_bot_draupnir_login | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bot_draupnir_enabled else [])
     +
     ([
       '^@'+(matrix_bot_chatgpt_matrix_bot_username_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
@@ -5057,6 +5168,11 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     ] if matrix_hookshot_enabled else [])
     +
     ([
+      '^@'+(matrix_mautrix_bluesky_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@bluesky_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_mautrix_bluesky_enabled else [])
+    +
+    ([
       '^@'+(matrix_mautrix_discord_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
       '^@discord_[0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_mautrix_discord_enabled else [])
@@ -5075,11 +5191,6 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
       '^@'+(matrix_mautrix_googlechat_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
       '^@googlechat_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_mautrix_googlechat_enabled else [])
-    +
-    ([
-      '^@'+(matrix_mautrix_hangouts_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
-      '^@hangouts_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_mautrix_hangouts_enabled else [])
     +
     ([
       '^@'+(matrix_mautrix_instagram_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
@@ -5176,6 +5287,8 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
 
 matrix_synapse_usage_exporter_enabled: false
 
+matrix_synapse_usage_exporter_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_usage_exporter_container_image_registry_prefix_upstream_default }}"
+
 matrix_synapse_usage_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
 matrix_synapse_usage_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
@@ -5193,7 +5306,7 @@ matrix_synapse_usage_exporter_container_labels_traefik_tls_certResolver: "{{ tra
 
 ######################################################################
 #
-# etke/prometheus_node_exporter
+# prometheus_node_exporter
 #
 ######################################################################
 
@@ -5208,9 +5321,11 @@ prometheus_node_exporter_gid: "{{ matrix_user_gid }}"
 
 prometheus_node_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
+prometheus_node_exporter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else prometheus_node_exporter_docker_image_registry_prefix_upstream_default }}"
+
 prometheus_node_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
-prometheus_node_exporter_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+prometheus_node_exporter_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
 
 prometheus_node_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
 prometheus_node_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
@@ -5222,14 +5337,14 @@ prometheus_node_exporter_container_labels_metrics_middleware_basic_auth_users: "
 
 ######################################################################
 #
-# /etke/prometheus_node_exporter
+# /prometheus_node_exporter
 #
 ######################################################################
 
 
 ######################################################################
 #
-# etke/prometheus_postgres_exporter
+# prometheus_postgres_exporter
 #
 ######################################################################
 
@@ -5243,6 +5358,8 @@ prometheus_postgres_exporter_uid: "{{ matrix_user_uid }}"
 prometheus_postgres_exporter_gid: "{{ matrix_user_gid }}"
 
 prometheus_postgres_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
+
+prometheus_postgres_exporter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else prometheus_postgres_exporter_docker_image_registry_prefix_upstream_default }}"
 
 prometheus_postgres_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
@@ -5273,7 +5390,7 @@ prometheus_postgres_exporter_systemd_required_services_list_auto: |
 
 ######################################################################
 #
-# /etke/prometheus_postgres_exporter
+# /prometheus_postgres_exporter
 #
 ######################################################################
 
@@ -5289,6 +5406,8 @@ matrix_prometheus_nginxlog_exporter_enabled: false
 matrix_prometheus_nginxlog_exporter_identifier: matrix-prometheus-nginxlog-exporter
 
 matrix_prometheus_nginxlog_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream_default }}"
 
 matrix_prometheus_nginxlog_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
@@ -5331,6 +5450,8 @@ prometheus_base_path: "{{ matrix_base_data_path }}/prometheus"
 
 prometheus_uid: "{{ matrix_user_uid }}"
 prometheus_gid: "{{ matrix_user_gid }}"
+
+prometheus_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else prometheus_container_image_registry_prefix_upstream_default }}"
 
 prometheus_container_network: "{{ matrix_monitoring_container_network }}"
 
@@ -5426,7 +5547,7 @@ matrix_prometheus_services_connect_scraper_synapse_usage_exporter_static_configs
 
 ######################################################################
 #
-# etke/grafana
+# grafana
 #
 ######################################################################
 
@@ -5440,6 +5561,8 @@ grafana_gid: "{{ matrix_user_gid }}"
 grafana_hostname: "{{ matrix_server_fqn_grafana }}"
 
 grafana_base_path: "{{ matrix_base_data_path }}/grafana"
+
+grafana_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else grafana_container_image_registry_prefix_upstream_default }}"
 
 grafana_container_network: "{{ matrix_monitoring_container_network }}"
 
@@ -5501,12 +5624,13 @@ grafana_default_home_dashboard_path: |-
       'synapse': ('/etc/grafana/dashboards/synapse.json' if matrix_synapse_metrics_enabled and matrix_synapse_metrics_enabled else ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else '')),
       'dendrite': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
       'conduit': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
+      'conduwuit': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
     }[matrix_homeserver_implementation]
   }}
 
 ######################################################################
 #
-# /etke/grafana
+# /grafana
 #
 ######################################################################
 
@@ -5527,6 +5651,8 @@ matrix_registration_systemd_required_services_list_auto: |
   {{
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_registration_database_hostname == postgres_connection_hostname) else [])
   }}
+
+matrix_registration_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_registration_docker_image_registry_prefix_upstream_default }}"
 
 matrix_registration_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
@@ -5558,6 +5684,7 @@ matrix_registration_shared_secret: |-
       'synapse': matrix_synapse_registration_shared_secret | default (''),
       'dendrite': matrix_dendrite_client_api_registration_shared_secret | default (''),
       'conduit': '',
+      'conduwuit': '',
     }[matrix_homeserver_implementation]
   }}
 
@@ -5591,6 +5718,8 @@ matrix_sliding_sync_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'htt
 matrix_sliding_sync_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_sliding_sync_path_prefix: /sliding-sync
+
+matrix_sliding_sync_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_sliding_sync_container_image_registry_prefix_upstream_default }}"
 
 matrix_sliding_sync_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
@@ -5653,6 +5782,8 @@ matrix_dendrite_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_dendrite_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
 
+matrix_dendrite_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_dendrite_docker_image_registry_prefix_upstream_default }}"
+
 matrix_dendrite_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_dendrite_container_additional_networks_auto: |
@@ -5696,20 +5827,7 @@ matrix_dendrite_database_hostname: "{{ postgres_connection_hostname if postgres_
 
 matrix_dendrite_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.db', rounds=655555) | to_uuid }}"
 
-# Even if TURN doesn't support TLS (it does by default),
-# it doesn't hurt to try a secure connection anyway.
-matrix_dendrite_client_api_turn_uris: |
-  {{
-    [
-      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ]
-    if matrix_coturn_enabled
-    else []
-  }}
-
+matrix_dendrite_client_api_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
 matrix_dendrite_client_api_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 matrix_dendrite_client_api_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 matrix_dendrite_client_api_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
@@ -5754,6 +5872,8 @@ matrix_conduit_hostname: "{{ matrix_server_fqn_matrix }}"
 
 matrix_conduit_allow_federation: "{{ matrix_homeserver_federation_enabled }}"
 
+matrix_conduit_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_conduit_docker_image_registry_prefix_upstream_default }}"
+
 matrix_conduit_container_network: "{{ matrix_homeserver_container_network }}"
 
 matrix_conduit_container_additional_networks_auto: |
@@ -5778,19 +5898,7 @@ matrix_conduit_container_labels_public_federation_api_traefik_tls: "{{ matrix_fe
 matrix_conduit_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_conduit_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
-matrix_conduit_turn_uris: |
-  {{
-    ([
-      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled and matrix_coturn_tls_enabled else [])
-    +
-    ([
-      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
-    ] if matrix_coturn_enabled else [])
-  }}
-
+matrix_conduit_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
 matrix_conduit_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
 matrix_conduit_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
 matrix_conduit_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
@@ -5798,6 +5906,58 @@ matrix_conduit_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix
 ######################################################################
 #
 # /matrix-conduit
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-conduwuit
+#
+######################################################################
+
+matrix_conduwuit_enabled: "{{ matrix_homeserver_implementation == 'conduwuit' }}"
+
+matrix_conduwuit_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_conduwuit_config_allow_federation: "{{ matrix_homeserver_federation_enabled }}"
+
+matrix_conduwuit_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_conduwuit_docker_image_registry_prefix_upstream_default }}"
+
+matrix_conduwuit_container_network: "{{ matrix_homeserver_container_network }}"
+
+matrix_conduwuit_container_additional_networks_auto: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_conduwuit_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
+    ) | unique
+  }}
+
+matrix_conduwuit_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and not matrix_synapse_workers_enabled }}"
+matrix_conduwuit_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_conduwuit_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_conduwuit_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_conduwuit_container_labels_public_client_root_redirection_enabled: "{{ matrix_conduwuit_container_labels_public_client_root_redirection_url != '' }}"
+matrix_conduwuit_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+
+matrix_conduwuit_container_labels_public_federation_api_traefik_hostname: "{{ matrix_server_fqn_matrix_federation }}"
+matrix_conduwuit_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
+matrix_conduwuit_container_labels_public_federation_api_traefik_tls: "{{ matrix_federation_traefik_entrypoint_tls }}"
+
+matrix_conduwuit_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
+matrix_conduwuit_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
+
+matrix_conduwuit_config_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
+matrix_conduwuit_config_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_conduwuit_config_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_conduwuit_config_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+
+matrix_conduwuit_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
+
+######################################################################
+#
+# /matrix-conduwuit
 #
 ######################################################################
 
@@ -5857,6 +6017,12 @@ matrix_user_creator_users_auto: |
       'initial_password': matrix_bot_maubot_initial_password,
       'initial_type': 'bot',
     }] if matrix_bot_maubot_enabled else [])
+        +
+    ([{
+      'username': matrix_bot_draupnir_login,
+      'initial_password': matrix_bot_draupnir_password,
+      'initial_type': 'bot',
+    }] if matrix_bot_draupnir_enabled and matrix_bot_draupnir_password else [])
   }}
 
 ######################################################################
@@ -5881,6 +6047,8 @@ matrix_user_verification_service_systemd_required_services_list: |
     (['matrix-' + matrix_homeserver_implementation + '.service'])
   }}
 
+matrix_user_verification_service_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_user_verification_service_docker_image_registry_prefix_upstream_default }}"
+
 matrix_user_verification_service_container_network: "{{ matrix_addons_container_network }}"
 
 matrix_user_verification_service_container_additional_networks: |
@@ -5892,7 +6060,7 @@ matrix_user_verification_service_container_additional_networks: |
     ) | unique
   }}
 
-# If Jitsi is managed by this playbook we can use the docker network - no need to expose a port.
+# If Jitsi is managed by this playbook we can use the docker network — no need to expose a port.
 # If Jitsi is not managed by this playbook, or you otherwise have a need for it, you can expose
 # matrix-user-verfification-services's client-server port to port 3003.
 # By default Matrix-User-Verification-Service binds to port 3000, which collides with grafana, therefore this uses port 3003.
@@ -5923,6 +6091,8 @@ matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homese
 
 matrix_static_files_enabled: true
 
+matrix_static_files_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_static_files_container_image_registry_prefix_upstream_default }}"
+
 matrix_static_files_container_network: "{{ (matrix_static_files_identifier if matrix_playbook_reverse_proxy_type == 'none' else matrix_playbook_reverse_proxy_container_network) }}"
 
 matrix_static_files_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
@@ -5938,7 +6108,7 @@ matrix_static_files_container_labels_base_domain_traefik_hostname: "{{ matrix_do
 
 # If we're not serving a static webpage, serve a redirect instead of a 404.
 matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: "{{ not matrix_static_files_file_index_html_enabled }}"
-matrix_static_files_container_labels_base_domain_root_path_redirection_url: "{{ ('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_matrix }}"
+matrix_static_files_container_labels_base_domain_root_path_redirection_url: "{{ ('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_matrix }}/${1}"
 
 matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain: "{{ matrix_server_fqn_jitsi if jitsi_enabled else '' }}"
 
@@ -5981,25 +6151,27 @@ matrix_static_files_self_check_hostname_identity: "{{ matrix_domain }}"
 
 ########################################################################
 #                                                                      #
-# com.devture.ansible.role.container_socket_proxy                      #
+# container-socket-proxy                                               #
 #                                                                      #
 ########################################################################
 
-devture_container_socket_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
+container_socket_proxy_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' }}"
 
-devture_container_socket_proxy_identifier: matrix-container-socket-proxy
+container_socket_proxy_identifier: matrix-container-socket-proxy
 
-devture_container_socket_proxy_base_path: "{{ matrix_base_data_path }}/container-socket-proxy"
+container_socket_proxy_base_path: "{{ matrix_base_data_path }}/container-socket-proxy"
 
-devture_container_socket_proxy_uid: "{{ matrix_user_uid }}"
-devture_container_socket_proxy_gid: "{{ matrix_user_gid }}"
+container_socket_proxy_uid: "{{ matrix_user_uid }}"
+container_socket_proxy_gid: "{{ matrix_user_gid }}"
 
 # Traefik requires read access to the containers APIs to do its job
-devture_container_socket_proxy_api_containers_enabled: true
+container_socket_proxy_api_containers_enabled: true
+
+container_socket_proxy_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else container_socket_proxy_container_image_registry_prefix_upstream_default }}"
 
 ########################################################################
 #                                                                      #
-# /com.devture.ansible.role.container_socket_proxy                     #
+# /container-socket-proxy                                              #
 #                                                                      #
 ########################################################################
 
@@ -6030,18 +6202,20 @@ traefik_additional_entrypoints_auto: |
     ([matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition] if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else [])
   }}
 
-traefik_config_providers_docker_endpoint: "{{ devture_container_socket_proxy_endpoint if devture_container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
+traefik_config_providers_docker_endpoint: "{{ container_socket_proxy_endpoint if container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
+
+traefik_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else traefik_container_image_registry_prefix_upstream_default }}"
 
 traefik_container_additional_networks_auto: |
   {{
-    ([devture_container_socket_proxy_container_network] if devture_container_socket_proxy_enabled else [])
+    ([container_socket_proxy_container_network] if container_socket_proxy_enabled else [])
   }}
 
 traefik_systemd_required_services_list: |
   {{
     ([devture_systemd_docker_base_docker_service_name])
     +
-    ([devture_container_socket_proxy_identifier + '.service'] if devture_container_socket_proxy_enabled else [])
+    ([container_socket_proxy_identifier + '.service'] if container_socket_proxy_enabled else [])
   }}
 
 ########################################################################
@@ -6067,6 +6241,8 @@ traefik_certs_dumper_uid: "{{ matrix_user_uid }}"
 traefik_certs_dumper_gid: "{{ matrix_user_gid }}"
 
 traefik_certs_dumper_ssl_dir_path: "{{ traefik_ssl_dir_path if traefik_enabled else '' }}"
+
+traefik_certs_dumper_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else traefik_certs_dumper_container_image_registry_prefix_upstream_default }}"
 
 ########################################################################
 #                                                                      #

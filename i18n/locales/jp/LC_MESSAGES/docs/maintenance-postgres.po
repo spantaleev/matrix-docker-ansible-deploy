@@ -1,0 +1,221 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: jp\n"
+"Language-Team: jp <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/maintenance-postgres.md:1
+msgid "PostgreSQL maintenance"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:3
+msgid "This document shows you how to perform various maintenance tasks related to the Postgres database server used by Matrix."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:5
+msgid "Table of contents:"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:7
+msgid "[Getting a database terminal](#getting-a-database-terminal), for when you wish to execute SQL queries"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:9
+msgid "[Vacuuming PostgreSQL](#vacuuming-postgresql), for when you wish to run a Postgres [VACUUM](https://www.postgresql.org/docs/current/sql-vacuum.html) (optimizing disk space)"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:11
+msgid "[Backing up PostgreSQL](#backing-up-postgresql), for when you wish to make a backup"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:13
+msgid "[Upgrading PostgreSQL](#upgrading-postgresql), for upgrading to new major versions of PostgreSQL. Such **manual upgrades are sometimes required**."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:15
+msgid "[Tuning PostgreSQL](#tuning-postgresql) to make it run faster"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:17
+msgid "Getting a database terminal"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:19
+msgid "You can use the `/matrix/postgres/bin/cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/11/app-psql.html)) to the PostgreSQL server."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:21
+msgid "If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above tool will not be available."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:23
+msgid "By default, this tool puts you in the `matrix` database, which contains nothing."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:25
+msgid "To see the available databases, run `\\list` (or just `\\l`)."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:27
+msgid "To change to another database (for example `synapse`), run `\\connect synapse` (or just `\\c synapse`)."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:29
+msgid "You can then proceed to write queries. Example: `SELECT COUNT(*) FROM users;`"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:31
+msgid "**Be careful**. Modifying the database directly (especially as services are running) is dangerous and may lead to irreversible database corruption. When in doubt, consider [making a backup](#backing-up-postgresql)."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:33
+msgid "Vacuuming PostgreSQL"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:35
+msgid "Deleting lots data from Postgres does not make it release disk space, until you perform a [`VACUUM` operation](https://www.postgresql.org/docs/current/sql-vacuum.html)."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:37
+msgid "You can run different `VACUUM` operations via the playbook, with the default preset being `vacuum-complete`:"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:39
+msgid "(default) `vacuum-complete`: stops all services temporarily and runs `VACUUM FULL VERBOSE ANALYZE`."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:40
+msgid "`vacuum-full`: stops all services temporarily and runs `VACUUM FULL VERBOSE`"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:41
+msgid "`vacuum`: runs `VACUUM VERBOSE` without stopping any services"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:42
+msgid "`vacuum-analyze` runs `VACUUM VERBOSE ANALYZE` without stopping any services"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:43
+msgid "`analyze` runs `ANALYZE VERBOSE` without stopping any services (this is just [ANALYZE](https://www.postgresql.org/docs/current/sql-analyze.html) without doing a vacuum, so it's faster)"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:45
+msgid "**Note**: for the `vacuum-complete` and `vacuum-full` presets, you'll need plenty of available disk space in your Postgres data directory (usually `/matrix/postgres/data`). These presets also stop all services (e.g. Synapse, etc.) while the vacuum operation is running."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:47
+msgid "Example playbook invocations:"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:49
+msgid "`just run-tags run-postgres-vacuum`: runs the default `vacuum-complete` preset and restarts all services"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:50
+msgid "`just run-tags run-postgres-vacuum -e postgres_vacuum_preset=analyze`: runs the `analyze` preset with all services remaining operational at all times"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:52
+msgid "Backing up PostgreSQL"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:54
+msgid "To automatically make Postgres database backups on a fixed schedule, see [Setting up postgres backup](configuring-playbook-postgres-backup.md)."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:56
+msgid "To make a one off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:67
+msgid "If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above command will not work, because neither the credentials file (`/matrix/postgres/env-postgres-psql`), nor the `matrix-postgres` container is available."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:69
+msgid "Restoring a backup made this way can be done by [importing it](importing-postgres.md)."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:71
+msgid "Upgrading PostgreSQL"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:73
+msgid "Unless you are using an [external Postgres server](configuring-playbook-external-postgres.md), this playbook initially installs Postgres for you."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:75
+msgid "Once installed, the playbook attempts to preserve the Postgres version it starts with. This is because newer Postgres versions cannot start with data generated by older Postgres versions."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:77
+msgid "Upgrades must be performed manually."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:79
+msgid "The playbook can upgrade your existing Postgres setup with the following command:"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:85
+msgid "**The old Postgres data directory is backed up** automatically, by renaming it to `/matrix/postgres/data-auto-upgrade-backup`. To rename to a different path, pass some extra flags to the command above, like this: `--extra-vars=\"postgres_auto_upgrade_backup_data_path=/another/disk/matrix-postgres-before-upgrade\"`"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:87
+msgid "The auto-upgrade-backup directory stays around forever, until you **manually decide to delete it**."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:89
+msgid "As part of the upgrade, the database is dumped to `/tmp`, an upgraded and empty Postgres server is started, and then the dump is restored into the new server. To use a different directory for the dump, pass some extra flags to the command above, like this: `--extra-vars=\"postgres_dump_dir=/directory/to/dump/here\"`"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:91
+msgid "To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage. If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars=\"postgres_dump_name=matrix-postgres-dump.sql\"`"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:93
+msgid "**All databases, roles, etc. on the Postgres server are migrated**."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:95
+msgid "Tuning PostgreSQL"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:97
+msgid "PostgreSQL can be [tuned](https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server) to make it run faster. This is done by passing extra arguments to the Postgres process."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:99
+msgid "The [Postgres Ansible role](https://github.com/mother-of-all-self-hosting/ansible-role-postgres) **already does some tuning by default**, which matches the [tuning logic](https://github.com/le0pard/pgtune/blob/master/src/features/configuration/configurationSlice.js) done by websites like https://pgtune.leopard.in.ua/. You can manually influence some of the tuning variables. These parameters (variables) are injected via the `postgres_postgres_process_extra_arguments_auto` variable."
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:101
+msgid "Most users should be fine with the automatically-done tuning. However, you may wish to:"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:103
+msgid "**adjust the automatically-determined tuning parameters manually**: change the values for the tuning variables defined in the Postgres role's [default configuration file](https://github.com/mother-of-all-self-hosting/ansible-role-postgres/blob/main/defaults/main.yml) (see `postgres_max_connections`, `postgres_data_storage` etc). These variables are ultimately passed to Postgres via a `postgres_postgres_process_extra_arguments_auto` variable"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:105
+msgid "**turn automatically-performed tuning off**: override it like this: `postgres_postgres_process_extra_arguments_auto: []`"
+msgstr ""
+
+#: ../../../docs/maintenance-postgres.md:107
+msgid "**add additional tuning parameters**: define your additional Postgres configuration parameters in `postgres_postgres_process_extra_arguments_custom`. See `postgres_postgres_process_extra_arguments_auto` defined in the Postgres role's [default configuration file](https://github.com/mother-of-all-self-hosting/ansible-role-postgres/blob/main/defaults/main.yml) for inspiration"
+msgstr ""

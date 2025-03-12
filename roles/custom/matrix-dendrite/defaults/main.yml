@@ -1,3 +1,17 @@
+# SPDX-FileCopyrightText: 2022 - 2023 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Aaron Raimist
+# SPDX-FileCopyrightText: 2022 Darren Rambaud
+# SPDX-FileCopyrightText: 2022 Jip J. Dekker
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Shaleen Jain
+# SPDX-FileCopyrightText: 2023 Isaiah Becker-Mayer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Dendrite is a second-generation Matrix homeserver currently in Beta
 # Project source code URL: https://github.com/matrix-org/dendrite
@@ -10,10 +24,12 @@ matrix_dendrite_container_image_self_build: false
 matrix_dendrite_container_image_self_build_repo: "https://github.com/matrix-org/dendrite.git"
 
 matrix_dendrite_docker_image_path: "matrixdotorg/dendrite-monolith"
-matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_name_prefix }}{{ matrix_dendrite_docker_image_path }}:{{ matrix_dendrite_docker_image_tag }}"
-matrix_dendrite_docker_image_name_prefix: "{{ 'localhost/' if matrix_dendrite_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_dendrite_docker_image: "{{ matrix_dendrite_docker_image_registry_prefix }}{{ matrix_dendrite_docker_image_path }}:{{ matrix_dendrite_docker_image_tag }}"
+matrix_dendrite_docker_image_registry_prefix: "{{ 'localhost/' if matrix_dendrite_container_image_self_build else matrix_dendrite_docker_image_registry_prefix_upstream }}"
+matrix_dendrite_docker_image_registry_prefix_upstream: "{{ matrix_dendrite_docker_image_registry_prefix_upstream_default }}"
+matrix_dendrite_docker_image_registry_prefix_upstream_default: docker.io/
 # renovate: datasource=docker depName=matrixdotorg/dendrite-monolith
-matrix_dendrite_docker_image_tag: "v0.13.8"
+matrix_dendrite_docker_image_tag: "v0.14.1"
 matrix_dendrite_docker_image_force_pull: "{{ matrix_dendrite_docker_image.endswith(':latest') }}"
 
 matrix_dendrite_base_path: "{{ matrix_base_data_path }}/dendrite"

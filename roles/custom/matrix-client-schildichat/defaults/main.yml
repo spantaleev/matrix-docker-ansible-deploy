@@ -1,18 +1,33 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Project source code URL: https://github.com/SchildiChat/schildichat-desktop
 
 matrix_client_schildichat_enabled: true
 
 matrix_client_schildichat_container_image_self_build: false
+matrix_client_schildichat_container_image_self_build_repo: "https://github.com/SchildiChat/schildichat-desktop.git"
+matrix_client_schildichat_container_image_self_build_version: "{{ 'lite' if matrix_client_schildichat_version == 'latest' else ('v' + matrix_client_schildichat_version) }}"
+# Controls whether to patch webpack.config.js when self-building, so that building can pass on low-memory systems (< 4 GB RAM):
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1357
+# - https://github.com/element-hq/element-web/issues/19544
+matrix_client_schildichat_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_memtotal_mb < 4096 }}"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/schildichat-web
-matrix_client_schildichat_version: 1.11.36-sc.3
-matrix_client_schildichat_docker_image: "{{ matrix_client_schildichat_docker_image_name_prefix }}etkecc/schildichat-web:{{ matrix_client_schildichat_version }}"
-matrix_client_schildichat_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_schildichat_container_image_self_build else 'ghcr.io/' }}"
+matrix_client_schildichat_version: 1.11.86-sc.0.test.0
+matrix_client_schildichat_docker_image: "{{ matrix_client_schildichat_docker_image_registry_prefix }}etkecc/schildichat-web:{{ matrix_client_schildichat_version }}"
+matrix_client_schildichat_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_schildichat_container_image_self_build else matrix_client_schildichat_docker_image_registry_prefix_upstream }}"
+matrix_client_schildichat_docker_image_registry_prefix_upstream: "{{ matrix_client_schildichat_docker_image_registry_prefix_upstream_default }}"
+matrix_client_schildichat_docker_image_registry_prefix_upstream_default: ghcr.io/
 matrix_client_schildichat_docker_image_force_pull: "{{ matrix_client_schildichat_docker_image.endswith(':latest') }}"
 
 matrix_client_schildichat_data_path: "{{ matrix_base_data_path }}/client-schildichat"
-matrix_client_schildichat_docker_src_files_path: "{{ matrix_client_schildichat_data_path }}/docker-src"
+matrix_client_schildichat_container_src_files_path: "{{ matrix_client_schildichat_data_path }}/docker-src"
 
 # The base container network
 matrix_client_schildichat_container_network: ''
@@ -183,7 +198,7 @@ matrix_client_schildichat_self_check_validate_certificates: true
 # don't show the registration button on welcome page
 matrix_client_schildichat_registration_enabled: false
 
-# Default country code on welcome page when login by phone number
+# An optional ISO 3166 alpha2 country code (eg: GB, the default) to use when showing phone number inputs
 matrix_client_schildichat_default_country_code: "GB"
 
 # Controls whether presence will be enabled

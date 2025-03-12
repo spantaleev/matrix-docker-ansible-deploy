@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: jp\n"
+"Language-Team: jp <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-conduit.md:1
+msgid "Configuring Conduit (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:3
+msgid "The playbook can install and configure the [Conduit](https://conduit.rs) Matrix server for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:5
+msgid "See the project's [documentation](https://docs.conduit.rs/) to learn what it does and why it might be useful to you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:7
+msgid "By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:9
+msgid "💡 **Note**: The playbook also supports installing a (currently) faster-moving Conduit fork called [conduwuit](./configuring-playbook-conduwuit.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:11
+msgid "⚠️ **Warnings**:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:13
+msgid "**You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Conduit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:15
+msgid "**Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:17
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:19
+msgid "To use Conduit, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:25
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:27
+msgid "There are some additional things you may wish to configure about the server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:29
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:31
+msgid "`roles/custom/matrix-conduit/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:32
+msgid "`roles/custom/matrix-conduit/templates/conduit.toml.j2` for the server's default configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:34
+msgid "If you'd like to have your own different configuration, feel free to copy and paste the original files into your inventory (e.g. in `inventory/host_vars/matrix.example.com/`) and then change the specific host's `vars.yml` file like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:40
+msgid "Creating the first user account"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:42
+msgid "Since it is difficult to create the first user account on Conduit (see [famedly/conduit#276](https://gitlab.com/famedly/conduit/-/issues/276) and [famedly/conduit#354](https://gitlab.com/famedly/conduit/-/merge_requests/354)) and it does not support [registering users](registering-users.md) (via the command line or via the playbook) like Synapse and Dendrite do, we recommend the following procedure:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:44
+msgid "Add `matrix_conduit_allow_registration: true` to your `vars.yml` the first time around, temporarily"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:45
+msgid "Run the playbook (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start` — see [Installing](installing.md))"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:46
+msgid "Create your first user via Element Web or any other client which supports creating users"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:47
+msgid "Get rid of `matrix_conduit_allow_registration: true` from your `vars.yml`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:48
+msgid "Run the playbook again (`ansible-playbook -i inventory/hosts setup.yml --tags=setup-conduit,start` would be enough this time)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:49
+msgid "You can now use your server safely. Additional users can be created by messaging the internal Conduit bot"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:51
+msgid "Configuring bridges / appservices"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:53
+msgid "For other homeserver implementations (like Synapse and Dendrite), the playbook automatically registers appservices (for bridges, bots, etc.) with the homeserver."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:55
+msgid "For Conduit, you will have to manually register appservices using the the [register-appservice](https://gitlab.com/famedly/conduit/-/blob/next/APPSERVICES.md) command."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-conduit.md:57
+msgid "Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`, then pass the content to Conduit:"
+msgstr ""

@@ -1,56 +1,83 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Aaron Raimist
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Element Web (optional)
 
 By default, this playbook installs the [Element Web](https://github.com/element-hq/element-web) Matrix client for you. If that's okay, you can skip this document.
+
+If you'd like to stop the playbook installing the client, see the section [below](#disabling-element-web) to check the configuration for disabling it.
 
 💡 **Note**: the latest version of Element Web is also available on the web, hosted by 3rd parties. If you trust giving your credentials to the following 3rd party Single Page Applications, you can consider using it from there and avoiding the (small) overhead of self-hosting (by [disabling Element Web](#disabling-element-web)):
 
 - [app.element.io](https://app.element.io/), hosted by [Element](https://element.io/)
 - [app.etke.cc](https://app.etke.cc/), hosted by [etke.cc](https://etke.cc/)
 
+## Adjusting DNS records
 
-## Disabling Element Web
+By default, this playbook installs Element Web on the `element.` subdomain (`element.example.com`) and requires you to create a CNAME record for `element`, which targets `matrix.example.com`.
 
-If you'd like for the playbook to not install Element Web (or to uninstall it if it was previously installed), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
-
-```yaml
-matrix_client_element_enabled: false
-```
-
+When setting, replace `example.com` with your own.
 
 ## Adjusting the playbook configuration
 
-The playbook provides some customization variables you could use to change Element Web's settings.
+### Set the country code for phone number inputs
 
-Their defaults are defined in [`roles/custom/matrix-client-element/defaults/main.yml`](../roles/custom/matrix-client-element/defaults/main.yml) and they ultimately end up in the generated `/matrix/element/config.json` file (on the server). This file is generated from the [`roles/custom/matrix-client-element/templates/config.json.j2`](../roles/custom/matrix-client-element/templates/config.json.j2) template.
+You can change the country code (default: `GB`) to use when showing phone number inputs. To change it to `FR` for example, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-**If there's an existing variable** which controls a setting you wish to change, you can simply define that variable in your configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) and [re-run the playbook](installing.md) to apply the changes.
-
-Alternatively, **if there is no pre-defined variable** for an Element Web setting you wish to change:
-
-- you can either **request a variable to be created** (or you can submit such a contribution yourself). Keep in mind that it's **probably not a good idea** to create variables for each one of Element Web's various settings that rarely get used.
-
-- or, you can **extend and override the default configuration** ([`config.json.j2`](../roles/custom/matrix-client-element/templates/config.json.j2)) by making use of the `matrix_client_element_configuration_extension_json_` variable. You can find information about this in [`roles/custom/matrix-client-element/defaults/main.yml`](../roles/custom/matrix-client-element/defaults/main.yml).
-
-- or, if extending the configuration is still not powerful enough for your needs, you can **override the configuration completely** using `matrix_client_element_configuration_default` (or `matrix_client_element_configuration`). You can find information about this in [`roles/custom/matrix-client-element/defaults/main.yml`](../roles/custom/matrix-client-element/defaults/main.yml).
-
+```yaml
+matrix_client_element_default_country_code: "FR"
+```
 
 ### Themes
 
-To change the look of Element Web, you can define your own themes manually by using the `matrix_client_element_setting_defaults_custom_themes` setting.
+#### Change the default theme
 
-Or better yet, you can automatically pull it all themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project by simply flipping a flag (`matrix_client_element_themes_enabled: true`).
+You can change the default theme from `light` to `dark`. To do so, add the following configuration to your `vars.yml` file:
 
-If you make your own theme, we encourage you to submit it to the **aaronraimist/element-themes** project, so that the whole community could easily enjoy it.
+```yaml
+# Controls the default theme
+matrix_client_element_default_theme: 'dark'
+```
+
+#### Use themes by `element-themes`
+
+You can change the look of Element Web by pulling themes provided by the [aaronraimist/element-themes](https://github.com/aaronraimist/element-themes) project or defining your own themes manually.
+
+To pull the themes and use them for your Element Web instance, add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_client_element_themes_enabled: true
+```
+
+If the variable is set to `true`, all themes found in the repository specified with `matrix_client_element_themes_repository_url` will be installed and enabled automatically.
 
 Note that for a custom theme to work well, all Element Web instances that you use must have the same theme installed.
 
-### Adjusting the Element Web URL
+#### Define themes manually
 
-By default, this playbook installs Element Web on the `element.` subdomain (`element.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+You can also define your own themes manually by adding and adjusting the following configuration to your `vars.yml` file:
+
+```yaml
+# Controls the `setting_defaults.custom_themes` setting of the Element Web configuration.
+matrix_client_element_setting_defaults_custom_themes: []
+```
+
+If you define your own themes with it and set `matrix_client_element_themes_enabled` to `true` for the themes by `element-themes`, your themes will be preserved as well.
+
+If you make your own theme, we encourage you to submit it to the **aaronraimist/element-themes** project, so that the whole community could easily enjoy it.
+
+### Adjusting the Element Web URL (optional)
 
 By tweaking the `matrix_client_element_hostname` and `matrix_client_element_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.example.com`),
@@ -61,14 +88,58 @@ matrix_client_element_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_client_element_path_prefix: /element
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Element Web domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `element`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+After changing the domain, **you may need to adjust your DNS** records to point the Element domain to the Matrix server.
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-client-element/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-client-element/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_element_configuration_extension_json` variable
+
+For example, to override some Element Web settings, add the following configuration to your `vars.yml` file:
+
+```yaml
+ # Your custom JSON configuration for Element Web should go to `matrix_client_element_configuration_extension_json`.
+ # This configuration extends the default starting configuration (`matrix_client_element_configuration_default`).
+ #
+ # You can override individual variables from the default configuration, or introduce new ones.
+ #
+ # If you need something more special, you can take full control by
+ # completely redefining `matrix_client_element_configuration_default`.
+ #
+matrix_client_element_configuration_extension_json: |
+ {
+ "disable_3pid_login": true,
+ "disable_login_language_selector": true
+ }
+```
+
+## Disabling Element Web
+
+If you'd like for the playbook to not install Element Web (or to uninstall it if it was previously installed), add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_client_element_enabled: false
+```
+
 ## Installing
 
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
+
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-client-element`.

@@ -1,0 +1,113 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:1
+msgid "Setting up the Sliding Sync proxy (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:3
+msgid "**Note**: The sliding-sync proxy is **not required** anymore as it's been replaced with a different method (called Simplified Sliding Sync) which is integrated into newer homeservers by default (**Conduit** homeserver from version `0.6.0` or **Synapse** from version `1.114`). This component and documentation remain here for historical purposes, but **installing this old sliding-sync proxy is generally not recommended anymore**."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:5
+msgid "The playbook can install and configure [sliding-sync](https://github.com/matrix-org/sliding-sync) proxy for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:7
+msgid "Sliding Sync is an implementation of [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/sync-v3/proposals/3575-sync.md) and a prerequisite for running Element X clients ([Element X iOS](https://github.com/element-hq/element-x-ios) and [Element X Android](https://github.com/element-hq/element-x-android)). See the project's [documentation](https://github.com/matrix-org/sliding-sync) to learn more."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:9
+msgid "Adjusting DNS records (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:11
+msgid "By default, this playbook installs the Sliding Sync proxy on the `matrix.` subdomain, at the `/sliding-sync` path (https://matrix.example.com/sliding-sync). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:13
+msgid "If you wish to adjust it, see the section [below](#adjusting-the-sliding-sync-proxy-url-optional) for details about DNS configuration."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:15
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:17
+msgid "To enable Sliding Sync proxy, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:23
+msgid "Adjusting the Sliding Sync proxy URL (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:25
+msgid "By tweaking the `matrix_sliding_sync_hostname` and `matrix_sliding_sync_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:27
+msgid "Example additional configuration for your `vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:35
+msgid "If you've changed the default hostname, you may need to create a CNAME record for the Sliding Sync proxy domain (`ss.example.com`), which targets `matrix.example.com`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:37
+msgid "When setting, replace `example.com` with your own."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:39
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:41
+msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:48
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:50
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:52
+msgid "External databases"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:54
+msgid "Please note that, if your setup utilizes an external database, you must also establish configuration for the sliding sync proxy. Alter the defaults below to suit your configuration:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:64
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:66
+msgid "You **don't need to do anything special** to make use of the Sliding Sync proxy. Simply open your client which supports Sliding Sync (like Element X) and log in."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:68
+msgid "When the Sliding Sync proxy is [installed](#installing), your `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc3575.proxy` section and `url` property are added there and made to point to your Sliding Sync proxy's base URL (e.g. `https://matrix.example.com/sliding-sync`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sliding-sync-proxy.md:70
+msgid "This allows clients which support Sliding Sync to detect the Sliding Sync proxy's URL and make use of it."
+msgstr ""

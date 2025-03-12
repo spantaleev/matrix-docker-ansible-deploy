@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Charles Wright
+# SPDX-FileCopyrightText: 2024 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Fail if required Synapse settings not defined
@@ -66,7 +72,7 @@
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "item.old in vars"
   with_items:
     - {'old': 'matrix_synapse_email_riot_base_url', 'new': '<superseded by client_base_url>'}
@@ -102,12 +108,14 @@
     - {'old': 'matrix_synapse_caches_autotuning_target_cache_memory_usage', 'new': 'matrix_synapse_cache_autotuning_target_cache_memory_usage'}
     - {'old': 'matrix_synapse_caches_autotuning_min_cache_ttl', 'new': 'matrix_synapse_cache_autotuning_min_cache_ttl'}
     - {'old': 'matrix_synapse_memtotal_kb', 'new': '<superseded by matrix_synapse_cache_size_calculations_memtotal_bytes>'}
+    - {'old': 'matrix_synapse_docker_image_name_prefix', 'new': 'matrix_synapse_docker_image_registry_prefix'}
+    - {'old': 'matrix_s3_goofys_docker_image_name_prefix', 'new': 'matrix_s3_goofys_docker_image_registry_prefix'}
 
 - name: (Deprecation) Catch and report renamed settings in matrix_synapse_configuration_extension_yaml
   ansible.builtin.fail:
     msg: >-
       Your matrix_synapse_configuration_extension_yaml configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "item.old in matrix_synapse_configuration_extension"
   with_items:
     - {'old': 'federation_ip_range_blacklist', 'new': 'ip_range_blacklist'}

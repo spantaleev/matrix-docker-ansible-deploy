@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2022 László Várady
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+SPDX-FileCopyrightText: 2024 Uğur İLTER
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Frequently Asked Questions
 
 This documentation page tries to answer various Frequently Asked Questions about all things [Matrix](https://matrix.org/), with a focus on this [Ansible](https://www.ansible.com/) playbook ([What is Ansible? How does it work?](#what-is-ansible-how-does-it-work)).
@@ -6,8 +18,7 @@ This FAQ page does not intend to replace the [matrix.org FAQ](https://matrix.org
 
 We've only started this FAQ recently, so it's still somewhat empty.
 
-Also, we encourage you to not dig yourself into a hole by reading way too much. When you've heard enough, proceed to [Prerequisites](prerequisites.md) to get guided into installing Matrix.
-
+Also, we encourage you to not dig yourself into a hole by reading way too much. When you've heard enough, proceed to installation. To get started, see [below](#how-do-i-run-the-installation) about our installation guides.
 
 ## Introductory
 
@@ -27,13 +38,13 @@ In the world of the Matrix chat protocol, there are various client programs. The
 
 Matrix is also like email due to the fact that there are many servers around the world which can all talk to each other (you can send email from `@gmail.com` addresses to `@yahoo.com` and `@hotmail.com` addresses). It's the same with Matrix (`@bob:example.com` can talk to `@alice:example.org`).
 
-If someone else is hosting your Matrix server (you being `@user:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element Web or Element X Android.
+If someone else is hosting your Matrix server (you being `@alice:matrix.org` or some other public server like this), all you need is a Matrix client program, like Element Web or Element X Android.
 
-If you'd like to host your own server (you being `@user:example.com`), you'd need to set up a Matrix server program, like Synapse.
+If you'd like to host your own server (you being `@alice:example.com`), you'd need to set up a Matrix server program, like Synapse.
 
 In short:
 
-- Matrix is the protocol - a set of rules about how the chat network operates
+- Matrix is the protocol — a set of rules about how the chat network operates
 - Element is a client program you can use to participate on the Matrix chat network via some server (yours or someone else's). There are also [many other client programs](https://matrix.org/clients/).
 - Synapse is a server program you can use to host your very own Matrix server.
 
@@ -49,15 +60,15 @@ Besides setting up your own bridges (preferable), you can also use some [public 
 
 ### How do I get started with Matrix?
 
-One of [Matrix](https://matrix.org/)'s distinguishing strengths (compared to other chat networks) is its decentralized nature. There's not just one entity (company, organization) controlling the servers. Rather there's thousands of servers operated by different people - one server being insecure, slow or disrespective toward its users does not affect the rest of the network. To participate in that decentralization in its fullest, consider hosting your own server or using some public server other than the largest/default one (`matrix.org`).
+One of [Matrix](https://matrix.org/)'s distinguishing strengths (compared to other chat networks) is its decentralized nature. There's not just one entity (company, organization) controlling the servers. Rather there's thousands of servers operated by different people — one server being insecure, slow or disrespective toward its users does not affect the rest of the network. To participate in that decentralization in its fullest, consider hosting your own server or using some public server other than the largest/default one (`matrix.org`).
 
 There are 3 ways to get into Matrix, depending on your technical ability and needs:
 
-- **using the existing default server** - the easiest way is to use an existing server. The largest public Matrix server is `matrix.org` and it's configured as a default server in clients such as [Element Web](https://app.element.io) and many others. Just use Element Web on the browser via that link (or [download client apps for your Desktop or smartphone](https://element.io/app-for-productivity)), create an account and start chatting.
+- **using the existing default server** — the easiest way is to use an existing server. The largest public Matrix server is `matrix.org` and it's configured as a default server in clients such as [Element Web](https://app.element.io) and many others. Just use Element Web on the browser via that link (or [download client apps for your Desktop or smartphone](https://element.io/app-for-productivity)), create an account and start chatting.
 
-- **using some other server** - instead of using the largest public server (`matrix.org`), you can use another public one. Here's a [list of public Matrix servers](https://joinmatrix.org/servers/) to choose from. Go to [Element Web](https://app.element.io) or download [some other client](https://matrix.org/clients/) of your choosing and adjust the homeserver URL during login.
+- **using some other server** — instead of using the largest public server (`matrix.org`), you can use another public one. Here's a [list of public Matrix servers](https://joinmatrix.org/servers/) to choose from. Go to [Element Web](https://app.element.io) or download [some other client](https://matrix.org/clients/) of your choosing and adjust the homeserver URL during login.
 
-- **using your own server** - running your own server puts you in ultimate control of your data. It also lets you have your own user identifiers (e.g. `@bob:example.com`). See [How do I set up my own Matrix server](#how-do-i-set-up-my-own-matrix-server).
+- **using your own server** — running your own server puts you in ultimate control of your data. It also lets you have your own user IDs (e.g. `@bob:example.com`). See [How do I set up my own Matrix server](#how-do-i-set-up-my-own-matrix-server).
 
 ### How do I set up my own Matrix server?
 
@@ -66,7 +77,8 @@ Normally, you'd first choose the [Matrix](https://matrix.org/) server software y
 There are [many guides about installing Synapse](https://matrix.org/docs/guides/#installing-synapse). Using this Ansible playbook is just one way of doing it.
 
 Naturally, we're biased, so our usual recommendation is to go with this [Ansible](https://www.ansible.com/) playbook, instead of installing Synapse (and many many other things around it) manually.
-To get started with the playbook, start at the [Prerequisites](prerequisites.md) page.
+
+To get started with the playbook, check out the [Quick start](quick-start.md) or full installation guide (starting at the [Prerequisites](prerequisites.md) page).
 
 ### What is Ansible? How does it work?
 
@@ -98,7 +110,7 @@ Reading the documentation of this Ansible playbook, you may also be thinking:
 
 > I don't know what [Ansible](https://www.ansible.com/) is. I don't know what [Docker](https://www.docker.com/) is. This looks more complicated.
 
-.. so you may be leaning toward [installing Synapse manually](https://github.com/element-hq/synapse/blob/master/INSTALL.md).
+… so you may be leaning toward [installing Synapse manually](https://github.com/element-hq/synapse/blob/master/INSTALL.md).
 
 The problem with a manual installation is:
 
@@ -117,15 +129,19 @@ All services run in Docker containers (most being officially provided by each co
 
 Reasons are similar to the reasons for not installing manually.
 
-Besides Synapse, you'd need other things - a Postgres database, likely the [Element](https://element.io) client, etc., etc.
+Besides Synapse, you'd need other things — a Postgres database, likely the [Element](https://element.io) client, etc., etc.
 
 Using the playbook, you get all these components in a way that works well together out of the box.
+
+### Occasionally I see some people are talking about "MDAD". What is it?
+
+It is the acronym of us: **m**atrix-**d**ocker-**a**nsible-**d**eploy.
 
 ### What's different about this Ansible playbook compared to [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy)?
 
 This is similar to the [EMnify/matrix-synapse-auto-deploy](https://github.com/EMnify/matrix-synapse-auto-deploy) Ansible deployment, but:
 
-- this one is a complete Ansible playbook (instead of just a role), so it's **easier to run** - especially for folks not familiar with Ansible
+- this one is a complete Ansible playbook (instead of just a role), so it's **easier to run** — especially for folks not familiar with Ansible
 
 - this one installs and hooks together **a lot more Matrix-related services** for you (see above)
 
@@ -193,7 +209,7 @@ The only thing we need on the distro is systemd and Python (we install Docker ou
 
 Instead of using [docker-compose](https://docs.docker.com/compose/), we prefer installing systemd services and scheduling those independently.
 
-There are people who have worked on turning this setup into a docker-compose-based one. See these experiments [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/64#issuecomment-603164625).
+There are people who have worked on turning this setup into a docker-compose-based one. See these experiments [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/64#issuecomment-603164625). There is also a demo project ([element-docker-demo](https://github.com/element-hq/element-docker-demo)) by Element.
 
 ### Can I run this on a distro without systemd?
 
@@ -225,18 +241,13 @@ Besides the regular Matrix stuff, we also support things like video-conferencing
 
 If your distro runs within an [LXC container](https://linuxcontainers.org/), you may hit [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/703). It can be worked around, if absolutely necessary, but we suggest that you avoid running from within an LXC container.
 
-
 ## Configuration
 
 ### Why install my server at matrix.example.com and not at the base domain?
 
 It's the same with email servers. Your email address is likely `name@company.com`, not `name@mail.company.com`, even though it's `mail.company.com` that is really handling your data for `@company.com` email to work.
 
-Using a separate domain name is easier to manage (although it's a little hard to get right at first) and keeps your Matrix server isolated from your website (if you have one), from your email server (if you have one), etc.
-
-We allow `matrix.example.com` to be the Matrix server handling Matrix stuff for `example.com` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
-
-If you'd really like to install Matrix services directly on the base domain, see [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
+Using a separate domain name is easier to manage (although it's a little hard to get right at first) and keeps your Matrix server isolated from your website (if you have one), from your email server (if you have one), etc. Therefore, this playbook sets up services on your Matrix server (`matrix.example.com`) by default.
 
 ### I don't control anything on the base domain and can't set up delegation to matrix.example.com. What do I do?
 
@@ -248,11 +259,7 @@ If you really can't obtain an HTTPS certificate for your base domain, you can ta
 
 ### How do I install on matrix.example.com without involving the base domain?
 
-This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`.
-
-We allow `matrix.example.com` to be the Matrix server handling Matrix stuff for `example.com` by [Server Delegation](howto-server-delegation.md). During the installation procedure, we recommend that you set up server delegation using the [.well-known](configuring-well-known.md) method.
-
-If you're fine with uglier identifiers (`@user:matrix.example.com`, which is the equivalent of having an email address like `bob@mail.company.com`, instead of just `bob@company.com`), you can do that as well using the following configuration in your `vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 # This is what your identifiers are like (e.g. `@bob:matrix.example.com`).
@@ -267,20 +274,30 @@ matrix_server_fqn_matrix: "matrix.example.com"
 # Feel free to use `element.matrix.example.com`, if you'd prefer that.
 matrix_server_fqn_element: "element.example.com"
 
-# This is where you access Dimension (if enabled via `matrix_dimension_enabled: true`; NOT enabled by default).
+# This is where you access Etherpad (if enabled via `etherpad_enabled: true`; NOT enabled by default).
 #
-# Feel free to use `dimension.matrix.example.com`, if you'd prefer that.
-matrix_server_fqn_dimension: "dimension.example.com"
-
-# This is where you access Jitsi (if enabled via `jitsi_enabled: true`; NOT enabled by default).
-#
-# Feel free to use `jitsi.matrix.example.com`, if you'd prefer that.
-matrix_server_fqn_jitsi: "jitsi.example.com"
+# Feel free to use `etherpad.matrix.example.com`, if you'd prefer that.
+matrix_server_fqn_etherpad: "etherpad.example.com"
 ```
+
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
+
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+**Notes**:
+
+- The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+  `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
+
+- Without setting up [server delegation](howto-server-delegation.md) to `matrix.example.com`, your user IDs will be like `@alice:matrix.example.com`. This is equivalent to having an email address like `bob@mail.company.com`, instead of just `bob@company.com`.
 
 ### I don't use the base domain for anything. How am I supposed to set up Server Delegation for Matrix services?
 
-If you don't use your base domain for anything, then it's hard for you to "serve files over HTTPS" on it -- something we ask you to do for the [.well-known](configuring-well-known.md) setup (needed for [Server Delegation](howto-server-delegation.md)).
+If you don't use your base domain for anything, then it's hard for you to "serve files over HTTPS" on it — something we ask you to do for the [.well-known](configuring-well-known.md) setup (needed for [Server Delegation](howto-server-delegation.md)).
 
 Luckily, the playbook can set up your Matrix server (at `matrix.example.com`) to also handle traffic for the base domain (`example.com`).
 
@@ -291,9 +308,6 @@ See [Serving the base domain](configuring-playbook-base-domain-serving.md).
 You can disable some not-so-important services to save on memory.
 
 ```yaml
-# An identity server is not a must.
-matrix_ma1sd_enabled: false
-
 # Disabling this will prevent email-notifications and other such things from working.
 exim_relay_enabled: false
 
@@ -366,24 +380,29 @@ Check each role's `roles/*/*/defaults/main.yml` for the corresponding variable a
 
 **Note**: some of the roles (`roles/galaxy/*`) live in separate repositories and are only installed after your run `just roles` (or `make roles`) or `just update` (which automatically does `git pull` and `just roles`).
 
-
 ## Installation
 
 ### How do I run the installation?
 
 See [Installing](installing.md) to learn how to use Ansible to install Matrix services.
 
-Of course, don't just jump straight to Installing. Rather, start at [Prerequisites](prerequisites.md) and get guided from there (into [setting up DNS](configuring-dns.md), [configuring the playbook](configuring-playbook.md), etc).
+However, we recommend you to follow our installation guide, instead of jumping straight to installing.
+
+There are two guides available:
+
+- ⚡ **[Quick start](quick-start.md)** (for beginners): this is recommended for those who do not have an existing Matrix server and want to start quickly with "opinionated defaults".
+
+- **Full installation guide (for advanced users)**: if you need to import an existing Matrix server's data into the new server or want to learn more while setting up the server, follow this guide by starting with the **[Prerequisites](prerequisites.md)** documentation page.
 
 ### I installed Synapse some other way. Can I migrate such a setup to the playbook?
 
 Yes, you can.
 
-You generally need to do a playbook installation (start at the [Prerequisites](prerequisites.md) page), followed by importing your existing data into it.
+You generally need to do a playbook installation. It's recommended to follow the full installation guide (starting at the [Prerequisites](prerequisites.md) page), not the [Quick start](quick-start.md) guide. The full installation guide will tell you when it's time to import your existing data into the newly-prepared server.
 
-This Ansible playbook guides you into installing a server for `example.com` (user identifiers are like this: `@user:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup - [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
+This Ansible playbook guides you into installing a server for `example.com` (user IDs are like this: `@alice:example.com`), while the server is at `matrix.example.com`. If your existing setup has a server name (`server_name` configuration setting in Synapse's `homeserver.yaml` file) other than the base `example.com`, you may need to tweak some additional variables. This FAQ entry may be of use if you're dealing with a more complicated setup — [How do I install on matrix.example.com without involving the base domain?](#how-do-i-install-on-matrixexamplecom-without-involving-the-base-domain)
 
-After configuring the playbook and installing and **before starting** services (done with `ansible-playbook ... --tags=start`) you'd import [your SQLite](importing-synapse-sqlite.md) (or [Postgres](importing-postgres.md)) database and also [import your media store](importing-synapse-media-store.md).
+After configuring the playbook and installing and **before starting** services (done with `ansible-playbook … --tags=start`) you'd import [your SQLite](importing-synapse-sqlite.md) (or [Postgres](importing-postgres.md)) database and also [import your media store](importing-synapse-media-store.md).
 
 ### I've downloaded Ansible and the playbook on the server. It can't connect using SSH.
 
@@ -393,48 +412,9 @@ It can perform a local connection instead. Just set `ansible_connection=local` a
 
 If you're running Ansible from within a container (one of the possibilities we list on our [dedicated Ansible documentation page](ansible.md)), then using `ansible_connection=local` is not possible.
 
+## Maintenance and Troubleshooting
 
-## Troubleshooting
-
-### I get "Error response from daemon: configured logging driver does not support reading" when I do `docker logs matrix-synapse`.
-
-See [How can I see the logs?](#how-can-i-see-the-logs).
-
-### How can I see the logs?
-
-We utilize [systemd/journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html#Description) for logging.
-
-To see logs for Synapse, run `journalctl -fu matrix-synapse.service`. You may wish to see the [manual page for journalctl](https://www.commandlinux.com/man-page/man1/journalctl.1.html).
-
-Available service names can be seen by doing `ls /etc/systemd/system/matrix*.service` on the server.
-
-Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that.
-
-We also disable Docker logging, so you can't use `docker logs matrix-*` either. We do this to prevent useless double (or even triple) logging and to avoid having to rotate log files.
-
-We just simply delegate logging to journald and it takes care of persistence and expiring old data.
-
-Also see: [How long do systemd/journald logs persist for?](#how-long-do-systemdjournald-logs-persist-for)
-
-### How long do systemd/journald logs persist for?
-
-On some distros, the journald logs are just in-memory and not persisted to disk.
-
-Consult (and feel free to adjust) your distro's journald logging configuration in `/etc/systemd/journald.conf`.
-
-To enable persistence and put some limits on how large the journal log files can become, adjust your configuration like this:
-
-```ini
-[Journal]
-RuntimeMaxUse=200M
-SystemMaxUse=1G
-RateLimitInterval=0
-RateLimitBurst=0
-Storage=persistent
-```
-
-
-## Maintenance
+💡 Also see this page for generic information about maintaining the services and troubleshooting: [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
 
 ### Do I need to do anything to keep my Matrix server updated?
 
@@ -444,26 +424,9 @@ See our [documentation page about upgrading services](maintenance-upgrading-serv
 
 ### How do I move my existing installation to another (VM) server?
 
-If you have an existing installation done using this Ansible playbook, you can easily migrate that to another server using [our dedicated server migration guide](maintenance-migrating.md).
+If you have an existing installation done using this Ansible playbook, you can easily migrate that to another server following [our dedicated server migration guide](maintenance-migrating.md).
 
 If your previous installation is done in some other way (not using this Ansible playbook), see [I installed Synapse some other way. Can I migrate such a setup to the playbook?](#i-installed-synapse-some-other-way-can-i-migrate-such-a-setup-to-the-playbook).
-
-### How do I back up the data on my server?
-
-We haven't documented this properly yet, but the general advice is to:
-
-- back up Postgres by making a database dump. See [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql)
-
-- back up all `/matrix` files, except for `/matrix/postgres/data` (you already have a dump) and `/matrix/postgres/data-auto-upgrade-backup` (this directory may exist and contain your old data if you've [performed a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql)).
-
-You can later restore these roughly like this:
-
-- restore the `/matrix` directory and files on the new server manually
-- run the playbook again (see [Installing](installing.md)), but **don't** start services yet (**don't run** `... --tags=start`). This step will fix any file permission mismatches and will also set up additional software (Docker, etc.) and files on the server (systemd service, etc.).
-- perform a Postgres database import (see [Importing Postgres](importing-postgres.md)) to restore your database backup
-- start services (see [Finalize the installation](installing.md#finalize-the-installation))
-
-If your server's IP address has changed, you may need to [set up DNS](configuring-dns.md) again.
 
 ### What is this `/matrix/postgres/data-auto-upgrade-backup` directory that is taking up so much space?
 
@@ -471,10 +434,16 @@ When you [perform a major Postgres upgrade](maintenance-postgres.md#upgrading-po
 
 After verifying that everything still works after the Postgres upgrade, you can safely delete `/matrix/postgres/data-auto-upgrade-backup`
 
-### How do I debug or force SSL certificate renewal?
+### I get "Error response from daemon: configured logging driver does not support reading" when I run `docker logs matrix-synapse`. Why?
 
-SSL certificates are managed automatically by the [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server.
+To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you cannot view logs using `docker logs matrix-*`.
 
-If you're having trouble with SSL certificate renewal, check the Traefik logs (`journalctl -fu matrix-traefik`).
+See [this section](maintenance-and-troubleshooting.md#how-to-see-the-logs) on the page for maintenance and troubleshooting for more details to see the logs.
 
-If you're [using your own webserver](configuring-playbook-own-webserver.md) instead of the integrated one (Traefik), you should investigate in another way.
+## Miscellaneous
+
+### I would like to see this favorite service of mine integrated and become available on my Matrix server. How can I request it?
+
+You can freely create an issue for feature request on the repository at GitHub [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/new/choose). Note this is a community project with no financial backing, and there is not assurance that your request would be eventually picked up by others and the requested feature would become available. The easiest way to get a feature into this project is to just develop it yourself.
+
+Also, please note that this playbook intends to focus solely on Matrix and Matrix-related services. If your request is not specific to Matrix, you may as well to consider to submit it to the [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook), maintained by the members behind this matrix-docker-ansible-deploy project. [This document on the interoperability](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/interoperability.md) describes how to deploy services along with the Matrix services easily.

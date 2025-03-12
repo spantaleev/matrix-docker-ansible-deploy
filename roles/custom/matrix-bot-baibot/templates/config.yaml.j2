@@ -1,0 +1,96 @@
+{#
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+# Default configuration for baibot.
+# To extend it, use `matrix_bot_baibot_configuration_extension_yaml`.
+
+homeserver:
+  # The canonical homeserver domain name
+  server_name: {{ matrix_bot_baibot_config_homeserver_server_name | to_json }}
+  url: {{ matrix_bot_baibot_config_homeserver_url | to_json }}
+
+user:
+  mxid_localpart: {{ matrix_bot_baibot_config_user_mxid_localpart | to_json }}
+  password: {{ matrix_bot_baibot_config_user_password | to_json }}
+
+  # The name the bot uses as a display name and when it refers to itself.
+  # Leave empty to use the default (baibot).
+  name: {{ matrix_bot_baibot_config_user_name | to_json }}
+
+  encryption:
+    # An optional passphrase to use for backing up and recovering the bot's encryption keys.
+    # You can use any string here.
+    #
+    # If left empty, the recovery module will not be used and losing your session/database (see persistence)
+    # will mean you lose access to old messages in encrypted room.
+    #
+    # Changing this subsequently will also cause you to lose access to old messages in encrypted rooms.
+    # If you really need to change this:
+    # - Set `encryption_recovery_reset_allowed` to `true` and adjust the passphrase
+    # - Remove your session file and database (see persistence)
+    # - Restart the bot
+    # - Then restore `encryption_recovery_reset_allowed` to `false` to prevent accidental resets in the future
+    recovery_passphrase: {{ matrix_bot_baibot_config_user_encryption_recovery_passphrase | to_json }}
+
+    # An optional flag to reset the encryption recovery passphrase.
+    recovery_reset_allowed: {{ matrix_bot_baibot_config_user_encryption_recovery_reset_allowed | to_json }}
+
+# Command prefix. Leave empty to use the default (!bai).
+command_prefix: {{ matrix_bot_baibot_config_command_prefix | to_json }}
+
+room:
+  # Whether the bot should send an introduction message after joining a room.
+  post_join_self_introduction_enabled: {{ matrix_bot_baibot_config_room_post_join_self_introduction_enabled | to_json }}
+
+access:
+  # Space-separated list of MXID patterns which specify who is an admin.
+  admin_patterns: {{ matrix_bot_baibot_config_access_admin_patterns | to_json }}
+
+persistence:
+  data_dir_path:  {{ matrix_bot_baibot_config_persistence_data_dir_path | to_json }}
+
+  # An optional secret for encrypting the bot's session data (stored in data_dir_path).
+  # This must be 32-bytes (64 characters when HEX-encoded).
+  # Generate it with: `openssl rand -hex 32`
+  # Leave null or empty to avoid using encryption.
+  # Changing this subsequently requires that you also throw away all data stored in data_dir_path.
+  session_encryption_key: {{ matrix_bot_baibot_config_persistence_session_encryption_key | to_json }}
+
+  # An optional secret for encrypting bot configuration stored in Matrix's account data.
+  # This must be 32-bytes (64 characters when HEX-encoded).
+  # Generate it with: `openssl rand -hex 32`
+  # Leave null or empty to avoid using encryption.
+  # Changing this subsequently will make you lose your configuration.
+  config_encryption_key: {{ matrix_bot_baibot_config_persistence_config_encryption_key | to_json }}
+
+agents:
+  # A list of statically-defined agents.
+  static_definitions: {{ matrix_bot_baibot_config_agents_static_definitions | to_json }}
+
+# Initial global configuration. This only affects the first run of the bot.
+# Configuration is later managed at runtime.
+initial_global_config:
+  handler:
+    catch_all: {{ matrix_bot_baibot_config_initial_global_config_handler_catch_all | to_json }}
+    text_generation: {{ matrix_bot_baibot_config_initial_global_config_handler_text_generation | to_json }}
+    text_to_speech: {{ matrix_bot_baibot_config_initial_global_config_handler_text_to_speech | to_json }}
+    speech_to_text: {{ matrix_bot_baibot_config_initial_global_config_handler_speech_to_text | to_json }}
+    image_generation: {{ matrix_bot_baibot_config_initial_global_config_handler_image_generation | to_json }}
+
+  # Space-separated list of MXID patterns which specify who can use the bot.
+  # By default, we let anyone on the homeserver use the bot.
+  user_patterns: {{ matrix_bot_baibot_config_initial_global_config_user_patterns | to_json}}
+
+# Controls logging.
+#
+# Sets all tracing targets (external crates) to warn, and our own logs to debug.
+# For even more verbose logging, one may also use trace.
+#
+# matrix_sdk_crypto may be chatty and could be added with an error level.
+#
+# Learn more here: https://stackoverflow.com/a/73735203
+logging: {{ matrix_bot_baibot_config_logging | to_json }}

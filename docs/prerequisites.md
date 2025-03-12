@@ -1,10 +1,23 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2022 Aaron Raimist
+SPDX-FileCopyrightText: 2019 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Fabio Bonelli
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Prerequisites
 
-<sup>⚡️[Quick start](quick-start.md) | Prerequisites > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
+<sup>Prerequisites > [Configuring DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>
 
 To install Matrix services using this Ansible playbook, you need to prepare several requirements both on your local computer (where you will run the playbook to configure the server) and the server (where the playbook will install the Matrix services for you). **These requirements need to be set up manually** before proceeding to the next step.
 
 We will be using `example.com` as the domain in the following instruction. Please remember to replace it with your own domain before running any commands.
+
+**Note**: if you do not have an existing Matrix server and want to start quickly with "opinionated defaults", we suggest you to follow ⚡ **[Quick start](quick-start.md)** installation guide.
 
 ## Your local computer
 
@@ -14,7 +27,7 @@ We will be using `example.com` as the domain in the following instruction. Pleas
 
 - [`git`](https://git-scm.com/) as the recommended way to download the playbook. `git` may also be required on the server if you will be [self-building](self-building.md) components.
 
-- [`just`](https://github.com/casey/just) for running `just roles`, `just update`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually. Take at look at this documentation for more information: [Running `just` commands](just.md).
+- [`just`](https://github.com/casey/just) for running `just roles`, `just update`, etc. (see [`justfile`](../justfile)), although you can also run these commands manually. Take a look at this documentation for more information: [Running `just` commands](just.md).
 
 - Strong password (random strings) generator. The playbook often requires you to create a strong password and use it for settings on `vars.yml`, components, etc. As any tools should be fine, this playbook has adopted [`pwgen`](https://linux.die.net/man/1/pwgen) (running `pwgen -s 64 1`). [Password Tech](https://pwgen-win.sourceforge.io/), formerly known as "PWGen for Windows", is available as free and open source password generator for Windows. Generally, using a random generator available on the internet is not recommended.
 
@@ -26,7 +39,7 @@ We will be using `example.com` as the domain in the following instruction. Pleas
   - **Debian** (10/Buster or newer)
   - **Ubuntu** (18.04 or newer, although [20.04 may be problematic](ansible.md#supported-ansible-versions) if you run the Ansible playbook on it)
 
-  Generally, newer is better. We only strive to support released stable versions of distributions, not betas or pre-releases. This playbook can take over your whole server or co-exist with other services that you have there.
+  Generally, newer is better. We only strive to support released stable versions of distributions, not betas or pre-releases. The playbook can take over your whole server or co-exist with other services that you have there.
 
   This playbook somewhat supports running on non-`amd64` architectures like ARM. See [Alternative Architectures](alternative-architectures.md).
 
@@ -46,11 +59,11 @@ We will be using `example.com` as the domain in the following instruction. Pleas
 
   - `80/tcp`: HTTP webserver
   - `443/tcp` and `443/udp`: HTTPS webserver
-  - `3478/tcp`: TURN over TCP (used by Coturn)
-  - `3478/udp`: TURN over UDP (used by Coturn)
-  - `5349/tcp`: TURN over TCP (used by Coturn)
-  - `5349/udp`: TURN over UDP (used by Coturn)
-  - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. In some cases, this **may necessary even with federation disabled**. Integration Servers (like Dimension) and Identity Servers (like ma1sd) may need to access `openid` APIs on the federation port.
+  - `3478/tcp`: STUN/TURN over TCP (used by [coturn](./docs/configuring-playbook-turn.md))
+  - `3478/udp`: STUN/TURN over TCP (used by [coturn](./docs/configuring-playbook-turn.md))
+  - `5349/tcp`: TURN over TCP (used by [coturn](./docs/configuring-playbook-turn.md))
+  - `5349/udp`: TURN over UDP (used by [coturn](./docs/configuring-playbook-turn.md))
+  - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. Some components like [Matrix User Verification Service](configuring-playbook-user-verification-service.md#open-matrix-federation-port) require this port to be opened **even with federation disabled**.
   - the range `49152-49172/udp`: TURN over UDP
   - potentially some other ports, depending on the additional (non-default) services that you enable in the **configuring the playbook** step (later on). Consult each service's documentation page in `docs/` for that.
 

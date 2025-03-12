@@ -1,8 +1,19 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 - 2021 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Kim Brose
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Importing an existing Postgres database from another installation (optional)
 
-Run this if you'd like to import your database from a previous installation.
-(don't forget to import your Synapse `media_store` files as well - see [the importing-synape-media-store guide](importing-synapse-media-store.md)).
+You can manually import your database from a previous default installation of Synapse.
 
+**Notes**:
+- Don't forget to import your Synapse `media_store` files as well — see [the importing-synapse-media-store guide](importing-synapse-media-store.md) for more details.
+- If you have an existing installation done using this Ansible playbook, you can easily migrate that to another server following [our dedicated server migration guide](maintenance-migrating.md).
 
 ## Prerequisites
 
@@ -10,10 +21,9 @@ For this to work, **the database name in Postgres must match** what this playboo
 
 The playbook supports importing Postgres dump files in **text** (e.g. `pg_dump > dump.sql`) or **gzipped** formats (e.g. `pg_dump | gzip -c > dump.sql.gz`). Importing multiple databases (as dumped by `pg_dumpall`) is also supported.
 
-The migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, ...)
+The migration might be a good moment, to "reset" a not properly working bridge. Be aware, that it might affect all users (new link to bridge, new rooms, …)
 
 Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay).
-
 
 ## Importing
 
@@ -34,6 +44,7 @@ just run-tags import-postgres \
 ## Troubleshooting
 
 ### Table Ownership
+
 A table ownership issue can occur if you are importing from a Synapse installation which was both:
 
  - migrated from SQLite to Postgres, and
@@ -56,7 +67,7 @@ ALTER TABLE public.account_data OWNER TO synapse_user;
 ALTER TABLE public.account_data_max_stream_id OWNER TO synapse_user;
 ALTER TABLE public.account_validity OWNER TO synapse_user;
 ALTER TABLE public.application_services_state OWNER TO synapse_user;
-...
+…
 ```
 
 It can be worked around by changing the username to `synapse`, for example by using `sed`:
@@ -65,7 +76,7 @@ It can be worked around by changing the username to `synapse`, for example by us
 $ sed -i "s/OWNER TO synapse_user;/OWNER TO synapse;/g" homeserver.sql
 ```
 
-This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` - replacing `matrix` only would... well - you can imagine.
+This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` — replacing `matrix` only would… well — you can imagine.
 
 Note that if the previous import failed with an error it may have made changes which are incompatible with re-running the import task right away; if you do so it may fail with an error such as:
 
@@ -86,6 +97,7 @@ In this case you can use the command suggested in the import task to clear the d
 Now on your local machine run `just run-tags setup-postgres` to prepare the database roles etc.
 
 If not, you probably get this error. `synapse` is the correct table owner, but the role is missing in database.
+
 ```
 "ERROR:  role synapse does not exist"
 ```
@@ -94,7 +106,7 @@ Once the database is clear and the ownership of the tables has been fixed in the
 
 Check, if `--dbname` is set to `synapse` (not `matrix`) and replace paths (or even better, copy this line from your terminal)
 
-```
+```sh
 /usr/bin/env docker run --rm --name matrix-postgres-import --log-driver=none --user=998:1001 --cap-drop=ALL --network=matrix --env-file=/matrix/postgres/env-postgres-psql --mount type=bind,src=/migration/synapse_dump.sql,dst=/synapse_dump.sql,ro --entrypoint=/bin/sh docker.io/postgres:15.0-alpine -c "cat /synapse_dump.sql | grep -vE '^(CREATE|ALTER) ROLE (matrix)(;| WITH)' | grep -vE '^CREATE DATABASE (matrix)\s' | psql -v ON_ERROR_STOP=1 -h matrix-postgres --dbname=synapse"
 ```
 

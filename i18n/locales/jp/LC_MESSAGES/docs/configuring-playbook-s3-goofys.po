@@ -1,0 +1,182 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-16 12:05+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: jp\n"
+"Language-Team: jp <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:1
+msgid "Storing Matrix media files on Amazon S3 with Goofys (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:3
+msgid "If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can let this playbook configure [Goofys](https://github.com/kahing/goofys) for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:5
+msgid "Another (and better performing) way to use S3 storage with Synapse is [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:7
+msgid "Using a Goofys-backed media store works, but performance may not be ideal. If possible, try to use a region which is close to your Matrix server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:9
+msgid "If you'd like to move your locally-stored media store data to Amazon S3 (or another S3-compatible object store), we also provide some migration instructions below."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:11
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:13
+msgid "After [creating the S3 bucket and configuring it](configuring-playbook-s3.md#bucket-creation-and-security-configuration), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:23
+msgid "You can use any S3-compatible object store by **additionally** configuring these variables:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:30
+msgid "If you have local media store files and wish to migrate to Backblaze B2 subsequently, follow our [migration guide to Backblaze B2](#migrating-to-backblaze-b2) below instead of applying this configuration as-is."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:32
+msgid "Migrating from local filesystem storage to S3"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:34
+msgid "It's a good idea to [make a complete server backup](faq.md#how-do-i-back-up-the-data-on-my-server) before migrating your local media store to an S3-backed one."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:36
+msgid "After making the backup, follow one of the guides below for a migration path from a locally-stored media store to one stored on S3-compatible storage:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:38
+msgid "[Migrating to any S3-compatible storage (universal, but likely slow)](#migrating-to-any-s3-compatible-storage-universal-but-likely-slow)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:39
+msgid "[Migrating to Backblaze B2](#migrating-to-backblaze-b2)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:41
+msgid "Migrating to any S3-compatible storage (universal, but likely slow)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:43
+msgid "Proceed with the steps below without stopping Matrix services"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:45
+msgid "Start by adding the base S3 configuration in your `vars.yml` file (seen above, may be different depending on the S3 provider of your choice)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:47
+msgid "In addition to the base configuration you see above, add this to your `vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:53
+msgid "This enables S3 support, but mounts the S3 storage bucket to `/matrix/s3-media-store` without hooking it to your homeserver yet. Your homeserver will still continue using your local filesystem for its media store."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:55
+msgid "Run the playbook to apply the changes: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:57
+msgid "Do an **initial sync of your files** by running this **on the server** (it may take a very long time):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:63
+msgid "You may need to install `rsync` manually."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:65
+#: ../../../docs/configuring-playbook-s3-goofys.md:106
+msgid "Stop all Matrix services (`ansible-playbook -i inventory/hosts setup.yml --tags=stop`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:67
+msgid "Start the S3 service by running this **on the server**: `systemctl start matrix-goofys`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:69
+msgid "Sync the files again by re-running the `rsync` command you see in step #5"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:71
+msgid "Stop the S3 service by running this **on the server**: `systemctl stop matrix-goofys`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:73
+#: ../../../docs/configuring-playbook-s3-goofys.md:114
+msgid "Get the old media store out of the way by running this command on the server:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:79
+msgid "Remove the `matrix_s3_media_store_path` configuration from your `vars.yml` file (undoing step #3 above)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:81
+#: ../../../docs/configuring-playbook-s3-goofys.md:122
+msgid "Run the playbook: `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:83
+#: ../../../docs/configuring-playbook-s3-goofys.md:124
+msgid "You're done! Verify that loading existing (old) media files works and that you can upload new ones."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:85
+#: ../../../docs/configuring-playbook-s3-goofys.md:126
+msgid "When confident that it all works, get rid of the local media store directory: `rm -rf /matrix/synapse/storage/media-store-local-backup`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:87
+msgid "Migrating to Backblaze B2"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:89
+msgid "While all Matrix services are running, run the following command on the server:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:91
+msgid "(you need to adjust the 3 `--env` line below with your own data)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:104
+msgid "This is some initial file sync, which may take a very long time."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:108
+msgid "Run the command from step #1 again."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:110
+msgid "Doing this will sync any new files that may have been created locally in the meantime."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:112
+msgid "Now that Matrix services aren't running, we're sure to get Backblaze B2 and your local media store fully in sync."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3-goofys.md:120
+msgid "Put the [Backblaze B2 settings](configuring-playbook-s3.md#backblaze-b2) in your `vars.yml` file"
+msgstr ""

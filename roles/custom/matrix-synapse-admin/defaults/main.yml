@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2020 - 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Dennis Ciba
+# SPDX-FileCopyrightText: 2021 - 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 - 2025 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # matrix-synapse-admin is a web UI for managing the Synapse Matrix server
 # Project source code URL: https://github.com/Awesome-Technologies/synapse-admin
@@ -14,9 +25,11 @@ matrix_synapse_admin_container_image_self_build: false
 matrix_synapse_admin_container_image_self_build_repo: "https://github.com/etkecc/synapse-admin.git"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/synapse-admin
-matrix_synapse_admin_version: v0.10.3-etke31
-matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
-matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else 'ghcr.io/' }}"
+matrix_synapse_admin_version: v0.10.3-etke38
+matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
+matrix_synapse_admin_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_synapse_admin_docker_image_registry_prefix_upstream }}"
+matrix_synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_synapse_admin_docker_image_registry_prefix_upstream_default }}"
+matrix_synapse_admin_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
 
 # The base container network
@@ -49,6 +62,11 @@ matrix_synapse_admin_container_labels_traefik_priority: 0
 matrix_synapse_admin_container_labels_traefik_entrypoints: web-secure
 matrix_synapse_admin_container_labels_traefik_tls: "{{ matrix_synapse_admin_container_labels_traefik_entrypoints != 'web' }}"
 matrix_synapse_admin_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+# This setting is to define a list ip addresses to allow access to synapse-admin.
+# Each IP address should be in CIDR format, e.g. xxx.xxx.xxx.xxx/xx.
+# For more information, see: https://doc.traefik.io/traefik/middlewares/http/ipallowlist/
+# If the list is empty, all IP addresses are allowed.
+matrix_synapse_admin_container_labels_traefik_ipallowlist_sourcerange: []
 
 # Controls which additional headers to attach to all HTTP responses.
 # To add your own headers, use `matrix_synapse_admin_container_labels_traefik_additional_response_headers_custom`
@@ -149,7 +167,6 @@ matrix_synapse_admin_path_prefix: /synapse-admin
 matrix_synapse_admin_configuration_default:
   restrictBaseUrl: "{{ matrix_synapse_admin_config_restrictBaseUrl }}"
   asManagedUsers: "{{ matrix_synapse_admin_config_asManagedUsers }}"
-  supportURL: "{{ matrix_synapse_admin_config_supportURL }}"
   menu: "{{ matrix_synapse_admin_config_menu }}"
 
 # Your custom JSON configuration for synapse-admin should go to `matrix_synapse_admin_configuration_extension_json`.
@@ -169,7 +186,10 @@ matrix_synapse_admin_configuration_default:
 #  }
 matrix_synapse_admin_configuration_extension_json: '{}'
 
-matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {} }}"
+# This is similar to `matrix_synapse_admin_configuration_extension_json`, but intended for use by playbook or group vars
+matrix_synapse_admin_configuration_extension_json_auto: {}
+
+matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json_auto | combine(matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
 
 # Holds the final synapse-admin configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_admin_configuration_default`.
@@ -193,10 +213,6 @@ matrix_synapse_admin_config_restrictBaseUrl: "{{ [matrix_homeserver_url] }}"  # 
 #   }
 # ]
 matrix_synapse_admin_config_menu: []
-
-# Controls the supportURL configuration setting, which, if defined, replaces the default link to the Synapse Admin GitHub repository.
-# DEPRECATED: use matrix_synapse_admin_config_menu instead (migrated automatically).
-matrix_synapse_admin_config_supportURL: ''  # noqa var-naming
 
 # Controls the asManagedUsers configuration setting (managed by playbook), which, if defined,
 # restricts modifications of the specified users (e.g., bridge-managed).

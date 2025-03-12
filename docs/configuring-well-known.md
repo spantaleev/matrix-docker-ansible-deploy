@@ -1,3 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 André Sterba
+SPDX-FileCopyrightText: 2020 Sean O'Neil
+SPDX-FileCopyrightText: 2021 Martha Sokolska
+SPDX-FileCopyrightText: 2022 Matt Holt
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2025 Edward Andò
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Service Discovery via .well-known
 
 This documentation page explains how to configure Service discovery via `/.well-known/` files. Service discovery is a way for the Matrix network to discover where a Matrix server is.
@@ -6,17 +19,17 @@ This documentation page explains how to configure Service discovery via `/.well-
 
 There are 3 types of well-known service discovery mechanism that Matrix makes use of:
 
-- (important) **Federation Server discovery** (`/.well-known/matrix/server`) -- assists other servers in the Matrix network with finding your server. With the default playbook configuration specified on the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), this is necessary for federation to work. Without a proper configuration, your server will effectively not be part of the Matrix network.
+- (important) **Federation Server discovery** (`/.well-known/matrix/server`) — assists other servers in the Matrix network with finding your server. With the default playbook configuration specified on the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), this is necessary for federation to work. Without a proper configuration, your server will effectively not be part of the Matrix network.
 
-- (less important) **Client Server discovery** (`/.well-known/matrix/client`) -- assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
+- (less important) **Client Server discovery** (`/.well-known/matrix/client`) — assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the "Homeserver URL" and "Identity Server URL" addresses.
 
-- (optional) **Support service discovery** (`/.well-known/matrix/support`) -- returns server admin contact and support page of the domain.
+- (optional) **Support service discovery** (`/.well-known/matrix/support`) — returns server admin contact and support page of the domain.
 
 ### Federation Server Discovery
 
 All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`), instead of the base domain (`example.com`).
 
-As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), to use a short Matrix user identifier like `@user:example.com` while hosting services on a subdomain such as `matrix.example.com`, the Matrix network needs to be instructed of [server delegation](howto-server-delegation.md) / redirection.
+As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), in order to use a short Matrix user ID like `@alice:example.com` instead of `@alice:matrix.example.com` while hosting services on a subdomain such as `matrix.example.com`, the Matrix network needs to be instructed of [server delegation](howto-server-delegation.md) / redirection.
 
 For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file.
 
@@ -24,7 +37,7 @@ If you set up the DNS SRV record for server delegation instead, take a look at t
 
 ### Client Server Discovery
 
-Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@username:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
+Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@alice:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`).
 
 This lets you (and your users) easily connect to your Matrix server without having to customize connection URLs. When using client programs that support it, you won't need to point them to `https://matrix.example.com` in Custom Server options manually anymore. The connection URL would be discovered automatically from your full username.
 
@@ -34,7 +47,7 @@ As [per the Client-Server specification](https://matrix.org/docs/spec/client_ser
 
 However, this playbook installs your Matrix server on another domain (e.g. `matrix.example.com`) and not on the base domain (e.g. `example.com`), so it takes a little extra manual effort to set up the file.
 
-### (Optional) Support Service Discovery
+### Support Service Discovery (optional)
 
 [MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929), which was added to [Matrix Specification version v1.10](https://spec.matrix.org/v1.10/client-server-api/#getwell-knownmatrixsupport), specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc.
 
@@ -67,7 +80,7 @@ To implement the service discovery mechanisms, your base domain's server (e.g. `
 
 If you don't have a server for your base domain at all, you can use the Matrix server for this. If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it.
 
-**This is the easiest way to set up well-known serving** -- letting the playbook handle the whole base domain for you (including SSL certificates, etc.) and take care to serve the appropriate well-known files automatically.
+**This is the easiest way to set up well-known serving** — letting the playbook handle the whole base domain for you (including SSL certificates, etc.) and take care to serve the appropriate well-known files automatically.
 
 If you decide to go this route, you don't need to read ahead in this document. Instead, go to [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up.
 
@@ -97,7 +110,7 @@ This is relatively easy to do and possibly your only choice if you can only host
 
 This option is less fragile and generally better.
 
-On the base domain's server (e.g. `example.com`), you can set up reverse-proxying, so that any access for the `/.well-known/matrix` location prefix is forwarded to the Matrix domain's server (e.g. `matrix.example.com`).
+On the base domain's server (e.g. `example.com`), you can set up reverse-proxying (or simply a 302 redirect), so that any access for the `/.well-known/matrix` location prefix is forwarded to the Matrix domain's server (e.g. `matrix.example.com`).
 
 With this method, you **don't need** to add special HTTP headers for [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) reasons (like `Access-Control-Allow-Origin`), because your Matrix server (where requests ultimately go) will be configured by this playbook correctly.
 
@@ -177,7 +190,6 @@ Make sure to:
 - **replace `example.com`** in the server configuration with your actual domain name
 - and: to **do this for the HTTPS-enabled server block**, as that's where Matrix expects the file to be
 
-
 ## Confirming it works
 
 No matter which method you've used to set up the well-known files, if you've done it correctly you should be able to see a JSON file at these URLs:
@@ -186,4 +198,4 @@ No matter which method you've used to set up the well-known files, if you've don
 - `https://example.com/.well-known/matrix/client`
 - `https://example.com/.well-known/matrix/support`
 
-You can also check if everything is configured correctly, by [checking if services work](maintenance-checking-services.md).
+You can also check if everything is configured correctly, by [checking if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work).

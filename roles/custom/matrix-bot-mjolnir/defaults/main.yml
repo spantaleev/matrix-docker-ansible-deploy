@@ -1,3 +1,15 @@
+# SPDX-FileCopyrightText: 2021 - 2022 Aaron Raimist
+# SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 Chirayu Desai
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # A moderation tool for Matrix
 # Project source code URL: https://github.com/matrix-org/mjolnir
@@ -5,13 +17,15 @@
 matrix_bot_mjolnir_enabled: true
 
 # renovate: datasource=docker depName=matrixdotorg/mjolnir
-matrix_bot_mjolnir_version: "v1.8.3"
+matrix_bot_mjolnir_version: "v1.9.2"
 
 matrix_bot_mjolnir_container_image_self_build: false
 matrix_bot_mjolnir_container_image_self_build_repo: "https://github.com/matrix-org/mjolnir.git"
 
-matrix_bot_mjolnir_docker_image: "{{ matrix_bot_mjolnir_docker_image_name_prefix }}matrixdotorg/mjolnir:{{ matrix_bot_mjolnir_version }}"
-matrix_bot_mjolnir_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_mjolnir_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_bot_mjolnir_docker_image: "{{ matrix_bot_mjolnir_docker_image_registry_prefix }}matrixdotorg/mjolnir:{{ matrix_bot_mjolnir_version }}"
+matrix_bot_mjolnir_docker_image_registry_prefix: "{{ 'localhost/' if matrix_bot_mjolnir_container_image_self_build else matrix_bot_mjolnir_docker_image_registry_prefix_upstream }}"
+matrix_bot_mjolnir_docker_image_registry_prefix_upstream: "{{ matrix_bot_mjolnir_docker_image_registry_prefix_upstream_default }}"
+matrix_bot_mjolnir_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_bot_mjolnir_docker_image_force_pull: "{{ matrix_bot_mjolnir_docker_image.endswith(':latest') }}"
 
 matrix_bot_mjolnir_base_path: "{{ matrix_base_data_path }}/mjolnir"

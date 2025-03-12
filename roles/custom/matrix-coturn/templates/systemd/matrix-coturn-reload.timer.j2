@@ -1,10 +1,18 @@
+{#
+SPDX-FileCopyrightText: 2021 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Hardy Erlinger
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 [Unit]
 Description=Reloads matrix-coturn periodically so that new SSL certificates can kick in
 
 [Timer]
 Unit=matrix-coturn-reload.service
-OnCalendar=*-*-* 06:30:00
-RandomizedDelaySec=1h
+OnCalendar={{ matrix_coturn_reload_schedule }}
+RandomizedDelaySec={{ matrix_coturn_reload_schedule_randomized_delay_sec }}
 
 [Install]
 WantedBy=timers.target

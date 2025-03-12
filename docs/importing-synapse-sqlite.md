@@ -1,11 +1,20 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Importing an existing SQLite database from another Synapse installation (optional)
 
-Run this if you'd like to import your database from a previous default installation of Synapse (don't forget to import your `media_store` files as well - see [the importing-synapse-media-store guide](importing-synapse-media-store.md)).
+You can manually import your database from a previous default installation of Synapse.
 
 While this playbook only supports running Synapse in combination with PostgreSQL, a Synapse instance installed manually usually defaults to using an SQLite database.
 
 If you have such a Synapse setup and wish to migrate it to one managed by the playbook (and over to PostgreSQL), this documentation page is for you.
 
+**Note**: don't forget to import your Synapse `media_store` files as well — see [the importing-synapse-media-store guide](importing-synapse-media-store.md) for more details.
 
 ## Prerequisites
 

@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Scott Crossen
+# SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Project source code URL: https://github.com/linuxserver/docker-ddclient
 
@@ -8,12 +18,14 @@ matrix_dynamic_dns_enabled: true
 matrix_dynamic_dns_daemon_interval: '300'
 
 # renovate: datasource=docker depName=linuxserver/ddclient versioning=semver
-matrix_dynamic_dns_version: 3.11.2
+matrix_dynamic_dns_version: 4.0.0
 
 # The docker container to use when in mode
-matrix_dynamic_dns_docker_image: "{{ matrix_dynamic_dns_docker_image_name_prefix }}linuxserver/ddclient:{{ matrix_dynamic_dns_version }}"
+matrix_dynamic_dns_docker_image: "{{ matrix_dynamic_dns_docker_image_registry_prefix }}linuxserver/ddclient:{{ matrix_dynamic_dns_version }}"
 
-matrix_dynamic_dns_docker_image_name_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_dynamic_dns_docker_image_registry_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else matrix_dynamic_dns_docker_image_registry_prefix_upstream }}"
+matrix_dynamic_dns_docker_image_registry_prefix_upstream: "{{ matrix_dynamic_dns_docker_image_registry_prefix_upstream_default }}"
+matrix_dynamic_dns_docker_image_registry_prefix_upstream_default: docker.io/
 
 # The image to force pull
 matrix_dynamic_dns_docker_image_force_pull: "{{ matrix_dynamic_dns_docker_image.endswith(':latest') }}"

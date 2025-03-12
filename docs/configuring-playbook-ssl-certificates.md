@@ -1,9 +1,19 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Aaron Raimist
+SPDX-FileCopyrightText: 2022 Alejo Diaz
+SPDX-FileCopyrightText: 2022 Julian Foad
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Adjusting SSL certificate retrieval (optional, advanced)
 
 By default, this playbook retrieves and auto-renews free SSL certificates from [Let's Encrypt](https://letsencrypt.org/) for the domains it needs (e.g. `matrix.example.com` and others)
 
 This guide is about using the integrated Traefik server and doesn't apply if you're using [your own webserver](configuring-playbook-own-webserver.md).
-
 
 ## Using staging Let's Encrypt certificates instead of real ones
 
@@ -15,17 +25,15 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 traefik_config_certificatesResolvers_acme_use_staging: true
 ```
 
-
 ## Disabling SSL termination
 
 For testing or other purposes, you may wish to install services without SSL termination and have services exposed to `http://` instead of `https://`.
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Add the following configuration to your `vars.yml` file:
 
 ```yaml
 traefik_config_entrypoint_web_secure_enabled: false
 ```
-
 
 ## Using self-signed SSL certificates
 
@@ -33,7 +41,6 @@ If you'd like to use your own SSL certificates, instead of the default (SSL cert
 
 - generate your self-signed certificate files
 - follow the [Using your own SSL certificates](#using-your-own-ssl-certificates) documentation below
-
 
 ## Using your own SSL certificates
 
@@ -54,7 +61,7 @@ traefik_ssl_dir_enabled: true
 
 # Tell Traefik to load our custom ssl key pair by extending provider configuration.
 # The key pair files are created below, in `aux_file_definitions`.
-# The `/ssl/..` path is an in-container path, not a path on the host (like `/matrix/traefik/ssl`). Do not change it!
+# The `/ssl/…` path is an in-container path, not a path on the host (like `/matrix/traefik/ssl`). Do not change it!
 traefik_provider_configuration_extension_yaml:
   tls:
     certificates:

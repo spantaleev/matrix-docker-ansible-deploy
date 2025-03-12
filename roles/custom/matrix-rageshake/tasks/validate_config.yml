@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Benjamin Kampmann
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Fail if required rageshake settings not defined
@@ -9,6 +14,14 @@
     - matrix_rageshake_hostname
     - matrix_rageshake_path_prefix
     - matrix_rageshake_container_network
+
+- name: (Deprecation) Catch and report renamed rageshake variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_rageshake_docker_image_name_prefix', 'new': 'matrix_rageshake_docker_image_registry_prefix'}
 
 - when: matrix_rageshake_container_labels_traefik_enabled | bool
   block:

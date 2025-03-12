@@ -1,0 +1,158 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/just.md:1
+msgid "Running `just` commands"
+msgstr ""
+
+#: ../../../docs/just.md:3
+msgid "We have previously used [make](https://www.gnu.org/software/make/) for easily running some playbook commands (e.g. `make roles` which triggers [`ansible-galaxy`](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html)). Our [`Makefile`](../Makefile) is still around, and you can still run these commands."
+msgstr ""
+
+#: ../../../docs/just.md:5
+msgid "In addition, we have added support for running commands via [`just`](https://github.com/casey/just) — a more modern command-runner alternative to `make`. It can be used to invoke `ansible-playbook` commands with less typing."
+msgstr ""
+
+#: ../../../docs/just.md:7
+msgid "The `just` utility executes shortcut commands (called as \"recipes\"), which invoke `ansible-playbook`, `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru) (depending on what is available in your system). The targets of the recipes are defined in [`justfile`](../justfile). Most of the just recipes have no corresponding `Makefile` targets."
+msgstr ""
+
+#: ../../../docs/just.md:9
+msgid "For some recipes such as `just update`, our `justfile` recommends installing [`agru`](https://github.com/etkecc/agru) (a faster alternative to `ansible-galaxy`) to speed up the process."
+msgstr ""
+
+#: ../../../docs/just.md:11
+msgid "Here are some examples of shortcuts:"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Shortcut"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Result"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just roles`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Install the necessary Ansible roles pinned in [`requirements.yml`](../requirements.yml)"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just update`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Run `git pull` (to update the playbook) and install the Ansible roles"
+msgstr ""
+
+#: ../../../docs/just.md:0
+#: ../../../docs/just.md:33
+msgid "`just install-all`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Run `ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-users-created,start`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just setup-all`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Run `ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just install-all --ask-vault-pass`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Run commands with additional arguments (`--ask-vault-pass` will be appended to the above installation command)"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just run-tags install-mautrix-slack,start`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Run specific playbook tags (here `install-mautrix-slack` and `start`)"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just install-service mautrix-slack`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Run `just run-tags install-mautrix-slack,start` with even less typing"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just start-all`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "(Re-)starts all services"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just stop-group postgres`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Stop only the Postgres service"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "`just register-user alice secret-password yes`"
+msgstr ""
+
+#: ../../../docs/just.md:0
+msgid "Registers an `alice` user with the `secret-password` password and admin access (admin = `yes`)"
+msgstr ""
+
+#: ../../../docs/just.md:26
+msgid "While [our documentation on prerequisites](prerequisites.md) lists `just` as one of the requirements for installation, using `just` is optional. If you find it difficult to install it, do not find it useful, or want to prefer raw `ansible-playbook` commands for some reason, feel free to run all commands manually. For example, you can run `ansible-galaxy` directly to install the Ansible roles: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`."
+msgstr ""
+
+#: ../../../docs/just.md:28
+msgid "Difference between playbook tags and shortcuts"
+msgstr ""
+
+#: ../../../docs/just.md:30
+msgid "It is worth noting that `just` \"recipes\" are different from [playbook tags](playbook-tags.md). The recipes are shortcuts of commands defined in `justfile` and can be executed by the `just` program only, while the playbook tags are available for the raw `ansible-playbook` commands as well. Please be careful not to confuse them."
+msgstr ""
+
+#: ../../../docs/just.md:32
+msgid "For example, these two commands are different:"
+msgstr ""
+
+#: ../../../docs/just.md:34
+msgid "`ansible-playbook -i inventory/hosts setup.yml --tags=install-all`"
+msgstr ""
+
+#: ../../../docs/just.md:36
+msgid "The just recipe runs `ensure-matrix-users-created` and `start` tags after `install-all`, while the latter runs only `install-all` tag. The correct shortcut of the latter is `just run-tags install-all`."
+msgstr ""
+
+#: ../../../docs/just.md:38
+msgid "Such kind of difference sometimes matters. For example, when you install a Matrix server into which you will import old data (see [here](installing.md#installing-a-server-into-which-youll-import-old-data)), you are not supposed to run `just install-all` or `just setup-all`, because these commands start services immediately after installing components which may prevent your from importing old data."
+msgstr ""

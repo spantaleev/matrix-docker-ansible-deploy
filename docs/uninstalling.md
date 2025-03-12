@@ -1,21 +1,22 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Uninstalling
 
-**Warnings**:
-
-- If your server federates with others, make sure to **leave any federated rooms before nuking your Matrix server's data**. Otherwise, the next time you set up a Matrix server for this domain (regardless of the installation method you use), you'll encounter trouble federating.
-
-- If you have some trouble with your installation, you can just [re-run the playbook](installing.md) and it will try to set things up again. **Uninstalling and then installing anew rarely solves anything**.
-
-
------------------
-
+> [!WARNING]
+> - If your server federates with others, make sure to **leave any federated rooms before nuking your Matrix server's data**. Otherwise, the next time you set up a Matrix server for this domain (regardless of the installation method you use), you'll encounter trouble federating.
+> - If you have some trouble with your installation, you can just [re-run the playbook](installing.md) and it will try to set things up again. **Uninstalling and then installing anew rarely solves anything**.
 
 ## Uninstalling using a script
 
 Installing places a `/matrix/bin/remove-all` script on the server.
 
 You can run it to to have it uninstall things for you automatically (see below). **Use with caution!**
-
 
 ## Uninstalling manually
 
@@ -32,5 +33,3 @@ If you prefer to uninstall manually, run these commands (most are meant to be ex
 - uninstall Docker itself, if necessary
 
 - delete the `/matrix` directory (`rm -rf /matrix`)
-
-

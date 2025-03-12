@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # matrix-static-files is a role which generates and serves `/.well-known/matrix` files for the purposes of Matrix Delegation.
@@ -8,7 +13,7 @@ matrix_static_files_enabled: true
 matrix_static_files_identifier: matrix-static-files
 
 # renovate: datasource=docker depName=joseluisq/static-web-server
-matrix_static_files_version: 2.33.1
+matrix_static_files_version: 2.36.0
 
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/{{ 'static-files' if matrix_static_files_identifier == 'matrix-static-files' else matrix_static_files_identifier }}"
 matrix_static_files_config_path: "{{ matrix_static_files_base_path }}/config"
@@ -25,7 +30,10 @@ matrix_static_files_systemd_wanted_services_list: "{{ matrix_static_files_system
 matrix_static_files_systemd_wanted_services_list_auto: []
 matrix_static_files_systemd_wanted_services_list_custom: []
 
-matrix_static_files_container_image: "{{ matrix_container_global_registry_prefix }}joseluisq/static-web-server:{{ matrix_static_files_container_image_tag }}"
+matrix_static_files_container_image: "{{ matrix_static_files_container_image_registry_prefix }}joseluisq/static-web-server:{{ matrix_static_files_container_image_tag }}"
+matrix_static_files_container_image_registry_prefix: "{{ matrix_static_files_container_image_registry_prefix_upstream }}"
+matrix_static_files_container_image_registry_prefix_upstream: "{{ matrix_static_files_container_image_registry_prefix_upstream_default }}"
+matrix_static_files_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_static_files_container_image_tag: "{{ 'latest' if matrix_static_files_version == 'latest' else (matrix_static_files_version + '-alpine') }}"
 matrix_static_files_container_image_force_pull: "{{ matrix_static_files_container_image.endswith(':latest') }}"
 
@@ -84,7 +92,7 @@ matrix_static_files_container_labels_base_domain_traefik_tls: "{{ matrix_static_
 matrix_static_files_container_labels_base_domain_traefik_tls_certResolver: "{{ matrix_static_files_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 # Controls whether the root path (/) at the base domain would respond with a redirect to some URL.
 matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: false
-matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^{{ matrix_static_files_scheme }}://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}$"
+matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^{{ matrix_static_files_scheme }}://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}(\\?.*)?$"
 matrix_static_files_container_labels_base_domain_root_path_redirection_url: ""
 
 # matrix_static_files_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.

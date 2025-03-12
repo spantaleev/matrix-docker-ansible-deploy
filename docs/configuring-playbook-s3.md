@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2023 Michael Hollister
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Storing Synapse media files on Amazon S3 or another compatible Object Storage (optional)
 
 By default, this playbook configures your server to store Synapse's content repository (`media_store`) files on the local filesystem. If that's okay, you can skip this document.
@@ -12,14 +20,13 @@ Then, [create the S3 bucket](#bucket-creation-and-security-configuration).
 
 Finally, [set up S3 storage for Synapse](#setting-up) (with [Goofys](configuring-playbook-s3-goofys.md), [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md), or use s3 datastore with the [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/configuration/s3-datastore.html)).
 
-
 ## Choosing an Object Storage provider
 
 You can create [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object storage like [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html), [Storj](https://storj.io), [Wasabi](https://wasabi.com), [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces), etc.
 
 Amazon S3, Backblaze B2, and Storj are pay-as-you with no minimum charges for storing too little data.
 
-All these providers have different prices, with Storj appearing to be the cheapest (as of 2024-10, storage fee is $0.004 per GB/month, and egress fee is $0.007 per GB). Backblaze egress is free, but for only certain users for up to 3x the amount of data stored. Beyond that you will pay $0.01/GB of egress.
+All these providers have different prices, with Storj appearing to be the cheapest (as of 2024-10, storage fee is $0.004 per GB/month, and egress fee is $0.007 per GB; check actual pricing [here](https://storj.dev/dcs/pricing)). Backblaze egress is free, but for only certain users for up to 3x the amount of data stored. Beyond that you will pay $0.01/GB of egress.
 
 Wasabi has a minimum charge of 1TB if you're storing less than 1TB, which becomes expensive if you need to store less data than that. Likewise, Digital Ocean Spaces has also a minimum charge of 250GB ($5/month as of 2022-10).
 
@@ -30,8 +37,7 @@ Here are some of the important aspects of choosing the right provider:
 - if a provider has a data region close to your Matrix server (if it's farther away, high latency may cause slowdowns)
 - if a provider's infrastructure such as data center is centralized or distributed
 - if a provider's price model is transparent (whether it includes hidden costs like minimum charge, minimum storage term, etc.)
-- if a provider has free or cheap egress fee (in case you need to get the data out often, for some reason) - likely not too important for the common use-case
-
+- if a provider has free or cheap egress fee (in case you need to get the data out often, for some reason) — likely not too important for the common use-case
 
 ## Bucket creation and Security Configuration
 
@@ -66,7 +72,6 @@ You'll need an Amazon S3 bucket and some IAM user credentials (access key + secr
 
 **Note**: This policy needs to be attached to an IAM user created from the **Security Credentials** menu. This is not a **Bucket Policy**.
 
-
 ## Backblaze B2
 
 To use [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html) you first need to sign up.
@@ -86,19 +91,15 @@ The `keyID` value is your **Access Key** and `applicationKey` is your **Secret K
 
 For configuring [Goofys](configuring-playbook-s3-goofys.md) or [s3-synapse-storage-provider](configuring-playbook-synapse-s3-storage-provider.md) you will need:
 
-- **Endpoint URL** - this is the  **Endpoint** value you saw above, but prefixed with `https://`
-
-- **Region** - use the value you see in the Endpoint (e.g. `us-west-002`)
-
-- **Storage Class** - use `STANDARD`. Backblaze B2 does not have different storage classes, so it doesn't make sense to use any other value.
-
+- **Endpoint URL** — this is the  **Endpoint** value you saw above, but prefixed with `https://`
+- **Region** — use the value you see in the Endpoint (e.g. `us-west-002`)
+- **Storage Class** — use `STANDARD`. Backblaze B2 does not have different storage classes, so it doesn't make sense to use any other value.
 
 ## Other providers
 
-For other S3-compatible providers, you may not need to configure security policies, etc. (just like for [Backblaze B2](#backblaze-b2)).
+For other S3-compatible providers, you most likely just need to create an S3 bucket and get some credentials (access key and secret key) for accessing the bucket in a read/write manner. You may not need to configure security policies, etc.
 
-You most likely just need to create an S3 bucket and get some credentials (access key and secret key) for accessing the bucket in a read/write manner.
-
+For details about setting up a bucket at Storj, please see the instruction [here](https://storj.dev/dcs/getting-started) to get started.
 
 ## Setting up
 
