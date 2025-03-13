@@ -1,20 +1,40 @@
 # SPDX-FileCopyrightText: 2023 - 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2023 - 2025 Catalan Lover <catalanlover@protonmail.com>
 # SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
 
+- name: (Deprecation) Catch and report renamed Draupnir settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+  when: "item.old in vars"
+  with_items:
+    - {'old': 'matrix_bot_draupnir_container_image_name_prefix', 'new': 'matrix_bot_draupnir_container_image_registry_prefix'}
+    - {'old': 'matrix_bot_draupnir_enable_room_state_backing_store', 'new': 'matrix_bot_draupnir_config_roomStateBackingStore_enabled'}
+    - {'old': 'matrix_bot_draupnir_disable_server_acl', 'new': 'matrix_bot_draupnir_config_disableServerACL'}
+    - {'old': 'matrix_bot_draupnir_enable_experimental_rust_crypto', 'new': 'matrix_bot_draupnir_config_experimentalRustCrypto'}
+    - {'old': 'matrix_bot_draupnir_access_token', 'new': 'matrix_bot_draupnir_config_accessToken'}
+    - {'old': 'matrix_bot_draupnir_management_room', 'new': 'matrix_bot_draupnir_config_managementRoom'}
+    - {'old': 'matrix_bot_draupnir_homeserver_url', 'new': 'matrix_bot_draupnir_config_homeserverUrl'}
+    - {'old': 'matrix_bot_draupnir_raw_homeserver_url', 'new': 'matrix_bot_draupnir_config_rawHomeserverUrl'}
+    - {'old': 'matrix_bot_draupnir_web_enabled', 'new': 'matrix_bot_draupnir_config_web_enabled'}
+    - {'old': 'matrix_bot_draupnir_abuse_reporting_enabled', 'new': 'matrix_bot_draupnir_config_web_abuseReporting'}
+    - {'old': 'matrix_bot_draupnir_display_reports', 'new': 'matrix_bot_draupnir_config_displayReports'}
+
 - name: Fail if required matrix-bot-draupnir variables are undefined
   ansible.builtin.fail:
     msg: "The `{{ item.name }}` variable must be defined and have a non-null value."
   with_items:
-    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ not matrix_bot_draupnir_pantalaimon_use }}"}
-    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_enable_experimental_rust_crypto }}"}
-    - {'name': 'matrix_bot_draupnir_management_room', when: true}
+    - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ not matrix_bot_draupnir_pantalaimon_use }}"}
+    - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_enable_experimental_rust_crypto }}"}
+    - {'name': 'matrix_bot_draupnir_config_managementRoom', when: true}
     - {'name': 'matrix_bot_draupnir_container_network', when: true}
-    - {'name': 'matrix_bot_draupnir_homeserver_url', when: true}
-    - {'name': 'matrix_bot_draupnir_raw_homeserver_url', when: true}
+    - {'name': 'matrix_bot_draupnir_config_homeserverUrl', when: true}
+    - {'name': 'matrix_bot_draupnir_config_rawHomeserverUrl', when: true}
     - {'name': 'matrix_bot_draupnir_pantalaimon_username', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
     - {'name': 'matrix_bot_draupnir_pantalaimon_password', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
   when: "item.when | bool and (vars[item.name] == '' or vars[item.name] is none)"
@@ -23,8 +43,8 @@
   ansible.builtin.fail:
     msg: "The `{{ item.name }}` variable must be undefined or have a null value."
   with_items:
-    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
-    - {'name': 'matrix_bot_draupnir_access_token', when: "{{ matrix_bot_draupnir_login_native }}"}
+    - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
+    - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_login_native }}"}
     - {'name': 'matrix_bot_draupnir_pantalaimon_use', when: "{{  matrix_bot_draupnir_enable_experimental_rust_crypto }}"}
   when: "item.when | bool and not (vars[item.name] == '' or vars[item.name] is none)"
 
@@ -40,12 +60,3 @@
               "Note: Draupnir does not support running with Pantalaimon as it would break all workflows that involve answering prompts with reactions. To enable E2EE for Draupnir, it is recommended to use matrix_bot_draupnir_enable_experimental_rust_crypto instead. This warning can be disabled by setting matrix_bot_draupnir_pantalaimon_breakage_ignore to true."
             ]
           }}
-
-- name: (Deprecation) Catch and report renamed Draupnir settings
-  ansible.builtin.fail:
-    msg: >-
-      Your configuration contains a variable, which now has a different name.
-      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
-  with_items:
-    - {'old': 'matrix_bot_draupnir_container_image_name_prefix', 'new': 'matrix_bot_draupnir_container_image_registry_prefix'}
