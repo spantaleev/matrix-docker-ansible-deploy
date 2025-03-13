@@ -5,6 +5,7 @@
 # SPDX-FileCopyrightText: 2024 Charles Wright
 # SPDX-FileCopyrightText: 2024 David Mehren
 # SPDX-FileCopyrightText: 2024 Michael Hollister
+# SPDX-FileCopyrightText: 2024 - 2025 Catalan Lover <catalanlover@protonmail.com>
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -118,6 +119,14 @@ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_ad
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints }}"
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_tls: "{{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_entrypoints != 'web' }}"
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose the /_synapse/admin paths on the internal Traefik entrypoint.
+# This is similar to `matrix_synapse_container_labels_public_client_api_enabled`, but the entrypoint and intent is different.
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_enabled: false
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_path_prefix: "{{ matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_path_prefix }}"
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_rule: "PathPrefix(`{{ matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_path_prefix }}`)"
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_priority: 0
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_entrypoints: ""
 
 # Controls whether labels will be added that expose the Server-Server API (Federation API).
 matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_enabled: "{{ matrix_synapse_reverse_proxy_companion_federation_api_enabled }}"
