@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2023 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2023 - 2025 Catalan Lover <catalanlover@protonmail.com>
 # SPDX-FileCopyrightText: 2023 Samuel Meenzen
 # SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 #
@@ -27,9 +28,9 @@ matrix_bot_draupnir_config_path: "{{ matrix_bot_draupnir_base_path }}/config"
 matrix_bot_draupnir_data_path: "{{ matrix_bot_draupnir_base_path }}/data"
 matrix_bot_draupnir_docker_src_files_path: "{{ matrix_bot_draupnir_base_path }}/docker-src"
 
-matrix_bot_draupnir_abuse_reporting_enabled: false
-matrix_bot_draupnir_web_enabled: "{{ matrix_bot_draupnir_abuse_reporting_enabled }}"
-matrix_bot_draupnir_display_reports: "{{ matrix_bot_draupnir_abuse_reporting_enabled }}"
+matrix_bot_draupnir_config_web_abuseReporting: false  # noqa var-naming
+matrix_bot_draupnir_config_web_enabled: "{{ matrix_bot_draupnir_config_web_abuseReporting }}"  # noqa var-naming
+matrix_bot_draupnir_config_displayReports: "{{ matrix_bot_draupnir_config_web_abuseReporting }}"  # noqa var-naming
 
 matrix_bot_draupnir_container_network: ""
 
@@ -56,7 +57,7 @@ matrix_bot_draupnir_systemd_wanted_services_list: []
 
 # Whether Draupnir should talk to the homeserver through Pantalaimon
 # If true, then other variables must be provided including pointing
-# `matrix_bot_draupnir_homeserver_url` to the Pantalaimon URL.
+# `matrix_bot_draupnir_config_homeserverUrl` to the Pantalaimon URL.
 #
 # The upstream project discourages enabling this option, because it is
 # known that running Draupnir along with Pantalaimon breaks all workflows that involve
@@ -74,35 +75,37 @@ matrix_bot_draupnir_enable_experimental_rust_crypto: false
 
 # The access token for the bot user. Required if Pantalaimon is NOT used.
 # (Otherwise provide `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password` instead.)
-matrix_bot_draupnir_access_token: ""
+matrix_bot_draupnir_config_accessToken: ""  # noqa var-naming
 
 # Username and password for the bot. Required if Pantalaimon is used.
-# (Otherwise provide `matrix_bot_draupnir_access_token` instead.)
+# (Otherwise provide `matrix_bot_draupnir_config_accessToken` instead.)
 matrix_bot_draupnir_pantalaimon_username: ""
 matrix_bot_draupnir_pantalaimon_password: ""
 
 # Username and password the bot uses for logging in directly. If Pantalaimon is used,
 # these values become the values of `matrix_bot_draupnir_pantalaimon_username` and `matrix_bot_draupnir_pantalaimon_password`
+# These config options do not follow the common naming schema as to not cause user confusion over them being called Pantalaimon when using native login.
 matrix_bot_draupnir_login: "{{ matrix_bot_draupnir_pantalaimon_username if matrix_bot_draupnir_pantalaimon_use == 'true' else 'bot.draupnir' }}"
 matrix_bot_draupnir_password: "{{ matrix_bot_draupnir_pantalaimon_password }}"
 
 # Controls if we activate the config block for Pantalaimon for now. Its name will
 # probably be changed for our usecase due to Draupnir's push to scrub Pantalaimon from the codebase.
+# This configuration option does not follow the common naming schema as its not controlling a config key directly.
 matrix_bot_draupnir_login_native: ""
 
 # The room ID where people can use the bot. The bot has no access controls, so
 # anyone in this room can use the bot - secure your room!
 # This should be a room alias or room ID - not a matrix.to URL.
 # Note: Draupnir is fairly verbose - expect a lot of messages from it.
-matrix_bot_draupnir_management_room: ""
+matrix_bot_draupnir_config_managementRoom: ""  # noqa var-naming
 
 # Endpoint URL that Draupnir uses to interact with the Matrix homeserver (client-server API).
 # Set this to the Pantalaimon URL if you're using that.
-matrix_bot_draupnir_homeserver_url: ""
+matrix_bot_draupnir_config_homeserverUrl: ""  # noqa var-naming
 
 # Endpoint URL that Draupnir could use to fetch events related to reports (client-server API and /_synapse/).
 # Only set this to the public-internet homeserver client API URL. Do NOT set this to the Pantalaimon URL.
-matrix_bot_draupnir_raw_homeserver_url: ""
+matrix_bot_draupnir_config_rawHomeserverUrl: ""  # noqa var-naming
 
 # Disable Server ACL is used if you do not want to give the bot the right to apply Server ACLs in rooms without complaints from the bot.
 # This setting is described the following way in the configuration.
@@ -112,12 +115,12 @@ matrix_bot_draupnir_raw_homeserver_url: ""
 # It is recommended to consult with people from the upstream project beforehand.
 #
 # It is exposed here because it is common enough to be valid to expose.
-matrix_bot_draupnir_disable_server_acl: "false"
+matrix_bot_draupnir_config_disableServerACL: false  # noqa var-naming
 
 # Controls if the room state backing store is activated.
 # Room state backing store makes restarts of the bot lightning fast as the bot does not suffer from amnesia.
 # This config option has diminished improvements for bots on extremely fast homeservers or very very small bots on fast homeservers.
-matrix_bot_draupnir_enable_room_state_backing_store: "true"
+matrix_bot_draupnir_config_roomStateBackingStore_enabled: true  # noqa var-naming
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
