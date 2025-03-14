@@ -13,7 +13,11 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 By default, the playbook retrieves and automatically renews free SSL certificates from [Let's Encrypt](https://letsencrypt.org/) via [ACME](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment) for the domains of the services it installs (e.g. `matrix.example.com` and others). Refer this guide if you want to modify settings about how it manages SSL certificates or have the Traefik server use yours.
 
-**Note**: the guide is intended to be referred for configuring the integrated Traefik server with regard to SSL certificates retrieval. If you're using [your own webserver](configuring-playbook-own-webserver.md), consult its documentation about how to configure it.
+**Notes**:
+- This guide is intended to be referred for configuring the integrated Traefik server with regard to SSL certificates retrieval. If you're using [your own webserver](configuring-playbook-own-webserver.md), consult its documentation about how to configure it.
+- Let's Encrypt ends the expiration notification email service on June 4, 2025 (see: [the official announcement](https://letsencrypt.org/2025/01/22/ending-expiration-emails/)), and it recommends using a third party service for those who want to receive expiriation notifications. If you are looking for a self-hosting service, you may be interested in a monitoring tool such as [Update Kuma](https://github.com/louislam/uptime-kuma/).
+
+  The [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting/mash-playbook) Ansible playbook can be used to install and manage an Uptime Kuma instance. See [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/uptime-kuma.md) for the instruction to install it with the MASH playbook. If you are wondering how to use the MASH playbook for your Matrix server, refer [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/setting-up-services-on-mdad-server.md).
 
 ## Use staging Let's Encrypt certificates
 
