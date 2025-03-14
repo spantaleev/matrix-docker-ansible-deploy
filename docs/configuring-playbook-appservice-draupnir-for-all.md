@@ -45,7 +45,7 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 ```yaml
 matrix_appservice_draupnir_for_all_enabled: true
 
-matrix_appservice_draupnir_for_all_master_control_room_alias: "MANAGEMENT_ROOM_ALIAS_HERE"
+matrix_appservice_draupnir_for_all_config_adminRoom: "MANAGEMENT_ROOM_ALIAS_HERE"
 ```
 
 ### Extending the configuration

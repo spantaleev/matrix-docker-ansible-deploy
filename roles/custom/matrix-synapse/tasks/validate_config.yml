@@ -47,6 +47,14 @@
 
     - {'name': 'matrix_synapse_container_labels_traefik_compression_middleware_name', when: "{{ matrix_synapse_container_labels_traefik_compression_middleware_enabled }}"}
 
+# If only MSC 4108 is enabled, Synapse fails with: "MSC4108 requires MSC3861 to be enabled"
+- name: Fail if Synapse experimental feature QR code login (MSC4108) is enabled while Next-Gen Auth (MSC3861) is not
+  ansible.builtin.fail:
+    msg: >-
+      QR code login (MSC4108) requires Next-Gen Auth (MSC3861) to be enabled or Synapse will fail to start.
+      Enable `matrix_synapse_experimental_features_msc3861_enabled` when using `matrix_synapse_experimental_features_msc4108_enabled`.
+  when: "matrix_synapse_experimental_features_msc4108_enabled and not matrix_synapse_experimental_features_msc3861_enabled"
+
 - name: Fail if asking for more than 1 instance of single-instance workers
   ansible.builtin.fail:
     msg: >-
