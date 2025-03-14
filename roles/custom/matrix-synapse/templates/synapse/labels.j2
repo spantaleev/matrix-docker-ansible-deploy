@@ -211,6 +211,30 @@ traefik.http.routers.matrix-synapse-public-client-synapse-admin-api.tls.certReso
 {% endif %}
 
 
+{% if matrix_synapse_container_labels_internal_client_synapse_admin_api_enabled %}
+############################################################
+#                                                          #
+# Internal Synapse Admin API (/_synapse/admin)             #
+#                                                          #
+############################################################
+traefik.http.routers.matrix-synapse-internal-client-synapse-admin-api.rule={{ matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_rule }}
+
+{% if matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-internal-client-synapse-admin-api.priority={{ matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_priority }}
+{% endif %}
+
+
+traefik.http.routers.matrix-synapse-internal-client-synapse-admin-api.service=matrix-synapse-client-api
+traefik.http.routers.matrix-synapse-internal-client-synapse-admin-api.entrypoints={{ matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_entrypoints }}
+
+############################################################
+#                                                          #
+# /Internal Synapse Admin API (/_synapse/admin)            #
+#                                                          #
+############################################################
+{% endif %}
+
+
 {% if matrix_synapse_container_labels_public_federation_api_enabled %}
 ############################################################
 #                                                          #
