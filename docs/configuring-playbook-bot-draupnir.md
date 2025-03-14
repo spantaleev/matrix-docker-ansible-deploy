@@ -54,7 +54,7 @@ To enable the native E2EE support, add the following configuration to your `vars
 
 ```yaml
 # Enables the native E2EE support
-matrix_bot_draupnir_enable_experimental_rust_crypto: true
+matrix_bot_draupnir_config_experimentalRustCrypto: true
 
 # Access token which the bot will use for logging in.
 # Comment out `matrix_bot_draupnir_login_native` when using this option.
@@ -76,7 +76,7 @@ matrix_bot_draupnir_enabled: true
 # If creating the user on your own and using `matrix_bot_draupnir_config_accessToken` to login you can comment out this line.
 matrix_bot_draupnir_password: PASSWORD_FOR_THE_BOT
 
-# Comment out if using `matrix_bot_draupnir_enable_experimental_rust_crypto: true` or `matrix_bot_draupnir_config_accessToken` to login.
+# Comment out if using `matrix_bot_draupnir_config_experimentalRustCrypto: true` or `matrix_bot_draupnir_config_accessToken` to login.
 matrix_bot_draupnir_login_native: true
 
 matrix_bot_draupnir_config_managementRoom: "MANAGEMENT_ROOM_ID_HERE"
