@@ -131,9 +131,6 @@ protectAllJoinedRooms: false
 # of the homeserver may be more impacted.
 backgroundDelayMS: 500
 
-# FIXME: This configuration option is currently broken in the playbook as admin APIs cannot
-# be accessed from containers. See https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3389
-# and https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3308
 # Server administration commands, these commands will only work if Draupnir is
 # a global server administrator, and the bot's server is a Synapse instance.
 admin:
@@ -141,7 +138,7 @@ admin:
   # (with enough permissions) to "make" a user an admin.
   #
   # This only works if a local user with enough admin permissions is present in the room.
-  enableMakeRoomAdminCommand: {{ matrix_bot_draupnir_room_hijack_enabled | to_json }}
+  enableMakeRoomAdminCommand: {{ matrix_bot_draupnir_config_enableMakeRoomAdminCommand | to_json }}
 
 # Misc options for command handling and commands
 commands:
