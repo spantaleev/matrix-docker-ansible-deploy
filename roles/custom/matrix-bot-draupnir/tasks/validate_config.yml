@@ -45,8 +45,16 @@
   with_items:
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_login_native }}"}
-    - {'name': 'matrix_bot_draupnir_pantalaimon_use', when: "{{  matrix_bot_draupnir_config_experimentalRustCrypto }}"}
   when: "item.when | bool and not (vars[item.name] == '' or vars[item.name] is none)"
+
+- name: Fail when matrix_bot_draupnir_config_experimentalRustCrypto is enabled together with matrix_bot_draupnir_pantalaimon_use
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration is trying to enable matrix_bot_draupnir_config_experimentalRustCrypto and matrix_bot_draupnir_pantalaimon_use at the same time.
+      These settings are mutually incompatible and therefore cant be used at the same time.
+  when:
+    - matrix_bot_draupnir_pantalaimon_use
+    - matrix_bot_draupnir_config_experimentalRustCrypto
 
 - when: "matrix_bot_draupnir_pantalaimon_use == 'true' and matrix_bot_draupnir_pantalaimon_breakage_ignore == 'false'"
   block:
