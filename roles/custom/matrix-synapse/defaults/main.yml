@@ -468,6 +468,13 @@ matrix_synapse_rc_federation:
 
 matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 
+# Controls the rate limit for delayed event management.
+#
+# This is only applied if `matrix_synapse_experimental_features_msc4140_enabled` is set to `true`.
+matrix_synapse_rc_delayed_event_mgmt:
+  per_second: 1
+  burst_count: 20
+
 # Controls the templates directory setting.
 #
 # See:
@@ -1265,7 +1272,9 @@ matrix_synapse_experimental_features_msc3266_enabled: true
 # Delayed events are required for proper call (Element Call) participation signalling.
 # If disabled it is very likely that you end up with stuck calls in Matrix rooms.
 #
-# Related to `matrix_synapse_max_event_delay_duration`
+# Related to:
+# - `matrix_synapse_max_event_delay_duration`
+# - `matrix_synapse_rc_delayed_event_mgmt`
 #
 # See https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 matrix_synapse_experimental_features_msc4140_enabled: false
