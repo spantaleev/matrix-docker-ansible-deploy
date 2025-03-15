@@ -20,6 +20,8 @@ The playbook can install and configure the [Jitsi](https://jitsi.org/) video-con
 
 Jitsi is an open source video-conferencing platform. It can not only be integrated with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS) as a widget, but also be used as standalone web app.
 
+💡 If you're into experimental technology, you may also be interested in trying out [Element Call](configuring-playbook-element-call.md) - a native Matrix video conferencing application.
+
 The [Ansible role for Jitsi](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi) is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting). For details about configuring Jitsi, you can check them via:
 - 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md) online
 - 📁 `roles/galaxy/jitsi/docs/configuring-jitsi.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)

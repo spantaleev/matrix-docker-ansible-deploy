@@ -1,3 +1,16 @@
+# 2025-03-15
+
+## Element Call support
+
+The playbook now supports [Element Call](https://github.com/element-hq/element-call) as an optional feature. Thanks to [wjbeckett](https://github.com/wjbeckett) for getting us started via [PR#3562](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3562).
+
+Element Call is a native Matrix video conferencing application developed by [Element](https://element.io/) that has the goal of replacing [Jitsi](./docs/configuring-playbook-jitsi.md) and the old WebRTC stack used in previous Element versions.
+
+💡 For now, Element Call is only supported with the [Synapse](docs/configuring-playbook-synapse.md) homeserver (with [federation](docs/configuring-playbook-federation.md) enabled) and [Element Web](docs/configuring-playbook-client-element-web.md) and Element X mobile clients. See the [Prerequisites](docs/configuring-playbook-element-call.md#prerequisites) section of the [Element Call documentation](docs/configuring-playbook-element-call.md) for more details.
+
+To get started, see the [Configuring Element Call](docs/configuring-playbook-element-call.md) documentation page.
+
+
 # 2025-03-08
 
 ## 6️⃣ IPv6 support enablement recommended by default

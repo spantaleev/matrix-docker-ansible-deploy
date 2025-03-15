@@ -1,0 +1,145 @@
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2024 wjbeckett
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# Element Call is a native Matrix video conferencing application developed by Element.
+# Project source code URL: https://github.com/element-hq/element-call
+
+matrix_element_call_enabled: false
+
+matrix_element_call_version: v0.7.2
+
+matrix_element_call_scheme: https
+
+matrix_element_call_hostname: "call.{{ matrix_server_fqn_element }}"
+matrix_element_call_path_prefix: /
+
+matrix_element_call_base_path: "{{ matrix_base_data_path }}/element-call"
+
+# The architecture for Element Call container images.
+# Recognized values by us are 'amd64', 'arm32' and 'arm64'.
+matrix_element_call_architecture: "{{ matrix_architecture }}"
+
+matrix_element_call_container_image: "{{ matrix_element_call_container_image_registry_prefix }}element-hq/element-call:{{ matrix_element_call_container_image_tag }}"
+matrix_element_call_container_image_registry_prefix: "{{ matrix_element_call_container_image_registry_prefix_upstream }}"
+matrix_element_call_container_image_registry_prefix_upstream: "{{ matrix_element_call_container_image_registry_prefix_upstream_default }}"
+matrix_element_call_container_image_registry_prefix_upstream_default: ghcr.io/
+matrix_element_call_container_image_tag: "{{ matrix_element_call_version }}"
+matrix_element_call_container_image_force_pull: "{{ matrix_element_call_container_image.endswith(':latest') }}"
+
+matrix_element_call_container_network: matrix-element-call
+
+matrix_element_call_container_http_host_bind_port: ''
+
+matrix_element_call_container_additional_networks: "{{ matrix_element_call_container_additional_networks_auto + matrix_element_call_container_additional_networks_custom }}"
+matrix_element_call_container_additional_networks_auto: []
+matrix_element_call_container_additional_networks_custom: []
+
+# Traefik Configuration for Element Call
+matrix_element_call_container_labels_traefik_enabled: true
+matrix_element_call_container_labels_traefik_docker_network: "{{ matrix_element_call_container_network }}"
+matrix_element_call_container_labels_traefik_hostname: "{{ matrix_element_call_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/element`).
+matrix_element_call_container_labels_traefik_path_prefix: "{{ matrix_element_call_path_prefix }}"
+matrix_element_call_container_labels_traefik_rule: "Host(`{{ matrix_element_call_container_labels_traefik_hostname }}`){% if matrix_element_call_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_element_call_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_element_call_container_labels_traefik_priority: 0
+matrix_element_call_container_labels_traefik_entrypoints: web-secure
+matrix_element_call_container_labels_traefik_tls: "{{ matrix_element_call_container_labels_traefik_entrypoints != 'web' }}"
+matrix_element_call_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_element_call_container_labels_traefik_additional_response_headers_custom`
+matrix_element_call_container_labels_traefik_additional_response_headers: "{{ matrix_element_call_container_labels_traefik_additional_response_headers_auto | combine(matrix_element_call_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_element_call_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': matrix_element_call_http_header_xss_protection} if matrix_element_call_http_header_xss_protection else {})
+    | combine ({'X-Frame-Options': matrix_element_call_http_header_frame_options} if matrix_element_call_http_header_frame_options else {})
+    | combine ({'X-Content-Type-Options': matrix_element_call_http_header_content_type_options} if matrix_element_call_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': matrix_element_call_http_header_content_security_policy} if matrix_element_call_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': matrix_element_call_http_header_content_permission_policy} if matrix_element_call_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': matrix_element_call_http_header_strict_transport_security} if matrix_element_call_http_header_strict_transport_security and matrix_element_call_container_labels_traefik_tls else {})
+  }}
+matrix_element_call_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_element_call_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_element_call_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_element_call_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_element_call_container_extra_arguments: []
+
+# List of systemd services that matrix-element-call.service depends on
+matrix_element_call_systemd_required_services_list: "{{ matrix_element_call_systemd_required_services_list_default + matrix_element_call_systemd_required_services_list_auto + matrix_element_call_systemd_required_services_list_custom }}"
+matrix_element_call_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_element_call_systemd_required_services_list_auto: []
+matrix_element_call_systemd_required_services_list_custom: []
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+matrix_element_call_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+matrix_element_call_http_header_frame_options: ''
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+matrix_element_call_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+matrix_element_call_http_header_content_security_policy: frame-ancestors *
+
+# Specifies the value of the `Permission-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
+matrix_element_call_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_element_call_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+matrix_element_call_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_element_call_hsts_preload_enabled else '' }}"
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `matrix_element_call_content_permission_policy`
+matrix_element_call_floc_optout_enabled: true
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `matrix_element_call_http_header_strict_transport_security`
+matrix_element_call_hsts_preload_enabled: false
+
+# Controls the default_server_config/m.homeserver/base_url property in the config.json file.
+matrix_element_call_config_default_server_config_m_homeserver_base_url: "{{ matrix_homeserver_url }}"
+
+# Controls the default_server_config/m.homeserver/server_name property in the config.json file.
+matrix_element_call_config_default_server_config_m_homeserver_server_name: "{{ matrix_domain }}"
+
+# Controls the livekit/livekit_service_url property in the config.json file.
+matrix_element_call_config_livekit_livekit_service_url: ""

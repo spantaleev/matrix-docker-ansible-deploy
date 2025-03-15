@@ -80,6 +80,8 @@ Services that run on the server to make the various parts of your installation w
 | [Exim](https://www.exim.org/) | ✅ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
 | [ma1sd](https://github.com/ma1uta/ma1sd) | ❌ | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
 | [ddclient](https://github.com/linuxserver/docker-ddclient) | ❌ | Dynamic DNS | [Link](docs/configuring-playbook-dynamic-dns.md) |
+| [LiveKit Server](https://github.com/livekit/livekit) | ❌ | WebRTC server for audio/video calls | [Link](docs/configuring-playbook-livekit-server.md) |
+| [Livekit JWT Service](https://github.com/livekit/livekit-jwt-service) | ❌ | JWT service for integrating [Element Call](./configuring-playbook-element-call.md) with [LiveKit Server](./configuring-playbook-livekit-server.md) | [Link](docs/configuring-playbook-livekit-jwt-service.md) |
 
 ### Authentication
 
@@ -185,6 +187,7 @@ Various services that don't fit any other categories.
 | [Pantalaimon](https://github.com/matrix-org/pantalaimon) | ❌ | E2EE aware proxy daemon | [Link](docs/configuring-playbook-pantalaimon.md) |
 | [Sygnal](https://github.com/matrix-org/sygnal) | ❌ | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | ❌ | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
+| [Element Call](https://github.com/element-hq/element-call) | ❌ | A native Matrix video conferencing application | [Link](docs/configuring-playbook-element-call.md) |
 
 ## 🆕 Changes
 

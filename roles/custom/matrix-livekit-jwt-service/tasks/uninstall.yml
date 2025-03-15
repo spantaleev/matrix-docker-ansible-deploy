@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2024 wjbeckett
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of LiveKit JWT Service systemd service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-livekit-jwt-service.service"
+  register: matrix_livekit_jwt_service_service_stat
+
+- when: matrix_livekit_jwt_service_service_stat.stat.exists | bool
+  block:
+    - name: Ensure LiveKit JWT Service systemd service is stopped
+      ansible.builtin.service:
+        name: matrix-livekit-jwt-service
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure LiveKit JWT Service systemd service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-livekit-jwt-service.service"
+        state: absent
+
+    - name: Ensure LiveKit JWT Service paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_livekit_jwt_service_base_path }}"
+        state: absent

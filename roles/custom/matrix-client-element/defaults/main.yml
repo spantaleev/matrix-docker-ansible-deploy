@@ -215,6 +215,67 @@ matrix_client_element_branding_auth_header_logo_url: "{{ matrix_client_element_w
 # URL to Wallpaper, shown in background of welcome page
 matrix_client_element_branding_welcome_background_url: ~  # noqa var-naming
 
+# Controls the `features` section of the Element Web configuration.
+matrix_client_element_features: "{{ matrix_client_element_features_default | combine(matrix_client_element_features_auto, recursive=True) | combine(matrix_client_element_features_custom, recursive=True) }}"
+matrix_client_element_features_default: |-
+  {{
+    {}
+
+    | combine(
+      {'feature_video_rooms': true} if matrix_client_element_features_feature_video_rooms else {}
+    )
+    | combine(
+      {'feature_group_calls': true} if matrix_client_element_features_feature_group_calls else {}
+    )
+    | combine(
+      {'feature_element_call_video_rooms': true} if matrix_client_element_features_feature_element_call_video_rooms else {}
+    )
+    | combine(
+      {'feature_oidc_native_flow': true} if matrix_client_element_features_feature_oidc_native_flow else {}
+    )
+  }}
+
+matrix_client_element_features_auto: {}
+matrix_client_element_features_custom: {}
+
+matrix_client_element_features_feature_video_rooms: false
+matrix_client_element_features_feature_group_calls: false
+matrix_client_element_features_feature_element_call_video_rooms: false
+matrix_client_element_features_feature_oidc_native_flow: false
+
+matrix_client_element_element_call_enabled: false
+matrix_client_element_element_call: "{{ matrix_client_element_element_call_default | combine(matrix_client_element_element_call_auto, recursive=True) | combine(matrix_client_element_element_call_custom, recursive=True) }}"
+matrix_client_element_element_call_default: |-
+  {{
+    {}
+    | combine(
+      {'url': matrix_client_element_element_call_url} if matrix_client_element_element_call_url else {}
+    )
+    | combine(
+      {'participant_limit': matrix_client_element_element_call_participant_limit} if matrix_client_element_element_call_participant_limit else {}
+    )
+    | combine(
+      {'brand': matrix_client_element_element_call_brand} if matrix_client_element_element_call_brand else {}
+    )
+    | combine(
+      {'use_exclusively': matrix_client_element_element_call_use_exclusively} if matrix_client_element_element_call_use_exclusively else {}
+    )
+  }}
+matrix_client_element_element_call_auto: {}
+matrix_client_element_element_call_custom: {}
+
+# Controls the `element_call.url` setting in the Element Web configuration.
+matrix_client_element_element_call_url: ''
+
+# Controls the `element_call.participant_limit` setting in the Element Web configuration.
+matrix_client_element_element_call_participant_limit: 8
+
+# Controls the `element_call.brand` setting in the Element Web configuration.
+matrix_client_element_element_call_brand: "Element Call"
+
+# Controls the `element_call.use_exclusively` setting in the Element Web configuration.
+matrix_client_element_element_call_use_exclusively: true
+
 matrix_client_element_page_template_welcome_path: "{{ role_path }}/templates/welcome.html.j2"
 
 # By default, there's no Element Web homepage (when logged in). If you wish to have one,

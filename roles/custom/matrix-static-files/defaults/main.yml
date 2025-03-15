@@ -20,6 +20,7 @@ matrix_static_files_config_path: "{{ matrix_static_files_base_path }}/config"
 matrix_static_files_public_path: "{{ matrix_static_files_base_path }}/public"
 matrix_static_files_public_well_known_path: "{{ matrix_static_files_public_path }}/.well-known"
 matrix_static_files_public_well_known_matrix_path: "{{ matrix_static_files_public_well_known_path }}/matrix"
+matrix_static_files_public_well_known_element_path: "{{ matrix_static_files_public_well_known_path }}/element"
 
 # List of systemd services that matrix-static-files.service depends on
 matrix_static_files_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
@@ -211,6 +212,16 @@ matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin: "{{ matri
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: {}
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_custom: {}
 
+# Controls whether `org.matrix.msc4143.rtc_foci`-related entries should be added to the client well-known.
+# By default, if there are entries in `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci`, we show them (by enabling this).
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci | default({}) | dict2items | length > 0 }}"
+
+# Controls the org.matrix.msc4143.rtc_foci property in the /.well-known/matrix/client file.
+# See `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled`
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto | combine(matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom, recursive=True) }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: {}
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom: {}
+
 # Default /.well-known/matrix/client configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -354,6 +365,56 @@ matrix_static_files_file_matrix_support_configuration: "{{ matrix_static_files_f
 ########################################################################
 #                                                                      #
 # /Related to /.well-known/matrix/support                              #
+#                                                                      #
+########################################################################
+
+
+########################################################################
+#                                                                      #
+# Related to /.well-known/element/element.json                         #
+#                                                                      #
+########################################################################
+
+# Controls whether a `/.well-known/element/element.json` file is generated and used at all.
+matrix_static_files_file_element_element_json_enabled: true
+
+# Controls the call.widget_url property in the /.well-known/element/element.json file
+matrix_static_files_file_element_element_json_property_call_widget_url: ''
+
+# Default /.well-known/element/element.json configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_static_files_file_matrix_support_configuration_extension_json`)
+# or completely replace this variable with your own template.
+matrix_static_files_file_element_element_json_configuration_json: "{{ lookup('template', 'templates/public/.well-known/element/element.json.j2') }}"
+
+# Your custom JSON configuration for /.well-known/element/element.json should go to `matrix_static_files_file_element_element_json_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_static_files_file_matrix_support_configuration_extension_json`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_static_files_file_matrix_support_configuration_json`.
+#
+# Example configuration extension follows:
+#
+# matrix_static_files_file_element_element_json_configuration_extension_json: |
+#   {
+#     "call": {
+#       "url": "value"
+#     }
+#   }
+matrix_static_files_file_element_element_json_configuration_extension_json: '{}'
+
+matrix_static_files_file_element_element_json_configuration_extension: "{{ matrix_static_files_file_element_element_json_configuration_extension_json | from_json if matrix_static_files_file_element_element_json_configuration_extension_json | from_json is mapping else {} }}"
+
+# Holds the final /.well-known/matrix/support configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_static_files_file_element_element_json_configuration_json` or `matrix_static_files_file_element_element_json_configuration_extension_json`.
+matrix_static_files_file_element_element_json_configuration: "{{ matrix_static_files_file_element_element_json_configuration_json | combine(matrix_static_files_file_element_element_json_configuration_extension, recursive=True) }}"
+
+########################################################################
+#                                                                      #
+# /Related to /.well-known/element/element.json                        #
 #                                                                      #
 ########################################################################
 
