@@ -20,6 +20,7 @@ See the project's [documentation](https://github.com/element-hq/element-call) to
 - Various experimental features for the Synapse homeserver which Element Call [requires](https://github.com/element-hq/element-call/blob/93ae2aed9841e0b066d515c56bd4c122d2b591b2/docs/self-hosting.md#a-matrix-homeserver) (automatically done when Element Call is enabled)
 - A [LiveKit Server](configuring-playbook-livekit-server.md) (automatically installed when Element Call is enabled)
 - The [LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) (automatically installed when Element Call is enabled)
+- A client compatible with Element Call. As of 2025-03-15, that's just [Element Web](configuring-playbook-client-element-web.md) and the Element X mobile clients (iOS and Android).
 
 > [!WARNING]
 >  Because Element Call [requires](https://github.com/element-hq/element-call/blob/93ae2aed9841e0b066d515c56bd4c122d2b591b2/docs/self-hosting.md#a-matrix-homeserver) a few experimental features in the Matrix protocol, it's **very likely that it only works with the Synapse homeserver**.
@@ -36,11 +37,11 @@ By default, this playbook installs Element Call on the `call.element.` subdomain
 
 When setting these values, replace `example.com` with your own.
 
-All dependency services for Element Call ([LiveKit Server](configuring-playbook-livekit-server.md) and [Livekit JWT Service](configuring-playbook-livekit-jwt-service.md)) are installed and configured automatically by the playbook. By default, these services are installed on a subpath on the `matrix.` domain, so no DNS record adjustments are required for them.
+All dependency services for Element Call ([LiveKit Server](configuring-playbook-livekit-server.md) and [Livekit JWT Service](configuring-playbook-livekit-jwt-service.md)) are installed and configured automatically by the playbook. By default, these services are installed on subpaths on the `matrix.` domain (e.g. `/livekit-server`, `/livekit-jwt-service`), so no DNS record adjustments are required for them.
 
 ## Adjusting firewall rules
 
-In addition to the HTTP/HTTPS ports (which you've already exposed as per the [prerequisites](prerequisites.md) document), you'll also need to open ports required by LiveKit Server as described in its own [Adjusting firewall rules](configuring-playbook-livekit-server.md#adjusting-firewall-rules) section.
+In addition to the HTTP/HTTPS ports (which you've already exposed as per the [prerequisites](prerequisites.md) document), you'll also need to open ports required by [LiveKit Server](configuring-playbook-livekit-server.md) as described in its own [Adjusting firewall rules](configuring-playbook-livekit-server.md#adjusting-firewall-rules) section.
 
 ## Adjusting the playbook configuration
 
@@ -57,7 +58,7 @@ By tweaking the `matrix_element_call_hostname` variable, you can easily make the
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
-matrix_element_call_hostname: "element-call.example.com"
+matrix_element_call_hostname: element-call.example.com
 ```
 
 > [!WARNING]
@@ -65,7 +66,16 @@ matrix_element_call_hostname: "element-call.example.com"
 
 ## Installing
 
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records) and [adjusting firewall rules](#adjusting-firewall-rules), run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records) and [adjusting firewall rules](#adjusting-firewall-rules), run the playbook with [playbook tags](playbook-tags.md) as below:
+
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
