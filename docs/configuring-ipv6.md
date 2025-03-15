@@ -58,7 +58,7 @@ Doing this:
 
 > [!WARNING]
 > Without enabling this and assuming you have IPv6 `AAAA` DNS records pointing to the server (see [Configuring DNS records for IPv6](#configuring-dns-records-for-ipv6)), IPv6 traffic will still be handled, but NAT64 will be used instead of NAT66.
-> As such, containers will only have an IPv4 address and all IPv6 traffic that reaches them will seem to originate from a local IP.
+> As such, containers will only have an IPv4 address and all IPv6 traffic that reaches them will seem to originate from a local IP. Containers also won't be able to make outgoing (even cross-container) IPv6 requests.
 
 To confirm connectivity, see the following other resources:
 
