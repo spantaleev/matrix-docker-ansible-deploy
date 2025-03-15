@@ -6,6 +6,13 @@
 
 ---
 
+- name: Fail if Element Call architecture is not supported
+  ansible.builtin.fail:
+    msg: >
+      Element Call is only supported on amd64 and arm64 architectures.
+      Your architecture is configured as '{{ matrix_element_call_architecture }}'.
+  when: "matrix_element_call_architecture not in ['amd64', 'arm64']"
+
 - name: Fail if required Element Call settings are not defined
   ansible.builtin.fail:
     msg: >
