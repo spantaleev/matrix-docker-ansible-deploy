@@ -27,7 +27,7 @@ Here are some playbook tags that you should be familiar with:
 
 - `stop` — stops all systemd services
 
-- `ensure-matrix-users-created` or its alias `ensure-users-created` — a special tag which ensures that all special users needed by the playbook (for bots, etc.) are created
+- `ensure-matrix-users-created` or its alias `ensure-users-created` — a special tag which ensures that all special users needed by the playbook (for bots, etc.) are created. See the variable `matrix_user_creator_users_auto` on [`group_vars/matrix_servers`](../group_vars/matrix_servers) for actual values of users which running this tag can create by default.
 
 **Notes**:
 - `setup-*` tags and `install-*` tags **do not start services** automatically, because you may wish to do things before starting services, such as importing a database dump, restoring data from another server, etc.
