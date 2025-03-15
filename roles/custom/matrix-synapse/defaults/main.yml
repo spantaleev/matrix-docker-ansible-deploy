@@ -570,6 +570,10 @@ matrix_synapse_registration_requires_token: false
 # A list of 3PID types which users must supply when registering (possible values: email, msisdn).
 matrix_synapse_registrations_require_3pid: []
 
+# Explicitly disable asking for MSISDNs from the registration
+# flow (overrides matrix_synapse_registrations_require_3pid if MSISDNs are set as required)
+matrix_synapse_disable_msisdn_registration: false
+
 # A list of patterns 3pids must match in order to permit registration, e.g.:
 #  - medium: email
 #    pattern: '.*@example\.com'
@@ -1206,6 +1210,27 @@ matrix_synapse_email_invite_client_location: "https://app.element.io"
 #
 ################################################################################
 
+# Controls whether to enable the "send typing, presence and receipts to appservices" experimental feature.
+#
+# See:
+# - https://github.com/matrix-org/matrix-spec-proposals/pull/2409
+# - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
+matrix_synapse_experimental_features_msc2409_to_device_messages_enabled: false
+
+# Controls whether to enable the "device masquerading" for encrypted appservices experimental feature.
+#
+# See:
+# - https://github.com/matrix-org/matrix-spec-proposals/pull/3202
+# - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
+matrix_synapse_experimental_features_msc3202_device_masquerading_enabled: false
+
+# Controls whether to enable the "transaction extensions" for encrypted appservices experimental feature.
+#
+# See:
+# - https://github.com/matrix-org/matrix-spec-proposals/pull/3202
+# - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
+matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: false
+
 # Controls whether to enable the "Next-generation auth for Matrix, based on OAuth 2.0/OIDC" experimental feature.
 #
 # See:
@@ -1532,6 +1557,11 @@ matrix_synapse_encryption_enabled_by_default_for_room_type: "off"
 
 matrix_synapse_trusted_key_servers:
   - server_name: "matrix.org"
+
+
+# Enable the following to disable the warning that is emitted when the
+# matrix_synapse_trusted_key_servers include 'matrix.org'. See above.
+matrix_synapse_suppress_key_server_warning: false
 
 matrix_synapse_redaction_retention_period: 7d
 
