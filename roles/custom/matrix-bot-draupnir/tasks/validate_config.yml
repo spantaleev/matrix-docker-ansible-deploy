@@ -39,6 +39,11 @@
     - {'name': 'matrix_bot_draupnir_pantalaimon_password', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
   when: "item.when | bool and (vars[item.name] == '' or vars[item.name] is none)"
 
+- name: Fail if Draupnir room hijacking enabled without enabling the Synapse Admin API
+  ansible.builtin.fail:
+    msg: "When matrix_bot_draupnir_config_admin_enableMakeRoomAdminCommand is enabled, matrix_bot_draupnir_admin_api_enabled must also be enabled"
+  when: "matrix_bot_draupnir_config_admin_enableMakeRoomAdminCommand | bool and not matrix_bot_draupnir_admin_api_enabled | bool"
+
 - name: Fail if inappropriate variables are defined
   ansible.builtin.fail:
     msg: "The `{{ item.name }}` variable must be undefined or have a null value."
