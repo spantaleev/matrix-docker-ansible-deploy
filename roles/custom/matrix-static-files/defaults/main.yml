@@ -57,7 +57,7 @@ matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_static_f
 matrix_static_files_container_labels_traefik_entrypoints: web-secure
 matrix_static_files_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added that expose the well-known public endpoint on the Matrix domain.
+# Controls whether labels will be added that expose the `/.well-known/matrix` endpoint on the Matrix domain.
 matrix_static_files_container_labels_well_known_matrix_endpoint_enabled: true
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname: ''
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_path_prefix: /.well-known/matrix
@@ -71,6 +71,21 @@ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls_cert
 # As such, they are not being compressed there and we compress them at the Traefik level.
 matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_enabled: true
 matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_minResponseBodyBytes: 100  # noqa var-naming
+
+# Controls whether labels will be added that expose the `/.well-known/element` endpoint on the Matrix domain.
+matrix_static_files_container_labels_well_known_element_endpoint_enabled: true
+matrix_static_files_container_labels_well_known_element_endpoint_traefik_hostname: ''
+matrix_static_files_container_labels_well_known_element_endpoint_traefik_path_prefix: /.well-known/element
+matrix_static_files_container_labels_well_known_element_endpoint_traefik_rule: "Host(`{{ matrix_static_files_container_labels_well_known_element_endpoint_traefik_hostname }}`) && PathPrefix(`{{ matrix_static_files_container_labels_well_known_element_endpoint_traefik_path_prefix }}`)"
+matrix_static_files_container_labels_well_known_element_endpoint_traefik_priority: 0
+matrix_static_files_container_labels_well_known_element_endpoint_traefik_entrypoints: "{{ matrix_static_files_container_labels_traefik_entrypoints }}"
+matrix_static_files_container_labels_well_known_element_endpoint_traefik_tls: "{{ matrix_static_files_container_labels_well_known_element_endpoint_traefik_entrypoints != 'web' }}"
+matrix_static_files_container_labels_well_known_element_endpoint_traefik_tls_certResolver: "{{ matrix_static_files_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+# Controls whether the compress middleware (https://doc.traefik.io/traefik/middlewares/http/compress/) will be enabled for this router.
+# The web-server only compresses known file types and our /.well-known/matrix/* files have no file extension.
+# As such, they are not being compressed there and we compress them at the Traefik level.
+matrix_static_files_container_labels_well_known_element_endpoint_middleware_compress_enabled: true
+matrix_static_files_container_labels_well_known_element_endpoint_middleware_compress_minResponseBodyBytes: 100  # noqa var-naming
 
 # Controls whether labels will be added that serve the base domain.
 #
