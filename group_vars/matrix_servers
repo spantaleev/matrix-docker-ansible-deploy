@@ -6089,7 +6089,7 @@ matrix_user_verification_service_container_url: "http://{{  matrix_user_verifica
 matrix_user_verification_service_uvs_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
 # We connect via the container network (private IPs), so we need to disable IP checks
-matrix_user_verification_service_uvs_disable_ip_blacklist: "{{'true' if matrix_synapse_enabled else 'false'}}"
+matrix_user_verification_service_uvs_disable_ip_blacklist: "{{ matrix_synapse_enabled }}"
 
 matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'uvs.auth.token', rounds=655555) | to_uuid }}"
 
