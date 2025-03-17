@@ -18,8 +18,13 @@
     - {path: "{{ matrix_static_files_public_path }}", when: true}
     - {path: "{{ matrix_static_files_public_well_known_path }}", when: true}
     - {path: "{{ matrix_static_files_public_well_known_matrix_path }}", when: true}
-    - {path: "{{ matrix_static_files_public_well_known_element_path }}", when: true}
   when: "item.when | bool"
+
+# This is not necessary anymore, so we're cleaning it up.
+- name: Ensure matrix-static-files element path doesn't exist
+  ansible.builtin.file:
+    path: "{{ matrix_static_files_public_well_known_element_path }}"
+    state: absent
 
 - name: Ensure matrix-static-files is configured
   ansible.builtin.template:
@@ -59,10 +64,6 @@
       dest: "{{ matrix_static_files_public_well_known_matrix_path }}/support"
       when: "{{ matrix_static_files_file_matrix_support_enabled }}"
 
-    - content: "{{ matrix_static_files_file_element_element_json_configuration | to_nice_json }}"
-      dest: "{{ matrix_static_files_public_well_known_element_path }}/element.json"
-      when: "{{ matrix_static_files_file_element_element_json_enabled }}"
-
     # This one will not be deleted if `matrix_static_files_file_index_html_enabled` flips to `false`.
     # See the comment for `matrix_static_files_file_index_html_enabled` to learn why.
     - content: "{{ matrix_static_files_file_index_html_template }}"
@@ -80,12 +81,6 @@
     path: "{{ matrix_static_files_public_well_known_matrix_path }}/support"
     state: absent
   when: "not matrix_static_files_file_matrix_support_enabled | bool"
-
-- name: Ensure /.well-known/element/element.json file deleted if not enabled
-  ansible.builtin.file:
-    path: "{{ matrix_static_files_public_well_known_element_path }}/element.json"
-    state: absent
-  when: "not matrix_static_files_file_element_element_json_enabled | bool"
 
 - name: Ensure matrix-static-files container image is pulled
   community.docker.docker_image:
