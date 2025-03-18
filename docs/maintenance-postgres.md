@@ -98,7 +98,7 @@ As part of the upgrade, the database is dumped to `/tmp`, an upgraded and empty 
 
 To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage. If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 
-**All databases, roles, etc. on the Postgres server are migrated**.
+**All databases, roles, etc. on the Postgres server are migrated**. However, other components that depend on specific Postgres versions (like the [Postgres Backup](configuring-playbook-postgres-backup.md) service) may need to be updated after the upgrade by using `just install-all`
 
 ## Tuning PostgreSQL
 
