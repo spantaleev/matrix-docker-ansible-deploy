@@ -10,7 +10,7 @@ matrix.example.com {
         encode zstd gzip
 
         # Use the docker service name instead of localhost or 127.0.0.1 here
-        matrix-traefik:8080 {
+        reverse_proxy matrix-traefik:8080 {
                header_up X-Forwarded-Port {http.request.port}
                header_up X-Forwarded-TlsProto {tls_protocol}
                header_up X-Forwarded-TlsCipher {tls_cipher}
