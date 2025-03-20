@@ -117,7 +117,7 @@ traefik_config_certificatesResolvers_acme_dnsChallenge_provider: "cloudflare"
 traefik_config_certificatesResolvers_acme_dnsChallenge_delayBeforeCheck: 60
 traefik_config_certificatesResolvers_acme_dnsChallenge_resolvers:
   - "1.1.1.1:53"
-traefik_environment_variables_additional_variables: |
+traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
