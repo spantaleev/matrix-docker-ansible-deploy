@@ -26,7 +26,7 @@ By default, this playbook installs its own [Traefik](https://traefik.io/) revers
 
 - serving public traffic and providing SSL-termination with certificates obtained from [Let's Encrypt](https://letsencrypt.org/). See [Adjusting SSL certificate retrieval](./configuring-playbook-ssl-certificates.md).
 
-- assists internal communication between addon services (briges, bots, etc.) and the homeserver via an internal entrypoint (`matrix-internal-matrix-client-api`).
+- assists internal communication between addon services (bridges, bots, etc.) and the homeserver via an internal entrypoint (`matrix-internal-matrix-client-api`).
 
 There are 2 ways to use Traefik with this playbook, as described below.
 
