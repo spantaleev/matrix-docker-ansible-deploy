@@ -24,12 +24,15 @@ matrix_synapse_auto_compressor_enabled: true
 
 ### Edit the schedule (optional)
 
-By default the task will run 0 a.m. every day based on the `matrix_synapse_auto_compressor_schedule` variable. It is defined in the format of systemd timer calendar.
+By default the task will around 0 a.m. every day based on the `matrix_synapse_auto_compressor_schedule` variable with a randomized delay of 6 hours (controlled by the `matrix_synapse_auto_compressor_schedule_randomized_delay_sec` variable). It is defined in the format of systemd timer calendar.
 
 To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_synapse_auto_compressor_schedule: "*-*-* 00:00:00"
+
+# Consider adjusting the randomized delay or setting it to 0 to disable randomized delays.
+# matrix_synapse_auto_compressor_schedule_randomized_delay_sec: 6h
 ```
 
 ### Extending the configuration

@@ -64,8 +64,13 @@ matrix_synapse_auto_compressor_database_name: 'synapse'
 # connection string to synapse database (postgres only)
 matrix_synapse_auto_compressor_synapse_database: 'postgres://{{ matrix_synapse_auto_compressor_database_username | urlencode() }}:{{ matrix_synapse_auto_compressor_database_password | urlencode() }}@{{ matrix_synapse_auto_compressor_database_hostname }}:{{ matrix_synapse_auto_compressor_database_port }}/{{ matrix_synapse_auto_compressor_database_name }}'
 
-# systemd calendar configuration for the compressor job
+# Controls the `OnCalendar` configuration for the compressor job.
+# Also see: `matrix_synapse_auto_compressor_schedule_randomized_delay_sec`
 matrix_synapse_auto_compressor_schedule: "*-*-* 00:00:00"
+
+# The `RandomizedDelaySec` delay (in seconds or as a systemd time string) to randomize the `OnCalendar` start time (`matrix_synapse_auto_compressor_schedule`) of the compressor job.
+# This can be set to 0 to disable randomized delays.
+matrix_synapse_auto_compressor_schedule_randomized_delay_sec: 6h
 
 # The number of state groups to work on at once.
 # All of the entries from state_groups_state are requested from the database for state groups that are worked on.
