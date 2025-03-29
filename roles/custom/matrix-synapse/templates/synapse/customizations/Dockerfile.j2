@@ -11,6 +11,9 @@ RUN pip install 'boto3<1.36.0' 'botocore<1.36.0' synapse-s3-storage-provider=={{
 {% else %}
 RUN pip install synapse-s3-storage-provider=={{ matrix_synapse_ext_synapse_s3_storage_provider_version }}
 {% endif %}
+{% if matrix_synapse_container_image_customizations_s3_storage_provider_installation_explicit_libldap_installation_enabled %}
+RUN apt-get update && apt-get install --no-install-recommends -y {{ matrix_synapse_container_image_customizations_s3_storage_provider_installation_explicit_libldap_installation_package_name }}
+{% endif %}
 {% endif %}
 
 {% if matrix_synapse_container_image_customizations_templates_enabled %}
