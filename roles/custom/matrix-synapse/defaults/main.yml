@@ -52,26 +52,6 @@ matrix_synapse_container_image_customizations_s3_storage_provider_installation_e
 # https://github.com/aws/aws-cli/issues/9214
 matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled: true
 
-# Controls whether to install libldapXX explicitly when installing s3-storage-provider.
-# This is to work around it potentially not being there (after `autoremove` invoked by other scripts cleans it up, etc.)
-#
-# Some scripts in the custom Dockerfile may install and then autoremove git/ssh/openssh-client.
-# This has the side-effect of removing the libldap library that s3-storage-provider depends upon indirectly (via psycopg2).
-#
-# If this should happen, s3-storage-provider (the `s3_media_upload` script) will fail to start with an error like this:
-# > Traceback (most recent call last):
-# >   File "/usr/local/bin/s3_media_upload", line 10, in <module>
-# >     import psycopg2
-# >   File "/usr/local/lib/python3.12/site-packages/psycopg2/__init__.py", line 51, in <module>
-# >     from psycopg2._psycopg import (                     # noqa
-# > ImportError: libldap-2.5.so.0: cannot open shared object file: No such file or directory
-#
-# The library (e.g. `/usr/lib/x86_64-linux-gnu/libldap-2.5.so.0`) appears to be available by default in the upstream Synapse image for some reason,
-# but it doesn't seem to be installed through a Debian package. Autoremoval would remove it, causing s3-storage-provider to fail.
-# Given that this is a dependency for s3-storage-provider (psycopg2), we prefer to install it explicitly.
-matrix_synapse_container_image_customizations_s3_storage_provider_installation_explicit_libldap_installation_enabled: true
-matrix_synapse_container_image_customizations_s3_storage_provider_installation_explicit_libldap_installation_package_name: libldap-2.5
-
 # Controls whether custom build steps will be added to the Dockerfile for installing auto-accept-invite module.
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_auto_accept_invite_version`.
 matrix_synapse_container_image_customizations_auto_accept_invite_installation_enabled: "{{ matrix_synapse_ext_synapse_auto_accept_invite_enabled }}"
