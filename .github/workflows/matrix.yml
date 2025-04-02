@@ -27,6 +27,8 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
       - name: Run ansible-lint
-        uses: ansible-community/ansible-lint-action@v6.17.0
+        uses: ansible/ansible-lint@v24.10.0
+        env:
+          ANSIBLE_ROLES_PATH: ./roles:roles/galaxy
         with:
-          path: roles/custom
+          requirements_file: requirements.yml
