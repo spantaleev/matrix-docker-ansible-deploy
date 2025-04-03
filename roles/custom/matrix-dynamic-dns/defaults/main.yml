@@ -55,6 +55,18 @@ matrix_dynamic_dns_base_path: "{{ matrix_base_data_path }}/dynamic-dns"
 matrix_dynamic_dns_config_path: "{{ matrix_dynamic_dns_base_path }}/config"
 matrix_dynamic_dns_docker_src_files_path: "{{ matrix_dynamic_dns_base_path }}/docker-src"
 
+# Config options
+matrix_dynamic_dns_use: "web"
+
+# The endpoint to use to determine your external IP
+matrix_dynamic_dns_web: "https://cloudflare.com/cdn-cgi/trace"
+
+# The field to extract the IP from
+# If your endpoint defined in `matrix_dynamic_dns_web` doesn't need this, just set it to ""
+matrix_dynamic_dns_web_skip: "ip="
+
+matrix_dynamic_dns_additional_configuration_blocks: []
+
 # Holds the configurations (the domains to update DNS for, the providers they use, etc.)
 #
 # Example:
@@ -65,7 +77,3 @@ matrix_dynamic_dns_docker_src_files_path: "{{ matrix_dynamic_dns_base_path }}/do
 #     password: XXXXXXXXXXXXXXXX
 #     domain: "{{ matrix_domain }}"
 matrix_dynamic_dns_domain_configurations: []
-
-# Config options
-matrix_dynamic_dns_additional_configuration_blocks: []
-matrix_dynamic_dns_use: "web"
