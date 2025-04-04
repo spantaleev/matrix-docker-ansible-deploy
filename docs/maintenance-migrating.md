@@ -78,3 +78,5 @@ The shortcut command with `just` program is also available: `just run-tags insta
 After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 
 Having make sure that both services and federation work as expected, you can safely shutdown the old server.
+
+**Note**: if Matrix Federation API port cannot be reached after migration, it might be due to the server provider not allowing the port by default. Take a look at [this section](maintenance-and-troubleshooting.md#in-case-of-matrix-federation-api-port-not-being-able-to-be-reached) to troubleshoot.
