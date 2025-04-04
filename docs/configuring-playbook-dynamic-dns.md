@@ -14,7 +14,7 @@ Most cloud providers / ISPs will charge you extra for a static IP address. If yo
 
 ## Prerequisite
 
-You'll need to get a username and password from your DNS provider. Please consult with the provider about how to retrieve them.
+You'll need to authenticate with your DNS provider somehow, in most cases this is simply a username and password but can differ from provider to provider. Please consult with your providers documentation and the upstream [ddclient documentation](https://github.com/ddclient/ddclient/blob/main/ddclient.conf.in) to determine what you'll need to provide to authenticate.
 
 ## Adjusting the playbook configuration
 
@@ -30,6 +30,8 @@ matrix_dynamic_dns_domain_configurations:
     password: YOUR_PASSWORD_HERE
     domain: "{{ matrix_domain }}"
 ```
+
+Keep in mind that certain providers may require a different configuration of the `matrix_dynamic_dns_domain_configurations` variable, for provider specific examples see the [upstream documentation](https://github.com/ddclient/ddclient/blob/main/ddclient.conf.in).
 
 ### Extending the configuration
 
@@ -57,7 +59,8 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 Additional resources:
 
 - https://matrix.org/docs/guides/free-small-matrix-server
+- https://github.com/linuxserver/docker-ddclient
 
 ## Troubleshooting
 
-As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dynamic-dns`.
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dynamic-dns`. However, due to an [upstream issue](https://github.com/linuxserver/docker-ddclient/issues/54#issuecomment-1153143132) the logging output is not always complete. For advanced debugging purposes running the `ddclient` tool outside of the container is useful via the following: `ddclient -file ./ddclient.conf -daemon=0 -debug -verbose -noquiet`.
