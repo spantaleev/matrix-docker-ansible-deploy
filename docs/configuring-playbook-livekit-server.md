@@ -25,8 +25,14 @@ To ensure LiveKit Server functions correctly, the following firewall rules and p
 
 - `7882/udp`: ICE/UDP Mux
 
-- `3479/udp`: TURN/UDP
+- `3479/udp`: TURN/UDP. Also see the [Limitations](#limitations) section below.
 
-- `5350/tcp`: TURN/TCP
+- `5350/tcp`: TURN/TCP. Also see the [Limitations](#limitations) section below.
 
 💡 The suggestions above are inspired by the upstream [Ports and Firewall](https://docs.livekit.io/home/self-hosting/ports-firewall/) documentation based on how LiveKit is configured in the playbook. If you've using custom configuration for the LiveKit Server role, you may need to adjust the firewall rules accordingly.
+
+## Limitations
+
+For some reason, LiveKit Server's TURN ports (`3479/udp` and `5350/tcp`) are not reachable over IPv6 regardless of whether you've [enabled IPv6](./configuring-ipv6.md) for your server.
+
+It seems like LiveKit Server intentionally only listens on `udp4` and `tcp4` as seen [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L128) and [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L92).
