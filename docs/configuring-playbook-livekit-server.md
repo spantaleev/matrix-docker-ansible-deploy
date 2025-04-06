@@ -25,4 +25,8 @@ To ensure LiveKit Server functions correctly, the following firewall rules and p
 
 - `7882/udp`: ICE/UDP Mux
 
+- `3479/udp`: TURN/UDP
+
+- `5350/tcp`: TURN/TCP
+
 💡 The suggestions above are inspired by the upstream [Ports and Firewall](https://docs.livekit.io/home/self-hosting/ports-firewall/) documentation based on how LiveKit is configured in the playbook. If you've using custom configuration for the LiveKit Server role, you may need to adjust the firewall rules accordingly.
