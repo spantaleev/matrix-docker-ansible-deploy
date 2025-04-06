@@ -6337,6 +6337,15 @@ livekit_server_container_labels_traefik_docker_network: "{{ matrix_playbook_reve
 livekit_server_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 livekit_server_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
+livekit_server_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+livekit_server_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
+livekit_server_metrics_proxying_enabled: "{{ livekit_server_config_prometheus_enabled and matrix_metrics_exposure_enabled }}"
+livekit_server_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+livekit_server_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/livekit-server"
+
+livekit_server_config_prometheus_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
+
 livekit_server_config_keys_auto: |-
   {{
     {}
