@@ -3568,10 +3568,8 @@ matrix_coturn_container_additional_volumes: |
     )
   }}
 
-matrix_coturn_systemd_required_services_list: |
+matrix_coturn_systemd_required_services_list_auto: |
   {{
-    [devture_systemd_docker_base_docker_service_name]
-    +
     ([traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else [])
   }}
 

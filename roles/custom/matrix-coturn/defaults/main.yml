@@ -56,7 +56,10 @@ matrix_coturn_docker_src_files_path: "{{ matrix_coturn_base_path }}/docker-src"
 matrix_coturn_config_path: "{{ matrix_coturn_base_path }}/turnserver.conf"
 
 # List of systemd services that matrix-coturn.service depends on
-matrix_coturn_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_coturn_systemd_required_services_list: "{{ matrix_coturn_systemd_required_services_list_default + matrix_coturn_systemd_required_services_list_auto + matrix_coturn_systemd_required_services_list_custom }}"
+matrix_coturn_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_coturn_systemd_required_services_list_auto: []
+matrix_coturn_systemd_required_services_list_custom: []
 
 # A list of additional "volumes" to mount in the container.
 # This list gets populated dynamically at runtime. You can provide a different default value,
