@@ -1,3 +1,27 @@
+# 2025-04-09
+
+## Element Call frontend installation is now optional
+
+Because all Element clients (Element Web and Element X mobile) now embed and use their own Element Call frontend application (and not the one hosted via the playbook), it makes little sense for the playbook to self-host the Element Call frontend for you. Setting up the frontend requires an additional hostname (DNS setup) and it won't be used by Element clients anyway, so **we now recommend not installing the Element Call frontend**.
+
+💡 A reason you may wish to continue installing the Element Call frontend (despite Matrix clients not making use of it), is if you wish to use it standalone - directly via a browser.
+
+The playbook now lets you [Decide between all of Element Call vs just the Element Call stack](./docs/configuring-playbook-element-call.md#decide-between-all-of-element-call-vs-just-the-element-call-stack).
+
+If you've already installed all of Element Call (via `matrix_element_call_enabled: true`), you can switch to "just the Element Call stack" (all supporting services **without the Element Call frontend**) by:
+
+1. Adjusting your `vars.yml` configuration like this:
+
+```diff
+-matrix_element_call_enabled: true
++matrix_element_call_stack_enabled: true
+```
+
+2. [Re-running the playbook](./docs/installing.md) with the `setup-all` Ansible tag (e.g. `just setup-all`)
+
+3. Getting rid of the `call.element.example.com` DNS record
+
+
 # 2025-03-15
 
 ## Element Call support
