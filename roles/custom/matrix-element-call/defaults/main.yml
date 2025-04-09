@@ -11,6 +11,15 @@
 
 matrix_element_call_enabled: false
 
+# Controls whether the Element Call stack (various services around Element Call, without the Element Call frontend itself) are to be installed.
+# This affects enablement of other services around Element Call.
+#
+# By default, we enable the rest of the stack when Element Call itself is enabled,
+# but people may wish to enable the stack by itself and avoid installing the Element Call frontend.
+# This is useful to do, because self-hosting the Element Call frontend is mostly useless, because
+# various clients tend to embed and preferusing their own embedded Element Call frontend, instead of a self-hosted one.
+matrix_rtc_enabled: "{{ matrix_element_call_enabled }}"
+
 # renovate: datasource=docker depName=ghcr.io/element-hq/element-call
 matrix_element_call_version: v0.9.0
 

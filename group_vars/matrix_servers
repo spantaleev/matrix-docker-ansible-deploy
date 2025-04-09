@@ -4609,9 +4609,9 @@ matrix_client_element_enable_presence_by_hs_url: |-
 
 matrix_client_element_jitsi_preferred_domain: "{{ matrix_server_fqn_jitsi if jitsi_enabled else '' }}"
 
-matrix_client_element_features_feature_video_rooms: "{{ matrix_element_call_enabled }}"
-matrix_client_element_features_feature_group_calls: "{{ matrix_element_call_enabled }}"
-matrix_client_element_features_feature_element_call_video_rooms: "{{ matrix_element_call_enabled }}"
+matrix_client_element_features_feature_video_rooms: "{{ matrix_rtc_enabled }}"
+matrix_client_element_features_feature_group_calls: "{{ matrix_rtc_enabled }}"
+matrix_client_element_features_feature_element_call_video_rooms: "{{ matrix_rtc_enabled }}"
 matrix_client_element_features_feature_oidc_native_flow: "{{ matrix_authentication_service_enabled }}"
 
 matrix_client_element_element_call_enabled: "{{ matrix_element_call_enabled }}"
@@ -4934,7 +4934,7 @@ matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
 matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
 matrix_synapse_report_stats_endpoint: "{{ (('http://' + matrix_synapse_usage_exporter_identifier + ':' + matrix_synapse_usage_exporter_container_port | string + '/report-usage-stats/push') if matrix_synapse_usage_exporter_enabled else '') }}"
 
-matrix_synapse_experimental_features_msc3266_enabled: "{{ matrix_element_call_enabled }}"
+matrix_synapse_experimental_features_msc3266_enabled: "{{ matrix_rtc_enabled }}"
 
 matrix_synapse_experimental_features_msc3861_enabled: "{{ matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress }}"
 matrix_synapse_experimental_features_msc3861_issuer: "{{ matrix_authentication_service_http_base_container_url if matrix_authentication_service_enabled else '' }}"
@@ -4944,9 +4944,9 @@ matrix_synapse_experimental_features_msc3861_account_management_url: "{{ matrix_
 
 matrix_synapse_experimental_features_msc4108_enabled: "{{ matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress }}"
 
-matrix_synapse_experimental_features_msc4140_enabled: "{{ matrix_element_call_enabled }}"
+matrix_synapse_experimental_features_msc4140_enabled: "{{ matrix_rtc_enabled }}"
 
-matrix_synapse_experimental_features_msc4222_enabled: "{{ matrix_element_call_enabled }}"
+matrix_synapse_experimental_features_msc4222_enabled: "{{ matrix_rtc_enabled }}"
 
 # Disable password authentication when delegating authentication to Matrix Authentication Service.
 # Unless this is done, Synapse fails on startup with:
@@ -6140,7 +6140,7 @@ matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: "{{
 # See: https://github.com/etkecc/synapse-admin/pull/126
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: "{{ matrix_synapse_admin_configuration if matrix_homeserver_implementation == 'synapse' else {} }}"
 
-matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_element_call_enabled }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_livekit_jwt_service_enabled }}"
 matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: |-
   {{
     (
@@ -6297,7 +6297,7 @@ matrix_element_call_config_livekit_livekit_service_url: "{{ matrix_livekit_jwt_s
 #                                                                      #
 ########################################################################
 
-livekit_server_enabled: "{{ matrix_element_call_enabled }}"
+livekit_server_enabled: "{{ matrix_rtc_enabled }}"
 
 livekit_server_identifier: matrix-livekit-server
 
@@ -6405,7 +6405,7 @@ livekit_server_systemd_required_services_list_auto: |
 #                                                                      #
 ########################################################################
 
-matrix_livekit_jwt_service_enabled: "{{ matrix_element_call_enabled and livekit_server_enabled }}"
+matrix_livekit_jwt_service_enabled: "{{ matrix_rtc_enabled and livekit_server_enabled }}"
 
 matrix_livekit_jwt_service_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 

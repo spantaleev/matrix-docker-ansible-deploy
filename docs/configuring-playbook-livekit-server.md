@@ -11,7 +11,7 @@ The playbook can install and configure [LiveKit Server](https://github.com/livek
 
 LiveKit Server is an open source project that provides scalable, multi-user conferencing based on WebRTC. It's designed to provide everything you need to build real-time video audio data capabilities in your applications.
 
-💡 LiveKit Server is automatically installed and configured when [Element Call](configuring-playbook-element-call.md) is enabled, so you don't need to do anything extra.
+💡 LiveKit Server is automatically installed and configured when either [Element Call](configuring-playbook-element-call.md) or the [Matrix RTC stack](configuring-playbook-matrix-rtc.md) is enabled, so you don't need to do anything extra.
 
 The [Ansible role for LiveKit Server](https://github.com/mother-of-all-self-hosting/ansible-role-livekit-server) is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting). For details about configuring LiveKit Server, you can check them via:
 - 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-livekit-server/blob/main/docs/configuring-livekit-server.md) online
