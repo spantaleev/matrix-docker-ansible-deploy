@@ -157,13 +157,13 @@ matrix_bot_draupnir_configuration: "{{ matrix_bot_draupnir_configuration_yaml | 
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
 matrix_bot_draupnir_container_labels_traefik_enabled: false
 matrix_bot_draupnir_container_labels_traefik_docker_network: "{{ matrix_draupnir_bot_container_network }}"
-matrix_bot_draupnir_container_labels_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_bot_draupnir_container_labels_traefik_path_regexp: "^/_matrix/client/(r0|v3)/rooms/([^/]*)/report/"
-matrix_bot_draupnir_container_labels_traefik_rule: "Host(`{{ matrix_bot_draupnir_container_labels_traefik_hostname }}`) && PathRegexp(`{{ matrix_bot_draupnir_container_labels_traefik_path_regexp }}`)"
-matrix_bot_draupnir_container_labels_traefik_priority: 0
-matrix_bot_draupnir_container_labels_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_bot_draupnir_container_labels_traefik_tls: "{{ matrix_bot_draupnir_container_labels_traefik_entrypoints != 'web' }}"
-matrix_bot_draupnir_container_labels_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_path_regexp: "^/_matrix/client/(r0|v3)/rooms/([^/]*)/report/(.*)$"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_rule: "Host(`{{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_hostname }}`) && PathRegexp(`{{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_path_regexp }}`)"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_priority: 0  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls: "{{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints != 'web' }}"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 # matrix_bot_draupnir_container_labels_traefik_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
 #
