@@ -1,7 +1,19 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 - 2021 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Kim Brose
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Importing an existing Postgres database from another installation (optional)
 
-Run this if you'd like to import your database from a previous installation.
-(don't forget to import your Synapse `media_store` files as well - see [the importing-synape-media-store guide](importing-synapse-media-store.md)).
+You can manually import your database from a previous default installation of Synapse.
+
+**Notes**:
+- Don't forget to import your Synapse `media_store` files as well — see [the importing-synapse-media-store guide](importing-synapse-media-store.md) for more details.
+- If you have an existing installation done using this Ansible playbook, you can easily migrate that to another server following [our dedicated server migration guide](maintenance-migrating.md).
 
 ## Prerequisites
 
@@ -64,7 +76,7 @@ It can be worked around by changing the username to `synapse`, for example by us
 $ sed -i "s/OWNER TO synapse_user;/OWNER TO synapse;/g" homeserver.sql
 ```
 
-This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` - replacing `matrix` only would… well - you can imagine.
+This uses sed to perform an 'in-place' (`-i`) replacement globally (`/g`), searching for `synapse_user` and replacing with `synapse` (`s/synapse_user/synapse`). If your database username was different, change `synapse_user` to that username instead. Expand search/replace statement as shown in example above, in case of old user name like `matrix` — replacing `matrix` only would… well — you can imagine.
 
 Note that if the previous import failed with an error it may have made changes which are incompatible with re-running the import task right away; if you do so it may fail with an error such as:
 

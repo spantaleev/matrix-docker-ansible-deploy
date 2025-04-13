@@ -1,3 +1,18 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2019 Edgars Voroboks
+SPDX-FileCopyrightText: 2020 Chris van Dijk
+SPDX-FileCopyrightText: 2020 jens quade
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Kim Brose
+SPDX-FileCopyrightText: 2022 Travis Ralston
+SPDX-FileCopyrightText: 2022 Yan Minagawa
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Dimension integration manager (optional, unmaintained)
 
 **Notes**:
@@ -34,7 +49,8 @@ ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=dimension p
 
 Dimension requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ## Adjusting DNS records
 
@@ -85,6 +101,17 @@ If you've decided to reuse the `matrix.` domain, you won't need to do any extra 
 
 **Note**: while there is a `matrix_dimension_path_prefix` variable for changing the path where Dimension is served, overriding it is not possible due to [this Dimension issue](https://github.com/turt2live/matrix-dimension/issues/510). You'd need to serve Dimension at a dedicated subdomain.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-dimension/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-dimension/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_dimension_configuration_extension_yaml` variable
+
+You can find all configuration options on [GitHub page of Dimension project](https://github.com/turt2live/matrix-dimension/blob/master/config/default.yaml).
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -100,16 +127,18 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
-- After Dimension has been installed you may need to log out and log back in for it to pick up the new integration manager. Then you can access integrations in Element Web by opening a room, clicking the Room info button (`i`) button in the top right corner of the screen, and then clicking Add widgets, bridges & bots.
+## Usage
 
-## Jitsi domain
+After Dimension has been installed you may need to log out and log back in for it to pick up the new integration manager. Then you can access integrations in Element Web by opening a room, clicking the room info button (`i`) on the top right corner, and then clicking the "Add widgets, bridges, & bots" link.
 
-By default Dimension will use [jitsi.riot.im](https://jitsi.riot.im/) as the `conferenceDomain` of [Jitsi](https://jitsi.org/) audio/video conference widgets. For users running [a self-hosted Jitsi instance](./configuring-playbook-jitsi.md), you will likely want the widget to use your own Jitsi instance. Currently there is no way to configure this via the playbook, see [this issue](https://github.com/turt2live/matrix-dimension/issues/345) for details.
+### Set up a Jitsi widget
 
-In the interim until the above limitation is resolved, an admin user needs to configure the domain via the admin ui once dimension is running. In Element Web, go to *Manage Integrations* &rightarrow; *Settings* &rightarrow; *Widgets* &rightarrow; *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
+By default Dimension will use [jitsi.riot.im](https://jitsi.riot.im/) as the `conferenceDomain` of [Jitsi](https://jitsi.org/) audio/video conference widgets. For users running [a self-hosted Jitsi instance](configuring-playbook-jitsi.md), you will likely want the widget to use your own Jitsi instance.
 
-## Additional features
+To set up the widget, an admin user needs to configure the domain via the admin UI once Dimension is running. In Element Web, go to *Manage Integrations* → *Settings* → *Widgets* → *Jitsi Conference Settings* and set *Jitsi Domain* and *Jitsi Script URL* appropriately.
 
-To use a more custom configuration, you can define a `matrix_dimension_configuration_extension_yaml` string variable and put your configuration in it. To learn more about how to do this, refer to the information about `matrix_dimension_configuration_extension_yaml` in the [default variables file](../roles/custom/matrix-dimension/defaults/main.yml) of the Dimension component.
+There is unfortunately no way to configure the widget via the playbook. See [this issue](https://github.com/turt2live/matrix-dimension/issues/345) for details.
 
-You can find all configuration options on [GitHub page of Dimension project](https://github.com/turt2live/matrix-dimension/blob/master/config/default.yaml).
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dimension`.

@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Dan Arnfield
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Charles Wright
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2024 Michael Hollister
+# SPDX-FileCopyrightText: 2024 - 2025 Catalan Lover <catalanlover@protonmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # matrix-synapse-reverse-proxy-companion is a role which brings up a containerized nginx webserver which helps with reverse-proxying to Synapse when workers are enabled.
@@ -13,7 +24,7 @@
 matrix_synapse_reverse_proxy_companion_enabled: true
 
 # renovate: datasource=docker depName=nginx
-matrix_synapse_reverse_proxy_companion_version: 1.27.3-alpine
+matrix_synapse_reverse_proxy_companion_version: 1.27.4-alpine
 
 matrix_synapse_reverse_proxy_companion_base_path: "{{ matrix_synapse_base_path }}/reverse-proxy-companion"
 matrix_synapse_reverse_proxy_companion_confd_path: "{{ matrix_synapse_reverse_proxy_companion_base_path }}/conf.d"
@@ -30,7 +41,11 @@ matrix_synapse_reverse_proxy_companion_systemd_wanted_services_list: ['matrix-sy
 # We use an official nginx image, which we fix-up to run unprivileged.
 # An alternative would be an `nginxinc/nginx-unprivileged` image, but
 # that is frequently out of date.
-matrix_synapse_reverse_proxy_companion_container_image: "{{ matrix_container_global_registry_prefix }}nginx:{{ matrix_synapse_reverse_proxy_companion_version }}"
+matrix_synapse_reverse_proxy_companion_container_image: "{{ matrix_synapse_reverse_proxy_companion_container_image_registry_prefix }}nginx:{{ matrix_synapse_reverse_proxy_companion_container_image_tag }}"
+matrix_synapse_reverse_proxy_companion_container_image_registry_prefix: "{{ matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream }}"
+matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream: "{{ matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream_default }}"
+matrix_synapse_reverse_proxy_companion_container_image_registry_prefix_upstream_default: "docker.io/"
+matrix_synapse_reverse_proxy_companion_container_image_tag: "{{ matrix_synapse_reverse_proxy_companion_version }}"
 matrix_synapse_reverse_proxy_companion_container_image_force_pull: "{{ matrix_synapse_reverse_proxy_companion_container_image.endswith(':latest') }}"
 
 matrix_synapse_reverse_proxy_companion_container_network: ""
@@ -104,6 +119,14 @@ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_ad
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_entrypoints }}"
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_tls: "{{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_entrypoints != 'web' }}"
 matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose the /_synapse/admin paths on the internal Traefik entrypoint.
+# This is similar to `matrix_synapse_container_labels_public_client_api_enabled`, but the entrypoint and intent is different.
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_enabled: false
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_path_prefix: "{{ matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_path_prefix }}"
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_rule: "PathPrefix(`{{ matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_path_prefix }}`)"
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_priority: 0
+matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_entrypoints: ""
 
 # Controls whether labels will be added that expose the Server-Server API (Federation API).
 matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_enabled: "{{ matrix_synapse_reverse_proxy_companion_federation_api_enabled }}"
@@ -199,14 +222,26 @@ matrix_synapse_reverse_proxy_companion_hostname: "matrix-synapse-reverse-proxy-c
 
 # matrix_synapse_reverse_proxy_companion_client_api_addr specifies the address where the Client-Server API is
 matrix_synapse_reverse_proxy_companion_client_api_addr: 'matrix-synapse:{{ matrix_synapse_container_client_api_port }}'
+
+# The maximum body size for client requests to any of the endpoints on the Client-Server API.
 # This needs to be equal or higher than the maximum upload size accepted by Synapse.
-matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb: 50
+matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb: 100
+
+# The buffer size for client requests to any of the endpoints on the Client-Server API.
+matrix_synapse_reverse_proxy_companion_client_api_client_body_buffer_size_mb: "{{ matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb }}"
 
 # matrix_synapse_reverse_proxy_companion_federation_api_enabled specifies whether reverse proxying for the Federation (Server-Server) API should be done
 matrix_synapse_reverse_proxy_companion_federation_api_enabled: true
 # matrix_synapse_reverse_proxy_companion_federation_api_addr specifies the address where the Federation (Server-Server) API is
 matrix_synapse_reverse_proxy_companion_federation_api_addr: 'matrix-synapse:{{ matrix_synapse_container_federation_api_plain_port }}'
-matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb: "{{ (matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb | int) * 3 }}"
+
+# The maximum body size for client requests to any of the endpoints on the Federation API.
+# We auto-calculate this based on the Client-Server API's maximum body size, but use a minimum value to ensure we don't go to low.
+matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb: "{{ [matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb_minimum, (matrix_synapse_reverse_proxy_companion_client_api_client_max_body_size_mb | int) * 3] | max }}"
+matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb_minimum: 100
+
+# The buffer size for client requests to any of the endpoints on the Federation API.
+matrix_synapse_reverse_proxy_companion_federation_api_client_body_buffer_size_mb: "{{ matrix_synapse_reverse_proxy_companion_federation_api_client_max_body_size_mb }}"
 
 # A list of strings containing additional configuration blocks to add to the nginx vhost handling the Synapse Client-Server API
 matrix_synapse_reverse_proxy_companion_synapse_client_api_additional_server_configuration_blocks: []

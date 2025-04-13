@@ -1,0 +1,55 @@
+{#
+SPDX-FileCopyrightText: 2024 wjbeckett
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_livekit_jwt_service_container_labels_traefik_enabled %}
+traefik.enable=true
+
+traefik.docker.network={{ matrix_livekit_jwt_service_container_labels_traefik_docker_network }}
+
+traefik.http.services.matrix-livekit-jwt-service.loadbalancer.server.port={{ matrix_livekit_jwt_service_environment_variable_livekit_jwt_port }}
+
+{% set middlewares = [] %}
+
+{% if matrix_livekit_jwt_service_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-livekit-jwt-service-slashless-redirect.redirectregex.regex=({{ matrix_livekit_jwt_service_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-livekit-jwt-service-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-livekit-jwt-service-slashless-redirect'] %}
+
+traefik.http.middlewares.matrix-livekit-jwt-service-strip-prefix.stripprefix.prefixes={{ matrix_livekit_jwt_service_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-livekit-jwt-service-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_livekit_jwt_service_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_livekit_jwt_service_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-livekit-jwt-service-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-livekit-jwt-service-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-livekit-jwt-service.rule={{ matrix_livekit_jwt_service_container_labels_traefik_rule }}
+
+{% if matrix_livekit_jwt_service_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-livekit-jwt-service.priority={{ matrix_livekit_jwt_service_container_labels_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-livekit-jwt-service.service=matrix-livekit-jwt-service
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-livekit-jwt-service.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-livekit-jwt-service.entrypoints={{ matrix_livekit_jwt_service_container_labels_traefik_entrypoints }}
+
+traefik.http.routers.matrix-livekit-jwt-service.tls={{ matrix_livekit_jwt_service_container_labels_traefik_tls | to_json }}
+
+{% if matrix_livekit_jwt_service_container_labels_traefik_tls %}
+traefik.http.routers.matrix-livekit-jwt-service.tls.certResolver={{ matrix_livekit_jwt_service_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+
+{{ matrix_livekit_jwt_service_container_labels_additional_labels }}

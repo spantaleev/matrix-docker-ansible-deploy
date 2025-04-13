@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # Shows help
 default:
     @{{ just_executable() }} --list --justfile {{ justfile() }}

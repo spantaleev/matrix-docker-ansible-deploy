@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2020 - 2021 MDAD project contributors
+# SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Tulir Asokan
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # Mx Puppet Twitter is a Matrix <-> Twitter bridge
@@ -19,8 +30,10 @@ matrix_mx_puppet_twitter_container_http_host_bind_port: ''
 
 # renovate: datasource=docker depName=sorunome/mx-puppet-twitter
 matrix_mx_puppet_twitter_version: latest
-matrix_mx_puppet_twitter_docker_image: "{{ matrix_mx_puppet_twitter_docker_image_name_prefix }}sorunome/mx-puppet-twitter:{{ matrix_mx_puppet_twitter_version }}"
-matrix_mx_puppet_twitter_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_twitter_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_mx_puppet_twitter_docker_image: "{{ matrix_mx_puppet_twitter_docker_image_registry_prefix }}sorunome/mx-puppet-twitter:{{ matrix_mx_puppet_twitter_version }}"
+matrix_mx_puppet_twitter_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mx_puppet_twitter_container_image_self_build else matrix_mx_puppet_twitter_docker_image_registry_prefix_upstream }}"
+matrix_mx_puppet_twitter_docker_image_registry_prefix_upstream: "{{ matrix_mx_puppet_twitter_docker_image_registry_prefix_upstream_default }}"
+matrix_mx_puppet_twitter_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_mx_puppet_twitter_docker_image_force_pull: "{{ matrix_mx_puppet_twitter_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_twitter_base_path: "{{ matrix_base_data_path }}/mx-puppet-twitter"

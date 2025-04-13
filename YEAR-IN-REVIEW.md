@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # 2023
 
 2023 was a year filled with many changes for matrix-docker-ansible-deploy. In this post, we're looking backward at some of the major changes that happened this year, as well as taking a glimpse of what's ahead in 2024.
@@ -69,7 +76,7 @@ When it comes to the `matrix-docker-ansible-deploy` Ansible playbook, 2022 was t
 
 Support for the following new **bridges** was added:
 
-*   [Postmoogle](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#postmoogle-email-bridge-support) for bi-directional email bridging, which supersedes my old and simplistic [email2matrix](https://github.com/devture/email2matrix) one-way bridge-bot
+*   [Postmoogle](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#postmoogle-email-bridge-support) for bi-directional email bridging, which supersedes my old and simplistic [Email2Matrix](https://github.com/devture/email2matrix) one-way bridge-bot
 *   [mautrix-discord](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#mautrix-discord-support)
 *   [go-skype-bridge](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#go-skype-bridge-bridging-support)
 *   [matrix-appservice-kakaotalk](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#matrix-appservice-kakaotalk-support)

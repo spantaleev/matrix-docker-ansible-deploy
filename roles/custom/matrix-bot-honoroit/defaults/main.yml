@@ -1,3 +1,12 @@
+# SPDX-FileCopyrightText: 2022 - 2025 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Honoroit is a helpdesk bot
 # Project source code URL: https://github.com/etkecc/honoroit
@@ -21,9 +30,11 @@ matrix_bot_honoroit_docker_repo_version: "{{ matrix_bot_honoroit_version }}"
 matrix_bot_honoroit_docker_src_files_path: "{{ matrix_base_data_path }}/honoroit/docker-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/honoroit
-matrix_bot_honoroit_version: v0.9.26
-matrix_bot_honoroit_docker_image: "{{ matrix_bot_honoroit_docker_image_name_prefix }}etkecc/honoroit:{{ matrix_bot_honoroit_version }}"
-matrix_bot_honoroit_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_honoroit_container_image_self_build else 'ghcr.io/' }}"
+matrix_bot_honoroit_version: v0.9.27
+matrix_bot_honoroit_docker_image: "{{ matrix_bot_honoroit_docker_image_registry_prefix }}etkecc/honoroit:{{ matrix_bot_honoroit_version }}"
+matrix_bot_honoroit_docker_image_registry_prefix: "{{ 'localhost/' if matrix_bot_honoroit_container_image_self_build else matrix_bot_honoroit_docker_image_registry_prefix_upstream }}"
+matrix_bot_honoroit_docker_image_registry_prefix_upstream: "{{ matrix_bot_honoroit_docker_image_registry_prefix_upstream_default }}"
+matrix_bot_honoroit_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_bot_honoroit_docker_image_force_pull: "{{ matrix_bot_honoroit_docker_image.endswith(':latest') }}"
 
 matrix_bot_honoroit_base_path: "{{ matrix_base_data_path }}/honoroit"
@@ -177,6 +188,9 @@ matrix_bot_honoroit_cachesize: ''
 
 # List of ignored room IDs
 matrix_bot_honoroit_ignoredrooms: []
+
+# If enabled, the bot will not send a warning message in an encrypted room
+matrix_bot_honoroit_no_encryption_warning: false
 
 # Ignore messages outside of threads
 matrix_bot_honoroit_ignorenothread: false

@@ -1,0 +1,42 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Matrix LiveKit JWT Service
+{% for service in matrix_livekit_jwt_service_systemd_required_services_list %}
+After={{ service }}
+Requires={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-livekit-jwt-service 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-livekit-jwt-service 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+    --rm \
+    --name=matrix-livekit-jwt-service \
+    --log-driver=none \
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+    --cap-drop=ALL \
+    --network={{ matrix_livekit_jwt_service_container_network }} \
+    {% if matrix_livekit_jwt_service_container_http_host_bind_port %}
+    -p {{ matrix_livekit_jwt_service_container_http_host_bind_port }}:{{ matrix_livekit_jwt_service_environment_variable_livekit_jwt_port }} \
+    {% endif %}
+    --env-file={{ matrix_livekit_jwt_service_base_path }}/env \
+    --label-file={{ matrix_livekit_jwt_service_base_path }}/labels \
+    {{ matrix_livekit_jwt_service_container_image }}
+
+{% for network in matrix_livekit_jwt_service_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-livekit-jwt-service
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-livekit-jwt-service
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-livekit-jwt-service 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-jwt-service 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-livekit-jwt-service
+
+[Install]
+WantedBy=multi-user.target

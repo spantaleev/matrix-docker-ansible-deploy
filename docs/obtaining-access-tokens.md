@@ -1,14 +1,24 @@
+<!--
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Obtaining an Access Token
 
 When setting up some optional features like bots and bridges you will need to provide an access token for some user. This document provides documentation on how to obtain such an access token.
 
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ## Prerequisites
 
 The user for whom you want to obtain an access token needs to already exist. You can use this playbook to [register a new user](registering-users.md), if you have not already.
 
-Below, we describe 2 ways to generate an access token for a user - using [Element Web](#obtain-an-access-token-via-element-web) or [curl](#obtain-an-access-token-via-curl). For both ways you need the user's password.
+Below, we describe 2 ways to generate an access token for a user — using [Element Web](#obtain-an-access-token-via-element-web) or [curl](#obtain-an-access-token-via-curl). For both ways you need the user's password.
 
 ## Obtain an access token via Element Web
 

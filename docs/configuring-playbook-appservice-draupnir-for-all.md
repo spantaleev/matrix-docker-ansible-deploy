@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Draupnir for All/D4A (optional)
 
 The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation tool for you in appservice mode.
@@ -28,11 +35,8 @@ The management room has to be given an alias, and your bot has to be invited to 
 
 This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel.
 
-As noted in the Draupnir install instructions the control room is sensitive. **Anyone in this room can control the bot so it is important that you only invite trusted users to this room.**
-
-### Set an alias to the management room
-
-Next, set an alias to the management room.
+> [!WARNING]
+> Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
 ## Adjusting the playbook configuration
 
@@ -41,24 +45,28 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 ```yaml
 matrix_appservice_draupnir_for_all_enabled: true
 
-matrix_appservice_draupnir_for_all_master_control_room_alias: "MANAGEMENT_ROOM_ALIAS_HERE"
+matrix_appservice_draupnir_for_all_config_adminRoom: "MANAGEMENT_ROOM_ALIAS_HERE"
 ```
 
 ### Extending the configuration
 
-You can configure additional options by adding the `matrix_appservice_draupnir_for_all_extension_yaml` variable.
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-appservice-draupnir-for-all/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_draupnir_for_all_configuration_extension_yaml` variable
 
 For example, to change Draupnir's `protectAllJoinedRooms` option to `true`, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_appservice_draupnir_for_all_extension_yaml: |
+matrix_appservice_draupnir_for_all_configuration_extension_yaml: |
   # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_yaml`).
+  # This configuration extends the default starting configuration (`matrix_appservice_draupnir_for_all_configuration_yaml`).
   #
   # You can override individual variables from the default configuration, or introduce new ones.
   #
   # If you need something more special, you can take full control by
-  # completely redefining `matrix_appservice_draupnir_for_all_yaml`.
+  # completely redefining `matrix_appservice_draupnir_for_all_configuration_yaml`.
   protectAllJoinedRooms: true
 ```
 

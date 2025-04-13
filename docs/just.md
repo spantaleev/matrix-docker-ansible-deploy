@@ -1,12 +1,19 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Running `just` commands
 
 We have previously used [make](https://www.gnu.org/software/make/) for easily running some playbook commands (e.g. `make roles` which triggers [`ansible-galaxy`](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html)). Our [`Makefile`](../Makefile) is still around, and you can still run these commands.
 
-In addition, we have added support for running commands via [`just`](https://github.com/casey/just) - a more modern command-runner alternative to `make`. It can be used to invoke `ansible-playbook` commands with less typing.
+In addition, we have added support for running commands via [`just`](https://github.com/casey/just) — a more modern command-runner alternative to `make`. It can be used to invoke `ansible-playbook` commands with less typing.
 
 The `just` utility executes shortcut commands (called as "recipes"), which invoke `ansible-playbook`, `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru) (depending on what is available in your system). The targets of the recipes are defined in [`justfile`](../justfile). Most of the just recipes have no corresponding `Makefile` targets.
 
-For some recipes such as `just update`, our `justfile` recommends installing [`agru`](https://github.com/etkecc/agru) (a faster alternative to `ansible-galaxy`) to speed up the process.
+For some recipes such as `just update`, our `justfile` recommends installing `agru` (a faster alternative to `ansible-galaxy`) to speed up the process.
 
 Here are some examples of shortcuts:
 
@@ -35,4 +42,4 @@ For example, these two commands are different:
 
 The just recipe runs `ensure-matrix-users-created` and `start` tags after `install-all`, while the latter runs only `install-all` tag. The correct shortcut of the latter is `just run-tags install-all`.
 
-Such kind of difference sometimes matters. For example, when you install a Matrix server into which you will import old data (see [here](installing.md#installing-a-server-into-which-youll-import-old-data)), you are not supposed to run `just install-all` or `just setup-all`, because these commands start services immediately after installing components which may prevent your from importing old data.
+Such kind of difference sometimes matters. For example, when you install a Matrix server into which you will import old data (see [here](installing.md#installing-a-server-into-which-youll-import-old-data)), you are not supposed to run `just install-all` or `just setup-all`, because these commands start services immediately after installing components, which may prevent you from importing the data.

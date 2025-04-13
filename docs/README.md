@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2021 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2019 Lyubomir Popov
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Table of Contents
 
 ## ⬇️ Installaton guides <!-- NOTE: the 🚀 emoji is used by "Getting started" on README.md -->
@@ -10,7 +19,7 @@ There are two installation guides available for beginners and advanced users.
 
     - [Prerequisites](prerequisites.md)
 
-    - [Configuring your DNS settings](configuring-dns.md)
+    - [Configuring DNS settings](configuring-dns.md)
 
     - [Getting the playbook](getting-the-playbook.md)
 
@@ -27,31 +36,29 @@ NOTE:
 
 You can check useful documentation for configuring components here: [Configuring the playbook](configuring-playbook.md)
 
-- [Administration](configuring-playbook.md#administration) - services that help you in administrating and monitoring your Matrix installation
+- [Administration](configuring-playbook.md#administration) — services that help you in administrating and monitoring your Matrix installation
 
-- [Authentication and user-related](configuring-playbook.md#authentication-and-user-related) - extend and modify how users are authenticated on your homeserver
+- [Authentication and user-related](configuring-playbook.md#authentication-and-user-related) — extend and modify how users are authenticated on your homeserver
 
-- [Bots](configuring-playbook.md#bots) - bots provide various additional functionality to your installation
+- [Bots](configuring-playbook.md#bots) — bots provide various additional functionality to your installation
 
-- [Bridges](configuring-playbook.md#bridging-other-networks) - bridges can be used to connect your Matrix installation with third-party communication networks
+- [Bridges](configuring-playbook.md#bridging-other-networks) — bridges can be used to connect your Matrix installation with third-party communication networks
 
-- [Clients](configuring-playbook.md#clients) - web clients for Matrix that you can host on your own domains
+- [Clients](configuring-playbook.md#clients) — web clients for Matrix that you can host on your own domains
 
-- [Core service adjustments](configuring-playbook.md#core-service-adjustments) - backbone of your Matrix system
+- [Core service adjustments](configuring-playbook.md#core-service-adjustments) — backbone of your Matrix system
 
-- [File Storage](configuring-playbook.md#file-storage) - use alternative file storage to the default `media_store` folder
+- [File Storage](configuring-playbook.md#file-storage) — use alternative file storage to the default `media_store` folder
 
 <!-- NOTE: sort list items above alphabetically -->
 
-- [Other specialized services](configuring-playbook.md#other-specialized-services) - various services that don't fit any other categories
+- [Other specialized services](configuring-playbook.md#other-specialized-services) — various services that don't fit any other categories
 
 ## 👨‍🔧 Maintenance
 
 If your server and services experience issues, feel free to come to [our support room](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) and ask for help.
 
 <!-- NOTE: sort list items alphabetically -->
-
-- [Checking if services work](maintenance-checking-services.md)
 
 - [Maintenance and Troubleshooting](maintenance-and-troubleshooting.md)
 
@@ -63,7 +70,7 @@ If your server and services experience issues, feel free to come to [our support
 
 ## Other documentation pages <!-- NOTE: this header's title and the section below need optimization -->
 
-- ℹ️ **[FAQ](faq.md)** - various Frequently Asked Questions about Matrix, with a focus on this Ansible playbook
+- ℹ️ **[FAQ](faq.md)** — various Frequently Asked Questions about Matrix, with a focus on this Ansible playbook
 
 <!-- NOTE: sort list items under faq.md alphabetically -->
 
@@ -84,3 +91,5 @@ If your server and services experience issues, feel free to come to [our support
 - [Uninstalling](uninstalling.md)
 
 - [Updating users passwords](updating-users-passwords.md)
+
+- [Using Ansible for the playbook](ansible.md)

@@ -1,12 +1,21 @@
-# Storing Matrix media files on Amazon S3 with Goofys (optional)
+<!--
+SPDX-FileCopyrightText: 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 
-If you'd like to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service), you can let this playbook configure [Goofys](https://github.com/kahing/goofys) for you.
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 
-Another (and better performing) way to use S3 storage with Synapse is [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md).
+# Storing Synapse media files on Amazon S3 with Goofys (optional)
 
-Using a Goofys-backed media store works, but performance may not be ideal. If possible, try to use a region which is close to your Matrix server.
+The playbook can install and configure [Goofys](https://github.com/kahing/goofys) for you.
 
-If you'd like to move your locally-stored media store data to Amazon S3 (or another S3-compatible object store), we also provide some migration instructions below.
+Goofys makes it possible to store Synapse's content repository (`media_store`) files on Amazon S3 (or other S3-compatible service) object storage.
+
+See the project's [documentation](https://github.com/kahing/goofys/blob/master/README.md) to learn what it does and why it might be useful to you.
+
+**Note**: as performance of a Goofys-backed media store may not be ideal, you may wish to use [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md) instead, another (and better performing) way to mount a S3 bucket for Synapse.
+
+If you'd like to move your locally-stored media store data to Amazon S3 (or another S3-compatible object store), you can refer our migration instructions below.
 
 ## Adjusting the playbook configuration
 
@@ -124,3 +133,7 @@ After making the backup, follow one of the guides below for a migration path fro
 7. You're done! Verify that loading existing (old) media files works and that you can upload new ones.
 
 8. When confident that it all works, get rid of the local media store directory: `rm -rf /matrix/synapse/storage/media-store-local-backup`
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-goofys`.

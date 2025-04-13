@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2024 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # matrix-appservice-kakaotalk is a Matrix <-> Kakaotalk bridge
 # Project source code URL: https://src.miscworks.net/fair/matrix-appservice-kakaotalk/
@@ -29,13 +35,17 @@ matrix_appservice_kakaotalk_container_image_self_build_repo: "https://src.miscwo
 matrix_appservice_kakaotalk_container_image_self_build_repo_version: "{{ 'master' if matrix_appservice_kakaotalk_version == 'latest' else matrix_appservice_kakaotalk_version }}"
 
 matrix_appservice_kakaotalk_node_version: "{{ matrix_appservice_kakaotalk_version }}"
-matrix_appservice_kakaotalk_node_docker_image: "{{ matrix_appservice_kakaotalk_node_docker_image_prefix }}fair/matrix-appservice-kakaotalk-node:{{ matrix_appservice_kakaotalk_node_version }}"
-matrix_appservice_kakaotalk_node_docker_image_prefix: "localhost/"
+matrix_appservice_kakaotalk_node_docker_image: "{{ matrix_appservice_kakaotalk_node_docker_image_registry_prefix }}fair/matrix-appservice-kakaotalk-node:{{ matrix_appservice_kakaotalk_node_version }}"
+matrix_appservice_kakaotalk_node_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_kakaotalk_container_image_self_build else matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream }}"
+matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream: "{{ matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream_default: ""
 matrix_appservice_kakaotalk_node_docker_image_force_pull: "{{ matrix_appservice_kakaotalk_node_docker_image.endswith(':latest') }}"
 
 matrix_appservice_kakaotalk_version: 86c038fd2ffee5e0aebf65136f085cce7e38b54e
-matrix_appservice_kakaotalk_docker_image: "{{ matrix_appservice_kakaotalk_docker_image_name_prefix }}fair/matrix-appservice-kakaotalk:{{ matrix_appservice_kakaotalk_version }}"
-matrix_appservice_kakaotalk_docker_image_name_prefix: "localhost/"
+matrix_appservice_kakaotalk_docker_image: "{{ matrix_appservice_kakaotalk_docker_image_registry_prefix }}fair/matrix-appservice-kakaotalk:{{ matrix_appservice_kakaotalk_version }}"
+matrix_appservice_kakaotalk_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_kakaotalk_container_image_self_build else matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream }}"
+matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream: "{{ matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream_default: ""
 matrix_appservice_kakaotalk_docker_image_force_pull: "{{ matrix_appservice_kakaotalk_docker_image.endswith(':latest') }}"
 
 matrix_appservice_kakaotalk_base_path: "{{ matrix_base_data_path }}/appservice-kakaotalk"

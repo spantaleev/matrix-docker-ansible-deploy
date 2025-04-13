@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 12:05+0900\n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: bg\n"
@@ -38,53 +38,57 @@ msgid "By default, emails are sent from `matrix@matrix.example.com`, as specifie
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:9
-msgid "⚠️ **Warning**: On some cloud providers (Google Cloud, etc.), [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible. You will need to [relay email through another SMTP server](#relaying-email-through-another-smtp-server)."
+msgid "[!WARNING] On some cloud providers (Google Cloud, etc.), [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible. You will need to [relay email through another SMTP server](#relaying-email-through-another-smtp-server)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:11
+#: ../../../docs/configuring-playbook-email.md:12
 msgid "💡 To improve deliverability, we recommend [relaying email through another SMTP server](#relaying-email-through-another-smtp-server) anyway."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:13
+#: ../../../docs/configuring-playbook-email.md:14
 msgid "Firewall settings"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:15
+#: ../../../docs/configuring-playbook-email.md:16
 msgid "No matter whether you send email directly (the default) or you relay email through another host (see how below), you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:17
+#: ../../../docs/configuring-playbook-email.md:18
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:20
 msgid "Relaying email through another SMTP server"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:19
+#: ../../../docs/configuring-playbook-email.md:22
 msgid "If you'd like to relay email through another SMTP server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:31
+#: ../../../docs/configuring-playbook-email.md:34
 msgid "**Note**: only the secure submission protocol (using `STARTTLS`, usually on port `587`) is supported. **SMTPS** (encrypted SMTP, usually on port `465`) **is not supported**."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:33
-msgid "Configuations for sending emails using Sendgrid"
+#: ../../../docs/configuring-playbook-email.md:36
+msgid "Sending emails using Sendgrid"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:35
-msgid "An easy and free SMTP service to set up is [Sendgrid](https://sendgrid.com/), the free tier allows for up to 100 emails per day to be sent. In the settings below you can provide any email for `exim_relay_sender_address`."
+#: ../../../docs/configuring-playbook-email.md:38
+msgid "An easy and free SMTP service to set up is [Sendgrid](https://sendgrid.com/). Its free tier allows for up to 100 emails per day to be sent."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:37
-msgid "The only other thing you need to change is the `exim_relay_relay_auth_password`, which you can generate at https://app.sendgrid.com/settings/api_keys. The API key password looks something like `SG.955oW1mLSfwds7i9Yd6IA5Q.q8GTaB8q9kGDzasegdG6u95fQ-6zkdwrPP8bOeuI`."
+#: ../../../docs/configuring-playbook-email.md:40
+msgid "To set it up, add the following configuration to your `vars.yml` file (adapt to your needs):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:39
-msgid "Note that the `exim_relay_relay_auth_username` is literally the string `apikey`, it's always the same for Sendgrid."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-email.md:51
+#: ../../../docs/configuring-playbook-email.md:57
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:53
-msgid "If you're having trouble with email not being delivered, it may be useful to inspect the mailer logs: `journalctl -f -u matrix-exim-relay`."
+#: ../../../docs/configuring-playbook-email.md:59
+msgid "If you're having trouble with email not being delivered, it may be useful to inspect the mailer logs."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:61
+msgid "To do so, log in to the server with SSH and run `journalctl -f -u matrix-exim-relay`."
 msgstr ""

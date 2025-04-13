@@ -1,6 +1,19 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2021 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Sergei Shikalov
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Daniel Vinci
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Synapse (optional)
 
 By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case. If that's okay, you can skip this document.
+
+💡 See this page for details about maintaining Synapse: [Synapse maintenance](maintenance-synapse.md)
 
 ## Adjusting the playbook configuration
 
@@ -22,9 +35,9 @@ By default, this enables the `one-of-each` [worker preset](#worker-presets), but
 
 We support a few configuration presets (`matrix_synapse_workers_preset: one-of-each` being the default configuration right now):
 
-- (federation-only) `little-federation-helper` - a very minimal worker configuration to improve federation performance
-- (generic) `one-of-each` - defaults to one worker of each supported type - no smart routing, just generic workers
-- (specialized) `specialized-workers` - defaults to one worker of each supported type, but disables generic workers and uses [specialized workers](#specialized-workers) instead
+- (federation-only) `little-federation-helper` — a very minimal worker configuration to improve federation performance
+- (generic) `one-of-each` — defaults to one worker of each supported type — no smart routing, just generic workers
+- (specialized) `specialized-workers` — defaults to one worker of each supported type, but disables generic workers and uses [specialized workers](#specialized-workers) instead
 
 These presets represent a few common configurations. There are many worker types which can be mixed and matched based on your needs.
 
@@ -34,20 +47,20 @@ Previously, the playbook only supported the most basic type of load-balancing. W
 
 This is **still the default load-balancing method (preset) used by the playbook**.
 
-To use generic load-balancing, do not specify `matrix_synapse_workers_preset` to make it use the default value (`one-of-each`), or better yet - explicitly set it as `one-of-each`.
+To use generic load-balancing, do not specify `matrix_synapse_workers_preset` to make it use the default value (`one-of-each`), or better yet — explicitly set it as `one-of-each`.
 
 You may also consider [tweaking the number of workers of each type](#controlling-the-number-of-worker-instances) from the default (one of each).
 
 ##### Specialized workers
 
-The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requestor's IP adddress, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** - the access token (username) of the requestor and/or on the resource (room, etc.) being requested.
+The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requestor's IP adddress, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** — the access token (username) of the requestor and/or on the resource (room, etc.) being requested.
 
 The playbook supports these **4 types** of specialized workers:
 
-- Room workers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) & [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs dedicated to handling specific rooms
-- Sync workers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs related to synchronization (most notably [the `/sync` endpoint](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3sync))
-- Client readers - handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs which are not for specific rooms (handled by **room workers**) or for synchronization (handled by **sync workers**)
-- Federation readers - handles various [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs which are not for specific rooms (handled by **room workers**)
+- Room workers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) & [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs dedicated to handling specific rooms
+- Sync workers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs related to synchronization (most notably [the `/sync` endpoint](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3sync))
+- Client readers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs which are not for specific rooms (handled by **room workers**) or for synchronization (handled by **sync workers**)
+- Federation readers — handles various [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs which are not for specific rooms (handled by **room workers**)
 
 To use specialized load-balancing, consider enabling the `specialized-workers` [worker preset](#worker-presets) and potentially [tweaking the number of workers of each type](#controlling-the-number-of-worker-instances) from the default (one of each).
 
@@ -170,6 +183,21 @@ The playbook can install and configure Synapse Admin for you. For details about 
 
 This playbook allows you to enable Synapse metrics, which can provide insight into the performance and activity of Synapse.
 
-To enable Synapse runtime metrics see: [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)
+To enable Synapse runtime metrics, see: [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) and [its subsection](configuring-playbook-prometheus-grafana.md#expose-metrics-of-other-services-roles)
 
 To enable Synapse usage metrics, see: [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse`.
+
+### Increase logging verbosity
+
+Because Synapse is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`.
+
+If you'd like to debug an issue or [report a Synapse bug](https://github.com/element-hq/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increase the logging verbosity to `INFO`. To do so, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_synapse_log_level: "INFO"
+matrix_synapse_storage_sql_log_level: "INFO"
+matrix_synapse_root_log_level: "INFO"

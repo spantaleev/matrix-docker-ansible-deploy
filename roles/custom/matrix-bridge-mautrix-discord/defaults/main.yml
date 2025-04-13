@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2022 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # mautrix-discord is a Matrix <-> Discord bridge
 # Project source code URL: https://github.com/mautrix/discord
@@ -16,8 +24,10 @@ matrix_mautrix_discord_container_image_self_build_branch: "{{ 'main' if matrix_m
 matrix_mautrix_discord_version: v0.7.2
 
 # See: https://mau.dev/mautrix/discord/container_registry
-matrix_mautrix_discord_docker_image: "{{ matrix_mautrix_discord_docker_image_name_prefix }}mautrix/discord:{{ matrix_mautrix_discord_version }}"
-matrix_mautrix_discord_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_discord_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_discord_docker_image: "{{ matrix_mautrix_discord_docker_image_registry_prefix }}mautrix/discord:{{ matrix_mautrix_discord_version }}"
+matrix_mautrix_discord_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_discord_container_image_self_build else matrix_mautrix_discord_docker_image_registry_prefix_upstream }}"
+matrix_mautrix_discord_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_discord_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_discord_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_mautrix_discord_docker_image_force_pull: "{{ matrix_mautrix_discord_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_discord_base_path: "{{ matrix_base_data_path }}/mautrix-discord"
@@ -118,7 +128,7 @@ matrix_mautrix_discord_appservice_bot_avatar: mxc://maunium.net/nIdEykemnwdisvHb
 matrix_mautrix_discord_provisioning_shared_secret: disable
 
 # Minimum severity of journal log messages.
-# Options: trace, debug, info, warn, error, fatal
+# Valid values: fatal, error, warn, info, debug, trace
 matrix_mautrix_discord_logging_level: 'warn'
 
 # Whether or not created rooms should have federation enabled.

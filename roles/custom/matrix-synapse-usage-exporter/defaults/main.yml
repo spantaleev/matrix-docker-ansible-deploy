@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Michael Hollister
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # Synapse Usage Exporter
@@ -21,8 +27,10 @@ matrix_synapse_usage_exporter_container_image_self_build: true
 matrix_synapse_usage_exporter_container_image_self_build_repo: "https://github.com/loelkes/synapse-usage-exporter.git"
 
 matrix_synapse_usage_exporter_container_image_path: "loelkes/synapse-usage-exporter"
-matrix_synapse_usage_exporter_container_image: "{{ matrix_synapse_usage_exporter_container_image_name_prefix }}{{ matrix_synapse_usage_exporter_container_image_path }}:{{ matrix_synapse_usage_exporter_container_image_tag }}"
-matrix_synapse_usage_exporter_container_image_name_prefix: "{{ 'localhost/' if matrix_synapse_usage_exporter_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_synapse_usage_exporter_container_image: "{{ matrix_synapse_usage_exporter_container_image_registry_prefix }}{{ matrix_synapse_usage_exporter_container_image_path }}:{{ matrix_synapse_usage_exporter_container_image_tag }}"
+matrix_synapse_usage_exporter_container_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_usage_exporter_container_image_self_build else matrix_synapse_usage_exporter_container_image_registry_prefix_upstream }}"
+matrix_synapse_usage_exporter_container_image_registry_prefix_upstream: "{{ matrix_synapse_usage_exporter_container_image_registry_prefix_upstream_default }}"
+matrix_synapse_usage_exporter_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_synapse_usage_exporter_container_image_tag: "{{ 'main' if matrix_synapse_usage_exporter_container_image_self_build else 'latest' }}"
 matrix_synapse_usage_exporter_container_image_force_pull: "{{ matrix_synapse_usage_exporter_container_image.endswith(':latest') }}"
 

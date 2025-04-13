@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 Julian Foad
+SPDX-FileCopyrightText: 2020 Ivar Troost
+SPDX-FileCopyrightText: 2020 Julian Strobl
+SPDX-FileCopyrightText: 2021 MDAD project contributors
+SPDX-FileCopyrightText: 2023 Antoine-Ali Zarrouk
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Server Delegation
 
 By default, this playbook sets up services on your Matrix server (`matrix.example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up server delegation / redirection.
@@ -11,7 +23,7 @@ Both methods have their place and will continue to do so. You only need to use j
 
 For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file. However, that method may have some downsides that are not to your liking. Hence this guide about alternative ways to set up Server Delegation.
 
-**Note**: as an alternative, it is possible to install the server such that it uses only the `matrix.example.com` domain (instead of identifying as the shorter base domain - `example.com`). This should be helpful if you are not in control of anything on the base domain (`example.com`). In this case, you would not need to configure server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
+**Note**: as an alternative, it is possible to install the server such that it uses only the `matrix.example.com` domain (instead of identifying as the shorter base domain — `example.com`). This should be helpful if you are not in control of anything on the base domain (`example.com`). In this case, you would not need to configure server delegation, but you would need to add other configuration. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ.
 
 ## Server Delegation via a well-known file
 

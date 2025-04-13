@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Johan Swetzén
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Messenger bridging via Mautrix Meta (optional)
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
@@ -45,8 +53,8 @@ As mentioned above, the [mautrix-meta](https://github.com/mautrix/meta) bridge s
 The bridge can pull your Messenger messages via 3 different methods:
 
 - (`facebook`) Facebook via `facebook.com`
-- (`facebook-tor`) Facebook via `facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion` ([Tor](https://www.torproject.org/)) - does not currently proxy media downloads
-- (default) (`messenger`) Messenger via `messenger.com` - usable even without a Facebook account
+- (`facebook-tor`) Facebook via `facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion` ([Tor](https://www.torproject.org/)) — does not currently proxy media downloads
+- (default) (`messenger`) Messenger via `messenger.com` — usable even without a Facebook account
 
 You may switch the mode via the `matrix_mautrix_meta_messenger_meta_mode` variable. The playbook defaults to the `messenger` mode, because it's most universal (every Facebook user has a Messenger account, but the opposite is not true).
 
@@ -64,16 +72,12 @@ After configuring the playbook, run it with [playbook tags](playbook-tags.md) as
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
-**Notes**:
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
-- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
-
-- The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
-
-  `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
@@ -84,3 +88,16 @@ You can then follow instructions on the bridge's [official documentation on Auth
 After logging in, the bridge will sync recent chats.
 
 **Note**: given that the bot is configured in `messenger` [bridge mode](#bridge-mode) by default, you will need to log in to [messenger.com](https://messenger.com/) (not `facebook.com`!) and obtain the cookies from there.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-meta-messenger`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# This bridge uses zerolog, so valid levels are: panic, fatal, error, warn, info, debug, trace
+matrix_mautrix_meta_messenger_logging_min_level: debug
+```

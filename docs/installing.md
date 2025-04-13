@@ -1,6 +1,20 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2019 Edgars Voroboks
+SPDX-FileCopyrightText: 2019 Michael Haak
+SPDX-FileCopyrightText: 2020 Kevin Lanni
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Mitja Jež
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Installing
 
-<sup>[Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
+<sup>[Prerequisites](prerequisites.md) > [Configuring DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
 
 If you've configured your DNS records and the playbook, you can start the installation procedure.
 
@@ -27,7 +41,7 @@ If you **don't** use SSH keys for authentication, but rather a regular password,
 
 If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands.
 
-There 2 ways to start the installation process - depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
+There 2 ways to start the installation process — depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
 
 **Note**: if you are migrating from an old server to a new one, take a look at [this guide](maintenance-migrating.md) instead. This is an easier and more straightforward way than installing a server and importing old data into it.
 
@@ -53,7 +67,8 @@ To do the installation **without** starting services, run `ansible-playbook` wit
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all
 ```
 
-⚠️ **Warning**: do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution. See: [Difference between playbook tags and shortcuts](just.md#difference-between-playbook-tags-and-shortcuts)
+> [!WARNING]
+> Do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution. See: [Difference between playbook tags and shortcuts](just.md#difference-between-playbook-tags-and-shortcuts)
 
 When this command completes, services won't be running yet.
 
@@ -119,20 +134,22 @@ After configuring the playbook, run the command below:
 ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
+**If an error is not returned, the installation has completed and the services have been started successfully**🎉
+
 ## Things to do next
 
-After finilizing the installation, you can:
+After completing the installation, you can:
 
-- [check if services work](maintenance-checking-services.md)
+- [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 - or [set up additional services](configuring-playbook.md#other-configuration-options) (bridges to other chat networks, bots, etc.)
 - or learn how to [upgrade services when new versions are released](maintenance-upgrading-services.md)
 - or learn how to [maintain your server](faq.md#maintenance)
 - or join some Matrix rooms:
   * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
-  * or come say Hi in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
+  * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
 
-### Maintaining your setup in the future
+### ⚠️ Keep the playbook and services up-to-date
 
 While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**.
 
@@ -140,7 +157,7 @@ The upstream projects, which this playbook makes use of, occasionally if not oft
 
 Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
 
-For more information about upgrading or maintaining services with the playbook, take at look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
+For more information about upgrading or maintaining services with the playbook, take a look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
 
 Feel free to **re-run the setup command any time** you think something is wrong with the server configuration. Ansible will take your configuration and update your server to match.
 

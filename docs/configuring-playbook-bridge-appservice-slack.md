@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Udo Rader
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Joel Bennett
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Fabio Bonelli
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Appservice Slack bridging (optional)
 
 **Notes**:
@@ -61,7 +72,21 @@ matrix_appservice_slack_control_room_id: "Your Matrix admin room ID"
 # matrix_appservice_slack_team_sync_enabled: true
 ```
 
-Other configuration options are available via the `matrix_appservice_slack_configuration_extension_yaml` variable.
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-appservice-slack/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-appservice-slack/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_slack_configuration_extension_yaml` variable
+
+For example, to change the bot's username from `slackbot`, add the following configuration to your `vars.yml` file. Replace `examplebot` with your own.
+
+```yaml
+matrix_appservice_slack_configuration_extension_yaml: |
+  bot_username: "examplebot"
+```
 
 ## Installing
 
@@ -69,16 +94,12 @@ After configuring the playbook, run it with [playbook tags](playbook-tags.md) as
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
-**Notes**:
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
-- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
-
-- The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
-
-  `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
@@ -86,7 +107,7 @@ To use the bridge, you need to send `/invite @slackbot:example.com` to invite th
 
 If Team Sync is not enabled, for each channel you would like to bridge, perform the following steps:
 
-- Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID - it will look something like `!qporfwt:example.com`.
+- Create a Matrix room in the usual manner for your client. Take a note of its Matrix room ID — it will look something like `!qporfwt:example.com`.
 - Invite the bot user to both the Slack and Matrix channels you would like to bridge using `/invite @matrixbot` for Slack and `/invite @slackbot:example.com` for Matrix.
 - Determine the "channel ID" that Slack uses to identify the channel. You can see it when you open a given Slack channel in a browser. The URL reads like this: `https://app.slack.com/client/XXX/<the channel ID>/details/`.
 - Issue a link command in the administration control room with these collected values as arguments:
@@ -121,7 +142,7 @@ Unlinking doesn't only disconnect the bridge, but also makes the slackbot leave 
 
 ## Troubleshooting
 
-As always, check the logs: `journalctl -fu matrix-appservice-slack`
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-appservice-slack`.
 
 ### Linking: "Room is now pending-name"
 
@@ -129,8 +150,8 @@ This typically means that you haven't used the correct Slack channel ID. Unlink 
 
 ### Messages work from Matrix to Slack, but not the other way around
 
-Check you logs, if they say something like
+Check the logs, and if you find the message like below, unlink your room, reinvite the bot and re-link it again.
 
 `WARN SlackEventHandler Ignoring message from unrecognised Slack channel ID : %s (%s) <the channel ID> <some other ID>`
 
-then unlink your room, reinvite the bot and re-link it again. This may particularly hit you, if you tried to unsuccessfully link your room multiple times without unlinking it after each failed attempt.
+This may particularly hit you, if you tried to unsuccessfully link your room multiple times without unlinking it after each failed attempt.

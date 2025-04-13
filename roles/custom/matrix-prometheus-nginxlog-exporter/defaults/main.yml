@@ -1,3 +1,10 @@
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # prometheus-nginxlog-exporter exports nginx logs in a prometheus usable format on a `/metrics/ endpoint
 # See: https://github.com/martin-helmich/prometheus-nginxlog-exporter/
@@ -17,9 +24,11 @@ matrix_prometheus_nginxlog_exporter_container_metrics_port: '4040'
 matrix_prometheus_nginxlog_exporter_container_syslog_port: '6514'
 
 matrix_prometheus_nginxlog_exporter_docker_image_arch: ['amd64', 'arm64']
-matrix_prometheus_nginxlog_exporter_docker_image_name_prefix: "{{ 'ghcr.io/martin-helmich/' }}"
+matrix_prometheus_nginxlog_exporter_docker_image: "{{ matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix }}martin-helmich/prometheus-nginxlog-exporter/exporter:{{ matrix_prometheus_nginxlog_exporter_docker_image_tag }}"
+matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix: "{{ matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream }}"
+matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream: "{{ matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream_default }}"
+matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_prometheus_nginxlog_exporter_docker_image_tag: "{{ 'latest' if matrix_prometheus_nginxlog_exporter_version == 'master' else matrix_prometheus_nginxlog_exporter_version }}-{{ matrix_architecture }}"
-matrix_prometheus_nginxlog_exporter_docker_image: "{{ matrix_prometheus_nginxlog_exporter_docker_image_name_prefix }}prometheus-nginxlog-exporter/exporter:{{ matrix_prometheus_nginxlog_exporter_docker_image_tag }}"
 matrix_prometheus_nginxlog_exporter_docker_image_force_pull: "{{ matrix_prometheus_nginxlog_exporter_docker_image.endswith(':latest') }}"
 matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: true
 

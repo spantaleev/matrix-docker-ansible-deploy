@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2024 Gouthaman Raveendran
+SPDX-FileCopyrightText: 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Nginx Proxy Manager fronting the playbook's integrated Traefik reverse-proxy
 
 Similar to standard nginx, [Nginx Proxy Manager](https://nginxproxymanager.com/) provides nginx capabilities but inside a pre-built Docker container. With the ability for managing proxy hosts and automatic SSL certificates via a simple web interface.

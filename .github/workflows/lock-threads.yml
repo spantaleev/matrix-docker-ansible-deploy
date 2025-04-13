@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2017 - 2023 Armin Sebastian
+#
+# SPDX-License-Identifier: MIT
+
+---
+name: 'Lock Threads'
+on:  # yamllint disable-line rule:truthy
+  # Use this to do a dry run from a pull request
+  # pull_request:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: lock-threads
+
+jobs:
+  action:
+    if: github.repository == 'spantaleev/matrix-docker-ansible-deploy'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/lock-threads@v5
+        with:
+          add-issue-labels: 'outdated'
+          process-only: 'issues, prs'

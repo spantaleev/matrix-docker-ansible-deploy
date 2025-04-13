@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2024 wjbeckett
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if required LiveKit JWT Service settings are not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] | length == 0"
+  with_items:
+    - {'name': 'matrix_livekit_jwt_service_hostname', when: true}
+    - {'name': 'matrix_livekit_jwt_service_container_network', when: true}
+    - {'name': 'matrix_livekit_jwt_service_environment_variable_livekit_key', when: true}
+    - {'name': 'matrix_livekit_jwt_service_environment_variable_livekit_url', when: true}
+    - {'name': 'matrix_livekit_jwt_service_environment_variable_livekit_secret', when: true}

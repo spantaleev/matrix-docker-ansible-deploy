@@ -1,3 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2023 Justin Croonenberghs
+SPDX-FileCopyrightText: 2023 Kuba Orlik
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2023 Samuel Meenzen
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Fabio Bonelli
+SPDX-FileCopyrightText: 2024 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the Sliding Sync proxy (optional)
 
 **Note**: The sliding-sync proxy is **not required** anymore as it's been replaced with a different method (called Simplified Sliding Sync) which is integrated into newer homeservers by default (**Conduit** homeserver from version `0.6.0` or **Synapse** from version `1.114`). This component and documentation remain here for historical purposes, but **installing this old sliding-sync proxy is generally not recommended anymore**.
@@ -36,6 +49,14 @@ If you've changed the default hostname, you may need to create a CNAME record fo
 
 When setting, replace `example.com` with your own.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-sliding-sync/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -68,3 +89,7 @@ You **don't need to do anything special** to make use of the Sliding Sync proxy.
 When the Sliding Sync proxy is [installed](#installing), your `/.well-known/matrix/client` file is also updated. A new `org.matrix.msc3575.proxy` section and `url` property are added there and made to point to your Sliding Sync proxy's base URL (e.g. `https://matrix.example.com/sliding-sync`).
 
 This allows clients which support Sliding Sync to detect the Sliding Sync proxy's URL and make use of it.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-sliding-sync`.

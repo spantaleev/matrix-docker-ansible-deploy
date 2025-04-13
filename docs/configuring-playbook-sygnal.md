@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the Sygnal push gateway (optional)
 
 The playbook can install and configure the [Sygnal](https://github.com/matrix-org/sygnal) push gateway for you.
@@ -100,3 +107,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 To make use of your Sygnal installation, you'd need to build your own Matrix client application, which uses the same API keys (for [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/)) and certificates (for [APNS](https://developer.apple.com/notifications/)) and is to your Sygnal URL endpoint (e.g. `https://sygnal.example.com`).
 
 Refer to Sygnal's [Notes for application developers](https://github.com/matrix-org/sygnal/blob/master/docs/applications.md) document.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-sygnal`.

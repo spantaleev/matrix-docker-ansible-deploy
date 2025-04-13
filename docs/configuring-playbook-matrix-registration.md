@@ -1,8 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up matrix-registration (optional)
 
-⚠️ **Warnings**:
-- This is a poorly maintained and buggy project. It's better to avoid using it.
-- This is not related to [matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md)
+> [!WARNING]
+> - This is a poorly maintained and buggy project. It's better to avoid using it.
+> - This is not related to [matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md)
 
 The playbook can install and configure [matrix-registration](https://github.com/ZerataX/matrix-registration) for you. It is a simple python application to have a token based Matrix registration.
 
@@ -47,6 +55,15 @@ If you've changed the default hostname, you may need to create a CNAME record fo
 
 When setting, replace `example.com` with your own.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-registration/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-registration/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_registration_configuration_extension_yaml` variable
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
@@ -64,7 +81,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 **matrix-registration** gets exposed at `https://matrix.example.com/matrix-registration`
 
-It provides various [APIs](https://github.com/ZerataX/matrix-registration/wiki/api) - for creating registration tokens, listing tokens, disabling tokens, etc. To make use of all of its capabilities, consider using `curl`.
+It provides various [APIs](https://github.com/ZerataX/matrix-registration/wiki/api) — for creating registration tokens, listing tokens, disabling tokens, etc. To make use of all of its capabilities, consider using `curl`.
 
 We make the most common APIs easy to use via the playbook (see below).
 
@@ -92,3 +109,7 @@ ansible-playbook -i inventory/hosts setup.yml \
 ```
 
 The shortcut command with `just` program is also available: `just run-tags list-matrix-registration-tokens`
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-registration`.

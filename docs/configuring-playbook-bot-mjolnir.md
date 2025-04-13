@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Marko Weltzer
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mjolnir (optional)
 
 The playbook can install and configure the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot for you.
@@ -24,7 +35,8 @@ If you would like Mjolnir to be able to deactivate users, move aliases, shutdown
 
 The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
 
-⚠️ **Warning**: Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
 
 ### Make sure the account is free from rate limiting
 
@@ -32,37 +44,57 @@ If your homeserver's implementation is Synapse, you will need to prevent it from
 
 This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally.
 
+**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
+
+The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+
+#### Add the configuration
+
 To expose the APIs publicly, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
 ```
 
-The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+#### Obtain an access token for admin account
 
-**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
+Manual access to Synapse's Admin APIs requires an access token for a homeserver admin account. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md). If you have made Mjolnir an admin, you can just use the Mjolnir token.
 
-To discharge rate limiting, run the following command on systems that ship curl (note that it does not work on outdated Windows 10). Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally. Before running it, make sure to replace `@bot.mjolnir:example.com` with the MXID of your Mjolnir:
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
+#### Run the `curl` command
+
+To disable rate limiting, run the following command on systems that ship curl. Before running it, make sure to replace:
+
+- `ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account
+- `example.com` with your base domain
+- `@bot.mjolnir:example.com` with the MXID of your Mjolnir bot user
 
 ```sh
-curl --header "Authorization: Bearer <access_token>" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.mjolnir:example.com/override_ratelimit
+curl --header "Authorization: Bearer ADMIN_ACCESS_TOKEN_HERE" -X POST https://matrix.example.com/_synapse/admin/v1/users/@bot.mjolnir:example.com/override_ratelimit
 ```
 
-You can obtain an access token for a homeserver admin account in the same way as you can do so for Mjolnir itself. If you have made Mjolnir an admin, you can just use the Mjolnir token.
+**Notes**:
+- This does not work on outdated Windows 10 as curl is not available there.
+- Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally.
 
 ### Create a management room
 
-Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room. Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
+Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room.
 
-If you make the management room encrypted (E2EE), then you MUST enable and use Pantalaimon (see [below](#configuration-with-e2ee-support)).
+> [!WARNING]
+> Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
-Once you have created the room you need to copy the room ID so you can tell the bot to use that room. In Element Web you can do this by going to the room's settings, clicking Advanced, and then copying the internal room ID. The room ID will look something like `!qporfwt:example.com`.
+It is possible to make the management room encrypted (E2EE). If doing so, then you MUST enable and use Pantalaimon (see [below](#configuration-with-e2ee-support)).
+
+Once you have created the room you need to copy the room ID so you can specify it on your `vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking "Advanced". The room ID will look something like `!qporfwt:example.com`.
 
 Finally invite the `@bot.mjolnir:example.com` account you created earlier into the room.
 
 ## Adjusting the playbook configuration
 
-To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE`.
+To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created just now.
 
 ```yaml
 # Enable Mjolnir
@@ -131,7 +163,11 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists: []
 
 ### Extending the configuration
 
-You can configure additional options by adding the `matrix_bot_mjolnir_configuration_extension_yaml` variable to your `inventory/host_vars/matrix.example.com/vars.yml` file.
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-mjolnir/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_mjolnir_configuration_extension_yaml` variable
 
 For example, to change Mjolnir's `recordIgnoredInvites` option to `true`, add the following configuration to your `vars.yml` file:
 
@@ -153,12 +189,10 @@ After configuring the playbook, run it with [playbook tags](playbook-tags.md) as
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
 **Notes**:
-
-- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
 
 - The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
@@ -169,3 +203,17 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 ## Usage
 
 You can refer to the upstream [documentation](https://github.com/matrix-org/mjolnir) for additional ways to use and configure Mjolnir. Check out their [quickstart guide](https://github.com/matrix-org/mjolnir#quickstart-guide) for some basic commands you can give to the bot.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-mjolnir`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: ERROR, WARN, INFO, DEBUG
+matrix_bot_mjolnir_configuration_extension_yaml: |
+  logLevel: "DEBUG"
+```

@@ -1,3 +1,24 @@
+# SPDX-FileCopyrightText: 2019 - 2020 Lee Verberne
+# SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2019 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 Aaron Raimist
+# SPDX-FileCopyrightText: 2019 Alexander Acevedo
+# SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2019 Hugues Morisset
+# SPDX-FileCopyrightText: 2019 Lyubomir Popov
+# SPDX-FileCopyrightText: 2019 Sylvia van Os
+# SPDX-FileCopyrightText: 2020 John Goerzen
+# SPDX-FileCopyrightText: 2021 - 2023 Thom Wiggers
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2021 Joseph Walton-Rivers
+# SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
+# SPDX-FileCopyrightText: 2021 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Matrix Appservice IRC is a Matrix <-> IRC bridge
 # Project source code URL: https://github.com/matrix-org/matrix-appservice-irc
@@ -13,10 +34,12 @@ matrix_appservice_irc_docker_src_files_path: "{{ matrix_base_data_path }}/appser
 # It's a bare version number now. We try to somewhat retain compatibility below.
 # renovate: datasource=docker depName=docker.io/matrixdotorg/matrix-appservice-irc
 matrix_appservice_irc_version: 1.0.1
-matrix_appservice_irc_docker_image: "{{ matrix_container_global_registry_prefix }}matrixdotorg/matrix-appservice-irc:{{ matrix_appservice_irc_docker_image_tag }}"
+matrix_appservice_irc_docker_image: "{{ matrix_appservice_irc_docker_image_registry_prefix }}matrixdotorg/matrix-appservice-irc:{{ matrix_appservice_irc_docker_image_tag }}"
+matrix_appservice_irc_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_irc_container_image_self_build else matrix_appservice_irc_docker_image_registry_prefix_upstream }}"
+matrix_appservice_irc_docker_image_registry_prefix_upstream: "{{ matrix_appservice_irc_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_irc_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_appservice_irc_docker_image_tag: "{{ 'latest' if matrix_appservice_irc_version == 'latest' else ('release-' + matrix_appservice_irc_version) }}"
 matrix_appservice_irc_docker_image_force_pull: "{{ matrix_appservice_irc_docker_image.endswith(':latest') }}"
-matrix_appservice_irc_docker_image_name_prefix: "{{ 'localhost/' if matrix_appservice_irc_container_image_self_build else matrix_container_global_registry_prefix }}"
 
 matrix_appservice_irc_base_path: "{{ matrix_base_data_path }}/appservice-irc"
 matrix_appservice_irc_config_path: "{{ matrix_appservice_irc_base_path }}/config"

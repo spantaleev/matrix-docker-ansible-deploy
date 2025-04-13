@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Riot-web (optional)
 
 By default, this playbook **used to install** the [Riot-web](https://github.com/element-hq/riot-web) Matrix client web application.
@@ -21,9 +29,9 @@ We used to set up Riot at the `riot.example.com` domain. The playbook now sets u
 
 There are a few options for handling this:
 
-- (**avoiding changes** - using the old `riot.example.com` domain and avoiding DNS changes) -- to keep using `riot.example.com` instead of `element.example.com`, override the domain at which the playbook serves Element Web: `matrix_server_fqn_element: "riot.{{ matrix_domain }}"`
+- (**avoiding changes** — using the old `riot.example.com` domain and avoiding DNS changes) — to keep using `riot.example.com` instead of `element.example.com`, override the domain at which the playbook serves Element Web: `matrix_server_fqn_element: "riot.{{ matrix_domain }}"`
 
-- (**embracing changes** - using only `element.example.com`) - set up the `element.example.com` DNS record (see [Configuring DNS](configuring-dns.md)). You can drop the `riot.example.com` in this case.
+- (**embracing changes** — using only `element.example.com`) — set up the `element.example.com` DNS record (see [Configuring DNS](configuring-dns.md)). You can drop the `riot.example.com` in this case.
 
 ### Re-running the playbook
 

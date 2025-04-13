@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Antoine-Ali Zarrouk
+SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Server Delegation via a DNS SRV record (advanced)
 
 **Reminder** : unless you are affected by the [Downsides of well-known-based Server Delegation](howto-server-delegation.md#downsides-of-well-known-based-server-delegation), we suggest you **stay on the simple/default path**: [Server Delegation](howto-server-delegation.md) by [configuring well-known files](configuring-well-known.md) at the base domain.
@@ -18,7 +26,7 @@ The up-to-date list can be accessed on [traefik's documentation](https://doc.tra
 
 **Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
 
-- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [Conduwuit](./configuring-playbook-conduwuit.md) or [Dendrite](./configuring-playbook-dendrite.md))
+- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [conduwuit](./configuring-playbook-conduwuit.md) or [Dendrite](./configuring-playbook-dendrite.md))
 - if you're using [Synapse with workers enabled](./configuring-playbook-synapse.md#load-balancing-with-workers) (`matrix_synapse_workers_enabled: true`). In that case, it's actually the `matrix-synapse-reverse-proxy-companion` service which has Traefik labels attached
 
 Also, all instructions below are from an older version of the playbook and may not work anymore.
@@ -64,7 +72,6 @@ traefik_configuration_extension_yaml: |
       acme:
         # To use a staging endpoint for testing purposes, uncomment the line below.
         # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-        email: {{ traefik_config_certificatesResolvers_acme_email | to_json }}
         dnsChallenge:
           provider: cloudflare
           resolvers:
@@ -73,7 +80,7 @@ traefik_configuration_extension_yaml: |
         storage: {{ traefik_config_certificatesResolvers_acme_storage | to_json }}
 
 # 2. Configure the environment variables needed by Rraefik to automate the ACME DNS Challenge (example for Cloudflare)
-traefik_environment_variables_additional_variables: |
+traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
@@ -124,7 +131,6 @@ matrix_coturn_container_additional_volumes: |
 ```yaml
 # Choosing the reverse proxy implementation
 matrix_playbook_reverse_proxy_type: playbook-managed-traefik
-traefik_config_certificatesResolvers_acme_email: redacted@example.com
 
 # To serve the federation from any domain, as long as the path matches
 matrix_synapse_container_labels_public_federation_api_traefik_rule: PathPrefix(`/_matrix/federation`)
@@ -141,7 +147,6 @@ traefik_configuration_extension_yaml: |
       acme:
         # To use a staging endpoint for testing purposes, uncomment the line below.
         # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-        email: {{ traefik_config_certificatesResolvers_acme_email | to_json }}
         dnsChallenge:
           provider: cloudflare
           resolvers:
@@ -153,7 +158,7 @@ traefik_configuration_extension_yaml: |
 traefik_certResolver_primary: "dns"
 
 # Configure the environment variables needed by Traefik to automate the ACME DNS Challenge (example for Cloudflare)
-traefik_environment_variables_additional_variables: |
+traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted

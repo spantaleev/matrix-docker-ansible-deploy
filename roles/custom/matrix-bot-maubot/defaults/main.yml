@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2022 Stuart Mumford
+# SPDX-FileCopyrightText: 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2023 Shreyas Ajjarapu
+# SPDX-FileCopyrightText: 2024 Fabio Bonelli
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # maubot is a plugin-based Matrix bot system.
@@ -21,8 +31,10 @@ matrix_bot_maubot_docker_repo_version: "{{ 'master' if matrix_bot_maubot_version
 
 # renovate: datasource=docker depName=dock.mau.dev/maubot/maubot
 matrix_bot_maubot_version: v0.5.1
-matrix_bot_maubot_docker_image: "{{ matrix_bot_maubot_docker_image_name_prefix }}maubot/maubot:{{ matrix_bot_maubot_version }}"
-matrix_bot_maubot_docker_image_name_prefix: "{{ 'localhost/' if matrix_bot_maubot_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_bot_maubot_docker_image: "{{ matrix_bot_maubot_docker_image_registry_prefix }}maubot/maubot:{{ matrix_bot_maubot_version }}"
+matrix_bot_maubot_docker_image_registry_prefix: "{{ 'localhost/' if matrix_bot_maubot_container_image_self_build else matrix_bot_maubot_docker_image_registry_prefix_upstream }}"
+matrix_bot_maubot_docker_image_registry_prefix_upstream: "{{ matrix_bot_maubot_docker_image_registry_prefix_upstream_default }}"
+matrix_bot_maubot_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_bot_maubot_docker_image_force_pull: "{{ matrix_bot_maubot_docker_image.endswith(':latest') }}"
 
 # matrix_bot_maubot_docker_image_customized is the name of the locally built maubot image
@@ -119,6 +131,8 @@ matrix_bot_maubot_container_image_customizations_enabled: false
 # matrix_bot_maubot_container_image_customizations_dockerfile_body contains your custom Dockerfile steps
 # for building your customized maubot image based on the original (upstream) image (`matrix_bot_maubot_docker_image`).
 # A `FROM …` clause is included automatically so you don't have to.
+#
+# For this to take effect, you need to enable customizations (`matrix_bot_maubot_container_image_customizations_enabled: true`).
 #
 # Example:
 # matrix_bot_maubot_container_image_customizations_dockerfile_body_custom: |

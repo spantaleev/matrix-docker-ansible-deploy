@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Kim Brose
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Paul Tötterman
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up matrix-hookshot (optional)
 
 The playbook can install and configure [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) for you.
@@ -38,7 +48,12 @@ Take special note of the `matrix_hookshot_*_enabled` variables. Services that ne
 
 ### Extending the configuration
 
-You can configure additional options by adding the `matrix_hookshot_configuration_extension_yaml` and `matrix_hookshot_registration_extension_yaml` variables.
+There are some additional things you may wish to configure about the bridge.
+
+Take a look at:
+
+- `roles/custom/matrix-bridge-hookshot/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-hookshot/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_hookshot_configuration_extension_yaml` and `matrix_hookshot_registration_extension_yaml` variables
 
 Refer the [official instructions](https://matrix-org.github.io/matrix-hookshot/latest/setup.html) and the comments in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) to learn what the individual options do.
 
@@ -91,9 +106,8 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 | provisioning | `/hookshot/v1/` | `matrix_hookshot_provisioning_endpoint` | Dimension [provisioning](#provisioning-api) |
 | appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | Matrix server |
 | widgets | `/hookshot/widgetapi/` | `matrix_hookshot_widgets_endpoint` | Widgets |
-| metrics | `/metrics/hookshot` | `matrix_hookshot_metrics_enabled` and exposure enabled via `matrix_hookshot_metrics_proxying_enabled` or `matrix_metrics_exposure_enabled`. Read more in the [Metrics section](#metrics) below. | Prometheus |
 
-Also see the various `matrix_hookshot_container_labels_*` variables in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml), which expose URLs publicly
+Also see the various `matrix_hookshot_container_labels_*` variables in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml), which expose URLs publicly.
 
 The different listeners are also reachable *internally* in the docker-network via the container's name (configured by `matrix_hookshot_container_url`) and on different ports (e.g. `matrix_hookshot_appservice_port`). Read [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) in detail for more info.
 
@@ -120,21 +134,57 @@ For more information, see the documentation in the [default configuration of the
 
 ### Provisioning API
 
-The provisioning API will be enabled automatically if you set `matrix_dimension_enabled: true` and provided a `matrix_hookshot_provisioning_secret`, unless you override it either way. To use hookshot with dimension, you will need to enter as "Provisioning URL": `http://matrix-hookshot:9002`, which is made up of the variables `matrix_hookshot_container_url` and `matrix_hookshot_provisioning_port`.
-
-### Metrics
-
-Metrics are **only enabled by default** if the builtin [Prometheus](configuring-playbook-prometheus-grafana.md) is enabled (by default, Prometheus isn't enabled). If so, metrics will automatically be collected by Prometheus and made available in Grafana. You will, however, need to set up your own Dashboard for displaying them.
-
-To explicitly enable metrics, use `matrix_hookshot_metrics_enabled: true`. This only exposes metrics over the container network, however.
-
-**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/hookshot` by:
-
-- either enabling metrics exposure for Hookshot via `matrix_hookshot_metrics_proxying_enabled: true`
-- or enabling metrics exposure for all services via `matrix_metrics_exposure_enabled: true`
-
-Whichever one you go with, by default metrics are exposed publicly **without** password-protection. See [the Prometheus and Grafana docs](configuring-playbook-prometheus-grafana.md) for details about password-protection for metrics.
+The provisioning API will be enabled automatically if you set `matrix_dimension_enabled: true` and provided a `matrix_hookshot_provisioning_secret`, unless you override it either way. To use hookshot with Dimension, you will need to enter as "Provisioning URL": `http://matrix-hookshot:9002`, which is made up of the variables `matrix_hookshot_container_url` and `matrix_hookshot_provisioning_port`.
 
 ### Collision with matrix-appservice-webhooks
 
 If you are also running [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), it reserves its namespace by the default setting `matrix_appservice_webhooks_user_prefix: '_webhook_'`. You should take care if you modify its or hookshot's prefix that they do not collide with each other's namespace (default `matrix_hookshot_generic_userIdPrefix: '_webhooks_'`).
+
+### Enable metrics
+
+The playbook can enable and configure the metrics of the service for you.
+
+Metrics are **only enabled by default** if the builtin [Prometheus](configuring-playbook-prometheus-grafana.md) is enabled (by default, Prometheus isn't enabled). If so, metrics will automatically be collected by Prometheus and made available in Grafana. You will, however, need to set up your own Dashboard for displaying them.
+
+To enable the metrics, add the following configuration to your `vars.yml` file:
+
+```yaml
+# Expose metrics (locally, on the container network).
+matrix_hookshot_metrics_enabled: true
+```
+
+**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/hookshot` by adding the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_hookshot_metrics_proxying_enabled: true
+```
+
+By default metrics are exposed publicly **without** password-protection. To password-protect the metrics with dedicated credentials, add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: true
+matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: ''
+```
+
+To `matrix_hookshot_container_labels_metrics_middleware_basic_auth_users`, set the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint. See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users for details about it.
+
+**Note**: alternatively, you can use `matrix_metrics_exposure_enabled` to expose all services on this `/metrics/*` feature, and you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` to password-protect the metrics of them. See [this section](configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) for more information.
+
+#### Enable Grafana (optional)
+
+Probably you wish to enable Grafana along with Prometheus for generating graphs of the metics.
+
+To enable Grafana, see [this section](configuring-playbook-prometheus-grafana.md#adjusting-the-playbook-configuration-grafana) for instructions.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-hookshot`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: error, warn, info, debug
+matrix_hookshot_logging_level: debug
+```

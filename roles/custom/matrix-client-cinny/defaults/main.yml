@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 László Várady
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Project source code URL: https://github.com/ajbura/cinny
 
@@ -7,9 +17,11 @@ matrix_client_cinny_container_image_self_build: false
 matrix_client_cinny_container_image_self_build_repo: "https://github.com/ajbura/cinny.git"
 
 # renovate: datasource=docker depName=ajbura/cinny
-matrix_client_cinny_version: v4.2.3
-matrix_client_cinny_docker_image: "{{ matrix_client_cinny_docker_image_name_prefix }}ajbura/cinny:{{ matrix_client_cinny_version }}"
-matrix_client_cinny_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_cinny_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_client_cinny_version: v4.6.0
+matrix_client_cinny_docker_image: "{{ matrix_client_cinny_docker_image_registry_prefix }}ajbura/cinny:{{ matrix_client_cinny_version }}"
+matrix_client_cinny_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_cinny_container_image_self_build else matrix_client_cinny_docker_image_registry_prefix_upstream }}"
+matrix_client_cinny_docker_image_registry_prefix_upstream: "{{ matrix_client_cinny_docker_image_registry_prefix_upstream_default }}"
+matrix_client_cinny_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_client_cinny_docker_image_force_pull: "{{ matrix_client_cinny_docker_image.endswith(':latest') }}"
 
 matrix_client_cinny_data_path: "{{ matrix_base_data_path }}/client-cinny"

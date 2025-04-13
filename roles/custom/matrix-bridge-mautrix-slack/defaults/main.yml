@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Cody Wyatt Neiman
+# SPDX-FileCopyrightText: 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # mautrix-slack is a Matrix <-> Slack bridge
 # Project source code URL: https://github.com/mautrix/slack
@@ -9,10 +17,12 @@ matrix_mautrix_slack_container_image_self_build_repo: "https://mau.dev/mautrix/s
 matrix_mautrix_slack_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_slack_version == 'latest' else matrix_mautrix_slack_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/slack
-matrix_mautrix_slack_version: v0.1.4
+matrix_mautrix_slack_version: v0.2.0
 # See: https://mau.dev/mautrix/slack/container_registry
-matrix_mautrix_slack_docker_image: "{{ matrix_mautrix_slack_docker_image_name_prefix }}mautrix/slack:{{ matrix_mautrix_slack_version }}"
-matrix_mautrix_slack_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_slack_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_slack_docker_image: "{{ matrix_mautrix_slack_docker_image_registry_prefix }}mautrix/slack:{{ matrix_mautrix_slack_version }}"
+matrix_mautrix_slack_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_slack_container_image_self_build else matrix_mautrix_slack_docker_image_registry_prefix_upstream }}"
+matrix_mautrix_slack_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_slack_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_slack_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_mautrix_slack_docker_image_force_pull: "{{ matrix_mautrix_slack_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_slack_base_path: "{{ matrix_base_data_path }}/mautrix-slack"
@@ -62,7 +72,7 @@ matrix_mautrix_slack_backfill_unread_hours_threshold: 720
 matrix_mautrix_slack_backfill_threads_max_initial_messages: 50
 
 # Minimum severity of journal log messages.
-# Options: trace, debug, info, warn, error, fatal
+# Valid values: fatal, error, warn, info, debug, trace
 matrix_mautrix_slack_logging_level: 'warn'
 
 # Database-related configuration fields.

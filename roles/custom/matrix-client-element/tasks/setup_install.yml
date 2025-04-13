@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure Element Web paths exists
@@ -84,11 +95,16 @@
     owner: "{{ matrix_user_username }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
-    - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
     - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
+    - {src: "{{ role_path }}/templates/env.j2", name: "env"}
     - {src: "{{ matrix_client_element_page_template_welcome_path }}", name: "welcome.html"}
     - {src: "{{ matrix_client_element_embedded_pages_home_path }}", name: "home.html"}
   when: "item.src is not none"
+
+- name: Ensure Element Web nginx.conf file is removed
+  ansible.builtin.file:
+    path: "{{ matrix_client_element_data_path }}/nginx.conf"
+    state: absent
 
 - name: Ensure Element Web config files removed
   ansible.builtin.file:

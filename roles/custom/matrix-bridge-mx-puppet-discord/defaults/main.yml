@@ -1,3 +1,15 @@
+# SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Hugues Morisset
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 Daniel Sonck
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Mx Puppet Discord is a Matrix <-> Discord bridge
 # Project source code URL: https://gitlab.com/mx-puppet/discord/mx-puppet-discord
@@ -16,8 +28,10 @@ matrix_mx_puppet_discord_container_http_host_bind_port: ''
 
 # renovate: datasource=docker depName=registry.gitlab.com/mx-puppet/discord/mx-puppet-discord
 matrix_mx_puppet_discord_version: v0.1.1
-matrix_mx_puppet_discord_docker_image: "{{ matrix_mx_puppet_discord_docker_image_name_prefix }}mx-puppet/discord/mx-puppet-discord:{{ matrix_mx_puppet_discord_version }}"
-matrix_mx_puppet_discord_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_discord_container_image_self_build else 'registry.gitlab.com/' }}"
+matrix_mx_puppet_discord_docker_image: "{{ matrix_mx_puppet_discord_docker_image_registry_prefix }}mx-puppet/discord/mx-puppet-discord:{{ matrix_mx_puppet_discord_version }}"
+matrix_mx_puppet_discord_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mx_puppet_discord_container_image_self_build else matrix_mx_puppet_discord_docker_image_registry_prefix_upstream }}"
+matrix_mx_puppet_discord_docker_image_registry_prefix_upstream: "{{ matrix_mx_puppet_discord_docker_image_registry_prefix_upstream_default }}"
+matrix_mx_puppet_discord_docker_image_registry_prefix_upstream_default: "registry.gitlab.com/"
 matrix_mx_puppet_discord_docker_image_force_pull: "{{ matrix_mx_puppet_discord_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_discord_base_path: "{{ matrix_base_data_path }}/mx-puppet-discord"

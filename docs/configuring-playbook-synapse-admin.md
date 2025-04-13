@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2023 Christian González
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+SPDX-FileCopyrightText: 2024 Uğur İLTER
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Synapse Admin (optional)
 
 The playbook can install and configure [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin), community room: [#synapse-admin:etke.cc](https://matrix.to/#/#synapse-admin:etke.cc)) for you.
@@ -25,9 +37,10 @@ matrix_synapse_admin_enabled: true
 - for [Synapse](./configuring-playbook-synapse.md) (our default homeserver implementation): `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true`
 - for [Dendrite](./configuring-playbook-dendrite.md): `matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: true`
 
-By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/etkecc/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) - the one managed by the playbook. To adjust these restrictions, tweak the `matrix_synapse_admin_config_restrictBaseUrl` variable.
+By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/etkecc/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) — the one managed by the playbook. To adjust these restrictions, tweak the `matrix_synapse_admin_config_restrictBaseUrl` variable.
 
-⚠️ **Warning**: If you're using [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS) for authentication, you will be able to [log into synapse-admin with an access token](https://github.com/etkecc/synapse-admin/pull/58), but certain synapse-admin features (especially those around user management) will be limited or not work at all.
+> [!WARNING]
+> If you're using [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS) for authentication, you will be able to [log into synapse-admin with an access token](https://github.com/etkecc/synapse-admin/pull/58), but certain synapse-admin features (especially those around user management) will be limited or not work at all.
 
 ### Adjusting the Synapse Admin URL (optional)
 
@@ -44,6 +57,14 @@ matrix_synapse_admin_path_prefix: /
 If you've changed the default hostname, you may need to create a CNAME record for the Synapse Admin domain (`admin.example.com`), which targets `matrix.example.com`.
 
 When setting, replace `example.com` with your own.
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-synapse-admin/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_synapse_admin_configuration_extension_json` variable
 
 ## Installing
 
@@ -63,3 +84,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 After installation, Synapse Admin will be accessible at: `https://matrix.example.com/synapse-admin/`
 
 To use Synapse Admin, you need to have [registered at least one administrator account](registering-users.md) on your server.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse-admin`.

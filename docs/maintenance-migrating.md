@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 Michael Haak
+SPDX-FileCopyrightText: 2021 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Migrating to new server
 
 This documentation explains how to migrate your Matrix services (server, client, bridges, etc.) and data **from an old server to a new server**.
@@ -66,6 +75,6 @@ The shortcut command with `just` program is also available: `just run-tags insta
 
 ### Check if services work
 
-After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-checking-services.md)
+After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 
 Having make sure that both services and federation work as expected, you can safely shutdown the old server.

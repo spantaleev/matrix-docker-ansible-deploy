@@ -1,6 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Matrix Authentication Service (optional)
 
-The playbook can install and configure [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service/) (MAS) - a service operating alongside your existing [Synapse](./configuring-playbook-synapse.md) homeserver and providing [better authentication, session management and permissions in Matrix](https://matrix.org/blog/2023/09/better-auth/).
+The playbook can install and configure [Matrix Authentication Service](https://github.com/element-hq/matrix-authentication-service/) (MAS) — a service operating alongside your existing [Synapse](./configuring-playbook-synapse.md) homeserver and providing [better authentication, session management and permissions in Matrix](https://matrix.org/blog/2023/09/better-auth/).
 
 Matrix Authentication Service is an implementation of [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) and still work in progress, tracked at the [areweoidcyet.com](https://areweoidcyet.com/) website.
 
@@ -36,8 +43,6 @@ Below, we'll try to **highlight some potential reasons for switching** to Matrix
 
 - ⚠️ the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default for this playbook). Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating wtih Matrix Authentication Service yet.
 
-- ⚠️ **email sending** configured (see [Adjusting email-sending settings](./configuring-playbook-email.md)), because **Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user** going through the new SSO-based login flow. It's also possible to [work around email deliverability issues](#working-around-email-deliverability-issues) if your email configuration is not working.
-
 - ❌ **disabling all password providers** for Synapse (things like [shared-secret-auth](./configuring-playbook-shared-secret-auth.md), [rest-auth](./configuring-playbook-rest-auth.md), [LDAP auth](./configuring-playbook-ldap-auth.md), etc.) More details about this are available in the [Expectations](#expectations) section below.
 
 ## Expectations
@@ -54,28 +59,21 @@ This section details what you can expect when switching to the Matrix Authentica
 
     > cannot initialize matrix bot error="olm account is marked as shared, keys seem to have disappeared from the server"
 
-  - [matrix-reminder-bot](./configuring-playbook-bot-matrix-reminder-bot.md) fails to start (see [element-hq/matrix-authentication-service#3439](https://github.com/element-hq/matrix-authentication-service/issues/3439))
-  - Other services may be similarly affected. This list is not exhaustive.
-
 - ❌ **Encrypted appservices** do not work yet (related to [MSC4190](https://github.com/matrix-org/matrix-spec-proposals/pull/4190) and [PR 17705 for Synapse](https://github.com/element-hq/synapse/pull/17705)), so all bridges/bots that rely on encryption will fail to start (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3658) for Hookshot). You can use these bridges/bots only if you **keep end-to-bridge encryption disabled** (which is the default setting).
 
-- ⚠️ **You will need to have email sending configured** (see [Adjusting email-sending settings](./configuring-playbook-email.md)), because **Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user** going through the new SSO-based login flow. It's also possible to [work around email deliverability issues](#working-around-email-deliverability-issues) if your email configuration is not working.
-
 - ⚠️ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) is **possible**, but requires **some playbook-assisted manual work**. Migration is **reversible with no or minor issues if done quickly enough**, but as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
-
-- ⚠️ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) does not currently seem to preserve the "admin" flag for users (as found in the Synapse database). All users are imported as non-admin - see [element-hq/matrix-authentication-service#3440](https://github.com/element-hq/matrix-authentication-service/issues/3440). You may need update the Matrix Authentication Service's database manually and adjust the `can_request_admin` column in the `users` table to `true` for users that need to be administrators (e.g. `UPDATE users SET can_request_admin = true WHERE username = 'someone';`)
 
 - ⚠️ Delegating user authentication to MAS causes **your Synapse server to be completely dependant on one more service** for its operations. MAS is quick & lightweight and should be stable enough already, but this is something to keep in mind when making the switch.
 
 - ⚠️ If you've got [OIDC configured in Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on), you will need to migrate your OIDC configuration to MAS by adding an [Upstream OAuth2 configuration](#upstream-oauth2-configuration).
 
-- ⚠️ A [compatibility layer](https://element-hq.github.io/matrix-authentication-service/setup/homeserver.html#set-up-the-compatibility-layer) is installed - all `/_matrix/client/*/login` (etc.) requests will be routed to MAS instead of going to the homeserver. This is done both publicly (e.g. `https://matrix.example.com/_matrix/client/*/login`) and on the internal Traefik entrypoint (e.g. `https://matrix-traefik:8008/_matrix/client/*/login`) which helps addon services reach the homeserver's Client-Server API. You typically don't need to do anything to make this work, but it's good to be aware of it, especially if you have a [custom webserver setup](./configuring-playbook-own-webserver.md).
+- ⚠️ A [compatibility layer](https://element-hq.github.io/matrix-authentication-service/setup/homeserver.html#set-up-the-compatibility-layer) is installed — all `/_matrix/client/*/login` (etc.) requests will be routed to MAS instead of going to the homeserver. This is done both publicly (e.g. `https://matrix.example.com/_matrix/client/*/login`) and on the internal Traefik entrypoint (e.g. `https://matrix-traefik:8008/_matrix/client/*/login`) which helps addon services reach the homeserver's Client-Server API. You typically don't need to do anything to make this work, but it's good to be aware of it, especially if you have a [custom webserver setup](./configuring-playbook-own-webserver.md).
 
 - ✅ Your **existing login sessions will continue to work** (you won't get logged out). Migration will require a bit of manual work and minutes of downtime, but it's not too bad.
 
 - ✅ Various clients ([Cinny](./configuring-playbook-client-cinny.md), [Element Web](./configuring-playbook-client-element-web.md), Element X, FluffyChat) will be able to use the **new SSO-based login flow** provided by Matrix Authentication Service
 
-- ✅ The **old login flow** (called `m.login.password`) **will still continue to work**, so clients (old Element Web, etc.) and bridges/bots that don't support the new OIDC-based login flow will still work. Going through the old login flow does not require users to have a verified email address, as [is the case](https://github.com/element-hq/matrix-authentication-service/issues/1505) for the new SSO-based login flow.
+- ✅ The **old login flow** (called `m.login.password`) **will still continue to work**, so clients (old Element Web, etc.) and bridges/bots that don't support the new OIDC-based login flow will still work
 
 - ✅ [Registering users](./registering-users.md) via **the playbook's `register-user` tag remains unchanged**. The playbook automatically does the right thing regardless of homeserver implementation (Synapse, Dendrite, etc.) and whether MAS is enabled or not. When MAS is enabled, the playbook will forward user-registration requests to MAS. Registering users via the command-line is no longer done via the `/matrix/synapse/bin/register` script, but via `/matrix/matrix-authentication-service/bin/register-user`.
 
@@ -248,7 +246,7 @@ matrix_authentication_service_config_upstream_oauth2_providers:
         #action: force
         #template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
       # The display name is the user's display name.
-      displayname:
+      #displayname:
         #action: suggest
         #template: "{% raw %}{{ user.name }}{% endraw %}"
       # An email address to import.
@@ -275,6 +273,15 @@ matrix_authentication_service_config_upstream_oauth2_providers:
 - [Configure upstream OIDC provider mapping for syn2mas](#configuring-upstream-oidc-provider-mapping-for-syn2mas)
 - go through the [migrating an existing homeserver](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) process
 - remove all Synapse OIDC-related configuration (`matrix_synapse_oidc_*`) to prevent it being in conflict with the MAS OIDC configuration
+
+### Extending the configuration
+
+There are some additional things you may wish to configure about the component.
+
+Take a look at:
+
+- `roles/custom/matrix-authentication-service/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-authentication-service/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_authentication_service_configuration_extension_yaml` variable
 
 ## Installing
 
@@ -428,7 +435,9 @@ If successful, you should see some output that looks like this:
 ✅ The legacy login API at "https://matrix.example.com/_matrix/client/v3/login" is reachable and is handled by MAS.
 ```
 
-## Management
+## Usage
+
+### Management
 
 You can use the [`mas-cli` command-line tool](https://element-hq.github.io/matrix-authentication-service/reference/cli/index.html) (exposed via the `/matrix/matrix-authentication-service/bin/mas-cli` script) to perform administrative tasks against MAS.
 
@@ -440,18 +449,26 @@ This documentation page already mentions:
 
 There are other sub-commands available. Run `/matrix/matrix-authentication-service/bin/mas-cli` to get an overview.
 
-## User registration
+### User registration
 
 After Matrix Authentication Service is [installed](#installing), users need to be managed there (unless you're managing them in an [upstream OAuth2 provider](#upstream-oauth2-configuration)).
 
 You can register users new users as described in the [Registering users](./registering-users.md) documentation (via `mas-cli manage register-user` or the Ansible playbook's `register-user` tag).
 
-## Working around email deliverability issues
+### Working around email deliverability issues
 
-Because Matrix Authentication Service [still insists](https://github.com/element-hq/matrix-authentication-service/issues/1505) on having a verified email address for each user, you may need to work around email deliverability issues if [your email-sending configuration](./configuring-playbook-email.md) is not working.
+Matrix Authentication Service only sends emails when:
 
-Matrix Authentication Service attempts to verify email addresses by sending a verification email to the address specified by the user whenever they log in to an account without a verified email address.
+- it verifies email addresses for users who are self-registering with a password
 
-If email delivery is not working, **you can retrieve the email configuration code from the Matrix Authentication Service's logs** (`journalctl -fu matrix-authentication-service`).
+- a user tries to add an email to their account
+
+If Matrix Authentication Service tries to send an email and it fails because [your email-sending configuration](./configuring-playbook-email.md) is not working, you may need to work around email deliverability.
+
+If email delivery is not working, **you can retrieve the email verification code from the Matrix Authentication Service's logs** (`journalctl -fu matrix-authentication-service`).
 
 Alternatively, you can use the [`mas-cli` management tool](#management) to manually verify email addresses for users. Example: `/matrix/matrix-authentication-service/bin/mas-cli manage verify-email some.username email@example.com`
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-authentication-service`.

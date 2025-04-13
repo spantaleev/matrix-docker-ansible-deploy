@@ -1,3 +1,17 @@
+# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Horvath Gergely
+# SPDX-FileCopyrightText: 2020 Marcel Partap
+# SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2021 Arthur Brugière
+# SPDX-FileCopyrightText: 2022 - 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 László Várady
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Adrien le Maire
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # mautrix-facebook is a Matrix <-> Facebook bridge
 # Project source code URL: https://github.com/mautrix/facebook
@@ -9,8 +23,10 @@ matrix_mautrix_facebook_container_image_self_build_repo: "https://mau.dev/mautri
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/facebook
 matrix_mautrix_facebook_version: v0.5.1
-matrix_mautrix_facebook_docker_image: "{{ matrix_mautrix_facebook_docker_image_name_prefix }}mautrix/facebook:{{ matrix_mautrix_facebook_version }}"
-matrix_mautrix_facebook_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_facebook_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_facebook_docker_image: "{{ matrix_mautrix_facebook_docker_image_registry_prefix }}mautrix/facebook:{{ matrix_mautrix_facebook_version }}"
+matrix_mautrix_facebook_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_facebook_container_image_self_build else matrix_mautrix_facebook_docker_image_registry_prefix_upstream }}"
+matrix_mautrix_facebook_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_facebook_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_facebook_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_mautrix_facebook_docker_image_force_pull: "{{ matrix_mautrix_facebook_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_facebook_base_path: "{{ matrix_base_data_path }}/mautrix-facebook"
