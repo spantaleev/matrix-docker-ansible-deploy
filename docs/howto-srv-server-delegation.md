@@ -79,7 +79,7 @@ traefik_configuration_extension_yaml: |
             - "8.8.8.8:53"
         storage: {{ traefik_config_certificatesResolvers_acme_storage | to_json }}
 
-# 2. Configure the environment variables needed by Rraefik to automate the ACME DNS Challenge (example for Cloudflare)
+# 2. Configure the environment variables needed by Traefik to automate the ACME DNS Challenge (example for Cloudflare)
 traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
