@@ -84,6 +84,8 @@ matrix_mautrix_telegram_appservice_public_external: '{{ matrix_mautrix_telegram_
 
 matrix_mautrix_telegram_appservice_bot_username: telegrambot
 
+matrix_mautrix_telegram_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+
 # Specifies the default log level for all bridge loggers.
 matrix_mautrix_telegram_logging_level: WARNING
 
@@ -239,6 +241,7 @@ matrix_mautrix_telegram_registration_yaml: |
   url: {{ matrix_mautrix_telegram_appservice_address }}
   rate_limited: false
   de.sorunome.msc2409.push_ephemeral: true
+  io.element.msc4190: {{ matrix_mautrix_telegram_msc4190_enabled | to_json }}
 
 matrix_mautrix_telegram_registration: "{{ matrix_mautrix_telegram_registration_yaml | from_yaml }}"
 
