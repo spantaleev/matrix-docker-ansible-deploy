@@ -123,6 +123,8 @@ matrix_mautrix_meta_instagram_appservice_address: "http://{{ matrix_mautrix_meta
 
 matrix_mautrix_meta_instagram_appservice_id: "{{ matrix_mautrix_meta_instagram_meta_mode }}"
 
+matrix_mautrix_meta_instagram_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+
 # For Facebook/Messenger, we use the same `@messengerbot:example.com` username regardless of how bridging happens for multiple reasons:
 # - it's consistent - regardless of how bridging happens, the bridged service is actually Messenger
 # - it's easy for users - you may change the mode, but the bot is always at `@messengerbot:example.com`
@@ -297,5 +299,6 @@ matrix_mautrix_meta_instagram_registration_yaml: |
   sender_localpart: _bot_{{ matrix_mautrix_meta_instagram_appservice_username }}
   rate_limited: false
   de.sorunome.msc2409.push_ephemeral: true
+  io.element.msc4190: {{ matrix_mautrix_meta_instagram_msc4190_enabled | to_json }}
 
 matrix_mautrix_meta_instagram_registration: "{{ matrix_mautrix_meta_instagram_registration_yaml | from_yaml }}"

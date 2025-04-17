@@ -31,6 +31,8 @@ matrix_mautrix_bluesky_homeserver_address: ""
 matrix_mautrix_bluesky_homeserver_domain: '{{ matrix_domain }}'
 matrix_mautrix_bluesky_appservice_address: 'http://matrix-mautrix-bluesky:29340'
 
+matrix_mautrix_bluesky_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+
 # A public address that external services can use to reach this appservice.
 matrix_mautrix_bluesky_appservice_public_address: ''
 
@@ -187,6 +189,7 @@ matrix_mautrix_bluesky_registration_yaml: |
   rate_limited: false
   de.sorunome.msc2409.push_ephemeral: true
   receive_ephemeral: true
+  io.element.msc4190: {{ matrix_mautrix_bluesky_msc4190_enabled | to_json }}
 
 matrix_mautrix_bluesky_registration: "{{ matrix_mautrix_bluesky_registration_yaml | from_yaml }}"
 
