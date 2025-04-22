@@ -243,7 +243,7 @@ matrix_addons_homeserver_client_api_url: "{{ ('http://' + matrix_playbook_revers
 matrix_addons_homeserver_systemd_services_list: "{{ ([traefik_identifier + '.service'] if matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' else []) if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_systemd_services_list }}"
 
 # Starting from version `0.6.0` Conduit natively supports some sync v3 (sliding-sync) features.
-matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit', 'conduwuit'] else '') }}"
+matrix_homeserver_sliding_sync_url: "{{ matrix_sliding_sync_base_url if matrix_sliding_sync_enabled else (matrix_homeserver_url if matrix_homeserver_implementation in ['conduit', 'conduwuit', 'continuwuity'] else '') }}"
 
 ########################################################################
 #                                                                      #
@@ -567,6 +567,7 @@ matrix_homeserver_container_client_api_endpoint: |-
       'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port | default('8008') | string),
       'conduit': ('matrix-conduit:' + matrix_conduit_port_number | default('8008') | string),
       'conduwuit': ('matrix-conduwuit:' + matrix_conduwuit_config_port_number | default('8008') | string),
+      'continuwuity': ('matrix-continuwuity:' + matrix_continuwuity_config_port_number | default('8008') | string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -577,6 +578,7 @@ matrix_homeserver_container_federation_api_endpoint: |-
       'dendrite': ('matrix-dendrite:' + matrix_dendrite_http_bind_port | default('8008') | string),
       'conduit': ('matrix-conduit:' + matrix_conduit_port_number | default('8008') | string),
       'conduwuit': ('matrix-conduwuit:' + matrix_conduwuit_config_port_number | default('8008') | string),
+      'continuwuity': ('matrix-continuwuity:' + matrix_continuwuity_config_port_number | default('8008') | string),
     }[matrix_homeserver_implementation]
   }}
 
@@ -5640,6 +5642,7 @@ grafana_default_home_dashboard_path: |-
       'dendrite': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
       'conduit': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
       'conduwuit': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
+      'continuwuity': ('/etc/grafana/dashboards/node-exporter-full.json' if prometheus_node_exporter_enabled else ''),
     }[matrix_homeserver_implementation]
   }}
 
@@ -5700,6 +5703,7 @@ matrix_registration_shared_secret: |-
       'dendrite': matrix_dendrite_client_api_registration_shared_secret | default (''),
       'conduit': '',
       'conduwuit': '',
+      'continuwuity': '',
     }[matrix_homeserver_implementation]
   }}
 
@@ -5973,6 +5977,58 @@ matrix_conduwuit_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabl
 ######################################################################
 #
 # /matrix-conduwuit
+#
+######################################################################
+
+
+######################################################################
+#
+# matrix-continuwuity
+#
+######################################################################
+
+matrix_continuwuity_enabled: "{{ matrix_homeserver_implementation == 'continuwuity' }}"
+
+matrix_continuwuity_hostname: "{{ matrix_server_fqn_matrix }}"
+
+matrix_continuwuity_config_allow_federation: "{{ matrix_homeserver_federation_enabled }}"
+
+matrix_continuwuity_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_continuwuity_docker_image_registry_prefix_upstream_default }}"
+
+matrix_continuwuity_container_network: "{{ matrix_homeserver_container_network }}"
+
+matrix_continuwuity_container_additional_networks_auto: |
+  {{
+    (
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_continuwuity_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
+    ) | unique
+  }}
+
+matrix_continuwuity_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and not matrix_synapse_workers_enabled }}"
+matrix_continuwuity_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_continuwuity_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_continuwuity_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_continuwuity_container_labels_public_client_root_redirection_enabled: "{{ matrix_continuwuity_container_labels_public_client_root_redirection_url != '' }}"
+matrix_continuwuity_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+
+matrix_continuwuity_container_labels_public_federation_api_traefik_hostname: "{{ matrix_server_fqn_matrix_federation }}"
+matrix_continuwuity_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
+matrix_continuwuity_container_labels_public_federation_api_traefik_tls: "{{ matrix_federation_traefik_entrypoint_tls }}"
+
+matrix_continuwuity_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
+matrix_continuwuity_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
+
+matrix_continuwuity_config_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
+matrix_continuwuity_config_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_continuwuity_config_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_continuwuity_config_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+
+matrix_continuwuity_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
+
+######################################################################
+#
+# /matrix-continuwuity
 #
 ######################################################################
 

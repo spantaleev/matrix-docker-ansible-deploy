@@ -26,7 +26,7 @@ The up-to-date list can be accessed on [traefik's documentation](https://doc.tra
 
 **Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
 
-- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [conduwuit](./configuring-playbook-conduwuit.md) or [Dendrite](./configuring-playbook-dendrite.md))
+- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [conduwuit](./configuring-playbook-conduwuit.md), [continuwuity](./configuring-playbook-continuwuity.md) or [Dendrite](./configuring-playbook-dendrite.md))
 - if you're using [Synapse with workers enabled](./configuring-playbook-synapse.md#load-balancing-with-workers) (`matrix_synapse_workers_enabled: true`). In that case, it's actually the `matrix-synapse-reverse-proxy-companion` service which has Traefik labels attached
 
 Also, all instructions below are from an older version of the playbook and may not work anymore.

@@ -28,6 +28,7 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Synapse](configuring-playbook-synapse.md) | [element-hq/synapse](https://ghcr.io/element-hq/synapse) | ✅ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network |
 | [Conduit](configuring-playbook-conduit.md) | [matrixconduit/matrix-conduit](https://hub.docker.com/r/matrixconduit/matrix-conduit) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Conduit is a lightweight open-source server implementation of the Matrix Specification with a focus on easy setup and low system requirements |
 | [conduwuit](configuring-playbook-conduwuit.md) | [girlbossceo/conduwuit](https://ghcr.io/girlbossceo/conduwuit) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. conduwuit is a fork of Conduit. |
+| [continuwuity](configuring-playbook-continuwuity.md) | [continuwuation/continuwuity](https://forgejo.ellis.link/continuwuation/continuwuity) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. continuwuity is a continuation of conduwuit. |
 | [Dendrite](configuring-playbook-dendrite.md) | [matrixdotorg/dendrite-monolith](https://hub.docker.com/r/matrixdotorg/dendrite-monolith/) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse. |
 
 ## Clients
