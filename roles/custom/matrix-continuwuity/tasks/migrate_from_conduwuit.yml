@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# This migrates the conduwuit server implementation (`/matrix/conduwuit`) to continuwuity (`/matrix/continuwuity`),
+#
+# Here, we merely backup the fresh continuwuity folder, relocate conduwuit directory to continuwuity (`/matrix/conduwuit`)
+#
+# and restore continuwuity labels.
+
+- name: Check existence of conduwuit directory ({{ matrix_base_data_path }}/conduwuit)
+  ansible.builtin.stat:
+    path: "{{ matrix_base_data_path }}/conduwuit"
+  register: matrix_conduwuit_directory_stat
+
+- name: Check existence of continuwuity directory ({{ matrix_base_data_path }}/continuwuity)
+  ansible.builtin.stat:
+    path: "{{ matrix_base_data_path }}/continuwuity"
+  register: matrix_continuwuity_directory_stat
+
+- when: >
+        matrix_conduwuit_directory_stat.stat.exists | bool and
+        matrix_continuwuity_directory_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-continuwuity.service systemd service is stopped
+      ansible.builtin.systemd:
+        name: matrix-continuwuity
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure continuwuity folder is removed
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/continuwuity {{ matrix_base_data_path }}/continuwuity_old"
+        creates: "{{ matrix_base_data_path }}/continuwuity_old"
+
+    - name: Ensure conduwuit directory relocated
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/conduwuit {{ matrix_base_data_path }}/continuwuity"
+        creates: "{{ matrix_base_data_path }}/continuwuity"
+        removes: "{{ matrix_base_data_path }}"
+
+    - name: Ensure conduwuit.toml file is renamed
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/continuwuity/config/conduwuit.toml {{ matrix_base_data_path }}/continuwuity/config/continuwuity.toml"
+
+    - name: Ensure continuwuity labels are restored
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/continuwuity_old/labels {{ matrix_base_data_path }}/continuwuity/labels"
+
+    - name: Ensure matrix-continuwuity.service systemd service is started
+      ansible.builtin.systemd:
+        name: matrix-continuwuity
+        state: started
+        enabled: true
+        daemon_reload: true

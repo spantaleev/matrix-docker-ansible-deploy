@@ -99,6 +99,10 @@ Then, send its content to the existing admin room:
     url: http://matrix-mautrix-signal:29328
     ```
 
+## Migrating from conduwuit
+
+Since continuwuity is a drop-in replacement for conduwuit, migration is possible. First, make sure that continuwuity is properly set up on your `vars.yml` and run the tag `just run-tags migrate-conduwuit`
+
 ## Troubleshooting
 
 As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-continuwuity`.
