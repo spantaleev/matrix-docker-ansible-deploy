@@ -266,7 +266,7 @@ web:
   enabled: true
 
   # The port to expose the webserver on. Defaults to 8080.
-  port: 8080
+  port: {{ matrix_bot_draupnir_config_web_port | to_json }}
 
   # The address to listen for requests on. Defaults to only the current
   # computer.
@@ -286,6 +286,18 @@ web:
   abuseReporting:
     # Whether to enable this feature.
     enabled: {{ matrix_bot_draupnir_config_web_abuseReporting | to_json }}
+  # Whether to setup a endpoints for synapse-http-antispam
+  # https://github.com/maunium/synapse-http-antispam
+  # this is required for some features of Draupnir,
+  # such as support for room takedown policies.
+  #
+  # Please FOLLOW the instructions here:
+  # https://the-draupnir-project.github.io/draupnir-documentation/bot/synapse-http-antispam
+  synapseHTTPAntispam:
+    enabled: {{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled | to_json }}
+    # This is a secret that you must place into your synapse module config
+    # https://github.com/maunium/synapse-http-antispam?tab=readme-ov-file#configuration
+    authorization: {{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization | to_json }}
 {% endif %}
 
 # FIXME: This configuration option is currently broken in the playbook as admin APIs cannot

@@ -25,7 +25,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--network={{ matrix_bot_draupnir_container_network }} \
 			{% if matrix_bot_draupnir_container_http_host_bind_port %}
-			-p {{ matrix_bot_draupnir_container_http_host_bind_port }}:8080 \
+			-p {{ matrix_bot_draupnir_container_http_host_bind_port }}:{{ matrix_bot_draupnir_config_web_port }} \
 			{% endif %}
 			--label-file={{ matrix_bot_draupnir_base_path }}/labels \
 			--mount type=bind,src={{ matrix_bot_draupnir_config_path }},dst=/data/config,ro \
