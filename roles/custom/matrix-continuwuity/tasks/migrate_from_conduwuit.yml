@@ -10,12 +10,12 @@
 #
 # and restore continuwuity labels.
 
-- name: Check existence of conduwuit directory ({{ matrix_base_data_path }}/conduwuit)
+- name: Check existence of conduwuit directory
   ansible.builtin.stat:
     path: "{{ matrix_base_data_path }}/conduwuit"
   register: matrix_conduwuit_directory_stat
 
-- name: Check existence of continuwuity directory ({{ matrix_base_data_path }}/continuwuity)
+- name: Check existence of continuwuity directory
   ansible.builtin.stat:
     path: "{{ matrix_base_data_path }}/continuwuity"
   register: matrix_continuwuity_directory_stat
@@ -31,24 +31,27 @@
         enabled: false
         daemon_reload: true
 
-    - name: Ensure continuwuity folder is removed
+    - name: Ensure continuwuity directory is backed up
       ansible.builtin.command:
         cmd: "mv {{ matrix_base_data_path }}/continuwuity {{ matrix_base_data_path }}/continuwuity_old"
         creates: "{{ matrix_base_data_path }}/continuwuity_old"
+        removes: "{{ matrix_base_data_path }}/continuwuity"
 
-    - name: Ensure conduwuit directory relocated
-      ansible.builtin.command:
-        cmd: "mv {{ matrix_base_data_path }}/conduwuit {{ matrix_base_data_path }}/continuwuity"
-        creates: "{{ matrix_base_data_path }}/continuwuity"
-        removes: "{{ matrix_base_data_path }}"
+    - name: Ensure conduwuit directory contents are copied to continuwuity
+      ansible.builtin.copy:
+        src: "{{ matrix_base_data_path }}/conduwuit/"
+        dest: "{{ matrix_base_data_path }}/continuwuity"
+        remote_src: true
+        mode: preserve
 
     - name: Ensure conduwuit.toml file is renamed
       ansible.builtin.command:
         cmd: "mv {{ matrix_base_data_path }}/continuwuity/config/conduwuit.toml {{ matrix_base_data_path }}/continuwuity/config/continuwuity.toml"
+        removes: "{{ matrix_base_data_path }}/continuwuity/config/conduwuit.toml"
 
     - name: Ensure continuwuity labels are restored
       ansible.builtin.command:
-        cmd: "mv {{ matrix_base_data_path }}/continuwuity_old/labels {{ matrix_base_data_path }}/continuwuity/labels"
+        cmd: "cp {{ matrix_base_data_path }}/continuwuity_old/labels {{ matrix_base_data_path }}/continuwuity/labels"
 
     - name: Ensure matrix-continuwuity.service systemd service is started
       ansible.builtin.systemd:
