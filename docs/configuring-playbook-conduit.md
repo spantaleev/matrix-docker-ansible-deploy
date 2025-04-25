@@ -65,6 +65,7 @@ Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/ma
     ```
     as_token: <token>
     de.sorunome.msc2409.push_ephemeral: true
+    receive_ephemeral: true
     hs_token: <token>
     id: signal
     namespaces:
