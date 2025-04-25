@@ -50,8 +50,12 @@
         removes: "{{ matrix_base_data_path }}/continuwuity/config/conduwuit.toml"
 
     - name: Ensure continuwuity labels are restored
-      ansible.builtin.command:
-        cmd: "cp {{ matrix_base_data_path }}/continuwuity_old/labels {{ matrix_base_data_path }}/continuwuity/labels"
+      ansible.builtin.copy:
+        src: "{{ matrix_base_data_path }}/continuwuity_old/labels"
+        dest: "{{ matrix_base_data_path }}/continuwuity/labels"
+        remote_src: true
+        force: true
+        mode: preserve
 
     - name: Ensure matrix-continuwuity.service systemd service is started
       ansible.builtin.systemd:
