@@ -5,9 +5,9 @@ SPDX-FileCopyrightText: 2025 Suguru Hirahara
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Configuring continuwuity (optional)
+# Configuring Continuwuity (optional)
 
-The playbook can install and configure the [continuwuity](https://continuwuity.org) Matrix server for you.
+The playbook can install and configure the [Continuwuity](https://continuwuity.org) Matrix server for you.
 
 See the project's [documentation](https://continuwuity.org) to learn what it does and why it might be useful to you.
 
@@ -16,12 +16,12 @@ By default, the playbook installs [Synapse](https://github.com/element-hq/synaps
 💡 **Note**: continuwuity is a fork of [conduwuit](./configuring-playbook-conduwuit.md), which the playbook also supports.
 
 > [!WARNING]
-> - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> continuwuity). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
+> - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Continuwuity). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
 > - **Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
 
 ## Adjusting the playbook configuration
 
-To use continuwuity, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:
+To use Continuwuity, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:
 
 ```yaml
 matrix_homeserver_implementation: continuwuity
@@ -101,7 +101,15 @@ Then, send its content to the existing admin room:
 
 ## Migrating from conduwuit
 
-Since continuwuity is a drop-in replacement for conduwuit, migration is possible. First, make sure that continuwuity is properly set up on your `vars.yml` and run the tag `just run-tags migrate-conduwuit`
+Since Continuwuity is a drop-in replacement for [conduwuit](configuring-playbook-conduwuit.md), migration is possible.
+
+1. Make sure that Continuwuity is properly set up on your `vars.yml` as described above
+
+2. Make sure that Conduwuit references are removed from your `vars.yml` file
+
+3. Run the installation in a way that installs new services and uninstalls old ones (e.g. `just setup-all`)
+
+4. Run the playbook with the `migrate-conduwuit` tag (e.g. `just run-tags migrate-conduwuit`). This migrates data from `/matrix/conduwuit` to `/matrix/continuwuity`
 
 ## Troubleshooting
 
