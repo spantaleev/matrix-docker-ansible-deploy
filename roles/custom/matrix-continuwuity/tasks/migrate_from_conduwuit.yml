@@ -7,6 +7,7 @@
 # This migrates the conduwuit server implementation (`/matrix/conduwuit`) to continuwuity (`/matrix/continuwuity`),
 #
 # Here, we merely backup the fresh continuwuity folder, relocate conduwuit directory to continuwuity (`/matrix/conduwuit`)
+#
 # and restore continuwuity labels.
 
 - name: Check existence of conduwuit directory
@@ -55,6 +56,24 @@
         remote_src: true
         force: true
         mode: preserve
+
+    - name: Ensure directories ownership is set
+      block:
+        - name: Set continuwuity ownership
+          ansible.builtin.file:
+            path: "{{ matrix_base_data_path }}/continuwuity"
+            state: directory
+            owner: "{{ matrix_user_username }}"
+            group: "{{ matrix_user_groupname }}"
+            recurse: true
+
+        - name: Set continuwuity_old ownership
+          ansible.builtin.file:
+            path: "{{ matrix_base_data_path }}/continuwuity_old"
+            state: directory
+            owner: "{{ matrix_user_username }}"
+            group: "{{ matrix_user_groupname }}"
+            recurse: true
 
     - name: Ensure matrix-continuwuity.service systemd service is started
       ansible.builtin.systemd:
