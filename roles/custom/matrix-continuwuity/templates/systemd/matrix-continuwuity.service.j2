@@ -21,7 +21,8 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_continuwuity_tmp_directory_size_mb }}m \
 			--network={{ matrix_continuwuity_container_network }} \
-			--env continuwuity_CONFIG=/etc/continuwuity/continuwuity.toml \
+			--env CONDUWUIT_CONFIG=/etc/continuwuity/continuwuity.toml \
+			--env CONDUWUIT_DATABASE_PATH=/var/lib/continuwuity \
 			--label-file={{ matrix_continuwuity_base_path }}/labels \
 			--mount type=bind,src={{ matrix_continuwuity_data_path }},dst=/var/lib/continuwuity \
 			--mount type=bind,src={{ matrix_continuwuity_config_path }},dst=/etc/continuwuity,ro \
