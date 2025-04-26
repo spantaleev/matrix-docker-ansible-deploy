@@ -83,6 +83,7 @@ Then, send its content to the existing admin room:
     ```
     as_token: <token>
     de.sorunome.msc2409.push_ephemeral: true
+    receive_ephemeral: true
     hs_token: <token>
     id: signal
     namespaces:
@@ -109,7 +110,7 @@ Since Continuwuity is a drop-in replacement for [conduwuit](configuring-playbook
 
 3. Run the installation in a way that installs new services and uninstalls old ones (e.g. `just setup-all`)
 
-4. Run the playbook with the `migrate-conduwuit` tag (e.g. `just run-tags migrate-conduwuit`). This migrates data from `/matrix/conduwuit` to `/matrix/continuwuity`
+4. Run the playbook with the `conduwuit-migrate-from-continuwuity` tag (e.g. `just run-tags conduwuit-migrate-from-continuwuity`). This migrates data from `/matrix/conduwuit` to `/matrix/continuwuity`
 
 ## Troubleshooting
 
