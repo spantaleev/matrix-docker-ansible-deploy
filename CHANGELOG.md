@@ -1,3 +1,21 @@
+# 2025-04-26
+
+## Continuwuity support
+
+Thanks to [Virkkunen](https://github.com/Virkkunen), we now have optional experimental [Continuwuity](./docs/configuring-playbook-continuwuity.md) homeserver support.
+
+Continuwuity is a fork of [conduwuit](./docs/configuring-playbook-conduwuit.md), which the playbook also supports. It appears that conduwuit has been abandoned and various forks (like Continuwuity, [Tuwunel](https://github.com/matrix-construct/tuwunel) and possibly others) are continuing in its path.
+
+Existing installations do **not** need to be updated. **Synapse is still the default homeserver implementation** installed by the playbook.
+
+People that used to run conduwuit, may wish to:
+
+- either [migrate from conduwuit to Continuwuity](./docs/configuring-playbook-continuwuity.md#migrating-from-conduwuit)
+- or wait for some of the other forks to progress and for support for them to get added to the playbook
+
+**The homeserver implementation of an existing server cannot be changed** (e.g. from Synapse/Conduit/Dendrite to Continuwuity) without data loss.
+
+
 # 2025-04-09
 
 ## Element Call frontend installation is now optional
