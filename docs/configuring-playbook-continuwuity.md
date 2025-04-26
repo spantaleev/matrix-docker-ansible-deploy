@@ -110,7 +110,7 @@ Since Continuwuity is a drop-in replacement for [conduwuit](configuring-playbook
 
 3. Run the installation in a way that installs new services and uninstalls old ones (e.g. `just setup-all`)
 
-4. Run the playbook with the `conduwuit-migrate-from-continuwuity` tag (e.g. `just run-tags conduwuit-migrate-from-continuwuity`). This migrates data from `/matrix/conduwuit` to `/matrix/continuwuity`
+4. Run the playbook with the `continuwuity-migrate-from-conduwuit` tag (e.g. `just run-tags continuwuity-migrate-from-conduwuit`). This migrates data from `/matrix/conduwuit` to `/matrix/continuwuity`
 
 ## Troubleshooting
 
