@@ -138,6 +138,25 @@ matrix_bot_draupnir_web_url: 'http://matrix-bot-draupnir'
 matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled: false  # noqa var-naming
 matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: ''  # noqa var-naming
 
+# This controls the URL that the module targets in Draupnir.
+matrix_bot_draupnir_synapse_http_antispam_config_base_url: "{{ matrix_bot_draupnir_web_url }}:{{ matrix_bot_draupnir_config_web_port }}/api/1/spam_check"
+
+# These variables control the configuration of the Synapse module as the configuration is highly consumer dependent.
+# Therefore the module is configured from Draupnir because the consumer of the module determines what settings are relevant.
+
+matrix_bot_draunpir_synapse_http_antispam_config_enabled_callbacks_yaml: |
+  - check_event_for_spam
+  - user_may_invite
+  - user_may_join_room
+
+matrix_bot_draupnir_synapse_http_antispam_config_fail_open_yaml: |
+  check_event_for_spam: true
+  user_may_invite: true
+  user_may_join_room: true
+
+matrix_bot_draupnir_synapse_http_antispam_config_async_yaml: |
+  check_event_for_spam: true
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #

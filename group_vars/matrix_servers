@@ -3204,7 +3204,8 @@ matrix_bot_draupnir_container_labels_traefik_docker_network: "{{ matrix_playbook
 matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'draupnir.synapseHTTPAntispam', rounds=655555) | to_uuid }}" # noqa var-naming
+#The salt is size restricted here as a maximum salt size of 16 characters exists due to the functions used.
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'draupnir.httpmod', rounds=655555) | to_uuid }}" # noqa var-naming
 
 ######################################################################
 #
@@ -3256,6 +3257,24 @@ matrix_appservice_draupnir_for_all_database_password: "{{ '%s' | format(matrix_h
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-synapse-ext-synapse-http-antispam
+#
+######################################################################
+
+matrix_synapse_ext_synapse_http_antispam_enabled: "{{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled }}"
+matrix_synapse_ext_synapse_http_antispam_config_base_url: "{{ matrix_bot_draupnir_synapse_http_antispam_config_base_url if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
+matrix_synapse_ext_synapse_http_antispam_config_authorization: "{{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
+matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks_yaml: "{{ matrix_bot_draunpir_synapse_http_antispam_config_enabled_callbacks_yaml if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
+matrix_synapse_ext_synapse_http_antispam_config_fail_open_yaml: "{{ matrix_bot_draupnir_synapse_http_antispam_config_fail_open_yaml if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
+matrix_synapse_ext_synapse_http_antispam_config_async_yaml: "{{ matrix_bot_draupnir_synapse_http_antispam_config_async_yaml if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
+
+######################################################################
+#
+# /matrix-synapse-ext-synapse-http-antispam
+#
+######################################################################
 
 ######################################################################
 #
