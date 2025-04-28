@@ -145,6 +145,20 @@ The bot can intercept the report API endpoint of the client-server API, which re
 matrix_bot_draupnir_config_web_abuseReporting: true
 ```
 
+### Enabling synapse-http-antispam support
+
+Certain protections in Draupnir require the [synapse-http-antispam](https://github.com/maunium/synapse-http-antispam) module and a Synapse homeserver plus homeserver admin status to function. This module can be enabled in the playbook via setting `matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled` to `true` and making sure that Draupnir admin API access is enabled.
+
+```yaml
+# Enables the integration between Draupnir and synapse-http-antispam module.
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled: true
+
+# Enables draupnir to access Synapse admin APIs. This is required for the module functionality to take full effect.
+matrix_bot_draupnir_admin_api_enabled: true
+```
+
+These protections need to be manually activated and consulting the [enabling protections](#enabling-built-in-protections) guide can be helpful or consulting upstream documentation.
+
 <!--
 NOTE: this is unsupported by the playbook due to the admin API being inaccessible from containers currently.
 
