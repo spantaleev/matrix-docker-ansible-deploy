@@ -49,7 +49,7 @@ aux_file_definitions:
       content
       here
     mode: '0600'
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 ```
 

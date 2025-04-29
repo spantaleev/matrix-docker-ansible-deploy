@@ -14,7 +14,7 @@
     path: "{{ item }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_sygnal_base_path }}"
@@ -26,7 +26,7 @@
     content: "{{ matrix_sygnal_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_sygnal_config_path }}/sygnal.yaml"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Sygnal labels installed
@@ -34,7 +34,7 @@
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ matrix_sygnal_base_path }}/labels"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Sygnal image is pulled

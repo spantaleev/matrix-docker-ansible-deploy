@@ -12,7 +12,7 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - path: "{{ matrix_rageshake_config_path }}"
@@ -27,7 +27,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_rageshake_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_rageshake_config_path }}/config.yaml"
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
     mode: 0640
 
@@ -36,7 +36,7 @@
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ matrix_rageshake_base_path }}/labels"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure rageshake image is pulled
@@ -58,7 +58,7 @@
     dest: "{{ matrix_rageshake_container_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_rageshake_git_pull_results
   when: "matrix_rageshake_container_image_self_build | bool"
 

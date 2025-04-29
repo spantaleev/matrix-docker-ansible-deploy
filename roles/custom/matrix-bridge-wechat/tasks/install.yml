@@ -10,7 +10,7 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {path: "{{ matrix_wechat_base_path }}", when: true}
@@ -41,7 +41,7 @@
         version: "{{ matrix_wechat_container_image_self_build_branch }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_wechat_git_pull_results
 
     - name: Ensure WeChat Bridge container image is built
@@ -76,7 +76,7 @@
         version: "{{ matrix_wechat_agent_container_image_self_build_branch }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_wechat_agent_git_pull_results
 
     - name: Ensure WeChat Agent container image is built
@@ -95,7 +95,7 @@
     content: "{{ matrix_wechat_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_wechat_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure WeChat registration.yaml installed
@@ -103,7 +103,7 @@
     content: "{{ matrix_wechat_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_wechat_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure Wechat Agent configuration installed
@@ -111,7 +111,7 @@
     content: "{{ matrix_wechat_agent_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_wechat_config_path }}/agent-config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-wechat container network is created

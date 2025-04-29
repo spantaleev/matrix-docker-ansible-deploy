@@ -10,7 +10,7 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - path: "{{ matrix_sliding_sync_base_path }}"
@@ -24,7 +24,7 @@
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_sliding_sync_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - env
@@ -51,7 +51,7 @@
         dest: "{{ matrix_sliding_sync_container_src_path }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_sliding_sync_git_pull_results
 
     - name: Ensure matrix-sliding-sync container image is built

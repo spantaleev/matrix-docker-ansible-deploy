@@ -10,7 +10,7 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {path: "{{ matrix_cactus_comments_client_base_path }}", when: true}
@@ -21,7 +21,7 @@
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
     mode: 0644
   with_items:
@@ -38,14 +38,14 @@
         url: "{{ matrix_cactus_comments_client_webclient_js_url }}"
         dest: "{{ matrix_cactus_comments_client_public_path }}/cactus.js"
         mode: "{{ matrix_cactus_comments_client_public_path_file_permissions }}"
-        owner: "{{ matrix_user_username }}"
+        owner: "{{ matrix_user_name }}"
         group: "{{ matrix_user_groupname }}"
     - name: Download web client css
       ansible.builtin.get_url:
         url: "{{ matrix_cactus_comments_client_webclient_css_url }}"
         dest: "{{ matrix_cactus_comments_client_public_path }}/style.css"
         mode: "{{ matrix_cactus_comments_client_public_path_file_permissions }}"
-        owner: "{{ matrix_user_username }}"
+        owner: "{{ matrix_user_name }}"
         group: "{{ matrix_user_groupname }}"
 
 - when: matrix_cactus_comments_client_local_dir | length > 0
@@ -55,14 +55,14 @@
         src: "{{ matrix_cactus_comments_client_local_dir }}/src/cactus.js"
         dest: "{{ matrix_cactus_comments_client_public_path }}/cactus.js"
         mode: "{{ matrix_cactus_comments_client_public_path_file_permissions }}"
-        owner: "{{ matrix_user_username }}"
+        owner: "{{ matrix_user_name }}"
         group: "{{ matrix_user_groupname }}"
     - name: Upload locally distributed client CSS
       ansible.builtin.copy:
         src: "{{ matrix_cactus_comments_client_local_dir }}/src/style.css"
         dest: "{{ matrix_cactus_comments_client_public_path }}/style.css"
         mode: "{{ matrix_cactus_comments_client_public_path_file_permissions }}"
-        owner: "{{ matrix_user_username }}"
+        owner: "{{ matrix_user_name }}"
         group: "{{ matrix_user_groupname }}"
 
 - name: Ensure matrix-cactus-comments-client container image is pulled

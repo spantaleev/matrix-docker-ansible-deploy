@@ -26,7 +26,7 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - path: "{{ matrix_mautrix_wsproxy_base_path }}"
@@ -38,7 +38,7 @@
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_mautrix_wsproxy_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - syncproxy-env
@@ -63,7 +63,7 @@
     path: "{{ item }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - "{{ matrix_mautrix_wsproxy_base_path }}"
@@ -79,7 +79,7 @@
     content: "{{ matrix_mautrix_wsproxy_configuration | to_nice_yaml }}"
     dest: "{{ matrix_mautrix_wsproxy_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure mautrix-androidsms registration.yaml installed
@@ -87,7 +87,7 @@
     content: "{{ matrix_mautrix_androidsms_registration | to_nice_yaml }}"
     dest: "{{ matrix_mautrix_wsproxy_config_path }}/androidsms-registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure mautrix-imessage registration.yaml installed
@@ -95,7 +95,7 @@
     content: "{{ matrix_mautrix_imessage_registration | to_nice_yaml }}"
     dest: "{{ matrix_mautrix_wsproxy_config_path }}/imessage-registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
 
 - name: Ensure mautrix-wsproxy container network is created

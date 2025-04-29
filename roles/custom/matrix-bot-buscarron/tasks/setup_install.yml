@@ -39,7 +39,7 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
   with_items:
     - {path: "{{ matrix_bot_buscarron_config_path }}", when: true}
@@ -52,7 +52,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_bot_buscarron_config_path }}/{{ item }}"
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_user_groupname }}"
     mode: 0640
   with_items:
@@ -78,7 +78,7 @@
     dest: "{{ matrix_bot_buscarron_docker_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_bot_buscarron_git_pull_results
   when: "matrix_bot_buscarron_container_image_self_build | bool"
 
