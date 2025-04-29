@@ -10,7 +10,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_client_fluffychat_data_path }}", when: true}
     - {path: "{{ matrix_client_fluffychat_container_src_files_path }}", when: "{{ matrix_client_fluffychat_container_image_self_build }}"}
@@ -55,7 +55,7 @@
     dest: "{{ matrix_client_fluffychat_data_path }}/{{ item.name }}"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
   when: "item.src is not none"

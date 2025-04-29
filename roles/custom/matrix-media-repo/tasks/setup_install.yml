@@ -13,7 +13,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - path: "{{ matrix_media_repo_base_path }}"
       when: true
@@ -31,7 +31,7 @@
     dest: "{{ matrix_media_repo_base_path }}/{{ item }}"
     mode: 0640
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - env
     - labels
@@ -42,7 +42,7 @@
     dest: "{{ matrix_media_repo_config_path }}/media-repo.yaml"
     mode: 0640
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure media-repo Docker image is pulled
   community.docker.docker_image:
@@ -129,7 +129,7 @@
         dest: "{{ matrix_media_repo_homeserver_signing_key }}.{{ matrix_homeserver_implementation }}.backup"
         mode: 0644
         owner: "{{ matrix_user_name }}"
-        group: "{{ matrix_user_groupname }}"
+        group: "{{ matrix_group_name }}"
 
     - name: Replace homeserver signing key with merged signing key
       ansible.builtin.command:

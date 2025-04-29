@@ -15,7 +15,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - "{{ matrix_sygnal_base_path }}"
     - "{{ matrix_sygnal_config_path }}"
@@ -27,7 +27,7 @@
     dest: "{{ matrix_sygnal_config_path }}/sygnal.yaml"
     mode: 0640
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure Sygnal labels installed
   ansible.builtin.template:
@@ -35,7 +35,7 @@
     dest: "{{ matrix_sygnal_base_path }}/labels"
     mode: 0640
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure Sygnal image is pulled
   community.docker.docker_image:

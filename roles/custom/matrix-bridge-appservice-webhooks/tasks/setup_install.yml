@@ -18,7 +18,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_appservice_webhooks_base_path }}", when: true}
     - {path: "{{ matrix_appservice_webhooks_config_path }}", when: true}
@@ -67,7 +67,7 @@
     dest: "{{ matrix_appservice_webhooks_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-webhooks schema.yml template exists
   ansible.builtin.template:
@@ -75,7 +75,7 @@
     dest: "{{ matrix_appservice_webhooks_config_path }}/schema.yml"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-webhooks database.json template exists
   ansible.builtin.template:
@@ -83,7 +83,7 @@
     dest: "{{ matrix_appservice_webhooks_data_path }}/database.json"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure appservice-webhooks registration.yaml installed
   ansible.builtin.copy:
@@ -91,7 +91,7 @@
     dest: "{{ matrix_appservice_webhooks_config_path }}/webhooks-registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-webhooks container network is created
   community.general.docker_network:
@@ -106,7 +106,7 @@
     dest: "{{ matrix_appservice_webhooks_base_path }}/{{ item }}"
     mode: 0640
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

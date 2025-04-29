@@ -23,7 +23,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_appservice_irc_base_path }}", when: true}
     - {path: "{{ matrix_appservice_irc_config_path }}", when: true}
@@ -119,7 +119,7 @@
     dest: "{{ matrix_appservice_irc_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Generate Appservice IRC passkey if it doesn't exist
   ansible.builtin.shell:
@@ -135,7 +135,7 @@
     path: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 # Ideally, we'd like to generate the final registration.yaml file by ourselves.
 #
@@ -199,7 +199,7 @@
     dest: "{{ matrix_appservice_irc_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-irc container network is created
   community.general.docker_network:

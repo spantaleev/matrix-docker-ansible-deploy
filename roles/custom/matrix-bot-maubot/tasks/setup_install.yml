@@ -15,7 +15,7 @@
     state: directory
     mode: 0755
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_bot_maubot_base_path }}", when: true}
     - {path: "{{ matrix_bot_maubot_config_path }}", when: true}
@@ -32,7 +32,7 @@
     src: "{{ role_path }}/templates/config.yaml.j2"
     dest: "{{ matrix_bot_maubot_config_path }}/config.yaml"
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
     mode: "u=rwx"
 
 - name: Ensure maubot image is pulled
@@ -77,7 +77,7 @@
         src: "{{ role_path }}/templates/customizations/Dockerfile.j2"
         dest: "{{ matrix_bot_maubot_customized_docker_src_files_path }}/Dockerfile"
         owner: "{{ matrix_user_name }}"
-        group: "{{ matrix_user_groupname }}"
+        group: "{{ matrix_group_name }}"
         mode: 0640
       register: matrix_bot_maubot_container_image_customizations_dockerfile_result
 
@@ -97,7 +97,7 @@
     dest: "{{ matrix_bot_maubot_base_path }}/{{ item }}"
     mode: 0640
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

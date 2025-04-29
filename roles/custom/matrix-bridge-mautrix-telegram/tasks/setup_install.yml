@@ -50,7 +50,7 @@
     state: directory
     mode: 0750
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_mautrix_telegram_base_path }}", when: true}
     - {path: "{{ matrix_mautrix_telegram_config_path }}", when: true}
@@ -145,7 +145,7 @@
     dest: "{{ matrix_mautrix_telegram_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-telegram registration.yaml installed
   ansible.builtin.copy:
@@ -153,7 +153,7 @@
     dest: "{{ matrix_mautrix_telegram_config_path }}/registration.yaml"
     mode: 0644
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-telegram support files installed
   ansible.builtin.template:
@@ -161,7 +161,7 @@
     dest: "{{ matrix_mautrix_telegram_base_path }}/{{ item }}"
     mode: 0640
     owner: "{{ matrix_user_name }}"
-    group: "{{ matrix_user_groupname }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 
