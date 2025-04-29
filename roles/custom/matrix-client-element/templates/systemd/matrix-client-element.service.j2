@@ -34,7 +34,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--tmpfs=/var/cache/nginx:rw,mode=777 \
 			--tmpfs=/var/run:rw,mode=777 \
 			--tmpfs=/tmp/element-web-config:rw,mode=777 \
-			--tmpfs=/etc/nginx/conf.d:rw,mode=777 \
+			--tmpfs=/etc/nginx/conf.d:rw,mode=777,uid={{ matrix_user_uid }} \
 			--mount type=bind,src={{ matrix_client_element_data_path }}/config.json,dst=/app/config.json,ro \
 			--mount type=bind,src={{ matrix_client_element_data_path }}/config.json,dst=/app/config.{{ matrix_server_fqn_element }}.json,ro \
 			{% if matrix_client_element_location_sharing_enabled %}
