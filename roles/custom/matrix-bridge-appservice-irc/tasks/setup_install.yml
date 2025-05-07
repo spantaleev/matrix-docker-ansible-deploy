@@ -135,33 +135,33 @@
 
 - when: not matrix_appservice_irc_stat_auth_media_key.stat.exists
   block:
-  - name: Generate IRC appservice signing key for authenticated media
-    community.docker.docker_container:
-      name: "create-auth-media-jwk-key"
-      image: "{{ matrix_appservice_irc_docker_image }}"
-      cleanup: yes
-      network_mode: none
-      entrypoint: "/usr/local/bin/node"
-      command: >
-        -e "const webcrypto = require('node:crypto');
-        async function main() {
-            const key = await webcrypto.subtle.generateKey({
-                name: 'HMAC',
-                hash: 'SHA-512',
-            }, true, ['sign', 'verify']);
-            console.log(JSON.stringify(await webcrypto.subtle.exportKey('jwk', key), undefined, 4));
-        }
-        main().then(() => process.exit(0)).catch(err => { throw err });"
-      detach: false
-    register: matrix_appservice_irc_jwk_result
+    - name: Generate IRC appservice signing key for authenticated media
+      community.docker.docker_container:
+        name: "create-auth-media-jwk-key"
+        image: "{{ matrix_appservice_irc_docker_image }}"
+        cleanup: true
+        network_mode: none
+        entrypoint: "/usr/local/bin/node"
+        command: >
+          -e "const webcrypto = require('node:crypto');
+          async function main() {
+              const key = await webcrypto.subtle.generateKey({
+                  name: 'HMAC',
+                  hash: 'SHA-512',
+              }, true, ['sign', 'verify']);
+              console.log(JSON.stringify(await webcrypto.subtle.exportKey('jwk', key), undefined, 4));
+          }
+          main().then(() => process.exit(0)).catch(err => { throw err });"
+        detach: false
+      register: matrix_appservice_irc_jwk_result
 
-  - name: Write auth media signing key to file
-    ansible.builtin.copy:
-      content: "{{ matrix_appservice_irc_jwk_result.container.Output }}"
-      dest: "{{ matrix_appservice_irc_data_path }}/auth-media.jwk"
-      mode: "0644"
-      owner: "{{ matrix_user_username }}"
-      group: "{{ matrix_user_groupname }}"
+    - name: Write auth media signing key to file
+      ansible.builtin.copy:
+        content: "{{ matrix_appservice_irc_jwk_result.container.Output }}"
+        dest: "{{ matrix_appservice_irc_data_path }}/auth-media.jwk"
+        mode: "0644"
+        owner: "{{ matrix_user_username }}"
+        group: "{{ matrix_user_groupname }}"
 
 # In the past, we used to generate the passkey.pem file with root, so permissions may not be okay.
 # Fix it.
