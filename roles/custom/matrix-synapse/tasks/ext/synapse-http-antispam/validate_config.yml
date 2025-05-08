@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2025 Catalan Lover <catalanlover@protonmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Fail if required synapse-http-antispam settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using synapse-http-antispam.
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_synapse_ext_synapse_http_antispam_enabled"
+    - "matrix_synapse_ext_synapse_http_antispam_config_base_url"
+    - "matrix_synapse_ext_synapse_http_antispam_config_authorization"
+
+- name: Fail if required matrix_synapse_ext_synapse_http_antispam_config_base_url looks invalid
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_synapse_ext_synapse_http_antispam_config_base_url` needs to look like a URL (`http://` or `https://` prefix).
+  when: "not matrix_synapse_ext_synapse_http_antispam_config_base_url.startswith('http')"

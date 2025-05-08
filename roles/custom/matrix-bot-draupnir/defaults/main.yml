@@ -28,8 +28,18 @@ matrix_bot_draupnir_config_path: "{{ matrix_bot_draupnir_base_path }}/config"
 matrix_bot_draupnir_data_path: "{{ matrix_bot_draupnir_base_path }}/data"
 matrix_bot_draupnir_docker_src_files_path: "{{ matrix_bot_draupnir_base_path }}/docker-src"
 
+matrix_bot_draupnir_config_web_enabled: "{{ matrix_bot_draupnir_config_web_abuseReporting or matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled }}"  # noqa var-naming
+
 matrix_bot_draupnir_config_web_abuseReporting: false  # noqa var-naming
-matrix_bot_draupnir_config_web_enabled: "{{ matrix_bot_draupnir_config_web_abuseReporting }}"  # noqa var-naming
+
+matrix_bot_draupnir_config_web_port: 8080
+
+# These variables are used for turning on the integration between the synapseHTTPAntispam module and Draupnir.
+# Authorisation is a shared secret between Draupnir and the module just like is used by Appservices and the homeserver
+# therefore the same creation mechanism is used here too.
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled: false  # noqa var-naming
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: ''  # noqa var-naming
+
 matrix_bot_draupnir_config_displayReports: "{{ matrix_bot_draupnir_config_web_abuseReporting }}"  # noqa var-naming
 
 matrix_bot_draupnir_container_network: ""
@@ -128,6 +138,27 @@ matrix_bot_draupnir_config_admin_enableMakeRoomAdminCommand: false  # noqa var-n
 # Room state backing store makes restarts of the bot lightning fast as the bot does not suffer from amnesia.
 # This config option has diminished improvements for bots on extremely fast homeservers or very very small bots on fast homeservers.
 matrix_bot_draupnir_config_roomStateBackingStore_enabled: true  # noqa var-naming
+
+matrix_bot_draupnir_web_url: 'http://matrix-bot-draupnir'
+
+# This controls the URL that the module targets in Draupnir.
+matrix_bot_draupnir_synapse_http_antispam_config_base_url: "{{ matrix_bot_draupnir_web_url }}:{{ matrix_bot_draupnir_config_web_port }}/api/1/spam_check"
+
+# These variables control the configuration of the Synapse module as the configuration is highly consumer dependent.
+# Therefore the module is configured from Draupnir because the consumer of the module determines what settings are relevant.
+
+matrix_bot_draupnir_synapse_http_antispam_config_enabled_callbacks:
+   - check_event_for_spam: true
+   - user_may_invite: true
+   - user_may_join_room: true
+
+matrix_bot_draupnir_synapse_http_antispam_config_fail_open:
+  check_event_for_spam: true
+  user_may_invite: true
+  user_may_join_room: true
+
+matrix_bot_draupnir_synapse_http_antispam_config_async:
+  check_event_for_spam: true
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

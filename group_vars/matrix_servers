@@ -3202,6 +3202,9 @@ matrix_bot_draupnir_container_labels_traefik_docker_network: "{{ matrix_playbook
 matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
+#The salt is size restricted here as a maximum salt size of 16 characters exists due to the functions used.
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'draupnir.httpmod', rounds=655555) | to_uuid }}" # noqa var-naming
+
 ######################################################################
 #
 # /matrix-bot-draupnir
@@ -4835,6 +4838,8 @@ matrix_synapse_container_additional_networks_auto: |
       ([exim_relay_container_network] if (exim_relay_enabled and matrix_synapse_email_enabled and matrix_synapse_email_smtp_host == exim_relay_identifier and matrix_synapse_container_network != exim_relay_container_network) else [])
       +
       ([matrix_ma1sd_container_network] if (matrix_ma1sd_enabled and matrix_synapse_account_threepid_delegates_msisdn == matrix_synapse_account_threepid_delegates_msisdn_mas1sd_url and matrix_synapse_container_network != matrix_ma1sd_container_network) else [])
+      +
+      ([matrix_bot_draupnir_container_network] if (matrix_synapse_ext_synapse_http_antispam_enabled and matrix_synapse_ext_synapse_http_antispam_config_base_url == matrix_bot_draupnir_synapse_http_antispam_config_base_url and matrix_bot_draupnir_container_network != matrix_synapse_container_network) else [])
     ) | unique
   }}
 
@@ -4929,6 +4934,13 @@ matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_
 
 # Disable creation of media repository Synapse worker when using media-repo
 matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
+
+matrix_synapse_ext_synapse_http_antispam_enabled: "{{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled }}"
+matrix_synapse_ext_synapse_http_antispam_config_base_url: "{{ matrix_bot_draupnir_synapse_http_antispam_config_base_url if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
+matrix_synapse_ext_synapse_http_antispam_config_authorization: "{{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
+matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks: "{{ matrix_bot_draupnir_synapse_http_antispam_config_enabled_callbacks if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else [] }}"
+matrix_synapse_ext_synapse_http_antispam_config_fail_open: "{{ matrix_bot_draupnir_synapse_http_antispam_config_fail_open if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else {} }}"
+matrix_synapse_ext_synapse_http_antispam_config_async: "{{ matrix_bot_draupnir_synapse_http_antispam_config_async if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else {} }}"
 
 # Enable Synapse statistics reporting when using synapse-usage-exporter
 matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"

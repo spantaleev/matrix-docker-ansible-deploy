@@ -1412,6 +1412,38 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config:
   ban_lists: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists }}"
   message_max_length: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_message_max_length }}"
 
+# Enable this to activate the synapse-http-antispam module.
+# See: github.com/maunium/synapse-http-antispam
+matrix_synapse_ext_synapse_http_antispam_enabled: false
+matrix_synapse_ext_synapse_http_antispam_git_repository_url: "https://github.com/maunium/synapse-http-antispam"
+# renovate: datasource=github-releases depName=maunium/synapse-http-antispam
+matrix_synapse_ext_synapse_http_antispam_git_version: "v0.3.0"
+# Where Synapse can locate the consumer of the antispam API. Currently
+# Draupnir is the only consumer of this API that is playbook supported.
+# But https://github.com/maunium/meowlnir also supports the API.
+matrix_synapse_ext_synapse_http_antispam_config_base_url: ''
+# This is a shared secret that is established between the consumer and the
+# homeserver a lot like how AS authentication is done. This is fully managed
+# the same way AS authentication is by the playbook.
+matrix_synapse_ext_synapse_http_antispam_config_authorization: ''
+# This controls what callbacks are activated. This list is fully dependent on what consumer is in play.
+# And what capabilities said consumer should or shouldn't have. There are also performance implications
+# to these choices.
+matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks: []
+# Controls if a loss of connectivity to the consumer results in fail open or closed.
+# As in if failure results in events getting flagged automatically as spam or not.
+matrix_synapse_ext_synapse_http_antispam_config_fail_open: {}
+# Controls if the checking is blocking or not. This allows the homeserver to skip waiting for a consumer response.
+matrix_synapse_ext_synapse_http_antispam_config_async: {}
+# Actual configuration passed to the synapse-http-antispam module
+matrix_synapse_ext_synapse_http_antispam_config: "{{ matrix_synapse_ext_synapse_http_antispam_config_yaml | from_yaml }}"
+matrix_synapse_ext_synapse_http_antispam_config_yaml: |
+  base_url: {{ matrix_synapse_ext_synapse_http_antispam_config_base_url | to_json }}
+  authorization: {{ matrix_synapse_ext_synapse_http_antispam_config_authorization | to_json }}
+  enabled_callbacks: {{ matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks | to_json }}
+  fail_open: {{ matrix_synapse_ext_synapse_http_antispam_config_fail_open | to_json }}
+  async: {{ matrix_synapse_ext_synapse_http_antispam_config_async | to_json }}
+
 # Enable this to activate the E2EE disabling Synapse module.
 # See: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_enabled: false
