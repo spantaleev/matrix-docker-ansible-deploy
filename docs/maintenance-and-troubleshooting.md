@@ -107,6 +107,14 @@ If it's all green, everything is probably running correctly.
 
 Besides this self-check, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain.
 
+#### In case of Matrix Federation API port not being able to be reached
+
+Please note that some server providers block TCP/UDP ports which are not quite often used based on their judgment (in order to improve security, to mitigate the risk of abuse, etc). It can cause that your Matrix instance cannot be reached via Matrix Federation API port (`8448`), resulting in the error about federation when running self-check test.
+
+In this case, make sure that your server provider does not block the port by default. As this playbook makes Docker configure the server's internal firewall for you as described [here](prerequisites.md), you mostly do not have to edit the firewall rules by yourself, unless your server is running behind another firewall.
+
+If the provider was indeed found to disallow the port, you need to allow it explicitly on the server configuration for managing ports (control panel, etc), as it is not able for this playbook to update the upstream configuration. Please consult the documentation of the provider for details about it.
+
 ### How to debug or force SSL certificate renewal
 
 SSL certificates are managed automatically by the [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server.
