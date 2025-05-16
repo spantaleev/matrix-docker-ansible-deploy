@@ -103,7 +103,6 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 | github oauth | `/hookshot/webhooks/oauth` | `matrix_hookshot_github_oauth_endpoint` | GitHub "Callback URL" |
 | jira oauth | `/hookshot/webhooks/jira/oauth` | `matrix_hookshot_jira_oauth_endpoint` | Jira OAuth |
 | figma endpoint | `/hookshot/webhooks/figma/webhook` | `matrix_hookshot_figma_endpoint` | Figma |
-| provisioning | `/hookshot/v1/` | `matrix_hookshot_provisioning_endpoint` | Dimension [provisioning](#provisioning-api) |
 | appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | Matrix server |
 | widgets | `/hookshot/widgetapi/` | `matrix_hookshot_widgets_endpoint` | Widgets |
 
@@ -131,10 +130,6 @@ aux_file_definitions:
 ```
 
 For more information, see the documentation in the [default configuration of the aux role](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml).
-
-### Provisioning API
-
-The provisioning API will be enabled automatically if you set `matrix_dimension_enabled: true` and provided a `matrix_hookshot_provisioning_secret`, unless you override it either way. To use hookshot with Dimension, you will need to enter as "Provisioning URL": `http://matrix-hookshot:9002`, which is made up of the variables `matrix_hookshot_container_url` and `matrix_hookshot_provisioning_port`.
 
 ### Collision with matrix-appservice-webhooks
 

@@ -2317,7 +2317,6 @@ matrix_hookshot_container_http_host_bind_ports_defaultmapping:
   - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_appservice_port }}:{{ matrix_hookshot_appservice_port }}"
   - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_metrics_port }}:{{ matrix_hookshot_metrics_port }}"
   - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_webhook_port }}:{{ matrix_hookshot_webhook_port }}"
-  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_provisioning_port }}:{{ matrix_hookshot_provisioning_port }}"
 
 matrix_hookshot_container_http_host_bind_ports: "{{ matrix_hookshot_container_http_host_bind_ports_defaultmapping if matrix_playbook_service_host_bind_interface_prefix else [] }}"
 
@@ -2325,8 +2324,6 @@ matrix_hookshot_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_pr
 matrix_hookshot_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_hookshot_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_hookshot_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
-matrix_hookshot_provisioning_enabled: "{{ matrix_hookshot_provisioning_secret and matrix_dimension_enabled }}"
 
 matrix_hookshot_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 

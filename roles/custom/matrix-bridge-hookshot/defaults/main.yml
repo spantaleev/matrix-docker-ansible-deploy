@@ -29,7 +29,7 @@ matrix_hookshot_container_additional_networks_auto: []
 matrix_hookshot_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=halfshot/matrix-hookshot
-matrix_hookshot_version: 6.0.3
+matrix_hookshot_version: 7.0.0
 
 matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_registry_prefix }}matrix-org/matrix-hookshot:{{ matrix_hookshot_version }}"
 matrix_hookshot_docker_image_registry_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_hookshot_docker_image_registry_prefix_upstream }}"
@@ -187,16 +187,6 @@ matrix_hookshot_feeds_enabled: true
 matrix_hookshot_feeds_pollIntervalSeconds: 600  # noqa var-naming
 matrix_hookshot_feeds_pollTimeoutSeconds: 30  # noqa var-naming
 
-
-matrix_hookshot_provisioning_enabled: false
-# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
-matrix_hookshot_provisioning_port: 9002
-matrix_hookshot_provisioning_secret: ''
-# Provisioning will be automatically enabled if Dimension is enabled and you have provided a provisioning secret, unless you override it
-matrix_hookshot_provisioning_internal: "/v1"
-matrix_hookshot_provisioning_hostname: "{{ matrix_hookshot_public_hostname }}"
-matrix_hookshot_provisioning_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ matrix_hookshot_provisioning_internal }}"
-
 # Valid values: error, warn, info, debug
 matrix_hookshot_logging_level: warn
 
@@ -289,15 +279,7 @@ matrix_hookshot_container_labels_widgets_traefik_entrypoints: "{{ matrix_hooksho
 matrix_hookshot_container_labels_widgets_traefik_tls: "{{ matrix_hookshot_container_labels_widgets_traefik_entrypoints != 'web' }}"
 matrix_hookshot_container_labels_widgets_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
-# Controls whether labels will be added that expose Hookshot's provisioning endpoint
-matrix_hookshot_container_labels_provisioning_enabled: "{{ matrix_hookshot_provisioning_enabled }}"
-matrix_hookshot_container_labels_provisioning_traefik_rule: "Host(`{{ matrix_hookshot_provisioning_hostname }}`) && PathPrefix(`{{ matrix_hookshot_provisioning_endpoint }}`)"
-matrix_hookshot_container_labels_provisioning_traefik_priority: 0
-matrix_hookshot_container_labels_provisioning_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
-matrix_hookshot_container_labels_provisioning_traefik_tls: "{{ matrix_hookshot_container_labels_provisioning_traefik_entrypoints != 'web' }}"
-matrix_hookshot_container_labels_provisioning_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-
-# Controls whether labels will be added that expose Hookshot's provisioning endpoint
+# Controls whether labels will be added that expose Hookshot's metrics endpoint
 matrix_hookshot_container_labels_metrics_enabled: "{{ matrix_hookshot_metrics_enabled and matrix_hookshot_metrics_proxying_enabled }}"
 matrix_hookshot_container_labels_metrics_traefik_rule: "Host(`{{ matrix_hookshot_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_hookshot_metrics_proxying_path_prefix }}`)"
 matrix_hookshot_container_labels_metrics_traefik_priority: 0

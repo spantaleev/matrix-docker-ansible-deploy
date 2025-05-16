@@ -89,12 +89,6 @@ feeds:
   pollIntervalSeconds: {{ matrix_hookshot_feeds_pollIntervalSeconds | to_json }}
   pollTimeoutSeconds: {{ matrix_hookshot_feeds_pollTimeoutSeconds | to_json }}
 {% endif %}
-{% if matrix_hookshot_provisioning_enabled %}
-provisioning:
-  # (Optional) Provisioning API for integration managers
-  #
-  secret: {{ matrix_hookshot_provisioning_secret | to_json }}
-{% endif %}
 passFile:
   # A passkey used to encrypt tokens stored inside the bridge.
   # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
@@ -143,7 +137,7 @@ permissions: {{ matrix_hookshot_permissions | to_json }}
 listeners:
   # (Optional) HTTP Listener configuration.
   # Bind resource endpoints to ports and addresses.
-  # 'resources' may be any of webhooks, widgets, metrics, provisioning, appservice
+  # 'resources' may be any of webhooks, widgets, metrics
   #
 {# always enabled since all services need it #}
   - port: {{ matrix_hookshot_webhook_port }}
@@ -155,12 +149,6 @@ listeners:
     bindAddress: 0.0.0.0
     resources:
       - metrics
-{% endif %}
-{% if matrix_hookshot_provisioning_enabled %}
-  - port: {{ matrix_hookshot_provisioning_port }}
-    bindAddress: 0.0.0.0
-    resources:
-      - provisioning
 {% endif %}
 {% if matrix_hookshot_widgets_enabled %}
   - port: {{ matrix_hookshot_widgets_port }}

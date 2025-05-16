@@ -39,6 +39,13 @@
     - {'old': 'matrix_hookshot_queue_port', 'new': 'matrix_hookshot_cache_redis_port'}
     - {'old': 'matrix_hookshot_experimental_encryption_enabled', 'new': 'matrix_hookshot_encryption_enabled'}
     - {'old': 'matrix_hookshot_docker_image_name_prefix', 'new': 'matrix_hookshot_docker_image_registry_prefix'}
+    - {'old': 'matrix_hookshot_provisioning_enabled', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_port', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_secret', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_internal', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_hostname', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_endpoint', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_container_labels_provisioning_enabled', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
 
 - name: Fail if required Hookshot settings not defined
   ansible.builtin.fail:
@@ -91,14 +98,6 @@
     msg: >-
       You need to define at least one Figma instance in `matrix_hookshot_figma_instances` to enable Figma.
   when: "matrix_hookshot_figma_enabled and matrix_hookshot_figma_instances | length == 0"
-
-- name: Fail if required provisioning settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item }}`) to enable provisioning.
-  when: "matrix_hookshot_provisioning_enabled and vars[item] == ''"
-  with_items:
-    - "matrix_hookshot_provisioning_secret"
 
 - name: Fail if no Redis queue enabled when Hookshot encryption is enabled
   ansible.builtin.fail:
