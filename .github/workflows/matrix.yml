@@ -7,9 +7,7 @@
 ---
 name: Matrix CI
 
-on:  # yamllint disable-line rule:truthy
-  push:
-  pull_request:
+on: [push, pull_request]  # yamllint disable-line rule:truthy
 
 jobs:
   yamllint:
@@ -30,3 +28,11 @@ jobs:
         uses: ansible-community/ansible-lint-action@v6.17.0
         with:
           path: roles/custom
+  precommit:
+    name: Run pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
