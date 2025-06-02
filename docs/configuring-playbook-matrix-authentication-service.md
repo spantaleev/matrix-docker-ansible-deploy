@@ -41,7 +41,7 @@ Below, we'll try to **highlight some potential reasons for switching** to Matrix
 
 ## Prerequisites
 
-- ⚠️ the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default for this playbook). Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating wtih Matrix Authentication Service yet.
+- ⚠️ the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default for this playbook). Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating with Matrix Authentication Service yet.
 
 - ❌ **disabling all password providers** for Synapse (things like [shared-secret-auth](./configuring-playbook-shared-secret-auth.md), [rest-auth](./configuring-playbook-rest-auth.md), [LDAP auth](./configuring-playbook-ldap-auth.md), etc.) More details about this are available in the [Expectations](#expectations) section below.
 
@@ -61,7 +61,7 @@ This section details what you can expect when switching to the Matrix Authentica
 
 - ⚠️ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) is **possible**, but requires **some playbook-assisted manual work**. Migration is **reversible with no or minor issues if done quickly enough**, but as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
 
-- ⚠️ Delegating user authentication to MAS causes **your Synapse server to be completely dependant on one more service** for its operations. MAS is quick & lightweight and should be stable enough already, but this is something to keep in mind when making the switch.
+- ⚠️ Delegating user authentication to MAS causes **your Synapse server to be completely dependent on one more service** for its operations. MAS is quick & lightweight and should be stable enough already, but this is something to keep in mind when making the switch.
 
 - ⚠️ If you've got [OIDC configured in Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on), you will need to migrate your OIDC configuration to MAS by adding an [Upstream OAuth2 configuration](#upstream-oauth2-configuration).
 
@@ -85,7 +85,7 @@ For new homeservers (which don't have any users in their Synapse database yet), 
 
 ### Existing homeserver
 
-Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating wtih Matrix Authentication Service yet.
+Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating with Matrix Authentication Service yet.
 
 For existing Synapse homeservers:
 

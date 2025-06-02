@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 The playbook can install and configure [matrix-corporal](https://github.com/devture/matrix-corporal) for you.
 
-In short, it's a sort of automation and firewalling service, which is helpful if you're instaling Matrix services in a controlled corporate environment.
+In short, it's a sort of automation and firewalling service, which is helpful if you're installing Matrix services in a controlled corporate environment.
 
 See the project's [documentation](https://github.com/devture/matrix-corporal/blob/main/README.md) to learn what it does and why it might be useful to you.
 

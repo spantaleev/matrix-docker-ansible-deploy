@@ -167,7 +167,7 @@ To `matrix_hookshot_container_labels_metrics_middleware_basic_auth_users`, set t
 
 #### Enable Grafana (optional)
 
-Probably you wish to enable Grafana along with Prometheus for generating graphs of the metics.
+Probably you wish to enable Grafana along with Prometheus for generating graphs of the metrics.
 
 To enable Grafana, see [this section](configuring-playbook-prometheus-grafana.md#adjusting-the-playbook-configuration-grafana) for instructions.
 

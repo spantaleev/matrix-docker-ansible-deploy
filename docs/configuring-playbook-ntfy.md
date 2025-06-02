@@ -115,7 +115,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-To receive push notifications with UnifiedPush from the ntfy server, you need to **install [the ntfy Android app](https://docs.ntfy.sh/subscribe/phone/)** which works as the Distrubutor, **log in to the account on the ntfy app** if you have enabled the access control, and then **configure a UnifiedPush-compatible Matrix client**. After setting up the ntfy Android app, the Matrix client listens to it, and push notitications are "distributed" from it.
+To receive push notifications with UnifiedPush from the ntfy server, you need to **install [the ntfy Android app](https://docs.ntfy.sh/subscribe/phone/)** which works as the Distributor, **log in to the account on the ntfy app** if you have enabled the access control, and then **configure a UnifiedPush-compatible Matrix client**. After setting up the ntfy Android app, the Matrix client listens to it, and push notifications are "distributed" from it.
 
 For details about installing and configuring the ntfy Android app, take a look at [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#install-the-ntfy-androidios-app) on the role's documentation.
 

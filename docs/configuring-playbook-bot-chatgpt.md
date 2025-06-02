@@ -57,7 +57,7 @@ matrix_bot_chatgpt_openai_api_key: 'API_KEY_HERE'
 
 matrix_bot_chatgpt_matrix_access_token: 'ACCESS_TOKEN_HERE'
 
-# Configuring the system promt used, needed if the bot is used for special tasks.
+# Configuring the system prompt used, needed if the bot is used for special tasks.
 # More information: https://github.com/mustvlad/ChatGPT-System-Prompts
 matrix_bot_chatgpt_matrix_bot_prompt_prefix: 'Instructions:\nYou are ChatGPT, a large language model trained by OpenAI.'
 ```
