@@ -60,7 +60,7 @@ To `matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_use
 
 #### Enable Grafana (optional)
 
-Probably you wish to enable Grafana along with Prometheus for generating graphs of the metics.
+Probably you wish to enable Grafana along with Prometheus for generating graphs of the metrics.
 
 To enable Grafana, see [this section](configuring-playbook-prometheus-grafana.md#adjusting-the-playbook-configuration-grafana) for instructions.
 

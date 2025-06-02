@@ -70,7 +70,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-Follow the [mautrix-imessage documenation](https://docs.mau.fi/bridges/go/imessage/index.html) for running `android-sms` and/or `matrix-imessage` on your device(s).
+Follow the [mautrix-imessage documentation](https://docs.mau.fi/bridges/go/imessage/index.html) for running `android-sms` and/or `matrix-imessage` on your device(s).
 
 ## Troubleshooting
 

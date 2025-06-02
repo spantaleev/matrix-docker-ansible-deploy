@@ -117,7 +117,7 @@ Then, to be asked for the password whenever running an `ansible-playbook` comman
 
 #### Resolve directory ownership issues
 
-Because you're `root` in the container running Ansible and this likely differs fom the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:
+Because you're `root` in the container running Ansible and this likely differs from the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:
 
 > fatal: unsafe repository ('/work' is owned by someone else)
 > To add an exception for this directory, call:

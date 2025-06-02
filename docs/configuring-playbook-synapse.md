@@ -53,7 +53,7 @@ You may also consider [tweaking the number of workers of each type](#controlling
 
 ##### Specialized workers
 
-The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requestor's IP adddress, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** — the access token (username) of the requestor and/or on the resource (room, etc.) being requested.
+The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requester's IP address, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** — the access token (username) of the requester and/or on the resource (room, etc.) being requested.
 
 The playbook supports these **4 types** of specialized workers:
 

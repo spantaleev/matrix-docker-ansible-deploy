@@ -501,7 +501,7 @@ matrix_synapse_tls_federation_listener_enabled: true
 matrix_synapse_tls_certificate_path: "/data/{{ matrix_server_fqn_matrix }}.tls.crt"
 matrix_synapse_tls_private_key_path: "/data/{{ matrix_server_fqn_matrix }}.tls.key"
 
-# Resource names used by the unsecure HTTP listener. Here only the Client API
+# Resource names used by the insecure HTTP listener. Here only the Client API
 # is defined, see the homeserver config for a full list of valid resource
 # names.
 matrix_synapse_http_listener_resource_names: ["client"]
@@ -835,7 +835,7 @@ matrix_synapse_workers_enabled: false
 
 # Specifies worker configuration that should be used when workers are enabled.
 #
-# The posible values (as seen in `matrix_synapse_workers_presets`) are:
+# The possible values (as seen in `matrix_synapse_workers_presets`) are:
 # - "little-federation-helper" - a very minimal worker configuration to improve federation performance
 # - "one-of-each" - one worker of each supported type + a generic worker
 # - "specialized-workers" - one worker of each supported type + specialized workers
@@ -1458,7 +1458,7 @@ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of: ["{{ matrix
 # Specifies whether the power levels event (setting) provided during room creation should be patched.
 # This makes it impossible for anybody (locally or over federation) from enabling room encryption
 # for the lifetime of rooms created while this setting is enabled (irreversible).
-# Enabling this may have incompatiblity consequences with servers / clients.
+# Enabling this may have incompatibility consequences with servers / clients.
 # Familiarize yourself with the caveats upstream: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_patch_power_levels: false
 matrix_synapse_ext_encryption_config: "{{ matrix_synapse_ext_encryption_config_yaml | from_yaml }}"

@@ -42,7 +42,7 @@ This is because with SRV federation, some servers / tools (one of which being th
 
 ### Tell Traefik which certificate to serve for the federation endpoint
 
-Now that the federation endpoint is not bound to a domain anymore we need to explicitely tell Traefik to use a wildcard certificate in addition to one containing the base name.
+Now that the federation endpoint is not bound to a domain anymore we need to explicitly tell Traefik to use a wildcard certificate in addition to one containing the base name.
 
 This is because the Matrix specification expects the federation endpoint to be served using a certificate compatible with the base domain, however, the other resources on the endpoint still need a valid certificate to work.
 
