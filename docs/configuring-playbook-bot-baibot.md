@@ -242,7 +242,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: "YOUR_
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 
 # If you'd like to use another text-generation agent, uncomment and adjust:
-# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o
+# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4.1
 ```
 
 Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agent, it will be given a `static/` ID prefix and will be named `static/openai`.
