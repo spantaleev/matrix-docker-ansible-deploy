@@ -21,7 +21,7 @@ matrix_mautrix_discord_container_image_self_build_repo: "https://mau.dev/mautrix
 matrix_mautrix_discord_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_discord_version == 'latest' else matrix_mautrix_discord_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/discord
-matrix_mautrix_discord_version: v0.7.3
+matrix_mautrix_discord_version: v0.7.4
 
 # See: https://mau.dev/mautrix/discord/container_registry
 matrix_mautrix_discord_docker_image: "{{ matrix_mautrix_discord_docker_image_registry_prefix }}mautrix/discord:{{ matrix_mautrix_discord_version }}"
@@ -38,6 +38,8 @@ matrix_mautrix_discord_docker_src_files_path: "{{ matrix_mautrix_discord_base_pa
 matrix_mautrix_discord_homeserver_address: ""
 matrix_mautrix_discord_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_discord_appservice_address: "http://matrix-mautrix-discord:8080"
+
+matrix_mautrix_discord_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
 
 matrix_mautrix_discord_bridge_command_prefix: "!discord"
 
@@ -225,6 +227,7 @@ matrix_mautrix_discord_registration_yaml: |
         regex: '^@{{ matrix_mautrix_discord_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_discord_homeserver_domain | regex_escape }}$'
   de.sorunome.msc2409.push_ephemeral: true
   receive_ephemeral: true
+  io.element.msc4190: {{ matrix_mautrix_discord_msc4190_enabled | to_json }}
 
 matrix_mautrix_discord_registration: "{{ matrix_mautrix_discord_registration_yaml | from_yaml }}"
 
