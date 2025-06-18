@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Quick start
 
 <!--
@@ -13,7 +19,7 @@ We will be using `example.com` as the "base domain" in the following instruction
 By following the instruction on this page, you will set up:
 
 - **your own Matrix server** on a `matrix.example.com` server, which is configured to present itself as `example.com`
-- **your user account** like `@user:example.com` on the server
+- **your user account** like `@alice:example.com` on the server
 - a **self-hosted Matrix client**, [Element Web](configuring-playbook-client-element-web.md) with the default subdomain at `element.example.com`
 - Matrix delegation, so that your `matrix.example.com` server (presenting itself as `example.com`) can join the Matrix Federation and communicate with any other server in the Matrix network
 
@@ -37,18 +43,21 @@ One of the main reasons of basic errors is using an incompatible version of requ
 
 ## Configure your DNS settings
 
-<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Configuring your DNS settings](configuring-dns.md)</sup>
+<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Configuring DNS settings](configuring-dns.md)</sup>
 
 After installing and configuring prerequisites, you will need to **configure DNS records**.
 
 To configure Matrix services in the default settings, go to your DNS service provider, and adjust DNS records as below.
 
-| Type  | Host                         | Priority | Weight | Port | Target               |
-| ----- | ---------------------------- | -------- | ------ | ---- | ---------------------|
-| A     | `matrix`                     | -        | -      | -    | `matrix-server-IP`   |
-| CNAME | `element`                    | -        | -      | -    | `matrix.example.com` |
+| Type  | Host      | Priority | Weight | Port | Target               |
+| ----- | ----------| -------- | ------ | ---- | ---------------------|
+| A     | `matrix`  | -        | -      | -    | `matrix-server-IPv4` |
+| AAAA  | `matrix`  | -        | -      | -    | `matrix-server-IPv6` |
+| CNAME | `element` | -        | -      | -    | `matrix.example.com` |
 
-As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IP address (DNS `A` record or `CNAME` record is fine).
+As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IPv4/IPv6 address.
+
+If you don't have IPv6 connectivity yet, you can skip the `AAAA` record. For more details about IPv6, see the [Configuring IPv6](./configuring-ipv6.md) documentation page.
 
 It might take some time for the DNS records to propagate after creation.
 
@@ -136,12 +145,12 @@ To create your user account (as an administrator of the server) via this Ansible
 
 **💡 Notes**:
 - Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
-- For `YOUR_USERNAME_HERE`, use a plain username like `john`, not your full identifier (`@user:example.com`)
+- For `YOUR_USERNAME_HERE`, use a plain username like `alice`, not your full ID (`@alice:example.com`)
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=yes' --tags=register-user
 
-# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
+# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=alice password=secret-password admin=yes' --tags=register-user
 ```
 
 <!--
@@ -177,7 +186,13 @@ ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files
 
 After the command finishes, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain.
 
-If you think something is off with the server configuration, feel free to [re-run the full setup command](#run-the-installation-command) any time.
+### Re-run the full setup command any time
+
+If you think something is wrong with the server configuration, feel free to re-run the setup command any time:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+```
 
 ## Log in to your user account
 
@@ -185,9 +200,9 @@ Finally, let's make sure that you can log in to the created account with the spe
 
 You should be able to log in to it with your own [Element Web](configuring-playbook-client-element-web.md) client which you have set up at `element.example.com` by running the playbook. Open the URL (`https://element.example.com`) in a web browser and enter your credentials to log in.
 
-**If you successfully logged in to your account, installing and configuring is complete**🎉
+**If you successfully logged in to your account, the installation and configuration have completed successfully**🎉
 
-Come say Hi👋 in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
+Come say Hi👋 in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 
 ## Things to do next
 
@@ -201,4 +216,4 @@ While this playbook helps you to set up Matrix services and maintain them, it wi
 
 Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
 
-For more information about upgrading or maintaining services with the playbook, take at look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
+For more information about upgrading or maintaining services with the playbook, take a look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)

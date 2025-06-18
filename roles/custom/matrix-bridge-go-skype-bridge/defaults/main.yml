@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 - 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Arthur Brugière
+# SPDX-FileCopyrightText: 2022 Vladimir Panteleev
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Go Skype Bridge is a Matrix <-> Skype bridge
 # Project source code URL: https://github.com/kelaresg/go-skype-bridge
@@ -10,8 +20,10 @@ matrix_go_skype_bridge_container_image_self_build_branch: "{{ 'master' if matrix
 
 # renovate: datasource=docker depName=nodefyme/go-skype-bridge
 matrix_go_skype_bridge_version: latest
-matrix_go_skype_bridge_docker_image: "{{ matrix_go_skype_bridge_docker_image_name_prefix }}nodefyme/go-skype-bridge:{{ matrix_go_skype_bridge_version }}"
-matrix_go_skype_bridge_docker_image_name_prefix: "{{ 'localhost/' if matrix_go_skype_bridge_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_go_skype_bridge_docker_image: "{{ matrix_go_skype_bridge_docker_image_registry_prefix }}nodefyme/go-skype-bridge:{{ matrix_go_skype_bridge_version }}"
+matrix_go_skype_bridge_docker_image_registry_prefix: "{{ 'localhost/' if matrix_go_skype_bridge_container_image_self_build else matrix_go_skype_bridge_docker_image_registry_prefix_upstream }}"
+matrix_go_skype_bridge_docker_image_registry_prefix_upstream: "{{ matrix_go_skype_bridge_docker_image_registry_prefix_upstream_default }}"
+matrix_go_skype_bridge_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_go_skype_bridge_docker_image_force_pull: "{{ matrix_go_skype_bridge_docker_image.endswith(':latest') }}"
 
 matrix_go_skype_bridge_base_path: "{{ matrix_base_data_path }}/go-skype-bridge"
@@ -94,14 +106,14 @@ matrix_go_skype_bridge_bridge_login_shared_secret_map:
 
 # Servers to always allow double puppeting from
 matrix_go_skype_bridge_bridge_double_puppet_server_map:
-  "{{ matrix_go_skype_bridge_homeserver_domain :  matrix_go_skype_bridge_homeserver_address }}"
+  "{{ matrix_go_skype_bridge_homeserver_domain: matrix_go_skype_bridge_homeserver_address }}"
 
 # Enable End-to-bridge encryption
 matrix_go_skype_bridge_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_go_skype_bridge_bridge_encryption_default: "{{ matrix_bridges_encryption_default }}"
 
 # Minimum severity of journal log messages.
-# Options: debug, info, warn, error, fatal
+# Valid values: fatal, error, warn, info, debug
 matrix_go_skype_bridge_log_level: 'warn'
 
 matrix_go_skype_bridge_bridge_permissions: |
@@ -147,5 +159,6 @@ matrix_go_skype_bridge_registration_yaml: |
       - exclusive: true
         regex: '^@{{ matrix_go_skype_bridge_appservice_bot_username | regex_escape }}:{{ matrix_go_skype_bridge_homeserver_domain | regex_escape }}$'
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
 
 matrix_go_skype_bridge_registration: "{{ matrix_go_skype_bridge_registration_yaml | from_yaml }}"

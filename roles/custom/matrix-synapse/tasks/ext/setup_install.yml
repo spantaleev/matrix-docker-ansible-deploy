@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2019 - 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2019 Hugues Morisset
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # encryption-disabler
@@ -59,6 +65,19 @@
   block:
     - when: matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/mjolnir-antispam/setup_install.yml"
+
+# synapse-http-antispam
+- tags:
+    - setup-all
+    - setup-synapse
+    - install-all
+    - install-synapse
+  block:
+    - when: matrix_synapse_ext_synapse_http_antispam_enabled  | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/synapse-http-antispam/validate_config.yml"
+
+    - when: matrix_synapse_ext_synapse_http_antispam_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/synapse-http-antispam/setup_install.yml"
 
 # s3-storage-provider
 - tags:

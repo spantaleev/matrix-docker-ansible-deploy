@@ -1,0 +1,102 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- ansible.builtin.set_fact:
+    matrix_mautrix_bluesky_requires_restart: false
+
+- name: Ensure Mautrix Bluesky image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_mautrix_bluesky_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_mautrix_bluesky_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_bluesky_docker_image_force_pull }}"
+  when: matrix_mautrix_bluesky_enabled | bool and not matrix_mautrix_bluesky_container_image_self_build
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure Mautrix Bluesky paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - {path: "{{ matrix_mautrix_bluesky_base_path }}", when: true}
+    - {path: "{{ matrix_mautrix_bluesky_config_path }}", when: true}
+    - {path: "{{ matrix_mautrix_bluesky_data_path }}", when: true}
+    - {path: "{{ matrix_mautrix_bluesky_docker_src_files_path }}", when: "{{ matrix_mautrix_bluesky_container_image_self_build }}"}
+  when: item.when | bool
+
+- name: Ensure Mautrix Bluesky repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_mautrix_bluesky_container_image_self_build_repo }}"
+    version: "{{ matrix_mautrix_bluesky_container_image_self_build_repo_version }}"
+    dest: "{{ matrix_mautrix_bluesky_docker_src_files_path }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_name }}"
+  register: matrix_mautrix_bluesky_git_pull_results
+  when: "matrix_mautrix_bluesky_enabled | bool and matrix_mautrix_bluesky_container_image_self_build"
+
+- name: Ensure Mautrix Bluesky Docker image is built
+  community.docker.docker_image:
+    name: "{{ matrix_mautrix_bluesky_docker_image }}"
+    source: build
+    force_source: "{{ matrix_mautrix_bluesky_git_pull_results.changed }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_mautrix_bluesky_docker_src_files_path }}"
+      pull: true
+  when: "matrix_mautrix_bluesky_enabled | bool and matrix_mautrix_bluesky_container_image_self_build | bool"
+
+- name: Ensure mautrix-bluesky config.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_mautrix_bluesky_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_mautrix_bluesky_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+
+- name: Ensure mautrix-bluesky registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_mautrix_bluesky_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_mautrix_bluesky_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+
+- name: Ensure mautrix-bluesky support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_mautrix_bluesky_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - labels
+
+- name: Ensure matrix-mautrix-bluesky container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_mautrix_bluesky_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Ensure matrix-mautrix-bluesky.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-bluesky.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-bluesky.service"
+    mode: 0644
+
+- name: Ensure matrix-mautrix-bluesky.service restarted, if necessary
+  ansible.builtin.service:
+    name: "matrix-mautrix-bluesky.service"
+    state: restarted
+    daemon_reload: true
+  when: "matrix_mautrix_bluesky_requires_restart | bool"

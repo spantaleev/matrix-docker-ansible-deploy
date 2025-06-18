@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure matrix-alertmanager-receiver paths exist
@@ -5,8 +10,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - path: "{{ matrix_alertmanager_receiver_base_path }}"
       when: true
@@ -21,16 +26,16 @@
     content: "{{ matrix_alertmanager_receiver_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_alertmanager_receiver_config_path }}/config.yml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-alertmanager-receiver support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_alertmanager_receiver_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 
@@ -55,7 +60,7 @@
         dest: "{{ matrix_alertmanager_receiver_container_src_path }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_alertmanager_receiver_git_pull_results
 
     - name: Ensure matrix-alertmanager-receiver container image is built

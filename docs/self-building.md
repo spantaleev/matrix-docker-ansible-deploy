@@ -1,3 +1,17 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Horvath Gergely
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
+SPDX-FileCopyrightText: 2022 Arthur Brugière
+SPDX-FileCopyrightText: 2023 Shreyas Ajjarapu
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Self-building
 
 **Caution: self-building does not have to be used on its own. See the [Alternative Architectures](alternative-architectures.md) page.**
@@ -28,7 +42,6 @@ Possibly outdated list of roles where self-building the Docker image is currentl
 - `matrix-bridge-appservice-webhooks`
 - `matrix-bridge-beeper-linkedin`
 - `matrix-bridge-mautrix-facebook`
-- `matrix-bridge-mautrix-hangouts`
 - `matrix-bridge-mautrix-googlechat`
 - `matrix-bridge-mautrix-telegram`
 - `matrix-bridge-mautrix-signal`
@@ -39,7 +52,6 @@ Possibly outdated list of roles where self-building the Docker image is currentl
 - `matrix-bot-honoroit`
 - `matrix-bot-matrix-reminder-bot`
 - `matrix-bot-maubot`
-- `matrix-email2matrix`
 - `matrix-pantalaimon`
 
 Adding self-building support to other roles is welcome. Feel free to contribute!

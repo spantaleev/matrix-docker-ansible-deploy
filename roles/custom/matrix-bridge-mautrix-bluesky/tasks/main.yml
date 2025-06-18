@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- tags:
+    - setup-all
+    - setup-mautrix-bluesky
+    - install-all
+    - install-mautrix-bluesky
+  block:
+    - when: matrix_mautrix_bluesky_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_mautrix_bluesky_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-mautrix-bluesky
+  block:
+    - when: not matrix_mautrix_bluesky_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

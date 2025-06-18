@@ -1,0 +1,65 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev <slavi@devture.com>
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara <acioustick@noreply.codeberg.org>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+# Shows help
+default:
+    @just --list --justfile {{ justfile() }}
+
+# Extracts original English strings (translation templates) into the `translation-templates/` directory
+extract-translation-templates: _venv
+    @echo "Extracting translation templates…"
+    PATH={{ justfile_directory() }}/.venv/bin:$PATH {{ justfile_directory() }}/bin/extract-translation-templates.sh
+
+# Syncs the translation templates (affects `translation-templates/`) and strings (affects `locales/*`) for all published languages (`PUBLISHED_LANGUAGES`)
+sync-for-all-published-languages: _venv
+    #!/bin/sh
+    cat {{ justfile_directory() }}/PUBLISHED_LANGUAGES | while read language ; do
+        {{ just_executable() }} sync-for-language $language
+    done
+
+# Syncs the translation templates (affects `translation-templates/`) and strings for all known languages (`KNOWN_LANGUAGES`)
+sync-for-all-known-languages:
+    #!/bin/sh
+    find {{ justfile_directory() }}/locales -mindepth 1 -maxdepth 1 -type d | while read path ; do
+        language=$(basename "$path")
+        echo "Syncing for language $language…"
+        {{ just_executable() }} sync-for-language $language
+    done
+
+# Updates the translation templates (affects `translation-templates/`) and syncs the translation strings for a given language (affects `locales/{{ language }}`)
+sync-for-language language: extract-translation-templates (_sync-translation-templates-to-locales-for-language language)
+
+# Updates `locales/{{ language }}` files based on the original template strings from `translation-templates/`
+_sync-translation-templates-to-locales-for-language language: _venv
+    PATH={{ justfile_directory() }}/.venv/bin:$PATH {{ justfile_directory() }}/bin/sync-translation-templates-to-locales.sh {{ language }}
+
+# Builds the translated result for a given language into the `translations/{{ language }}` directory
+build-for-language language: _venv
+    PATH={{ justfile_directory() }}/.venv/bin:$PATH {{ justfile_directory() }}/bin/build-translated-result.sh {{ language }}
+
+# Builds the translated result for all published languages into the `translations/` directory
+build-for-all-published-languages:
+    #!/bin/sh
+    cat {{ justfile_directory() }}/PUBLISHED_LANGUAGES | while read language ; do
+        {{ just_executable() }} build-for-language $language
+    done
+
+# Builds the translated result for all known languages into the `translations/` directory
+build-for-all-known-languages:
+    #!/bin/sh
+    find {{ justfile_directory() }}/locales -mindepth 1 -maxdepth 1 -type d | while read path ; do
+        language=$(basename "$path")
+        echo "Building for language $language…"
+        {{ just_executable() }} build-for-language $language
+    done
+
+# Creates the virtual environment and installs the required Python packages
+_venv:
+    #!/bin/sh
+    if [ ! -f {{ justfile_directory() }}/.venv/bin/sphinx-build ]; then
+        echo "No sphinx-build found, creating virtual environment and installing requirements…"
+        uv venv {{ justfile_directory() }}/.venv
+        VIRTUAL_ENV={{ justfile_directory() }}/.venv uv pip install -r {{ justfile_directory() }}/requirements.txt
+    fi

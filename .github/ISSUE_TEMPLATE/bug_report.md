@@ -11,7 +11,7 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 <!--
-NOTE: This Ansible playbook installs tens of separate services. If you're having a problem with a specific service, it is likely that the problem is not with our deployment method, but with the service itself. You may wish to report that problem at the source, upstream, and not to us
+NOTE: This Ansible playbook installs tens of separate services. If you're having a problem with a specific one, it is likely that the problem is with the service itself. You may wish to report that problem at the source, upstream.
 -->
 
 **To Reproduce**
@@ -34,7 +34,7 @@ A clear and concise description of what you expected to happen.
 
 **Ansible:**
 If your problem appears to be with Ansible, tell us:
-- where you run Ansible -- e.g. on the Matrix server itself; on another computer (which OS? distro? standard installation or containerized Ansible?)
+- where you run Ansible — e.g. on the Matrix server itself; on another computer (which OS? distro? standard installation or containerized Ansible?)
 - what version of Ansible you're running (see `ansible --version`)
 
 <!--

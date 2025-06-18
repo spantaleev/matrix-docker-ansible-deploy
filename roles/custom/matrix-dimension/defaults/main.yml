@@ -1,3 +1,18 @@
+# SPDX-FileCopyrightText: 2019 - 2021 MDAD project contributors
+# SPDX-FileCopyrightText: 2019 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2019 Edgars Voroboks
+# SPDX-FileCopyrightText: 2019 Sylvia van Os
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Project source code URL: https://github.com/turt2live/matrix-dimension
 
@@ -16,7 +31,7 @@ matrix_dimension_path_prefix: /
 # For information on how to acquire an access token, visit https://t2bot.io/docs/access_tokens
 matrix_dimension_access_token: ""
 
-# Users in form: ['@user1:example.com', '@user2:example.com']
+# Users in form: ['@alice:example.com', '@bob:example.com']
 matrix_dimension_admins: []
 
 # Whether to allow Dimension widgets serve websites with invalid or self signed SSL certificates
@@ -31,8 +46,10 @@ matrix_dimension_docker_src_files_path: "{{ matrix_base_data_path }}/docker-src/
 
 # renovate: datasource=docker depName=turt2live/matrix-dimension
 matrix_dimension_version: latest
-matrix_dimension_docker_image: "{{ matrix_dimension_docker_image_name_prefix }}turt2live/matrix-dimension:{{ matrix_dimension_version }}"
-matrix_dimension_docker_image_name_prefix: "{{ 'localhost/' if matrix_dimension_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_dimension_docker_image: "{{ matrix_dimension_docker_image_registry_prefix }}turt2live/matrix-dimension:{{ matrix_dimension_version }}"
+matrix_dimension_docker_image_registry_prefix: "{{ 'localhost/' if matrix_dimension_container_image_self_build else matrix_dimension_docker_image_registry_prefix_upstream }}"
+matrix_dimension_docker_image_registry_prefix_upstream: "{{ matrix_dimension_docker_image_registry_prefix_upstream_default }}"
+matrix_dimension_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_dimension_docker_image_force_pull: "{{ matrix_dimension_docker_image.endswith(':latest') }}"
 
 # List of systemd services that matrix-dimension.service depends on.

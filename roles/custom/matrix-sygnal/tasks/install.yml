@@ -1,3 +1,12 @@
+# SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure Sygnal paths exists
@@ -5,8 +14,8 @@
     path: "{{ item }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - "{{ matrix_sygnal_base_path }}"
     - "{{ matrix_sygnal_config_path }}"
@@ -17,16 +26,16 @@
     content: "{{ matrix_sygnal_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_sygnal_config_path }}/sygnal.yaml"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure Sygnal labels installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ matrix_sygnal_base_path }}/labels"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure Sygnal image is pulled
   community.docker.docker_image:

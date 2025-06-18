@@ -1,3 +1,10 @@
+{#
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Catalan Lover <catalanlover@protonmail.com>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 {% if matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled %}
 traefik.enable=true
 
@@ -75,7 +82,7 @@ traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-api.
 {% if matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_enabled %}
 ############################################################
 #                                                          #
-# Public Synapse Admin API (/_synapse/client)              #
+# Public Synapse Client API (/_synapse/client)             #
 #                                                          #
 ############################################################
 
@@ -105,7 +112,7 @@ traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synaps
 
 ############################################################
 #                                                          #
-# /Public Synapse Admin API (/_synapse/client)             #
+# /Public Synapse Client API (/_synapse/client)            #
 #                                                          #
 ############################################################
 {% endif %}
@@ -149,6 +156,29 @@ traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synaps
 ############################################################
 {% endif %}
 
+{% if matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_enabled %}
+############################################################
+#                                                          #
+# Internal Synapse Admin API (/_synapse/admin)             #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-admin-api.rule={{ matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_rule }}
+
+{% if matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-public-client-synapse-admin-api.priority={{ matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_priority }}
+{% endif %}
+
+
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-admin-api.service=matrix-synapse-reverse-proxy-companion-client-api
+traefik.http.routers.matrix-synapse-reverse-proxy-companion-internal-client-synapse-admin-api.entrypoints={{ matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_entrypoints }}
+
+############################################################
+#                                                          #
+# /Internal Synapse Admin API (/_synapse/admin)            #
+#                                                          #
+############################################################
+{% endif %}
 
 {% if matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_enabled %}
 ############################################################

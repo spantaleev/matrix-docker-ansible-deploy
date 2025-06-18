@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2021 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2021 Cody Neiman
+# SPDX-FileCopyrightText: 2021 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Cody Wyatt Neiman
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Mx Puppet GroupMe is a Matrix <-> GroupMe bridge
 # Project source code URL: https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme
@@ -14,8 +25,10 @@ matrix_mx_puppet_groupme_container_image_self_build_repo_version: "{{ 'main' if 
 matrix_mx_puppet_groupme_container_http_host_bind_port: ''
 
 matrix_mx_puppet_groupme_version: 533cccc8
-matrix_mx_puppet_groupme_docker_image: "{{ matrix_mx_puppet_groupme_docker_image_name_prefix }}xangelix-pub/matrix/mx-puppet-groupme:{{ matrix_mx_puppet_groupme_version }}"
-matrix_mx_puppet_groupme_docker_image_name_prefix: "{{ 'localhost/' if matrix_mx_puppet_groupme_container_image_self_build else 'registry.gitlab.com/' }}"
+matrix_mx_puppet_groupme_docker_image: "{{ matrix_mx_puppet_groupme_docker_image_registry_prefix }}xangelix-pub/matrix/mx-puppet-groupme:{{ matrix_mx_puppet_groupme_version }}"
+matrix_mx_puppet_groupme_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mx_puppet_groupme_container_image_self_build else matrix_mx_puppet_groupme_docker_image_registry_prefix_upstream }}"
+matrix_mx_puppet_groupme_docker_image_registry_prefix_upstream: "{{ matrix_mx_puppet_groupme_docker_image_registry_prefix_upstream_default }}"
+matrix_mx_puppet_groupme_docker_image_registry_prefix_upstream_default: "registry.gitlab.com/"
 matrix_mx_puppet_groupme_docker_image_force_pull: "{{ matrix_mx_puppet_groupme_docker_image.endswith(':latest') }}"
 
 matrix_mx_puppet_groupme_base_path: "{{ matrix_base_data_path }}/mx-puppet-groupme"
@@ -29,14 +42,14 @@ matrix_mx_puppet_groupme_homeserver_address: ""
 matrix_mx_puppet_groupme_homeserver_domain: '{{ matrix_domain }}'
 matrix_mx_puppet_groupme_appservice_address: 'http://matrix-mx-puppet-groupme:{{ matrix_mx_puppet_groupme_appservice_port }}'
 
-# "@user:example.com" to allow a specific user
+# "@alice:example.com" to allow a specific user
 # "@.*:example.com" to allow users on a specific homeserver
 # "@.*" to allow anyone
 matrix_mx_puppet_groupme_provisioning_whitelist:
   - "@.*:{{ matrix_domain | regex_escape }}"
 
 # Leave empty to disable blacklist
-# "@user:example.com" to disallow a specific user
+# "@bob:example.com" to disallow a specific user
 # "@.*:example.com" to disallow users on a specific homeserver
 matrix_mx_puppet_groupme_provisioning_blacklist: []
 
@@ -120,5 +133,6 @@ matrix_mx_puppet_groupme_registration_yaml: |
   sender_localpart: _groupmepuppet_bot
   url: {{ matrix_mx_puppet_groupme_appservice_address }}
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
 
 matrix_mx_puppet_groupme_registration: "{{ matrix_mx_puppet_groupme_registration_yaml | from_yaml }}"

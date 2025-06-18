@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2020 Rodrigo Belem
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure MX Puppet Slack paths exist
@@ -5,8 +11,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_mx_puppet_slack_base_path }}", when: true}
     - {path: "{{ matrix_mx_puppet_slack_config_path }}", when: true}
@@ -74,7 +80,7 @@
     force: "yes"
     version: "{{ matrix_mx_puppet_slack_container_image_self_build_version }}"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_mx_puppet_slack_git_pull_results
   when: "matrix_mx_puppet_slack_enabled | bool and matrix_mx_puppet_slack_container_image_self_build"
 
@@ -102,24 +108,24 @@
     content: "{{ matrix_mx_puppet_slack_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mx_puppet_slack_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mx-puppet-slack slack-registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mx_puppet_slack_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mx_puppet_slack_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mx-puppet-slack support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_mx_puppet_slack_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

@@ -1,0 +1,138 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: bg\n"
+"Language-Team: bg <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-turn.md:1
+msgid "Configuring a TURN server (optional, advanced)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:3
+msgid "By default, this playbook installs and configures the [coturn](https://github.com/coturn/coturn) as a TURN server, through which clients can make audio/video calls even from [NAT](https://en.wikipedia.org/wiki/Network_address_translation)-ed networks. It also configures the Synapse chat server by default, so that it points to the coturn TURN server installed by the playbook. If that's okay, you can skip this document."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:5
+msgid "If you'd like to stop the playbook installing the server, see the section [below](#disabling-coturn) to check the configuration for disabling it."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:7
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:9
+msgid "Define public IP manually (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:11
+msgid "In the `hosts` file we explicitly ask for your server's external IP address when defining `ansible_host`, because the same value is used for configuring coturn."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:13
+msgid "If you'd rather use a local IP for `ansible_host`, add the following configuration to your `vars.yml` file. Make sure to replace `YOUR_PUBLIC_IP` with the pubic IP used by the server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:19
+msgid "If you'd like to rely on external IP address auto-detection (not recommended unless you need it), set an empty value to the variable. The playbook will automatically contact an [EchoIP](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:21
+msgid "If your server has multiple external IP addresses, the coturn role offers a different variable for specifying them:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:28
+msgid "Change the authentication mechanism (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:30
+msgid "The playbook uses the [`auth-secret` authentication method](https://github.com/coturn/coturn/blob/873cabd6a2e5edd7e9cc5662cac3ffe47fe87a8e/README.turnserver#L186-L199) by default, but you may switch to the [`lt-cred-mech` method](https://github.com/coturn/coturn/blob/873cabd6a2e5edd7e9cc5662cac3ffe47fe87a8e/README.turnserver#L178) which [some report](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3191) to be working better."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:32
+msgid "To do so, add the following configuration to your `vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:38
+msgid "Regardless of the selected authentication method, the playbook generates secrets automatically and passes them to the homeserver and coturn."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:40
+msgid "If [Jitsi](configuring-playbook-jitsi.md) is installed, note that switching to `lt-cred-mech` will disable the integration between Jitsi and your coturn server, as Jitsi seems to support the `auth-secret` authentication method only."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:42
+msgid "Use your own external coturn server (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:44
+msgid "If you'd like to use another TURN server (be it coturn or some other one), add the following configuration to your `vars.yml` file. Make sure to replace `HOSTNAME_OR_IP` with your own."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:58
+msgid "If you have or want to enable Jitsi, you might want to enable the TURN server there too. If you do not do it, Jitsi will fall back to an upstream service."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:65
+msgid "You can put multiple host/port combinations if you'd like to."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:67
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:69
+msgid "There are some additional things you may wish to configure about the TURN server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:71
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:73
+msgid "`roles/custom/matrix-coturn/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:75
+msgid "Disabling coturn"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:77
+msgid "If, for some reason, you'd like for the playbook to not install coturn (or to uninstall it if it was previously installed), add the following configuration to your `vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:83
+msgid "In that case, Synapse would not point to any coturn servers and audio/video call functionality may fail."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:85
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:87
+msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:94
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-turn.md:96
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""

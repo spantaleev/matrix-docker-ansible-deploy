@@ -1,3 +1,10 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # synapse_auto_compressor tool
@@ -8,11 +15,11 @@ matrix_synapse_auto_compressor_enabled: true
 # renovate: datasource=docker depName=registry.gitlab.com/etke.cc/rust-synapse-compress-state
 matrix_synapse_auto_compressor_version: v0.1.4
 
-# note: UID/GID better to match the UID/GID of the postgres container, but it doesn't really matter, as volumes are not used here
+# note: UID/GID better to match the UID/GID of the Postgres container, but it doesn't really matter, as volumes are not used here
 matrix_synapse_auto_compressor_uid: ''
 matrix_synapse_auto_compressor_gid: ''
 
-# note: the postgres image version doesn't matter, as it is used for a SQL script that doesn't use any specific features
+# note: the Postgres image version doesn't matter, as it is used for a SQL script that doesn't use any specific features
 matrix_synapse_auto_compressor_postgres_image: "postgres"
 
 matrix_synapse_auto_compressor_base_path: "{{ matrix_base_data_path }}/synapse-auto-compressor"
@@ -22,8 +29,10 @@ matrix_synapse_auto_compressor_container_image_self_build: false
 matrix_synapse_auto_compressor_container_image_self_build_repo: "https://github.com/matrix-org/rust-synapse-compress-state.git"
 matrix_synapse_auto_compressor_container_image_self_build_version: "{{ 'main' if matrix_synapse_auto_compressor_version == 'latest' else matrix_synapse_auto_compressor_version }}"
 
-matrix_synapse_auto_compressor_container_image: "{{ matrix_synapse_auto_compressor_container_image_name_prefix }}etke.cc/rust-synapse-compress-state:{{ matrix_synapse_auto_compressor_version }}"
-matrix_synapse_auto_compressor_container_image_name_prefix: "{{ 'localhost/' if matrix_synapse_auto_compressor_container_image_self_build else 'registry.gitlab.com/' }}"
+matrix_synapse_auto_compressor_container_image: "{{ matrix_synapse_auto_compressor_container_image_registry_prefix }}etke.cc/rust-synapse-compress-state:{{ matrix_synapse_auto_compressor_version }}"
+matrix_synapse_auto_compressor_container_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_auto_compressor_container_image_self_build else matrix_synapse_auto_compressor_container_image_registry_prefix_upstream }}"
+matrix_synapse_auto_compressor_container_image_registry_prefix_upstream: "{{ matrix_synapse_auto_compressor_container_image_registry_prefix_upstream_default }}"
+matrix_synapse_auto_compressor_container_image_registry_prefix_upstream_default: "registry.gitlab.com/"
 matrix_synapse_auto_compressor_container_image_force_pull: "{{ matrix_synapse_auto_compressor_container_image.endswith(':latest') }}"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
@@ -55,8 +64,13 @@ matrix_synapse_auto_compressor_database_name: 'synapse'
 # connection string to synapse database (postgres only)
 matrix_synapse_auto_compressor_synapse_database: 'postgres://{{ matrix_synapse_auto_compressor_database_username | urlencode() }}:{{ matrix_synapse_auto_compressor_database_password | urlencode() }}@{{ matrix_synapse_auto_compressor_database_hostname }}:{{ matrix_synapse_auto_compressor_database_port }}/{{ matrix_synapse_auto_compressor_database_name }}'
 
-# systemd calendar configuration for the compressor job
-matrix_synapse_auto_compressor_calendar: "*-*-* 00:00:00"
+# Controls the `OnCalendar` configuration for the compressor job.
+# Also see: `matrix_synapse_auto_compressor_schedule_randomized_delay_sec`
+matrix_synapse_auto_compressor_schedule: "*-*-* 00:00:00"
+
+# The `RandomizedDelaySec` delay (in seconds or as a systemd time string) to randomize the `OnCalendar` start time (`matrix_synapse_auto_compressor_schedule`) of the compressor job.
+# This can be set to 0 to disable randomized delays.
+matrix_synapse_auto_compressor_schedule_randomized_delay_sec: 6h
 
 # The number of state groups to work on at once.
 # All of the entries from state_groups_state are requested from the database for state groups that are worked on.

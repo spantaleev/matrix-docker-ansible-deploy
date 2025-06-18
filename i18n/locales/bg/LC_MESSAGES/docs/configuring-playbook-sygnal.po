@@ -1,0 +1,150 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: bg\n"
+"Language-Team: bg <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-sygnal.md:1
+msgid "Setting up the Sygnal push gateway (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:3
+msgid "The playbook can install and configure the [Sygnal](https://github.com/matrix-org/sygnal) push gateway for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:5
+msgid "See the project's [documentation](https://github.com/matrix-org/sygnal/blob/master/README.md) to learn what it does and why it might be useful to you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:7
+msgid "**Note**: most people don't need to install their own gateway. As Sygnal's [Notes for application developers](https://github.com/matrix-org/sygnal/blob/master/docs/applications.md) documentation says:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:9
+msgid "It is not feasible to allow end-users to configure their own Sygnal instance, because the Sygnal instance needs the appropriate FCM or APNs secrets that belong to the application."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:11
+msgid "This optional playbook component is only useful to people who develop/build their own Matrix client applications themselves."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:13
+msgid "Adjusting DNS records"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:15
+msgid "By default, this playbook installs Sygnal on the `sygnal.` subdomain (`sygnal.example.com`) and requires you to create a CNAME record for `sygnal`, which targets `matrix.example.com`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:17
+msgid "When setting, replace `example.com` with your own."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:19
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:21
+msgid "To enable Sygnal, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:49
+msgid "Configuring [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/) is easier, as it only requires that you provide some config values."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:51
+msgid "To configure [APNS](https://developer.apple.com/notifications/) (Apple Push Notification Service), you'd need to provide one or more certificate files. To do that, the above example configuration:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:53
+msgid "makes use of the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux) (and its `aux_file_definitions` variable) to make the playbook install files into `/matrix/sygnal/data` (the `matrix_sygnal_data_path` variable). See [`defaults/main.yml` file](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml) of the `aux` role for usage examples. It also makes sure the files are owned by `matrix:matrix`, so that Sygnal can read them. Of course, you can also install these files manually yourself, if you'd rather not use `aux`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:55
+msgid "references these files in the Sygnal configuration (`matrix_sygnal_apps`) using a path like `/data/…` (the `/matrix/sygnal/data` directory on the host system is mounted into the `/data` directory inside the container)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:57
+msgid "Adjusting the Sygnal URL (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:59
+msgid "By tweaking the `matrix_sygnal_hostname` and `matrix_sygnal_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:61
+msgid "Example additional configuration for your `vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:72
+msgid "After changing the domain, **you may need to adjust your DNS** records to point the Sygnal domain to the Matrix server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:74
+msgid "If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:76
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:78
+msgid "There are some additional things you may wish to configure about the component."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:80
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:82
+msgid "`roles/custom/matrix-sygnal/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:83
+msgid "`roles/custom/matrix-sygnal/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_sygnal_configuration_extension_yaml` variable"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:85
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:87
+msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:94
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:96
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:98
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:100
+msgid "To make use of your Sygnal installation, you'd need to build your own Matrix client application, which uses the same API keys (for [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/)) and certificates (for [APNS](https://developer.apple.com/notifications/)) and is to your Sygnal URL endpoint (e.g. `https://sygnal.example.com`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-sygnal.md:102
+msgid "Refer to Sygnal's [Notes for application developers](https://github.com/matrix-org/sygnal/blob/master/docs/applications.md) document."
+msgstr ""

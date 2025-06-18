@@ -1,3 +1,10 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Michael Hollister
+# SPDX-FileCopyrightText: 2024 Daniel A. Maierhofer
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure media-repo paths exist
@@ -5,8 +12,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - path: "{{ matrix_media_repo_base_path }}"
       when: true
@@ -23,8 +30,8 @@
     src: "{{ role_path }}/templates/media-repo/{{ item }}.j2"
     dest: "{{ matrix_media_repo_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - env
     - labels
@@ -34,8 +41,8 @@
     src: "{{ role_path }}/templates/media-repo/media-repo.yaml.j2"
     dest: "{{ matrix_media_repo_config_path }}/media-repo.yaml"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure media-repo Docker image is pulled
   community.docker.docker_image:
@@ -58,7 +65,7 @@
         version: "{{ matrix_media_repo_docker_image.split(':')[1] }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_media_repo_git_pull_results
 
     - name: Check if media-repo Docker image exists
@@ -121,8 +128,8 @@
         src: "{{ matrix_media_repo_homeserver_signing_key }}"
         dest: "{{ matrix_media_repo_homeserver_signing_key }}.{{ matrix_homeserver_implementation }}.backup"
         mode: 0644
-        owner: "{{ matrix_user_username }}"
-        group: "{{ matrix_user_groupname }}"
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
 
     - name: Replace homeserver signing key with merged signing key
       ansible.builtin.command:

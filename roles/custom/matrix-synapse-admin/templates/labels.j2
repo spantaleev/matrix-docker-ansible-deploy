@@ -1,3 +1,10 @@
+{#
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 {% if matrix_synapse_admin_container_labels_traefik_enabled %}
 traefik.enable=true
 
@@ -8,6 +15,11 @@ traefik.docker.network={{ matrix_synapse_admin_container_labels_traefik_docker_n
 traefik.http.services.matrix-synapse-admin.loadbalancer.server.port=80
 
 {% set middlewares = [] %}
+
+{% if matrix_synapse_admin_container_labels_traefik_ipallowlist_sourcerange | length > 0 %}
+traefik.http.middlewares.matrix-synapse-admin-ipallowlist.ipallowlist.sourcerange={{ matrix_synapse_admin_container_labels_traefik_ipallowlist_sourcerange | join(',') }}
+{% set middlewares = middlewares + ['matrix-synapse-admin-ipallowlist'] %}
+{% endif %}
 
 {% if matrix_synapse_admin_container_labels_traefik_path_prefix != '/' %}
 traefik.http.middlewares.matrix-synapse-admin-slashless-redirect.redirectregex.regex=({{ matrix_synapse_admin_container_labels_traefik_path_prefix | quote }})$

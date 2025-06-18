@@ -1,3 +1,19 @@
+# SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Daniel Wiegreffe
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2021 Béla Becker
+# SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
+# SPDX-FileCopyrightText: 2021 boris runakov
+# SPDX-FileCopyrightText: 2022 Didier 'OdyX' Raboud
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Fabio Bonelli
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # matrix-appservice-slack is a Matrix <-> Slack bridge
 # Project source code URL: https://github.com/matrix-org/matrix-appservice-slack
@@ -17,7 +33,10 @@ matrix_appservice_slack_docker_src_files_path: "{{ matrix_base_data_path }}/apps
 # It's a bare version number now. We try to somewhat retain compatibility below.
 # renovate: datasource=docker depName=docker.io/matrixdotorg/matrix-appservice-slack
 matrix_appservice_slack_version: 2.1.2
-matrix_appservice_slack_docker_image: "{{ matrix_container_global_registry_prefix }}matrixdotorg/matrix-appservice-slack:{{ matrix_appservice_slack_docker_image_tag }}"
+matrix_appservice_slack_docker_image: "{{ matrix_appservice_slack_docker_image_registry_prefix }}matrixdotorg/matrix-appservice-slack:{{ matrix_appservice_slack_docker_image_tag }}"
+matrix_appservice_slack_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_slack_container_image_self_build else matrix_appservice_slack_docker_image_registry_prefix_upstream }}"
+matrix_appservice_slack_docker_image_registry_prefix_upstream: "{{ matrix_appservice_slack_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_slack_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_appservice_slack_docker_image_tag: "{{ 'latest' if matrix_appservice_slack_version == 'latest' else ('release-' + matrix_appservice_slack_version) }}"
 matrix_appservice_slack_docker_image_force_pull: "{{ matrix_appservice_slack_docker_image.endswith(':latest') }}"
 
@@ -153,7 +172,7 @@ matrix_appservice_slack_configuration_extension_yaml: |
     #    console: "info"
     #    files:
     #    - "./debug.log": "info"
-    #- "./error.log": "error"
+    #    - "./error.log": "error"
 
 matrix_appservice_slack_configuration_extension: "{{ matrix_appservice_slack_configuration_extension_yaml | from_yaml if matrix_appservice_slack_configuration_extension_yaml | from_yaml else {} }}"
 

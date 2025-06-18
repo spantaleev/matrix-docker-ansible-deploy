@@ -1,3 +1,17 @@
+# SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2020 Marcel Partap
+# SPDX-FileCopyrightText: 2020 Matt Cengia
+# SPDX-FileCopyrightText: 2020 Stuart Mumford
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure ma1sd paths exist
@@ -5,8 +19,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_ma1sd_config_path }}", when: true}
     - {path: "{{ matrix_ma1sd_data_path }}", when: true}
@@ -64,7 +78,7 @@
         version: "{{ matrix_ma1sd_container_image_self_build_branch }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_ma1sd_git_pull_results
 
     - name: Ensure ma1sd container image is built
@@ -81,16 +95,16 @@
     content: "{{ matrix_ma1sd_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_ma1sd_config_path }}/ma1sd.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure custom view templates are installed, if any
   ansible.builtin.copy:
     content: "{{ item.value }}"
     dest: "{{ matrix_ma1sd_config_path }}/{{ item.location }}"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {value: "{{ matrix_ma1sd_view_session_custom_onTokenSubmit_success_template }}", location: 'tokenSubmitSuccess.html'}
     - {value: "{{ matrix_ma1sd_view_session_custom_onTokenSubmit_failure_template }}", location: 'tokenSubmitFailure.html'}
@@ -101,8 +115,8 @@
     content: "{{ item.value }}"
     dest: "{{ matrix_ma1sd_config_path }}/{{ item.location }}"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_invite_template }}", location: 'invite-template.eml'}
     - {value: "{{ matrix_ma1sd_threepid_medium_email_custom_session_validation_template }}", location: 'validate-template.eml'}
@@ -127,8 +141,8 @@
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_ma1sd_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

@@ -1,0 +1,277 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: jp\n"
+"Language-Team: jp <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-email2matrix.md:1
+msgid "Setting up Email2Matrix (optional, deprecated)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:3
+msgid "**Note**: this component has been deprecated. We recommend not bothering with installing it. While not a 1:1 replacement, the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-postmoogle.md). Consider using that component instead of this one."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:5
+msgid "The playbook can install and configure [Email2Matrix](https://github.com/devture/email2matrix) for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:7
+msgid "See the project's [documentation](https://github.com/devture/email2matrix/blob/master/docs/README.md) to learn what it does and why it might be useful to you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:9
+msgid "Preparation"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:11
+msgid "Port availability"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:13
+msgid "Ensure that port 25 is available on your Matrix server and open in your firewall."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:15
+msgid "If you have `postfix` or some other email server software installed, you may need to manually remove it first (unless you need it, of course)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:17
+msgid "If you really need to run an email server on the Matrix machine for other purposes, it may be possible to run Email2Matrix on another port (with a configuration like `matrix_email2matrix_smtp_host_bind_port: \"127.0.0.01:2525\"`) and have your other email server relay messages there."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:19
+msgid "For details about using Email2Matrix alongside [Postfix](http://www.postfix.org/), see [here](https://github.com/devture/email2matrix/blob/master/docs/setup_with_postfix.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:21
+msgid "Register a dedicated Matrix user (optional, recommended)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:23
+msgid "We recommend that you create a dedicated Matrix user for Email2Matrix."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:25
+msgid "Generate a strong password for the user. You can create one with a command like `pwgen -s 64 1`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:27
+msgid "You can use the playbook to [register a new user](registering-users.md):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:33
+msgid "Take note of the user's ID as it needs to be specified as `MatrixUserId` on your `inventory/host_vars/matrix.example.com/vars.yml` file later."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:35
+msgid "Obtain an access token"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:37
+msgid "Email2Matrix requires an access token for the sender user to be able to send messages to the room. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:39
+msgid "[!WARNING] Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:42
+msgid "Join to rooms as the sender user manually"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:44
+msgid "ℹ️ **Email2Matrix does not accept room invitations automatically**. To deliver messages to rooms, the sender user must be joined to all rooms manually."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:46
+msgid "For each new room you would like the user to deliver messages to, invite the user to the room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:48
+msgid "Then, log in as the sender user using any Matrix client of your choosing, accept the room invitation from the user's account."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:50
+msgid "Make sure that you and the sender user are part of the same room and that the sender user has enough privileges in the room to be able to send messages there, then log out."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:52
+msgid "Take note of each room's room ID (different clients show the room ID in a different place). You'll need the room ID when [configuring the playbook](#adjusting-the-playbook-configuration) below."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:54
+msgid "Adjusting DNS records"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:56
+msgid "To increase the chances that incoming emails reach your server, you can set up a `MX` record for `matrix.example.com` that looks like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "Type"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "Host"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "Priority"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "Weight"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "Port"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "Target"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "MX"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "`matrix`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "10"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "0"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "-"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md
+msgid "`matrix.example.com`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:62
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:64
+msgid "To enable Email2Matrix, add the following configuration to your `vars.yml` file. Make sure to replace `ACCESS_TOKEN_FOR_EMAIL2MATRIX1_HERE` and `ACCESS_TOKEN_FOR_EMAIL2MATRIX2_HERE` with the ones created [above](#obtain-an-access-token)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:90
+msgid "where:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:92
+msgid "MailboxName — local-part of the email address, through which emails are bridged to the room whose ID is defined with MatrixRoomId"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:93
+msgid "MatrixRoomId — internal ID of the room, to which received emails are sent as Matrix message"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:94
+msgid "MatrixHomeserverUrl — URL of your Matrix homeserver, through which to send Matrix messages. You can also set `MatrixHomeserverUrl` to the container URL where your homeserver's Client-Server API lives by using the `{{ matrix_addons_homeserver_client_api_url }}` variable"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:95
+msgid "MatrixUserId — the full ID of the sender user which sends bridged messages to the room. On this configuration it is `@email2matrix1:example.com` and `@email2matrix2:example.com` (where `example.com` is your base domain, not the `matrix.` domain)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:96
+msgid "MatrixAccessToken — sender user's access token"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:97
+msgid "IgnoreSubject — if set to \"true\", the subject is not bridged to Matrix"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:98
+msgid "IgnoreBody — if set to \"true\", the message body is not bridged to Matrix"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:99
+msgid "SkipMarkdown — if set to \"true\", emails are bridged as plain text Matrix message instead of Markdown (actually HTML)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:101
+msgid "Refer to the official documentation [here](https://github.com/devture/email2matrix/blob/master/docs/configuration.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:103
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:105
+msgid "There are some additional things you may wish to configure about the component."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:107
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:109
+msgid "`roles/custom/matrix-email2matrix/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:111
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:113
+msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:120
+msgid "**Notes**:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:122
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-service email2matrix` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:124
+msgid "`just install-service email2matrix` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:126
+msgid "After installation, you may wish to send a test email to the email address assigned to `mailbox1` (default: `mailbox1@matrix.example.com`) to make sure that Email2Matrix works as expected."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:128
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:130
+msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-email2matrix`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:132
+msgid "Increase logging verbosity"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email2matrix.md:134
+msgid "If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:"
+msgstr ""

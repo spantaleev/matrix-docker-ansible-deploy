@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # WeChat Bridge is a Matrix <-> WeChat bridge
@@ -7,8 +12,10 @@ matrix_wechat_enabled: true
 
 # renovate: datasource=docker depName=lxduo/matrix-wechat
 matrix_wechat_version: 0.2.4
-matrix_wechat_container_image: "{{ matrix_wechat_container_image_name_prefix }}lxduo/matrix-wechat:{{ matrix_wechat_version }}"
-matrix_wechat_container_image_name_prefix: "{{ 'localhost/' if matrix_wechat_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_wechat_container_image: "{{ matrix_wechat_container_image_registry_prefix }}lxduo/matrix-wechat:{{ matrix_wechat_version }}"
+matrix_wechat_container_image_registry_prefix: "{{ 'localhost/' if matrix_wechat_container_image_self_build else matrix_wechat_container_image_registry_prefix_upstream }}"
+matrix_wechat_container_image_registry_prefix_upstream: "{{ matrix_wechat_container_image_registry_prefix_upstream_default }}"
+matrix_wechat_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_wechat_container_image_force_pull: "{{ matrix_wechat_container_image.endswith(':latest') }}"
 
 matrix_wechat_container_image_self_build: false
@@ -17,8 +24,10 @@ matrix_wechat_container_image_self_build_branch: "{{ 'master' if matrix_wechat_v
 
 # renovate: datasource=docker depName=lxduo/matrix-wechat-agent
 matrix_wechat_agent_version: 0.0.1
-matrix_wechat_agent_container_image: "{{ matrix_wechat_agent_container_image_name_prefix }}lxduo/matrix-wechat-agent:{{ matrix_wechat_agent_version }}"
-matrix_wechat_agent_container_image_name_prefix: "{{ 'localhost/' if matrix_wechat_agent_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_wechat_agent_container_image: "{{ matrix_wechat_agent_container_image_registry_prefix }}lxduo/matrix-wechat-agent:{{ matrix_wechat_agent_version }}"
+matrix_wechat_agent_container_image_registry_prefix: "{{ 'localhost/' if matrix_wechat_agent_container_image_self_build else matrix_wechat_agent_container_image_registry_prefix_upstream }}"
+matrix_wechat_agent_container_image_registry_prefix_upstream: "{{ matrix_wechat_agent_container_image_registry_prefix_upstream_default }}"
+matrix_wechat_agent_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_wechat_agent_container_image_force_pull: "{{ matrix_wechat_agent_container_image.endswith(':latest') }}"
 
 # The agent needs to write to /home/user/.vnc.
@@ -95,7 +104,7 @@ matrix_wechat_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_wechat_encryption_default: "{{ matrix_wechat_encryption_allow }}"
 
 # Minimum severity of journal log messages.
-# Options: debug, info, warn, error, fatal
+# Valid values: fatal, error, warn, info, debug
 matrix_wechat_log_level: 'warn'
 
 matrix_wechat_permissions: |
@@ -141,6 +150,7 @@ matrix_wechat_registration_yaml: |
       - exclusive: true
         regex: '^@{{ matrix_wechat_appservice_bot_username | regex_escape }}:{{ matrix_wechat_homeserver_domain | regex_escape }}$'
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
 
 matrix_wechat_registration: "{{ matrix_wechat_registration_yaml | from_yaml }}"
 

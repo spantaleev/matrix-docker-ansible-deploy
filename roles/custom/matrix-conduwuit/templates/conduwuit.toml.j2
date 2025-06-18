@@ -1,0 +1,1546 @@
+{#
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+### conduwuit Configuration
+### See:
+### https://conduwuit.puppyirl.gay/configuration.html
+
+[global]
+
+# The server_name is the pretty name of this server. It is used as a
+# suffix for user and room IDs/aliases.
+#
+# See the docs for reverse proxying and delegation:
+# https://conduwuit.puppyirl.gay/deploying/generic.html#setting-up-the-reverse-proxy
+#
+# Also see the `[global.well_known]` config section at the very bottom.
+#
+# Examples of delegation:
+# - https://puppygock.gay/.well-known/matrix/server
+# - https://puppygock.gay/.well-known/matrix/client
+#
+# YOU NEED TO EDIT THIS. THIS CANNOT BE CHANGED AFTER WITHOUT A DATABASE
+# WIPE.
+#
+# example: "conduwuit.woof"
+#
+server_name = {{ matrix_conduwuit_config_server_name | to_json }}
+
+# The default address (IPv4 or IPv6) conduwuit will listen on.
+#
+# If you are using Docker or a container NAT networking setup, this must
+# be "0.0.0.0".
+#
+# To listen on multiple addresses, specify a vector e.g. ["127.0.0.1",
+# "::1"]
+#
+address = "0.0.0.0"
+
+# The port(s) conduwuit will listen on.
+#
+# For reverse proxying, see:
+# https://conduwuit.puppyirl.gay/deploying/generic.html#setting-up-the-reverse-proxy
+#
+# If you are using Docker, don't change this, you'll need to map an
+# external port to this.
+#
+# To listen on multiple ports, specify a vector e.g. [8080, 8448]
+#
+port = {{ matrix_conduwuit_config_port_number }}
+
+# The UNIX socket conduwuit will listen on.
+#
+# conduwuit cannot listen on both an IP address and a UNIX socket. If
+# listening on a UNIX socket, you MUST remove/comment the `address` key.
+#
+# Remember to make sure that your reverse proxy has access to this socket
+# file, either by adding your reverse proxy to the 'conduwuit' group or
+# granting world R/W permissions with `unix_socket_perms` (666 minimum).
+#
+# example: "/run/conduwuit/conduwuit.sock"
+#
+#unix_socket_path =
+
+# The default permissions (in octal) to create the UNIX socket with.
+#
+#unix_socket_perms = 660
+
+# This is the only directory where conduwuit will save its data, including
+# media. Note: this was previously "/var/lib/matrix-conduit".
+#
+# YOU NEED TO EDIT THIS.
+#
+# example: "/var/lib/conduwuit"
+#
+database_path = "/var/lib/conduwuit"
+
+# conduwuit supports online database backups using RocksDB's Backup engine
+# API. To use this, set a database backup path that conduwuit can write
+# to.
+#
+# For more information, see:
+# https://conduwuit.puppyirl.gay/maintenance.html#backups
+#
+# example: "/opt/conduwuit-db-backups"
+#
+#database_backup_path =
+
+# The amount of online RocksDB database backups to keep/retain, if using
+# "database_backup_path", before deleting the oldest one.
+#
+#database_backups_to_keep = 1
+
+# Text which will be added to the end of the user's displayname upon
+# registration with a space before the text. In Conduit, this was the
+# lightning bolt emoji.
+#
+# To disable, set this to "" (an empty string).
+#
+# The default is the trans pride flag.
+#
+# example: "🏳️‍⚧️"
+#
+new_user_displayname_suffix = {{ matrix_conduwuit_config_new_user_displayname_suffix | to_json }}
+
+# If enabled, conduwuit will send a simple GET request periodically to
+# `https://pupbrain.dev/check-for-updates/stable` for any new
+# announcements made. Despite the name, this is not an update check
+# endpoint, it is simply an announcement check endpoint.
+#
+# This is disabled by default as this is rarely used except for security
+# updates or major updates.
+#
+allow_check_for_updates = {{ matrix_conduwuit_config_allow_check_for_updates | to_json }}
+
+# Set this to any float value to multiply conduwuit's in-memory LRU caches
+# with such as "auth_chain_cache_capacity".
+#
+# May be useful if you have significant memory to spare to increase
+# performance.
+#
+# If you have low memory, reducing this may be viable.
+#
+# By default, the individual caches such as "auth_chain_cache_capacity"
+# are scaled by your CPU core count.
+#
+#cache_capacity_modifier = 1.0
+
+# Set this to any float value in megabytes for conduwuit to tell the
+# database engine that this much memory is available for database read
+# caches.
+#
+# May be useful if you have significant memory to spare to increase
+# performance.
+#
+# Similar to the individual LRU caches, this is scaled up with your CPU
+# core count.
+#
+# This defaults to 128.0 + (64.0 * CPU core count).
+#
+#db_cache_capacity_mb = varies by system
+
+# Set this to any float value in megabytes for conduwuit to tell the
+# database engine that this much memory is available for database write
+# caches.
+#
+# May be useful if you have significant memory to spare to increase
+# performance.
+#
+# Similar to the individual LRU caches, this is scaled up with your CPU
+# core count.
+#
+# This defaults to 48.0 + (4.0 * CPU core count).
+#
+#db_write_buffer_capacity_mb = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#pdu_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#auth_chain_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#shorteventid_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#eventidshort_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#eventid_pdu_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#shortstatekey_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#statekeyshort_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#servernameevent_data_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#server_visibility_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#user_visibility_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#stateinfo_cache_capacity = varies by system
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#roomid_spacehierarchy_cache_capacity = varies by system
+
+# Maximum entries stored in DNS memory-cache. The size of an entry may
+# vary so please take care if raising this value excessively. Only
+# decrease this when using an external DNS cache. Please note that
+# systemd-resolved does *not* count as an external cache, even when
+# configured to do so.
+#
+#dns_cache_entries = 32768
+
+# Minimum time-to-live in seconds for entries in the DNS cache. The
+# default may appear high to most administrators; this is by design as the
+# majority of NXDOMAINs are correct for a long time (e.g. the server is no
+# longer running Matrix). Only decrease this if you are using an external
+# DNS cache.
+#
+#dns_min_ttl = 10800
+
+# Minimum time-to-live in seconds for NXDOMAIN entries in the DNS cache.
+# This value is critical for the server to federate efficiently.
+# NXDOMAIN's are assumed to not be returning to the federation and
+# aggressively cached rather than constantly rechecked.
+#
+# Defaults to 3 days as these are *very rarely* false negatives.
+#
+#dns_min_ttl_nxdomain = 259200
+
+# Number of DNS nameserver retries after a timeout or error.
+#
+#dns_attempts = 10
+
+# The number of seconds to wait for a reply to a DNS query. Please note
+# that recursive queries can take up to several seconds for some domains,
+# so this value should not be too low, especially on slower hardware or
+# resolvers.
+#
+#dns_timeout = 10
+
+# Fallback to TCP on DNS errors. Set this to false if unsupported by
+# nameserver.
+#
+#dns_tcp_fallback = true
+
+# Enable to query all nameservers until the domain is found. Referred to
+# as "trust_negative_responses" in hickory_resolver. This can avoid
+# useless DNS queries if the first nameserver responds with NXDOMAIN or
+# an empty NOERROR response.
+#
+#query_all_nameservers = true
+
+# Enable using *only* TCP for querying your specified nameservers instead
+# of UDP.
+#
+# If you are running conduwuit in a container environment, this config
+# option may need to be enabled. For more details, see:
+# https://conduwuit.puppyirl.gay/troubleshooting.html#potential-dns-issues-when-using-docker
+#
+#query_over_tcp_only = false
+
+# DNS A/AAAA record lookup strategy
+#
+# Takes a number of one of the following options:
+# 1 - Ipv4Only (Only query for A records, no AAAA/IPv6)
+#
+# 2 - Ipv6Only (Only query for AAAA records, no A/IPv4)
+#
+# 3 - Ipv4AndIpv6 (Query for A and AAAA records in parallel, uses whatever
+# returns a successful response first)
+#
+# 4 - Ipv6thenIpv4 (Query for AAAA record, if that fails then query the A
+# record)
+#
+# 5 - Ipv4thenIpv6 (Query for A record, if that fails then query the AAAA
+# record)
+#
+# If you don't have IPv6 networking, then for better DNS performance it
+# may be suitable to set this to Ipv4Only (1) as you will never ever use
+# the AAAA record contents even if the AAAA record is successful instead
+# of the A record.
+#
+#ip_lookup_strategy = 5
+
+# Max request size for file uploads in bytes. Defaults to 20MB.
+#
+max_request_size = {{ matrix_conduwuit_config_max_request_size }}
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#max_fetch_prev_events = 192
+
+# Default/base connection timeout (seconds). This is used only by URL
+# previews and update/news endpoint checks.
+#
+#request_conn_timeout = 10
+
+# Default/base request timeout (seconds). The time waiting to receive more
+# data from another server. This is used only by URL previews,
+# update/news, and misc endpoint checks.
+#
+#request_timeout = 35
+
+# Default/base request total timeout (seconds). The time limit for a whole
+# request. This is set very high to not cancel healthy requests while
+# serving as a backstop. This is used only by URL previews and update/news
+# endpoint checks.
+#
+#request_total_timeout = 320
+
+# Default/base idle connection pool timeout (seconds). This is used only
+# by URL previews and update/news endpoint checks.
+#
+#request_idle_timeout = 5
+
+# Default/base max idle connections per host. This is used only by URL
+# previews and update/news endpoint checks. Defaults to 1 as generally the
+# same open connection can be re-used.
+#
+#request_idle_per_host = 1
+
+# Federation well-known resolution connection timeout (seconds).
+#
+#well_known_conn_timeout = 6
+
+# Federation HTTP well-known resolution request timeout (seconds).
+#
+#well_known_timeout = 10
+
+# Federation client request timeout (seconds). You most definitely want
+# this to be high to account for extremely large room joins, slow
+# homeservers, your own resources etc.
+#
+#federation_timeout = 300
+
+# Federation client idle connection pool timeout (seconds).
+#
+#federation_idle_timeout = 25
+
+# Federation client max idle connections per host. Defaults to 1 as
+# generally the same open connection can be re-used.
+#
+#federation_idle_per_host = 1
+
+# Federation sender request timeout (seconds). The time it takes for the
+# remote server to process sent transactions can take a while.
+#
+#sender_timeout = 180
+
+# Federation sender idle connection pool timeout (seconds).
+#
+#sender_idle_timeout = 180
+
+# Federation sender transaction retry backoff limit (seconds).
+#
+#sender_retry_backoff_limit = 86400
+
+# Appservice URL request connection timeout. Defaults to 35 seconds as
+# generally appservices are hosted within the same network.
+#
+#appservice_timeout = 35
+
+# Appservice URL idle connection pool timeout (seconds).
+#
+#appservice_idle_timeout = 300
+
+# Notification gateway pusher idle connection pool timeout.
+#
+#pusher_idle_timeout = 15
+
+# Enables registration. If set to false, no users can register on this
+# server.
+#
+# If set to true without a token configured, users can register with no
+# form of 2nd-step only if you set the following option to true:
+# `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`
+#
+# If you would like registration only via token reg, please configure
+# `registration_token` or `registration_token_file`.
+#
+allow_registration = {{ matrix_conduwuit_config_allow_registration | to_json }}
+
+yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = {{ matrix_conduwuit_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse | to_json }}
+
+allow_federation = {{ matrix_conduwuit_config_allow_federation | to_json }}
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = false
+
+# A static registration token that new users will have to provide when
+# creating an account. If unset and `allow_registration` is true,
+# registration is open without any condition.
+#
+# YOU NEED TO EDIT THIS OR USE registration_token_file.
+#
+# example: "o&^uCtes4HPf0Vu@F20jQeeWE7"
+#
+registration_token = {{ matrix_conduwuit_config_registration_token | to_json }}
+
+# Path to a file on the system that gets read for the registration token.
+# this config option takes precedence/priority over "registration_token".
+#
+# conduwuit must be able to access the file, and it must not be empty
+#
+# example: "/etc/conduwuit/.reg_token"
+#
+#registration_token_file =
+
+# Controls whether encrypted rooms and events are allowed.
+#
+#allow_encryption = true
+
+# Controls whether federation is allowed or not. It is not recommended to
+# disable this after the fact due to potential federation breakage.
+#
+#allow_federation = true
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#federation_loopback = false
+
+# Set this to true to require authentication on the normally
+# unauthenticated profile retrieval endpoints (GET)
+# "/_matrix/client/v3/profile/{userId}".
+#
+# This can prevent profile scraping.
+#
+#require_auth_for_profile_requests = false
+
+# Set this to true to allow your server's public room directory to be
+# federated. Set this to false to protect against /publicRooms spiders,
+# but will forbid external users from viewing your server's public room
+# directory. If federation is disabled entirely (`allow_federation`), this
+# is inherently false.
+#
+#allow_public_room_directory_over_federation = false
+
+# Set this to true to allow your server's public room directory to be
+# queried without client authentication (access token) through the Client
+# APIs. Set this to false to protect against /publicRooms spiders.
+#
+#allow_public_room_directory_without_auth = false
+
+# Allow guests/unauthenticated users to access TURN credentials.
+#
+# This is the equivalent of Synapse's `turn_allow_guests` config option.
+# This allows any unauthenticated user to call the endpoint
+# `/_matrix/client/v3/voip/turnServer`.
+#
+# It is unlikely you need to enable this as all major clients support
+# authentication for this endpoint and prevents misuse of your TURN server
+# from potential bots.
+#
+#turn_allow_guests = false
+
+# Set this to true to lock down your server's public room directory and
+# only allow admins to publish rooms to the room directory. Unpublishing
+# is still allowed by all users with this enabled.
+#
+#lockdown_public_room_directory = false
+
+# Set this to true to allow federating device display names / allow
+# external users to see your device display name. If federation is
+# disabled entirely (`allow_federation`), this is inherently false. For
+# privacy reasons, this is best left disabled.
+#
+#allow_device_name_federation = false
+
+# Config option to allow or disallow incoming federation requests that
+# obtain the profiles of our local users from
+# `/_matrix/federation/v1/query/profile`
+#
+# Increases privacy of your local user's such as display names, but some
+# remote users may get a false "this user does not exist" error when they
+# try to invite you to a DM or room. Also can protect against profile
+# spiders.
+#
+# This is inherently false if `allow_federation` is disabled
+#
+#allow_inbound_profile_lookup_federation_requests = true
+
+# Allow standard users to create rooms. Appservices and admins are always
+# allowed to create rooms
+#
+#allow_room_creation = true
+
+# Set to false to disable users from joining or creating room versions
+# that aren't officially supported by conduwuit.
+#
+# conduwuit officially supports room versions 6 - 11.
+#
+# conduwuit has slightly experimental (though works fine in practice)
+# support for versions 3 - 5.
+#
+#allow_unstable_room_versions = true
+
+# Default room version conduwuit will create rooms with.
+#
+# Per spec, room version 10 is the default.
+#
+#default_room_version = 10
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#allow_jaeger = false
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#jaeger_filter = "info"
+
+# If the 'perf_measurements' compile-time feature is enabled, enables
+# collecting folded stack trace profile of tracing spans using
+# tracing_flame. The resulting profile can be visualized with inferno[1],
+# speedscope[2], or a number of other tools.
+#
+# [1]: https://github.com/jonhoo/inferno
+# [2]: www.speedscope.app
+#
+#tracing_flame = false
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#tracing_flame_filter = "info"
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#tracing_flame_output_path = "./tracing.folded"
+
+# Examples:
+#
+# - No proxy (default):
+#
+#       proxy = "none"
+#
+# - For global proxy, create the section at the bottom of this file:
+#
+#       [global.proxy]
+#       global = { url = "socks5h://localhost:9050" }
+#
+# - To proxy some domains:
+#
+#       [global.proxy]
+#       [[global.proxy.by_domain]]
+#       url = "socks5h://localhost:9050"
+#       include = ["*.onion", "matrix.myspecial.onion"]
+#       exclude = ["*.myspecial.onion"]
+#
+# Include vs. Exclude:
+#
+# - If include is an empty list, it is assumed to be `["*"]`.
+#
+# - If a domain matches both the exclude and include list, the proxy will
+#   only be used if it was included because of a more specific rule than
+#   it was excluded. In the above example, the proxy would be used for
+#   `ordinary.onion`, `matrix.myspecial.onion`, but not
+#   `hello.myspecial.onion`.
+#
+#proxy = "none"
+
+# Servers listed here will be used to gather public keys of other servers
+# (notary trusted key servers).
+#
+# Currently, conduwuit doesn't support inbound batched key requests, so
+# this list should only contain other Synapse servers.
+#
+# example: ["matrix.org", "envs.net", "constellatory.net", "tchncs.de"]
+#
+trusted_servers = {{ matrix_conduwuit_trusted_servers | to_json }}
+
+# Whether to query the servers listed in trusted_servers first or query
+# the origin server first. For best security, querying the origin server
+# first is advised to minimize the exposure to a compromised trusted
+# server. For maximum federation/join performance this can be set to true,
+# however other options exist to query trusted servers first under
+# specific high-load circumstances and should be evaluated before setting
+# this to true.
+#
+#query_trusted_key_servers_first = false
+
+# Whether to query the servers listed in trusted_servers first
+# specifically on room joins. This option limits the exposure to a
+# compromised trusted server to room joins only. The join operation
+# requires gathering keys from many origin servers which can cause
+# significant delays. Therefore this defaults to true to mitigate
+# unexpected delays out-of-the-box. The security-paranoid or those willing
+# to tolerate delays are advised to set this to false. Note that setting
+# query_trusted_key_servers_first to true causes this option to be
+# ignored.
+#
+#query_trusted_key_servers_first_on_join = true
+
+# Only query trusted servers for keys and never the origin server. This is
+# intended for clusters or custom deployments using their trusted_servers
+# as forwarding-agents to cache and deduplicate requests. Notary servers
+# do not act as forwarding-agents by default, therefore do not enable this
+# unless you know exactly what you are doing.
+#
+#only_query_trusted_key_servers = false
+
+# Maximum number of keys to request in each trusted server batch query.
+#
+#trusted_server_batch_size = 1024
+
+# Max log level for conduwuit. Allows debug, info, warn, or error.
+#
+# See also:
+# https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html#directives
+#
+# **Caveat**:
+# For release builds, the tracing crate is configured to only implement
+# levels higher than error to avoid unnecessary overhead in the compiled
+# binary from trace macros. For debug builds, this restriction is not
+# applied.
+#
+log = {{ matrix_conduwuit_config_log | to_json }}
+
+# Output logs with ANSI colours.
+#
+#log_colors = true
+
+# Configures the span events which will be outputted with the log.
+#
+#log_span_events = "none"
+
+# Configures whether CONDUWUIT_LOG EnvFilter matches values using regular
+# expressions. See the tracing_subscriber documentation on Directives.
+#
+#log_filter_regex = true
+
+# Toggles the display of ThreadId in tracing log output.
+#
+#log_thread_ids = false
+
+# OpenID token expiration/TTL in seconds.
+#
+# These are the OpenID tokens that are primarily used for Matrix account
+# integrations (e.g. Vector Integrations in Element), *not* OIDC/OpenID
+# Connect/etc.
+#
+#openid_token_ttl = 3600
+
+# Allow an existing session to mint a login token for another client.
+# This requires interactive authentication, but has security ramifications
+# as a malicious client could use the mechanism to spawn more than one
+# session.
+# Enabled by default.
+#
+#login_via_existing_session = true
+
+# Login token expiration/TTL in milliseconds.
+#
+# These are short-lived tokens for the m.login.token endpoint.
+# This is used to allow existing sessions to create new sessions.
+# see login_via_existing_session.
+#
+#login_token_ttl = 120000
+
+# Static TURN username to provide the client if not using a shared secret
+# ("turn_secret"), It is recommended to use a shared secret over static
+# credentials.
+#
+#turn_username = false
+
+# Static TURN password to provide the client if not using a shared secret
+# ("turn_secret"). It is recommended to use a shared secret over static
+# credentials.
+#
+#turn_password = false
+
+# Vector list of TURN URIs/servers to use.
+#
+# Replace "example.turn.uri" with your TURN domain, such as the coturn
+# "realm" config option. If using TURN over TLS, replace the URI prefix
+# "turn:" with "turns:".
+#
+# example: ["turn:example.turn.uri?transport=udp",
+# "turn:example.turn.uri?transport=tcp"]
+#
+turn_uris = {{ matrix_conduwuit_config_turn_uris | to_json }}
+
+# TURN secret to use for generating the HMAC-SHA1 hash apart of username
+# and password generation.
+#
+# This is more secure, but if needed you can use traditional static
+# username/password credentials.
+#
+#turn_secret = false
+{% if matrix_conduwuit_config_turn_secret != '' %}
+turn_secret = {{ matrix_conduwuit_config_turn_secret | to_json }}
+{% endif %}
+
+# If you have your TURN server configured to use a username and password
+# you can provide these information too. In this case comment out `turn_secret above`!
+{% if matrix_conduwuit_config_turn_username != '' or matrix_conduwuit_config_turn_password != '' %}
+turn_username = {{ matrix_conduwuit_config_turn_username | to_json }}
+turn_password = {{ matrix_conduwuit_config_turn_password | to_json }}
+{% endif %}
+
+# TURN secret to use that's read from the file path specified.
+#
+# This takes priority over "turn_secret" first, and falls back to
+# "turn_secret" if invalid or failed to open.
+#
+# example: "/etc/conduwuit/.turn_secret"
+#
+#turn_secret_file =
+
+# TURN TTL, in seconds.
+#
+#turn_ttl = 86400
+
+# List/vector of room IDs or room aliases that conduwuit will make newly
+# registered users join. The rooms specified must be rooms that you have
+# joined at least once on the server, and must be public.
+#
+# example: ["#conduwuit:puppygock.gay",
+# "!eoIzvAvVwY23LPDay8:puppygock.gay"]
+#
+#auto_join_rooms = []
+
+# Config option to automatically deactivate the account of any user who
+# attempts to join a:
+# - banned room
+# - forbidden room alias
+# - room alias or ID with a forbidden server name
+#
+# This may be useful if all your banned lists consist of toxic rooms or
+# servers that no good faith user would ever attempt to join, and
+# to automatically remediate the problem without any admin user
+# intervention.
+#
+# This will also make the user leave all rooms. Federation (e.g. remote
+# room invites) are ignored here.
+#
+# Defaults to false as rooms can be banned for non-moderation-related
+# reasons and this performs a full user deactivation.
+#
+#auto_deactivate_banned_room_attempts = false
+
+# RocksDB log level. This is not the same as conduwuit's log level. This
+# is the log level for the RocksDB engine/library which show up in your
+# database folder/path as `LOG` files. conduwuit will log RocksDB errors
+# as normal through tracing or panics if severe for safety.
+#
+#rocksdb_log_level = "error"
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#rocksdb_log_stderr = false
+
+# Max RocksDB `LOG` file size before rotating in bytes. Defaults to 4MB in
+# bytes.
+#
+#rocksdb_max_log_file_size = 4194304
+
+# Time in seconds before RocksDB will forcibly rotate logs.
+#
+#rocksdb_log_time_to_roll = 0
+
+# Set this to true to use RocksDB config options that are tailored to HDDs
+# (slower device storage).
+#
+# It is worth noting that by default, conduwuit will use RocksDB with
+# Direct IO enabled. *Generally* speaking this improves performance as it
+# bypasses buffered I/O (system page cache). However there is a potential
+# chance that Direct IO may cause issues with database operations if your
+# setup is uncommon. This has been observed with FUSE filesystems, and
+# possibly ZFS filesystem. RocksDB generally deals/corrects these issues
+# but it cannot account for all setups. If you experience any weird
+# RocksDB issues, try enabling this option as it turns off Direct IO and
+# feel free to report in the conduwuit Matrix room if this option fixes
+# your DB issues.
+#
+# For more information, see:
+# https://github.com/facebook/rocksdb/wiki/Direct-IO
+#
+#rocksdb_optimize_for_spinning_disks = false
+
+# Enables direct-io to increase database performance via unbuffered I/O.
+#
+# For more details about direct I/O and RockDB, see:
+# https://github.com/facebook/rocksdb/wiki/Direct-IO
+#
+# Set this option to false if the database resides on a filesystem which
+# does not support direct-io like FUSE, or any form of complex filesystem
+# setup such as possibly ZFS.
+#
+#rocksdb_direct_io = true
+
+# Amount of threads that RocksDB will use for parallelism on database
+# operations such as cleanup, sync, flush, compaction, etc. Set to 0 to
+# use all your logical threads. Defaults to your CPU logical thread count.
+#
+#rocksdb_parallelism_threads = varies by system
+
+# Maximum number of LOG files RocksDB will keep. This must *not* be set to
+# 0. It must be at least 1. Defaults to 3 as these are not very useful
+# unless troubleshooting/debugging a RocksDB bug.
+#
+#rocksdb_max_log_files = 3
+
+# Type of RocksDB database compression to use.
+#
+# Available options are "zstd", "zlib", "bz2", "lz4", or "none".
+#
+# It is best to use ZSTD as an overall good balance between
+# speed/performance, storage, IO amplification, and CPU usage. For more
+# performance but less compression (more storage used) and less CPU usage,
+# use LZ4.
+#
+# For more details, see:
+# https://github.com/facebook/rocksdb/wiki/Compression
+#
+# "none" will disable compression.
+#
+#rocksdb_compression_algo = "zstd"
+
+# Level of compression the specified compression algorithm for RocksDB to
+# use.
+#
+# Default is 32767, which is internally read by RocksDB as the default
+# magic number and translated to the library's default compression level
+# as they all differ. See their `kDefaultCompressionLevel`.
+#
+#rocksdb_compression_level = 32767
+
+# Level of compression the specified compression algorithm for the
+# bottommost level/data for RocksDB to use. Default is 32767, which is
+# internally read by RocksDB as the default magic number and translated to
+# the library's default compression level as they all differ. See their
+# `kDefaultCompressionLevel`.
+#
+# Since this is the bottommost level (generally old and least used data),
+# it may be desirable to have a very high compression level here as it's
+# less likely for this data to be used. Research your chosen compression
+# algorithm.
+#
+#rocksdb_bottommost_compression_level = 32767
+
+# Whether to enable RocksDB's "bottommost_compression".
+#
+# At the expense of more CPU usage, this will further compress the
+# database to reduce more storage. It is recommended to use ZSTD
+# compression with this for best compression results. This may be useful
+# if you're trying to reduce storage usage from the database.
+#
+# See https://github.com/facebook/rocksdb/wiki/Compression for more details.
+#
+#rocksdb_bottommost_compression = false
+
+# Database recovery mode (for RocksDB WAL corruption).
+#
+# Use this option when the server reports corruption and refuses to start.
+# Set mode 2 (PointInTime) to cleanly recover from this corruption. The
+# server will continue from the last good state, several seconds or
+# minutes prior to the crash. Clients may have to run "clear-cache &
+# reload" to account for the rollback. Upon success, you may reset the
+# mode back to default and restart again. Please note in some cases the
+# corruption error may not be cleared for at least 30 minutes of operation
+# in PointInTime mode.
+#
+# As a very last ditch effort, if PointInTime does not fix or resolve
+# anything, you can try mode 3 (SkipAnyCorruptedRecord) but this will
+# leave the server in a potentially inconsistent state.
+#
+# The default mode 1 (TolerateCorruptedTailRecords) will automatically
+# drop the last entry in the database if corrupted during shutdown, but
+# nothing more. It is extraordinarily unlikely this will desynchronize
+# clients. To disable any form of silent rollback set mode 0
+# (AbsoluteConsistency).
+#
+# The options are:
+# 0 = AbsoluteConsistency
+# 1 = TolerateCorruptedTailRecords (default)
+# 2 = PointInTime (use me if trying to recover)
+# 3 = SkipAnyCorruptedRecord (you now voided your conduwuit warranty)
+#
+# For more information on these modes, see:
+# https://github.com/facebook/rocksdb/wiki/WAL-Recovery-Modes
+#
+# For more details on recovering a corrupt database, see:
+# https://conduwuit.puppyirl.gay/troubleshooting.html#database-corruption
+#
+#rocksdb_recovery_mode = 1
+
+# Enables or disables paranoid SST file checks. This can improve RocksDB
+# database consistency at a potential performance impact due to further
+# safety checks ran.
+#
+# For more information, see:
+# https://github.com/facebook/rocksdb/wiki/Online-Verification#columnfamilyoptionsparanoid_file_checks
+#
+#rocksdb_paranoid_file_checks = false
+
+# Database repair mode (for RocksDB SST corruption).
+#
+# Use this option when the server reports corruption while running or
+# panics. If the server refuses to start use the recovery mode options
+# first. Corruption errors containing the acronym 'SST' which occur after
+# startup will likely require this option.
+#
+# - Backing up your database directory is recommended prior to running the
+#   repair.
+#
+# - Disabling repair mode and restarting the server is recommended after
+#   running the repair.
+#
+# See https://conduwuit.puppyirl.gay/troubleshooting.html#database-corruption for more details on recovering a corrupt database.
+#
+#rocksdb_repair = false
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#rocksdb_read_only = false
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#rocksdb_secondary = false
+
+# Enables idle CPU priority for compaction thread. This is not enabled by
+# default to prevent compaction from falling too far behind on busy
+# systems.
+#
+#rocksdb_compaction_prio_idle = false
+
+# Enables idle IO priority for compaction thread. This prevents any
+# unexpected lag in the server's operation and is usually a good idea.
+# Enabled by default.
+#
+#rocksdb_compaction_ioprio_idle = true
+
+# Disables RocksDB compaction. You should never ever have to set this
+# option to true. If you for some reason find yourself needing to use this
+# option as part of troubleshooting or a bug, please reach out to us in
+# the conduwuit Matrix room with information and details.
+#
+# Disabling compaction will lead to a significantly bloated and
+# explosively large database, gradually poor performance, unnecessarily
+# excessive disk read/writes, and slower shutdowns and startups.
+#
+#rocksdb_compaction = true
+
+# Level of statistics collection. Some admin commands to display database
+# statistics may require this option to be set. Database performance may
+# be impacted by higher settings.
+#
+# Option is a number ranging from 0 to 6:
+# 0 = No statistics.
+# 1 = No statistics in release mode (default).
+# 2 to 3 = Statistics with no performance impact.
+# 3 to 5 = Statistics with possible performance impact.
+# 6 = All statistics.
+#
+#rocksdb_stats_level = 1
+
+# This is a password that can be configured that will let you login to the
+# server bot account (currently `@conduit`) for emergency troubleshooting
+# purposes such as recovering/recreating your admin room, or inviting
+# yourself back.
+#
+# See https://conduwuit.puppyirl.gay/troubleshooting.html#lost-access-to-admin-room for other ways to get back into your admin room.
+#
+# Once this password is unset, all sessions will be logged out for
+# security purposes.
+#
+# example: "F670$2CP@Hw8mG7RY1$%!#Ic7YA"
+#
+emergency_password = {{ matrix_conduwuit_config_emergency_password | to_json }}
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#notification_push_path = "/_matrix/push/v1/notify"
+
+# Allow local (your server only) presence updates/requests.
+#
+# Note that presence on conduwuit is very fast unlike Synapse's. If using
+# outgoing presence, this MUST be enabled.
+#
+#allow_local_presence = true
+
+# Allow incoming federated presence updates/requests.
+#
+# This option receives presence updates from other servers, but does not
+# send any unless `allow_outgoing_presence` is true. Note that presence on
+# conduwuit is very fast unlike Synapse's.
+#
+#allow_incoming_presence = true
+
+# Allow outgoing presence updates/requests.
+#
+# This option sends presence updates to other servers, but does not
+# receive any unless `allow_incoming_presence` is true. Note that presence
+# on conduwuit is very fast unlike Synapse's. If using outgoing presence,
+# you MUST enable `allow_local_presence` as well.
+#
+#allow_outgoing_presence = true
+
+# How many seconds without presence updates before you become idle.
+# Defaults to 5 minutes.
+#
+#presence_idle_timeout_s = 300
+
+# How many seconds without presence updates before you become offline.
+# Defaults to 30 minutes.
+#
+#presence_offline_timeout_s = 1800
+
+# Enable the presence idle timer for remote users.
+#
+# Disabling is offered as an optimization for servers participating in
+# many large rooms or when resources are limited. Disabling it may cause
+# incorrect presence states (i.e. stuck online) to be seen for some remote
+# users.
+#
+#presence_timeout_remote_users = true
+
+# Allow receiving incoming read receipts from remote servers.
+#
+#allow_incoming_read_receipts = true
+
+# Allow sending read receipts to remote servers.
+#
+#allow_outgoing_read_receipts = true
+
+# Allow outgoing typing updates to federation.
+#
+#allow_outgoing_typing = true
+
+# Allow incoming typing updates from federation.
+#
+#allow_incoming_typing = true
+
+# Maximum time federation user can indicate typing.
+#
+#typing_federation_timeout_s = 30
+
+# Minimum time local client can indicate typing. This does not override a
+# client's request to stop typing. It only enforces a minimum value in
+# case of no stop request.
+#
+#typing_client_timeout_min_s = 15
+
+# Maximum time local client can indicate typing.
+#
+#typing_client_timeout_max_s = 45
+
+# Set this to true for conduwuit to compress HTTP response bodies using
+# zstd. This option does nothing if conduwuit was not built with
+# `zstd_compression` feature. Please be aware that enabling HTTP
+# compression may weaken TLS. Most users should not need to enable this.
+# See https://breachattack.com/ and https://wikipedia.org/wiki/BREACH
+# before deciding to enable this.
+#
+#zstd_compression = false
+
+# Set this to true for conduwuit to compress HTTP response bodies using
+# gzip. This option does nothing if conduwuit was not built with
+# `gzip_compression` feature. Please be aware that enabling HTTP
+# compression may weaken TLS. Most users should not need to enable this.
+# See https://breachattack.com/ and https://wikipedia.org/wiki/BREACH before
+# deciding to enable this.
+#
+# If you are in a large amount of rooms, you may find that enabling this
+# is necessary to reduce the significantly large response bodies.
+#
+#gzip_compression = false
+
+# Set this to true for conduwuit to compress HTTP response bodies using
+# brotli. This option does nothing if conduwuit was not built with
+# `brotli_compression` feature. Please be aware that enabling HTTP
+# compression may weaken TLS. Most users should not need to enable this.
+# See https://breachattack.com/ and https://wikipedia.org/wiki/BREACH
+# before deciding to enable this.
+#
+#brotli_compression = false
+
+# Set to true to allow user type "guest" registrations. Some clients like
+# Element attempt to register guest users automatically.
+#
+#allow_guest_registration = false
+
+# Set to true to log guest registrations in the admin room. Note that
+# these may be noisy or unnecessary if you're a public homeserver.
+#
+#log_guest_registrations = false
+
+# Set to true to allow guest registrations/users to auto join any rooms
+# specified in `auto_join_rooms`.
+#
+#allow_guests_auto_join_rooms = false
+
+# Enable the legacy unauthenticated Matrix media repository endpoints.
+# These endpoints consist of:
+# - /_matrix/media/*/config
+# - /_matrix/media/*/upload
+# - /_matrix/media/*/preview_url
+# - /_matrix/media/*/download/*
+# - /_matrix/media/*/thumbnail/*
+#
+# The authenticated equivalent endpoints are always enabled.
+#
+# Defaults to true for now, but this is highly subject to change, likely
+# in the next release.
+#
+#allow_legacy_media = true
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#freeze_legacy_media = true
+
+# Check consistency of the media directory at startup:
+# 1. When `media_compat_file_link` is enabled, this check will upgrade
+#    media when switching back and forth between Conduit and conduwuit.
+#    Both options must be enabled to handle this.
+# 2. When media is deleted from the directory, this check will also delete
+#    its database entry.
+#
+# If none of these checks apply to your use cases, and your media
+# directory is significantly large setting this to false may reduce
+# startup time.
+#
+#media_startup_check = true
+
+# Enable backward-compatibility with Conduit's media directory by creating
+# symlinks of media.
+#
+# This option is only necessary if you plan on using Conduit again.
+# Otherwise setting this to false reduces filesystem clutter and overhead
+# for managing these symlinks in the directory. This is now disabled by
+# default. You may still return to upstream Conduit but you have to run
+# conduwuit at least once with this set to true and allow the
+# media_startup_check to take place before shutting down to return to
+# Conduit.
+#
+#media_compat_file_link = false
+
+# Prune missing media from the database as part of the media startup
+# checks.
+#
+# This means if you delete files from the media directory the
+# corresponding entries will be removed from the database. This is
+# disabled by default because if the media directory is accidentally moved
+# or inaccessible, the metadata entries in the database will be lost with
+# sadness.
+#
+#prune_missing_media = false
+
+# Vector list of servers that conduwuit will refuse to download remote
+# media from.
+#
+#prevent_media_downloads_from = []
+
+# List of forbidden server names that we will block incoming AND outgoing
+# federation with, and block client room joins / remote user invites.
+#
+# This check is applied on the room ID, room alias, sender server name,
+# sender user's server name, inbound federation X-Matrix origin, and
+# outbound federation handler.
+#
+# Basically "global" ACLs.
+#
+#forbidden_remote_server_names = []
+
+# List of forbidden server names that we will block all outgoing federated
+# room directory requests for. Useful for preventing our users from
+# wandering into bad servers or spaces.
+#
+#forbidden_remote_room_directory_server_names = []
+
+# Vector list of IPv4 and IPv6 CIDR ranges / subnets *in quotes* that you
+# do not want conduwuit to send outbound requests to. Defaults to
+# RFC1918, unroutable, loopback, multicast, and testnet addresses for
+# security.
+#
+# Please be aware that this is *not* a guarantee. You should be using a
+# firewall with zones as doing this on the application layer may have
+# bypasses.
+#
+# Currently this does not account for proxies in use like Synapse does.
+#
+# To disable, set this to be an empty vector (`[]`).
+#
+# Defaults to:
+# ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12",
+# "192.168.0.0/16", "100.64.0.0/10", "192.0.0.0/24", "169.254.0.0/16",
+# "192.88.99.0/24", "198.18.0.0/15", "192.0.2.0/24", "198.51.100.0/24",
+# "203.0.113.0/24", "224.0.0.0/4", "::1/128", "fe80::/10", "fc00::/7",
+# "2001:db8::/32", "ff00::/8", "fec0::/10"]
+#
+#ip_range_denylist =
+
+# Optional IP address or network interface-name to bind as the source of
+# URL preview requests. If not set, it will not bind to a specific
+# address or interface.
+#
+# Interface names only supported on Linux, Android, and Fuchsia platforms;
+# all other platforms can specify the IP address. To list the interfaces
+# on your system, use the command `ip link show`.
+#
+# example: `"eth0"` or `"1.2.3.4"`
+#
+#url_preview_bound_interface =
+
+# Vector list of domains allowed to send requests to for URL previews.
+#
+# This is a *contains* match, not an explicit match. Putting "google.com"
+# will match "https://google.com" and
+# "http://mymaliciousdomainexamplegoogle.com" Setting this to "*" will
+# allow all URL previews. Please note that this opens up significant
+# attack surface to your server, you are expected to be aware of the risks
+# by doing so.
+#
+#url_preview_domain_contains_allowlist = []
+
+# Vector list of explicit domains allowed to send requests to for URL
+# previews.
+#
+# This is an *explicit* match, not a contains match. Putting "google.com"
+# will match "https://google.com", "http://google.com", but not
+# "https://mymaliciousdomainexamplegoogle.com". Setting this to "*" will
+# allow all URL previews. Please note that this opens up significant
+# attack surface to your server, you are expected to be aware of the risks
+# by doing so.
+#
+#url_preview_domain_explicit_allowlist = []
+
+# Vector list of explicit domains not allowed to send requests to for URL
+# previews.
+#
+# This is an *explicit* match, not a contains match. Putting "google.com"
+# will match "https://google.com", "http://google.com", but not
+# "https://mymaliciousdomainexamplegoogle.com". The denylist is checked
+# first before allowlist. Setting this to "*" will not do anything.
+#
+#url_preview_domain_explicit_denylist = []
+
+# Vector list of URLs allowed to send requests to for URL previews.
+#
+# Note that this is a *contains* match, not an explicit match. Putting
+# "google.com" will match "https://google.com/",
+# "https://google.com/url?q=https://mymaliciousdomainexample.com", and
+# "https://mymaliciousdomainexample.com/hi/google.com" Setting this to "*"
+# will allow all URL previews. Please note that this opens up significant
+# attack surface to your server, you are expected to be aware of the risks
+# by doing so.
+#
+#url_preview_url_contains_allowlist = []
+
+# Maximum amount of bytes allowed in a URL preview body size when
+# spidering. Defaults to 256KB in bytes.
+#
+#url_preview_max_spider_size = 256000
+
+# Option to decide whether you would like to run the domain allowlist
+# checks (contains and explicit) on the root domain or not. Does not apply
+# to URL contains allowlist. Defaults to false.
+#
+# Example usecase: If this is enabled and you have "wikipedia.org" allowed
+# in the explicit and/or contains domain allowlist, it will allow all
+# subdomains under "wikipedia.org" such as "en.m.wikipedia.org" as the
+# root domain is checked and matched. Useful if the domain contains
+# allowlist is still too broad for you but you still want to allow all the
+# subdomains under a root domain.
+#
+#url_preview_check_root_domain = false
+
+# List of forbidden room aliases and room IDs as strings of regex
+# patterns.
+#
+# Regex can be used or explicit contains matches can be done by just
+# specifying the words (see example).
+#
+# This is checked upon room alias creation, custom room ID creation if
+# used, and startup as warnings if any room aliases in your database have
+# a forbidden room alias/ID.
+#
+# example: ["19dollarfortnitecards", "b[4a]droom"]
+#
+#forbidden_alias_names = []
+
+# List of forbidden username patterns/strings.
+#
+# Regex can be used or explicit contains matches can be done by just
+# specifying the words (see example).
+#
+# This is checked upon username availability check, registration, and
+# startup as warnings if any local users in your database have a forbidden
+# username.
+#
+# example: ["administrator", "b[a4]dusernam[3e]"]
+#
+#forbidden_usernames = []
+
+# Retry failed and incomplete messages to remote servers immediately upon
+# startup. This is called bursting. If this is disabled, said messages may
+# not be delivered until more messages are queued for that server. Do not
+# change this option unless server resources are extremely limited or the
+# scale of the server's deployment is huge. Do not disable this unless you
+# know what you are doing.
+#
+#startup_netburst = true
+
+# Messages are dropped and not reattempted. The `startup_netburst` option
+# must be enabled for this value to have any effect. Do not change this
+# value unless you know what you are doing. Set this value to -1 to
+# reattempt every message without trimming the queues; this may consume
+# significant disk. Set this value to 0 to drop all messages without any
+# attempt at redelivery.
+#
+#startup_netburst_keep = 50
+
+# Block non-admin local users from sending room invites (local and
+# remote), and block non-admin users from receiving remote room invites.
+#
+# Admins are always allowed to send and receive all room invites.
+#
+#block_non_admin_invites = false
+
+# Allow admins to enter commands in rooms other than "#admins" (admin
+# room) by prefixing your message with "\!admin" or "\\!admin" followed up
+# a normal conduwuit admin command. The reply will be publicly visible to
+# the room, originating from the sender.
+#
+# example: \\!admin debug ping puppygock.gay
+#
+#admin_escape_commands = true
+
+# Automatically activate the conduwuit admin room console / CLI on
+# startup. This option can also be enabled with `--console` conduwuit
+# argument.
+#
+#admin_console_automatic = false
+
+# List of admin commands to execute on startup.
+#
+# This option can also be configured with the `--execute` conduwuit
+# argument and can take standard shell commands and environment variables
+#
+# For example: `./conduwuit --execute "server admin-notice conduwuit has
+# started up at $(date)"`
+#
+# example: admin_execute = ["debug ping puppygock.gay", "debug echo hi"]`
+#
+#admin_execute = []
+
+# Ignore errors in startup commands.
+#
+# If false, conduwuit will error and fail to start if an admin execute
+# command (`--execute` / `admin_execute`) fails.
+#
+#admin_execute_errors_ignore = false
+
+# Controls the max log level for admin command log captures (logs
+# generated from running admin commands). Defaults to "info" on release
+# builds, else "debug" on debug builds.
+#
+#admin_log_capture = "info"
+
+# The default room tag to apply on the admin room.
+#
+# On some clients like Element, the room tag "m.server_notice" is a
+# special pinned room at the very bottom of your room list. The conduwuit
+# admin room can be pinned here so you always have an easy-to-access
+# shortcut dedicated to your admin room.
+#
+#admin_room_tag = "m.server_notice"
+
+# Sentry.io crash/panic reporting, performance monitoring/metrics, etc.
+# This is NOT enabled by default. conduwuit's default Sentry reporting
+# endpoint domain is `o4506996327251968.ingest.us.sentry.io`.
+#
+#sentry = false
+
+# Sentry reporting URL, if a custom one is desired.
+#
+#sentry_endpoint = "https://fe2eb4536aa04949e28eff3128d64757@o4506996327251968.ingest.us.sentry.io/4506996334657536"
+
+# Report your conduwuit server_name in Sentry.io crash reports and
+# metrics.
+#
+#sentry_send_server_name = false
+
+# Performance monitoring/tracing sample rate for Sentry.io.
+#
+# Note that too high values may impact performance, and can be disabled by
+# setting it to 0.0 (0%) This value is read as a percentage to Sentry,
+# represented as a decimal. Defaults to 15% of traces (0.15)
+#
+#sentry_traces_sample_rate = 0.15
+
+# Whether to attach a stacktrace to Sentry reports.
+#
+#sentry_attach_stacktrace = false
+
+# Send panics to Sentry. This is true by default, but Sentry has to be
+# enabled. The global `sentry` config option must be enabled to send any
+# data.
+#
+#sentry_send_panic = true
+
+# Send errors to sentry. This is true by default, but sentry has to be
+# enabled. This option is only effective in release-mode; forced to false
+# in debug-mode.
+#
+#sentry_send_error = true
+
+# Controls the tracing log level for Sentry to send things like
+# breadcrumbs and transactions
+#
+#sentry_filter = "info"
+
+# Enable the tokio-console. This option is only relevant to developers.
+#
+#	For more information, see:
+# https://conduwuit.puppyirl.gay/development.html#debugging-with-tokio-console
+#
+#tokio_console = false
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#test = false
+
+# Controls whether admin room notices like account registrations, password
+# changes, account deactivations, room directory publications, etc will be
+# sent to the admin room. Update notices and normal admin command
+# responses will still be sent.
+#
+#admin_room_notices = true
+
+# Enable database pool affinity support. On supporting systems, block
+# device queue topologies are detected and the request pool is optimized
+# for the hardware; db_pool_workers is determined automatically.
+#
+#db_pool_affinity = true
+
+# Sets the number of worker threads in the frontend-pool of the database.
+# This number should reflect the I/O capabilities of the system,
+# such as the queue-depth or the number of simultaneous requests in
+# flight. Defaults to 32 or four times the number of CPU cores, whichever
+# is greater.
+#
+# Note: This value is only used if db_pool_affinity is disabled or not
+# detected on the system, otherwise it is determined automatically.
+#
+#db_pool_workers = 32
+
+# When db_pool_affinity is enabled and detected, the size of any worker
+# group will not exceed the determined value. This is necessary when
+# thread-pooling approach does not scale to the full capabilities of
+# high-end hardware; using detected values without limitation could
+# degrade performance.
+#
+# The value is multiplied by the number of cores which share a device
+# queue, since group workers can be scheduled on any of those cores.
+#
+#db_pool_workers_limit = 64
+
+# Determines the size of the queues feeding the database's frontend-pool.
+# The size of the queue is determined by multiplying this value with the
+# number of pool workers. When this queue is full, tokio tasks conducting
+# requests will yield until space is available; this is good for
+# flow-control by avoiding buffer-bloat, but can inhibit throughput if
+# too low.
+#
+#db_pool_queue_mult = 4
+
+# Sets the initial value for the concurrency of streams. This value simply
+# allows overriding the default in the code. The default is 32, which is
+# the same as the default in the code. Note this value is itself
+# overridden by the computed stream_width_scale, unless that is disabled;
+# this value can serve as a fixed-width instead.
+#
+#stream_width_default = 32
+
+# Scales the stream width starting from a base value detected for the
+# specific system. The base value is the database pool worker count
+# determined from the hardware queue size (e.g. 32 for SSD or 64 or 128+
+# for NVMe). This float allows scaling the width up or down by multiplying
+# it (e.g. 1.5, 2.0, etc). The maximum result can be the size of the pool
+# queue (see: db_pool_queue_mult) as any larger value will stall the tokio
+# task. The value can also be scaled down (e.g. 0.5)  to improve
+# responsiveness for many users at the cost of throughput for each.
+#
+# Setting this value to 0.0 causes the stream width to be fixed at the
+# value of stream_width_default. The default scale is 1.0 to match the
+# capabilities detected for the system.
+#
+#stream_width_scale = 1.0
+
+# Sets the initial amplification factor. This controls batch sizes of
+# requests made by each pool worker, multiplying the throughput of each
+# stream. This value is somewhat abstract from specific hardware
+# characteristics and can be significantly larger than any thread count or
+# queue size. This is because each database query may require several
+# index lookups, thus many database queries in a batch may make progress
+# independently while also sharing index and data blocks which may or may
+# not be cached. It is worthwhile to submit huge batches to reduce
+# complexity. The maximum value is 32768, though sufficient hardware is
+# still advised for that.
+#
+#stream_amplification = 1024
+
+# Number of sender task workers; determines sender parallelism. Default is
+# '0' which means the value is determined internally, likely matching the
+# number of tokio worker-threads or number of cores, etc. Override by
+# setting a non-zero value.
+#
+#sender_workers = 0
+
+[global.well_known]
+
+# The server URL that the client well-known file will serve. This should
+# not contain a port, and should just be a valid HTTPS URL.
+#
+# example: "https://matrix.example.com"
+#
+#client =
+
+# The server base domain of the URL with a specific port that the server
+# well-known file will serve. This should contain a port at the end, and
+# should not be a URL.
+#
+# example: "matrix.example.com:443"
+#
+#server =
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#support_page =
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#support_role =
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#support_email =
+
+# This item is undocumented. Please contribute documentation for it.
+#
+#support_mxid =

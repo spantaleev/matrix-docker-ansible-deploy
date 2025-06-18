@@ -1,6 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Justin Croonenberghs
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 (Adapted from the [upstream project](https://github.com/element-hq/synapse/blob/develop/docs/CAPTCHA_SETUP.md))
 
 # Overview
+
 Captcha can be enabled for this home server. This file explains how to do that.
 
 The captcha mechanism used is Google's [ReCaptcha](https://www.google.com/recaptcha/). This requires API keys from Google. If your homeserver is Dendrite then [hCapcha](https://www.hcaptcha.com) can be used instead.

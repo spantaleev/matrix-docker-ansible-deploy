@@ -1,3 +1,17 @@
+# SPDX-FileCopyrightText: 2020 - 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Marcel Partap
+# SPDX-FileCopyrightText: 2020 Matt Cengia
+# SPDX-FileCopyrightText: 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2021 boris runakov
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # ma1sd is a Federated Matrix Identity Server
 # Project source code URL: https://github.com/ma1uta/ma1sd
@@ -14,8 +28,10 @@ matrix_ma1sd_container_image_self_build_branch: "{{ matrix_ma1sd_version }}"
 # renovate: datasource=docker depName=ma1uta/ma1sd
 matrix_ma1sd_version: "2.5.0"
 
-matrix_ma1sd_docker_image: "{{ matrix_ma1sd_docker_image_name_prefix }}ma1uta/ma1sd:{{ matrix_ma1sd_version }}"
-matrix_ma1sd_docker_image_name_prefix: "{{ 'localhost/' if matrix_ma1sd_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_ma1sd_docker_image: "{{ matrix_ma1sd_docker_image_registry_prefix }}ma1uta/ma1sd:{{ matrix_ma1sd_version }}"
+matrix_ma1sd_docker_image_registry_prefix: "{{ 'localhost/' if matrix_ma1sd_container_image_self_build else matrix_ma1sd_docker_image_registry_prefix_upstream }}"
+matrix_ma1sd_docker_image_registry_prefix_upstream: "{{ matrix_ma1sd_docker_image_registry_prefix_upstream_default }}"
+matrix_ma1sd_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_ma1sd_docker_image_force_pull: "{{ matrix_ma1sd_docker_image.endswith(':latest') }}"
 
 matrix_ma1sd_base_path: "{{ matrix_base_data_path }}/ma1sd"
@@ -134,7 +150,7 @@ matrix_ma1sd_database_name: 'matrix_ma1sd'
 matrix_ma1sd_database_connection_string: 'postgresql://{{ matrix_ma1sd_database_username }}:{{ matrix_ma1sd_database_password }}@{{ matrix_ma1sd_database_hostname }}:{{ matrix_ma1sd_database_port }}/{{ matrix_ma1sd_database_name }}'
 
 
-# ma1sd has serveral supported identity stores.
+# ma1sd has several supported identity stores.
 # One of them is storing identities directly in Synapse's database.
 # Learn more here: https://github.com/ma1uta/ma1sd/blob/master/docs/stores/synapse.md
 matrix_ma1sd_synapsesql_enabled: false
@@ -189,7 +205,7 @@ matrix_ma1sd_self_check_validate_certificates: true
 
 # Controls ma1sd logging verbosity for troubleshooting.
 #
-# According to: https://github.com/ma1uta/ma1sd/blob/master/docs/troubleshooting.md#increase-verbosity
+# See: https://github.com/ma1uta/ma1sd/blob/master/docs/troubleshooting.md#increase-verbosity
 matrix_ma1sd_verbose_logging: false
 
 # Setting up support for API prefixes

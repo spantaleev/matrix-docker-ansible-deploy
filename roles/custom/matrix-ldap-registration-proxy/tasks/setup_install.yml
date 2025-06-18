@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure matrix_ldap_registration_proxy paths exist
@@ -5,8 +13,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_ldap_registration_proxy_config_path }}", when: true}
     - {path: "{{ matrix_ldap_registration_proxy_docker_src_files_path }}", when: true}
@@ -19,7 +27,7 @@
     version: "{{ matrix_ldap_registration_proxy_container_image_self_build_branch }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_ldap_registration_proxy_git_pull_results
 
 - name: Ensure matrix_ldap_registration_proxy Docker image is built
@@ -38,16 +46,16 @@
     src: "{{ role_path }}/templates/ldap-registration-proxy.env.j2"
     dest: "{{ matrix_ldap_registration_proxy_config_path }}/ldap-registration-proxy.env"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-ldap-registration-proxy support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_ldap_registration_proxy_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

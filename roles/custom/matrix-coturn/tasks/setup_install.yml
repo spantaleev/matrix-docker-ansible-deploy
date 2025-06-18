@@ -1,3 +1,17 @@
+# SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 - 2020 MDAD project contributors
+# SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2020 Béla Becker
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2020 Horvath Gergely
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - when: matrix_coturn_turn_external_ip_address_auto_detection_enabled | bool
@@ -32,18 +46,18 @@
     - ansible.builtin.set_fact:
         matrix_coturn_turn_external_ip_address: "{{ result_matrix_coturn_turn_external_ip_address_auto_detection_echoip_response.json.ip }}"
 
-- name: Ensure Matrix Coturn path exists
+- name: Ensure Matrix coturn path exists
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
   when: "item.when | bool"
 
-- name: Ensure Coturn image is pulled
+- name: Ensure coturn image is pulled
   community.docker.docker_image:
     name: "{{ matrix_coturn_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -57,17 +71,17 @@
 
 - when: "matrix_coturn_container_image_self_build | bool"
   block:
-    - name: Ensure Coturn repository is present on self-build
+    - name: Ensure coturn repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_coturn_container_image_self_build_repo }}"
         dest: "{{ matrix_coturn_docker_src_files_path }}"
         version: "{{ matrix_coturn_container_image_self_build_repo_version }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_coturn_git_pull_results
 
-    - name: Ensure Coturn Docker image is built
+    - name: Ensure coturn Docker image is built
       community.docker.docker_image:
         name: "{{ matrix_coturn_docker_image }}"
         source: build
@@ -78,25 +92,26 @@
           path: "{{ matrix_coturn_docker_src_files_path }}"
           pull: true
 
-- name: Ensure Coturn configuration path exists
+- name: Ensure coturn configuration path exists
   ansible.builtin.file:
     path: "{{ matrix_coturn_base_path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure turnserver.conf installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/turnserver.conf.j2"
     dest: "{{ matrix_coturn_config_path }}"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
-- name: Ensure Coturn network is created in Docker
+- name: Ensure coturn network is created in Docker
   when: matrix_coturn_container_network not in ['', 'host']
   community.docker.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_coturn_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"

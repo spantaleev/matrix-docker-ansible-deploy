@@ -1,0 +1,134 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-traefik.md:1
+msgid "Configuring the Traefik reverse-proxy (optional, advanced)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:3
+msgid "By default, this playbook installs and manages a [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server, powered by the [ansible-role-traefik](https://github.com/mother-of-all-self-hosting/ansible-role-traefik) Ansible role."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:5
+msgid "This Ansible role support various configuration options. Feel free to consult its `default/main.yml` variables file."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:7
+msgid "Adjusting SSL certificate retrieval"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:9
+msgid "See the dedicated [Adjusting SSL certificate retrieval](configuring-playbook-ssl-certificates.md) documentation page."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:11
+msgid "Increase logging verbosity"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:17
+msgid "Disable access logs"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:19
+msgid "This will disable access logging."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:25
+msgid "Enable Traefik Dashboard"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:27
+msgid "This will enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.example.com/dashboard/` (note the trailing `/`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:37
+msgid "[!WARNING] Enabling the dashboard on a hostname you use for something else (like `matrix_server_fqn_matrix` in the configuration above) may cause conflicts. Enabling the Traefik Dashboard makes Traefik capture all `/dashboard` and `/api` requests and forward them to itself. If any of the services hosted on the same hostname requires any of these 2 URL prefixes, you will experience problems. So far, we're not aware of any playbook services which occupy these endpoints and are likely to cause conflicts."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:40
+msgid "Additional configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:42
+msgid "Use the `traefik_configuration_extension_yaml` variable provided by the Traefik Ansible role to override or inject additional settings, even when no dedicated variable exists."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:52
+msgid "Reverse-proxying another service behind Traefik"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:54
+msgid "The preferred way to reverse-proxy additional services behind Traefik would be to start the service as another container, configure the container with the corresponding Traefik [container labels](https://docs.docker.com/config/labels-custom-metadata/) (see [Traefik & Docker](https://doc.traefik.io/traefik/routing/providers/docker/)), and connect the service to the `traefik` network. Some services are also already available via the compatible [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook), but take a look at the minor [interoperability adjustments](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/interoperability.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:56
+msgid "However, if your service does not run on a container or runs on another machine, the following configuration might be what you are looking for."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:58
+msgid "Reverse-proxying a remote HTTP/HTTPS service behind Traefik"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:60
+msgid "If you want to host another webserver would be reachable via `my-fancy-website.example.net` from the internet and via `https://<internal webserver IP address>:<internal port>` from inside your network, you can make the playbook's integrated Traefik instance reverse-proxy the traffic to the correct host."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:62
+msgid "Prerequisites: DNS and routing for the domain `my-fancy-website.example.net` need to be set up correctly. In this case, you'd be pointing the domain name to your Matrix server — `my-fancy-website.example.net` would be a CNAME going to `matrix.example.com`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:64
+msgid "First, we have to adjust the static configuration of Traefik, so that we can add additional configuration files:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:78
+msgid "If you are using a self-signed certificate on your webserver, you can tell Traefik to trust your own backend servers by adding more configuration to the static configuration file. If you do so, bear in mind the security implications of disabling the certificate validity checks towards your back end."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:92
+msgid "Next, you have to add a new dynamic configuration file for Traefik that contains the actual information of the server using the `aux_file_definitions` variable. In this example, we will terminate SSL at the Traefik instance and connect to the other server via HTTPS. Traefik will now take care of managing the certificates."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:111
+#: ../../../docs/configuring-playbook-traefik.md:134
+msgid "Changing the `url` to one with an `http://` prefix would allow to connect to the server via HTTP."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:113
+msgid "Reverse-proxying another service behind Traefik without terminating SSL"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:115
+msgid "If you do not want to terminate SSL at the Traefik instance (for example, because you're already terminating SSL at other webserver), you need to adjust the static configuration in the same way as in the previous chapter in order to be able to add our own dynamic configuration files. Afterwards, you can add the following configuration to your `vars.yml` configuration file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:136
+msgid "With these changes, all TCP traffic will be reverse-proxied to the target system."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:138
+msgid "[!WARNING] This configuration might lead to problems or need additional steps when a [certbot](https://certbot.eff.org/) behind Traefik also tries to manage [Let's Encrypt](https://letsencrypt.org/) certificates, as Traefik captures all traffic to ```PathPrefix(`/.well-known/acme-challenge/`)```."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:141
+msgid "Traefik behind a `proxy_protocol` reverse-proxy"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-traefik.md:143
+msgid "If you run a reverse-proxy which speaks `proxy_protocol`, add the following to your configuration file:"
+msgstr ""

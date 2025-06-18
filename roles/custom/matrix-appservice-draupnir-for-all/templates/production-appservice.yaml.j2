@@ -1,3 +1,11 @@
+{#
+SPDX-FileCopyrightText: 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Catalan Lover <catalanlover@protonmail.com>
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 homeserver:
   # The Matrix server name, this will be the name of the server in your Matrix ID.
   domain: "{{ matrix_domain }}"
@@ -11,8 +19,14 @@ db:
 
 # A room you have created that scopes who can access the appservice.
 # See docs/access_control.md
-adminRoom: "{{ matrix_appservice_draupnir_for_all_master_control_room_alias }}"
+adminRoom: {{ matrix_appservice_draupnir_for_all_config_adminRoom | to_json }}
 
 # This is a web api that the widget connects to in order to interact with the appservice.
 webAPI:
   port: 9000
+
+# The directory the bot should store various bits of information in
+dataPath: "/data"
+
+roomStateBackingStore:
+  enabled: {{ matrix_appservice_draupnir_for_all_config_roomStateBackingStore_enabled | to_json }}

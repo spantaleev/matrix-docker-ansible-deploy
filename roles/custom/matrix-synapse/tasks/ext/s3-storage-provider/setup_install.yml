@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # We install this into Synapse by making `matrix_synapse_ext_synapse_s3_storage_provider_enabled` influence other variables:
@@ -43,7 +47,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/ext/s3-storage-provider/systemd/{{ item }}.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ item }}"
-    mode: 0640
+    mode: 0644
   with_items:
     - matrix-synapse-s3-storage-provider-migrate.service
     - matrix-synapse-s3-storage-provider-migrate.timer

@@ -1,7 +1,36 @@
+# SPDX-FileCopyrightText: 2019 - 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2019 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2019 Edgars Voroboks
+# SPDX-FileCopyrightText: 2019 Lyubomir Popov
+# SPDX-FileCopyrightText: 2019 Stuart Mumford
+# SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2020 Alin Trăistaru
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2020 Horvath Gergely
+# SPDX-FileCopyrightText: 2020 Tobias Küchel
+# SPDX-FileCopyrightText: 2021 Blaž Tomažič
+# SPDX-FileCopyrightText: 2021 Krisztian Szegi
+# SPDX-FileCopyrightText: 2021 Yannick Goossens
+# SPDX-FileCopyrightText: 2021 boris runakov
+# SPDX-FileCopyrightText: 2022 - 2025 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Charles Wright
+# SPDX-FileCopyrightText: 2022 Julian Foad
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Benjamin Kampmann
+# SPDX-FileCopyrightText: 2023 Jayesh Nirve
+# SPDX-FileCopyrightText: 2023 Johan Swetzén
+# SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2024 László Várady
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # The bare domain name which represents your Matrix identity.
-# Matrix user IDs for your server will be of the form (`@user:example.com`).
+# Matrix user IDs for your server will be of the form (`@alice:example.com`).
 #
 # Note: this playbook does not touch the server referenced here.
 # Installation happens on another server ("matrix.example.com", see `matrix_server_fqn_matrix`).
@@ -10,7 +39,7 @@
 matrix_domain: ~
 
 # The optional Matrix admin MXID, used in bridges' configs to set bridge admin user
-# Example value: "@someone:{{ matrix_domain }}"
+# Example value: "@alice:{{ matrix_domain }}"
 matrix_admin: ''
 
 # Global var to enable/disable encryption across all bridges with encryption support
@@ -18,6 +47,9 @@ matrix_bridges_encryption_enabled: false
 
 # Global var to make encryption default/optional across all bridges with encryption support
 matrix_bridges_encryption_default: "{{ matrix_bridges_encryption_enabled }}"
+
+# Global var for enabling msc4190 ( On supported bridges)
+matrix_bridges_msc4190_enabled: "{{ matrix_authentication_service_enabled and matrix_bridges_encryption_enabled and matrix_synapse_experimental_features_msc3202_device_masquerading_enabled }}"
 
 # Global var to enable/disable relay mode across all bridges with relay mode support
 matrix_bridges_relay_enabled: false
@@ -49,7 +81,7 @@ matrix_monitoring_container_network: matrix-monitoring
 matrix_homeserver_enabled: true
 
 # This will contain the homeserver implementation that is in use.
-# Valid values: synapse, dendrite, conduit
+# Valid values: synapse, dendrite, conduit, conduwuit, continuwuity
 #
 # By default, we use Synapse, because it's the only full-featured Matrix server at the moment.
 #
@@ -79,6 +111,9 @@ matrix_server_fqn_cinny: "cinny.{{ matrix_domain }}"
 
 # This is where you access the SchildiChat Web from (if enabled via matrix_client_schildichat_enabled; disabled by default).
 matrix_server_fqn_schildichat: "schildichat.{{ matrix_domain }}"
+
+# This is where you access the FluffyChat Web from (if enabled via matrix_client_fluffychat_enabled; disabled by default).
+matrix_server_fqn_fluffychat: "fluffychat.{{ matrix_domain }}"
 
 # This is where you access the Buscarron bot from (if enabled via matrix_bot_buscarron_enabled; disabled by default).
 matrix_server_fqn_buscarron: "buscarron.{{ matrix_domain }}"
@@ -133,13 +168,22 @@ matrix_architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ('arm6
 # We just remap from our `matrix_architecture` values to what Debian and possibly other distros call things.
 matrix_debian_arch: "{{ 'armhf' if matrix_architecture == 'arm32' else matrix_architecture }}"
 
-matrix_container_global_registry_prefix: "docker.io/"
+# If specified, the playbook will override the default registry prefix for all components.
+#
+# This is to be used when you've mirrored all the necessary container images (from their respective registries) by yourself.
+#
+# Example value: "registry.example.com/" (note the trailing `/`).
+matrix_container_global_registry_prefix_override: ""
 
-matrix_user_username: "matrix"
-matrix_user_groupname: "matrix"
+matrix_user_name: "matrix"
+matrix_user_system: true
+matrix_user_shell: /sbin/nologin
 
-# By default, the playbook creates the user (`matrix_user_username`)
-# and group (`matrix_user_groupname`) with a random ID.
+matrix_group_name: "matrix"
+matrix_group_system: true
+
+# By default, the playbook creates the user (`matrix_user_name`)
+# and group (`matrix_group_name`) with a random ID.
 # To use a specific user/group ID, override these variables.
 matrix_user_uid: ~
 matrix_user_gid: ~
@@ -173,7 +217,7 @@ matrix_homeserver_container_url: "http://{{ matrix_homeserver_container_client_a
 
 # Specifies where the homeserver's Client-Server API is on the container network (matrix_homeserver_container_network).
 # Where this is depends on whether there's a reverse-proxy in front of the homeserver, which homeserver it is, etc.
-# This likely gets overriden elsewhere.
+# This likely gets overridden elsewhere.
 matrix_homeserver_container_client_api_endpoint: ""
 
 # Specifies where the homeserver's Federation API is on the container network (matrix_homeserver_container_network).
@@ -181,7 +225,7 @@ matrix_homeserver_container_federation_url: "http://{{ matrix_homeserver_contain
 
 # Specifies where the homeserver's Federation API is on the container network (matrix_homeserver_container_network).
 # Where this is depends on whether there's a reverse-proxy in front of the homeserver, which homeserver it is, etc.
-# This likely gets overriden elsewhere.
+# This likely gets overridden elsewhere.
 matrix_homeserver_container_federation_api_endpoint: ""
 
 # Specifies the public url of the Sync v3 (sliding-sync) API.
@@ -217,7 +261,6 @@ matrix_metrics_exposure_http_basic_auth_users: ''
 # - `playbook-managed-traefik`
 #     - the playbook will run a managed Traefik instance (matrix-traefik)
 #     - Traefik will do SSL termination, unless you disable it (e.g. `traefik_config_entrypoint_web_secure_enabled: false`)
-#     - if SSL termination is enabled (as it is by default), you need to populate: `traefik_config_certificatesResolvers_acme_email`
 #
 # - `other-traefik-container`
 #     - this playbook will not install Traefik
@@ -234,7 +277,7 @@ matrix_metrics_exposure_http_basic_auth_users: ''
 matrix_playbook_reverse_proxy_type: ''
 
 # Specifies the network that the reverse-proxy is operating at
-matrix_playbook_reverse_proxy_container_network: 'traefik'
+matrix_playbook_reverse_proxy_container_network: "{{ 'traefik' if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] else '' }}"
 
 # Specifies the hostname that the reverse-proxy is available at
 matrix_playbook_reverse_proxy_hostname: 'matrix-traefik'
@@ -271,7 +314,7 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_name: "{{ matrix
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port: "{{ matrix_federation_public_port }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port: "{{ matrix_federation_public_port }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port_udp: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled else '' }}"
-matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default | combine (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto)) | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto)) | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: true
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port }}"  # noqa var-naming
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_readTimeout: "{{ traefik_config_entrypoint_web_secure_transport_respondingTimeouts_readTimeout }}"  # noqa var-naming

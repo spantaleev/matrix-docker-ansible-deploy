@@ -1,0 +1,290 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../YEAR-IN-REVIEW.md:1
+msgid "2023"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:3
+msgid "2023 was a year filled with many changes for matrix-docker-ansible-deploy. In this post, we're looking backward at some of the major changes that happened this year, as well as taking a glimpse of what's ahead in 2024."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:5
+msgid "2023 is probably [the year of AI](https://journal.everypixel.com/2023-the-year-of-ai), with millions of people jumping aboard [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/chatgpt) train. matrix-docker-ansible-deploy is no stranger to this and 2023 began with a PR from [bertybuttface](https://github.com/bertybuttface) who added support for [matrix-chatgpt-bot](https://github.com/matrixgpt/matrix-chatgpt-bot) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#chatgpt-support)). While OpenAI's chat GPT website was frequently overloaded in the past, their API was up which made using this bot both convenient and more reliable."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:7
+msgid "AI aside, with the playbook's focus being containers, we're **doubling down on being \"container native\"** and becoming more interoperable for people hosting other containers on the Matrix server. In [2022](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/YEAR-IN-REVIEW.md#2022), we've announced a few sibling Ansible playbooks, their use of [Traefik](https://doc.traefik.io/traefik/) and the possiblity of matrix-docker-ansible-deploy also switching to this reverse-proxy. This prediction materialized quickly. The **largest change** in the playbook in 2023 happened way back in February - matrix-docker-ansible-deploy [starting the switch from nginx to Traefik](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#backward-compatibility-reverse-proxy-configuration-changes-and-initial-traefik-support) and then quickly [making Treafik the default reverse-proxy](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#traefik-is-the-default-reverse-proxy-now). As noted in the changelog entries, we envisioned a quick and complete elimination of `matrix-nginx-proxy`, but at the end of 2023, it hasn't happened yet. The playbook is already using Traefik as the front-most reverse-proxy, but nginx (via `matrix-nginx-proxy`) is still around - it has taken a step back and is only used internally for new setups. Work got to a stall due to:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:9
+msgid "complexity: untangling the overly large and messy `matrix-nginx-proxy` component is difficult"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:10
+msgid "the current setup became \"good enough\" because nginx has become an internal implementation detail for those who have migrated to Traefik. Traefik is already the default public reverse-proxy and gives better possibilities to people wishing to run other web-exposed containers on their Matrix server via [Docker Compose](https://docs.docker.com/compose/), other Ansible playbooks like [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) (more about this one, below) or any other way."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:12
+msgid "`matrix-nginx-proxy` is no longer in the way of us being interoperable, but its ugly internal details are still there. It is one more proxy in the long chain of reverse-proxies we have and we'd like to cut it out. This would both make things simpler and also boost performance."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:14
+msgid "The delay in eliminating `matrix-nginx-proxy` has probably been welcome by many existing users who decided to postpone the Traefik migration a bit longer. In 2024, work on eliminating `matrix-nginx-proxy` will continue with rapid pace. People who are still using `matrix-nginx-proxy` as their front-most reverse-proxy will need to rework their setup. About a year of putting it off has been long enough."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:16
+msgid "This large Traefik reverse-proxy change was also accompanied by another internal change which began in 2022, but continued in 2023 - **moving non-Matrix-related roles from being internal to the playbook to living their own life outside of it**. Various roles were made more decoupled and moved outside of the playbook, so that other projects (like the [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) Ansible playbook or other Ansible playbooks) could benefit from them. This led to the **death of a few sibling playbooks** ([gitea-docker-ansible-deploy](https://github.com/spantaleev/gitea-docker-ansible-deploy), [nextcloud-docker-ansible-deploy](https://github.com/spantaleev/nextcloud-docker-ansible-deploy), [peertube-docker-ansible-deploy](https://github.com/spantaleev/peertube-docker-ansible-deploy), [vaultwarden-docker-ansible-deploy](https://github.com/spantaleev/vaultwarden-docker-ansible-deploy)), but brought life to something better, which supports all these services and more."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:18
+msgid "[mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) is a new Ansible playbook that a few of us (matrix-docker-ansible-deploy contributors) have launched in 2023. It has quickly grown to supports [60+ services](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/supported-services.md) and aims to do the same for [FOSS](https://en.wikipedia.org/wiki/Free_and_open-source_software) service hosting, as matrix-docker-ansible-deploy has done for Matrix - providing a clean and secure way to run a bunch of services in containers on a regular server (that is to say, without Kubernetes, etc.). Thanks to Traefik and Ansible role reuse, it's easy to host both mash-playbook services and matrix-docker-ansible-deploy services on the same server - see mash-playbook's [interoperability](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/interoperability.md) documentation page. If you've been looking for a holiday project or your New Year's Resolutions list contains \"self-hosting more services\", then you're welcome to give this new playbook a try and join its Matrix room ([#mash-playbook:devture.com](https://matrix.to/#/#mash-playbook:devture.com))."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:20
+msgid "Because many of the roles are now external to this playbook (defined in the [requirements.yml](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/da27655ef34999fa924bc0a5e641dbd9ba06f133/requirements.yml) file), running `make roles` (or better yet `just roles` via the [just tool](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#support-for-running-commands-via-just)) becomes a necessity each time one pulls playbook updates (`git pull`). Pulling external roles happens via the [ansible-galaxy](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html) command-line tool, but if available, the playbook would also use the much faster [agru](https://github.com/etkecc/agru) tool (developed by [Aine](https://gitlab.com/etke.cc) from [etke.cc](https://etke.cc/) this year)."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:22
+msgid "With the internal (but important) details out of the way, we can now talk more about **new features that landed in matrix-docker-ansible-deploy in 2023**."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:24
+msgid "The following **new** **bridges** were added to the playbook in 2023:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:26
+msgid "(2023-01-11) [mautrix-slack](https://mau.dev/mautrix/slack), thanks to a PR by [Cody Neiman](https://github.com/xangelix) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#mautrix-slack-support))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:27
+msgid "(2023-07-21) [mautrix-gmessages](https://github.com/mautrix/gmessages), thanks to a PR by [Shreyas Ajjarapu](https://github.com/shreyasajj) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#mautrix-gmessages-support))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:28
+msgid "(2023-08-23) [mautrix-wsproxy](https://github.com/mautrix/wsproxy) for Apple iMessage bridging (when combined with the [mautrix-imessage](https://github.com/mautrix/imessage) bridge running on your Mac or Android phone), thanks to a PR by [Johan Swetzén](https://github.com/jswetzen)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:30
+msgid "This brings the total number of **[bridges that the playbook supports](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/docs/configuring-playbook.md#bridging-other-networks) up to 30**. There are alternative bridge implementations for various networks and protocols, so the number of \"unique bridged networks\" is surely much smaller."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:32
+msgid "A few other **major components and changes** landed in 2023:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:34
+msgid "(2023-02-10) The [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation tool (successor to [Mjolnir](https://github.com/matrix-org/mjolnir)), thanks to a PR by [FSG-Cat](https://github.com/FSG-Cat) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#draupnir-moderation-tool-bot-support))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:35
+msgid "(2023-02-10) [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) to add Matrix Authentication Support to our Jitsi setup, thanks to a PR by [Jakob S.](https://github.com/jakicoll) from [zakk gGmbH](https://github.com/zakk-it) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#matrix-authentication-support-for-jitsi))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:36
+msgid "(2023-02-25) The [rageshake](https://github.com/matrix-org/rageshake) bug report server, thanks to a PR by [Benjamin Kampmann](https://github.com/gnunicorn) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#rageshake-support))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:37
+msgid "(2023-03-07) [Sliding Sync proxy](https://github.com/matrix-org/sliding-sync) (currently a necessary component for [Element X](https://element.io/labs/element-x) to work), thanks to: [Benjamin Kampmann](https://github.com/gnunicorn) and [FSG-Cat](https://github.com/FSG-Cat) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#sliding-sync-proxy-element-x-support))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:38
+msgid "(2023-03-12) synapse-auto-compressor to periodically and automatically run [rust-synapse-compress-state](https://github.com/matrix-org/rust-synapse-compress-state), thanks to a PR by [Aine](https://gitlab.com/etke.cc) from [etke.cc](https://etke.cc/) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#synapse-auto-compressor-support))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:39
+msgid "(2023-07-17) [matrix-media-repo](https://github.com/turt2live/matrix-media-repo),  thanks to a PR by [Michael Hollister](https://github.com/Michael-Hollister) from [FUTO](https://www.futo.org/), the creators of the [Circles app](https://circu.li/) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#matrix-media-repo-support))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:40
+msgid "(2023-08-31) [SchildiChat Web](https://github.com/SchildiChat/schildichat-desktop) client app (fork of [Element Web)](https://github.com/element-hq/element-web), thanks to a PR by [Aine](https://gitlab.com/etke.cc) from [etke.cc](https://etke.cc/) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#schildichat-support))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:41
+msgid "(2023-10-18) Postgres parameters auto-tuning, thanks to a PR by [Aine](https://gitlab.com/etke.cc) from [etke.cc](https://etke.cc/) (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#postgres-parameters-are-automatically-tuned-now))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:42
+msgid "(2023-10-23) Enabling federation of the room directory for Synapse (see the [changelog entry](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#enabling-allow_public_rooms_over_federation-by-default-for-synapse))"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:44
+msgid "The most recent change in the list above (Enabling federation of the room directory for Synapse) has been somewhat **controversial** as it goes against upstream defaults for Synapse. Nevertheless, we believe it **promotes the well-being of the Matrix Federation by improving room discovery**."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:46
+msgid "**Matrix Federation Stats** (containing the percentage of servers publishing their room directory publicly) are posted to [TWIM](https://matrix.org/category/this-week-in-matrix/) each week by [Aine](https://gitlab.com/etke.cc) from [etke.cc](https://etke.cc/). The number of servers which [currently published their room directory publicly](https://matrix.org/blog/2023/12/2/this-week-in-matrix-2023-12-22/#matrix-federation-stats) stands at `26.6%`, which is:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:48
+msgid "**2.4% more** than when it was when [first published to TWIM](https://matrix.org/blog/2023/11/03/this-week-in-matrix-2023-11-03/#matrix-federation-stats) (1 month earlier, in November)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:49
+msgid "likely about **15+% more** than from before we flipped the switch (in October)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:51
+msgid "Hopefully, Synapse defaults would also change the same way and we'd see the number of servers publicly listing their room directory grow faster."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:53
+msgid "With this configuration change in place, projects like [MatrixRooms.info](https://matrixrooms.info/) (made by [etke.cc](https://etke.cc/)) and potentially others in the future, can discover, index the metadata (room address, title, topic, number of users, etc.) and make public rooms browsable & searchable across the whole Matrix Federation. It'd be great if users joining Matrix could more easily find interesting communities that match their interests!"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:55
+msgid "On the **media side of things**, besides Jitsi getting better Matrix integration (via the aforementioned Matrix User Verification Service), we've also had some [coturn security tightening](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#backward-compatibility-tightening-coturn-security-can-lead-to-connectivity-issues) as well as [performance optimizations](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md#coturn-can-now-use-host-networking) for configurations exposing lots of network ports."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:57
+msgid "[Element Call](https://github.com/element-hq/element-call) seems to have become a nice and polished product lately (as proclaimed in [The Matrix Holiday Update 2023](https://matrix.org/blog/2023/12/25/the-matrix-holiday-update-2023/)), so 2024 is likely the year we'll see support for it in the playbook. Element Call depends on the [LiveKit](https://livekit.io/) streaming server (which is also useful to developers even by itself), so the first step is likely to see LiveKit support in mash-playbook via a reusable Ansible role. Such a LiveKit Ansible role could later easily land in matrix-docker-ansible-deploy and an Element Call static website could be hooked to it."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:59
+msgid "Besides these highlights, there were many other relatively large changes announced in our [CHANGELOG](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/850078b7e37401ce91a0f9b686f60b945f6c3a96/CHANGELOG.md) and hundreds of other more minor (but still important) playbook changes that didn't get a mention."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:61
+msgid "We have **hundreds of contributors to thank for their hard work** on making Matrix self-hosting better for all of us! It should be noted that **support comes in many shapes**, not only in raw code commits and financial help (via [donations](https://liberapay.com/s.pantaleev) or using the [etke.cc managed Matrix hosting service](https://etke.cc/) which is based on matrix-docker-ansible-deploy). It also comes in the shape of code reviews, helping others with [issues](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues), reporting new issues, participating in our support room on Matrix ([#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com)), etc. To everyone who has been there to make matrix-docker-ansible-deploy better in 2023, thank you! 🙇‍♂️"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:64
+msgid "2022"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:66
+msgid "For [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy/), 2022 started with **breaking the** [**Synapse**](https://github.com/element-hq/synapse) **monopoly** by [adding support](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#dendrite-support) for the [Dendrite](https://github.com/matrix-org/dendrite) Matrix homeserver in early January. This required various internal changes so that the [Ansible](https://www.ansible.com/) playbook would not be Synapse-centric anymore. This groundwork paved the way for continuing in this direction and we [added support](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#conduit-support) for [Conduit](https://conduit.rs/) in August."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:68
+msgid "When it comes to the `matrix-docker-ansible-deploy` Ansible playbook, 2022 was the year of the non-Synapse homeserver implementation. In practice, none of these homeserver implementations seem ready for prime-time yet and there is no migration path when coming from Synapse. Having done our job of adding support for these alternative homeserver implementations, we can say that we're not getting in the way of future progress. It's time for the Dendrite developers to push harder (development-wise) and for the Synapse developers to take a well-deserved long (infinite) break, and we may get to see more people migrating away from Synapse in the next year(s)."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:70
+msgid "Support for the following new **bridges** was added:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:72
+msgid "[Postmoogle](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#postmoogle-email-bridge-support) for bi-directional email bridging, which supersedes my old and simplistic [Email2Matrix](https://github.com/devture/email2matrix) one-way bridge-bot"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:73
+msgid "[mautrix-discord](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#mautrix-discord-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:74
+msgid "[go-skype-bridge](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#go-skype-bridge-bridging-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:75
+msgid "[matrix-appservice-kakaotalk](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#matrix-appservice-kakaotalk-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:77
+msgid "Support for the following new **bots** was added:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:79
+msgid "[buscarron bot](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#buscarron-bot-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:80
+msgid "[Honoroit bot](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#honoroit-bot-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:81
+msgid "[matrix-registration-bot](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#matrix-registration-bot-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:82
+msgid "[matrix-hookshot](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#matrix-hookshot-bridging-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:83
+msgid "[maubot](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#maubot-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:85
+msgid "Support for the following new **components and services** was added:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:87
+msgid "[BorgBackup](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#borg-backup-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:88
+msgid "[Cactus Comments](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#cactus-comments-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:89
+msgid "[Cinny](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#cinny-support) client support"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:90
+msgid "[ntfy](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#ntfy-push-notifications-support) notifications"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:91
+msgid "[matrix-ldap-registration-proxy](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#matrix-ldap-registration-proxy-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:92
+msgid "[matrix\\_encryption\\_disabler support](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#matrix_encryption_disabler-support)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:93
+msgid "[synapse-s3-storage-provider](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#synapse-s3-storage-provider-support) to stop the Synapse media store from being a scalability problem. This brought along [another feature](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#synapse-container-image-customization-support) - an easier way to customize the Synapse container image without having to fork and self-build all of it from scratch"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:95
+msgid "Besides these major user-visible changes, a lot of work also happened **under the hood**:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:97
+msgid "we made [major improvements to Synapse workers](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#potential-backward-compatibility-break-major-improvements-to-synapse-workers) - adding support for stream writers and for running multiple workers of various kinds (federation senders, pushers, background task processing workers, etc.)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:98
+msgid "we [improved the compatibility of (Synapse + workers) with the rest of the playbook](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#backward-compatibility-break-changing-how-reverse-proxying-to-synapse-works---now-via-a-matrix-synapse-reverse-proxy-companion-service) by introducing a new `matrix-synapse-reverse-proxy-companion-service` service"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:99
+msgid "we started [splitting various Ansible roles out of the Matrix playbook and into independent roles](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#the-playbook-now-uses-external-roles-for-some-things) (e.g. `matrix-postgres` -> [ansible-role-postgres](https://github.com/mother-of-all-self-hosting/ansible-role-postgres)), which could be included in other Ansible playbooks. In fact, these roles already power a few **interesting other sibling playbooks**:"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:100
+msgid "[gitea-docker-ansible-deploy](https://github.com/spantaleev/gitea-docker-ansible-deploy), for deploying a [Gitea](https://gitea.io/) (self-hosted [Git](https://git-scm.com/) service) server"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:101
+msgid "[nextcloud-docker-ansible-deploy](https://github.com/spantaleev/nextcloud-docker-ansible-deploy), for deploying a [Nextcloud](https://nextcloud.com/) groupware server"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:102
+msgid "[vaultwarden-docker-ansible-deploy](https://github.com/spantaleev/vaultwarden-docker-ansible-deploy), for deploying a [Vaultwarden](https://github.com/dani-garcia/vaultwarden) password manager server (unofficial [Bitwarden](https://bitwarden.com/) compatible server)"
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:104
+msgid "These sibling playbooks co-exist nicely with one another due to using [Traefik](https://traefik.io/) for reverse-proxying, instead of trying to overtake the whole server by running their own [nginx](https://nginx.org/) reverse-proxy. Hopefully soon, the Matrix playbook will follow suit and be powered by Traefik by default."
+msgstr ""
+
+#: ../../../YEAR-IN-REVIEW.md:106
+msgid "Last, but not least, to optimize our [etke.cc managed Matrix hosting service](https://etke.cc/)'s performance (but also individual Ansible playbook runs for people self-hosting by themselves using the playbook), we've [improved playbook runtime 2-5x](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ba09705f7fbaf0108652ecbe209793b1d935eba7/CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) by employing various Ansible tricks."
+msgstr ""

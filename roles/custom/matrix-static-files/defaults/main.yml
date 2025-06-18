@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # matrix-static-files is a role which generates and serves `/.well-known/matrix` files for the purposes of Matrix Delegation.
@@ -8,13 +13,14 @@ matrix_static_files_enabled: true
 matrix_static_files_identifier: matrix-static-files
 
 # renovate: datasource=docker depName=joseluisq/static-web-server
-matrix_static_files_version: 2.33.1
+matrix_static_files_version: 2.37.0
 
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/{{ 'static-files' if matrix_static_files_identifier == 'matrix-static-files' else matrix_static_files_identifier }}"
 matrix_static_files_config_path: "{{ matrix_static_files_base_path }}/config"
 matrix_static_files_public_path: "{{ matrix_static_files_base_path }}/public"
 matrix_static_files_public_well_known_path: "{{ matrix_static_files_public_path }}/.well-known"
 matrix_static_files_public_well_known_matrix_path: "{{ matrix_static_files_public_well_known_path }}/matrix"
+matrix_static_files_public_well_known_element_path: "{{ matrix_static_files_public_well_known_path }}/element"
 
 # List of systemd services that matrix-static-files.service depends on
 matrix_static_files_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
@@ -24,7 +30,10 @@ matrix_static_files_systemd_wanted_services_list: "{{ matrix_static_files_system
 matrix_static_files_systemd_wanted_services_list_auto: []
 matrix_static_files_systemd_wanted_services_list_custom: []
 
-matrix_static_files_container_image: "{{ matrix_container_global_registry_prefix }}joseluisq/static-web-server:{{ matrix_static_files_container_image_tag }}"
+matrix_static_files_container_image: "{{ matrix_static_files_container_image_registry_prefix }}joseluisq/static-web-server:{{ matrix_static_files_container_image_tag }}"
+matrix_static_files_container_image_registry_prefix: "{{ matrix_static_files_container_image_registry_prefix_upstream }}"
+matrix_static_files_container_image_registry_prefix_upstream: "{{ matrix_static_files_container_image_registry_prefix_upstream_default }}"
+matrix_static_files_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_static_files_container_image_tag: "{{ 'latest' if matrix_static_files_version == 'latest' else (matrix_static_files_version + '-alpine') }}"
 matrix_static_files_container_image_force_pull: "{{ matrix_static_files_container_image.endswith(':latest') }}"
 
@@ -48,7 +57,7 @@ matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_static_f
 matrix_static_files_container_labels_traefik_entrypoints: web-secure
 matrix_static_files_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added that expose the well-known public endpoint on the Matrix domain.
+# Controls whether labels will be added that expose the `/.well-known/matrix` endpoint on the Matrix domain.
 matrix_static_files_container_labels_well_known_matrix_endpoint_enabled: true
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname: ''
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_path_prefix: /.well-known/matrix
@@ -83,7 +92,7 @@ matrix_static_files_container_labels_base_domain_traefik_tls: "{{ matrix_static_
 matrix_static_files_container_labels_base_domain_traefik_tls_certResolver: "{{ matrix_static_files_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 # Controls whether the root path (/) at the base domain would respond with a redirect to some URL.
 matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: false
-matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^{{ matrix_static_files_scheme }}://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}$"
+matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^{{ matrix_static_files_scheme }}://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}(\\?.*)?$"
 matrix_static_files_container_labels_base_domain_root_path_redirection_url: ""
 
 # matrix_static_files_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
@@ -202,6 +211,16 @@ matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_enabled: "
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin: "{{ matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto | combine(matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_custom, recursive=True) }}"
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: {}
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_custom: {}
+
+# Controls whether `org.matrix.msc4143.rtc_foci`-related entries should be added to the client well-known.
+# By default, if there are entries in `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci`, we show them (by enabling this).
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci | default({}) | dict2items | length > 0 }}"
+
+# Controls the org.matrix.msc4143.rtc_foci property in the /.well-known/matrix/client file.
+# See `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled`
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto+ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: []
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom: []
 
 # Default /.well-known/matrix/client configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
@@ -399,10 +418,3 @@ matrix_static_files_self_check_hostname_identity: ''
 # As per the spec (https://matrix.org/docs/spec/client_server/r0.6.0#well-known-uri), it shouldn't be,
 # so we default to not following redirects as well.
 matrix_static_files_self_check_well_known_matrix_client_follow_redirects: none
-
-# TODO - review this one
-# Specifies where requests for the root URI (`/`) on the `matrix.` domain should be redirected.
-# If this has an empty value, they're just passed to the homeserver, which serves a static page.
-# If you'd like to make `https://matrix.example.com` redirect to `https://element.example.com` (or something of that sort), specify the domain name here.
-# Example value: `element.example.com` (or `{{ matrix_server_fqn_element }}`).
-matrix_static_files_client_redirect_root_uri_to_domain: ""

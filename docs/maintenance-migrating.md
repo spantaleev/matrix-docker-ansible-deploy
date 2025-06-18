@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 Michael Haak
+SPDX-FileCopyrightText: 2021 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Migrating to new server
 
 This documentation explains how to migrate your Matrix services (server, client, bridges, etc.) and data **from an old server to a new server**.
@@ -46,6 +55,8 @@ Then, run the command below on your local computer to create the `matrix` user a
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-system-user
 ```
 
+The shortcut command with `just` program is also available: `just run-tags setup-system-user`
+
 **Note**: because the `matrix` user and group are created dynamically on each server, the user/group ID may differ between the old and new server. We suggest that you adjust ownership of `/matrix` files. To adjust the ownership, log in to the new server and run the command:
 
 ```sh
@@ -60,8 +71,10 @@ Finally, run the command below on your local computer to finish the installation
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
 ```
 
+The shortcut command with `just` program is also available: `just run-tags install-all,start`
+
 ### Check if services work
 
-After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-checking-services.md)
+After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 
 Having make sure that both services and federation work as expected, you can safely shutdown the old server.

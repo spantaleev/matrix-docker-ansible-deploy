@@ -1,3 +1,16 @@
+# SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - ansible.builtin.include_role:
@@ -9,8 +22,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_appservice_irc_base_path }}", when: true}
     - {path: "{{ matrix_appservice_irc_config_path }}", when: true}
@@ -84,7 +97,7 @@
     dest: "{{ matrix_appservice_irc_docker_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_appservice_irc_git_pull_results
   when: "matrix_appservice_irc_enabled | bool and matrix_appservice_irc_container_image_self_build | bool"
 
@@ -105,15 +118,15 @@
     content: "{{ matrix_appservice_irc_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_irc_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Generate Appservice IRC passkey if it doesn't exist
   ansible.builtin.shell:
     cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
     creates: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
 
 # In the past, we used to generate the passkey.pem file with root, so permissions may not be okay.
 # Fix it.
@@ -121,8 +134,8 @@
   ansible.builtin.file:
     path: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 # Ideally, we'd like to generate the final registration.yaml file by ourselves.
 #
@@ -185,8 +198,8 @@
     content: "{{ matrix_appservice_irc_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_irc_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-irc container network is created
   community.general.docker_network:

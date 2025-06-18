@@ -1,0 +1,272 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: bg\n"
+"Language-Team: bg <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:1
+msgid "Setting up Mjolnir (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:3
+msgid "The playbook can install and configure the [Mjolnir](https://github.com/matrix-org/mjolnir) moderation bot for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:5
+msgid "See the project's [documentation](https://github.com/matrix-org/mjolnir/blob/main/README.md) to learn what it does and why it might be useful to you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:7
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:9
+msgid "Register the bot account"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:11
+msgid "The playbook does not automatically create users for you. You **need to register the bot user manually** before setting up the bot."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:13
+msgid "Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:15
+msgid "You can use the playbook to [register a new user](registering-users.md):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:21
+msgid "If you would like Mjolnir to be able to deactivate users, move aliases, shutdown rooms, etc then it must be a server admin so you need to change `admin=no` to `admin=yes` in the command above."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:23
+msgid "Obtain an access token"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:25
+msgid "The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:27
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:52
+msgid "[!WARNING] Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:30
+msgid "Make sure the account is free from rate limiting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:32
+msgid "If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a required step. If you do not configure it, Mjolnir will crash.**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:34
+msgid "This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:36
+msgid "**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:38
+msgid "The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:40
+msgid "Add the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:42
+msgid "To expose the APIs publicly, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:48
+msgid "Obtain an access token for admin account"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:50
+msgid "Manual access to Synapse's Admin APIs requires an access token for a homeserver admin account. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md). If you have made Mjolnir an admin, you can just use the Mjolnir token."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:55
+msgid "Run the `curl` command"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:57
+msgid "To disable rate limiting, run the following command on systems that ship curl. Before running it, make sure to replace:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:59
+msgid "`ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:60
+msgid "`example.com` with your base domain"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:61
+msgid "`@bot.mjolnir:example.com` with the MXID of your Mjolnir bot user"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:67
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:184
+msgid "**Notes**:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:68
+msgid "This does not work on outdated Windows 10 as curl is not available there."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:69
+msgid "Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:71
+msgid "Create a management room"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:73
+msgid "Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:75
+msgid "[!WARNING] Anyone in this room can control the bot so it is important that you only invite trusted users to this room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:78
+msgid "It is possible to make the management room encrypted (E2EE). If doing so, then you MUST enable and use Pantalaimon (see [below](#configuration-with-e2ee-support))."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:80
+msgid "Once you have created the room you need to copy the room ID so you can specify it on your `vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking \"Advanced\". The room ID will look something like `!qporfwt:example.com`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:82
+msgid "Finally invite the `@bot.mjolnir:example.com` account you created earlier into the room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:84
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:86
+msgid "To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created just now."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:95
+msgid "End-to-End Encryption support"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:97
+msgid "Decide whether you want Mjolnir to be capable of operating in end-to-end encrypted (E2EE) rooms. This includes the management room and the moderated rooms."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:99
+msgid "To support E2EE, Mjolnir needs to [use Pantalaimon](configuring-playbook-pantalaimon.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:101
+msgid "Configuration with E2EE support"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:103
+msgid "When using Pantalaimon, Mjolnir will log in to its bot account itself through Pantalaimon, so configure its username and password."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:105
+msgid "Add the following configuration to your `vars.yml` file (adapt to your needs):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:119
+msgid "The playbook's `group_vars` will configure other required settings. If using this role separately without the playbook, you also need to configure the two URLs that Mjolnir uses to reach the homeserver, one through Pantalaimon and one \"raw\". This example is taken from the playbook's `group_vars`:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:131
+msgid "Configuration without E2EE support"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:133
+msgid "When NOT using Pantalaimon, Mjolnir does not log in by itself and you must give it an access token for its bot account."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:135
+msgid "Add the following configuration to your `vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:141
+msgid "Adding Mjolnir synapse antispam module (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:143
+msgid "To enable Mjolnir synapse antispam module, add the following configuration to your `vars.yml` file (adapt to your needs):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:153
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:155
+msgid "There are some additional things you may wish to configure about the bot."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:157
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:159
+msgid "`roles/custom/matrix-bot-mjolnir/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_mjolnir_configuration_extension_yaml` variable"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:161
+msgid "For example, to change Mjolnir's `recordIgnoredInvites` option to `true`, add the following configuration to your `vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:175
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:177
+msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:186
+msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:188
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:190
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:192
+msgid "If you change the Pantalaimon's password (`matrix_bot_mjolnir_pantalaimon_password` in your `vars.yml` file) subsequently, its credentials on the homeserver won't be updated automatically. If you'd like to change the password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_mjolnir_pantalaimon_password` to let Pantalaimon know its new password."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:194
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-mjolnir.md:196
+msgid "You can refer to the upstream [documentation](https://github.com/matrix-org/mjolnir) for additional ways to use and configure Mjolnir. Check out their [quickstart guide](https://github.com/matrix-org/mjolnir#quickstart-guide) for some basic commands you can give to the bot."
+msgstr ""

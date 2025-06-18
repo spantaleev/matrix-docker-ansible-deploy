@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure matrix-pantalaimon paths exist
@@ -5,8 +10,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_pantalaimon_base_path }}", when: true}
     - {path: "{{ matrix_pantalaimon_data_path }}", when: true}
@@ -18,8 +23,8 @@
     content: "{{ matrix_pantalaimon_configuration }}"
     dest: "{{ matrix_pantalaimon_data_path }}/pantalaimon.conf"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure pantalaimon container image is pulled
   community.docker.docker_image:
@@ -40,7 +45,7 @@
     dest: "{{ matrix_pantalaimon_container_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_pantalaimon_git_pull_results
   when: "matrix_pantalaimon_container_image_self_build | bool"
 
@@ -57,6 +62,7 @@
 
 - name: Ensure pantalaimon container network is created
   community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_pantalaimon_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"

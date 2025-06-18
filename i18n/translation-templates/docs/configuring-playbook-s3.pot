@@ -1,0 +1,213 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-s3.md:1
+msgid "Storing Synapse media files on Amazon S3 or another compatible Object Storage (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:3
+msgid "By default, this playbook configures your server to store Synapse's content repository (`media_store`) files on the local filesystem. If that's okay, you can skip this document."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:5
+msgid "As an alternative to storing media files on the local filesystem, you can store them on [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object store."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:7
+msgid "You can do this either by sticking to Synapse's media repository and making that use S3 (read below for this method), or by switching to an external media storage implementation like [matrix-media-repo](configuring-playbook-matrix-media-repo.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:9
+msgid "First, [choose an Object Storage provider](#choosing-an-object-storage-provider)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:11
+msgid "Then, [create the S3 bucket](#bucket-creation-and-security-configuration)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:13
+msgid "Finally, [set up S3 storage for Synapse](#setting-up) (with [Goofys](configuring-playbook-s3-goofys.md), [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md), or use s3 datastore with the [matrix-media-repo](https://docs.t2bot.io/matrix-media-repo/configuration/s3-datastore.html))."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:15
+msgid "Choosing an Object Storage provider"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:17
+msgid "You can create [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object storage like [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html), [Storj](https://storj.io), [Wasabi](https://wasabi.com), [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces), etc."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:19
+msgid "Amazon S3, Backblaze B2, and Storj are pay-as-you with no minimum charges for storing too little data."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:21
+msgid "All these providers have different prices, with Storj appearing to be the cheapest (as of 2024-10, storage fee is $0.004 per GB/month, and egress fee is $0.007 per GB). Backblaze egress is free, but for only certain users for up to 3x the amount of data stored. Beyond that you will pay $0.01/GB of egress."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:23
+msgid "Wasabi has a minimum charge of 1TB if you're storing less than 1TB, which becomes expensive if you need to store less data than that. Likewise, Digital Ocean Spaces has also a minimum charge of 250GB ($5/month as of 2022-10)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:25
+msgid "Here are some of the important aspects of choosing the right provider:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:27
+msgid "if a provider is a company you like and trust (or dislike less than the others)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:28
+msgid "if a provider implements end-to-end encryption of your data"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:29
+msgid "if a provider has a data region close to your Matrix server (if it's farther away, high latency may cause slowdowns)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:30
+msgid "if a provider's infrastructure such as data center is centralized or distributed"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:31
+msgid "if a provider's price model is transparent (whether it includes hidden costs like minimum charge, minimum storage term, etc.)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:32
+msgid "if a provider has free or cheap egress fee (in case you need to get the data out often, for some reason) — likely not too important for the common use-case"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:34
+msgid "Bucket creation and Security Configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:36
+msgid "Now that you've [chosen an Object Storage provider](#choosing-an-object-storage-provider), you need to create a storage bucket."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:38
+msgid "How you do this varies from provider to provider, with Amazon S3 being the most complicated due to its vast number of services and complicated security policies."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:40
+msgid "Below, we provider some guides for common providers. If you don't see yours, look at the others for inspiration or read some guides online about how to create a bucket. Feel free to contribute to this documentation with an update!"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:42
+msgid "Amazon S3"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:44
+msgid "You'll need an Amazon S3 bucket and some IAM user credentials (access key + secret key) with full write access to the bucket. Example IAM security policy:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:65
+msgid "**Note**: This policy needs to be attached to an IAM user created from the **Security Credentials** menu. This is not a **Bucket Policy**."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:67
+msgid "Backblaze B2"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:69
+msgid "To use [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html) you first need to sign up."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:71
+msgid "You [can't easily change which region (US, Europe) your Backblaze account stores files in](https://old.reddit.com/r/backblaze/comments/hi1v90/make_the_choice_for_the_b2_data_center_region/), so make sure to carefully choose the region when signing up (hint: it's a hard to see dropdown below the username/password fields in the signup form)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:73
+msgid "After logging in to Backblaze:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:75
+msgid "create a new **private** bucket through its user interface (you can call it something like `matrix-example-media-store`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:76
+msgid "note the **Endpoint** for your bucket (something like `s3.us-west-002.backblazeb2.com`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:77
+msgid "adjust its Lifecycle Rules to: Keep only the last version of the file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:78
+msgid "go to [App Keys](https://secure.backblaze.com/app_keys.htm) and use the **Add a New Application Key** to create a new one"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:79
+msgid "restrict it to the previously created bucket (e.g. `matrix-example-media-store`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:80
+msgid "give it *Read & Write* access"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:82
+msgid "The `keyID` value is your **Access Key** and `applicationKey` is your **Secret Key**."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:84
+msgid "For configuring [Goofys](configuring-playbook-s3-goofys.md) or [s3-synapse-storage-provider](configuring-playbook-synapse-s3-storage-provider.md) you will need:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:86
+msgid "**Endpoint URL** — this is the  **Endpoint** value you saw above, but prefixed with `https://`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:88
+msgid "**Region** — use the value you see in the Endpoint (e.g. `us-west-002`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:90
+msgid "**Storage Class** — use `STANDARD`. Backblaze B2 does not have different storage classes, so it doesn't make sense to use any other value."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:92
+msgid "Other providers"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:94
+msgid "For other S3-compatible providers, you may not need to configure security policies, etc. (just like for [Backblaze B2](#backblaze-b2))."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:96
+msgid "You most likely just need to create an S3 bucket and get some credentials (access key and secret key) for accessing the bucket in a read/write manner."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:98
+msgid "Setting up"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:100
+msgid "To set up Synapse to store files in S3, follow the instructions for the method of your choice:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:102
+msgid "using [synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md) (recommended)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:103
+msgid "using [Goofys to mount the S3 store to the local filesystem](configuring-playbook-s3-goofys.md)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-s3.md:104
+msgid "using [matrix-media-repo](configuring-playbook-matrix-media-repo.md)"
+msgstr ""

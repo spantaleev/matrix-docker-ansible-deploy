@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Michael Hollister
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 MDAD project contributors
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # matrix-media-repo is a highly customizable multi-domain media repository for Matrix.
 # Intended for medium to large environments consisting of several homeservers, this
@@ -16,10 +24,12 @@ matrix_media_repo_container_image_self_build: false
 matrix_media_repo_container_image_self_build_repo: "https://github.com/turt2live/matrix-media-repo.git"
 
 matrix_media_repo_docker_image_path: "t2bot/matrix-media-repo"
-matrix_media_repo_docker_image: "{{ matrix_media_repo_docker_image_name_prefix }}{{ matrix_media_repo_docker_image_path }}:{{ matrix_media_repo_docker_image_tag }}"
-matrix_media_repo_docker_image_name_prefix: "{{ 'localhost/' if matrix_media_repo_container_image_self_build else 'ghcr.io/' }}"
+matrix_media_repo_docker_image: "{{ matrix_media_repo_docker_image_registry_prefix }}{{ matrix_media_repo_docker_image_path }}:{{ matrix_media_repo_docker_image_tag }}"
+matrix_media_repo_docker_image_registry_prefix: "{{ 'localhost/' if matrix_media_repo_container_image_self_build else matrix_media_repo_docker_image_registry_prefix_upstream }}"
+matrix_media_repo_docker_image_registry_prefix_upstream: "{{ matrix_media_repo_docker_image_registry_prefix_upstream_default }}"
+matrix_media_repo_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 # renovate: datasource=docker depName=ghcr.io/t2bot/matrix-media-repo
-matrix_media_repo_docker_image_tag: "v1.3.7"
+matrix_media_repo_docker_image_tag: "v1.3.8"
 matrix_media_repo_docker_image_force_pull: "{{ matrix_media_repo_docker_image.endswith(':latest') }}"
 
 matrix_media_repo_base_path: "{{ matrix_base_data_path }}/{{ matrix_media_repo_identifier }}"
@@ -384,7 +394,7 @@ matrix_media_repo_access_tokens_appservices: []
 # See docs/admin.md for information on what these people can do. They must belong to one of the
 # configured homeservers above.
 # matrix_media_repo_admins: [
-#   "@your_username:example.org"
+#   "@alice:example.org"
 # ]
 
 matrix_media_repo_admins: []

@@ -1,9 +1,58 @@
+<!--
+SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2019 - 2020 MDAD project contributors
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 Noah Fleischmann
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Maintenance and Troubleshooting
 
-## How to see the current status of your services
+## Maintenance
+
+### How to back up the data on your server
+
+We haven't documented this properly yet, but the general advice is to:
+
+- back up Postgres by making a database dump. See [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql)
+
+- back up all `/matrix` files, except for `/matrix/postgres/data` (you already have a dump) and `/matrix/postgres/data-auto-upgrade-backup` (this directory may exist and contain your old data if you've [performed a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql)).
+
+You can later restore these by:
+
+- Restoring the `/matrix` directory and files on the new server manually
+- Following the instruction described on [Installing a server into which you'll import old data](installing.md#installing-a-server-into-which-youll-import-old-data)
+
+If your server's IP address has changed, you may need to [set up DNS](configuring-dns.md) again.
+
+### Remove unused Docker data
+
+You can free some disk space from Docker by removing its unused data. See [docker system prune](https://docs.docker.com/engine/reference/commandline/system_prune/) for more information.
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune
+```
+
+The shortcut command with `just` program is also available: `just run-tags run-docker-prune`
+
+### Postgres
+
+See the dedicated [PostgreSQL maintenance](maintenance-postgres.md) documentation page.
+
+### Synapse
+
+See the dedicated [Synapse maintenance](maintenance-synapse.md) documentation page.
+
+## Troubleshooting
+
+### How to see the current status of your services
 
 You can check the status of your services by using `systemctl status`. Example:
-```
+
+```sh
 sudo systemctl status matrix-synapse
 
 ● matrix-synapse.service - Synapse server
@@ -11,44 +60,57 @@ sudo systemctl status matrix-synapse
      Active: active (running) since Sun 2024-01-14 09:13:06 UTC; 1h 31min ago
 ```
 
+### How to see the logs
+
 Docker containers that the playbook configures are supervised by [systemd](https://wiki.archlinux.org/title/Systemd) and their logs are configured to go to [systemd-journald](https://wiki.archlinux.org/title/Systemd/Journal).
 
-To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs`.
-
-To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/journalctl.1), run a command like this:
+For example, you can find the logs of `matrix-synapse` in `systemd-journald` by logging in to the server with SSH and running the command as below:
 
 ```sh
 sudo journalctl -fu matrix-synapse
 ```
 
+Available service names can be seen by doing `ls /etc/systemd/system/matrix*.service` on the server. Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that.
 
-## Increasing Synapse logging
+We just simply delegate logging to journald and it takes care of persistence and expiring old data.
 
-Because the [Synapse](https://github.com/element-hq/synapse) Matrix server is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`.
+#### Enable systemd/journald logs persistence
 
-If you'd like to debug an issue or [report a Synapse bug](https://github.com/element-hq/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increasing the logging level to `INFO`.
+On some distros, the journald logs are just in-memory and not persisted to disk.
 
-Example configuration (`inventory/host_vars/matrix.example.com/vars.yml`):
+Consult (and feel free to adjust) your distro's journald logging configuration in `/etc/systemd/journald.conf`.
 
-```yaml
-matrix_synapse_log_level: "INFO"
-matrix_synapse_storage_sql_log_level: "INFO"
-matrix_synapse_root_log_level: "INFO"
+To enable persistence and put some limits on how large the journal log files can become, adjust your configuration like this:
+
+```ini
+[Journal]
+RuntimeMaxUse=200M
+SystemMaxUse=1G
+RateLimitInterval=0
+RateLimitBurst=0
+Storage=persistent
 ```
 
-Re-run the playbook after making these configuration changes.
+### How to check if services work
 
-## Remove unused Docker data
+The playbook can perform a check to ensure that you've configured things correctly and that services are running.
 
-You can free some disk space from Docker, see [docker system prune](https://docs.docker.com/engine/reference/commandline/system_prune/) for more information.
-```bash
-ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune
+To perform the check, run:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=self-check
 ```
 
-## Postgres
+The shortcut command with `just` program is also available: `just run-tags self-check`
 
-See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page.
+If it's all green, everything is probably running correctly.
 
-## Ma1sd
+Besides this self-check, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain.
 
-See the dedicated [Adjusting ma1sd Identity Server configuration](configuring-playbook-ma1sd.md) documentation page.
+### How to debug or force SSL certificate renewal
+
+SSL certificates are managed automatically by the [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server.
+
+If you're having trouble with SSL certificate renewal, check the Traefik logs (`journalctl -fu matrix-traefik`).
+
+If you're [using your own webserver](configuring-playbook-own-webserver.md) instead of the integrated one (Traefik), you should investigate in another way.

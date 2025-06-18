@@ -1,11 +1,20 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 - name: Ensure Cinny paths exists
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_client_cinny_data_path }}", when: true}
     - {path: "{{ matrix_client_cinny_docker_src_files_path }}", when: "{{ matrix_client_cinny_container_image_self_build }}"}
@@ -30,7 +39,7 @@
     version: "{{ matrix_client_cinny_docker_image.split(':')[1] }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_client_cinny_git_pull_results
   when: "matrix_client_cinny_container_image_self_build | bool"
 
@@ -39,16 +48,16 @@
     content: "{{ matrix_client_cinny_configuration | to_nice_json }}"
     dest: "{{ matrix_client_cinny_data_path }}/config.json"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure Cinny additional config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ matrix_client_cinny_data_path }}/{{ item.name }}"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {src: "{{ role_path }}/templates/nginx.conf.j2", name: "nginx.conf"}
     - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}

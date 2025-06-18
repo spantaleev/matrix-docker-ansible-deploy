@@ -1,3 +1,10 @@
+# SPDX-FileCopyrightText: 2023 - 2024 lavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Benjamin Kampmann
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure rageshake paths exist
@@ -5,8 +12,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - path: "{{ matrix_rageshake_config_path }}"
       when: true
@@ -19,9 +26,9 @@
 - name: Ensure rageshake config file created
   ansible.builtin.copy:
     content: "{{ matrix_rageshake_configuration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_rageshake_config_path }}/config.yml"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    dest: "{{ matrix_rageshake_config_path }}/config.yaml"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0640
 
 - name: Ensure rageshake labels installed
@@ -29,8 +36,8 @@
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ matrix_rageshake_base_path }}/labels"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure rageshake image is pulled
   community.docker.docker_image:
@@ -51,7 +58,7 @@
     dest: "{{ matrix_rageshake_container_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_rageshake_git_pull_results
   when: "matrix_rageshake_container_image_self_build | bool"
 

@@ -1,26 +1,67 @@
+<!--
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver (optional)
 
 The playbook can install and configure the [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) service for you. It's a [client](https://prometheus.io/docs/alerting/latest/clients/) for Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/), allowing you to deliver alerts to Matrix rooms.
 
-See the project's [documentation](https://github.com/metio/matrix-alertmanager-receiver) to learn more about what this component does and why it might be useful to you.
-
-At the moment, **setting up this service's bot requires some manual actions** as described below in [Account and room preparation](#account-and-room-preparation).
+See the project's [documentation](https://github.com/metio/matrix-alertmanager-receiver/blob/main/README.md) to learn what it does and why it might be useful to you.
 
 This service is meant to be used with an external [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) instance. It's **not** meant to be integrated with the [Prometheus & Grafana stack](./configuring-playbook-prometheus-grafana.md) installed by this playbook, because the Alertmanager component is not installed by it.
 
+## Prerequisites
+
+### Register the bot account
+
+This service uses a bot (with a username specified in `matrix_alertmanager_receiver_config_matrix_user_id_localpart`) for delivering messages.
+
+The playbook does not automatically create users for you. You **need to register the bot user manually** before setting up the bot.
+
+Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
+
+You can use the playbook to [register a new user](registering-users.md):
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.alertmanager.receiver password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
+```
+
+### Obtain an access token
+
+The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
+### Join to rooms as the bot manually
+
+ℹ️ **This bot does not accept room invitations automatically**. To deliver messages to rooms, the bot must be joined to all rooms manually.
+
+For each new room you would like the bot to deliver alerts to, invite the bot to the room.
+
+Then, log in as the bot using any Matrix client of your choosing, accept the room invitation from the bot's account, and log out.
+
+## Adjusting DNS records (optional)
+
+By default, this playbook installs matrix-alertmanager-receiver on the `matrix.` subdomain, at the `/matrix-alertmanager-receiver` path (https://matrix.example.com/matrix-alertmanager-receiver). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+
+If you wish to adjust it, see the section [below](#adjusting-the-matrix-alertmanager-receiver-url-optional) for details about DNS configuration.
+
 ## Adjusting the playbook configuration
 
-To enable matrix-alertmanager-receiver, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token).
 
-```yml
+```yaml
 matrix_alertmanager_receiver_enabled: true
 
-# If you'd like to change the username for this bot, uncomment and adjust. Otherwise, remove.
+# Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_alertmanager_receiver_config_matrix_user_id_localpart: "bot.alertmanager.receiver"
 
-# Specify the bot user's access token here.
-# See the "Account and room preparation" section below.
-matrix_alertmanager_receiver_config_matrix_access_token: ''
+matrix_alertmanager_receiver_config_matrix_access_token: "ACCESS_TOKEN_HERE"
 
 # Optionally, configure some mappings (URL-friendly room name -> actual Matrix room ID).
 #
@@ -33,15 +74,11 @@ matrix_alertmanager_receiver_config_matrix_room_mapping:
   some-room-name: "!qporfwt:{{ matrix_domain }}"
 ```
 
-See `roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for additional configuration variables.
-
-### Adjusting the matrix-alertmanager-receiver URL
-
-By default, this playbook installs matrix-alertmanager-receiver on the `matrix.` subdomain, at the `/matrix-alertmanager-receiver` path (https://matrix.example.com/matrix-alertmanager-receiver). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+### Adjusting the matrix-alertmanager-receiver URL (optional)
 
 By tweaking the `matrix_alertmanager_receiver_hostname` and `matrix_alertmanager_receiver_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix
@@ -49,43 +86,37 @@ matrix_alertmanager_receiver_hostname: alertmanager.example.com
 matrix_alertmanager_receiver_path_prefix: /
 ```
 
-## Adjusting DNS records
+If you've changed the default hostname, you may need to create a CNAME record for the matrix-alertmanager-receiver domain (`alertmanager.example.com`), which targets `matrix.example.com`.
 
-If you've changed the default hostname, **you may need to adjust your DNS** records to point the matrix-alertmanager-receiver domain to the Matrix server.
+When setting, replace `example.com` with your own.
 
-See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+### Extending the configuration
 
-If you've decided to use the default hostname, you won't need to do any extra DNS configuration.
+There are some additional things you may wish to configure about the component.
 
-## Account and room preparation
+Take a look at:
 
-The playbook can automatically create users, but it cannot automatically obtain access tokens, nor perform any of the other manual actions below.
-
-`matrix-alertmanager-receiver` uses a bot (with a username specified in `matrix_alertmanager_receiver_config_matrix_user_id_localpart` - see above) for delivering messages. You need to **manually register this bot acccount and obtain an access token for it**.
-
-1. [Register a new user](registering-users.md): `ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.alertmanager.receiver password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user`
-2. [Obtain an access token](obtaining-access-tokens.md) for the bot's user account
-3. Invite the bot to a room where you'd like to alerts to be delivered
-4. Log in as the bot using any Matrix client of your choosing, accept the room invitation from the bot's account and log out
-5. (Optionally) Adjust `matrix_alertmanager_receiver_config_matrix_room_mapping` to create a mapping between the new room and its ID
-
-Steps 1 and 2 above only need to be done once, while preparing your [configuration](#adjusting-the-playbook-configuration).
-
-Steps 3 and 4 need to be done for each new room you'd like the bot to deliver alerts to. Step 5 is optional and provides cleaner `/alert/` URLs.
-
+- `roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-alertmanager-receiver/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_alertmanager_receiver_configuration_extension_yaml` variable
 
 ## Installing
 
-Now that you've [prepared the bot account and room](#account-and-room-preparation), [configured the playbook](#adjusting-the-playbook-configuration), and potentially [adjusted your DNS records](#adjusting-dns-records), you can run the [installation](installing.md) command: `just install-all`
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
 
-Then, you can proceed to [Usage](#usage).
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
 Configure your Prometheus Alertmanager with configuration like this:
 
-```yml
+```yaml
 receivers:
   - name: matrix
     webhook_configs:
@@ -102,6 +133,17 @@ route:
     - receiver: matrix
 ```
 
-.. where `URL_HERE` looks like `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!qporfwt:example.com`.
+where `URL_HERE` looks like `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!qporfwt:example.com`.
 
-This bot does **not** accept room invitations automatically (like many other bots do). To deliver messages to rooms, **the bot must be joined to all rooms manually** - see Step 4 of the [Account and room preparation](#account-and-room-preparation) section.
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-alertmanager-receiver`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: error, warn, info, debug
+matrix_alertmanager_receiver_container_process_argument_log_level: debug
+```

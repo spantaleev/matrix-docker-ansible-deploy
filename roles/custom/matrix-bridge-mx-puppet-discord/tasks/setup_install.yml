@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Hugues Morisset
+# SPDX-FileCopyrightText: 2020 Stuart Mumford
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure MX Puppet Discord paths exist
@@ -5,8 +16,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_mx_puppet_discord_base_path }}", when: true}
     - {path: "{{ matrix_mx_puppet_discord_config_path }}", when: true}
@@ -80,7 +91,7 @@
     force: "yes"
     version: "{{ matrix_mx_puppet_discord_container_image_self_build_version }}"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_mx_puppet_discord_git_pull_results
   when: "matrix_mx_puppet_discord_enabled | bool and matrix_mx_puppet_discord_container_image_self_build"
 
@@ -101,16 +112,16 @@
     content: "{{ matrix_mx_puppet_discord_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mx_puppet_discord_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mx-puppet-discord discord-registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mx_puppet_discord_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mx_puppet_discord_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mx-puppet-discord container network is created
   community.general.docker_network:

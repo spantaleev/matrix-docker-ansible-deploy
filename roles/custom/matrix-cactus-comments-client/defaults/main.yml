@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Cactus Comments is a federated comment system built on Matrix.
 # This role installs the client assets (JS, CSS files).
@@ -13,9 +18,12 @@ matrix_cactus_comments_client_public_path: "{{ matrix_cactus_comments_client_bas
 matrix_cactus_comments_client_public_path_file_permissions: "0644"
 
 # renovate: datasource=docker depName=joseluisq/static-web-server
-matrix_cactus_comments_client_version: 2.33.1
+matrix_cactus_comments_client_version: 2.37.0
 
-matrix_cactus_comments_client_container_image: "{{ matrix_container_global_registry_prefix }}joseluisq/static-web-server:{{ matrix_cactus_comments_client_container_image_tag }}"
+matrix_cactus_comments_client_container_image: "{{ matrix_cactus_comments_client_container_image_registry_prefix }}joseluisq/static-web-server:{{ matrix_cactus_comments_client_container_image_tag }}"
+matrix_cactus_comments_client_container_image_registry_prefix: "{{ matrix_cactus_comments_client_container_image_registry_prefix_upstream }}"
+matrix_cactus_comments_client_container_image_registry_prefix_upstream: "{{ matrix_cactus_comments_client_container_image_registry_prefix_upstream_default }}"
+matrix_cactus_comments_client_container_image_registry_prefix_upstream_default: docker.io/
 matrix_cactus_comments_client_container_image_tag: "{{ 'latest' if matrix_cactus_comments_client_version == 'latest' else (matrix_cactus_comments_client_version + '-alpine') }}"
 matrix_cactus_comments_client_container_image_force_pull: "{{ matrix_cactus_comments_client_container_image.endswith(':latest') }}"
 
@@ -67,7 +75,7 @@ matrix_cactus_comments_client_environment_variable_server_port: 8080
 
 # Controls the SERVER_LOG_LEVEL environment variable.
 # See: https://static-web-server.net/configuration/environment-variables/
-# Valid values: error, warn, info, debug or trace
+# Valid values: error, warn, info, debug, trace
 matrix_cactus_comments_client_environment_variable_server_log_level: error
 
 # Controls the SERVER_LOG_REMOTE_ADDRESS environment variable.

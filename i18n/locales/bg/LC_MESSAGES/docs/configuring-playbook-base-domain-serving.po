@@ -1,0 +1,162 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-16 12:05+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: bg\n"
+"Language-Team: bg <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:1
+msgid "Serving the base domain (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:3
+msgid "By default, this playbook sets up services on your Matrix server (`matrix.example.com`), but has it configured so that it presents itself as the base domain (`example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up server delegation / redirection."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:5
+msgid "As we discuss in [Server Delegation](howto-server-delegation.md), server delegation / redirection can be configured in either of these ways:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:7
+msgid "Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:8
+msgid "Setting up a `_matrix._tcp` DNS SRV record"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:10
+msgid "For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:12
+msgid "However, those who don't have a separate server to dedicate to the base domain have trouble arranging this."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:14
+msgid "Usually, there are 2 options:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:16
+msgid "either get a separate server for the base domain, just for serving the files necessary for [Server Delegation via a well-known file](howto-server-delegation.md#server-delegation-via-a-well-known-file)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:18
+msgid "or, arrange for the Matrix server to serve the base domain. This either involves you [using your own webserver](configuring-playbook-own-webserver.md) or making the integrated webserver serve the base domain for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:20
+msgid "This documentation page tells you how to do the latter. With some easy changes, we make it possible to serve the base domain from the Matrix server via the integrated webserver."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:22
+msgid "Just [**adjust your DNS records**](configuring-dns.md), so that your base domain is pointed to the Matrix server's IP address (using a DNS `A` record) **and then add the following configuration** to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:28
+msgid "Doing this, the playbook will:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:30
+msgid "obtain an SSL certificate for the base domain, just like it does for all other domains (see [how we handle SSL certificates](configuring-playbook-ssl-certificates.md))"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:32
+msgid "serve the `/.well-known/matrix/*` files which are necessary for [Federation Server Discovery](configuring-well-known.md#federation-server-discovery) (also see [Server Delegation](howto-server-delegation.md)) and [Client-Server discovery](configuring-well-known.md#client-server-discovery)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:34
+msgid "serve a simple homepage at `https://example.com` with content `Hello from example.com` (configurable via the `matrix_static_files_file_index_html_template` variable). You can also [serve a more complicated static website](#serving-a-static-website-at-the-base-domain)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:36
+msgid "Serving a static website at the base domain"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:38
+msgid "By default, when \"serving the base domain\" is enabled, the playbook hosts a simple `index.html` webpage at `/matrix/static-files/public/index.html`. The content of this page is taken from the `matrix_static_files_file_index_html_template` variable."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:40
+msgid "If you'd like to host your own static website (more than a single `index.html` page) at the base domain, you can disable the creation of this default `index.html` page like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:54
+msgid "With this configuration, Ansible will no longer mess around with the `/matrix/static-files/public/index.html` file."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:56
+msgid "You are then free to upload any static website files to `/matrix/static-files/public` and they will get served at the base domain. You can do so manually or by using the [ansible-role-aux](https://github.com/mother-of-all-self-hosting/ansible-role-aux) Ansible role, which is part of this playbook already."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:58
+msgid "Serving a more complicated website at the base domain"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:60
+msgid "If you'd like to serve an even more complicated (dynamic) website from the Matrix server, relying on the playbook to serve the base domain is not the best choice."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:62
+msgid "You have 2 options."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:64
+msgid "**One way is to host your base domain elsewhere**. This involves:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:65
+msgid "you stopping to serve it from the Matrix server: remove `matrix_static_files_container_labels_base_domain_enabled` from your configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:66
+msgid "[configuring Matrix Delegation via well-known](./configuring-well-known.md)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:68
+msgid "**Another way is to serve the base domain from another (your own) container on the Matrix server**. This involves:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:69
+msgid "telling the playbook to only serve `example.com/.well-known/matrix` files by adjusting your `vars.yml` configuration like this:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:70
+msgid "keep `matrix_static_files_container_labels_base_domain_enabled: true`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:71
+msgid "add an extra: `matrix_static_files_container_labels_base_domain_traefik_path_prefix: /.well-known/matrix`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:72
+msgid "building and running a new container on the Matrix server:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:73
+msgid "it should be connected to the `traefik` network, so that Traefik can reverse-proxy to it"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:74
+msgid "it should have appropriate [container labels](https://docs.docker.com/config/labels-custom-metadata/), which instruct Traefik to reverse-proxy to it"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-base-domain-serving.md:76
+msgid "How you'll be managing building and running this container is up-to-you. You may use of the primitives from [ansible-role-aux](https://github.com/mother-of-all-self-hosting/ansible-role-aux) Ansible role to organize it yourself, or you can set it up in another way."
+msgstr ""

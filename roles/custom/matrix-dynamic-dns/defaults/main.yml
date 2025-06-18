@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Scott Crossen
+# SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Project source code URL: https://github.com/linuxserver/docker-ddclient
 
@@ -8,12 +18,14 @@ matrix_dynamic_dns_enabled: true
 matrix_dynamic_dns_daemon_interval: '300'
 
 # renovate: datasource=docker depName=linuxserver/ddclient versioning=semver
-matrix_dynamic_dns_version: 3.11.2
+matrix_dynamic_dns_version: 4.0.0
 
 # The docker container to use when in mode
-matrix_dynamic_dns_docker_image: "{{ matrix_dynamic_dns_docker_image_name_prefix }}linuxserver/ddclient:{{ matrix_dynamic_dns_version }}"
+matrix_dynamic_dns_docker_image: "{{ matrix_dynamic_dns_docker_image_registry_prefix }}linuxserver/ddclient:{{ matrix_dynamic_dns_version }}"
 
-matrix_dynamic_dns_docker_image_name_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_dynamic_dns_docker_image_registry_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else matrix_dynamic_dns_docker_image_registry_prefix_upstream }}"
+matrix_dynamic_dns_docker_image_registry_prefix_upstream: "{{ matrix_dynamic_dns_docker_image_registry_prefix_upstream_default }}"
+matrix_dynamic_dns_docker_image_registry_prefix_upstream_default: docker.io/
 
 # The image to force pull
 matrix_dynamic_dns_docker_image_force_pull: "{{ matrix_dynamic_dns_docker_image.endswith(':latest') }}"
@@ -24,7 +36,7 @@ matrix_dynamic_dns_container_additional_networks: "{{ matrix_dynamic_dns_contain
 matrix_dynamic_dns_container_additional_networks_auto: []
 matrix_dynamic_dns_container_additional_networks_custom: []
 
-# List of extra arguments to pass to the ontainer mode
+# List of extra arguments to pass to the container mode
 matrix_dynamic_dns_container_extra_arguments: []
 
 # List of wanted services when running in mode
@@ -43,6 +55,18 @@ matrix_dynamic_dns_base_path: "{{ matrix_base_data_path }}/dynamic-dns"
 matrix_dynamic_dns_config_path: "{{ matrix_dynamic_dns_base_path }}/config"
 matrix_dynamic_dns_docker_src_files_path: "{{ matrix_dynamic_dns_base_path }}/docker-src"
 
+# Config options
+matrix_dynamic_dns_use: "web"
+
+# The endpoint to use to determine your external IP
+matrix_dynamic_dns_web: "https://cloudflare.com/cdn-cgi/trace"
+
+# The field to extract the IP from
+# If your endpoint defined in `matrix_dynamic_dns_web` doesn't need this, just set it to ""
+matrix_dynamic_dns_web_skip: "ip="
+
+matrix_dynamic_dns_additional_configuration_blocks: []
+
 # Holds the configurations (the domains to update DNS for, the providers they use, etc.)
 #
 # Example:
@@ -53,7 +77,3 @@ matrix_dynamic_dns_docker_src_files_path: "{{ matrix_dynamic_dns_base_path }}/do
 #     password: XXXXXXXXXXXXXXXX
 #     domain: "{{ matrix_domain }}"
 matrix_dynamic_dns_domain_configurations: []
-
-# Config options
-matrix_dynamic_dns_additional_configuration_blocks: []
-matrix_dynamic_dns_use: "web"

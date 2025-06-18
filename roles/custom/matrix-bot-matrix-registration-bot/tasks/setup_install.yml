@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure matrix-registration-bot paths exist
@@ -5,20 +13,20 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_bot_matrix_registration_bot_config_path }}", when: true}
     - {path: "{{ matrix_bot_matrix_registration_bot_data_path }}", when: true}
-    - {path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}", when: true}
+    - {path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}", when: "{{ matrix_bot_matrix_registration_bot_container_image_self_build }}"}
   when: "item.when | bool"
 
 - name: Ensure matrix-registration-bot configuration file created
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/config/config.yml.j2"
-    dest: "{{ matrix_bot_matrix_registration_bot_config_path }}/config.yml"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    src: "{{ role_path }}/templates/config.yaml.j2"
+    dest: "{{ matrix_bot_matrix_registration_bot_config_path }}/config.yaml"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0640
 
 - name: Ensure matrix-registration-bot image is pulled
@@ -33,28 +41,28 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
-- name: Ensure matrix-registration-bot repository is present on self-build
-  ansible.builtin.git:
-    repo: "{{ matrix_bot_matrix_registration_bot_docker_repo }}"
-    version: "{{ matrix_bot_matrix_registration_bot_docker_repo_version }}"
-    dest: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}"
-    force: "yes"
-  become: true
-  become_user: "{{ matrix_user_username }}"
-  register: matrix_bot_matrix_registration_bot_git_pull_results
-  when: "matrix_bot_matrix_registration_bot_container_image_self_build | bool"
+- when: matrix_bot_matrix_registration_bot_container_image_self_build | bool
+  block:
+    - name: Ensure matrix-registration-bot repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_bot_matrix_registration_bot_docker_repo }}"
+        version: "{{ matrix_bot_matrix_registration_bot_docker_repo_version }}"
+        dest: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_name }}"
+      register: matrix_bot_matrix_registration_bot_git_pull_results
 
-- name: Ensure matrix-registration-bot image is built
-  community.docker.docker_image:
-    name: "{{ matrix_bot_matrix_registration_bot_docker_image }}"
-    source: build
-    force_source: "{{ matrix_bot_matrix_registration_bot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_matrix_registration_bot_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}"
-      pull: true
-  when: "matrix_bot_matrix_registration_bot_container_image_self_build | bool"
+    - name: Ensure matrix-registration-bot image is built
+      community.docker.docker_image:
+        name: "{{ matrix_bot_matrix_registration_bot_docker_image }}"
+        source: build
+        force_source: "{{ matrix_bot_matrix_registration_bot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_matrix_registration_bot_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}"
+          pull: true
 
 - name: Ensure matrix-registration-bot container network is created
   community.general.docker_network:

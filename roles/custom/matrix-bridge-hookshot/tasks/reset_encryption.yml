@@ -1,5 +1,17 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
+- name: Ensure matrix-hookshot is stopped
+  ansible.builtin.service:
+    name: matrix-hookshot
+    state: stopped
+  register: matrix_hookshot_stopped
+
+# `yarn start:resetcrypto` fails, as described here: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3868
+# Also related to: https://github.com/matrix-org/matrix-hookshot/issues/730
 - name: Resetting Hookshot's crypto store
   ansible.builtin.command:
     cmd: |
@@ -8,7 +20,15 @@
       --name={{ matrix_hookshot_identifier }}-reset-crypto
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
-      --mount type=bind,src={{ matrix_hookshot_base_path }}/config.yml,dst=/config.yml
+      --mount type=bind,src={{ matrix_hookshot_base_path }},dst=/data
       {{ matrix_hookshot_docker_image }}
-      yarn start:resetcrypto
+      node --require source-map-support/register /usr/bin/matrix-hookshot/App/ResetCryptoStore.js
   changed_when: true
+
+- name: Ensure matrix-hookshot is started, if it previously was
+  ansible.builtin.service:
+    name: matrix-hookshot
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: matrix_hookshot_stopped.changed | bool

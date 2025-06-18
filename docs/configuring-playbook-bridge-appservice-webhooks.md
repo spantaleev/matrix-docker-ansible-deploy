@@ -1,73 +1,113 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Björn Marten
+SPDX-FileCopyrightText: 2020 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 iLyas Bakouch
+SPDX-FileCopyrightText: 2022 Kim Brose
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Appservice Webhooks bridging (optional, deprecated)
 
-**Note**: This bridge has been deprecated. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bridge instead of this one.
+**Note**: This bridge has been deprecated. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bridge instead of this one.
 
 The playbook can install and configure [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for you. This bridge provides support for Slack-compatible webhooks.
 
-Setup Instructions:
+See the project's [documentation](https://github.com/turt2live/matrix-appservice-webhooks/blob/master/README.md) to learn what it does and why it might be useful to you.
 
-loosely based on [this](https://github.com/turt2live/matrix-appservice-webhooks/blob/master/README.md)
+## Adjusting the playbook configuration
 
-1. Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
-    ```yaml
-    matrix_appservice_webhooks_enabled: true
-    matrix_appservice_webhooks_api_secret: '<your_secret>'
-    ```
+```yaml
+matrix_appservice_webhooks_enabled: true
+matrix_appservice_webhooks_api_secret: '<your_secret>'
 
-2. In case you want to change the verbosity of logging via `journalctl -fu matrix-appservice-webhooks.service` you can adjust this in `inventory/host_vars/matrix.example.com/vars.yml` as well.
+# As of Synapse 1.90.0, uncomment to enable the backwards compatibility (https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs.
+# Note: This deprecated method is considered insecure.
+#
+# matrix_synapse_configuration_extension_yaml: |
+#   use_appservice_legacy_authorization: true
+```
 
-    **Note**: default value is: `info` and availabe log levels are : `info`, `verbose`
+### Extending the configuration
 
-    ```yaml
-    matrix_appservice_webhooks_log_level: '<log_level>'
-    ```
+There are some additional things you may wish to configure about the bridge.
 
-3. As of Synapse 1.90.0, you will need to add the following to `matrix_synapse_configuration_extension_yaml` to enable the [backwards compatibility](https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs:
+Take a look at:
 
-    ```yaml
-    matrix_synapse_configuration_extension_yaml: |
-      use_appservice_legacy_authorization: true
-    ```
+- `roles/custom/matrix-bridge-appservice-webhooks/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bridge-appservice-webhooks/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_webhooks_configuration_extension_yaml` variable
 
-    **Note**: This deprecated method is considered insecure.
+## Installing
 
-4. If you've already installed Matrix services using the playbook before, you'll need to re-run it (`--tags=setup-all,start`). If not, proceed with [configuring other playbook services](configuring-playbook.md) and then with [Installing](installing.md). Get back to this guide once ready.
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
-5. If you're using the [Dimension integration manager](configuring-playbook-dimension.md), you can configure the Webhooks bridge by opening the Dimension integration manager -> Settings -> Bridges and selecting edit action for "Webhook Bridge". Press "Add self-hosted Bridge" button and populate "Provisioning URL"  & "Shared Secret" values from `/matrix/appservice-webhooks/config/config.yaml` file's homeserver URL value and provisioning secret value, respectively.
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
-6. Invite the bridge bot user to your room:
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
-    - either with `/invite @_webhook:example.com` (**Note**: Make sure you have administration permissions in your room)
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
-    - or simply add the bridge bot to a private channel (personal channels imply you being an administrator)
+## Usage
 
-7. Send a message to the bridge bot in order to receive a private message including the webhook link.
+To use the bridge, you need to invite the bridge bot user to your room in either way.
 
-    ```
-    !webhook
-    ```
+- Send `/invite @_webhook:example.com` (**Note**: Make sure you have administration permissions in your room)
+- Add the bridge bot to a private channel (personal channels imply you being an administrator)
 
-8. The JSON body for posting messages will have to look like this:
+You then need to send a message to the bridge bot to receive a private message including the webhook link:
 
-    ```json
-    {
-        "text": "Hello world!",
-        "format": "plain",
-        "displayName": "My Cool Webhook",
-        "avatar_url": "http://i.imgur.com/IDOBtEJ.png"
-    }
-    ```
+```
+!webhook
+```
 
-    You can test this via curl like so:
+The JSON body for posting messages will have to look like this:
 
-    ```sh
-    curl --header "Content-Type: application/json" \
-    --data '{
+```json
+{
     "text": "Hello world!",
     "format": "plain",
     "displayName": "My Cool Webhook",
     "avatar_url": "http://i.imgur.com/IDOBtEJ.png"
-    }' \
-    <the link you've gotten in 5.>
-    ```
+}
+```
+
+You can test this via curl like so:
+
+```sh
+curl --header "Content-Type: application/json" \
+--data '{
+"text": "Hello world!",
+"format": "plain",
+"displayName": "My Cool Webhook",
+"avatar_url": "http://i.imgur.com/IDOBtEJ.png"
+}' \
+<the webhook link you've gotten from the bridge bot>
+```
+
+### Setting Webhooks with Dimension integration manager
+
+If you're using the [Dimension integration manager](configuring-playbook-dimension.md), you can configure the Webhooks bridge with it.
+
+To configure it, open the Dimension integration manager, and go to "Settings" and "Bridges", then select edit action for "Webhook Bridge".
+
+On the UI, press "Add self-hosted Bridge" button and populate "Provisioning URL"  and "Shared Secret" values from `/matrix/appservice-webhooks/config/config.yaml` file's homeserver URL value and provisioning secret value, respectively.
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-appservice-webhooks`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+# Valid values: info, verbose
+matrix_appservice_webhooks_log_level: 'verbose'
+```

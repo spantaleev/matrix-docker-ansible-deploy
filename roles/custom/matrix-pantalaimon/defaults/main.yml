@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # E2EE aware proxy daemon for Matrix clients.
 # Project source code URL: https://github.com/matrix-org/pantalaimon
@@ -10,8 +15,10 @@ matrix_pantalaimon_container_image_self_build: false
 matrix_pantalaimon_container_image_self_build_repo: "https://github.com/matrix-org/pantalaimon.git"
 matrix_pantalaimon_container_image_self_build_repo_version: "{{ 'main' if matrix_pantalaimon_version == 'latest' else matrix_pantalaimon_version }}"
 
-matrix_pantalaimon_docker_image: "{{ matrix_pantalaimon_docker_image_name_prefix }}matrixdotorg/pantalaimon:v{{ matrix_pantalaimon_version }}"
-matrix_pantalaimon_docker_image_name_prefix: "{{ 'localhost/' if matrix_pantalaimon_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_pantalaimon_docker_image: "{{ matrix_pantalaimon_docker_image_registry_prefix }}matrixdotorg/pantalaimon:v{{ matrix_pantalaimon_version }}"
+matrix_pantalaimon_docker_image_registry_prefix: "{{ 'localhost/' if matrix_pantalaimon_container_image_self_build else matrix_pantalaimon_docker_image_registry_prefix_upstream }}"
+matrix_pantalaimon_docker_image_registry_prefix_upstream: "{{ matrix_pantalaimon_docker_image_registry_prefix_upstream_default }}"
+matrix_pantalaimon_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_pantalaimon_docker_image_force_pull: "{{ matrix_pantalaimon_docker_image.endswith(':latest') }}"
 
 matrix_pantalaimon_base_path: "{{ matrix_base_data_path }}/pantalaimon"
@@ -42,7 +49,7 @@ matrix_pantalaimon_systemd_wanted_services_list_default: []
 matrix_pantalaimon_systemd_wanted_services_list_auto: []
 matrix_pantalaimon_systemd_wanted_services_list_custom: []
 
-# Pantalaimon log level, case-insensitive (Error, Warning, Info, Debug)
+# Valid values: Error, Warning, Info, Debug
 matrix_pantalaimon_log_level: Warning
 
 # Base URL where matrix-pantalaimon can reach your homeserver C-S API.

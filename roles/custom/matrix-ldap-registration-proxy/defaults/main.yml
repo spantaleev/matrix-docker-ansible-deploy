@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # matrix_ldap_registration_proxy - Want to build a large-scale Matrix server using external registration on LDAP?
 # Project source code URL: https://gitlab.com/activism.international/matrix_ldap_registration_proxy
@@ -6,7 +12,12 @@ matrix_ldap_registration_proxy_enabled: true
 
 matrix_ldap_registration_proxy_hostname: ''
 
-matrix_ldap_registration_proxy_docker_image: matrix_ldap_registration_proxy
+matrix_ldap_registration_proxy_docker_image: "{{ matrix_ldap_registration_proxy_docker_image_registry_prefix }}matrix_ldap_registration_proxy"
+matrix_ldap_registration_proxy_docker_image_registry_prefix: "{{ 'localhost/' if matrix_ldap_registration_proxy_container_image_self_build else matrix_ldap_registration_proxy_docker_image_registry_prefix_upstream }}"
+matrix_ldap_registration_proxy_docker_image_registry_prefix_upstream: "{{ matrix_ldap_registration_proxy_docker_image_registry_prefix_upstream_default }}"
+matrix_ldap_registration_proxy_docker_image_registry_prefix_upstream_default: ""
+
+matrix_ldap_registration_proxy_container_image_self_build: true
 matrix_ldap_registration_proxy_container_image_self_build_repo: "https://gitlab.com/activism.international/matrix_ldap_registration_proxy.git"
 matrix_ldap_registration_proxy_container_image_self_build_branch: "{{ matrix_ldap_registration_proxy_version }}"
 

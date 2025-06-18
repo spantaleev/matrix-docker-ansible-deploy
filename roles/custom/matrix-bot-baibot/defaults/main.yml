@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # baibot is a bot exposing the power of Large Language Models to you.
@@ -11,9 +17,11 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v1.4.0
-matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_name_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
-matrix_bot_baibot_container_image_name_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else 'ghcr.io/' }}"
+matrix_bot_baibot_version: v1.7.4
+matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_registry_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
+matrix_bot_baibot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else matrix_bot_baibot_container_image_registry_prefix_upstream }}"
+matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
+matrix_bot_baibot_container_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_bot_baibot_container_image_force_pull: "{{ matrix_bot_baibot_container_image.endswith(':latest') }}"
 
 matrix_bot_baibot_base_path: "{{ matrix_base_data_path }}/baibot"
@@ -86,6 +94,10 @@ matrix_bot_baibot_config_user_encryption_recovery_reset_allowed: false
 # Controls the `command_prefix` configuration setting.
 # If you leave this empty, the bot will use the default (!bai).
 matrix_bot_baibot_config_command_prefix: "!bai"
+
+# Controls the `room.post_join_self_introduction_enabled` configuration setting.
+# Influences whether the bot should send an introduction message after joining a room.
+matrix_bot_baibot_config_room_post_join_self_introduction_enabled: true
 
 # Controls the `access.admin_patterns` configuration setting.
 # A space-separated list of MXID patterns which specify who is an admin.
@@ -167,7 +179,7 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_enabled: false
 matrix_bot_baibot_config_agents_static_definitions_anthropic_id: anthropic
 matrix_bot_baibot_config_agents_static_definitions_anthropic_provider: anthropic
 
-matrix_bot_baibot_config_agents_static_definitions_anthropic_config: "{{ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_anthropic_config_extension, recursive=True)}}"
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config: "{{ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_anthropic_config_extension, recursive=True) }}"
 
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_yaml: "{{ lookup('template', 'templates/provider/anthropic-config.yml.j2') }}"
 
@@ -193,7 +205,7 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: ""
 
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_enabled: true
 # For valid model choices, see: https://platform.anthropic.com/docs/models
-matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: claude-3-5-sonnet-20240620
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: claude-3-7-sonnet-20250219
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
@@ -220,7 +232,7 @@ matrix_bot_baibot_config_agents_static_definitions_groq_enabled: false
 matrix_bot_baibot_config_agents_static_definitions_groq_id: groq
 matrix_bot_baibot_config_agents_static_definitions_groq_provider: groq
 
-matrix_bot_baibot_config_agents_static_definitions_groq_config: "{{ matrix_bot_baibot_config_agents_static_definitions_groq_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_groq_config_extension, recursive=True)}}"
+matrix_bot_baibot_config_agents_static_definitions_groq_config: "{{ matrix_bot_baibot_config_agents_static_definitions_groq_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_groq_config_extension, recursive=True) }}"
 
 matrix_bot_baibot_config_agents_static_definitions_groq_config_yaml: "{{ lookup('template', 'templates/provider/groq-config.yml.j2') }}"
 
@@ -276,7 +288,7 @@ matrix_bot_baibot_config_agents_static_definitions_mistral_enabled: false
 matrix_bot_baibot_config_agents_static_definitions_mistral_id: mistral
 matrix_bot_baibot_config_agents_static_definitions_mistral_provider: mistral
 
-matrix_bot_baibot_config_agents_static_definitions_mistral_config: "{{ matrix_bot_baibot_config_agents_static_definitions_mistral_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_mistral_config_extension, recursive=True)}}"
+matrix_bot_baibot_config_agents_static_definitions_mistral_config: "{{ matrix_bot_baibot_config_agents_static_definitions_mistral_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_mistral_config_extension, recursive=True) }}"
 
 matrix_bot_baibot_config_agents_static_definitions_mistral_config_yaml: "{{ lookup('template', 'templates/provider/mistral-config.yml.j2') }}"
 
@@ -329,7 +341,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_enabled: false
 matrix_bot_baibot_config_agents_static_definitions_openai_id: openai
 matrix_bot_baibot_config_agents_static_definitions_openai_provider: openai
 
-matrix_bot_baibot_config_agents_static_definitions_openai_config: "{{ matrix_bot_baibot_config_agents_static_definitions_openai_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_openai_config_extension, recursive=True)}}"
+matrix_bot_baibot_config_agents_static_definitions_openai_config: "{{ matrix_bot_baibot_config_agents_static_definitions_openai_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_openai_config_extension, recursive=True) }}"
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_yaml: "{{ lookup('template', 'templates/provider/openai-config.yml.j2') }}"
 
@@ -356,7 +368,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: ""
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_enabled: true
 # For valid model choices, see: https://platform.openai.com/docs/models
-matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4o
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4.1
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
@@ -364,6 +376,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation
 # See: https://blogs.novita.ai/what-are-large-language-model-settings-temperature-top-p-and-max-tokens/#what-is-llm-temperature
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_temperature: 1.0
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_response_tokens: 16384
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_completion_tokens: ~
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_context_tokens: 128000
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_enabled: true
@@ -376,9 +389,10 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_response_format: opus
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_enabled: true
-matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_model_id: dall-e-3
-matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_style: vivid
-matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_size: 1024x1024
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_model_id: gpt-image-1
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_style: null
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_size: null
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_quality: null
 
 ########################################################################################
 #                                                                                      #
@@ -461,7 +475,7 @@ matrix_bot_baibot_configuration: "{{ matrix_bot_baibot_configuration_yaml | from
 #
 # For a more advanced customization, you can extend the default (see `matrix_bot_baibot_configuration_extension_yaml`)
 # or completely replace this variable with your own template.
-matrix_bot_baibot_configuration_yaml: "{{ lookup('template', 'templates/config.yml.j2') }}"
+matrix_bot_baibot_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
 matrix_bot_baibot_configuration_extension_yaml: |
   # Your custom YAML configuration for baibot goes here.

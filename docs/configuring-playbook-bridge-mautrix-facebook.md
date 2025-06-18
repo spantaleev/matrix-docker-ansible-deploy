@@ -1,10 +1,34 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 Hugues Morisset
+SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 László Várady
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Mautrix Facebook bridging (optional, deprecated)
 
-**Note**: This bridge has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, which can be installed using [this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md). Consider using that bridge instead of this one.
+<sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
+
+**Note**: This bridge has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, which can be [installed using this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md). Consider using that bridge instead of this one.
 
 The playbook can install and configure [mautrix-facebook](https://github.com/mautrix/facebook) for you.
 
-See the project's [documentation](https://github.com/mautrix/facebook/blob/master/ROADMAP.md) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/mautrix/facebook/blob/master/README.md) to learn what it does and why it might be useful to you.
+
+## Prerequisite (optional)
+
+### Enable Shared Secret Auth
+
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook.
+
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
+
+**Note**: double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future.
 
 ## Adjusting the playbook configuration
 
@@ -14,78 +38,44 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_mautrix_facebook_enabled: true
 ```
 
-There are some additional things you may wish to configure about the bridge before you continue.
+### Extending the configuration
 
-Encryption support is off by default. If you would like to enable encryption, add the following to your `vars.yml` file:
-```yaml
-matrix_mautrix_facebook_configuration_extension_yaml: |
-  bridge:
-    encryption:
-      allow: true
-      default: true
-```
+There are some additional things you may wish to configure about the bridge.
 
-If you would like to be able to administrate the bridge from your account it can be configured like this:
-```yaml
-matrix_mautrix_facebook_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
-```
-
-Using both would look like
-
-```yaml
-matrix_mautrix_facebook_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '@YOUR_USERNAME:{{ matrix_domain }}': admin
-    encryption:
-      allow: true
-      default: true
-```
-
-You may wish to look at `roles/custom/matrix-bridge-mautrix-facebook/templates/config.yaml.j2` and `roles/custom/matrix-bridge-mautrix-facebook/defaults/main.yml` to find other things you would like to configure.
+See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#set-the-bots-username-optional), etc.
 
 ## Installing
 
-After configuring the playbook, run the [installation](installing.md) command: `just install-all` or `just setup-all`
+After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:
 
-## Set up Double Puppeting
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
 
-If you'd like to use [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do), you have 2 ways of going about it.
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
-### Method 1: automatically, by enabling Shared Secret Auth
-
-The bridge will automatically perform Double Puppeting if you enable [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) for this playbook.
-
-This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future.
-
-### Method 2: manually, by asking each user to provide a working access token
-
-**Note**: This method for enabling Double Puppeting can be configured only after you've already set up bridging (see [Usage](#usage)).
-
-When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:
-
-- retrieve a Matrix access token for yourself. Refer to the documentation on [how to do that](obtaining-access-tokens.md).
-
-- send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`
-
-- make sure you don't log out the `Mautrix-Facebook` device some time in the future, as that would break the Double Puppeting feature
-
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
-You then need to start a chat with `@facebookbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `@facebookbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Send `login YOUR_FACEBOOK_EMAIL_ADDRESS` to the bridge bot to enable bridging for your Facebook Messenger account. You can learn more here about authentication from the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/facebook/authentication.html).
+You then need to send `login YOUR_FACEBOOK_EMAIL_ADDRESS` to the bridge bot to enable bridging for your Facebook Messenger account.
 
 If you run into trouble, check the [Troubleshooting](#troubleshooting) section below.
 
-After successfully enabling bridging, you may wish to [set up Double Puppeting](#set-up-double-puppeting), if you haven't already done so.
-
-
 ## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-facebook`.
+
+### Increase logging verbosity
+
+The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+
+```yaml
+matrix_mautrix_facebook_logging_level: DEBUG
+```
 
 ### Facebook rejecting login attempts and forcing you to change password
 
@@ -97,7 +87,7 @@ The easiest way to do this may be to use [sshuttle](https://sshuttle.readthedocs
 
 Example command for proxying your traffic through the Matrix server:
 
-```
+```sh
 sshuttle -r root@matrix.example.com:22 0/0
 ```
 

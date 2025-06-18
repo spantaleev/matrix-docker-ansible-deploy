@@ -1,22 +1,29 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 - 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2020 Hardy Erlinger
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Marc Leuser
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Kim Brose
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # PostgreSQL maintenance
 
 This document shows you how to perform various maintenance tasks related to the Postgres database server used by Matrix.
 
 Table of contents:
-
 - [Getting a database terminal](#getting-a-database-terminal), for when you wish to execute SQL queries
-
 - [Vacuuming PostgreSQL](#vacuuming-postgresql), for when you wish to run a Postgres [VACUUM](https://www.postgresql.org/docs/current/sql-vacuum.html) (optimizing disk space)
-
 - [Backing up PostgreSQL](#backing-up-postgresql), for when you wish to make a backup
-
 - [Upgrading PostgreSQL](#upgrading-postgresql), for upgrading to new major versions of PostgreSQL. Such **manual upgrades are sometimes required**.
-
 - [Tuning PostgreSQL](#tuning-postgresql) to make it run faster
 
 ## Getting a database terminal
 
-You can use the `/matrix/postgres/bin/cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/11/app-psql.html)) to the PostgreSQL server.
+You can use the `/matrix/postgres/bin/cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/current/app-psql.html)) to the PostgreSQL server.
 
 If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above tool will not be available.
 
@@ -28,8 +35,8 @@ To change to another database (for example `synapse`), run `\connect synapse` (o
 
 You can then proceed to write queries. Example: `SELECT COUNT(*) FROM users;`
 
-**Be careful**. Modifying the database directly (especially as services are running) is dangerous and may lead to irreversible database corruption. When in doubt, consider [making a backup](#backing-up-postgresql).
-
+> [!WARNING]
+> **Modifying the database directly (especially as services are running) is dangerous and may lead to irreversible database corruption.** When in doubt, consider [making a backup](#backing-up-postgresql).
 
 ## Vacuuming PostgreSQL
 
@@ -50,14 +57,13 @@ Example playbook invocations:
 - `just run-tags run-postgres-vacuum`: runs the default `vacuum-complete` preset and restarts all services
 - `just run-tags run-postgres-vacuum -e postgres_vacuum_preset=analyze`: runs the `analyze` preset with all services remaining operational at all times
 
-
 ## Backing up PostgreSQL
 
-To automatically make Postgres database backups on a fixed schedule, see [Setting up postgres backup](configuring-playbook-postgres-backup.md).
+To automatically make Postgres database backups on a fixed schedule, consider enabling the [Postgres Backup](configuring-playbook-postgres-backup.md) service.
 
-To make a one off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
+To make a one-off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
 
-```bash
+```sh
 /usr/bin/docker exec \
 --env-file=/matrix/postgres/env-postgres-psql \
 matrix-postgres \
@@ -70,7 +76,6 @@ If you are using an [external Postgres server](configuring-playbook-external-pos
 
 Restoring a backup made this way can be done by [importing it](importing-postgres.md).
 
-
 ## Upgrading PostgreSQL
 
 Unless you are using an [external Postgres server](configuring-playbook-external-postgres.md), this playbook initially installs Postgres for you.
@@ -79,7 +84,7 @@ Once installed, the playbook attempts to preserve the Postgres version it starts
 
 Upgrades must be performed manually.
 
-This playbook can upgrade your existing Postgres setup with the following command:
+The playbook can upgrade your existing Postgres setup with the following command:
 
 ```sh
 just run-tags upgrade-postgres
@@ -91,11 +96,9 @@ The auto-upgrade-backup directory stays around forever, until you **manually dec
 
 As part of the upgrade, the database is dumped to `/tmp`, an upgraded and empty Postgres server is started, and then the dump is restored into the new server. To use a different directory for the dump, pass some extra flags to the command above, like this: `--extra-vars="postgres_dump_dir=/directory/to/dump/here"`
 
-To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage.
-If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
+To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage. If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 
-**All databases, roles, etc. on the Postgres server are migrated**.
-
+**All databases, roles, etc. on the Postgres server are migrated**. However, other components that depend on specific Postgres versions (like the [Postgres Backup](configuring-playbook-postgres-backup.md) service) may need to be updated after the upgrade by using `just install-all`
 
 ## Tuning PostgreSQL
 

@@ -1,25 +1,37 @@
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure matrix-static-files paths exist
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
-    - "{{ matrix_static_files_base_path }}"
-    - "{{ matrix_static_files_config_path }}"
-    - "{{ matrix_static_files_public_path }}"
-    - "{{ matrix_static_files_public_well_known_path }}"
-    - "{{ matrix_static_files_public_well_known_matrix_path }}"
+    - {path: "{{ matrix_static_files_base_path }}", when: true}
+    - {path: "{{ matrix_static_files_config_path }}", when: true}
+    - {path: "{{ matrix_static_files_public_path }}", when: true}
+    - {path: "{{ matrix_static_files_public_well_known_path }}", when: true}
+    - {path: "{{ matrix_static_files_public_well_known_matrix_path }}", when: true}
+  when: "item.when | bool"
+
+# This is not necessary anymore, so we're cleaning it up.
+- name: Ensure matrix-static-files element path doesn't exist
+  ansible.builtin.file:
+    path: "{{ matrix_static_files_public_well_known_element_path }}"
+    state: absent
 
 - name: Ensure matrix-static-files is configured
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0644
   with_items:
     - src: "{{ role_path }}/templates/config.toml.j2"
@@ -36,8 +48,8 @@
     content: "{{ item.content }}"
     dest: "{{ item.dest }}"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   when: item.when | bool
   with_items:
     - content: "{{ matrix_static_files_file_matrix_client_configuration | to_nice_json }}"

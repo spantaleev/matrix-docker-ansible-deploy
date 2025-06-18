@@ -1,22 +1,19 @@
+{#
+SPDX-FileCopyrightText: 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Catalan Lover <catalanlover@protonmail.com>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 # The log level of terminal (or container) output,
 # can be one of DEBUG, INFO, WARN and ERROR, in increasing order of importance and severity.
 #
 # This should be at INFO or DEBUG in order to get support for Draupnir problems.
 logLevel: "INFO"
 
-# Whether or not Draupnir should synchronize policy lists immediately after startup.
-# Equivalent to running '!draupnir sync'.
-syncOnStartup: true
-
 # Whether or not Draupnir should check moderation permissions in all protected rooms on startup.
 # Equivalent to running `!draupnir verify`.
 verifyPermissionsOnStartup: true
-
-# Whether Draupnir should check member lists quicker (by using a different endpoint),
-# keep in mind that enabling this will miss invited (but not joined) users.
-#
-# Turn on if your bot is in (very) large rooms, or in large amounts of rooms.
-fasterMembershipChecks: false
 
 # A case-insensitive list of ban reasons to have the bot also automatically redact the user's messages for.
 #
@@ -70,14 +67,27 @@ commands:
     - "draupnir_bot"
     - "draupnir"
 
-  # Whether or not commands with a wildcard (*) will require an additional `--force` argument
-  # in the command to be able to be submitted.
-  confirmWildcardBan: true
-
   # The default reasons to be prompted with if the reason is missing from a ban command.
   ban:
-    defaultReasons: 
+    defaultReasons:
       - "spam"
       - "brigading"
       - "harassment"
       - "disagreement"
+
+# Safe mode provides recovery options for some failure modes when Draupnir
+# fails to start. For example, if the bot fails to resolve a room alias in
+# a watched list, or if the server has parted from a protected room and can't
+# find a way back in. Safe mode will provide different options to recover from
+# these. Such as unprotecting the room or unwatching the policy list.
+# By default Draupnir will boot into safe mode only when the failure mode
+# is recoverable.
+# It may be desirable to prevent the bot from starting into safe mode if you have
+# a pager system when Draupnir is down, as Draupnir could prevent your monitoring
+# system from identifying a failure to start.
+#safeMode:
+#  # The option for entering safe mode when Draupnir fails to start up.
+#  # - "RecoveryOnly" will only start the bot in safe mode when there are recovery options available. This is the default.
+#  # - "Never" will never start the bot in safe mode when Draupnir fails to start normally.
+#  # - "Always" will always start the bot in safe mode when Draupnir fails to start normally.
+#  bootOption: RecoveryOnly

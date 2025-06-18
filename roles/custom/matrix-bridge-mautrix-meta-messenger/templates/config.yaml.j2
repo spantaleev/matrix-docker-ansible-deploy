@@ -212,7 +212,7 @@ appservice:
         username: {{ matrix_mautrix_meta_messenger_appservice_username | to_json }}
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
-        displayname: {{ matrix_mautrix_meta_messenger_appservice_displayname | to_json }}
+        displayname: {{ matrix_mautrix_meta_messenger_appservice_displayname | to_json(ensure_ascii=False) }}
         avatar: {{ matrix_mautrix_meta_messenger_appservice_avatar | to_json }}
 
     # Whether to receive ephemeral events via appservice transactions.
@@ -263,7 +263,7 @@ provisioning:
     prefix: /_matrix/provision
     # Shared secret for authentication. If set to "generate" or null, a random secret will be generated,
     # or if set to "disable", the provisioning API will be disabled.
-    shared_secret: disable
+    shared_secret: {{ matrix_mautrix_meta_messenger_provisioning_shared_secret | to_json }}
     # Whether to allow provisioning API requests to be authed using Matrix access tokens.
     # This follows the same rules as double puppeting to determine which server to contact to check the token,
     # which means that by default, it only works for users on the same server as the bridge.
@@ -367,6 +367,11 @@ encryption:
     # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
     # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
     appservice: {{ matrix_mautrix_meta_messenger_bridge_encryption_appservice | to_json }}
+    # Whether to use MSC4190 instead of appservice login to create the bridge bot device.
+    # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
+    # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
+    # Changing this option requires updating the appservice registration file.
+    msc4190: {{ matrix_mautrix_meta_messenger_msc4190_enabled | to_json }}
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
     allow_key_sharing: {{ matrix_mautrix_meta_messenger_bridge_encryption_allow_key_sharing | to_json }}

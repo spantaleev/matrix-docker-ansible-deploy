@@ -1,6 +1,20 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2019 Edgars Voroboks
+SPDX-FileCopyrightText: 2019 Michael Haak
+SPDX-FileCopyrightText: 2020 Kevin Lanni
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Mitja Jež
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Installing
 
-<sup>[Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
+<sup>[Prerequisites](prerequisites.md) > [Configuring DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
 
 If you've configured your DNS records and the playbook, you can start the installation procedure.
 
@@ -27,7 +41,7 @@ If you **don't** use SSH keys for authentication, but rather a regular password,
 
 If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands.
 
-There 2 ways to start the installation process - depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
+There 2 ways to start the installation process — depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
 
 **Note**: if you are migrating from an old server to a new one, take a look at [this guide](maintenance-migrating.md) instead. This is an easier and more straightforward way than installing a server and importing old data into it.
 
@@ -53,7 +67,8 @@ To do the installation **without** starting services, run `ansible-playbook` wit
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all
 ```
 
-**Note**: do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution. See: [Difference between playbook tags and shortcuts](just.md#difference-between-playbook-tags-and-shortcuts)
+> [!WARNING]
+> Do not run the just "recipe" `just install-all` instead, because it automatically starts services at the end of execution. See: [Difference between playbook tags and shortcuts](just.md#difference-between-playbook-tags-and-shortcuts)
 
 When this command completes, services won't be running yet.
 
@@ -65,7 +80,7 @@ You can now:
 
 - [Importing `media_store` data files from an existing Synapse installation](importing-synapse-media-store.md) (optional)
 
-.. and then proceed to starting all services:
+… and then proceed to starting all services:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=ensure-matrix-users-created,start
@@ -83,13 +98,13 @@ To create your user account (as an administrator of the server) via this Ansible
 
 **Notes**:
 - Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`
-- For `YOUR_USERNAME_HERE`, use a plain username like `john`, not your full identifier (`@user:example.com`)
+- For `YOUR_USERNAME_HERE`, use a plain username like `alice`, not your full ID (`@alice:example.com`)
 - Use `admin=yes` to make your user account an administrator of the Matrix server
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=YOUR_USERNAME_HERE password=YOUR_PASSWORD_HERE admin=yes' --tags=register-user
 
-# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=john password=secret-password admin=yes' --tags=register-user
+# Example: ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=alice password=secret-password admin=yes' --tags=register-user
 ```
 
 Feel free to create as many accounts (for friends, family, etc.) as you want. Still, perhaps you should grant full administrative access to your account only (with `admin=yes`), and others should be created with `admin=no`.
@@ -104,7 +119,7 @@ This is required for federation to work! Without a proper configuration, your se
 
 To configure the delegation, you have these two options. Choose one of them according to your situation.
 
-- If you can afford to point the base domain at the Matrix server, follow the instructions below which guide you into [serving the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user identifier like `@<username>:example.com` while hosting services on a subdomain like `matrix.example.com`.
+- If you can afford to point the base domain at the Matrix server, follow the instructions below which guide you into [serving the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server. It will enable you to use a Matrix user ID like `@alice:example.com` while hosting services on a subdomain like `matrix.example.com`.
 - Alternatively, if you're using the base domain for other purposes and cannot point it to the Matrix server (and thus cannot "serve the base domain" from it), you most likely need to [manually install well-known files on the base domain's server](configuring-well-known.md#manually-installing-well-known-files-on-the-base-domains-server), but feel free to familiarize yourself with all [server delegation (redirection) options](howto-server-delegation.md).
 
 To have the base domain served from the integrated web server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
@@ -119,20 +134,22 @@ After configuring the playbook, run the command below:
 ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
+**If an error is not returned, the installation has completed and the services have been started successfully**🎉
+
 ## Things to do next
 
-After finilizing the installation, you can:
+After completing the installation, you can:
 
-- [check if services work](maintenance-checking-services.md)
+- [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 - or [set up additional services](configuring-playbook.md#other-configuration-options) (bridges to other chat networks, bots, etc.)
 - or learn how to [upgrade services when new versions are released](maintenance-upgrading-services.md)
 - or learn how to [maintain your server](faq.md#maintenance)
 - or join some Matrix rooms:
   * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
-  * or come say Hi in our support room - [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
+  * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
 
-### Maintaining your setup in the future
+### ⚠️ Keep the playbook and services up-to-date
 
 While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**.
 
@@ -140,6 +157,22 @@ The upstream projects, which this playbook makes use of, occasionally if not oft
 
 Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
 
-For more information about upgrading or maintaining services with the playbook, take at look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
+Also, do not forget to update your system regularly. While this playbook may install basic services, such as Docker, it will not interfere further with system maintenance. Keeping the system itself up-to-date is out of scope for this playbook.
 
-Feel free to **re-run the setup command any time** you think something is off with the server configuration. Ansible will take your configuration and update your server to match.
+For more information about upgrading or maintaining services with the playbook, take a look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
+
+Feel free to **re-run the setup command any time** you think something is wrong with the server configuration. Ansible will take your configuration and update your server to match.
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+```
+
+**Note**: see [this page on the playbook tags](playbook-tags.md) for more information about those tags.
+
+### Make full use of `just` shortcut commands
+
+After you get familiar with reconfiguring and re-running the playbook to maintain the server, upgrade its services, etc., you probably would like to make use of `just` shortcut commands for faster input.
+
+For example, `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
+
+You can learn about the shortcut commands on this page: [Running `just` commands](just.md)

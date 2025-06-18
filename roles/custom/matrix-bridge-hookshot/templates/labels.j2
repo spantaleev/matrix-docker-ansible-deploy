@@ -1,3 +1,9 @@
+{#
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 {% if matrix_hookshot_container_labels_traefik_enabled %}
 traefik.enable=true
 
@@ -8,7 +14,6 @@ traefik.docker.network={{ matrix_hookshot_container_labels_traefik_docker_networ
 traefik.http.services.matrix-hookshot-webhooks.loadbalancer.server.port={{ matrix_hookshot_webhook_port }}
 traefik.http.services.matrix-hookshot-appservice.loadbalancer.server.port={{ matrix_hookshot_appservice_port }}
 traefik.http.services.matrix-hookshot-widgets.loadbalancer.server.port={{ matrix_hookshot_widgets_port }}
-traefik.http.services.matrix-hookshot-provisioning.loadbalancer.server.port={{ matrix_hookshot_provisioning_port }}
 traefik.http.services.matrix-hookshot-metrics.loadbalancer.server.port={{ matrix_hookshot_metrics_port }}
 
 {% if matrix_hookshot_container_labels_webhooks_enabled %}
@@ -108,37 +113,6 @@ traefik.http.routers.matrix-hookshot-widgets.tls.certResolver={{ matrix_hookshot
 ############################################################
 #                                                          #
 # /Widgets                                                 #
-#                                                          #
-############################################################
-{% endif %}
-
-{% if matrix_hookshot_container_labels_provisioning_enabled %}
-############################################################
-#                                                          #
-# Provisioning                                             #
-#                                                          #
-############################################################
-
-traefik.http.middlewares.matrix-hookshot-provisioning-strip-prefix.stripprefix.prefixes={{ matrix_hookshot_provisioning_endpoint }}
-
-traefik.http.routers.matrix-hookshot-provisioning.rule={{ matrix_hookshot_container_labels_provisioning_traefik_rule }}
-traefik.http.routers.matrix-hookshot-provisioning.middlewares=matrix-hookshot-provisioning-strip-prefix
-
-{% if matrix_hookshot_container_labels_provisioning_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-hookshot-provisioning.priority={{ matrix_hookshot_container_labels_provisioning_traefik_priority }}
-{% endif %}
-
-traefik.http.routers.matrix-hookshot-provisioning.service=matrix-hookshot-provisioning
-traefik.http.routers.matrix-hookshot-provisioning.entrypoints={{ matrix_hookshot_container_labels_provisioning_traefik_entrypoints }}
-
-traefik.http.routers.matrix-hookshot-provisioning.tls={{ matrix_hookshot_container_labels_provisioning_traefik_tls | to_json }}
-{% if matrix_hookshot_container_labels_provisioning_traefik_tls %}
-traefik.http.routers.matrix-hookshot-provisioning.tls.certResolver={{ matrix_hookshot_container_labels_provisioning_traefik_tls_certResolver }}
-{% endif %}
-
-############################################################
-#                                                          #
-# /Provisioning                                            #
 #                                                          #
 ############################################################
 {% endif %}

@@ -1,4 +1,20 @@
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
+- name: (Deprecation) Catch and report renamed matrix-synapse-auto-compressor settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+  when: "item.old in vars"
+  with_items:
+    - "old": "matrix_synapse_auto_compressor_calendar"
+      "new": "matrix_synapse_auto_compressor_schedule"
+    - "old": "matrix_synapse_auto_compressor_container_image_name_prefix"
+      "new": "matrix_synapse_auto_compressor_container_image_registry_prefix"
 
 - name: Fail if required matrix-synapse-auto-compressor settings not defined
   ansible.builtin.fail:

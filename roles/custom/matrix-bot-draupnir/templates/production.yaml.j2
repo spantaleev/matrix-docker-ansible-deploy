@@ -1,18 +1,29 @@
-# Endpoint URL that Draupnir uses to interact with the Matrix homeserver (client-server API),
+{#
+SPDX-FileCopyrightText: 2023 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2023 - 2025 Catalan Lover <catalanlover@protonmail.com>
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+# Endpoint URL that Draupnir uses to interact with the matrix homeserver (client-server API),
 # set this to the pantalaimon URL if you're using that.
-homeserverUrl: {{ matrix_bot_draupnir_homeserver_url | to_json }}
+homeserverUrl: {{ matrix_bot_draupnir_config_homeserverUrl | to_json }}
 
 # Endpoint URL that Draupnir could use to fetch events related to reports (client-server API and /_synapse/),
 # only set this to the public-internet homeserver client API URL, do NOT set this to the pantalaimon URL.
-rawHomeserverUrl: {{ matrix_bot_draupnir_raw_homeserver_url | to_json }}
+rawHomeserverUrl: {{ matrix_bot_draupnir_config_rawHomeserverUrl | to_json }}
 
 # Matrix Access Token to use, Draupnir will only use this if pantalaimon.use is false.
-accessToken: {{ matrix_bot_draupnir_access_token | to_json }}
+# This option can be loaded from a file by passing "--access-token-path <path>" at the command line,
+# which would allow using secret management systems such as systemd's service credentials.
+accessToken: {{ matrix_bot_draupnir_config_accessToken | to_json }}
 
-{% if matrix_bot_draupnir_pantalaimon_use %}
+{% if matrix_bot_draupnir_pantalaimon_use or matrix_bot_draupnir_login_native %}
 # Options related to Pantalaimon (https://github.com/matrix-org/pantalaimon)
 pantalaimon:
-  # Whether or not Draupnir will use pantalaimon to access the Matrix homeserver,
+  # Whether or not Draupnir will use pantalaimon to access the matrix homeserver,
   # set to `true` if you're using pantalaimon.
   #
   # Be sure to point homeserverUrl to the pantalaimon instance.
@@ -22,13 +33,22 @@ pantalaimon:
   use: true
 
   # The username to login with.
-  username: {{ matrix_bot_draupnir_pantalaimon_username | to_json }}
+  username: {{ matrix_bot_draupnir_login | to_json }}
 
   # The password Draupnir will login with.
   #
   # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
-  password: {{ matrix_bot_draupnir_pantalaimon_password | to_json }}
+  # This option can be loaded from a file by passing "--pantalaimon-password-path <path>" at the command line,
+  # which would allow using secret management systems such as systemd's service credentials.
+  password: {{ matrix_bot_draupnir_password | to_json }}
 {% endif %}
+
+# Experimental usage of the matrix-bot-sdk rust crypto.
+# This can not be used with Pantalaimon.
+# Make sure to setup the bot as if you are not using pantalaimon for this.
+#
+# Warning: At this time this is not considered production safe.
+experimentalRustCrypto: {{ matrix_bot_draupnir_config_experimentalRustCrypto | to_json }}
 
 # The path Draupnir will store its state/data in, leave default ("/data/storage") when using containers.
 dataPath: "/data"
@@ -51,23 +71,13 @@ recordIgnoredInvites: false
 #
 # Note: By default, Draupnir is fairly verbose - expect a lot of messages in this room.
 # (see verboseLogging to adjust this a bit.)
-managementRoom: {{ matrix_bot_draupnir_management_room | to_json }}
-
-# Deprecated and will be removed in a future version.
-# Running with verboseLogging is unsupported.
-# Whether Draupnir should log a lot more messages in the room,
-# mainly involves "all-OK" messages, and debugging messages for when Draupnir checks bans in a room.
-#verboseLogging: false
+managementRoom: {{ matrix_bot_draupnir_config_managementRoom | to_json }}
 
 # The log level of terminal (or container) output,
 # can be one of DEBUG, INFO, WARN and ERROR, in increasing order of importance and severity.
 #
 # This should be at INFO or DEBUG in order to get support for Draupnir problems.
 logLevel: "INFO"
-
-# Whether or not Draupnir should synchronize policy lists immediately after startup.
-# Equivalent to running '!draupnir sync'.
-syncOnStartup: true
 
 # Whether or not Draupnir should check moderation permissions in all protected rooms on startup.
 # Equivalent to running `!draupnir verify`.
@@ -79,13 +89,7 @@ noop: false
 
 # Whether or not Draupnir should apply `m.room.server_acl` events.
 # DO NOT change this to `true` unless you are very confident that you know what you are doing.
-disableServerACL: {{ matrix_bot_draupnir_disable_server_acl | to_json }}
-
-# Whether Draupnir should check member lists quicker (by using a different endpoint),
-# keep in mind that enabling this will miss invited (but not joined) users.
-#
-# Turn on if your bot is in (very) large rooms, or in large amounts of rooms.
-fasterMembershipChecks: false
+disableServerACL: {{ matrix_bot_draupnir_config_disableServerACL | to_json }}
 
 # A case-insensitive list of ban reasons to have the bot also automatically redact the user's messages for.
 #
@@ -101,15 +105,6 @@ fasterMembershipChecks: false
 automaticallyRedactForReasons:
   - "spam"
   - "advertising"
-
-# A list of rooms to protect. Draupnir will add this to the list it knows from its account data.
-#
-# It won't, however, add it to the account data.
-# Manually add the room via '!draupnir rooms add' to have it stay protected regardless if this config value changes.
-#
-# Note: These must be matrix.to URLs
-#protectedRooms:
-#  - "https://matrix.to/#/#matrix:example.org"
 
 # Whether or not to add all joined rooms to the "protected rooms" list
 # (excluding the management room and watched policy list rooms, see below).
@@ -131,14 +126,16 @@ protectAllJoinedRooms: false
 # of the homeserver may be more impacted.
 backgroundDelayMS: 500
 
-# Server administration commands, these commands will only work if Draupnir is
+# Server administrative features. These will only work if Draupnir is
 # a global server administrator, and the bot's server is a Synapse instance.
+# Please review https://the-draupnir-project.github.io/draupnir-documentation/bot/homeserver-administration
 admin:
-  # Whether or not Draupnir can temporarily take control of any eligible account from the local homeserver who's in the room
-  # (with enough permissions) to "make" a user an admin.
+  # Whether to enable the make admin command.
+  # This command allows Draupnir can temporarily take control of any eligible account
+  # from the local homeserver in the target room (with enough permissions) to "make" another user an admin.
   #
   # This only works if a local user with enough admin permissions is present in the room.
-  enableMakeRoomAdminCommand: false
+  enableMakeRoomAdminCommand: {{ matrix_bot_draupnir_config_admin_enableMakeRoomAdminCommand | to_json }}
 
 # Misc options for command handling and commands
 commands:
@@ -157,10 +154,6 @@ commands:
     - "draupnir_bot"
     - "draupnir"
 
-  # Whether or not commands with a wildcard (*) will require an additional `--force` argument
-  # in the command to be able to be submitted.
-  confirmWildcardBan: true
-
   # The default reasons to be prompted with if the reason is missing from a ban command.
   ban:
     defaultReasons:
@@ -178,10 +171,9 @@ commands:
 #    #
 #    # WordList will ban users who use these words when first joining a room, so take caution when selecting them.
 #    #
-#    # For advanced usage, regex can also be used, see the following links for more information;
-#    #  - https://www.digitalocean.com/community/tutorials/an-introduction-to-regular-expressions
-#    #  - https://regexr.com/
-#    #  - https://regexone.com/
+#    # The word list protection does not support regular expressions at this time.
+#    # The configuration in the past stated support for Regex erroneously.
+#    #
 #    words:
 #      - "LoReM"
 #      - "IpSuM"
@@ -195,6 +187,31 @@ commands:
 #    # Set to zero to disable the timeout and make users *always* appear "new".
 #    # (users will always be banned if they say a bad word)
 #    minutesBeforeTrusting: 20
+
+# The room state backing store writes a copy of the room state for all protected
+# rooms to the data directory.
+# It is recommended to enable this option unless you deploy Draupnir close to the
+# homeserver and know that Draupnir is starting up quickly. If your homeserver can
+# respond quickly to Draupnir's requests for `/state` then you might not need this option.
+roomStateBackingStore:
+  enabled: {{ matrix_bot_draupnir_config_roomStateBackingStore_enabled | to_json }}
+
+# Safe mode provides recovery options for some failure modes when Draupnir
+# fails to start. For example, if the bot fails to resolve a room alias in
+# a watched list, or if the server has parted from a protected room and can't
+# find a way back in. Safe mode will provide different options to recover from
+# these. Such as unprotecting the room or unwatching the policy list.
+# By default Draupnir will boot into safe mode only when the failure mode
+# is recoverable.
+# It may be desirable to prevent the bot from starting into safe mode if you have
+# a pager system when Draupnir is down, as Draupnir could prevent your monitoring
+# system from identifying a failure to start.
+#safeMode:
+#  # The option for entering safe mode when Draupnir fails to start up.
+#  # - "RecoveryOnly" will only start the bot in safe mode when there are recovery options available. This is the default.
+#  # - "Never" will never start the bot in safe mode when Draupnir fails to start normally.
+#  # - "Always" will always start the bot in safe mode when Draupnir fails to start normally.
+#  bootOption: RecoveryOnly
 
 # Options for advanced monitoring of the health of the bot.
 health:
@@ -227,18 +244,35 @@ health:
     # Defaults to 418.
     unhealthyStatus: 418
 
-{% if matrix_bot_draupnir_web_enabled %}
+  # Sentry options. Sentry is a tool used to receive/collate/triage runtime
+  # errors and performance issues. Skip this section if you do not wish to use
+  # Sentry.
+  sentry:
+    # The key used to upload Sentry data to the server.
+    # dsn: "https://XXXXXXXXX@example.com/YYY
+
+    # Frequency of performance monitoring.
+    # A number in [0.0, 1.0], where 0.0 means "don't bother with tracing"
+    # and 1.0 means "trace performance at every opportunity".
+    # tracesSampleRate: 0.5
+
+{% if matrix_bot_draupnir_config_web_enabled %}
 # Options for exposing web APIs.
 web:
   # Whether to enable web APIs.
   enabled: true
 
   # The port to expose the webserver on. Defaults to 8080.
-  port: 8080
+  port: {{ matrix_bot_draupnir_config_web_port | to_json }}
 
   # The address to listen for requests on. Defaults to only the current
   # computer.
-  address: 0.0.0.0
+  address: "0.0.0.0"
+
+  # Alternative setting to open to the entire web. Be careful,
+  # as this will increase your security perimeter:
+  #
+  #  address: "0.0.0.0"
 
   # A web API designed to intercept Matrix API
   # POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}
@@ -248,7 +282,19 @@ web:
   # to configure a reverse proxy, see e.g. test/nginx.conf
   abuseReporting:
     # Whether to enable this feature.
-    enabled: {{ matrix_bot_draupnir_abuse_reporting_enabled | to_json }}
+    enabled: {{ matrix_bot_draupnir_config_web_abuseReporting | to_json }}
+  # Whether to setup a endpoints for synapse-http-antispam
+  # https://github.com/maunium/synapse-http-antispam
+  # this is required for some features of Draupnir,
+  # such as support for room takedown policies.
+  #
+  # Please FOLLOW the instructions here:
+  # https://the-draupnir-project.github.io/draupnir-documentation/bot/synapse-http-antispam
+  synapseHTTPAntispam:
+    enabled: {{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled | to_json }}
+    # This is a secret that you must place into your synapse module config
+    # https://github.com/maunium/synapse-http-antispam?tab=readme-ov-file#configuration
+    authorization: {{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization | to_json }}
 {% endif %}
 
 # Whether or not to actively poll synapse for abuse reports, to be used
@@ -258,4 +304,4 @@ pollReports: false
 
 # Whether or not new reports, received either by webapi or polling,
 # should be printed to our managementRoom.
-displayReports: {{ matrix_bot_draupnir_display_reports | to_json }}
+displayReports: {{ matrix_bot_draupnir_config_displayReports | to_json }}

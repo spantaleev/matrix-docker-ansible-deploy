@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-conduwuit service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-conduwuit.service"
+  register: matrix_conduwuit_service_stat
+
+- when: matrix_conduwuit_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-conduwuit is stopped
+      ansible.builtin.systemd:
+        name: matrix-conduwuit
+        state: stopped
+        daemon_reload: true
+
+    - name: Ensure matrix-conduwuit.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-conduwuit.service"
+        state: absent

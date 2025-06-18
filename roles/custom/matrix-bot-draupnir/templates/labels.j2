@@ -1,3 +1,10 @@
+{#
+SPDX-FileCopyrightText: 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2025 Catalan Lover <catalanlover@protonmail.com>
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 {% if matrix_bot_draupnir_container_labels_traefik_enabled %}
 traefik.enable=true
 
@@ -5,8 +12,9 @@ traefik.enable=true
 traefik.docker.network={{ matrix_bot_draupnir_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.matrix-bot-draupnir.loadbalancer.server.port=8080
+traefik.http.services.matrix-bot-draupnir.loadbalancer.server.port={{ matrix_bot_draupnir_config_web_port }}
 
+{% if matrix_bot_draupnir_config_web_abuseReporting %}
 ############################################################
 #                                                          #
 # Abuse Reports (/_matrix/client/../rooms/../report)       #
@@ -15,32 +23,32 @@ traefik.http.services.matrix-bot-draupnir.loadbalancer.server.port=8080
 
 {% set middlewares = [] %}
 
-traefik.http.middlewares.matrix-bot-draupnir-redirect.replacepathregex.regex=^/_matrix/client/(r0|v3)/rooms/([^/]*)/report/(.*)$
-traefik.http.middlewares.matrix-bot-draupnir-redirect.replacepathregex.replacement=/api/1/report/$2/$3
+traefik.http.middlewares.matrix-bot-draupnir-web-abuseReporting-redirect.replacepathregex.regex={{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_path_regexp }}
+traefik.http.middlewares.matrix-bot-draupnir-web-abuseReporting-redirect.replacepathregex.replacement=/api/1/report/$2/$3
 
-{% set middlewares = middlewares + ['matrix-bot-draupnir-redirect'] %}
+{% set middlewares = middlewares + ['matrix-bot-draupnir-web-abuseReporting-redirect'] %}
 
-traefik.http.middlewares.matrix-bot-draupnir-cors.headers.accesscontrolalloworiginlist=*
-traefik.http.middlewares.matrix-bot-draupnir-cors.headers.accesscontrolallowheaders=Content-Type,Authorization
-traefik.http.middlewares.matrix-bot-draupnir-cors.headers.accesscontrolallowmethods=POST,OPTIONS
+traefik.http.middlewares.matrix-bot-draupnir-web-abuseReporting-cors.headers.accesscontrolalloworiginlist=*
+traefik.http.middlewares.matrix-bot-draupnir-web-abuseReporting-cors.headers.accesscontrolallowheaders=Content-Type,Authorization
+traefik.http.middlewares.matrix-bot-draupnir-web-abuseReporting-cors.headers.accesscontrolallowmethods=POST,OPTIONS
 
-{% set middlewares = middlewares + ['matrix-bot-draupnir-cors'] %}
+{% set middlewares = middlewares + ['matrix-bot-draupnir-web-abuseReporting-cors'] %}
 
-traefik.http.routers.matrix-bot-draupnir.rule={{ matrix_bot_draupnir_container_labels_traefik_rule }}
+traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.rule={{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_rule }}
 
-{% if matrix_bot_draupnir_container_labels_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-bot-draupnir.priority={{ matrix_bot_draupnir_container_labels_traefik_priority }}
+{% if matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.priority={{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_priority }}
 {% endif %}
 {% if middlewares | length > 0 %}
-traefik.http.routers.matrix-bot-draupnir.middlewares={{ middlewares | join(',') }}
+traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.middlewares={{ middlewares | join(',') }}
 {% endif %}
 
-traefik.http.routers.matrix-bot-draupnir.service=matrix-bot-draupnir
-traefik.http.routers.matrix-bot-draupnir.entrypoints={{ matrix_bot_draupnir_container_labels_traefik_entrypoints }}
-traefik.http.routers.matrix-bot-draupnir.tls={{ matrix_bot_draupnir_container_labels_traefik_tls | to_json }}
+traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.service=matrix-bot-draupnir
+traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.entrypoints={{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints }}
+traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.tls={{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls | to_json }}
 
-{% if matrix_bot_draupnir_container_labels_traefik_tls %}
-traefik.http.routers.matrix-bot-draupnir.tls.certResolver={{ matrix_bot_draupnir_container_labels_traefik_tls_certResolver }}
+{% if matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls %}
+traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.tls.certResolver={{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls_certResolver }}
 {% endif %}
 
 ############################################################
@@ -48,6 +56,7 @@ traefik.http.routers.matrix-bot-draupnir.tls.certResolver={{ matrix_bot_draupnir
 # /Abuse Reports (/_matrix/client/../rooms/../report)      #
 #                                                          #
 ############################################################
+{% endif %}
 {% endif %}
 
 {{ matrix_bot_draupnir_container_labels_traefik_labels_additional_labels }}

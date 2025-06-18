@@ -1,0 +1,125 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: jp\n"
+"Language-Team: jp <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:1
+msgid "Setting up Synapse Admin (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:3
+msgid "The playbook can install and configure [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin), community room: [#synapse-admin:etke.cc](https://matrix.to/#/#synapse-admin:etke.cc)) for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:5
+msgid "synapse-admin is a web UI tool you can use to **administrate users, rooms, media, etc. on your Matrix server**. It's designed to work with the Synapse homeserver implementation and WON'T work with Dendrite because [Dendrite Admin API](https://element-hq.github.io/dendrite/administration/adminapi) differs from [Synapse Admin API](https://element-hq.github.io/synapse/latest/usage/administration/admin_api/)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:7
+msgid "💡 **Note**: the latest version of synapse-admin is hosted by [etke.cc](https://etke.cc/) at [admin.etke.cc](https://admin.etke.cc/). If you only need this service occasionally and trust giving your admin credentials to a 3rd party Single Page Application, you can consider using it from there and avoiding the (small) overhead of self-hosting."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:9
+msgid "Adjusting DNS records (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:11
+msgid "By default, this playbook installs Synapse Admin on the `matrix.` subdomain, at the `/synapse-admin` path (https://matrix.example.com/synapse-admin). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:13
+msgid "If you wish to adjust it, see the section [below](#adjusting-the-synapse-admin-url-optional) for details about DNS configuration."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:15
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:17
+msgid "To enable Synapse Admin, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:23
+msgid "**Note**: Synapse Admin requires Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/usage/administration/admin_api/index.html) to function. Access to them is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, for additional security, we normally leave them unexposed, following [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints). Because Synapse Admin needs these APIs to function, when installing Synapse Admin, the playbook **automatically** exposes the Synapse Admin API publicly for you. Depending on the homeserver implementation you're using (Synapse, Dendrite), this is equivalent to:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:25
+msgid "for [Synapse](./configuring-playbook-synapse.md) (our default homeserver implementation): `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:26
+msgid "for [Dendrite](./configuring-playbook-dendrite.md): `matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: true`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:28
+msgid "By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/etkecc/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) — the one managed by the playbook. To adjust these restrictions, tweak the `matrix_synapse_admin_config_restrictBaseUrl` variable."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:30
+msgid "[!WARNING] If you're using [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS) for authentication, you will be able to [log into synapse-admin with an access token](https://github.com/etkecc/synapse-admin/pull/58), but certain synapse-admin features (especially those around user management) will be limited or not work at all."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:33
+msgid "Adjusting the Synapse Admin URL (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:35
+msgid "By tweaking the `matrix_synapse_admin_hostname` and `matrix_synapse_admin_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:37
+msgid "Example additional configuration for your `vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:45
+msgid "If you've changed the default hostname, you may need to create a CNAME record for the Synapse Admin domain (`admin.example.com`), which targets `matrix.example.com`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:47
+msgid "When setting, replace `example.com` with your own."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:49
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:51
+msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:58
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:60
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:62
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:64
+msgid "After installation, Synapse Admin will be accessible at: `https://matrix.example.com/synapse-admin/`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-admin.md:66
+msgid "To use Synapse Admin, you need to have [registered at least one administrator account](registering-users.md) on your server."
+msgstr ""

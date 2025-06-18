@@ -1,3 +1,10 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - ansible.builtin.set_fact:
@@ -33,8 +40,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_mautrix_discord_base_path }}", when: true}
     - {path: "{{ matrix_mautrix_discord_config_path }}", when: true}
@@ -61,7 +68,7 @@
     version: "{{ matrix_mautrix_discord_container_image_self_build_branch }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_mautrix_discord_git_pull_results
   when: "matrix_mautrix_discord_container_image_self_build | bool"
 
@@ -82,16 +89,26 @@
     content: "{{ matrix_mautrix_discord_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_discord_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-discord registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_discord_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_discord_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+
+- name: Ensure mautrix-discord support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_mautrix_discord_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - labels
 
 - name: Ensure mautrix-discord container network is created
   community.general.docker_network:

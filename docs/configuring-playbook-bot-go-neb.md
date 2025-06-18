@@ -1,34 +1,53 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Yannick Goossens
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Go-NEB (optional, unmaintained)
 
-**Note**: [Go-NEB](https://github.com/matrix-org/go-neb) is now an archived (**unmaintained**) project. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bot instead of this one.
+**Note**: [Go-NEB](https://github.com/matrix-org/go-neb) is now an archived (**unmaintained**) project. We recommend not bothering with installing it. While not a 1:1 replacement, the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md). Consider using that bot instead of this one.
 
 The playbook can install and configure [Go-NEB](https://github.com/matrix-org/go-neb) for you.
 
 Go-NEB is a Matrix bot written in Go. It is the successor to Matrix-NEB, the original Matrix bot written in Python.
 
-See the project's [documentation](https://github.com/matrix-org/go-neb) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/matrix-org/go-neb/blob/master/README.md) to learn what it does and why it might be useful to you.
 
+## Prerequisites
 
-## Registering the bot user
+### Register the bot account
 
-The playbook does not automatically create users for you. The bot requires at least 1 access token to be able to connect to your homeserver.
+The playbook does not automatically create users for you. You **need to register the bot user manually** before setting up the bot.
 
-You **need to register the bot user manually** before setting up the bot.
-
-Choose a strong password for the bot. You can generate a good password with a command like this: `pwgen -s 64 1`.
+Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
 
 You can use the playbook to [register a new user](registering-users.md):
 
-```
+```sh
 ansible-playbook -i inventory/hosts setup.yml --extra-vars='username=bot.go-neb password=PASSWORD_FOR_THE_BOT admin=no' --tags=register-user
 ```
 
-Once the user is created you can [obtain an access token](obtaining-access-tokens.md).
+### Obtain an access token
 
+The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md).
+
+> [!WARNING]
+> Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone.
+
+## Adjusting DNS records
+
+By default, this playbook installs Go-NEB on the `goneb.` subdomain (`goneb.example.com`) and requires you to create a CNAME record for `goneb`, which targets `matrix.example.com`.
+
+When setting, replace `example.com` with your own.
 
 ## Adjusting the playbook configuration
 
-To enable Go-NEB, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_FOR_GONEB_HERE` and `ACCESS_TOKEN_FOR_ANOTHER_GONEB_HERE` with the ones created [above](#obtain-an-access-token).
 
 ```yaml
 matrix_bot_go_neb_enabled: true
@@ -37,7 +56,7 @@ matrix_bot_go_neb_enabled: true
 # Use the access token you obtained in the step above.
 matrix_bot_go_neb_clients:
   - UserID: "@goneb:{{ matrix_domain }}"
-    AccessToken: "MDASDASJDIASDJASDAFGFRGER"
+    AccessToken: "ACCESS_TOKEN_FOR_GONEB_HERE"
     DeviceID: "DEVICE1"
     HomeserverURL: "{{ matrix_addons_homeserver_client_api_url }}"
     Sync: true
@@ -46,7 +65,7 @@ matrix_bot_go_neb_clients:
     AcceptVerificationFromUsers: [":{{ matrix_domain }}"]
 
   - UserID: "@another_goneb:{{ matrix_domain }}"
-    AccessToken: "MDASDASJDIASDJASDAFGFRGER"
+    AccessToken: "ACCESS_TOKEN_FOR_ANOTHER_GONEB_HERE"
     DeviceID: "DEVICE2"
     HomeserverURL: "{{ matrix_addons_homeserver_client_api_url }}"
     Sync: false
@@ -64,7 +83,7 @@ matrix_bot_go_neb_realms:
 matrix_bot_go_neb_sessions:
   - SessionID: "your_github_session"
     RealmID: "github_realm"
-    UserID: "@YOUR_USER_ID:{{ matrix_domain }}" # This needs to be the username of the person that's allowed to use the !github commands
+    UserID: "@alice:{{ matrix_domain }}" # This needs to be the username of the person that's allowed to use the !github commands
     Config:
       # Populate these fields by generating a "Personal Access Token" on github.com
       AccessToken: "YOUR_GITHUB_ACCESS_TOKEN"
@@ -107,7 +126,7 @@ matrix_bot_go_neb_services:
       api_key: "AIzaSyA4FD39m9"
       cx: "AIASDFWSRRtrtr"
 
-# Get a key via https://api.imgur.com/oauth2/addclient
+# Obtain a key via https://api.imgur.com/oauth2/addclient
 # Select "oauth2 without callback url"
   - ID: "imgur_service"
     Type: "imgur"
@@ -151,7 +170,7 @@ matrix_bot_go_neb_services:
     UserID: "@another_goneb:{{ matrix_domain }}"
     Config:
       RealmID: "github_realm"
-      ClientUserID: "@YOUR_USER_ID:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
+      ClientUserID: "@alice:{{ matrix_domain }}" # needs to be an authenticated user so Go-NEB can create webhooks. Check the UserID field in the github_realm in matrix_bot_go_neb_sessions.
       Rooms:
         "!qporfwt:example.com":
           Repos:
@@ -192,46 +211,57 @@ matrix_bot_go_neb_services:
           msg_type: "m.text"  # Must be either `m.text` or `m.notice`
 ```
 
-### Adjusting the Go-NEB URL
-
-By default, this playbook installs Go-NEB on the `goneb.` subdomain (`goneb.example.com`) and requires you to [adjust your DNS records](#adjusting-dns-records).
+### Adjusting the Go-NEB URL (optional)
 
 By tweaking the `matrix_bot_go_neb_hostname` and `matrix_bot_go_neb_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
-Example additional configuration for your `inventory/host_vars/matrix.example.com/vars.yml` file:
+Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.example.com`),
 # so we won't need to add additional DNS records for Go-NEB.
 matrix_bot_go_neb_hostname: "{{ matrix_server_fqn_matrix }}"
 
-# Expose under the /buscarron subpath
+# Expose under the /go-neb subpath
 matrix_bot_go_neb_path_prefix: /go-neb
 ```
 
-## Adjusting DNS records
-
-Once you've decided on the domain and path, **you may need to adjust your DNS** records to point the Go-NEB domain to the Matrix server.
-
-By default, you will need to create a CNAME record for `goneb`. See [Configuring DNS](configuring-dns.md) for details about DNS changes.
+After changing the domain, **you may need to adjust your DNS** records to point the Go-NEB domain to the Matrix server.
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
+### Extending the configuration
+
+There are some additional things you may wish to configure about the bot.
+
+Take a look at:
+
+- `roles/custom/matrix-bot-go-neb/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-bot-go-neb/templates/config.yaml.j2` for the bot's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_go_neb_configuration_extension_yaml` variable
+
 ## Installing
 
-After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the [installation](installing.md) command:
+After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:
 
-```
+<!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
+```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
+
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 
-To use the bot, invite it to any existing Matrix room (`/invite @whatever_you_chose:example.com` where `example.com` is your base domain, not the `matrix.` domain, make sure you have permission from the room owner if that's not you).
+To use the bot, invite it to any existing Matrix room (`/invite @bot.go-neb:example.com` where `example.com` is your base domain, not the `matrix.` domain). Make sure you are granted with the sufficient permission if you are not the room owner.
 
 Basic usage is like this: `!echo hi` or `!imgur puppies` or `!giphy matrix`
 
-If you enabled the github_cmd service you can get the supported commands via `!github help`
+If you enabled the github_cmd service, send `!github help` to the bot in the room to see the available commands.
 
 You can also refer to the upstream [Documentation](https://github.com/matrix-org/go-neb).
+
+## Troubleshooting
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-go-neb`.

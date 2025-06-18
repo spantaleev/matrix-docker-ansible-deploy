@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 László Várady
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Project source code URL: https://github.com/ajbura/cinny
 
@@ -7,9 +17,11 @@ matrix_client_cinny_container_image_self_build: false
 matrix_client_cinny_container_image_self_build_repo: "https://github.com/ajbura/cinny.git"
 
 # renovate: datasource=docker depName=ajbura/cinny
-matrix_client_cinny_version: v4.2.3
-matrix_client_cinny_docker_image: "{{ matrix_client_cinny_docker_image_name_prefix }}ajbura/cinny:{{ matrix_client_cinny_version }}"
-matrix_client_cinny_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_cinny_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_client_cinny_version: v4.8.1
+matrix_client_cinny_docker_image: "{{ matrix_client_cinny_docker_image_registry_prefix }}ajbura/cinny:{{ matrix_client_cinny_version }}"
+matrix_client_cinny_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_cinny_container_image_self_build else matrix_client_cinny_docker_image_registry_prefix_upstream }}"
+matrix_client_cinny_docker_image_registry_prefix_upstream: "{{ matrix_client_cinny_docker_image_registry_prefix_upstream_default }}"
+matrix_client_cinny_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_client_cinny_docker_image_force_pull: "{{ matrix_client_cinny_docker_image.endswith(':latest') }}"
 
 matrix_client_cinny_data_path: "{{ matrix_base_data_path }}/client-cinny"
@@ -143,8 +155,30 @@ matrix_client_cinny_path_prefix: /
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_client_cinny_self_check_validate_certificates: true
 
-# config.json
+# Default homeserver URL to use in the `config.json` file.
+# See `matrix_client_cinny_config_homeserverList`.
 matrix_client_cinny_default_hs_url: ""
+
+# Controls the `defaultHomeserver` value in the `config.json` file.
+matrix_client_cinny_config_defaultHomeserver: 0  # noqa var-naming
+
+# Controls the `homeserverList` value in the `config.json` file.
+matrix_client_cinny_config_homeserverList: "{{ [matrix_client_cinny_default_hs_url] }}"  # noqa var-naming
+
+# Controls the `allowCustomHomeservers` value in the `config.json` file.
+matrix_client_cinny_config_allowCustomHomeservers: true  # noqa var-naming
+
+# Controls the `featuredCommunities.spaces` value in the `config.json` file.
+matrix_client_cinny_config_featuredCommunities_spaces: []  # noqa var-naming
+
+# Controls the `featuredCommunities.rooms` value in the `config.json` file.
+matrix_client_cinny_config_featuredCommunities_rooms: []  # noqa var-naming
+
+# Controls the `featuredCommunities.servers` value in the `config.json` file.
+matrix_client_cinny_config_featuredCommunities_servers: ["matrix.org"]  # noqa var-naming
+
+# Controls the `featuredCommunities.openAsDefault` value in the `config.json` file.
+matrix_client_cinny_config_featuredCommunities_openAsDefault: false  # noqa var-naming
 
 # Default Cinny configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.

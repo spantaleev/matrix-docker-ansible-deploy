@@ -1,0 +1,278 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2024, Slavi Pantaleev, Aine Etke, MDAD community
+# members
+# This file is distributed under the same license as the
+# matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: jp\n"
+"Language-Team: jp <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: ../../../docs/configuring-playbook-synapse.md:1
+msgid "Configuring Synapse (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:3
+msgid "By default, this playbook configures the [Synapse](https://github.com/element-hq/synapse) Matrix server, so that it works for the general case. If that's okay, you can skip this document."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:5
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:7
+msgid "Load balancing with workers"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:9
+msgid "To have Synapse gracefully handle thousands of users, worker support should be enabled. It factors out some homeserver tasks and spreads the load of incoming client and server-to-server traffic between multiple processes. More information can be found in the [official Synapse workers documentation](https://github.com/element-hq/synapse/blob/master/docs/workers.md) and [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:11
+msgid "To enable Synapse worker support, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:19
+msgid "By default, this enables the `one-of-each` [worker preset](#worker-presets), but you may wish to use another preset or [control the number of worker instances](#controlling-the-number-of-worker-instances)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:21
+msgid "Worker presets"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:23
+msgid "We support a few configuration presets (`matrix_synapse_workers_preset: one-of-each` being the default configuration right now):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:25
+msgid "(federation-only) `little-federation-helper` — a very minimal worker configuration to improve federation performance"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:26
+msgid "(generic) `one-of-each` — defaults to one worker of each supported type — no smart routing, just generic workers"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:27
+msgid "(specialized) `specialized-workers` — defaults to one worker of each supported type, but disables generic workers and uses [specialized workers](#specialized-workers) instead"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:29
+msgid "These presets represent a few common configurations. There are many worker types which can be mixed and matched based on your needs."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:31
+msgid "Generic workers"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:33
+msgid "Previously, the playbook only supported the most basic type of load-balancing. We call it **generic load-balancing** below, because incoming HTTP requests are sent to a generic worker. Load-balancing was done based on the requestor's IP address. This is simple, but not necessarily optimal. If you're accessing your account from multiple IP addresses (e.g. your mobile phone being on a different network than your PC), these separate requests may potentially be routed to different workers, each of which would need to cache roughly the same data."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:35
+msgid "This is **still the default load-balancing method (preset) used by the playbook**."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:37
+msgid "To use generic load-balancing, do not specify `matrix_synapse_workers_preset` to make it use the default value (`one-of-each`), or better yet — explicitly set it as `one-of-each`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:39
+msgid "You may also consider [tweaking the number of workers of each type](#controlling-the-number-of-worker-instances) from the default (one of each)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:41
+msgid "Specialized workers"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:43
+msgid "The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requestor's IP adddress, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** — the access token (username) of the requestor and/or on the resource (room, etc.) being requested."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:45
+msgid "The playbook supports these **4 types** of specialized workers:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:47
+msgid "Room workers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) & [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs dedicated to handling specific rooms"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:48
+msgid "Sync workers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs related to synchronization (most notably [the `/sync` endpoint](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3sync))"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:49
+msgid "Client readers — handles various [Client-Server](https://spec.matrix.org/v1.9/client-server-api/) APIs which are not for specific rooms (handled by **room workers**) or for synchronization (handled by **sync workers**)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:50
+msgid "Federation readers — handles various [Federation](https://spec.matrix.org/v1.9/server-server-api) APIs which are not for specific rooms (handled by **room workers**)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:52
+msgid "To use specialized load-balancing, consider enabling the `specialized-workers` [worker preset](#worker-presets) and potentially [tweaking the number of workers of each type](#controlling-the-number-of-worker-instances) from the default (one of each)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:54
+msgid "Controlling the number of worker instances"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:56
+msgid "If you'd like more customization power, you can start with one of the [worker presets](#worker-presets) and then tweak various `matrix_synapse_workers_*_count` variables manually."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:58
+msgid "To find what variables are available for you to override in your own `vars.yml` configuration file, see the [`defaults/main.yml` file for the `matrix-synapse` Ansible role](../roles/custom/matrix-synapse/defaults/main.yml)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:60
+msgid "The only thing you **cannot** do is mix [generic workers](#generic-workers) and [specialized workers](#specialized-workers)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:62
+msgid "Effect of enabling workers on the rest of your server"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:64
+msgid "When Synapse workers are enabled, the integrated [Postgres database is tuned](maintenance-postgres.md#tuning-postgresql), so that the maximum number of Postgres connections are increased from `200` to `500`. If you need to decrease or increase the number of maximum Postgres connections further, use the `postgres_max_connections` variable."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:66
+msgid "A separate Ansible role (`matrix-synapse-reverse-proxy-companion`) and component handles load-balancing for workers. This role/component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:68
+msgid "In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/element-hq/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:70
+msgid "Synapse + OpenID Connect for Single-Sign-On"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:72
+msgid "💡 An alternative to setting up OIDC in Synapse is to use [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS). Newer clients (like Element X) only support SSO-based authentication via MAS and not via the legacy Synapse OIDC setup described below. That said, MAS is still a new experimental service which comes with its own downsides. Consult its documentation to learn if it will be a good fit for your deployment."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:74
+msgid "If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional configuration."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:76
+msgid "This example configuration is for [keycloak](https://www.keycloak.org/), an opensource Identity Provider maintained by Red Hat."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:78
+msgid "For more detailed documentation on available options and how to setup keycloak, see the [Synapse documentation on OpenID Connect with keycloak](https://github.com/element-hq/synapse/blob/develop/docs/openid.md#keycloak)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:80
+#, python-format
+msgid "In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:101
+msgid "Customizing templates"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:103
+msgid "[Templates](https://github.com/element-hq/synapse/blob/develop/docs/templates.md) are used by Synapse for showing **certain web pages** handled by the server, as well as for **email notifications**."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:105
+msgid "This playbook allows you to customize the default templates (see the [`synapse/res/templates` directory](https://github.com/element-hq/synapse/tree/develop/synapse/res/templates))."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:107
+msgid "If template customization is enabled, the playbook will build a custom container image based on the official one."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:109
+msgid "Your custom templates need to live in a public or private git repository. This repository will be cloned during Synapse image customization (during the playbook run)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:111
+msgid "To enable template customizations, add the following configuration to your `vars.yml` file (adapt to your needs):"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:137
+msgid "As mentioned in Synapse's Templates documentation, Synapse will fall back to its own templates if a template is not found in that directory. Due to this, it's recommended to only store and maintain template files in your repository if you need to make custom changes. Other files (which you don't need to change), should not be duplicated, so that you don't need to worry about getting out-of-sync with the original Synapse templates."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:139
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:141
+msgid "There are some additional things you may wish to configure about the server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:143
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:145
+msgid "`roles/custom/matrix-synapse/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:146
+msgid "`roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_synapse_configuration_extension_yaml` variable"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:148
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:150
+msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:157
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:159
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:161
+msgid "Usage"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:163
+msgid "Synapse Admin"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:165
+msgid "With [Synapse Admin](configuring-playbook-synapse-admin.md), certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:167
+msgid "The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:169
+msgid "Monitoring Synapse Metrics with Prometheus and Grafana"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:171
+msgid "This playbook allows you to enable Synapse metrics, which can provide insight into the performance and activity of Synapse."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:173
+msgid "To enable Synapse runtime metrics see: [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:175
+msgid "To enable Synapse usage metrics, see: [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)"
+msgstr ""

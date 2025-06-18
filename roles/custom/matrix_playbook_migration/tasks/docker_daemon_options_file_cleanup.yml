@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# ansible-role-docker creates the Docker daemon options file (`/etc/docker/daemon.json`) when options are set
+# via `matrix_playbook_docker_installation_daemon_options` (which influences the `docker_daemon_options` variable of the role).
+# See: https://github.com/geerlingguy/ansible-role-docker/blob/acade8d01f11bcd5efecba6d8211138d7567ce4b/tasks/main.yml#L53-L66
+#
+# However, it doesn't delete the file when the options list is empty.
+#
+# This means that people who previously force-disabled IPv6 (and injected `{'ipv6': false}` options, etc)
+# or had some other custom options had that file created for them.
+# Later, when they stopped setting these options, they were stuck with the configuration file that still retained them.
+#
+# Here, we make the file go away of no options are set.
+# Ideally, this task would be part of the `ansible-role-docker` role, but it's not (yet).
+# See: https://github.com/geerlingguy/ansible-role-docker/pull/498
+- name: Ensure the Docker daemon options file is deleted when no longer needed
+  when: matrix_playbook_docker_installation_daemon_options.keys() | length == 0
+  ansible.builtin.file:
+    path: "{{ matrix_playbook_docker_installation_daemon_options_file_path }}"
+    state: absent
+  notify: restart docker

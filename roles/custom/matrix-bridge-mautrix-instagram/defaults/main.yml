@@ -1,3 +1,15 @@
+# SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2021 Marcus Proest
+# SPDX-FileCopyrightText: 2022 - 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 László Várady
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Adrien le Maire
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # mautrix-instagram is a Matrix <-> Instagram bridge
 # Project source code URL: https://github.com/mautrix/instagram
@@ -11,8 +23,10 @@ matrix_mautrix_instagram_container_image_self_build_repo_version: "{{ 'master' i
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/instagram
 matrix_mautrix_instagram_version: v0.3.1
 # See: https://mau.dev/tulir/mautrix-instagram/container_registry
-matrix_mautrix_instagram_docker_image: "{{ matrix_mautrix_instagram_docker_image_name_prefix }}mautrix/instagram:{{ matrix_mautrix_instagram_version }}"
-matrix_mautrix_instagram_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_instagram_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_instagram_docker_image: "{{ matrix_mautrix_instagram_docker_image_registry_prefix }}mautrix/instagram:{{ matrix_mautrix_instagram_version }}"
+matrix_mautrix_instagram_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_instagram_container_image_self_build else matrix_mautrix_instagram_docker_image_registry_prefix_upstream }}"
+matrix_mautrix_instagram_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_instagram_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_instagram_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_mautrix_instagram_docker_image_force_pull: "{{ matrix_mautrix_instagram_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_instagram_base_path: "{{ matrix_base_data_path }}/mautrix-instagram"
@@ -169,6 +183,7 @@ matrix_mautrix_instagram_registration_yaml: |
   sender_localpart: _bot_{{ matrix_mautrix_instagram_appservice_bot_username }}
   rate_limited: false
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
 
 matrix_mautrix_instagram_registration: "{{ matrix_mautrix_instagram_registration_yaml | from_yaml }}"
 

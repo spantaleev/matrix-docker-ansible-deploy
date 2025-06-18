@@ -1,3 +1,16 @@
+# SPDX-FileCopyrightText: 2019 - 2020 MDAD project contributors
+# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2020 Stuart Mumford
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - ansible.builtin.set_fact:
@@ -43,8 +56,8 @@
     path: "{{ item }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - "{{ matrix_appservice_discord_base_path }}"
     - "{{ matrix_appservice_discord_config_path }}"
@@ -80,16 +93,16 @@
     content: "{{ matrix_appservice_discord_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_discord_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure AppService Discord registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_discord_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_discord_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 # If `matrix_appservice_discord_client_id` hasn't changed, the same invite link would be generated.
 # We intentionally suppress Ansible changes.
