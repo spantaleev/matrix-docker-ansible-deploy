@@ -1,0 +1,62 @@
+---
+
+- name: Ensure Fluffygate paths exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  with_items:
+    - "{{ matrix_fluffygate_base_path }}"
+    - "{{ matrix_fluffygate_config_path }}"
+    - "{{ matrix_fluffygate_data_path }}"
+
+- name: Ensure Fluffygate config installed
+  ansible.builtin.copy:
+    content: "{{ matrix_fluffygate_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_fluffygate_config_path }}/config.yaml"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Firebase key file is created when enabled
+  ansible.builtin.copy:
+    content: "{{ matrix_fluffygate_firebase_key }}"
+    dest: "{{ matrix_fluffygate_data_path }}/firebase-key.json"
+    mode: 0600
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: matrix_fluffygate_firebase_key != ''
+
+- name: Ensure Fluffygate labels installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_fluffygate_base_path }}/labels"
+    mode: 0640
+    owner: "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+
+- name: Ensure Fluffygate image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_fluffygate_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_fluffygate_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_fluffygate_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure Fluffygate container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_fluffygate_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Ensure matrix-fluffygate.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-fluffygate.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-fluffygate.service"
+    mode: 0644
