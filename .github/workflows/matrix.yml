@@ -24,10 +24,14 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
+
       - name: Run ansible-lint
-        uses: ansible-community/ansible-lint-action@v6.17.0
+        uses: ansible/ansible-lint@v25.6.1
         with:
-          path: roles/custom
+          args: "roles/custom"
+          setup_python: "true"
+          working_directory: ""
+          requirements_file: requirements.yml
   precommit:
     name: Run pre-commit
     runs-on: ubuntu-latest
