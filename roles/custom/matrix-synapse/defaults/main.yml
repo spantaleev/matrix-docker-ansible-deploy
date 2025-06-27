@@ -1426,6 +1426,10 @@ matrix_synapse_ext_synapse_http_antispam_config_base_url: ''
 # homeserver a lot like how AS authentication is done. This is fully managed
 # the same way AS authentication is by the playbook.
 matrix_synapse_ext_synapse_http_antispam_config_authorization: ''
+# This controls if the module will ping the consumer or not for ease of troubleshooting. This defaults
+# to enabled to help assure users that the connection is working.
+# Due to that its only a single log line per worker per startup this default is deemed acceptable.
+matrix_synapse_ext_synapse_http_antispam_config_do_ping: true
 # This controls what callbacks are activated. This list is fully dependent on what consumer is in play.
 # And what capabilities said consumer should or shouldn't have. There are also performance implications
 # to these choices.
@@ -1440,6 +1444,7 @@ matrix_synapse_ext_synapse_http_antispam_config: "{{ matrix_synapse_ext_synapse_
 matrix_synapse_ext_synapse_http_antispam_config_yaml: |
   base_url: {{ matrix_synapse_ext_synapse_http_antispam_config_base_url | to_json }}
   authorization: {{ matrix_synapse_ext_synapse_http_antispam_config_authorization | to_json }}
+  do_ping: {{ matrix_synapse_ext_synapse_http_antispam_config_do_ping | to_json }}
   enabled_callbacks: {{ matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks | to_json }}
   fail_open: {{ matrix_synapse_ext_synapse_http_antispam_config_fail_open | to_json }}
   async: {{ matrix_synapse_ext_synapse_http_antispam_config_async | to_json }}
