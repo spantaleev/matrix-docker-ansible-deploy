@@ -50,8 +50,8 @@ If a specific setting you'd like to change does not have a dedicated Ansible var
 
 ```yaml
 matrix_continuwuity_environment_variables_extension: |
-  continuwuity_MAX_REQUEST_SIZE=50000000
-  continuwuity_REQUEST_TIMEOUT=60
+  CONTINUWUITY_MAX_REQUEST_SIZE=50000000
+  CONTINUWUITY_REQUEST_TIMEOUT=60
 ```
 
 ## Creating the first user account
