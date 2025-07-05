@@ -7,8 +7,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
 ### continuwuity Configuration
-### See:
-### https://continuwuity.org/configuration
+### For more information, see:
+### https://continuwuity.org/configuration.html
 
 [global]
 
@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 # suffix for user and room IDs/aliases.
 #
 # See the docs for reverse proxying and delegation:
-# https://continuwuity.org/deploying/generic#setting-up-the-reverse-proxy
+# https://continuwuity.org/deploying/generic.html#setting-up-the-reverse-proxy
 #
 # Also see the `[global.well_known]` config section at the very bottom.
 #
@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 # YOU NEED TO EDIT THIS. THIS CANNOT BE CHANGED AFTER WITHOUT A DATABASE
 # WIPE.
 #
-# example: "continuwuity.woof"
+# example: "continuwuity.org"
 #
 server_name = {{ matrix_continuwuity_config_server_name | to_json }}
 
@@ -44,7 +44,7 @@ address = "0.0.0.0"
 # The port(s) continuwuity will listen on.
 #
 # For reverse proxying, see:
-# https://continuwuity.org/deploying/generic#setting-up-the-reverse-proxy
+# https://continuwuity.org/deploying/generic.html#setting-up-the-reverse-proxy
 #
 # If you are using Docker, don't change this, you'll need to map an
 # external port to this.
@@ -59,8 +59,9 @@ port = {{ matrix_continuwuity_config_port_number }}
 # listening on a UNIX socket, you MUST remove/comment the `address` key.
 #
 # Remember to make sure that your reverse proxy has access to this socket
-# file, either by adding your reverse proxy to the 'continuwuity' group or
-# granting world R/W permissions with `unix_socket_perms` (666 minimum).
+# file, either by adding your reverse proxy to the appropriate user group
+# or granting world R/W permissions with `unix_socket_perms` (666
+# minimum).
 #
 # example: "/run/continuwuity/continuwuity.sock"
 #
@@ -70,8 +71,8 @@ port = {{ matrix_continuwuity_config_port_number }}
 #
 #unix_socket_perms = 660
 
-# This is the only directory where continuwuity will save its data, including
-# media. Note: this was previously "/var/lib/matrix-conduit".
+# This is the only directory where continuwuity will save its data,
+# including media. Note: this was previously "/var/lib/matrix-conduit".
 #
 # YOU NEED TO EDIT THIS.
 #
@@ -79,9 +80,9 @@ port = {{ matrix_continuwuity_config_port_number }}
 #
 database_path = "/var/lib/continuwuity"
 
-# continuwuity supports online database backups using RocksDB's Backup engine
-# API. To use this, set a database backup path that continuwuity can write
-# to.
+# continuwuity supports online database backups using RocksDB's Backup
+# engine API. To use this, set a database backup path that continuwuity
+# can write to.
 #
 # For more information, see:
 # https://continuwuity.org/maintenance.html#backups
@@ -108,17 +109,13 @@ database_path = "/var/lib/continuwuity"
 new_user_displayname_suffix = {{ matrix_continuwuity_config_new_user_displayname_suffix | to_json }}
 
 # If enabled, continuwuity will send a simple GET request periodically to
-# `https://pupbrain.dev/check-for-updates/stable` for any new
-# announcements made. Despite the name, this is not an update check
-# endpoint, it is simply an announcement check endpoint.
-#
-# This is disabled by default as this is rarely used except for security
-# updates or major updates.
+# `https://continuwuity.org/.well-known/continuwuity/announcements` for any new
+# announcements or major updates. This is not an update check endpoint.
 #
 allow_check_for_updates = {{ matrix_continuwuity_config_allow_check_for_updates | to_json }}
 
-# Set this to any float value to multiply continuwuity's in-memory LRU caches
-# with such as "auth_chain_cache_capacity".
+# Set this to any float value to multiply continuwuity's in-memory LRU
+# caches with such as "auth_chain_cache_capacity".
 #
 # May be useful if you have significant memory to spare to increase
 # performance.
@@ -192,14 +189,6 @@ allow_check_for_updates = {{ matrix_continuwuity_config_allow_check_for_updates 
 
 # This item is undocumented. Please contribute documentation for it.
 #
-#server_visibility_cache_capacity = varies by system
-
-# This item is undocumented. Please contribute documentation for it.
-#
-#user_visibility_cache_capacity = varies by system
-
-# This item is undocumented. Please contribute documentation for it.
-#
 #stateinfo_cache_capacity = varies by system
 
 # This item is undocumented. Please contribute documentation for it.
@@ -259,7 +248,7 @@ allow_check_for_updates = {{ matrix_continuwuity_config_allow_check_for_updates 
 #
 # If you are running continuwuity in a container environment, this config
 # option may need to be enabled. For more details, see:
-# https://continuwuity.org/troubleshooting#potential-dns-issues-when-using-docker
+# https://continuwuity.org/troubleshooting.html#potential-dns-issues-when-using-docker
 #
 #query_over_tcp_only = false
 
@@ -372,6 +361,26 @@ max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 #
 #pusher_idle_timeout = 15
 
+# Maximum time to receive a request from a client (seconds).
+#
+#client_receive_timeout = 75
+
+# Maximum time to process a request received from a client (seconds).
+#
+#client_request_timeout = 180
+
+# Maximum time to transmit a response to a client (seconds)
+#
+#client_response_timeout = 120
+
+# Grace period for clean shutdown of client requests (seconds).
+#
+#client_shutdown_timeout = 10
+
+# Grace period for clean shutdown of federation requests (seconds).
+#
+#sender_shutdown_timeout = 5
+
 # Enables registration. If set to false, no users can register on this
 # server.
 #
@@ -384,17 +393,27 @@ max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 #
 allow_registration = {{ matrix_continuwuity_config_allow_registration | to_json }}
 
-yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = {{ matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse | to_json }}
-
-allow_federation = {{ matrix_continuwuity_config_allow_federation | to_json }}
-
-# This item is undocumented. Please contribute documentation for it.
+# If registration is enabled, and this setting is true, new users
+# registered after the first admin user will be automatically suspended
+# and will require an admin to run `!admin users unsuspend <user_id>`.
 #
-#yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = false
+# Suspended users are still able to read messages, make profile updates,
+# leave rooms, and deactivate their account, however cannot send messages,
+# invites, or create/join or otherwise modify rooms.
+# They are effectively read-only.
+#
+suspend_on_register = {{ matrix_continuwuity_config_suspend_on_register | to_json }}
+
+# Enabling this setting opens registration to anyone without restrictions.
+# This makes your server vulnerable to abuse
+#
+yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = {{ matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse | to_json }}
 
 # A static registration token that new users will have to provide when
 # creating an account. If unset and `allow_registration` is true,
-# registration is open without any condition.
+# you must set
+# `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`
+# to true to allow open registration without any conditions.
 #
 # YOU NEED TO EDIT THIS OR USE registration_token_file.
 #
@@ -402,8 +421,9 @@ allow_federation = {{ matrix_continuwuity_config_allow_federation | to_json }}
 #
 registration_token = {{ matrix_continuwuity_config_registration_token | to_json }}
 
-# Path to a file on the system that gets read for the registration token.
-# this config option takes precedence/priority over "registration_token".
+# Path to a file on the system that gets read for additional registration
+# tokens. Multiple tokens can be added if you separate them with
+# whitespace
 #
 # continuwuity must be able to access the file, and it must not be empty
 #
@@ -418,11 +438,20 @@ registration_token = {{ matrix_continuwuity_config_registration_token | to_json 
 # Controls whether federation is allowed or not. It is not recommended to
 # disable this after the fact due to potential federation breakage.
 #
-#allow_federation = true
+allow_federation = {{ matrix_continuwuity_config_allow_federation | to_json }}
 
-# This item is undocumented. Please contribute documentation for it.
+# Allows federation requests to be made to itself
+#
+# This isn't intended and is very likely a bug if federation requests are
+# being sent to yourself. This currently mainly exists for development
+# purposes.
 #
 #federation_loopback = false
+
+# Always calls /forget on behalf of the user if leaving a room. This is a
+# part of MSC4267 "Automatically forgetting rooms on leave"
+#
+#forget_forced_upon_leave = false
 
 # Set this to true to require authentication on the normally
 # unauthenticated profile retrieval endpoints (GET)
@@ -501,9 +530,9 @@ registration_token = {{ matrix_continuwuity_config_registration_token | to_json 
 
 # Default room version continuwuity will create rooms with.
 #
-# Per spec, room version 10 is the default.
+# Per spec, room version 11 is the default.
 #
-#default_room_version = 10
+#default_room_version = 11
 
 # This item is undocumented. Please contribute documentation for it.
 #
@@ -568,9 +597,9 @@ registration_token = {{ matrix_continuwuity_config_registration_token | to_json 
 # Currently, continuwuity doesn't support inbound batched key requests, so
 # this list should only contain other Synapse servers.
 #
-# example: ["matrix.org", "envs.net", "constellatory.net", "tchncs.de"]
+# example: ["matrix.org", "tchncs.de"]
 #
-trusted_servers = {{ matrix_continuwuity_trusted_servers | to_json }}
+trusted_servers = {{ matrix_continuwuity_config_trusted_servers | to_json }}
 
 # Whether to query the servers listed in trusted_servers first or query
 # the origin server first. For best security, querying the origin server
@@ -627,8 +656,9 @@ log = {{ matrix_continuwuity_config_log | to_json }}
 #
 #log_span_events = "none"
 
-# Configures whether continuwuity_LOG EnvFilter matches values using regular
-# expressions. See the tracing_subscriber documentation on Directives.
+# Configures whether CONTINUWUITY_LOG EnvFilter matches values using
+# regular expressions. See the tracing_subscriber documentation on
+# Directives.
 #
 #log_filter_regex = true
 
@@ -664,13 +694,17 @@ log = {{ matrix_continuwuity_config_log | to_json }}
 # ("turn_secret"), It is recommended to use a shared secret over static
 # credentials.
 #
-#turn_username = false
+{% if matrix_continuwuity_config_turn_username != ''  %}
+turn_username = {{ matrix_continuwuity_config_turn_username | to_json }}
+{% endif %}
 
 # Static TURN password to provide the client if not using a shared secret
 # ("turn_secret"). It is recommended to use a shared secret over static
 # credentials.
 #
-#turn_password = false
+{% if matrix_continuwuity_config_turn_password != '' %}
+turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
+{% endif %}
 
 # Vector list of TURN URIs/servers to use.
 #
@@ -689,16 +723,8 @@ turn_uris = {{ matrix_continuwuity_config_turn_uris | to_json }}
 # This is more secure, but if needed you can use traditional static
 # username/password credentials.
 #
-#turn_secret = false
 {% if matrix_continuwuity_config_turn_secret != '' %}
 turn_secret = {{ matrix_continuwuity_config_turn_secret | to_json }}
-{% endif %}
-
-# If you have your TURN server configured to use a username and password
-# you can provide these information too. In this case comment out `turn_secret above`!
-{% if matrix_continuwuity_config_turn_username != '' or matrix_continuwuity_config_turn_password != '' %}
-turn_username = {{ matrix_continuwuity_config_turn_username | to_json }}
-turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 {% endif %}
 
 # TURN secret to use that's read from the file path specified.
@@ -714,12 +740,12 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 #
 #turn_ttl = 86400
 
-# List/vector of room IDs or room aliases that continuwuity will make newly
-# registered users join. The rooms specified must be rooms that you have
-# joined at least once on the server, and must be public.
+# List/vector of room IDs or room aliases that continuwuity will make
+# newly registered users join. The rooms specified must be rooms that you
+# have joined at least once on the server, and must be public.
 #
-# example: ["#continuwuity:puppygock.gay",
-# "!eoIzvAvVwY23LPDay8:puppygock.gay"]
+# example: ["#continuwuity:continuwuity.org",
+# "!main-1:continuwuity.org"]
 #
 #auto_join_rooms = []
 
@@ -742,10 +768,10 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 #
 #auto_deactivate_banned_room_attempts = false
 
-# RocksDB log level. This is not the same as continuwuity's log level. This
-# is the log level for the RocksDB engine/library which show up in your
-# database folder/path as `LOG` files. continuwuity will log RocksDB errors
-# as normal through tracing or panics if severe for safety.
+# RocksDB log level. This is not the same as continuwuity's log level.
+# This is the log level for the RocksDB engine/library which show up in
+# your database folder/path as `LOG` files. continuwuity will log RocksDB
+# errors as normal through tracing or panics if severe for safety.
 #
 #rocksdb_log_level = "error"
 
@@ -806,7 +832,7 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 
 # Type of RocksDB database compression to use.
 #
-# Available options are "zstd", "zlib", "bz2", "lz4", or "none".
+# Available options are "zstd", "bz2", "lz4", or "none".
 #
 # It is best to use ZSTD as an overall good balance between
 # speed/performance, storage, IO amplification, and CPU usage. For more
@@ -827,6 +853,9 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 # magic number and translated to the library's default compression level
 # as they all differ. See their `kDefaultCompressionLevel`.
 #
+# Note when using the default value we may override it with a setting
+# tailored specifically for continuwuity.
+#
 #rocksdb_compression_level = 32767
 
 # Level of compression the specified compression algorithm for the
@@ -840,6 +869,9 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 # less likely for this data to be used. Research your chosen compression
 # algorithm.
 #
+# Note when using the default value we may override it with a setting
+# tailored specifically for continuwuity.
+#
 #rocksdb_bottommost_compression_level = 32767
 
 # Whether to enable RocksDB's "bottommost_compression".
@@ -851,7 +883,7 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 #
 # See https://github.com/facebook/rocksdb/wiki/Compression for more details.
 #
-#rocksdb_bottommost_compression = false
+#rocksdb_bottommost_compression = true
 
 # Database recovery mode (for RocksDB WAL corruption).
 #
@@ -878,7 +910,7 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 # 0 = AbsoluteConsistency
 # 1 = TolerateCorruptedTailRecords (default)
 # 2 = PointInTime (use me if trying to recover)
-# 3 = SkipAnyCorruptedRecord (you now voided your continuwuity warranty)
+# 3 = SkipAnyCorruptedRecord (you now voided your Continuwuity warranty)
 #
 # For more information on these modes, see:
 # https://github.com/facebook/rocksdb/wiki/WAL-Recovery-Modes
@@ -896,6 +928,20 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 # https://github.com/facebook/rocksdb/wiki/Online-Verification#columnfamilyoptionsparanoid_file_checks
 #
 #rocksdb_paranoid_file_checks = false
+
+# Enables or disables checksum verification in rocksdb at runtime.
+# Checksums are usually hardware accelerated with low overhead; they are
+# enabled in rocksdb by default. Older or slower platforms may see gains
+# from disabling.
+#
+#rocksdb_checksums = true
+
+# Enables the "atomic flush" mode in rocksdb. This option is not intended
+# for users. It may be removed or ignored in future versions. Atomic flush
+# may be enabled by the paranoid to possibly improve database integrity at
+# the cost of performance.
+#
+#rocksdb_atomic_flush = false
 
 # Database repair mode (for RocksDB SST corruption).
 #
@@ -934,10 +980,10 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 #
 #rocksdb_compaction_ioprio_idle = true
 
-# Disables RocksDB compaction. You should never ever have to set this
-# option to true. If you for some reason find yourself needing to use this
-# option as part of troubleshooting or a bug, please reach out to us in
-# the continuwuity Matrix room with information and details.
+# Enables RocksDB compaction. You should never ever have to set this
+# option to false. If you for some reason find yourself needing to use
+# this option as part of troubleshooting or a bug, please reach out to us
+# in the continuwuity Matrix room with information and details.
 #
 # Disabling compaction will lead to a significantly bloated and
 # explosively large database, gradually poor performance, unnecessarily
@@ -970,7 +1016,9 @@ turn_password = {{ matrix_continuwuity_config_turn_password | to_json }}
 #
 # example: "F670$2CP@Hw8mG7RY1$%!#Ic7YA"
 #
+{% if matrix_continuwuity_config_emergency_password != '' %}
 emergency_password = {{ matrix_continuwuity_config_emergency_password | to_json }}
+{% endif %}
 
 # This item is undocumented. Please contribute documentation for it.
 #
@@ -978,8 +1026,8 @@ emergency_password = {{ matrix_continuwuity_config_emergency_password | to_json 
 
 # Allow local (your server only) presence updates/requests.
 #
-# Note that presence on continuwuity is very fast unlike Synapse's. If using
-# outgoing presence, this MUST be enabled.
+# Note that presence on continuwuity is very fast unlike Synapse's. If
+# using outgoing presence, this MUST be enabled.
 #
 #allow_local_presence = true
 
@@ -995,8 +1043,8 @@ emergency_password = {{ matrix_continuwuity_config_emergency_password | to_json 
 #
 # This option sends presence updates to other servers, but does not
 # receive any unless `allow_incoming_presence` is true. Note that presence
-# on continuwuity is very fast unlike Synapse's. If using outgoing presence,
-# you MUST enable `allow_local_presence` as well.
+# on continuwuity is very fast unlike Synapse's. If using outgoing
+# presence, you MUST enable `allow_local_presence` as well.
 #
 #allow_outgoing_presence = true
 
@@ -1115,7 +1163,7 @@ emergency_password = {{ matrix_continuwuity_config_emergency_password | to_json 
 
 # Check consistency of the media directory at startup:
 # 1. When `media_compat_file_link` is enabled, this check will upgrade
-#    media when switching back and forth between Conduit and continuwuity.
+#    media when switching back and forth between Conduit and conduwuit.
 #    Both options must be enabled to handle this.
 # 2. When media is deleted from the directory, this check will also delete
 #    its database entry.
@@ -1150,27 +1198,71 @@ emergency_password = {{ matrix_continuwuity_config_emergency_password | to_json 
 #
 #prune_missing_media = false
 
-# Vector list of servers that continuwuity will refuse to download remote
-# media from.
+# List of forbidden server names via regex patterns that we will block
+# incoming AND outgoing federation with, and block client room joins /
+# remote user invites.
 #
-#prevent_media_downloads_from = []
-
-# List of forbidden server names that we will block incoming AND outgoing
-# federation with, and block client room joins / remote user invites.
+# Note that your messages can still make it to forbidden servers through
+# backfilling. Events we receive from forbidden servers via backfill
+# from servers we *do* federate with will be stored in the database.
 #
 # This check is applied on the room ID, room alias, sender server name,
 # sender user's server name, inbound federation X-Matrix origin, and
 # outbound federation handler.
 #
-# Basically "global" ACLs.
+# You can set this to ["*"] to block all servers by default, and then
+# use `allowed_remote_server_names` to allow only specific servers.
 #
-forbidden_remote_server_names = {{ matrix_continuwuity_forbidden_remote_server_names | to_json }}
+# example: ["badserver\\.tld$", "badphrase", "19dollarfortnitecards"]
+#
+forbidden_remote_server_names = {{ matrix_continuwuity_config_forbidden_remote_server_names | to_json }}
 
-# List of forbidden server names that we will block all outgoing federated
-# room directory requests for. Useful for preventing our users from
-# wandering into bad servers or spaces.
+# List of allowed server names via regex patterns that we will allow,
+# regardless of if they match `forbidden_remote_server_names`.
 #
-forbidden_remote_room_directory_server_names = {{ matrix_continuwuity_forbidden_remote_room_directory_server_names | to_json }}
+# This option has no effect if `forbidden_remote_server_names` is empty.
+#
+# example: ["goodserver\\.tld$", "goodphrase"]
+#
+allowed_remote_server_names = {{ matrix_continuwuity_config_allowed_remote_server_names | to_json }}
+
+# Vector list of regex patterns of server names that continuwuity will
+# refuse to download remote media from.
+#
+# example: ["badserver\.tld$", "badphrase", "19dollarfortnitecards"]
+#
+prevent_media_downloads_from = {{ matrix_continuwuity_config_prevent_media_downloads_from | to_json }}
+
+# List of forbidden server names via regex patterns that we will block all
+# outgoing federated room directory requests for. Useful for preventing
+# our users from wandering into bad servers or spaces.
+#
+# example: ["badserver\.tld$", "badphrase", "19dollarfortnitecards"]
+#
+forbidden_remote_room_directory_server_names = {{ matrix_continuwuity_config_forbidden_remote_room_directory_server_names | to_json }}
+
+# Vector list of regex patterns of server names that continuwuity will not
+# send messages to the client from.
+#
+# Note that there is no way for clients to receive messages once a server
+# has become unignored without doing a full sync. This is a protocol
+# limitation with the current sync protocols. This means this is somewhat
+# of a nuclear option.
+#
+# example: ["reallybadserver\.tld$", "reallybadphrase",
+# "69dollarfortnitecards"]
+#
+ignore_messages_from_server_names = {{ matrix_continuwuity_config_ignore_messages_from_server_names | to_json }}
+
+# Send messages from users that the user has ignored to the client.
+#
+# There is no way for clients to receive messages sent while a user was
+# ignored without doing a full sync. This is a protocol limitation with
+# the current sync protocols. Disabling this option will move
+# responsibility of ignoring messages to the client, which can avoid this
+# limitation.
+#
+#send_messages_from_ignored_users_to_client = false
 
 # Vector list of IPv4 and IPv6 CIDR ranges / subnets *in quotes* that you
 # do not want continuwuity to send outbound requests to. Defaults to
@@ -1215,7 +1307,7 @@ forbidden_remote_room_directory_server_names = {{ matrix_continuwuity_forbidden_
 # attack surface to your server, you are expected to be aware of the risks
 # by doing so.
 #
-url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domain_contains_allowlist | to_json }}
+url_preview_domain_contains_allowlist = {{ matrix_continuwuity_config_url_preview_domain_contains_allowlist | to_json }}
 
 # Vector list of explicit domains allowed to send requests to for URL
 # previews.
@@ -1279,7 +1371,7 @@ url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domai
 # used, and startup as warnings if any room aliases in your database have
 # a forbidden room alias/ID.
 #
-# example: ["19dollarfortnitecards", "b[4a]droom"]
+# example: ["19dollarfortnitecards", "b[4a]droom", "badphrase"]
 #
 #forbidden_alias_names = []
 
@@ -1292,7 +1384,7 @@ url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domai
 # startup as warnings if any local users in your database have a forbidden
 # username.
 #
-# example: ["administrator", "b[a4]dusernam[3e]"]
+# example: ["administrator", "b[a4]dusernam[3e]", "badphrase"]
 #
 #forbidden_usernames = []
 
@@ -1323,8 +1415,8 @@ url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domai
 
 # Allow admins to enter commands in rooms other than "#admins" (admin
 # room) by prefixing your message with "\!admin" or "\\!admin" followed up
-# a normal continuwuity admin command. The reply will be publicly visible to
-# the room, originating from the sender.
+# a normal continuwuity admin command. The reply will be publicly visible
+# to the room, originating from the sender.
 #
 # example: \\!admin debug ping puppygock.gay
 #
@@ -1341,8 +1433,8 @@ url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domai
 # This option can also be configured with the `--execute` continuwuity
 # argument and can take standard shell commands and environment variables
 #
-# For example: `./continuwuity --execute "server admin-notice continuwuity has
-# started up at $(date)"`
+# For example: `./continuwuity --execute "server admin-notice continuwuity
+# has started up at $(date)"`
 #
 # example: admin_execute = ["debug ping puppygock.gay", "debug echo hi"]`
 #
@@ -1355,6 +1447,13 @@ url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domai
 #
 #admin_execute_errors_ignore = false
 
+# List of admin commands to execute on SIGUSR2.
+#
+# Similar to admin_execute, but these commands are executed when the
+# server receives SIGUSR2 on supporting platforms.
+#
+#admin_signal_execute = []
+
 # Controls the max log level for admin command log captures (logs
 # generated from running admin commands). Defaults to "info" on release
 # builds, else "debug" on debug builds.
@@ -1364,21 +1463,20 @@ url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domai
 # The default room tag to apply on the admin room.
 #
 # On some clients like Element, the room tag "m.server_notice" is a
-# special pinned room at the very bottom of your room list. The continuwuity
-# admin room can be pinned here so you always have an easy-to-access
-# shortcut dedicated to your admin room.
+# special pinned room at the very bottom of your room list. The
+# continuwuity admin room can be pinned here so you always have an
+# easy-to-access shortcut dedicated to your admin room.
 #
 #admin_room_tag = "m.server_notice"
 
 # Sentry.io crash/panic reporting, performance monitoring/metrics, etc.
-# This is NOT enabled by default. continuwuity's default Sentry reporting
-# endpoint domain is `o4506996327251968.ingest.us.sentry.io`.
+# This is NOT enabled by default.
 #
 #sentry = false
 
 # Sentry reporting URL, if a custom one is desired.
 #
-#sentry_endpoint = "https://fe2eb4536aa04949e28eff3128d64757@o4506996327251968.ingest.us.sentry.io/4506996334657536"
+#sentry_endpoint = ""
 
 # Report your continuwuity server_name in Sentry.io crash reports and
 # metrics.
@@ -1512,6 +1610,34 @@ url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domai
 #
 #sender_workers = 0
 
+# Enables listener sockets; can be set to false to disable listening. This
+# option is intended for developer/diagnostic purposes only.
+#
+#listening = true
+
+# Enables configuration reload when the server receives SIGUSR1 on
+# supporting platforms.
+#
+#config_reload_signal = true
+
+[global.tls]
+
+# Path to a valid TLS certificate file.
+#
+# example: "/path/to/my/certificate.crt"
+#
+#certs =
+
+# Path to a valid TLS certificate private key.
+#
+# example: "/path/to/my/certificate.key"
+#
+#key =
+
+# Whether to listen and allow for HTTP and HTTPS connections (insecure!)
+#
+#dual_protocol = false
+
 [global.well_known]
 
 # The server URL that the client well-known file will serve. This should
@@ -1529,18 +1655,46 @@ url_preview_domain_contains_allowlist = {{ matrix_continuwuity_url_preview_domai
 #
 #server =
 
-# This item is undocumented. Please contribute documentation for it.
+# URL to a support page for the server, which will be served as part of
+# the MSC1929 server support endpoint at /.well-known/matrix/support.
+# Will be included alongside any contact information
 #
 #support_page =
 
-# This item is undocumented. Please contribute documentation for it.
+# Role string for server support contacts, to be served as part of the
+# MSC1929 server support endpoint at /.well-known/matrix/support.
 #
-#support_role =
+#support_role = "m.role.admin"
 
-# This item is undocumented. Please contribute documentation for it.
+# Email address for server support contacts, to be served as part of the
+# MSC1929 server support endpoint.
+# This will be used along with support_mxid if specified.
 #
 #support_email =
 
-# This item is undocumented. Please contribute documentation for it.
+# Matrix ID for server support contacts, to be served as part of the
+# MSC1929 server support endpoint.
+# This will be used along with support_email if specified.
+#
+# If no email or mxid is specified, all of the server's admins will be
+# listed.
 #
 #support_mxid =
+
+[global.blurhashing]
+
+# blurhashing x component, 4 is recommended by https://blurha.sh/
+#
+#components_x = 4
+
+# blurhashing y component, 3 is recommended by https://blurha.sh/
+#
+#components_y = 3
+
+# Max raw size that the server will blurhash, this is the size of the
+# image after converting it to raw data, it should be higher than the
+# upload limit but not too high. The higher it is the higher the
+# potential load will be for clients requesting blurhashes. The default
+# is 33.55MB. Setting it to 0 disables blurhashing.
+#
+#blurhash_max_raw_size = 33554432

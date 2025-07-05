@@ -143,6 +143,9 @@ matrix_continuwuity_config_max_request_size: 20_000_000
 # Enables registration. If set to false, no users can register on this server.
 matrix_continuwuity_config_allow_registration: false
 
+# Controls if newly registered users are automatically suspended, requiring admin approval.
+matrix_continuwuity_config_suspend_on_register: false
+
 # Controls the `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse` setting.
 # This is only used when `matrix_continuwuity_config_allow_registration` is set to true and no registration token is configured.
 matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse: false
@@ -166,12 +169,11 @@ matrix_continuwuity_config_allow_check_for_updates: false
 # Controls the `emergency_password` setting.
 matrix_continuwuity_config_emergency_password: ''
 
-# Controls the `allow_federation` setting.
-matrix_continuwuity_config_allow_federation: true
-
-matrix_continuwuity_trusted_servers:
+# Controls the `matrix_continuwuity_trusted_servers`` setting.
+matrix_continuwuity_config_trusted_servers:
  - "matrix.org"
 
+# Controls the `matrix_continuwuity_config_log` setting.
 matrix_continuwuity_config_log: "info,state_res=warn,rocket=off,_=off,sled=off"
 
 # TURN integration.
@@ -184,18 +186,23 @@ matrix_continuwuity_config_turn_password: ''
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_continuwuity_self_check_validate_certificates: true
 
+# Controls server (de)federation settings.
+matrix_continuwuity_config_allow_federation: true
+matrix_continuwuity_config_allowed_remote_server_names: []
+matrix_continuwuity_config_forbidden_remote_server_names: []
+matrix_continuwuity_config_forbidden_remote_room_directory_server_names: []
+matrix_continuwuity_config_prevent_media_downloads_from: []
+matrix_continuwuity_config_ignore_messages_from_server_names: []
+
+# Controls the `url_preview_domain_contains_allowlist` setting.
+matrix_continuwuity_config_url_preview_domain_contains_allowlist: []
+
 # Additional environment variables to pass to the container.
 #
 # Environment variables take priority over settings in the configuration file.
 #
 # Example:
 # matrix_continuwuity_environment_variables_extension: |
-#   continuwuity_MAX_REQUEST_SIZE=50000000
-#   continuwuity_REQUEST_TIMEOUT=60
+#   CONTINUWUITY_MAX_REQUEST_SIZE=50000000
+#   CONTINUWUITY_REQUEST_TIMEOUT=60
 matrix_continuwuity_environment_variables_extension: ''
-
-matrix_continuwuity_forbidden_remote_server_names: []
-matrix_continuwuity_forbidden_remote_room_directory_server_names: []
-
-# Controls the `url_preview_domain_contains_allowlist` setting.
-matrix_continuwuity_url_preview_domain_contains_allowlist: []
