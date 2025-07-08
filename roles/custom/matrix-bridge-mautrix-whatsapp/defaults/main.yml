@@ -161,6 +161,13 @@ matrix_mautrix_whatsapp_double_puppet_secrets: "{{ matrix_mautrix_whatsapp_doubl
 matrix_mautrix_whatsapp_double_puppet_secrets_auto: {}
 matrix_mautrix_whatsapp_double_puppet_secrets_custom: {}
 
+# Displayname template for WhatsApp users.
+# {{.PushName}}     - nickname set by the WhatsApp user
+# {{.BusinessName}} - validated WhatsApp business name
+# {{.Phone}}        - phone number (international format)
+# {{.FullName}}     - Name you set in the contacts list
+matrix_mautrix_whatsapp_network_displayname_template: '{% raw %}{{or .BusinessName .PushName .Phone}} (WA){% endraw %}'
+
 # Enable End-to-bridge encryption
 matrix_mautrix_whatsapp_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
 matrix_mautrix_whatsapp_bridge_encryption_default: "{{ matrix_bridges_encryption_default }}"
