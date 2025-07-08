@@ -36,6 +36,27 @@ matrix_mautrix_slack_appservice_address: "http://matrix-mautrix-slack:8080"
 
 matrix_mautrix_slack_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
 
+# Displayname template for Slack users. Available variables:
+#  .Name - The username of the user
+#  .Team.Name - The name of the team the channel is in
+#  .Team.Domain - The Slack subdomain of the team the channel is in
+#  .ID - The internal ID of the user
+#  .IsBot - Whether the user is a bot
+#  .Profile.DisplayName - The username or real name of the user (depending on settings)
+# Variables only available for users (not bots):
+#  .TeamID - The internal ID of the workspace the user is in
+#  .TZ - The timezone region of the user (e.g. Europe/London)
+#  .TZLabel - The label of the timezone of the user (e.g. Greenwich Mean Time)
+#  .TZOffset - The UTC offset of the timezone of the user (e.g. 0)
+#  .Profile.RealName - The real name of the user
+#  .Profile.FirstName - The first name of the user
+#  .Profile.LastName - The last name of the user
+#  .Profile.Title - The job title of the user
+#  .Profile.Pronouns - The pronouns of the user
+#  .Profile.Email - The email address of the user
+#  .Profile.Phone - The formatted phone number of the user
+matrix_mautrix_slack_network_displayname_template: '{% raw %}{{or .Profile.DisplayName .Profile.RealName .Name}}{{if .IsBot}} (bot){{end}}{% endraw %}'
+
 matrix_mautrix_slack_command_prefix: "!slack"
 
 matrix_mautrix_slack_bridge_permissions: |
