@@ -33,9 +33,14 @@ matrix_client_fluffychat_container_additional_networks: "{{ matrix_client_fluffy
 matrix_client_fluffychat_container_additional_networks_auto: []
 matrix_client_fluffychat_container_additional_networks_custom: []
 
+# Configures the port number used inside the container image.
+matrix_client_fluffychat_container_http_port: 8080
+
 # Controls whether the matrix-client-fluffychat container exposes its HTTP port (tcp/8080 in the container).
 #
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8765"), or empty string to not expose.
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8080"), or empty string to not expose.
+#
+# Also see: `matrix_client_fluffychat_container_http_port`
 matrix_client_fluffychat_container_http_host_bind_port: ''
 
 # matrix_client_fluffychat_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
@@ -44,6 +49,7 @@ matrix_client_fluffychat_container_http_host_bind_port: ''
 # To inject your own other container labels, see `matrix_client_fluffychat_container_labels_additional_labels`.
 matrix_client_fluffychat_container_labels_traefik_enabled: true
 matrix_client_fluffychat_container_labels_traefik_docker_network: "{{ matrix_client_fluffychat_container_network }}"
+matrix_client_fluffychat_container_labels_traefik_http_service_load_balancer_port: "{{ matrix_client_fluffychat_container_http_port }}"
 matrix_client_fluffychat_container_labels_traefik_hostname: "{{ matrix_client_fluffychat_hostname }}"
 # The path prefix must either be `/` or not end with a slash (e.g. `/fluffychat`).
 matrix_client_fluffychat_container_labels_traefik_path_prefix: "{{ matrix_client_fluffychat_path_prefix }}"
