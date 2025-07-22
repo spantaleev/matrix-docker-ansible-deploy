@@ -6,24 +6,15 @@
 		"context": ".."
 	},
 	"postCreateCommand": {
-		"Fix Volume Permissions": "sudo chown -R $(whoami): /commandhistory"
+		"Fix Volume Permissions": "chown -R $(whoami): /commandhistory"
 	},
-	"postAttachCommand": "bash",
 	"mounts": [
-		{
-			"source": "${localEnv:SSH_AUTH_SOCK}",
-			"target": "/agent.sock",
-			"type": "bind"
-		},
 		{
 			"source": "matrix-docker-ansible-deploy-bashhistory",
 			"target": "/commandhistory",
 			"type": "volume"
 		}
 	],
-	"containerEnv": {
-		"SSH_AUTH_SOCK": "/agent.sock"
-	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
