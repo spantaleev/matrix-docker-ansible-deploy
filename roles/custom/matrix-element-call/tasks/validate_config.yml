@@ -17,7 +17,7 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] | length == 0"
+  when: "item.when | bool and vars[item.name] | string | length == 0"
   with_items:
     - {'name': 'matrix_element_call_container_network', when: true}
     - {'name': 'matrix_element_call_hostname', when: true}

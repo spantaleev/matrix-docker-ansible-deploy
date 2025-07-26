@@ -19,7 +19,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] | length == 0"
+  when: "item.when | bool and vars[item.name] | string | length == 0"
   with_items:
     - {'name': 'matrix_authentication_service_syn2mas_synapse_homeserver_config_path', when: true}
 
