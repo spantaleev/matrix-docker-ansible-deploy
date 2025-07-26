@@ -87,7 +87,7 @@
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_postgres_.+', wantlist=True) | join(', ') }}
-    when: "lookup('ansible.builtin.varnames', '^matrix_postgres_.+', wantlist=True) | length > 0"
+  when: "lookup('ansible.builtin.varnames', '^matrix_postgres_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report matrix_mailer_ variables
   ansible.builtin.fail:
