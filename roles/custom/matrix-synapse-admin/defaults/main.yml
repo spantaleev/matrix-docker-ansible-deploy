@@ -189,7 +189,7 @@ matrix_synapse_admin_configuration_extension_json: '{}'
 # This is similar to `matrix_synapse_admin_configuration_extension_json`, but intended for use by playbook or group vars
 matrix_synapse_admin_configuration_extension_json_auto: {}
 
-matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json_auto | combine(matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
+matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json_auto | from_json | combine(matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
 
 # Holds the final synapse-admin configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_admin_configuration_default`.
