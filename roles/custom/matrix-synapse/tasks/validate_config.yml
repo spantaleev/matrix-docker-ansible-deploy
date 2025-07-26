@@ -82,7 +82,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_synapse_email_riot_base_url', 'new': '<superseded by client_base_url>'}
     - {'old': 'matrix_synapse_container_expose_api_port', 'new': '<superseded by matrix_synapse_container_federation_api_plain_host_bind_port>'}

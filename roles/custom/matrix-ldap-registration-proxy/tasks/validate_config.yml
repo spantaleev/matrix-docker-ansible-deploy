@@ -25,7 +25,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_ldap_registration_proxy_registration_addr_with_container', 'new': '<removed>'}
     - {'old': 'matrix_ldap_registration_proxy_registration_addr_sans_container', 'new': '<removed>'}

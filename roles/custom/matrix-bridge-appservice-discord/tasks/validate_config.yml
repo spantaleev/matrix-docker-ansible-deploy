@@ -9,7 +9,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_appservice_discord_client_id', when: true}
     - {'name': 'matrix_appservice_discord_bot_token', when: true}
@@ -24,7 +24,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_appservice_discord_container_expose_client_server_api_port', 'new': '<superseded by matrix_appservice_discord_container_http_host_bind_port>'}
     - {'old': 'matrix_appservice_discord_container_image_name_prefix', 'new': 'matrix_appservice_discord_docker_image_registry_prefix'}

@@ -10,7 +10,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_coturn_docker_network', 'new': 'matrix_coturn_container_network'}
     - {'old': 'matrix_coturn_container_stun_plain_host_bind_port', 'new': 'superseded by matrix_coturn_container_stun_plain_host_bind_port_tcp and matrix_coturn_container_stun_plain_host_bind_port_udp'}
@@ -27,7 +27,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_coturn_turn_static_auth_secret', when: "{{ matrix_coturn_authentication_method == 'auth-secret' }}"}
     - {'name': 'matrix_coturn_lt_cred_mech_username', when: "{{ matrix_coturn_authentication_method == 'lt-cred-mech' }}"}

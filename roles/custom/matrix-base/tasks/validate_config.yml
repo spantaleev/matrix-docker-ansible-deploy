@@ -20,7 +20,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'host_specific_hostname_identity', 'new': 'matrix_domain'}
     - {'old': 'hostname_identity', 'new': 'matrix_domain'}
@@ -97,7 +97,7 @@
       To get rid of this error, remove all `matrix_mx_puppet_*` references from your configuration.
       To clean up your server from mx-puppet-skype's presence, see this changelog entry: https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#mx-puppet-skype-removal.
       If you still need bridging to Skype, consider switching to the go-skype bridge instead. See `docs/configuring-playbook-bridge-go-skype-bridge.md`.
-  when: "'matrix_mx_puppet_skype_enabled' in vars"
+  when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_skype_enabled$', wantlist=True) | length > 0"
 
 - name: Fail if mautrix-instagram and mautrix-meta-instagram are in conflict
   ansible.builtin.fail:

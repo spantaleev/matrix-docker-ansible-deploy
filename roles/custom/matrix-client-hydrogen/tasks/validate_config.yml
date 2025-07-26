@@ -10,7 +10,7 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) to use Hydrogen.
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_client_hydrogen_default_hs_url', when: "{{ matrix_client_hydrogen_container_image_self_build }}"}
     - {'name': 'matrix_client_hydrogen_container_network', when: true}
@@ -20,7 +20,7 @@
   ansible.builtin.fail:
     msg: >-
       The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_client_hydrogen_container_image_name_prefix', 'new': 'matrix_client_hydrogen_container_image_registry_prefix'}
 
