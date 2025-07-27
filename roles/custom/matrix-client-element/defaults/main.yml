@@ -320,7 +320,7 @@ matrix_client_element_setting_defaults_custom_themes: []  # noqa var-naming
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_client_element_configuration_default: "{{ lookup('template', 'templates/config.json.j2') | from_json }}"
+matrix_client_element_configuration_default: "{{ lookup('template', 'templates/config.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Element Web should go to `matrix_client_element_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_element_configuration_default`).
@@ -358,7 +358,7 @@ matrix_client_element_location_sharing_enabled: false
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_client_element_location_sharing_map_style_default: "{{ lookup('template', 'templates/map_style.json.j2') | from_json }}"
+matrix_client_element_location_sharing_map_style_default: "{{ lookup('template', 'templates/map_style.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Element location sharing map style should go to `matrix_client_element_location_sharing_map_style_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_element_location_sharing_map_style_default`).
