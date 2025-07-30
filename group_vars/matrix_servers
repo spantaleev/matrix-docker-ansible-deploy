@@ -6422,6 +6422,15 @@ livekit_server_config_keys_auto: |-
     )
   }}
 
+# We only wish for matrix-livekit-jwt-service to create rooms, only for users on trusted homeservers.
+# See `matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers`.
+#
+# Ref:
+# - https://github.com/element-hq/lk-jwt-service/releases/tag/v0.3.0
+# - https://github.com/livekit/livekit/blob/5e483e7554e5afbf254acf84e3ec0aa6e108e758/config-sample.yaml#L168-L170
+# - https://github.com/mother-of-all-self-hosting/ansible-role-livekit-server/commit/2a1b04552634097bdd26d472502a8f5bf1b8528f
+livekit_server_config_room_auto_create: false
+
 # The playbook intentionally uses a non-standard port than the default used by the role (5349),
 # because Coturn is already using that port.
 # Note that TURN is not enabled by default. See `livekit_server_config_turn_enabled`.
