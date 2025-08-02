@@ -1,0 +1,20 @@
+---
+
+- tags:
+    - setup-all
+    - setup-fluffygate
+    - install-all
+    - install-fluffygate
+  block:
+    - when: matrix_fluffygate_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_fluffygate_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-fluffygate
+  block:
+    - when: not matrix_fluffygate_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
