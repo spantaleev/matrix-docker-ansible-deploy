@@ -1220,13 +1220,6 @@ matrix_synapse_email_app_name: Matrix
 matrix_synapse_email_client_base_url: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_element }}"
 matrix_synapse_email_invite_client_location: "https://app.element.io"
 
-
-################################################################################
-#
-# Next-generation auth for Matrix, based on OAuth 2.0/OIDC
-#
-################################################################################
-
 # Controls whether to enable the "send typing, presence and receipts to appservices" experimental feature.
 #
 # See:
@@ -1248,50 +1241,29 @@ matrix_synapse_experimental_features_msc3202_device_masquerading_enabled: false
 # - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
 matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: false
 
-# Controls whether to enable the "Next-generation auth for Matrix, based on OAuth 2.0/OIDC" experimental feature.
+################################################################################
 #
+# Next-generation auth for Matrix, based on OAuth 2.0/OIDC
+#
+################################################################################
+
+# Controls whether to enable "Matrix Authentication Service" integration ("Next-generation auth for Matrix, based on OAuth 2.0/OIDC").
 # See:
+# - https://github.com/element-hq/matrix-authentication-service
 # - https://matrix.org/blog/2023/09/better-auth/
 # - https://github.com/matrix-org/matrix-spec-proposals/pull/3861
-matrix_synapse_experimental_features_msc3861_enabled: false
+matrix_synapse_matrix_authentication_service_enabled: false
 
-# Specifies the issuer URL for the OAuth 2.0/OIDC authentication provider.
-#
-# This can be set to a private (container) URL.
-#
-# Example: https://matrix.example.com/auth/
-matrix_synapse_experimental_features_msc3861_issuer: ''
+# Specifies the base URL where the Matrix Authentication Service is running.
+matrix_synapse_matrix_authentication_service_endpoint: ""
 
-# Specifies the introspection endpoint URL for the OAuth 2.0/OIDC authentication provider.
-#
-# This can be set to a private (container) URL.
-#
-# If this is left empty, `{issuer}/.well-known/openid-configuration` will be fetched and the `introspection_endpoint` will be extracted from there.
-# We define it explicitly, because this allows us to override it and use an internal (container network) URL instead of using the public one.
-# Avoiding public addresses is an optimization that decreases overhead due to public networking and SSL termination.
-#
-# Example: https://matrix.example.com/auth/oauth2/introspect
-matrix_synapse_experimental_features_msc3861_introspection_endpoint: "{{ matrix_synapse_experimental_features_msc3861_issuer + 'oauth2/introspect' }}"
-
-# A unique identifier for the client.
-#
-# It must be a valid ULID (https://github.com/ulid/spec),
-# and it happens that 0000000000000000000SYNAPSE is a valid ULID.
-matrix_synapse_experimental_features_msc3861_client_id: '0000000000000000000SYNAPSE'
-
-matrix_synapse_experimental_features_msc3861_client_auth_method: client_secret_basic
-
-matrix_synapse_experimental_features_msc3861_client_secret: ''
-
-# A token that can be used to make admin API calls.
-# Matches `matrix.secret` in the matrix-authentication-service config
-matrix_synapse_experimental_features_msc3861_admin_token: ''
-
-# URL to advertise to clients where users can self-manage their account.
-matrix_synapse_experimental_features_msc3861_account_management_url: ''
+# Specifies the shared secret used to authenticate Matrix Authentication Service requests.
+# Must be the same as `matrix.secret` in the Matrix Authentication Service configuration.
+# See https://element-hq.github.io/matrix-authentication-service/reference/configuration.html#matrix
+matrix_synapse_matrix_authentication_service_secret: ""
 
 # Controls whether to enable the "QR code login" experimental feature.
-# Enabling this requires that MSC3861 (see `matrix_synapse_experimental_features_msc3861_enabled`) is also enabled.
+# Enabling this requires that Matrix Authentication Service integration (see `matrix_synapse_matrix_authentication_service_enabled`) is also enabled.
 matrix_synapse_experimental_features_msc4108_enabled: false
 
 ################################################################################
