@@ -270,14 +270,14 @@ You can undo bans with the [unban command](https://the-draupnir-project.github.i
 
 ### Enabling built-in protections
 
-You can also **turn on various built-in [protections](https://the-draupnir-project.github.io/draupnir-documentation/protections)** like `JoinWaveShortCircuit` ("If X amount of users join in Y time, set the room to invite-only").
+You can also **turn on various built-in [protections](https://the-draupnir-project.github.io/draupnir-documentation/protections)** like `JoinWaveShortCircuitProtection` ("If X amount of users join in Y time, set the room to invite-only").
 
 To **see which protections are available and which are enabled**, send a `!draupnir protections` command to the Management Room.
 
-To **see the configuration options for a given protection**, send a `!draupnir protections show PROTECTION_NAME` (e.g. `!draupnir protections show JoinWaveShortCircuit`).
+To [**see the configuration options for a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/configuring-protections#displaying-the-protection-settings), send a `!draupnir protections show PROTECTION_NAME` (e.g. `!draupnir protections show JoinWaveShortCircuitProtection`).
 
-To **set a specific option for a given protection**, send a command like this: `!draupnir config set PROTECTION_NAME.OPTION VALUE` (e.g. `!draupnir config set JoinWaveShortCircuit.timescaleMinutes 30`).
+To [**set a specific option for a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/configuring-protections#changing-protection-settings), send a command like this: `!draupnir protections config set PROTECTION_NAME OPTION VALUE` (e.g. `!draupnir protections config set JoinWaveShortCircuitProtection timescaleMinutes 30`).
 
-To **enable a given protection**, send a command like this: `!draupnir enable PROTECTION_NAME` (e.g. `!draupnir enable JoinWaveShortCircuit`).
+To [**enable a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/block-invitations-on-server-protection#enabling-the-protection), send a command like this: `!draupnir protections enable PROTECTION_NAME` (e.g. `!draupnir protections enable JoinWaveShortCircuitProtection`).
 
-To **disable a given protection**, send a command like this: `!draupnir disable PROTECTION_NAME` (e.g. `!draupnir disable JoinWaveShortCircuit`).
+To **disable a given protection**, send a command like this: `!draupnir protections disable PROTECTION_NAME` (e.g. `!draupnir protections disable JoinWaveShortCircuitProtection`).
