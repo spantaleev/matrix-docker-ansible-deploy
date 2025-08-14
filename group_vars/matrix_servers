@@ -669,17 +669,6 @@ matrix_authentication_service_config_passwords_schemes:
   - version: 2
     algorithm: argon2id
 
-matrix_authentication_service_config_clients_auto: |-
-  {{
-    ([
-      {
-        'client_id': matrix_synapse_experimental_features_msc3861_client_id,
-        'client_auth_method': matrix_synapse_experimental_features_msc3861_client_auth_method,
-        'client_secret': matrix_synapse_experimental_features_msc3861_client_secret,
-      }
-    ] if matrix_synapse_experimental_features_msc3861_enabled else [])
-  }}
-
 matrix_authentication_service_config_email_transport: "{{ 'smtp' if exim_relay_enabled else 'blackhole' }}"
 matrix_authentication_service_config_email_hostname: "{{ exim_relay_identifier if exim_relay_enabled else '' }}"
 matrix_authentication_service_config_email_port: "{{ 8025 if exim_relay_enabled else 587 }}"
@@ -4911,7 +4900,7 @@ matrix_synapse_systemd_required_services_list_auto: |
     +
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
     +
-    (['matrix-authentication-service.service'] if (matrix_authentication_service_enabled and matrix_synapse_experimental_features_msc3861_enabled) else [])
+    (['matrix-authentication-service.service'] if (matrix_synapse_matrix_authentication_service_enabled and matrix_synapse_matrix_authentication_service_endpoint == matrix_authentication_service_http_base_container_url) else [])
   }}
 
 matrix_synapse_systemd_wanted_services_list_auto: |
@@ -4945,11 +4934,9 @@ matrix_synapse_report_stats_endpoint: "{{ (('http://' + matrix_synapse_usage_exp
 
 matrix_synapse_experimental_features_msc3266_enabled: "{{ matrix_rtc_enabled }}"
 
-matrix_synapse_experimental_features_msc3861_enabled: "{{ matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress }}"
-matrix_synapse_experimental_features_msc3861_issuer: "{{ matrix_authentication_service_http_base_container_url if matrix_authentication_service_enabled else '' }}"
-matrix_synapse_experimental_features_msc3861_client_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'syn.ngauth.cs', rounds=655555) | to_uuid }}"
-matrix_synapse_experimental_features_msc3861_admin_token: "{{ matrix_authentication_service_config_matrix_secret if matrix_authentication_service_enabled else '' }}"
-matrix_synapse_experimental_features_msc3861_account_management_url: "{{ matrix_authentication_service_account_management_url if matrix_authentication_service_enabled else '' }}"
+matrix_synapse_matrix_authentication_service_enabled: "{{ matrix_authentication_service_enabled }}"
+matrix_synapse_matrix_authentication_service_endpoint: "{{ matrix_authentication_service_http_base_container_url if matrix_authentication_service_enabled else '' }}"
+matrix_synapse_matrix_authentication_service_secret: "{{ matrix_authentication_service_config_matrix_secret if matrix_authentication_service_enabled else '' }}"
 
 matrix_synapse_experimental_features_msc4108_enabled: "{{ matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress }}"
 
@@ -4961,7 +4948,7 @@ matrix_synapse_experimental_features_msc4222_enabled: "{{ matrix_rtc_enabled }}"
 # Unless this is done, Synapse fails on startup with:
 # > Error in configuration at 'password_config.enabled':
 # > Password auth cannot be enabled when OAuth delegation is enabled
-matrix_synapse_password_config_enabled: "{{ not matrix_synapse_experimental_features_msc3861_enabled }}"
+matrix_synapse_password_config_enabled: "{{ not matrix_synapse_matrix_authentication_service_enabled }}"
 
 matrix_synapse_register_user_script_matrix_authentication_service_path: "{{ matrix_authentication_service_bin_path }}/register-user"
 
