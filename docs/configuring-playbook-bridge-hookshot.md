@@ -35,7 +35,7 @@ matrix_hookshot_enabled: true
 
 # Uncomment to enable end-to-bridge encryption.
 # See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
-# matrix_hookshot_experimental_encryption_enabled: true
+# matrix_hookshot_encryption_enabled: true
 
 # Uncomment and paste the contents of GitHub app private key to enable GitHub bridge.
 # Alternatively, you can use one of the other methods explained below on the "Manage GitHub Private Key with aux role" section.
