@@ -64,7 +64,7 @@
 
 - name: Fail if matrix_architecture is set incorrectly
   ansible.builtin.fail:
-    msg: "Detected that variable matrix_architecture {{ matrix_architecture }} appears to be set incorrectly. See docs/alternative-architectures.md. Server appears to be {{ ansible_architecture }}."
+    msg: "Detected that variable matrix_architecture {{ matrix_architecture }} appears to be set incorrectly. See docs/alternative-architectures.md. Server appears to be {{ ansible_facts.architecture }}."
   when: matrix_architecture not in ['amd64', 'arm32', 'arm64']
 
 - name: Fail if matrix_playbook_reverse_proxy_type is set incorrectly
