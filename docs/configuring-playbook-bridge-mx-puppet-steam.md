@@ -7,7 +7,9 @@ SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Setting up MX Puppet Steam bridging (optional)
+# Setting up MX Puppet Steam bridging (optional, deprecated)
+
+**Note**: This bridge has been deprecated in favor of the [matrix-steam-bridge](https://github.com/jasonlaguidice/matrix-steam-bridge) bridge for Steam, which can be [installed using this playbook](configuring-playbook-bridge-steam.md). Consider using that bridge instead of this one.
 
 The playbook can install and configure [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) for you.
 
