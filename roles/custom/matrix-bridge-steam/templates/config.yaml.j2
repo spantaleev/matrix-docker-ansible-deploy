@@ -284,15 +284,15 @@ provisioning:
 public_media:
     # Should public media be enabled at all?
     # The public_address field under the appservice section MUST be set when enabling public media.
-    enabled: false
+    enabled: {{ matrix_steam_bridge_public_media_enabled | to_json }}
     # A key for signing public media URLs.
     # If set to "generate", a random key will be generated.
-    signing_key: "generate"
+    signing_key: {{ matrix_steam_bridge_public_media_signing_key | to_json }}
     # Number of seconds that public media URLs are valid for.
     # If set to 0, URLs will never expire.
-    expiry: 0
+    expiry: {{ matrix_steam_bridge_public_media_expiry | to_json }}
     # Length of hash to use for public media URLs. Must be between 0 and 32.
-    hash_length: 32
+    hash_length: {{ matrix_steam_bridge_public_media_hash_length | to_json }}
 
 # Settings for converting remote media to custom mxc:// URIs instead of reuploading.
 # More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html
