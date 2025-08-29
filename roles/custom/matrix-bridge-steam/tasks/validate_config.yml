@@ -27,29 +27,3 @@
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_steam_bridge_docker_image_name_prefix', 'new': 'matrix_steam_bridge_docker_image_registry_prefix'}
-
-
-
-
-
-
-
-
-
-
-
-- name: Fail if required settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
-  with_items:
-    - "matrix_mautrix_androidsms_appservice_token"
-    - "matrix_mautrix_androidsms_homeserver_token"
-    - "matrix_mautrix_imessage_appservice_token"
-    - "matrix_mautrix_imessage_homeserver_token"
-    - "matrix_mautrix_wsproxy_homeserver_address"
-    - "matrix_mautrix_wsproxy_syncproxy_shared_secret"
-    - "matrix_mautrix_wsproxy_syncproxy_homeserver_url"
-    - "matrix_mautrix_wsproxy_syncproxy_database_hostname"
-    - "matrix_mautrix_wsproxy_syncproxy_database_password"
