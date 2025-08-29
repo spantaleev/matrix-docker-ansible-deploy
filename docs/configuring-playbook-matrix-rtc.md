@@ -16,7 +16,6 @@ The Matrix RTC stack is a set of supporting components ([LiveKit Server](configu
 ## Prerequisites
 
 - A [Synapse](configuring-playbook-synapse.md) homeserver (see the warning below)
-- [Federation](configuring-playbook-federation.md) being enabled for your Matrix homeserver (federation is enabled by default, unless you've explicitly disabled it), because [LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) currently [requires it](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3562#issuecomment-2725250554) ([relevant source code](https://github.com/element-hq/lk-jwt-service/blob/f5f5374c4bdcc00a4fb13d27c0b28e20e4c62334/main.go#L135-L146))
 - Various experimental features for the Synapse homeserver which Element Call [requires](https://github.com/element-hq/element-call/blob/93ae2aed9841e0b066d515c56bd4c122d2b591b2/docs/self-hosting.md#a-matrix-homeserver) (automatically done when Element Call is enabled)
 - A [LiveKit Server](configuring-playbook-livekit-server.md) (automatically installed when [Element Call or the Matrix RTC stack is enabled](#decide-between-element-call-vs-just-the-matrix-rtc-stack))
 - The [LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) (automatically installed when [Element Call or the Matrix RTC stack is enabled](#decide-between-element-call-vs-just-the-matrix-rtc-stack))
