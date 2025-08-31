@@ -38,7 +38,7 @@ bridge:
     # By default, users who are in the same group on the remote network will be
     # in the same Matrix room bridged to that group. If this is set to true,
     # every user will get their own Matrix room instead.
-    split_portals: false
+    split_portals: {{ matrix_steam_bridge_bridge_split_portals | to_json }}
     # Should the bridge resend `m.bridge` events to all portals on startup?
     resend_bridge_info: false
     # Should `m.bridge` events be sent without a state key?
@@ -77,24 +77,24 @@ bridge:
     #   delete - Remove all ghosts and users from the room (i.e. delete it)
     cleanup_on_logout:
         # Should cleanup on logout be enabled at all?
-        enabled: false
+        enabled: {{ matrix_steam_bridge_bridge_cleanup_on_logout_enabled | to_json }}
         # Settings for manual logouts (explicitly initiated by the Matrix user)
         manual:
             # Action for private portals which will never be shared with other Matrix users.
-            private: nothing
+            private: {{ matrix_steam_bridge_bridge_cleanup_on_logout_manual_private | to_json }}
             # Action for portals with a relay user configured.
-            relayed: nothing
+            relayed: {{ matrix_steam_bridge_bridge_cleanup_on_logout_manual_relayed | to_json }}
             # Action for portals which may be shared, but don't currently have any other Matrix users.
-            shared_no_users: nothing
+            shared_no_users: {{ matrix_steam_bridge_bridge_cleanup_on_logout_manual_shared_no_users | to_json }}
             # Action for portals which have other logged-in Matrix users.
-            shared_has_users: nothing
+            shared_has_users: {{ matrix_steam_bridge_bridge_cleanup_on_logout_manual_shared_has_users | to_json }}
         # Settings for credentials being invalidated (initiated by the remote network, possibly through user action).
         # Keys have the same meanings as in the manual section.
         bad_credentials:
-            private: nothing
-            relayed: nothing
-            shared_no_users: nothing
-            shared_has_users: nothing
+            private: {{ matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_private | to_json }}
+            relayed: {{ matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_relayed | to_json }}
+            shared_no_users: {{ matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_shared_no_users | to_json }}
+            shared_has_users: {{ matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_shared_has_users | to_json }}
 
     # Settings for relay mode
     relay:
@@ -184,7 +184,7 @@ homeserver:
     # The bridge will use the appservice as_token to authorize requests.
     message_send_checkpoint_endpoint:
     # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
-    async_media: false
+    async_media: {{ matrix_steam_bridge_homeserver_async_media | to_json }}
 
     # Should the bridge use a websocket for connecting to the homeserver?
     # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,

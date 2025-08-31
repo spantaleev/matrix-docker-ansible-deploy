@@ -39,7 +39,8 @@ matrix_steam_bridge_appservice_public_address: "https://{{ matrix_server_fqn_mat
 # Public media configuration for external access to bridge media
 matrix_steam_bridge_public_media_enabled: true
 # A key for signing public media URLs. If set to "generate", a random key will be generated.
-matrix_steam_bridge_public_media_signing_key: generate
+# This will be auto-generated deterministically if matrix_homeserver_generic_secret_key is set.
+matrix_steam_bridge_public_media_signing_key: ''
 # Number of seconds that public media URLs are valid for. If set to 0, URLs will never expire.
 matrix_steam_bridge_public_media_expiry: 0
 matrix_steam_bridge_public_media_hash_length: 32
@@ -111,6 +112,30 @@ matrix_steam_bridge_homeserver_token: ''
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.
 matrix_steam_bridge_matrix_federate_rooms: false
+
+# Bridge configuration options
+# Should every user have their own portals rather than sharing them?
+matrix_steam_bridge_bridge_split_portals: false
+
+# Cleanup on logout configuration
+matrix_steam_bridge_bridge_cleanup_on_logout_enabled: false
+# Valid values for cleanup actions: nothing, kick, unbridge, delete
+#   nothing - Do nothing, let the user stay in the portals
+#   kick - Remove the user from the portal rooms, but don't delete them
+#   unbridge - Remove all ghosts in the room and disassociate it from the remote chat
+#   delete - Remove all ghosts and users from the room (i.e. delete it)
+matrix_steam_bridge_bridge_cleanup_on_logout_manual_private: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_manual_relayed: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_manual_shared_no_users: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_manual_shared_has_users: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_private: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_relayed: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_shared_no_users: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_shared_has_users: nothing
+
+# Homeserver configuration options
+# Does the homeserver support MSC2246 (async media uploads)?
+matrix_steam_bridge_homeserver_async_media: false
 
 # Database-related configuration fields.
 #

@@ -2789,6 +2789,7 @@ matrix_steam_bridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generi
 
 matrix_steam_bridge_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_steam_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'steam.hs.token', rounds=655555) | to_uuid }}"
+matrix_steam_bridge_public_media_signing_key: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'steam.pub.key', rounds=655555) | to_uuid) if matrix_steam_bridge_public_media_enabled else '' }}"
 
 matrix_steam_bridge_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'steam.prov', rounds=655555) | to_uuid }}"
 
