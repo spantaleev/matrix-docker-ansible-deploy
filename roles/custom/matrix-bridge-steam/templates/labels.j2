@@ -59,8 +59,10 @@ traefik.http.routers.matrix-steam-bridge-metrics.tls.certResolver={{ matrix_stea
 traefik.http.routers.matrix-steam-bridge-public-media.rule=Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`/_mautrix/publicmedia/{{ matrix_domain }}/`)
 traefik.http.routers.matrix-steam-bridge-public-media.service=matrix-steam-bridge
 traefik.http.routers.matrix-steam-bridge-public-media.entrypoints={{ matrix_steam_bridge_container_labels_traefik_entrypoints }}
-traefik.http.routers.matrix-steam-bridge-public-media.tls=true
+traefik.http.routers.matrix-steam-bridge-public-media.tls={{ matrix_steam_bridge_container_labels_traefik_tls | to_json }}
+{% if matrix_steam_bridge_container_labels_traefik_tls %}
 traefik.http.routers.matrix-steam-bridge-public-media.tls.certResolver={{ matrix_steam_bridge_container_labels_traefik_tls_certResolver }}
+{% endif %}
 
 
 ############################################################
