@@ -55,17 +55,13 @@ traefik.http.routers.matrix-steam-bridge-metrics.tls.certResolver={{ matrix_stea
 #                                                          #
 ############################################################
 
-# Router for public media with custom server identifier
-traefik.http.routers.matrix-steam-bridge-public-media.rule=Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`/_mautrix/publicmedia/matrix-steam-bridge/`)
-traefik.http.routers.matrix-steam-bridge-public-media.middlewares=matrix-steam-bridge-media-rewrite
+# Router for public media
+traefik.http.routers.matrix-steam-bridge-public-media.rule=Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`/_mautrix/publicmedia/{{ matrix_domain }}/`)
 traefik.http.routers.matrix-steam-bridge-public-media.service=matrix-steam-bridge
 traefik.http.routers.matrix-steam-bridge-public-media.entrypoints={{ matrix_steam_bridge_container_labels_traefik_entrypoints }}
 traefik.http.routers.matrix-steam-bridge-public-media.tls=true
 traefik.http.routers.matrix-steam-bridge-public-media.tls.certResolver={{ matrix_steam_bridge_container_labels_traefik_tls_certResolver }}
 
-# URL rewriting middleware - converts custom server name to real homeserver
-traefik.http.middlewares.matrix-steam-bridge-media-rewrite.replacepathregex.regex=^/_mautrix/publicmedia/matrix-steam-bridge/(.*)$
-traefik.http.middlewares.matrix-steam-bridge-media-rewrite.replacepathregex.replacement=/_mautrix/publicmedia/{{ matrix_server_fqn_matrix }}/$1
 
 ############################################################
 #                                                          #
