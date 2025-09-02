@@ -230,12 +230,12 @@ matrix_mautrix_telegram_registration_yaml: |
   namespaces:
       users:
       - exclusive: true
-        regex: '^@telegram_.+:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
+        regex: '^@{{ matrix_mautrix_telegram_username_template | replace('{userid}', '.+') }}:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
       - exclusive: true
         regex: '^@{{ matrix_mautrix_telegram_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
       aliases:
       - exclusive: true
-        regex: '^#telegram_.+:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
+        regex: '^#{{ matrix_mautrix_telegram_alias_template | replace('{groupname}', '.+') }}:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
   # See https://github.com/mautrix/signal/issues/43
   sender_localpart: _bot_{{ matrix_mautrix_telegram_appservice_bot_username }}
   url: {{ matrix_mautrix_telegram_appservice_address }}
