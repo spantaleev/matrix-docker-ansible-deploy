@@ -37,6 +37,10 @@ matrix_synapse_enable_registration: true
 
 # Restrict registration to users with a token
 matrix_synapse_registration_requires_token: true
+
+# Set an optional command prefix for the bot. This can be any arbitrary string, including whitespace.
+# Example: "!regbot "
+matrix_bot_matrix_registration_bot_bot_prefix: ""
 ```
 
 The bot account will be created automatically.
