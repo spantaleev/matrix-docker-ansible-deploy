@@ -5231,7 +5231,7 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     +
     ([
       '^@'+(matrix_mautrix_telegram_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
-      '^@telegram_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_mautrix_telegram_username_template | regex_escape | replace('{userid}', '.+'))+':'+(matrix_domain | regex_escape)+'$',
     ] if matrix_mautrix_telegram_enabled else [])
     +
     ([
