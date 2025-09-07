@@ -1,0 +1,83 @@
+# SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# This migrates the conduwuit server implementation (`/matrix/conduwuit`) to continuwuity (`/matrix/continuwuity`),
+#
+# Here, we merely backup the fresh continuwuity folder, relocate conduwuit directory to continuwuity (`/matrix/conduwuit`)
+#
+# and restore continuwuity labels.
+
+- name: Check existence of conduwuit directory
+  ansible.builtin.stat:
+    path: "{{ matrix_base_data_path }}/conduwuit"
+  register: matrix_conduwuit_directory_stat
+
+- name: Check existence of continuwuity directory
+  ansible.builtin.stat:
+    path: "{{ matrix_base_data_path }}/continuwuity"
+  register: matrix_continuwuity_directory_stat
+
+- when: >
+        matrix_conduwuit_directory_stat.stat.exists | bool and
+        matrix_continuwuity_directory_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-continuwuity.service systemd service is stopped
+      ansible.builtin.systemd:
+        name: matrix-continuwuity
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure continuwuity directory is backed up
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/continuwuity {{ matrix_base_data_path }}/continuwuity_old"
+        creates: "{{ matrix_base_data_path }}/continuwuity_old"
+        removes: "{{ matrix_base_data_path }}/continuwuity"
+
+    - name: Ensure conduwuit directory contents are copied to continuwuity
+      ansible.builtin.copy:
+        src: "{{ matrix_base_data_path }}/conduwuit/"
+        dest: "{{ matrix_base_data_path }}/continuwuity"
+        remote_src: true
+        mode: preserve
+
+    - name: Ensure conduwuit.toml file is renamed
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/continuwuity/config/conduwuit.toml {{ matrix_base_data_path }}/continuwuity/config/continuwuity.toml"
+        removes: "{{ matrix_base_data_path }}/continuwuity/config/conduwuit.toml"
+
+    - name: Ensure continuwuity labels are restored
+      ansible.builtin.copy:
+        src: "{{ matrix_base_data_path }}/continuwuity_old/labels"
+        dest: "{{ matrix_base_data_path }}/continuwuity/labels"
+        remote_src: true
+        force: true
+        mode: preserve
+
+    - name: Ensure directories ownership is set
+      block:
+        - name: Set continuwuity ownership
+          ansible.builtin.file:
+            path: "{{ matrix_base_data_path }}/continuwuity"
+            state: directory
+            owner: "{{ matrix_user_name }}"
+            group: "{{ matrix_group_name }}"
+            recurse: true
+
+        - name: Set continuwuity_old ownership
+          ansible.builtin.file:
+            path: "{{ matrix_base_data_path }}/continuwuity_old"
+            state: directory
+            owner: "{{ matrix_user_name }}"
+            group: "{{ matrix_group_name }}"
+            recurse: true
+
+    - name: Ensure matrix-continuwuity.service systemd service is started
+      ansible.builtin.systemd:
+        name: matrix-continuwuity
+        state: started
+        enabled: true
+        daemon_reload: true

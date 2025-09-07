@@ -21,7 +21,7 @@ matrix_mautrix_discord_container_image_self_build_repo: "https://mau.dev/mautrix
 matrix_mautrix_discord_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_discord_version == 'latest' else matrix_mautrix_discord_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/discord
-matrix_mautrix_discord_version: v0.7.2
+matrix_mautrix_discord_version: v0.7.5
 
 # See: https://mau.dev/mautrix/discord/container_registry
 matrix_mautrix_discord_docker_image: "{{ matrix_mautrix_discord_docker_image_registry_prefix }}mautrix/discord:{{ matrix_mautrix_discord_version }}"
@@ -36,8 +36,13 @@ matrix_mautrix_discord_data_path: "{{ matrix_mautrix_discord_base_path }}/data"
 matrix_mautrix_discord_docker_src_files_path: "{{ matrix_mautrix_discord_base_path }}/docker-src"
 
 matrix_mautrix_discord_homeserver_address: ""
+# Whether asynchronous uploads via MSC2246 should be enabled for media.
+# Requires a homeserver that supports MSC2246 (https://github.com/matrix-org/matrix-spec-proposals/pull/2246).
+matrix_mautrix_discord_homeserver_async_media: false
 matrix_mautrix_discord_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_discord_appservice_address: "http://matrix-mautrix-discord:8080"
+
+matrix_mautrix_discord_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
 
 matrix_mautrix_discord_bridge_command_prefix: "!discord"
 
@@ -224,6 +229,8 @@ matrix_mautrix_discord_registration_yaml: |
       - exclusive: true
         regex: '^@{{ matrix_mautrix_discord_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_discord_homeserver_domain | regex_escape }}$'
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
+  io.element.msc4190: {{ matrix_mautrix_discord_msc4190_enabled | to_json }}
 
 matrix_mautrix_discord_registration: "{{ matrix_mautrix_discord_registration_yaml | from_yaml }}"
 

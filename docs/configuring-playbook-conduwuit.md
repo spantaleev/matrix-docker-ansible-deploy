@@ -18,6 +18,7 @@ By default, the playbook installs [Synapse](https://github.com/element-hq/synaps
 > [!WARNING]
 > - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> conduwuit). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
 > - **Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding
+> - **the Conduwuit project appears to have been abandoned**. You may wish to install [Conduit](./configuring-playbook-conduit.md), or one of the Conduwuit successors (like [Continuwuity](configuring-playbook-continuwuity.md))
 
 ## Adjusting the playbook configuration
 
@@ -83,6 +84,7 @@ Then, send its content to the existing admin room:
     ```
     as_token: <token>
     de.sorunome.msc2409.push_ephemeral: true
+    receive_ephemeral: true
     hs_token: <token>
     id: signal
     namespaces:

@@ -235,7 +235,7 @@ Running Matrix on a server with 1GB of memory is possible (especially if you dis
 
 **We recommend starting with a server having at least 2GB of memory** and even then using it sparingly. If you know for sure you'll be joining various large rooms, etc., then going for 4GB of memory or more is a good idea.
 
-Besides the regular Matrix stuff, we also support things like video-conferencing using [Jitsi](configuring-playbook-jitsi.md) and other additional services which (when installed) may use up a lot of memory. Things do add up. Besides the Synapse Matrix server, Jitsi is especially notorious for consuming a lot of resources. If you plan on running Jitsi, we recommend a server with at least 2GB of memory (preferrably more). See our [Jitsi documentation page](configuring-playbook-jitsi.md) to learn how to optimize its memory/CPU usage.
+Besides the regular Matrix stuff, we also support things like video-conferencing using [Jitsi](configuring-playbook-jitsi.md) and other additional services which (when installed) may use up a lot of memory. Things do add up. Besides the Synapse Matrix server, Jitsi is especially notorious for consuming a lot of resources. If you plan on running Jitsi, we recommend a server with at least 2GB of memory (preferably more). See our [Jitsi documentation page](configuring-playbook-jitsi.md) to learn how to optimize its memory/CPU usage.
 
 ### Can I run this in an LXC container?
 
@@ -362,7 +362,7 @@ Configuration variables are defined in multiple places in this playbook and are 
 
 You can discover the variables you can override in each role (`roles/*/*/defaults/main.yml`).
 
-As described in [How is the effective configuration determined?](#how-is-the-effective-configuration-determined), these role-defaults may be overriden by values defined in `group_vars/matrix_servers`.
+As described in [How is the effective configuration determined?](#how-is-the-effective-configuration-determined), these role-defaults may be overridden by values defined in `group_vars/matrix_servers`.
 
 Refer to both of these for inspiration. Still, as mentioned in [Configuring the playbook](configuring-playbook.md), you're only ever supposed to edit your own `inventory/host_vars/matrix.example.com/vars.yml` file and nothing else inside the playbook (unless you're meaning to contribute new features).
 

@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- tags:
+    - setup-all
+    - setup-continuwuity
+    - install-all
+    - install-continuwuity
+  block:
+    - when: matrix_continuwuity_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_continuwuity_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-continuwuity
+  block:
+    - when: not matrix_continuwuity_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
+
+- tags:
+    - self-check
+  block:
+    - when: matrix_continuwuity_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_client_api.yml"
+
+    - when: matrix_continuwuity_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check_federation_api.yml"
+
+- tags:
+    - continuwuity-migrate-from-conduwuit
+  block:
+    - when: matrix_continuwuity_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/migrate_from_conduwuit.yml"

@@ -10,7 +10,7 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) for using Element Web.
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_client_element_default_hs_url', when: true}
     - {'name': 'matrix_client_element_container_network', when: true}
@@ -29,18 +29,16 @@
     msg: >-
       Riot has been renamed to Element (https://element.io/blog/welcome-to-element/).
       The playbook will migrate your existing configuration and data automatically, but you need to adjust variable names.
-      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+      Please rename these variable (`matrix_riot_web_*` -> `matrix_client_element_*`) on your configuration file (vars.yml): {{ lookup('ansible.builtin.varnames', '^matrix_riot_web_.+', wantlist=True) | join(', ') }}
       Also note that DNS configuration changes may be necessary.
-  when: "vars | dict2items | selectattr('key', 'match', item.old) | list | items2dict"
-  with_items:
-    - {'old': 'matrix_riot_web_.*', 'new': 'matrix_client_element_.*'}
+  when: "lookup('ansible.builtin.varnames', '^matrix_riot_web_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report renamed element-web settings
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_client_element_showLabsSettings', 'new': 'matrix_client_element_show_lab_settings'}
     - {'old': 'matrix_client_element_permalinkPrefix', 'new': 'matrix_client_element_permalink_prefix'}
@@ -59,7 +57,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`).
-      when: "vars[item] == ''"
+      when: "lookup('vars', item, default='') | string | length == 0"
       with_items:
         - matrix_client_element_container_labels_traefik_hostname
         - matrix_client_element_container_labels_traefik_path_prefix

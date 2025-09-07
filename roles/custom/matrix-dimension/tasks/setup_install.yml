@@ -87,7 +87,7 @@
     path: "{{ matrix_dimension_base_path }}"
     state: directory
     mode: 0770
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_dimension_user_gid }}"
 
 - name: Ensure Dimension config installed
@@ -95,7 +95,7 @@
     content: "{{ matrix_dimension_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_dimension_base_path }}/config.yaml"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
+    owner: "{{ matrix_user_name }}"
     group: "{{ matrix_dimension_user_gid }}"
 
 - name: Ensure Dimension labels installed
@@ -103,8 +103,8 @@
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ matrix_dimension_base_path }}/labels"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure Dimension image is pulled
   community.docker.docker_image:
@@ -125,7 +125,7 @@
     version: "{{ matrix_dimension_container_image_self_build_branch }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   when: "matrix_dimension_container_image_self_build | bool"
   register: matrix_dimension_git_pull_results
 

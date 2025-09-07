@@ -49,7 +49,7 @@ We will be using `example.com` as the domain in the following instruction. Pleas
 
 - [Python](https://www.python.org/). Most distributions install Python by default, but some don't (e.g. Ubuntu 18.04) and require manual installation (something like `apt-get install python3`). On some distros, Ansible may incorrectly [detect the Python version](https://docs.ansible.com/ansible/latest/reference_appendices/interpreter_discovery.html) (2 vs 3) and you may need to explicitly specify the interpreter path in `inventory/hosts` during installation (e.g. `ansible_python_interpreter=/usr/bin/python3`)
 
-- [sudo](https://www.sudo.ws/), even when you've configured Ansible to log in as `root`. Some distributions, like a minimal Debian net install, do not include the `sudo` package by default.
+- [sudo](https://www.sudo.ws/), even when you've configured Ansible to log in as `root`, because this Ansible playbook sometimes uses the Ansible [become](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html) module to perform tasks as another user (e.g. `matrix`) and the `become` module's default implementation uses `sudo`. Some distributions, like a minimal Debian net install, do not include the `sudo` package by default.
 
 - An HTTPS-capable web server at the base domain name (`example.com`) which is capable of serving static files. Unless you decide to [Serve the base domain from the Matrix server](configuring-playbook-base-domain-serving.md) or alternatively, to use DNS SRV records for [Server Delegation](howto-server-delegation.md).
 
@@ -60,7 +60,7 @@ We will be using `example.com` as the domain in the following instruction. Pleas
   - `80/tcp`: HTTP webserver
   - `443/tcp` and `443/udp`: HTTPS webserver
   - `3478/tcp`: STUN/TURN over TCP (used by [coturn](./configuring-playbook-turn.md))
-  - `3478/udp`: STUN/TURN over TCP (used by [coturn](./configuring-playbook-turn.md))
+  - `3478/udp`: STUN/TURN over UDP (used by [coturn](./configuring-playbook-turn.md))
   - `5349/tcp`: TURN over TCP (used by [coturn](./configuring-playbook-turn.md))
   - `5349/udp`: TURN over UDP (used by [coturn](./configuring-playbook-turn.md))
   - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. Some components like [Matrix User Verification Service](configuring-playbook-user-verification-service.md#open-matrix-federation-port) require this port to be opened **even with federation disabled**.

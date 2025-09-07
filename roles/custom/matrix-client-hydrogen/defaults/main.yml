@@ -154,6 +154,9 @@ matrix_client_hydrogen_path_prefix: /
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_client_hydrogen_self_check_validate_certificates: true
 
+# Controls whether the access log is enabled.
+matrix_client_hydrogen_access_log_enabled: true
+
 # config.json
 matrix_client_hydrogen_push:
   appId: io.element.hydrogen.web
@@ -170,7 +173,7 @@ matrix_client_hydrogen_bugReportEndpointUrl: "https://element.io/bugreports/subm
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_client_hydrogen_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+matrix_client_hydrogen_configuration_default: "{{ lookup('template', 'templates/config.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Hydrogen should go to `matrix_client_hydrogen_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_hydrogen_configuration_default`).

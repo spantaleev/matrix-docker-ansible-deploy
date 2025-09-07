@@ -66,6 +66,19 @@
     - when: matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/mjolnir-antispam/setup_install.yml"
 
+# synapse-http-antispam
+- tags:
+    - setup-all
+    - setup-synapse
+    - install-all
+    - install-synapse
+  block:
+    - when: matrix_synapse_ext_synapse_http_antispam_enabled  | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/synapse-http-antispam/validate_config.yml"
+
+    - when: matrix_synapse_ext_synapse_http_antispam_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/synapse-http-antispam/setup_install.yml"
+
 # s3-storage-provider
 - tags:
     - setup-all

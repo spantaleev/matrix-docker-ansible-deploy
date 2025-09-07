@@ -13,8 +13,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_bot_matrix_registration_bot_config_path }}", when: true}
     - {path: "{{ matrix_bot_matrix_registration_bot_data_path }}", when: true}
@@ -25,8 +25,8 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/config.yaml.j2"
     dest: "{{ matrix_bot_matrix_registration_bot_config_path }}/config.yaml"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0640
 
 - name: Ensure matrix-registration-bot image is pulled
@@ -50,7 +50,7 @@
         dest: "{{ matrix_bot_matrix_registration_bot_docker_src_files_path }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_bot_matrix_registration_bot_git_pull_results
 
     - name: Ensure matrix-registration-bot image is built

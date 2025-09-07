@@ -25,7 +25,7 @@ matrix_mautrix_signal_container_image_self_build_repo: "https://mau.dev/mautrix/
 matrix_mautrix_signal_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_signal_version == 'latest' else matrix_mautrix_signal_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/signal
-matrix_mautrix_signal_version: v0.8.1
+matrix_mautrix_signal_version: v0.8.6
 
 # See: https://mau.dev/mautrix/signal/container_registry
 matrix_mautrix_signal_docker_image: "{{ matrix_mautrix_signal_docker_image_registry_prefix }}mautrix/signal:{{ matrix_mautrix_signal_docker_image_tag }}"
@@ -42,9 +42,22 @@ matrix_mautrix_signal_docker_src_files_path: "{{ matrix_mautrix_signal_base_path
 
 matrix_mautrix_signal_homeserver_address: ""
 matrix_mautrix_signal_homeserver_domain: "{{ matrix_domain }}"
+# Whether asynchronous uploads via MSC2246 should be enabled for media.
+# Requires a homeserver that supports MSC2246 (https://github.com/matrix-org/matrix-spec-proposals/pull/2246).
+matrix_mautrix_signal_homeserver_async_media: false
 matrix_mautrix_signal_appservice_address: "http://matrix-mautrix-signal:8080"
 
+matrix_mautrix_signal_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+
 matrix_mautrix_signal_command_prefix: "!signal"
+
+# Displayname template for Signal users.
+# {{.ProfileName}} - The Signal profile name set by the user.
+# {{.ContactName}} - The name for the user from your phone's contact list. This is not safe on multi-user instances.
+# {{.PhoneNumber}} - The phone number of the user.
+# {{.UUID}} - The UUID of the Signal user.
+# {{.AboutEmoji}} - The emoji set by the user in their profile.
+matrix_mautrix_signal_network_displayname_template: "{% raw %}{{or .ProfileName .PhoneNumber 'Unknown user'}} (Signal){% endraw %}"
 
 matrix_mautrix_signal_bridge_permissions: |
   {{
@@ -210,6 +223,8 @@ matrix_mautrix_signal_registration_yaml: |
       - exclusive: true
         regex: '^@{{ matrix_mautrix_signal_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_signal_homeserver_domain | regex_escape }}$'
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
+  io.element.msc4190: {{ matrix_mautrix_signal_msc4190_enabled | to_json }}
 
 matrix_mautrix_signal_registration: "{{ matrix_mautrix_signal_registration_yaml | from_yaml }}"
 

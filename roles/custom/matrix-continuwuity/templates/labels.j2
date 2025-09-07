@@ -1,0 +1,173 @@
+{#
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_continuwuity_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_continuwuity_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_continuwuity_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-continuwuity.loadbalancer.server.port={{ matrix_continuwuity_config_port_number }}
+
+
+{% if matrix_continuwuity_container_labels_public_client_root_enabled %}
+############################################################
+#                                                          #
+# Public Root path (/)                                     #
+#                                                          #
+############################################################
+
+{% set client_root_middlewares = [] %}
+
+{% if matrix_continuwuity_container_labels_public_client_root_redirection_enabled %}
+{% set client_root_middlewares = client_root_middlewares + ['matrix-continuwuity-client-root-redirect'] %}
+traefik.http.middlewares.matrix-continuwuity-client-root-redirect.redirectregex.regex=(.*)
+traefik.http.middlewares.matrix-continuwuity-client-root-redirect.redirectregex.replacement={{ matrix_continuwuity_container_labels_public_client_root_redirection_url }}
+{% endif %}
+
+traefik.http.routers.matrix-continuwuity-public-client-root.rule={{ matrix_continuwuity_container_labels_public_client_root_traefik_rule }}
+
+traefik.http.routers.matrix-continuwuity-public-client-root.middlewares={{ client_root_middlewares | join(',') }}
+
+{% if matrix_continuwuity_container_labels_public_client_root_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-continuwuity-public-client-root.priority={{ matrix_continuwuity_container_labels_public_client_root_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-continuwuity-public-client-root.service=matrix-continuwuity
+traefik.http.routers.matrix-continuwuity-public-client-root.entrypoints={{ matrix_continuwuity_container_labels_public_client_root_traefik_entrypoints }}
+traefik.http.routers.matrix-continuwuity-public-client-root.tls={{ matrix_continuwuity_container_labels_public_client_root_traefik_tls | to_json }}
+
+{% if matrix_continuwuity_container_labels_public_client_root_traefik_tls %}
+traefik.http.routers.matrix-continuwuity-public-client-root.tls.certResolver={{ matrix_continuwuity_container_labels_public_client_root_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public Root path (/)                                    #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% if matrix_continuwuity_container_labels_public_client_api_enabled %}
+############################################################
+#                                                          #
+# Public Client-API (/_matrix)                             #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-continuwuity-public-client-api.rule={{ matrix_continuwuity_container_labels_public_client_api_traefik_rule }}
+
+{% if matrix_continuwuity_container_labels_public_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-continuwuity-public-client-api.priority={{ matrix_continuwuity_container_labels_public_client_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-continuwuity-public-client-api.service=matrix-continuwuity
+traefik.http.routers.matrix-continuwuity-public-client-api.entrypoints={{ matrix_continuwuity_container_labels_public_client_api_traefik_entrypoints }}
+
+traefik.http.routers.matrix-continuwuity-public-client-api.tls={{ matrix_continuwuity_container_labels_public_client_api_traefik_tls | to_json }}
+{% if matrix_continuwuity_container_labels_public_client_api_traefik_tls %}
+traefik.http.routers.matrix-continuwuity-public-client-api.tls.certResolver={{ matrix_continuwuity_container_labels_public_client_api_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public Client-API (/_matrix)                            #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% if matrix_continuwuity_container_labels_internal_client_api_enabled %}
+############################################################
+#                                                          #
+# Internal Client-API (/_matrix)                           #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-continuwuity-internal-client-api.rule={{ matrix_continuwuity_container_labels_internal_client_api_traefik_rule }}
+
+{% if matrix_continuwuity_container_labels_internal_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-continuwuity-internal-client-api.priority={{ matrix_continuwuity_container_labels_internal_client_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-continuwuity-internal-client-api.service=matrix-continuwuity
+traefik.http.routers.matrix-continuwuity-internal-client-api.entrypoints={{ matrix_continuwuity_container_labels_internal_client_api_traefik_entrypoints }}
+
+############################################################
+#                                                          #
+# /Internal Client-API (/_matrix)                          #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% if matrix_continuwuity_container_labels_public_federation_api_enabled %}
+############################################################
+#                                                          #
+# Public Federation-API (/_matrix)                         #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-continuwuity-public-federation-api.rule={{ matrix_continuwuity_container_labels_public_federation_api_traefik_rule }}
+
+{% if matrix_continuwuity_container_labels_public_federation_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-continuwuity-public-federation-api.priority={{ matrix_continuwuity_container_labels_public_federation_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-continuwuity-public-federation-api.service=matrix-continuwuity
+traefik.http.routers.matrix-continuwuity-public-federation-api.entrypoints={{ matrix_continuwuity_container_labels_public_federation_api_traefik_entrypoints }}
+
+traefik.http.routers.matrix-continuwuity-public-federation-api.tls={{ matrix_continuwuity_container_labels_public_federation_api_traefik_tls | to_json }}
+{% if matrix_continuwuity_container_labels_public_federation_api_traefik_tls %}
+traefik.http.routers.matrix-continuwuity-public-federation-api.tls.certResolver={{ matrix_continuwuity_container_labels_public_federation_api_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public Federation-API (/_matrix)                        #
+#                                                          #
+############################################################
+{% endif %}
+
+
+
+
+{% if matrix_continuwuity_container_labels_public_continuwuity_api_enabled %}
+############################################################
+#                                                          #
+# Public continuwuity-API (/_continuwuity)                       #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-continuwuity-public-continuwuity-api.rule={{ matrix_continuwuity_container_labels_public_continuwuity_api_traefik_rule }}
+
+{% if matrix_continuwuity_container_labels_public_continuwuity_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-continuwuity-public-continuwuity-api.priority={{ matrix_continuwuity_container_labels_public_continuwuity_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-continuwuity-public-continuwuity-api.service=matrix-continuwuity
+traefik.http.routers.matrix-continuwuity-public-continuwuity-api.entrypoints={{ matrix_continuwuity_container_labels_public_continuwuity_api_traefik_entrypoints }}
+
+traefik.http.routers.matrix-continuwuity-public-continuwuity-api.tls={{ matrix_continuwuity_container_labels_public_continuwuity_api_traefik_tls | to_json }}
+{% if matrix_continuwuity_container_labels_public_continuwuity_api_traefik_tls %}
+traefik.http.routers.matrix-continuwuity-public-continuwuity-api.tls.certResolver={{ matrix_continuwuity_container_labels_public_continuwuity_api_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public continuwuity-API (/_continuwuity)                      #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% endif %}
+
+{{ matrix_continuwuity_container_labels_additional_labels }}

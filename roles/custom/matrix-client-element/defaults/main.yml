@@ -29,7 +29,7 @@ matrix_client_element_container_image_self_build_repo: "https://github.com/eleme
 matrix_client_element_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_memtotal_mb < 4096 }}"
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/element-web
-matrix_client_element_version: v1.11.97
+matrix_client_element_version: v1.11.110
 
 matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_registry_prefix }}element-hq/element-web:{{ matrix_client_element_version }}"
 matrix_client_element_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else matrix_client_element_docker_image_registry_prefix_upstream }}"
@@ -186,6 +186,7 @@ matrix_client_element_integrations_rest_url: "https://scalar.vector.im/api"
 matrix_client_element_integrations_widgets_urls: ["https://scalar.vector.im/api"]
 matrix_client_element_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
 matrix_client_element_permalink_prefix: "https://matrix.to"  # noqa var-naming
+matrix_client_element_mobile_guide_app_variant: "element"
 matrix_client_element_bug_report_endpoint_url: "https://element.io/bugreports/submit"
 matrix_client_element_show_lab_settings: true  # noqa var-naming
 # Element public room directory server(s)
@@ -320,7 +321,7 @@ matrix_client_element_setting_defaults_custom_themes: []  # noqa var-naming
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_client_element_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+matrix_client_element_configuration_default: "{{ lookup('template', 'templates/config.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Element Web should go to `matrix_client_element_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_element_configuration_default`).
@@ -358,7 +359,7 @@ matrix_client_element_location_sharing_enabled: false
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_client_element_location_sharing_map_style_default: "{{ lookup('template', 'templates/map_style.json.j2') }}"
+matrix_client_element_location_sharing_map_style_default: "{{ lookup('template', 'templates/map_style.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Element location sharing map style should go to `matrix_client_element_location_sharing_map_style_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_element_location_sharing_map_style_default`).

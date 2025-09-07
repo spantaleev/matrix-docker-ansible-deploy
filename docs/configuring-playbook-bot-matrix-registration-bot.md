@@ -37,6 +37,10 @@ matrix_synapse_enable_registration: true
 
 # Restrict registration to users with a token
 matrix_synapse_registration_requires_token: true
+
+# Set an optional command prefix for the bot. This can be any arbitrary string, including whitespace.
+# Example: "!regbot "
+matrix_bot_matrix_registration_bot_bot_prefix: ""
 ```
 
 The bot account will be created automatically.
@@ -77,7 +81,7 @@ Send `help` to the bot to see the available commands.
 
 You can also refer to the upstream [Usage documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands).
 
-If you have any questions, or if you need help setting it up, read the [troublshooting guide](https://github.com/moan0s/matrix-registration-bot/blob/main/docs/troubleshooting.md) or join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
+If you have any questions, or if you need help setting it up, read the [troubleshooting guide](https://github.com/moan0s/matrix-registration-bot/blob/main/docs/troubleshooting.md) or join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
 
 To clean the cache (session & encryption data) after you changed the bot's username, changed the login method from access_token to password etc… you can use:
 

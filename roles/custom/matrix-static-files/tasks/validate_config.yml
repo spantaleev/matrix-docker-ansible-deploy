@@ -8,7 +8,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] | length == 0"
+  when: "item.when | bool and vars[item.name] | string | length == 0"
   with_items:
     - {'name': 'matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname', when: "{{ matrix_static_files_container_labels_well_known_matrix_endpoint_enabled }}"}
     - {'name': 'matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_path_prefix', when: "{{ matrix_static_files_container_labels_well_known_matrix_endpoint_enabled }}"}

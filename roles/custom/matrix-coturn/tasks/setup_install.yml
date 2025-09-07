@@ -51,8 +51,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_coturn_docker_src_files_path }}", when: "{{ matrix_coturn_container_image_self_build }}"}
   when: "item.when | bool"
@@ -78,7 +78,7 @@
         version: "{{ matrix_coturn_container_image_self_build_repo_version }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_coturn_git_pull_results
 
     - name: Ensure coturn Docker image is built
@@ -97,16 +97,16 @@
     path: "{{ matrix_coturn_base_path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure turnserver.conf installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/turnserver.conf.j2"
     dest: "{{ matrix_coturn_config_path }}"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure coturn network is created in Docker
   when: matrix_coturn_container_network not in ['', 'host']

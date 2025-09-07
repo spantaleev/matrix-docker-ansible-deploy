@@ -10,7 +10,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_mx_puppet_slack_hostname', when: true}
     - {'name': 'matrix_mx_puppet_slack_path_prefix', when: true}
@@ -25,7 +25,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_mx_puppet_slack_redirect_path', 'new': 'matrix_mx_puppet_slack_oauth_redirect_path, but setting matrix_mx_puppet_slack_path_prefix is better'}
     - {'old': 'matrix_mx_puppet_slack_redirect_uri', 'new': '<matrix_mx_puppet_slack_oauth_redirect_uri, but controlling matrix_mx_puppet_slack_scheme/matrix_mx_puppet_slack_hostname/matrix_mx_puppet_slack_path_prefix is better'}

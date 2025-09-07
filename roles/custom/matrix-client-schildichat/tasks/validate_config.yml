@@ -11,7 +11,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_client_schildichat_welcome_user_id', 'new': '<removed>'}
     - {'old': 'matrix_client_schildichat_container_image_name_prefix', 'new': 'matrix_client_schildichat_container_image_registry_prefix'}

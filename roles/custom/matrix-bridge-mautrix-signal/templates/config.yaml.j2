@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 # Network-specific config options
 network:
     # Displayname template for Signal users.
@@ -9,7 +9,7 @@ network:
     # {{.UUID}} - The UUID of the Signal user.
     # {{.AboutEmoji}} - The emoji set by the user in their profile.
     # {% endraw %}
-    displayname_template: "{% raw %}{{or .ProfileName .PhoneNumber 'Unknown user'}} (Signal){% endraw %}"
+    displayname_template: {{ matrix_mautrix_signal_network_displayname_template | to_json }}
     # Should avatars from the user's contact list be used? This is not safe on multi-user instances.
     use_contact_avatars: false
     # Should the bridge request the user's contact list from the phone on startup?
@@ -159,7 +159,7 @@ homeserver:
     # The bridge will use the appservice as_token to authorize requests.
     message_send_checkpoint_endpoint: null
     # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
-    async_media: false
+    async_media: {{ matrix_mautrix_signal_homeserver_async_media | to_json }}
 
     # Should the bridge use a websocket for connecting to the homeserver?
     # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
@@ -334,6 +334,11 @@ encryption:
     # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
     # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
     appservice: false
+    # Whether to use MSC4190 instead of appservice login to create the bridge bot device.
+    # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
+    # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
+    # Changing this option requires updating the appservice registration file.
+    msc4190: {{ matrix_mautrix_signal_msc4190_enabled | to_json }}
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
     allow_key_sharing: {{ matrix_mautrix_signal_bridge_encryption_key_sharing_allow | to_json }}

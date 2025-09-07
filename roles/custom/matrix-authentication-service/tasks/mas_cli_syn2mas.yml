@@ -1,0 +1,117 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- ansible.builtin.set_fact:
+    matrix_authentication_service_syn2mas_migrate_dry_run: "{{ matrix_authentication_service_syn2mas_migrate_dry_run | bool }}"
+
+- name: Abort, if not using Synapse
+  when: not matrix_synapse_enabled | bool
+  ansible.builtin.fail:
+    msg: |-
+      You can only use syn2mas to migrate from Synapse to Matrix Authentication Service.
+      Other homeserver implementations are not supported.
+
+- name: Fail if required matrix-authentication-service syn2mas settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and vars[item.name] | string | length == 0"
+  with_items:
+    - {'name': 'matrix_authentication_service_syn2mas_synapse_homeserver_config_path', when: true}
+
+- name: Check if Synapse homeserver config file exists
+  ansible.builtin.stat:
+    path: "{{ matrix_authentication_service_syn2mas_synapse_homeserver_config_path }}"
+  register: matrix_authentication_service_syn2mas_synapse_config_stat
+
+- name: Fail if Synapse homeserver config file does not exist
+  ansible.builtin.fail:
+    msg: "The Synapse homeserver config file does not exist at the specified path: {{ matrix_authentication_service_syn2mas_synapse_homeserver_config_path }}"
+  when: not matrix_authentication_service_syn2mas_synapse_config_stat.stat.exists
+
+- name: Ensure Synapse is stopped
+  when: not matrix_authentication_service_syn2mas_migrate_dry_run | bool
+  ansible.builtin.service:
+    name: matrix-synapse
+    state: stopped
+    daemon_reload: true
+  register: matrix_authentication_service_synapse_ensure_stopped_result
+
+# We probably don't necessarily need to stop this, because:
+# - the upstream docs don't say we should.
+# - while a migration is in progress (see `matrix_authentication_service_migration_in_progress`),
+#   we don't even add compatibility layer labels, so MAS would not be used anyway.
+#
+# Still, it's probably safer to stop it anyway.
+- name: Ensure Matrix Authentication Service is stopped
+  when: not matrix_authentication_service_syn2mas_migrate_dry_run | bool
+  ansible.builtin.service:
+    name: matrix-authentication-service
+    state: stopped
+  register: matrix_authentication_service_mas_ensure_stopped_result
+
+# This is similar to the command found in the systemd service file.
+#
+# We cannot use `docker exec` with the existing Matrix Authentication Service container here,
+# because we need an additional mount (the Synapse homeserver config).
+- name: Generate syn2mas migration command
+  ansible.builtin.set_fact:
+    matrix_authentication_service_mas_cli_syn2mas_command: >-
+      {{ devture_systemd_docker_base_host_command_docker }} run
+      --rm
+      --name=matrix-authentication-service-syn2mas
+      --log-driver=none
+      --user={{ matrix_authentication_service_uid }}:{{ matrix_authentication_service_gid }}
+      --cap-drop=ALL
+      --network={{ matrix_authentication_service_syn2mas_container_network }}
+      --mount type=bind,src={{ matrix_authentication_service_config_path }}/config.yaml,dst=/config.yaml,ro
+      --mount type=bind,src={{ matrix_authentication_service_data_keys_path }},dst=/keys,ro
+      --mount type=bind,src={{ matrix_authentication_service_syn2mas_synapse_homeserver_config_path }},dst=/homeserver.yaml,ro
+      {{ matrix_authentication_service_container_image }}
+      syn2mas
+      --synapse-config=/homeserver.yaml
+      {{ matrix_authentication_service_syn2mas_command_extra_options | join(' ') }}
+      {{ matrix_authentication_service_syn2mas_subcommand }}
+      {{ '--dry-run' if matrix_authentication_service_syn2mas_migrate_dry_run and matrix_authentication_service_syn2mas_subcommand == 'migrate' else '' }}
+      {{ matrix_authentication_service_syn2mas_subcommand_extra_options | join(' ') }}
+  tags:
+    - skip_ansible_lint
+
+# This is a hack.
+# See: https://ansibledaily.com/print-to-standard-output-without-escaping/
+#
+# We want to run `debug: msg=".."`, but that dumps it as JSON and escapes double quotes within it,
+# which ruins the command (`matrix_authentication_service_mas_cli_syn2mas_command`).
+- name: Note about syn2mas migration
+  ansible.builtin.set_fact:
+    dummy: true
+  with_items:
+    - >-
+        Running syn2mas migration using the following command: `{{ matrix_authentication_service_mas_cli_syn2mas_command }}`.
+        If this crashes, you can stop Synapse (`systemctl stop matrix-synapse`), start Matrix Authentication Service (`systemctl start matrix-authentication-service`) and run the command manually.
+
+- name: Perform syn2mas migration
+  ansible.builtin.command:
+    cmd: "{{ matrix_authentication_service_mas_cli_syn2mas_command }}"
+  register: matrix_authentication_service_mas_cli_syn2mas_command_result
+  changed_when: matrix_authentication_service_mas_cli_syn2mas_command_result.rc == 0
+
+- name: Print syn2mas migration command result
+  ansible.builtin.debug:
+    var: matrix_authentication_service_mas_cli_syn2mas_command_result
+
+- name: Ensure Synapse is started (if it previously was)
+  when: "not matrix_authentication_service_syn2mas_migrate_dry_run and matrix_authentication_service_mas_cli_syn2mas_command_result.changed"
+  ansible.builtin.service:
+    name: matrix-synapse
+    state: started
+
+- name: Ensure Matrix Authentication Service is started (if it previously was)
+  when: "not matrix_authentication_service_syn2mas_migrate_dry_run and matrix_authentication_service_mas_ensure_stopped_result.changed"
+  ansible.builtin.service:
+    name: matrix-authentication-service
+    state: started

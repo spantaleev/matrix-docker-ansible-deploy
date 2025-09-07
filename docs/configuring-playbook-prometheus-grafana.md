@@ -258,4 +258,4 @@ As with all other services, you can find the logs in [systemd-journald](https://
 - [The Prometheus scraping rules](https://github.com/element-hq/synapse/tree/master/contrib/prometheus) (we use v2)
 - [The Synapse Grafana dashboard](https://github.com/element-hq/synapse/tree/master/contrib/grafana)
 - [The Node Exporter dashboard](https://github.com/rfrail3/grafana-dashboards) (for generic non-synapse performance graphs)
-- [The PostgresSQL dashboard](https://grafana.com/grafana/dashboards/9628) (generic Postgres dashboard)
+- [The PostgreSQL dashboard](https://grafana.com/grafana/dashboards/9628) (generic Postgres dashboard)

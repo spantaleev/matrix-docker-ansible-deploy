@@ -16,8 +16,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_appservice_draupnir_for_all_base_path }}", when: true}
     - {path: "{{ matrix_appservice_draupnir_for_all_config_path }}", when: true}
@@ -44,7 +44,7 @@
     version: "{{ matrix_appservice_draupnir_for_all_docker_image.split(':')[1] }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_appservice_draupnir_for_all_git_pull_results
   when: "matrix_appservice_draupnir_for_all_container_image_self_build | bool"
 
@@ -64,24 +64,24 @@
     content: "{{ matrix_appservice_draupnir_for_all_configuration_appservice | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_draupnir_for_all_config_path }}/production-appservice.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-draupnir-for-all bot config installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_draupnir_for_all_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_draupnir_for_all_config_path }}/production-bots.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-draupnir-for-all registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_draupnir_for_all_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_draupnir_for_all_config_path }}/draupnir-for-all-registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-draupnir-for-all container network is created
   community.general.docker_network:

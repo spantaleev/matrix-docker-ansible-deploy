@@ -7,7 +7,8 @@ SPDX-FileCopyrightText: 2024 Suguru Hirahara
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
-# Endpoint URL that Draupnir uses to interact with the Matrix homeserver (client-server API),
+# Endpoint URL that Draupnir uses to interact with the matrix homeserver (client-server API),
+# set this to the pantalaimon URL if you're using that.
 homeserverUrl: {{ matrix_bot_draupnir_config_homeserverUrl | to_json }}
 
 # Endpoint URL that Draupnir could use to fetch events related to reports (client-server API and /_synapse/),
@@ -22,7 +23,10 @@ accessToken: {{ matrix_bot_draupnir_config_accessToken | to_json }}
 {% if matrix_bot_draupnir_pantalaimon_use or matrix_bot_draupnir_login_native %}
 # Options related to Pantalaimon (https://github.com/matrix-org/pantalaimon)
 pantalaimon:
-  # Set to `true` when the bot is to login and fetch the access token on its own.
+  # Whether or not Draupnir will use pantalaimon to access the matrix homeserver,
+  # set to `true` if you're using pantalaimon.
+  #
+  # Be sure to point homeserverUrl to the pantalaimon instance.
   #
   # Draupnir will log in using the given username and password once,
   # then store the resulting access token in a file under dataPath.
@@ -34,13 +38,14 @@ pantalaimon:
   # The password Draupnir will login with.
   #
   # After successfully logging in once, this will be ignored, so this value can be blanked after first startup.
-  # This option can be loaded from a file by passing "--password-path <path>" at the command line,
+  # This option can be loaded from a file by passing "--pantalaimon-password-path <path>" at the command line,
   # which would allow using secret management systems such as systemd's service credentials.
   password: {{ matrix_bot_draupnir_password | to_json }}
 {% endif %}
 
-# Experimental usage of the matrix-bot-sdk rust crypto. This can not be used with Pantalaimon.
-# Make sure Pantalaimon is disabled in Draupnir's configuration.
+# Experimental usage of the matrix-bot-sdk rust crypto.
+# This can not be used with Pantalaimon.
+# Make sure to setup the bot as if you are not using pantalaimon for this.
 #
 # Warning: At this time this is not considered production safe.
 experimentalRustCrypto: {{ matrix_bot_draupnir_config_experimentalRustCrypto | to_json }}
@@ -68,21 +73,11 @@ recordIgnoredInvites: false
 # (see verboseLogging to adjust this a bit.)
 managementRoom: {{ matrix_bot_draupnir_config_managementRoom | to_json }}
 
-# Deprecated and will be removed in a future version.
-# Running with verboseLogging is unsupported.
-# Whether Draupnir should log a lot more messages in the room,
-# mainly involves "all-OK" messages, and debugging messages for when Draupnir checks bans in a room.
-verboseLogging: false
-
 # The log level of terminal (or container) output,
 # can be one of DEBUG, INFO, WARN and ERROR, in increasing order of importance and severity.
 #
 # This should be at INFO or DEBUG in order to get support for Draupnir problems.
 logLevel: "INFO"
-
-# Whether or not Draupnir should synchronize policy lists immediately after startup.
-# Equivalent to running '!draupnir sync'.
-syncOnStartup: true
 
 # Whether or not Draupnir should check moderation permissions in all protected rooms on startup.
 # Equivalent to running `!draupnir verify`.
@@ -131,11 +126,13 @@ protectAllJoinedRooms: false
 # of the homeserver may be more impacted.
 backgroundDelayMS: 500
 
-# Server administration commands, these commands will only work if Draupnir is
+# Server administrative features. These will only work if Draupnir is
 # a global server administrator, and the bot's server is a Synapse instance.
+# Please review https://the-draupnir-project.github.io/draupnir-documentation/bot/homeserver-administration
 admin:
-  # Whether or not Draupnir can temporarily take control of any eligible account from the local homeserver who's in the room
-  # (with enough permissions) to "make" a user an admin.
+  # Whether to enable the make admin command.
+  # This command allows Draupnir can temporarily take control of any eligible account
+  # from the local homeserver in the target room (with enough permissions) to "make" another user an admin.
   #
   # This only works if a local user with enough admin permissions is present in the room.
   enableMakeRoomAdminCommand: {{ matrix_bot_draupnir_config_admin_enableMakeRoomAdminCommand | to_json }}
@@ -266,7 +263,7 @@ web:
   enabled: true
 
   # The port to expose the webserver on. Defaults to 8080.
-  port: 8080
+  port: {{ matrix_bot_draupnir_config_web_port | to_json }}
 
   # The address to listen for requests on. Defaults to only the current
   # computer.
@@ -286,15 +283,24 @@ web:
   abuseReporting:
     # Whether to enable this feature.
     enabled: {{ matrix_bot_draupnir_config_web_abuseReporting | to_json }}
+  # Whether to setup a endpoints for synapse-http-antispam
+  # https://github.com/maunium/synapse-http-antispam
+  # this is required for some features of Draupnir,
+  # such as support for room takedown policies.
+  #
+  # Please FOLLOW the instructions here:
+  # https://the-draupnir-project.github.io/draupnir-documentation/bot/synapse-http-antispam
+  synapseHTTPAntispam:
+    enabled: {{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled | to_json }}
+    # This is a secret that you must place into your synapse module config
+    # https://github.com/maunium/synapse-http-antispam?tab=readme-ov-file#configuration
+    authorization: {{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization | to_json }}
 {% endif %}
 
-# FIXME: This configuration option is currently broken in the playbook as admin APIs cannot
-# be accessed from containers. See https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3389
-# and https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3308
 # Whether or not to actively poll synapse for abuse reports, to be used
 # instead of intercepting client calls to synapse's abuse endpoint, when that
 # isn't possible/practical.
-#pollReports: false
+pollReports: false
 
 # Whether or not new reports, received either by webapi or polling,
 # should be printed to our managementRoom.

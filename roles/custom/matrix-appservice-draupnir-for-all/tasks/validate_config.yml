@@ -20,7 +20,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_appservice_draupnir_for_all_docker_image_name_prefix', 'new': 'matrix_appservice_draupnir_for_all_docker_image_registry_prefix'}
     - {'old': 'matrix_appservice_draupnir_for_all_enable_room_state_backing_store', 'new': 'matrix_appservice_draupnir_for_all_config_roomStateBackingStore_enabled'}

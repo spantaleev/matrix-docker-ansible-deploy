@@ -20,7 +20,7 @@ Currently, we support translation of:
 Organization of this `i18n` directory is as follows:
 
 - [PUBLISHED_LANGUAGES](PUBLISHED_LANGUAGES): a list of languages that we publish translations for (in the [translations/](translations/) directory)
-- [.gitignore](.gitignore): a list of files and directories to ignore in the `i18n` directory. We intentionaly ignore translated results (`translations/<language>` directories) for languages taht are still in progress. We only [publish translations in a new language](#publish-translations-in-a-new-language) when the translation progresses beyond a certain threshold.
+- [.gitignore](.gitignore): a list of files and directories to ignore in the `i18n` directory. We intentionally ignore translated results (`translations/<language>` directories) for languages that are still in progress. We only [publish translations in a new language](#publish-translations-in-a-new-language) when the translation progresses beyond a certain threshold.
 - [justfile](justfile): a list of recipes for [just](https://github.com/casey/just) command runner
 - [requirements.txt](requirements.txt): a list of Python packages required to work with translations
 - [translation-templates/](translation-templates/): a list of English translation templates - strings extracted from Markdown files

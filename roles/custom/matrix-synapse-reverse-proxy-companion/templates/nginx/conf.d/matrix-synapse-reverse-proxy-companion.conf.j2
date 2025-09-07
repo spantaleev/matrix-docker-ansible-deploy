@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 
 {% set room_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'room_worker') | list %}
 {% set sync_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'sync_worker') | list %}
@@ -14,7 +14,6 @@
 {% set user_dir_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'user_dir') | list %}
 
 {% macro render_worker_upstream(name, workers, load_balance) %}
-{% if workers | length > 0 %}
 	upstream {{ name }} {
 		{#
 			We need to use a zone so that the upstream is stored in shared memory,
@@ -30,7 +29,6 @@
 			server "{{ worker.name }}:{{ worker.port }}" resolve;
 		{% endfor %}
 	}
-{% endif %}
 {% endmacro %}
 
 {% macro render_locations_to_upstream(locations, upstream_name) %}
@@ -73,22 +71,53 @@ map $request_uri $room_name {
 	{% endif %}
 	# Round Robin "upstream" pools for workers
 
-	{{ render_worker_upstream('room_workers_upstream', room_workers, 'hash $room_name consistent;') }}
-	{{ render_worker_upstream('sync_workers_upstream', sync_workers, 'hash $mxid_localpart consistent;') }}
-	{{ render_worker_upstream('client_reader_workers_upstream', client_reader_workers, 'least_conn;') }}
-	{{ render_worker_upstream('federation_reader_workers_upstream', federation_reader_workers, 'hash $http_x_forwarded_for;') }}
+	{% if room_workers | length > 0 %}
+	{{- render_worker_upstream('room_workers_upstream', room_workers, 'hash $room_name consistent;') }}
+	{% endif %}
 
-	{{ render_worker_upstream('generic_workers_upstream', generic_workers, 'hash $http_x_forwarded_for;') }}
+	{% if sync_workers | length > 0 %}
+	{{- render_worker_upstream('sync_workers_upstream', sync_workers, 'hash $mxid_localpart consistent;') }}
+	{% endif %}
 
-	{{ render_worker_upstream('stream_writer_typing_stream_workers_upstream', stream_writer_typing_stream_workers, '') }}
-	{{ render_worker_upstream('stream_writer_to_device_stream_workers_upstream', stream_writer_to_device_stream_workers, '') }}
-	{{ render_worker_upstream('stream_writer_account_data_stream_workers_upstream', stream_writer_account_data_stream_workers, '') }}
-	{{ render_worker_upstream('stream_writer_receipts_stream_workers_upstream', stream_writer_receipts_stream_workers, '') }}
-	{{ render_worker_upstream('stream_writer_presence_stream_workers_upstream', stream_writer_presence_stream_workers, '') }}
+	{% if client_reader_workers | length > 0 %}
+	{{- render_worker_upstream('client_reader_workers_upstream', client_reader_workers, 'least_conn;') }}
+	{% endif %}
 
-	{{ render_worker_upstream('media_repository_workers_upstream', media_repository_workers, 'least_conn;') }}
+	{% if federation_reader_workers | length > 0 %}
+	{{- render_worker_upstream('federation_reader_workers_upstream', federation_reader_workers, 'hash $http_x_forwarded_for;') }}
+	{% endif %}
 
-	{{ render_worker_upstream('user_dir_workers_upstream', user_dir_workers, '') }}
+	{% if generic_workers | length > 0 %}
+	{{- render_worker_upstream('generic_workers_upstream', generic_workers, 'hash $http_x_forwarded_for;') }}
+	{% endif %}
+
+	{% if stream_writer_typing_stream_workers | length > 0 %}
+	{{- render_worker_upstream('stream_writer_typing_stream_workers_upstream', stream_writer_typing_stream_workers, '') }}
+	{% endif %}
+
+	{% if stream_writer_to_device_stream_workers | length > 0 %}
+	{{- render_worker_upstream('stream_writer_to_device_stream_workers_upstream', stream_writer_to_device_stream_workers, '') }}
+	{% endif %}
+
+	{% if stream_writer_account_data_stream_workers | length > 0 %}
+	{{- render_worker_upstream('stream_writer_account_data_stream_workers_upstream', stream_writer_account_data_stream_workers, '') }}
+	{% endif %}
+
+	{% if stream_writer_receipts_stream_workers | length > 0 %}
+	{{- render_worker_upstream('stream_writer_receipts_stream_workers_upstream', stream_writer_receipts_stream_workers, '') }}
+	{% endif %}
+
+	{% if stream_writer_presence_stream_workers | length > 0 %}
+	{{- render_worker_upstream('stream_writer_presence_stream_workers_upstream', stream_writer_presence_stream_workers, '') }}
+	{% endif %}
+
+	{% if media_repository_workers | length > 0 %}
+	{{- render_worker_upstream('media_repository_workers_upstream', media_repository_workers, 'least_conn;') }}
+	{% endif %}
+
+	{% if user_dir_workers | length > 0 %}
+	{{- render_worker_upstream('user_dir_workers_upstream', user_dir_workers, '') }}
+	{% endif %}
 {% endif %}
 
 server {

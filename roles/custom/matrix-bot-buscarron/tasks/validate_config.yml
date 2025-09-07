@@ -10,7 +10,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_bot_buscarron_noencryption', 'new': '<removed>'}
     - {'old': 'matrix_bot_buscarron_spam_hosts', 'new': '<superseded by matrix_bot_buscarron_spamlist>'}
@@ -22,7 +22,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_bot_buscarron_password', when: true}
     - {'name': 'matrix_bot_buscarron_hostname', when: true}

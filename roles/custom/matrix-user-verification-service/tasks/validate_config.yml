@@ -33,7 +33,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_user_verification_service_uvs_homeserver_url', when: true}
     - {'name': 'matrix_user_verification_service_container_network', when: true}
@@ -43,6 +43,6 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_user_verification_service_docker_image_name_prefix', 'new': 'matrix_user_verification_service_docker_image_registry_prefix'}

@@ -41,7 +41,7 @@ Below, we'll try to **highlight some potential reasons for switching** to Matrix
 
 ## Prerequisites
 
-- ⚠️ the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default for this playbook). Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating wtih Matrix Authentication Service yet.
+- ⚠️ the [Synapse](configuring-playbook-synapse.md) homeserver implementation (which is the default for this playbook). Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating with Matrix Authentication Service yet.
 
 - ❌ **disabling all password providers** for Synapse (things like [shared-secret-auth](./configuring-playbook-shared-secret-auth.md), [rest-auth](./configuring-playbook-rest-auth.md), [LDAP auth](./configuring-playbook-ldap-auth.md), etc.) More details about this are available in the [Expectations](#expectations) section below.
 
@@ -55,15 +55,13 @@ This section details what you can expect when switching to the Matrix Authentica
 
 - ❌ **Some services experience issues when authenticating via MAS**:
 
-  - [Postmoogle](./configuring-playbook-bridge-postmoogle.md) works the first time around, but it consistently fails after restarting:
-
-    > cannot initialize matrix bot error="olm account is marked as shared, keys seem to have disappeared from the server"
+  - [Reminder bot](configuring-playbook-bot-matrix-reminder-bot.md) seems to be losing some of its state on each restart and may reschedule old reminders once again
 
 - ❌ **Encrypted appservices** do not work yet (related to [MSC4190](https://github.com/matrix-org/matrix-spec-proposals/pull/4190) and [PR 17705 for Synapse](https://github.com/element-hq/synapse/pull/17705)), so all bridges/bots that rely on encryption will fail to start (see [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3658) for Hookshot). You can use these bridges/bots only if you **keep end-to-bridge encryption disabled** (which is the default setting).
 
 - ⚠️ [Migrating an existing Synapse homeserver to Matrix Authentication Service](#migrating-an-existing-synapse-homeserver-to-matrix-authentication-service) is **possible**, but requires **some playbook-assisted manual work**. Migration is **reversible with no or minor issues if done quickly enough**, but as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
 
-- ⚠️ Delegating user authentication to MAS causes **your Synapse server to be completely dependant on one more service** for its operations. MAS is quick & lightweight and should be stable enough already, but this is something to keep in mind when making the switch.
+- ⚠️ Delegating user authentication to MAS causes **your Synapse server to be completely dependent on one more service** for its operations. MAS is quick & lightweight and should be stable enough already, but this is something to keep in mind when making the switch.
 
 - ⚠️ If you've got [OIDC configured in Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on), you will need to migrate your OIDC configuration to MAS by adding an [Upstream OAuth2 configuration](#upstream-oauth2-configuration).
 
@@ -87,7 +85,7 @@ For new homeservers (which don't have any users in their Synapse database yet), 
 
 ### Existing homeserver
 
-Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating wtih Matrix Authentication Service yet.
+Other homeserver implementations ([Dendrite](./configuring-playbook-dendrite.md), [Conduit](./configuring-playbook-conduit.md), etc.) do not support integrating with Matrix Authentication Service yet.
 
 For existing Synapse homeservers:
 
@@ -159,6 +157,10 @@ matrix_authentication_service_config_upstream_oauth2_providers:
   - # A unique identifier for the provider
     # Must be a valid ULID
     id: 01HFVBY12TMNTYTBV8W921M5FA
+    # This can be set if you're migrating an existing (legacy) Synapse OIDC configuration.
+    # The value used here would most likely be "oidc" or "oidc-provider".
+    # See: https://element-hq.github.io/matrix-authentication-service/setup/migration.html#map-any-upstream-sso-providers
+    synapse_idp_id: null
     # The issuer URL, which will be used to discover the provider's configuration.
     # If discovery is enabled, this *must* exactly match the `issuer` field
     # advertised in `<issuer>/.well-known/openid-configuration`.
@@ -306,7 +308,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 Our migration guide is loosely based on the upstream [Migrating an existing homeserver](https://element-hq.github.io/matrix-authentication-service/setup/migration.html) guide.
 
-Migration is done via a tool called `syn2mas`, which the playbook could run for you (in a container).
+Migration is done via a sub-command called `syn2mas`, which the playbook could run for you (in a container).
 
 The installation + migration steps are like this:
 
@@ -322,7 +324,7 @@ The installation + migration steps are like this:
 
     - The `matrix-user-creator` role would be suppressed, so that it doesn't automatically attempt to create users (for bots, etc.) in the MAS database. These user accounts likely already exist in Synapse's user database and could be migrated over (via syn2mas, as per the steps below), so creating them in the MAS database would have been unnecessary and potentially problematic (conflicts during the syn2mas migration).
 
-3. Consider taking a full [backup of your Postgres database](./maintenance-postgres.md#backing-up-postgresql). This is done just in case. The **syn2mas migration tool does not delete any data**, so it should be possible to revert to your previous setup by merely disabling MAS and re-running the playbook (no need to restore a Postgres backup). However, do note that as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
+3. Consider taking a full [backup of your Postgres database](./maintenance-postgres.md#backing-up-postgresql). This is done just in case. The **syn2mas migration command does not delete any data**, so it should be possible to revert to your previous setup by merely disabling MAS and re-running the playbook (no need to restore a Postgres backup). However, do note that as users start logging in (creating new login sessions) via the new MAS setup, disabling MAS and reverting back to the Synapse user database will cause these new sessions to break.
 
 4. [Migrate your data from Synapse to Matrix Authentication Service using syn2mas](#migrate-your-data-from-synapse-to-matrix-authentication-service-using-syn2mas)
 
@@ -342,9 +344,7 @@ The installation + migration steps are like this:
 
 ### Migrate your data from Synapse to Matrix Authentication Service using syn2mas
 
-We **don't** ask you to [run the `syn2mas` migration advisor command](https://element-hq.github.io/matrix-authentication-service/setup/migration.html#run-the-migration-advisor), because it only gives you the green light if your Synapse configuration (`homeserver.yaml`) is configured in a way that's compatible with MAS (delegating authentication to MAS; disabling Synapse's password config; etc.). Until we migrate your data with the `syn2mas` tool, we intentionally avoid doing these changes to allow existing user sessions to work.
-
-You can invoke the `syn2mas` tool via the playbook by running the playbook's `matrix-authentication-service-syn2mas` tag. We recommend first doing a [dry-run](#performing-a-syn2mas-dry-run) and then a [real migration](#performing-a-real-syn2mas-migration).
+You can invoke the `syn2mas` tool via the playbook by running the playbook's `matrix-authentication-service-mas-cli-syn2mas` tag. We recommend first doing a [dry-run](#performing-a-syn2mas-dry-run) and then a [real migration](#performing-a-real-syn2mas-migration).
 
 #### Configuring syn2mas
 
@@ -356,26 +356,9 @@ When you're done with potentially configuring `syn2mas`, proceed to doing a [dry
 
 ##### Configuring upstream OIDC provider mapping for syn2mas
 
-If you have existing OIDC users in your Synapse user database (which will be the case if when using [OIDC with Synapse](./configuring-playbook-synapse.md#synapse--openid-connect-for-single-sign-on)), you may need to pass an additional `--upstreamProviderMapping` argument to the `syn2mas` tool to tell it which provider (on the Synapse side) maps to which other provider on the MAS side.
+Since Matrix Authentication Service v0.16.0 (which replaced the standalone `syn2mas` tool with a `mas-cli syn2mas` sub-command), OIDC configuration (mapping from your old OIDC configuration to your new one, etc) is meant to be configured in the Matrix Authentication Service configuration (via `matrix_authentication_service_config_upstream_oauth2_providers`) as a `synapse_idp_id` property for each provider.
 
-If you don't do this, `syn2mas` would report errors like this one:
-
-> [FATAL] migrate - [Failed to import external id 4264b0f0-4f11-4ddd-aedb-b500e4d07c25 with oidc-keycloak for user @alice:example.com: Error: Unknown upstream provider oidc-keycloak]
-
-Below is an example situation and a guide for how to solve it.
-
-If in `matrix_synapse_oidc_providers` your provider `idp_id` is (was) named `keycloak`, in the Synapse database users would be associated with the `oidc-keycloak` provider (note the `oidc-` prefix that was added automatically by Synapse to your `idp_id` value).
-
-The same OIDC provider may have an `id` of `01HFVBY12TMNTYTBV8W921M5FA` on the MAS side, as defined in `matrix_authentication_service_config_upstream_oauth2_providers` (see the [Upstream OAuth2 configuration](#upstream-oauth2-configuration) section above).
-
-To tell `syn2mas` how the Synapse-configured OIDC provider maps to the new MAS-configured OIDC provider, add this additional configuration to your `vars.yml` file:
-
-```yaml
-# Adjust the mapping below to match your provider IDs on the Synapse side and the MAS side.
-# Don't forget that Synapse automatically adds an `oidc-` prefix to provider ids defined in its configuration.
-matrix_authentication_service_syn2mas_process_extra_arguments:
-  - "--upstreamProviderMapping oidc-keycloak:01HFVBY12TMNTYTBV8W921M5FA"
-```
+You can refer to the [Map any upstream SSO providers](https://element-hq.github.io/matrix-authentication-service/setup/migration.html#map-any-upstream-sso-providers) section of the MAS documentation for figuring out how to set the `synapse_idp_id` value in `matrix_authentication_service_config_upstream_oauth2_providers` correctly.
 
 #### Performing a syn2mas dry-run
 
@@ -386,7 +369,7 @@ A dry-run would not cause downtime, because it avoids stopping Synapse.
 To perform a dry-run, run:
 
 ```sh
-just run-tags matrix-authentication-service-syn2mas -e matrix_authentication_service_syn2mas_dry_run=true
+just run-tags matrix-authentication-service-mas-cli-syn2mas -e matrix_authentication_service_syn2mas_migrate_dry_run=true
 ```
 
 Observe the command output (especially the last line of the the syn2mas output). If you are confident that the migration will work out as expected, you can proceed with a [real migration](#performing-a-real-syn2mas-migration).
@@ -405,13 +388,13 @@ Before performing a real migration make sure:
 
 - you've performed a [syn2mas dry-run](#performing-a-syn2mas-dry-run) and don't see any issues in its output
 
-To perform a real migration, run the `matrix-authentication-service-syn2mas` tag **without** the `matrix_authentication_service_syn2mas_dry_run` variable:
+To perform a real migration, run the `matrix-authentication-service-mas-cli-syn2mas` tag **without** the `matrix_authentication_service_syn2mas_migrate_dry_run` variable:
 
 ```sh
-just run-tags matrix-authentication-service-syn2mas
+just run-tags matrix-authentication-service-mas-cli-syn2mas
 ```
 
-Having performed a `syn2mas` migration once, trying to do it again will report errors for users that were already migrated (e.g. "Error: Unknown upstream provider oauth-delegated").
+Having performed a `syn2mas` migration once, trying to do it again will report errors (e.g. "Error: The MAS database is not empty: rows found in at least `users`. Please drop and recreate the database, then try again.").
 
 ## Verify that Matrix Authentication Service is installed correctly
 

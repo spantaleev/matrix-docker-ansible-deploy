@@ -11,7 +11,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_vars_yml_snapshotting_enabled', 'new': 'devture_playbook_state_preserver_vars_preservation_enabled'}
     - {'old': 'matrix_vars_yml_snapshotting_src', 'new': 'devture_playbook_state_preserver_vars_preservation_src'}
@@ -86,8 +86,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_postgres_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_postgres_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report matrix_mailer_ variables
   ansible.builtin.fail:
@@ -99,14 +99,14 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_mailer_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'matrix_mailer_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_mailer_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mailer_.+', wantlist=True) | length > 0"
 
 - when: matrix_playbook_migration_matrix_prometheus_node_exporter_migration_validation_enabled | bool
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_prometheus_node_exporter_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_prometheus_node_exporter_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_prometheus_node_exporter variables
       ansible.builtin.fail:
@@ -118,14 +118,14 @@
 
           After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-          The following variables in your configuration need to be renamed: {{ matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars.keys() | join(', ') }}
+          The following variables in your configuration need to be renamed: {{ matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars | join(', ') }}
       when: "matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars | length > 0"
 
 - when: matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_validation_enabled | bool
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_prometheus_postgres_exporter_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_prometheus_postgres_exporter_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_prometheus_postgres_exporter variables
       ansible.builtin.fail:
@@ -144,7 +144,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_backup_borg_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_backup_borg_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_backup_borg_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_backup_borg variables
       ansible.builtin.fail:
@@ -163,7 +163,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_grafana_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_grafana_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_grafana_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_grafana variables
       ansible.builtin.fail:
@@ -182,7 +182,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_ntfy_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_ntfy_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_ntfy_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_ntfy variables
       ansible.builtin.fail:
@@ -201,7 +201,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_redis_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_redis_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_redis_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_redis variables
       ansible.builtin.fail:
@@ -220,7 +220,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_redis_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'redis_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^redis_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_redis variables
       ansible.builtin.fail:
@@ -238,7 +238,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_keydb_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'keydb_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^keydb_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_redis variables
       ansible.builtin.fail:
@@ -256,7 +256,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_etherpad_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_etherpad_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_etherpad_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_etherpad variables
       ansible.builtin.fail:
@@ -275,7 +275,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_aux_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_aux_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_aux_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_aux variables
       ansible.builtin.fail:
@@ -294,7 +294,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_jitsi_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_jitsi_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_jitsi_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_jitsi variables
       ansible.builtin.fail:
@@ -313,7 +313,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_postmoogle_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_bot_postmoogle_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_bot_postmoogle_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_bot_postmoogle variables
       ansible.builtin.fail:
@@ -332,7 +332,7 @@
         msg: >-
           Your configuration contains a variable, which now has a different name.
           Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-      when: "item.old in vars"
+      when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
       with_items:
         - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_enabled', 'new': 'matrix_metrics_exposure_enabled'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled', 'new': 'matrix_metrics_exposure_http_basic_auth_enabled'}
@@ -419,7 +419,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_nginx_proxy_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_nginx_proxy_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_nginx_proxy_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report leftover matrix_nginx_proxy variables
       ansible.builtin.fail:
@@ -435,7 +435,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_ssl_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_ssl_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_ssl_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_ssl variables
       ansible.builtin.fail:
@@ -450,7 +450,7 @@
 - block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_matrix_synapse_container_labels_public_client_synapse_oidc_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_synapse_container_labels_public_client_synapse_oidc_*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_synapse_container_labels_public_client_synapse_oidc_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_ssl variables
       ansible.builtin.fail:
@@ -461,7 +461,7 @@
 - block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_ssl variables
       ansible.builtin.fail:
@@ -479,8 +479,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_postgres_backup_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_postgres_backup_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_postgres_backup_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_postgres_backup_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report devture_postgres variables
   ansible.builtin.fail:
@@ -492,8 +492,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_postgres_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_postgres_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_postgres_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_postgres_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report traefik_certs_dumper variables
   ansible.builtin.fail:
@@ -505,8 +505,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_traefik_certs_dumper_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_traefik_certs_dumper_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_traefik_certs_dumper_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_traefik_certs_dumper_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report devture_traefik variables
   ansible.builtin.fail:
@@ -518,8 +518,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_traefik_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_traefik_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report devture_container_socket_proxy variables
   ansible.builtin.fail:
@@ -531,8 +531,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_container_socket_proxy_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_container_socket_proxy_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report mautrix-hangouts variables
   ansible.builtin.fail:
@@ -544,8 +544,8 @@
 
       You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mautrix-hangouts.md` for more information.
 
-      The following variables in your configuration need to be removed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_mautrix_hangouts_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'matrix_mautrix_hangouts_.*') | list | items2dict"
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mautrix_hangouts_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mautrix_hangouts_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report Email2Matrix variables
   ansible.builtin.fail:
@@ -556,5 +556,5 @@
 
       You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-email2matrix.md` for more information.
 
-      The following variables in your configuration need to be removed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_email2matrix_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'matrix_email2matrix_.*') | list | items2dict"
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_email2matrix_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_email2matrix_.+', wantlist=True) | length > 0"

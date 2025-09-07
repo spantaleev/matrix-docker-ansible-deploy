@@ -25,7 +25,7 @@ matrix_synapse_admin_container_image_self_build: false
 matrix_synapse_admin_container_image_self_build_repo: "https://github.com/etkecc/synapse-admin.git"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/synapse-admin
-matrix_synapse_admin_version: v0.10.3-etke38
+matrix_synapse_admin_version: v0.11.1-etke47
 matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
 matrix_synapse_admin_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_synapse_admin_docker_image_registry_prefix_upstream }}"
 matrix_synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_synapse_admin_docker_image_registry_prefix_upstream_default }}"
@@ -187,9 +187,9 @@ matrix_synapse_admin_configuration_default:
 matrix_synapse_admin_configuration_extension_json: '{}'
 
 # This is similar to `matrix_synapse_admin_configuration_extension_json`, but intended for use by playbook or group vars
-matrix_synapse_admin_configuration_extension_json_auto: {}
+matrix_synapse_admin_configuration_extension_json_auto: '{}'
 
-matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json_auto | combine(matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
+matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json_auto | from_json | combine(matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
 
 # Holds the final synapse-admin configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_admin_configuration_default`.
@@ -197,7 +197,7 @@ matrix_synapse_admin_configuration: "{{ matrix_synapse_admin_configuration_defau
 
 # Controls the restrictBaseUrl configuration setting, which, if defined,
 # restricts the homeserver(s), so that the user can no longer define a homeserver manually during login.
-matrix_synapse_admin_config_restrictBaseUrl: "{{ [matrix_homeserver_url] }}"  # noqa var-naming
+matrix_synapse_admin_config_restrictBaseUrl: "{{ matrix_homeserver_url }}"  # noqa var-naming
 
 # Controls the menu configuration setting, which, if defined, adds new menu items to the Synapse Admin UI.
 # The format is a list of objects, where each object has the following keys:

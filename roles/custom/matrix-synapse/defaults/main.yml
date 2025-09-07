@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.128.0
+matrix_synapse_version: v1.137.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -374,6 +374,10 @@ matrix_synapse_registration_shared_secret: "{{ matrix_synapse_macaroon_secret_ke
 matrix_synapse_allow_guest_access: false
 matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
 
+
+# Controls how to reach server admin, used in ResouceLimitError
+matrix_synapse_admin_contact: ~
+
 matrix_synapse_max_upload_size_mb: 50
 
 # Controls whether local media should be removed under certain conditions, typically for the purpose of saving space.
@@ -501,7 +505,7 @@ matrix_synapse_tls_federation_listener_enabled: true
 matrix_synapse_tls_certificate_path: "/data/{{ matrix_server_fqn_matrix }}.tls.crt"
 matrix_synapse_tls_private_key_path: "/data/{{ matrix_server_fqn_matrix }}.tls.key"
 
-# Resource names used by the unsecure HTTP listener. Here only the Client API
+# Resource names used by the insecure HTTP listener. Here only the Client API
 # is defined, see the homeserver config for a full list of valid resource
 # names.
 matrix_synapse_http_listener_resource_names: ["client"]
@@ -725,6 +729,9 @@ matrix_synapse_oidc_providers: []
 # Note: internally, this uses the `--mount` flag for mounting the specified volumes.
 matrix_synapse_container_additional_volumes: []
 
+# Controls whether cas_config is enabled
+matrix_synapse_cas_config_enabled: false
+
 # A list of additional loggers to register in synapse.log.config.
 # This list gets populated dynamically based on Synapse extensions that have been enabled.
 # Contains definition objects like this: `{"name": "..", "level": "DEBUG"}
@@ -832,7 +839,7 @@ matrix_synapse_workers_enabled: false
 
 # Specifies worker configuration that should be used when workers are enabled.
 #
-# The posible values (as seen in `matrix_synapse_workers_presets`) are:
+# The possible values (as seen in `matrix_synapse_workers_presets`) are:
 # - "little-federation-helper" - a very minimal worker configuration to improve federation performance
 # - "one-of-each" - one worker of each supported type + a generic worker
 # - "specialized-workers" - one worker of each supported type + specialized workers
@@ -1213,13 +1220,6 @@ matrix_synapse_email_app_name: Matrix
 matrix_synapse_email_client_base_url: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_element }}"
 matrix_synapse_email_invite_client_location: "https://app.element.io"
 
-
-################################################################################
-#
-# Next-generation auth for Matrix, based on OAuth 2.0/OIDC
-#
-################################################################################
-
 # Controls whether to enable the "send typing, presence and receipts to appservices" experimental feature.
 #
 # See:
@@ -1241,50 +1241,29 @@ matrix_synapse_experimental_features_msc3202_device_masquerading_enabled: false
 # - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
 matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: false
 
-# Controls whether to enable the "Next-generation auth for Matrix, based on OAuth 2.0/OIDC" experimental feature.
+################################################################################
 #
+# Next-generation auth for Matrix, based on OAuth 2.0/OIDC
+#
+################################################################################
+
+# Controls whether to enable "Matrix Authentication Service" integration ("Next-generation auth for Matrix, based on OAuth 2.0/OIDC").
 # See:
+# - https://github.com/element-hq/matrix-authentication-service
 # - https://matrix.org/blog/2023/09/better-auth/
 # - https://github.com/matrix-org/matrix-spec-proposals/pull/3861
-matrix_synapse_experimental_features_msc3861_enabled: false
+matrix_synapse_matrix_authentication_service_enabled: false
 
-# Specifies the issuer URL for the OAuth 2.0/OIDC authentication provider.
-#
-# This can be set to a private (container) URL.
-#
-# Example: https://matrix.example.com/auth/
-matrix_synapse_experimental_features_msc3861_issuer: ''
+# Specifies the base URL where the Matrix Authentication Service is running.
+matrix_synapse_matrix_authentication_service_endpoint: ""
 
-# Specifies the introspection endpoint URL for the OAuth 2.0/OIDC authentication provider.
-#
-# This can be set to a private (container) URL.
-#
-# If this is left empty, `{issuer}/.well-known/openid-configuration` will be fetched and the `introspection_endpoint` will be extracted from there.
-# We define it explicitly, because this allows us to override it and use an internal (container network) URL instead of using the public one.
-# Avoiding public addresses is an optimization that decreases overhead due to public networking and SSL termination.
-#
-# Example: https://matrix.example.com/auth/oauth2/introspect
-matrix_synapse_experimental_features_msc3861_introspection_endpoint: "{{ matrix_synapse_experimental_features_msc3861_issuer + 'oauth2/introspect' }}"
-
-# A unique identifier for the client.
-#
-# It must be a valid ULID (https://github.com/ulid/spec),
-# and it happens that 0000000000000000000SYNAPSE is a valid ULID.
-matrix_synapse_experimental_features_msc3861_client_id: '0000000000000000000SYNAPSE'
-
-matrix_synapse_experimental_features_msc3861_client_auth_method: client_secret_basic
-
-matrix_synapse_experimental_features_msc3861_client_secret: ''
-
-# A token that can be used to make admin API calls.
-# Matches `matrix.secret` in the matrix-authentication-service config
-matrix_synapse_experimental_features_msc3861_admin_token: ''
-
-# URL to advertise to clients where users can self-manage their account.
-matrix_synapse_experimental_features_msc3861_account_management_url: ''
+# Specifies the shared secret used to authenticate Matrix Authentication Service requests.
+# Must be the same as `matrix.secret` in the Matrix Authentication Service configuration.
+# See https://element-hq.github.io/matrix-authentication-service/reference/configuration.html#matrix
+matrix_synapse_matrix_authentication_service_secret: ""
 
 # Controls whether to enable the "QR code login" experimental feature.
-# Enabling this requires that MSC3861 (see `matrix_synapse_experimental_features_msc3861_enabled`) is also enabled.
+# Enabling this requires that Matrix Authentication Service integration (see `matrix_synapse_matrix_authentication_service_enabled`) is also enabled.
 matrix_synapse_experimental_features_msc4108_enabled: false
 
 ################################################################################
@@ -1370,6 +1349,7 @@ matrix_synapse_ext_password_provider_ldap_bind_password: ""
 matrix_synapse_ext_password_provider_ldap_filter: ""
 matrix_synapse_ext_password_provider_ldap_active_directory: false
 matrix_synapse_ext_password_provider_ldap_default_domain: ""
+matrix_synapse_ext_password_provider_ldap_tls_options_validate: true
 
 # Enable this to activate the Synapse Antispam spam-checker module.
 # See: https://github.com/t2bot/synapse-simple-antispam
@@ -1383,7 +1363,7 @@ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeserve
 matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: false
 matrix_synapse_ext_spam_checker_mjolnir_antispam_git_repository_url: "https://github.com/matrix-org/mjolnir"
 # renovate: datasource=docker depName=matrixdotorg/mjolnir
-matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "v1.9.2"
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "v1.11.0"
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
 # Flag messages sent by servers/users in the ban lists as spam. Currently
 # this means that spammy messages will appear as empty to users. Default
@@ -1409,6 +1389,43 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config:
   ban_lists: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists }}"
   message_max_length: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_message_max_length }}"
 
+# Enable this to activate the synapse-http-antispam module.
+# See: github.com/maunium/synapse-http-antispam
+matrix_synapse_ext_synapse_http_antispam_enabled: false
+matrix_synapse_ext_synapse_http_antispam_git_repository_url: "https://github.com/maunium/synapse-http-antispam"
+# renovate: datasource=github-releases depName=maunium/synapse-http-antispam
+matrix_synapse_ext_synapse_http_antispam_git_version: "v0.5.0"
+# Where Synapse can locate the consumer of the antispam API. Currently
+# Draupnir is the only consumer of this API that is playbook supported.
+# But https://github.com/maunium/meowlnir also supports the API.
+matrix_synapse_ext_synapse_http_antispam_config_base_url: ''
+# This is a shared secret that is established between the consumer and the
+# homeserver a lot like how AS authentication is done. This is fully managed
+# the same way AS authentication is by the playbook.
+matrix_synapse_ext_synapse_http_antispam_config_authorization: ''
+# This controls if the module will ping the consumer or not for ease of troubleshooting. This defaults
+# to enabled to help assure users that the connection is working.
+# Due to that its only a single log line per worker per startup this default is deemed acceptable.
+matrix_synapse_ext_synapse_http_antispam_config_do_ping: true
+# This controls what callbacks are activated. This list is fully dependent on what consumer is in play.
+# And what capabilities said consumer should or shouldn't have. There are also performance implications
+# to these choices.
+matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks: []
+# Controls if a loss of connectivity to the consumer results in fail open or closed.
+# As in if failure results in events getting flagged automatically as spam or not.
+matrix_synapse_ext_synapse_http_antispam_config_fail_open: {}
+# Controls if the checking is blocking or not. This allows the homeserver to skip waiting for a consumer response.
+matrix_synapse_ext_synapse_http_antispam_config_async: {}
+# Actual configuration passed to the synapse-http-antispam module
+matrix_synapse_ext_synapse_http_antispam_config: "{{ matrix_synapse_ext_synapse_http_antispam_config_yaml | from_yaml }}"
+matrix_synapse_ext_synapse_http_antispam_config_yaml: |
+  base_url: {{ matrix_synapse_ext_synapse_http_antispam_config_base_url | to_json }}
+  authorization: {{ matrix_synapse_ext_synapse_http_antispam_config_authorization | to_json }}
+  do_ping: {{ matrix_synapse_ext_synapse_http_antispam_config_do_ping | to_json }}
+  enabled_callbacks: {{ matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks | to_json }}
+  fail_open: {{ matrix_synapse_ext_synapse_http_antispam_config_fail_open | to_json }}
+  async: {{ matrix_synapse_ext_synapse_http_antispam_config_async | to_json }}
+
 # Enable this to activate the E2EE disabling Synapse module.
 # See: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_enabled: false
@@ -1423,7 +1440,7 @@ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of: ["{{ matrix
 # Specifies whether the power levels event (setting) provided during room creation should be patched.
 # This makes it impossible for anybody (locally or over federation) from enabling room encryption
 # for the lifetime of rooms created while this setting is enabled (irreversible).
-# Enabling this may have incompatiblity consequences with servers / clients.
+# Enabling this may have incompatibility consequences with servers / clients.
 # Familiarize yourself with the caveats upstream: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_patch_power_levels: false
 matrix_synapse_ext_encryption_config: "{{ matrix_synapse_ext_encryption_config_yaml | from_yaml }}"
@@ -1527,7 +1544,7 @@ matrix_synapse_room_list_publication_rules:
     room_id: "*"
     action: allow
 
-matrix_synapse_default_room_version: "10"
+matrix_synapse_default_room_version: "12"
 
 # Controls whether leaving a room will automatically forget it.
 # The upstream default is `false`, but we try to make Synapse less wasteful of resources, so we do things differently.

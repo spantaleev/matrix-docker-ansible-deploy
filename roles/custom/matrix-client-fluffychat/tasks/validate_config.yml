@@ -17,7 +17,7 @@
   ansible.builtin.fail:
     msg: >-
       The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_client_fluffychat_container_image_name_prefix', 'new': 'matrix_client_fluffychat_container_image_registry_prefix'}
 

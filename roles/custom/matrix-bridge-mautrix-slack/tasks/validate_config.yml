@@ -10,7 +10,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_mautrix_slack_appservice_token', when: true}
     - {'name': 'matrix_mautrix_slack_homeserver_address', when: true}
@@ -22,7 +22,7 @@
   when: matrix_appservice_slack_enabled | default(False) | bool and matrix_mautrix_slack_appservice_bot_username == matrix_appservice_slack_bot_name | default ('')
   ansible.builtin.fail:
     msg: |
-      The appservice-slack and mautrix-slack components are both enabled and use the same bot username ({{ matrix_mautrix_slack_appservice_bot_username }}), as per their default configuration, which causes a conflcit.
+      The appservice-slack and mautrix-slack components are both enabled and use the same bot username ({{ matrix_mautrix_slack_appservice_bot_username }}), as per their default configuration, which causes a conflict.
       To resolve the conflict, make one of these components use a different username.
       Consider either changing `matrix_mautrix_slack_appservice_bot_username` (the bot username for the mautrix-slack component) or `matrix_appservice_slack_bot_name` (the bot username for the appservice-slack component).
       We recommend that you change the username for the newly-added (and yet unused) component.
@@ -32,7 +32,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_mautrix_slack_login_shared_secret', 'new': '<removed>'}
     - {'old': 'matrix_mautrix_slack_bridge_login_shared_secret_map', 'new': '<superseded by matrix_mautrix_slack_double_puppet_secrets>'}

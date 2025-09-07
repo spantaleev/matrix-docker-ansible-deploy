@@ -25,7 +25,7 @@ matrix_livekit_jwt_service_container_additional_networks_auto: []
 matrix_livekit_jwt_service_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/lk-jwt-service
-matrix_livekit_jwt_service_version: 0.2.3
+matrix_livekit_jwt_service_version: 0.3.0
 
 matrix_livekit_jwt_service_container_image_self_build: false
 matrix_livekit_jwt_service_container_repo: "https://github.com/element-hq/lk-jwt-service.git"
@@ -79,6 +79,13 @@ matrix_livekit_jwt_service_environment_variable_livekit_url: ""
 
 # Controls the LIVEKIT_SECRET environment variable
 matrix_livekit_jwt_service_environment_variable_livekit_secret: ""
+
+# Controls the LIVEKIT_FULL_ACCESS_HOMESERVERS environment variable
+# Comma-separated list of Matrix homeservers whose users are authorized with full access to LiveKit SFU features
+# (supports * as a wildcard to allow all homeservers).
+matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers: "{{ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list | join(',') }}"
+
+matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list: ["*"]
 
 # Additional environment variables to pass to the container.
 #

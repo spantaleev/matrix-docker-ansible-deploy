@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix FluffyChat Web server
 {% for service in matrix_client_fluffychat_systemd_required_services_list %}
@@ -22,7 +22,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--network={{ matrix_client_fluffychat_container_network }} \
 			{% if matrix_client_fluffychat_container_http_host_bind_port %}
-			-p {{ matrix_client_fluffychat_container_http_host_bind_port }}:8080 \
+			-p {{ matrix_client_fluffychat_container_http_host_bind_port }}:{{ matrix_client_fluffychat_container_http_port }} \
 			{% endif %}
 			--label-file={{ matrix_client_fluffychat_data_path }}/labels \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \

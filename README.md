@@ -1,4 +1,4 @@
-[![Support room on Matrix](https://img.shields.io/matrix/matrix-docker-ansible-deploy:devture.com.svg?label=%23matrix-docker-ansible-deploy%3Adevture.com&logo=matrix&style=for-the-badge&server_fqdn=matrix.devture.com)](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) [![donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/s.pantaleev/donate) [![REUSE status](https://api.reuse.software/badge/github.com/spantaleev/matrix-docker-ansible-deploy)](https://api.reuse.software/info/github.com/spantaleev/matrix-docker-ansible-deploy)
+[![Support room on Matrix](https://img.shields.io/matrix/matrix-docker-ansible-deploy:devture.com.svg?label=%23matrix-docker-ansible-deploy%3Adevture.com&logo=matrix&style=for-the-badge&server_fqdn=matrix.devture.com&fetchMode=summary)](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) [![donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/s.pantaleev/donate) [![REUSE status](https://api.reuse.software/badge/github.com/spantaleev/matrix-docker-ansible-deploy)](https://api.reuse.software/info/github.com/spantaleev/matrix-docker-ansible-deploy)
 
 # Matrix (An open network for secure, decentralized communication) server setup using Ansible and Docker
 
@@ -53,6 +53,7 @@ The homeserver is the backbone of your Matrix system. Choose one from the follow
 | [Synapse](https://github.com/element-hq/synapse) | ✅ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network | [Link](docs/configuring-playbook-synapse.md) |
 | [Conduit](https://conduit.rs) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Conduit is a lightweight open-source server implementation of the Matrix Specification with a focus on easy setup and low system requirements | [Link](docs/configuring-playbook-conduit.md) |
 | [conduwuit](https://conduwuit.puppyirl.gay/) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. conduwuit is a fork of Conduit. | [Link](docs/configuring-playbook-conduwuit.md) |
+| [continuwuity](https://continuwuity.org) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. continuwuity is a continuation of conduwuit. | [Link](docs/configuring-playbook-continuwuity.md) |
 | [Dendrite](https://github.com/element-hq/dendrite) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse. | [Link](docs/configuring-playbook-dendrite.md) |
 
 ### Clients

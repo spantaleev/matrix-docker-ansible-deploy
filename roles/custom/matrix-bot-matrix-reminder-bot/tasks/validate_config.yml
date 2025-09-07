@@ -10,7 +10,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_bot_matrix_reminder_bot_matrix_user_password', when: true}
     - {'name': 'matrix_bot_matrix_reminder_bot_reminders_timezone', when: true}
@@ -23,7 +23,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_bot_matrix_reminder_bot_container_self_build', 'new': 'matrix_bot_matrix_reminder_bot_container_image_self_build'}
     - {'old': 'matrix_bot_matrix_reminder_bot_container_image_name_prefix', 'new': 'matrix_bot_matrix_reminder_bot_container_image_registry_prefix'}

@@ -13,8 +13,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_client_schildichat_data_path }}", when: true}
     - {path: "{{ matrix_client_schildichat_container_src_files_path }}", when: "{{ matrix_client_schildichat_container_image_self_build }}"}
@@ -41,7 +41,7 @@
         version: "{{ matrix_client_schildichat_container_image_self_build_version }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_client_schildichat_git_pull_results
 
     # See:
@@ -72,8 +72,8 @@
     content: "{{ matrix_client_schildichat_configuration | to_nice_json }}"
     dest: "{{ matrix_client_schildichat_data_path }}/config.json"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure SchildiChat location sharing map style installed
   when: matrix_client_schildichat_location_sharing_enabled | bool
@@ -81,16 +81,16 @@
     content: "{{ matrix_client_schildichat_location_sharing_map_style | to_nice_json }}"
     dest: "{{ matrix_client_schildichat_data_path }}/map_style.json"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure SchildiChat Web config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ matrix_client_schildichat_data_path }}/{{ item.name }}"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
     - {src: "{{ matrix_client_schildichat_page_template_welcome_path }}", name: "welcome.html"}

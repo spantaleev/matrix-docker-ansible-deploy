@@ -10,8 +10,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_static_files_base_path }}", when: true}
     - {path: "{{ matrix_static_files_config_path }}", when: true}
@@ -30,8 +30,8 @@
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0644
   with_items:
     - src: "{{ role_path }}/templates/config.toml.j2"
@@ -48,8 +48,8 @@
     content: "{{ item.content }}"
     dest: "{{ item.dest }}"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   when: item.when | bool
   with_items:
     - content: "{{ matrix_static_files_file_matrix_client_configuration | to_nice_json }}"

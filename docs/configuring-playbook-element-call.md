@@ -30,7 +30,7 @@ These **clients will use their own embedded Element Call frontend**, so **self-h
 
 💡 A reason you may wish to continue installing the Element Call frontend (despite Matrix clients not making use of it), is if you need to use it standalone - directly via a browser (without a Matrix client). Note that unless you [allow guest accounts to use Element Call](#allowing-guests-to-use-element-call-optional), you will still need a Matrix user account **on the same homeserver** to be able to use Element Call.
 
-The playbook makes a distiction between enabling Element Call (`matrix_element_call_enabled`) and enabling the Matrix RTC Stack (`matrix_rtc_enabled`). Enabling Element Call automatically enables the Matrix RTC stack. Because installing the Element Call frontend is now unnecessary, **we recommend only installing the Matrix RTC stack, without the Element Call frontend**.
+The playbook makes a distinction between enabling Element Call (`matrix_element_call_enabled`) and enabling the Matrix RTC Stack (`matrix_rtc_enabled`). Enabling Element Call automatically enables the Matrix RTC stack. Because installing the Element Call frontend is now unnecessary, **we recommend only installing the Matrix RTC stack, without the Element Call frontend**.
 
 | Description / Variable | Element Call frontend | [LiveKit Server](configuring-playbook-livekit-server.md) | [LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) |
 |------------------------|-----------------------|----------------|---------------------|

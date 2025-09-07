@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 # Network-specific config options
 network:
     # Displayname template for Slack users. Available variables:
@@ -20,7 +20,7 @@ network:
     #  .Profile.Pronouns - The pronouns of the user
     #  .Profile.Email - The email address of the user
     #  .Profile.Phone - The formatted phone number of the user
-    displayname_template: '{% raw %}{{or .Profile.DisplayName .Profile.RealName .Name}}{{if .IsBot}} (bot){{end}}{% endraw %}'
+    displayname_template: {{ matrix_mautrix_slack_network_displayname_template | to_json }}
     # Channel name template for Slack channels (all types). Available variables:
     #  .Name - The name of the channel
     #  .Team.Name - The name of the team the channel is in
@@ -113,12 +113,12 @@ bridge:
     relay:
         # Whether relay mode should be allowed. If allowed, the set-relay command can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: false
+        enabled: {{ matrix_mautrix_slack_bridge_relay_enabled | to_json }}
         # Should only admins be allowed to set themselves as relay users?
         # If true, non-admins can only set users listed in default_relays as relays in a room.
-        admin_only: true
+        admin_only: {{ matrix_mautrix_slack_bridge_relay_admin_only | to_json }}
         # List of user login IDs which anyone can set as a relay, as long as the relay user is in the room.
-        default_relays: []
+        default_relays: {{ matrix_mautrix_slack_bridge_relay_default_relays | to_json }}
         # The formats to use when sending messages via the relaybot.
         # Available variables:
         #   .Sender.UserID - The Matrix user ID of the sender.
@@ -197,7 +197,7 @@ homeserver:
     # The bridge will use the appservice as_token to authorize requests.
     message_send_checkpoint_endpoint:
     # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
-    async_media: false
+    async_media: {{ matrix_mautrix_slack_homeserver_async_media | to_json }}
 
     # Should the bridge use a websocket for connecting to the homeserver?
     # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
@@ -371,6 +371,11 @@ encryption:
     # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
     # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
     appservice: false
+    # Whether to use MSC4190 instead of appservice login to create the bridge bot device.
+    # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
+    # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
+    # Changing this option requires updating the appservice registration file.
+    msc4190: {{ matrix_mautrix_slack_msc4190_enabled | to_json }}
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
     allow_key_sharing: {{ matrix_mautrix_slack_bridge_encryption_key_sharing_allow | to_json }}

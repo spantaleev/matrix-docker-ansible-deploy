@@ -28,7 +28,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_corporal_container_expose_ports', 'new': '<superseded by matrix_corporal_container_http_gateway_host_bind_port and matrix_corporal_container_http_api_host_bind_port>'}
     - {'old': 'matrix_corporal_reconciliation_user_id_local_part', 'new': 'matrix_corporal_corporal_user_id_local_part'}

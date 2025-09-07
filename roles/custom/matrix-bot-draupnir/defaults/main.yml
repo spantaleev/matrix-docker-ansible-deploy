@@ -12,7 +12,7 @@
 matrix_bot_draupnir_enabled: true
 
 # renovate: datasource=docker depName=gnuxie/draupnir
-matrix_bot_draupnir_version: "v2.2.0"
+matrix_bot_draupnir_version: "v2.6.1"
 
 matrix_bot_draupnir_container_image_self_build: false
 matrix_bot_draupnir_container_image_self_build_repo: "https://github.com/the-draupnir-project/Draupnir.git"
@@ -28,8 +28,18 @@ matrix_bot_draupnir_config_path: "{{ matrix_bot_draupnir_base_path }}/config"
 matrix_bot_draupnir_data_path: "{{ matrix_bot_draupnir_base_path }}/data"
 matrix_bot_draupnir_docker_src_files_path: "{{ matrix_bot_draupnir_base_path }}/docker-src"
 
+matrix_bot_draupnir_config_web_enabled: "{{ matrix_bot_draupnir_config_web_abuseReporting or matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled }}"  # noqa var-naming
+
 matrix_bot_draupnir_config_web_abuseReporting: false  # noqa var-naming
-matrix_bot_draupnir_config_web_enabled: "{{ matrix_bot_draupnir_config_web_abuseReporting }}"  # noqa var-naming
+
+matrix_bot_draupnir_config_web_port: 8080
+
+# These variables are used for turning on the integration between the synapseHTTPAntispam module and Draupnir.
+# Authorisation is a shared secret between Draupnir and the module just like is used by Appservices and the homeserver
+# therefore the same creation mechanism is used here too.
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled: false  # noqa var-naming
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: ''  # noqa var-naming
+
 matrix_bot_draupnir_config_displayReports: "{{ matrix_bot_draupnir_config_web_abuseReporting }}"  # noqa var-naming
 
 matrix_bot_draupnir_container_network: ""
@@ -129,6 +139,24 @@ matrix_bot_draupnir_config_admin_enableMakeRoomAdminCommand: false  # noqa var-n
 # This config option has diminished improvements for bots on extremely fast homeservers or very very small bots on fast homeservers.
 matrix_bot_draupnir_config_roomStateBackingStore_enabled: true  # noqa var-naming
 
+matrix_bot_draupnir_web_url: 'http://matrix-bot-draupnir'
+
+# This controls the URL that the module targets in Draupnir.
+matrix_bot_draupnir_synapse_http_antispam_config_base_url: "{{ matrix_bot_draupnir_web_url }}:{{ matrix_bot_draupnir_config_web_port }}/api/1/spam_check"
+
+# These variables control the configuration of the Synapse module as the configuration is highly consumer dependent.
+# Therefore the module is configured from Draupnir because the consumer of the module determines what settings are relevant.
+
+matrix_bot_draupnir_synapse_http_antispam_config_enabled_callbacks:
+  - user_may_invite
+  - user_may_join_room
+
+matrix_bot_draupnir_synapse_http_antispam_config_fail_open:
+  user_may_invite: true
+  user_may_join_room: true
+
+matrix_bot_draupnir_synapse_http_antispam_config_async: {}
+
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -157,13 +185,13 @@ matrix_bot_draupnir_configuration: "{{ matrix_bot_draupnir_configuration_yaml | 
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
 matrix_bot_draupnir_container_labels_traefik_enabled: false
 matrix_bot_draupnir_container_labels_traefik_docker_network: "{{ matrix_draupnir_bot_container_network }}"
-matrix_bot_draupnir_container_labels_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"
-matrix_bot_draupnir_container_labels_traefik_path_regexp: "^/_matrix/client/(r0|v3)/rooms/([^/]*)/report/"
-matrix_bot_draupnir_container_labels_traefik_rule: "Host(`{{ matrix_bot_draupnir_container_labels_traefik_hostname }}`) && PathRegexp(`{{ matrix_bot_draupnir_container_labels_traefik_path_regexp }}`)"
-matrix_bot_draupnir_container_labels_traefik_priority: 0
-matrix_bot_draupnir_container_labels_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"
-matrix_bot_draupnir_container_labels_traefik_tls: "{{ matrix_bot_draupnir_container_labels_traefik_entrypoints != 'web' }}"
-matrix_bot_draupnir_container_labels_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_hostname: "{{ matrix_synapse_container_labels_traefik_hostname }}"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_path_regexp: "^/_matrix/client/(r0|v3)/rooms/([^/]*)/report/(.*)$"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_rule: "Host(`{{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_hostname }}`) && PathRegexp(`{{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_path_regexp }}`)"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_priority: 0  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints: "{{ matrix_synapse_container_labels_traefik_entrypoints }}"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls: "{{ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints != 'web' }}"  # noqa var-naming
+matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 # matrix_bot_draupnir_container_labels_traefik_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
 #

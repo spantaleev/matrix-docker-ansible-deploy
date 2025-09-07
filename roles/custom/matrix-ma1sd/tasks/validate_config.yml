@@ -13,7 +13,7 @@
       The `{{ item }}` variable defined in your configuration is not used by this playbook anymore!
       You'll need to adapt to the new way of extending ma1sd configuration.
       See the CHANGELOG and the `matrix_ma1sd_configuration_extension_yaml` variable for more information and examples.
-  when: "item in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item + '$'), wantlist=True) | length > 0"
   with_items:
     - 'matrix_ma1sd_ldap_enabled'
     - 'matrix_ma1sd_ldap_connection_host'
@@ -50,7 +50,7 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_ma1sd_hostname', when: true}
     - {'name': 'matrix_ma1sd_threepid_medium_email_connectors_smtp_host', when: true}
@@ -68,7 +68,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_ma1sd_container_expose_port', 'new': '<superseded by matrix_ma1sd_container_http_host_bind_port>'}
     - {'old': 'matrix_ma1sd_threepid_medium_email_custom_unbind_fraudulent_template', 'new': 'matrix_ma1sd_threepid_medium_email_custom_session_unbind_notification_template'}
@@ -82,7 +82,5 @@
     msg: >-
       mxisd is deprecated and has been replaced with ma1sd (https://github.com/ma1uta/ma1sd), a compatible fork.
       The playbook will migrate your existing mxisd configuration and data automatically, but you need to adjust variable names.
-      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "vars | dict2items | selectattr('key', 'match', item.old) | list | items2dict"
-  with_items:
-    - {'old': 'matrix_mxisd_.*', 'new': 'matrix_ma1sd_.*'}
+      Please rename these variables (`matrix_mxisd_*` -> `matrix_ma1sd_*`) on your configuration file (vars.yml): {{ lookup('ansible.builtin.varnames', '^matrix_mxisd_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mxisd_.+', wantlist=True) | length > 0"
