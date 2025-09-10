@@ -79,6 +79,9 @@ matrix_mautrix_telegram_public_endpoint: "{{ matrix_mautrix_telegram_path_prefix
 
 matrix_mautrix_telegram_homeserver_address: ""
 matrix_mautrix_telegram_homeserver_domain: '{{ matrix_domain }}'
+# Whether asynchronous uploads via MSC2246 should be enabled for media.
+# Requires a homeserver that supports MSC2246 (https://github.com/matrix-org/matrix-spec-proposals/pull/2246).
+matrix_mautrix_telegram_homeserver_async_media: false
 matrix_mautrix_telegram_appservice_address: 'http://matrix-mautrix-telegram:8080'
 matrix_mautrix_telegram_appservice_public_external: '{{ matrix_mautrix_telegram_scheme }}://{{ matrix_mautrix_telegram_hostname }}{{ matrix_mautrix_telegram_public_endpoint }}'
 
@@ -230,12 +233,12 @@ matrix_mautrix_telegram_registration_yaml: |
   namespaces:
       users:
       - exclusive: true
-        regex: '^@telegram_.+:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
+        regex: '^@{{ matrix_mautrix_telegram_username_template | replace('{userid}', '.+') }}:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
       - exclusive: true
         regex: '^@{{ matrix_mautrix_telegram_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
       aliases:
       - exclusive: true
-        regex: '^#telegram_.+:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
+        regex: '^#{{ matrix_mautrix_telegram_alias_template | replace('{groupname}', '.+') }}:{{ matrix_mautrix_telegram_homeserver_domain | regex_escape }}$'
   # See https://github.com/mautrix/signal/issues/43
   sender_localpart: _bot_{{ matrix_mautrix_telegram_appservice_bot_username }}
   url: {{ matrix_mautrix_telegram_appservice_address }}

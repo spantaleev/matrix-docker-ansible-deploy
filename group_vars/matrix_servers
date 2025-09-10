@@ -672,6 +672,7 @@ matrix_authentication_service_config_passwords_schemes:
   - version: 1
     secret: "{{ matrix_synapse_password_config_pepper }}"
     algorithm: bcrypt
+    unicode_normalization: true
   - version: 2
     algorithm: argon2id
 
@@ -992,6 +993,8 @@ matrix_appservice_kakaotalk_appservice_token: "{{ '%s' | format(matrix_homeserve
 matrix_appservice_kakaotalk_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_appservice_kakaotalk_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.kakao.hs', rounds=655555) | to_uuid }}"
 
+matrix_appservice_kakaotalk_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+
 matrix_appservice_kakaotalk_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 matrix_appservice_kakaotalk_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
@@ -1040,6 +1043,8 @@ matrix_beeper_linkedin_appservice_token: "{{ '%s' | format(matrix_homeserver_gen
 
 matrix_beeper_linkedin_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_beeper_linkedin_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'linked.hs.token', rounds=655555) | to_uuid }}"
+
+matrix_beeper_linkedin_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
 matrix_beeper_linkedin_bridge_login_shared_secret_map_auto: |-
   {{
@@ -1161,6 +1166,8 @@ matrix_mautrix_bluesky_appservice_token: "{{ '%s' | format(matrix_homeserver_gen
 matrix_mautrix_bluesky_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_bluesky_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'bsky.hs.token', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_bluesky_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+
 matrix_mautrix_bluesky_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.bsky.prov', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_bluesky_double_puppet_secrets_auto: |-
@@ -1230,6 +1237,8 @@ matrix_mautrix_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_gen
 matrix_mautrix_discord_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.hs.tok', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_discord_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+
 matrix_mautrix_discord_bridge_avatar_proxy_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.avatar', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_discord_hostname: "{{ matrix_server_fqn_matrix }}"
@@ -1295,6 +1304,8 @@ matrix_mautrix_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_gener
 
 matrix_mautrix_slack_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.hs.tok', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_slack_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
 matrix_mautrix_slack_double_puppet_secrets_auto: |-
   {{
@@ -1368,6 +1379,8 @@ matrix_mautrix_facebook_appservice_token: "{{ '%s' | format(matrix_homeserver_ge
 matrix_mautrix_facebook_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
 matrix_mautrix_facebook_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'fb.hs.token', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_facebook_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
 matrix_mautrix_facebook_appservice_public_enabled: true
 matrix_mautrix_facebook_appservice_public_hostname: "{{ matrix_server_fqn_matrix }}"
@@ -1589,6 +1602,8 @@ matrix_mautrix_signal_homeserver_domain: '{{ matrix_domain }}'
 matrix_mautrix_signal_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_signal_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'si.hs.token', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_signal_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+
 matrix_mautrix_signal_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'si.as.token', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_signal_double_puppet_secrets_auto: |-
@@ -1667,6 +1682,8 @@ matrix_mautrix_meta_messenger_homeserver_address: "{{ matrix_addons_homeserver_c
 
 matrix_mautrix_meta_messenger_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.meta.fb.hs', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_meta_messenger_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+
 matrix_mautrix_meta_messenger_double_puppet_secrets_auto: |-
   {{
     {
@@ -1742,6 +1759,8 @@ matrix_mautrix_meta_instagram_appservice_token: "{{ '%s' | format(matrix_homeser
 matrix_mautrix_meta_instagram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
 matrix_mautrix_meta_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.meta.ig.hs', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_meta_instagram_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
 matrix_mautrix_meta_instagram_double_puppet_secrets_auto: |-
   {{
@@ -1828,6 +1847,8 @@ matrix_mautrix_telegram_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_telegram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_telegram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'telegr.hs.token', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_telegram_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+
 matrix_mautrix_telegram_bridge_login_shared_secret_map_auto: |-
   {{
     ({
@@ -1904,6 +1925,8 @@ matrix_mautrix_twitter_appservice_token: "{{ '%s' | format(matrix_homeserver_gen
 matrix_mautrix_twitter_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'twt.hs.token', rounds=655555) | to_uuid }}"
 
+matrix_mautrix_twitter_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+
 matrix_mautrix_twitter_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twit.prov', rounds=655555) | to_uuid }}"
 
 matrix_mautrix_twitter_double_puppet_secrets_auto: |-
@@ -1975,6 +1998,8 @@ matrix_mautrix_gmessages_appservice_token: "{{ '%s' | format(matrix_homeserver_g
 
 matrix_mautrix_gmessages_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_gmessages_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gmessa.hs.token', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_gmessages_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
 matrix_mautrix_gmessages_double_puppet_secrets_auto: |-
   {{
@@ -2094,6 +2119,8 @@ matrix_wechat_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secr
 matrix_wechat_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_wechat_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'wechat.hs.token', rounds=655555) | to_uuid }}"
 
+matrix_wechat_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+
 matrix_wechat_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
 matrix_wechat_bridge_listen_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'wechat.lstn', rounds=655555) | to_uuid }}"
@@ -2154,6 +2181,8 @@ matrix_mautrix_whatsapp_appservice_token: "{{ '%s' | format(matrix_homeserver_ge
 
 matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_whatsapp_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'whats.hs.token', rounds=655555) | to_uuid }}"
+
+matrix_mautrix_whatsapp_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
 matrix_mautrix_whatsapp_double_puppet_secrets_auto: |-
   {{
@@ -5180,6 +5209,8 @@ matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playboo
 matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_synapse_admin_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
+matrix_synapse_admin_config_externalAuthProvider: "{{ matrix_authentication_service_enabled | default(false) or matrix_synapse_ext_password_provider_ldap_enabled | default(false) }}"
+
 matrix_synapse_admin_config_asManagedUsers_auto: |
   {{
     ([
@@ -5315,7 +5346,7 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     +
     ([
       '^@'+(matrix_mautrix_telegram_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
-      '^@telegram_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_mautrix_telegram_username_template | regex_escape | replace('{userid}', '.+'))+':'+(matrix_domain | regex_escape)+'$',
     ] if matrix_mautrix_telegram_enabled else [])
     +
     ([
