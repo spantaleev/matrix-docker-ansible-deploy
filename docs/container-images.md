@@ -159,7 +159,7 @@ Various services that don't fit any other categories.
 | ------- | --------------- | -------- | ----------- |
 | [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | ❌ | Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync) |
 | [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | ❌ | Synapse module to automatically accept invites |
-| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | ❌ | Cli tool that automatically compresses `state_groups` database table in background |
+| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [mb-saces/rust-synapse-tools](https://gitlab.com/mb-saces/rust-synapse-tools/container_registry) | ❌ | Cli tool that automatically compresses Synapse's `state_groups` database table in background |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | ❌ | Reconciliator and gateway for a managed Matrix server |
 | [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | ❌ | Open source collaborative text editor |
 | [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | ❌ | [Jitsi](https://jitsi.org/) web UI |

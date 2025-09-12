@@ -12,8 +12,8 @@
 
 matrix_synapse_auto_compressor_enabled: true
 
-# renovate: datasource=docker depName=registry.gitlab.com/etke.cc/rust-synapse-compress-state
-matrix_synapse_auto_compressor_version: v0.1.4
+# renovate: datasource=docker depName=registry.gitlab.com/mb-saces/rust-synapse-tools
+matrix_synapse_auto_compressor_version: v0.0.3
 
 # note: UID/GID better to match the UID/GID of the Postgres container, but it doesn't really matter, as volumes are not used here
 matrix_synapse_auto_compressor_uid: ''
@@ -29,7 +29,7 @@ matrix_synapse_auto_compressor_container_image_self_build: false
 matrix_synapse_auto_compressor_container_image_self_build_repo: "https://github.com/matrix-org/rust-synapse-compress-state.git"
 matrix_synapse_auto_compressor_container_image_self_build_version: "{{ 'main' if matrix_synapse_auto_compressor_version == 'latest' else matrix_synapse_auto_compressor_version }}"
 
-matrix_synapse_auto_compressor_container_image: "{{ matrix_synapse_auto_compressor_container_image_registry_prefix }}etke.cc/rust-synapse-compress-state:{{ matrix_synapse_auto_compressor_version }}"
+matrix_synapse_auto_compressor_container_image: "{{ matrix_synapse_auto_compressor_container_image_registry_prefix }}mb-saces/rust-synapse-tools:{{ matrix_synapse_auto_compressor_version }}"
 matrix_synapse_auto_compressor_container_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_auto_compressor_container_image_self_build else matrix_synapse_auto_compressor_container_image_registry_prefix_upstream }}"
 matrix_synapse_auto_compressor_container_image_registry_prefix_upstream: "{{ matrix_synapse_auto_compressor_container_image_registry_prefix_upstream_default }}"
 matrix_synapse_auto_compressor_container_image_registry_prefix_upstream_default: "registry.gitlab.com/"

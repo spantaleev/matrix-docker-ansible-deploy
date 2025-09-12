@@ -5092,7 +5092,7 @@ matrix_synapse_auto_compressor_postgres_image: "{{ postgres_container_image_to_u
 
 matrix_synapse_auto_compressor_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_auto_compressor_container_image_registry_prefix_upstream_default }}"
 
-matrix_synapse_auto_compressor_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
+matrix_synapse_auto_compressor_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
 matrix_synapse_auto_compressor_container_network: "{{ (postgres_container_network if (postgres_enabled and matrix_synapse_auto_compressor_database_hostname == matrix_synapse_database_host and matrix_synapse_database_host == postgres_connection_hostname) else 'matrix-synapse-auto-compressor') }}"
 
