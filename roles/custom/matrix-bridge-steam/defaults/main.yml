@@ -1,0 +1,242 @@
+# SPDX-FileCopyrightText: 2025 Jason LaGuidice
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# matrix-steam-bridge is a Matrix <-> Steam bridge
+# See: https://github.com/jasonlaguidice/matrix-steam-bridge
+
+matrix_steam_bridge_enabled: true
+
+matrix_steam_bridge_container_image_self_build: false
+matrix_steam_bridge_container_image_self_build_repo: "https://github.com/jasonlaguidice/matrix-steam-bridge.git"
+matrix_steam_bridge_container_image_self_build_repo_version: "{{ 'main' if matrix_steam_bridge_version == 'latest' else matrix_steam_bridge_version }}"
+
+# renovate: datasource=docker depName=ghcr.io/jasonlaguidice/matrix-steam-bridge
+matrix_steam_bridge_version: 1.0.3
+matrix_steam_bridge_docker_image: "{{ matrix_steam_bridge_docker_image_registry_prefix }}jasonlaguidice/matrix-steam-bridge:{{ matrix_steam_bridge_version }}"
+matrix_steam_bridge_docker_image_registry_prefix: "{{ 'localhost/' if matrix_steam_bridge_container_image_self_build else matrix_steam_bridge_docker_image_registry_prefix_upstream }}"
+matrix_steam_bridge_docker_image_registry_prefix_upstream: "{{ matrix_steam_bridge_docker_image_registry_prefix_upstream_default }}"
+matrix_steam_bridge_docker_image_registry_prefix_upstream_default: "ghcr.io/"
+matrix_steam_bridge_docker_image_tag: "{{ matrix_steam_bridge_version }}"
+matrix_steam_bridge_docker_image_force_pull: "{{ matrix_steam_bridge_docker_image.endswith(':latest') }}"
+
+matrix_steam_bridge_base_path: "{{ matrix_base_data_path }}/matrix-steam-bridge"
+matrix_steam_bridge_config_path: "{{ matrix_steam_bridge_base_path }}/config"
+matrix_steam_bridge_data_path: "{{ matrix_steam_bridge_base_path }}/data"
+matrix_steam_bridge_docker_src_files_path: "{{ matrix_steam_bridge_base_path }}/docker-src"
+
+matrix_steam_bridge_homeserver_address: ""
+matrix_steam_bridge_homeserver_domain: "{{ matrix_domain }}"
+matrix_steam_bridge_appservice_address: "http://matrix-steam-bridge:{{ matrix_steam_bridge_appservice_port }}"
+matrix_steam_bridge_appservice_port: "8080"
+
+matrix_steam_bridge_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+
+# A public address that external services can use to reach this appservice
+matrix_steam_bridge_appservice_public_address: "https://{{ matrix_server_fqn_matrix }}"
+
+# Public media configuration for external access to bridge media
+matrix_steam_bridge_public_media_enabled: true
+# A key for signing public media URLs. If set to "generate", a random key will be generated.
+# This will be auto-generated deterministically if matrix_homeserver_generic_secret_key is set.
+matrix_steam_bridge_public_media_signing_key: ''
+# Number of seconds that public media URLs are valid for. If set to 0, URLs will never expire.
+matrix_steam_bridge_public_media_expiry: 0
+matrix_steam_bridge_public_media_hash_length: 32
+
+# Displayname template for Steam users
+# {{ .DisplayName }} is replaced with the display name of the Steam user
+# {{ .Username }} is replaced with the username of the Steam user
+matrix_steam_bridge_network_displayname_template: "{% raw %}{{ .DisplayName }}{% endraw %} (Steam)"
+
+matrix_steam_bridge_command_prefix: "!steam"
+
+matrix_steam_bridge_bridge_permissions: |
+  {{
+    {matrix_steam_bridge_homeserver_domain: 'user'}
+    | combine ({matrix_admin: 'admin'} if matrix_admin else {})
+  }}
+
+# TODO: May need to set network for public media?
+matrix_steam_bridge_container_network: ""
+
+matrix_steam_bridge_container_additional_networks: "{{ matrix_steam_bridge_container_additional_networks_auto + matrix_steam_bridge_container_additional_networks_custom }}"
+matrix_steam_bridge_container_additional_networks_auto: []
+matrix_steam_bridge_container_additional_networks_custom: []
+
+# matrix_steam_bridge_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_steam_bridge_container_labels_additional_labels`.
+matrix_steam_bridge_container_labels_traefik_enabled: true
+matrix_steam_bridge_container_labels_traefik_docker_network: "{{ matrix_steam_bridge_container_network }}"
+matrix_steam_bridge_container_labels_traefik_entrypoints: web-secure
+matrix_steam_bridge_container_labels_traefik_tls: "{{ matrix_steam_bridge_container_labels_traefik_entrypoints != 'web' }}"
+matrix_steam_bridge_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose mautrix-instagram's metrics
+matrix_steam_bridge_container_labels_metrics_enabled: "{{ matrix_steam_bridge_metrics_enabled and matrix_steam_bridge_metrics_proxying_enabled }}"
+matrix_steam_bridge_container_labels_metrics_traefik_rule: "Host(`{{ matrix_steam_bridge_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_steam_bridge_metrics_proxying_path_prefix }}`)"
+matrix_steam_bridge_container_labels_metrics_traefik_priority: 0
+matrix_steam_bridge_container_labels_metrics_traefik_entrypoints: "{{ matrix_steam_bridge_container_labels_traefik_entrypoints }}"
+matrix_steam_bridge_container_labels_metrics_traefik_tls: "{{ matrix_steam_bridge_container_labels_metrics_traefik_entrypoints != 'web' }}"
+matrix_steam_bridge_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_steam_bridge_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_steam_bridge_container_labels_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+matrix_steam_bridge_container_labels_metrics_middleware_basic_auth_users: ''
+
+# matrix_steam_bridge_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_steam_bridge_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_steam_bridge_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_steam_bridge_container_extra_arguments: []
+
+# List of systemd services that matrix_steam_bridge.service depends on.
+matrix_steam_bridge_systemd_required_services_list: "{{ matrix_steam_bridge_systemd_required_services_list_default + matrix_steam_bridge_systemd_required_services_list_auto + matrix_steam_bridge_systemd_required_services_list_custom }}"
+matrix_steam_bridge_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_steam_bridge_systemd_required_services_list_auto: []
+matrix_steam_bridge_systemd_required_services_list_custom: []
+
+# List of systemd services that matrix_steam_bridge.service wants
+matrix_steam_bridge_systemd_wanted_services_list: []
+
+matrix_steam_bridge_appservice_token: ''
+matrix_steam_bridge_homeserver_token: ''
+
+# Whether or not created rooms should have federation enabled.
+# If false, created portal rooms will never be federated.
+matrix_steam_bridge_matrix_federate_rooms: false
+
+# Bridge configuration options
+# Should every user have their own portals rather than sharing them?
+matrix_steam_bridge_bridge_split_portals: false
+
+# Cleanup on logout configuration
+matrix_steam_bridge_bridge_cleanup_on_logout_enabled: false
+# Valid values for cleanup actions: nothing, kick, unbridge, delete
+#   nothing - Do nothing, let the user stay in the portals
+#   kick - Remove the user from the portal rooms, but don't delete them
+#   unbridge - Remove all ghosts in the room and disassociate it from the remote chat
+#   delete - Remove all ghosts and users from the room (i.e. delete it)
+matrix_steam_bridge_bridge_cleanup_on_logout_manual_private: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_manual_relayed: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_manual_shared_no_users: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_manual_shared_has_users: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_private: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_relayed: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_shared_no_users: nothing
+matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_shared_has_users: nothing
+
+# Homeserver configuration options
+# Does the homeserver support MSC2246 (async media uploads)?
+matrix_steam_bridge_homeserver_async_media: false
+
+# Database-related configuration fields.
+#
+# To use Postgres:
+# - adjust your database credentials via the `matrix_steam_bridge_postgres_*` variables
+matrix_steam_bridge_database_engine: 'postgres'
+
+matrix_steam_bridge_database_username: 'matrix_steam_bridge'
+matrix_steam_bridge_database_password: 'some-password'
+matrix_steam_bridge_database_hostname: ''
+matrix_steam_bridge_database_port: 5432
+matrix_steam_bridge_database_name: 'matrix_steam_bridge'
+matrix_steam_bridge_database_sslmode: disable
+
+matrix_steam_bridge_database_connection_string: 'postgres://{{ matrix_steam_bridge_database_username }}:{{ matrix_steam_bridge_database_password }}@{{ matrix_steam_bridge_database_hostname }}:{{ matrix_steam_bridge_database_port }}/{{ matrix_steam_bridge_database_name }}?sslmode={{ matrix_steam_bridge_database_sslmode }}'
+
+matrix_steam_bridge_database_uri: "{{
+	{
+		'postgres': matrix_steam_bridge_database_connection_string,
+	}[matrix_steam_bridge_database_engine]
+}}"
+
+matrix_steam_bridge_double_puppet_secrets: "{{ matrix_steam_bridge_double_puppet_secrets_auto | combine(matrix_steam_bridge_double_puppet_secrets_custom) }}"
+matrix_steam_bridge_double_puppet_secrets_auto: {}
+matrix_steam_bridge_double_puppet_secrets_custom: {}
+
+matrix_steam_bridge_appservice_bot_username: steambot
+matrix_steam_bridge_appservice_bot_displayname: Steam bridge bot
+matrix_steam_bridge_appservice_bot_avatar: mxc://shadowdrake.org/EeNKAcrmByNubPwoyceQsBaN
+
+matrix_steam_bridge_backfill_enabled: true
+# Maximum number of messages to backfill in empty rooms
+matrix_steam_bridge_backfill_max_initial_messages: 50
+
+# Maximum number of missed messages to backfill after bridge restarts
+matrix_steam_bridge_backfill_max_catchup_messages: 500
+
+# Shared secret for authentication of provisioning API requests.
+# If set to "disable", the provisioning API will be disabled.
+matrix_steam_bridge_provisioning_shared_secret: disable
+
+# Minimum severity of journal log messages.
+# Valid values: fatal, error, warn, info, debug, trace
+matrix_steam_bridge_logging_level: 'warn'
+
+# Whether or not metrics endpoint should be enabled.
+# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_steam_bridge_metrics_proxying_enabled`.
+matrix_steam_bridge_metrics_enabled: false
+
+# Controls whether metrics should be exposed on a public URL.
+matrix_steam_bridge_metrics_proxying_enabled: false
+matrix_steam_bridge_metrics_proxying_hostname: ''
+matrix_steam_bridge_metrics_proxying_path_prefix: ''
+
+# Default configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_steam_bridge_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_steam_bridge_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_steam_bridge_configuration_extension_yaml: |
+  # Your custom YAML configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_steam_bridge_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_steam_bridge_configuration_yaml`.
+
+matrix_steam_bridge_configuration_extension: "{{ matrix_steam_bridge_configuration_extension_yaml | from_yaml if matrix_steam_bridge_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_steam_bridge_configuration_yaml`.
+matrix_steam_bridge_configuration: "{{ matrix_steam_bridge_configuration_yaml | from_yaml | combine(matrix_steam_bridge_configuration_extension, recursive=True) }}"
+
+matrix_steam_bridge_registration_yaml: |
+  id: steam
+  as_token: "{{ matrix_steam_bridge_appservice_token }}"
+  hs_token: "{{ matrix_steam_bridge_homeserver_token }}"
+  namespaces:
+    users:
+    - exclusive: true
+      regex: '^@steam_.+:{{ matrix_steam_bridge_homeserver_domain | regex_escape }}$'
+    - exclusive: true
+      regex: '^@{{ matrix_steam_bridge_appservice_bot_username | regex_escape }}:{{ matrix_steam_bridge_homeserver_domain | regex_escape }}$'
+  url: {{ matrix_steam_bridge_appservice_address }}
+  sender_localpart: _bot_{{ matrix_steam_bridge_appservice_bot_username }}
+  rate_limited: false
+  de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
+  io.element.msc4190: {{ matrix_steam_bridge_msc4190_enabled | to_json }}
+
+matrix_steam_bridge_registration: "{{ matrix_steam_bridge_registration_yaml | from_yaml }}"
+
+# Enable End-to-bridge encryption
+matrix_steam_bridge_bridge_encryption_allow: "{{ matrix_bridges_encryption_enabled }}"
+matrix_steam_bridge_bridge_encryption_default: "{{ matrix_bridges_encryption_default }}"
+matrix_steam_bridge_bridge_encryption_require: false
+matrix_steam_bridge_bridge_encryption_appservice: false
+matrix_steam_bridge_bridge_encryption_key_sharing_allow: "{{ matrix_steam_bridge_bridge_encryption_allow }}"
+matrix_steam_bridge_bridge_encryption_pickle_key: mautrix.bridge.e2ee

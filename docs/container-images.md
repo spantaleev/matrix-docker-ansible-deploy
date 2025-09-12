@@ -114,6 +114,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) | [sorunome/mx-puppet-twitter](https://hub.docker.com/r/sorunome/mx-puppet-twitter) | ❌ | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) |
 | [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) | [mx-puppet/discord/mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord/container_registry) | ❌ | Bridge to [Discord](https://discordapp.com/) |
 | [mx-puppet-groupme](configuring-playbook-bridge-mx-puppet-groupme.md) | [xangelix/mx-puppet-groupme](https://hub.docker.com/r/xangelix/mx-puppet-groupme) | ❌ | Bridge to [GroupMe](https://groupme.com/) |
+| [matrix-steam-bridge](configuring-playbook-bridge-steam.md) | [jasonlaguidice/matrix-steam-bridge](https://github.com/jasonlaguidice/matrix-steam-bridge/pkgs/container/matrix-steam-bridge) | ❌ | Bridge to [Steam](https://steampowered.com/) |
 | [mx-puppet-steam](configuring-playbook-bridge-mx-puppet-steam.md) | [icewind1991/mx-puppet-steam](https://hub.docker.com/r/icewind1991/mx-puppet-steam) | ❌ | Bridge to [Steam](https://steamapp.com/) |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) | [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) | ❌ | Email to Matrix bridge |
 

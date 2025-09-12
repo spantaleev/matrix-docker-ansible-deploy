@@ -141,6 +141,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) | ❌ | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-discord.md) |
 | [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) | ❌ | Bridge to [GroupMe](https://groupme.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-groupme.md) |
 | [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) | ❌ | Bridge to [Steam](https://steamapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-steam.md) |
+| [matrix-steam-bridge](https://github.com/jasonlaguidice/matrix-steam-bridge) | ❌ | Bridge to [Steam](https://steampowered.com/) | [Link](docs/configuring-playbook-bridge-steam.md) |
 | [Postmoogle](https://github.com/etkecc/postmoogle) | ❌ | Email to Matrix bridge | [Link](docs/configuring-playbook-bridge-postmoogle.md) |
 
 ### Bots
