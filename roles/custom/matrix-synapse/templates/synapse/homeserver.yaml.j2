@@ -298,7 +298,7 @@ listeners:
     tls: true
     bind_addresses: ['::']
     type: http
-    x_forwarded: false
+    x_forwarded: {{ matrix_synapse_container_federation_api_tls_x_forwarded | to_json }}
 
     resources:
       - names: {{ matrix_synapse_federation_listener_resource_names|to_json }}
@@ -311,7 +311,7 @@ listeners:
     tls: false
     bind_addresses: ['::']
     type: http
-    x_forwarded: true
+    x_forwarded: {{ matrix_synapse_container_client_api_x_forwarded | to_json }}
 
     resources:
       - names: {{ matrix_synapse_http_listener_resource_names|to_json }}
@@ -324,7 +324,7 @@ listeners:
     tls: false
     bind_addresses: ['::']
     type: http
-    x_forwarded: true
+    x_forwarded: {{ matrix_synapse_container_federation_api_plain_x_forwarded | to_json }}
 
     resources:
       - names: {{ matrix_synapse_federation_listener_resource_names|to_json }}
