@@ -463,10 +463,15 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #         # Kick a Matrix user from ALL rooms if they choose to QUIT the IRC network.
 #         userQuit: true
 
-# Controls whether the matrix-appservice-discord container exposes its HTTP port (tcp/9999 in the container).
+# Controls whether the matrix-appservice-irc container exposes its HTTP port (tcp/9999 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9999"), or empty string to not expose.
 matrix_appservice_irc_container_http_host_bind_port: ''
+
+# Controls whether the matrix-appservice-irc container exposes its media proxy HTTP port (tcp/11111 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:11111"), or empty string to not expose.
+matrix_appservice_irc_container_media_proxy_host_bind_port: ''
 
 matrix_appservice_irc_container_network: ""
 
@@ -476,6 +481,24 @@ matrix_appservice_irc_container_additional_networks_custom: []
 
 # A list of extra arguments to pass to the container
 matrix_appservice_irc_container_extra_arguments: []
+
+# matrix_appservice_irc_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# To inject your own other container labels, see `matrix_appservice_irc_container_labels_additional_labels`.
+matrix_appservice_irc_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_appservice_irc_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_appservice_irc_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+# Controls whether Traefik labels for the media proxy will be applied
+matrix_appservice_irc_container_labels_media_proxy_enabled: true
+matrix_appservice_irc_container_labels_media_proxy_traefik_rule: "Host(`{{ matrix_domain }}`) && PathPrefix(`/irc/`)"
+matrix_appservice_irc_container_labels_media_proxy_traefik_priority: 2000
+matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints: "{{ matrix_appservice_irc_container_labels_traefik_entrypoints }}"
+matrix_appservice_irc_container_labels_media_proxy_traefik_tls: "{{ matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints != 'web' }}"
+matrix_appservice_irc_container_labels_media_proxy_traefik_tls_certResolver: "{{ matrix_appservice_irc_container_labels_traefik_tls_certResolver }}"
+
+# matrix-appservice-irc container additional labels
+matrix_appservice_irc_container_labels_additional_labels: ''
 
 # List of systemd services that matrix-appservice-irc.service depends on.
 matrix_appservice_irc_systemd_required_services_list: "{{ matrix_appservice_irc_systemd_required_services_list_default + matrix_appservice_irc_systemd_required_services_list_auto + matrix_appservice_irc_systemd_required_services_list_custom }}"

@@ -1,0 +1,43 @@
+{#
+SPDX-FileCopyrightText: 2025 Jade Ellis
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_appservice_irc_container_labels_traefik_enabled and matrix_appservice_irc_container_labels_media_proxy_enabled %}
+traefik.enable=true
+
+{% if matrix_appservice_irc_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_appservice_irc_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-appservice-irc-media-proxy.loadbalancer.server.port={{ matrix_appservice_irc_homeserver_media_bind_port }}
+
+############################################################
+#                                                          #
+# IRC Bridge Media Proxy                                   #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-appservice-irc-media-proxy.rule={{ matrix_appservice_irc_container_labels_media_proxy_traefik_rule }}
+
+{% if matrix_appservice_irc_container_labels_media_proxy_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-appservice-irc-media-proxy.priority={{ matrix_appservice_irc_container_labels_media_proxy_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-appservice-irc-media-proxy.service=matrix-appservice-irc-media-proxy
+traefik.http.routers.matrix-appservice-irc-media-proxy.entrypoints={{ matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints }}
+
+traefik.http.routers.matrix-appservice-irc-media-proxy.tls={{ matrix_appservice_irc_container_labels_media_proxy_traefik_tls | to_json }}
+{% if matrix_appservice_irc_container_labels_media_proxy_traefik_tls %}
+traefik.http.routers.matrix-appservice-irc-media-proxy.tls.certResolver={{ matrix_appservice_irc_container_labels_media_proxy_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /IRC Bridge Media Proxy                                  #
+#                                                          #
+############################################################
+{% endif %}
+
+{{ matrix_appservice_irc_container_labels_additional_labels }}

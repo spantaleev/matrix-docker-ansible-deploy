@@ -843,6 +843,8 @@ matrix_appservice_irc_container_additional_networks_auto: |-
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([postgres_container_network] if (postgres_enabled and matrix_appservice_irc_database_hostname == postgres_connection_hostname and matrix_appservice_irc_container_network != postgres_container_network) else [])
+      +
+      [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_appservice_irc_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else []
     ) | unique
   }}
 
@@ -859,6 +861,11 @@ matrix_appservice_irc_database_engine: "{{ 'postgres' if postgres_enabled else '
 matrix_appservice_irc_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_appservice_irc_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.irc.db', rounds=655555) | to_uuid }}"
 matrix_appservice_irc_database_container_network: "{{ postgres_container_network if postgres_enabled else '' }}"
+
+matrix_appservice_irc_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_appservice_irc_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_appservice_irc_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 ######################################################################
 #
