@@ -121,6 +121,14 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
 
+- name: Ensure Matrix Appservice IRC labels file installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_appservice_irc_base_path }}/labels"
+    mode: 0644
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+
 - name: Generate Appservice IRC passkey if it doesn't exist
   ansible.builtin.shell:
     cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
