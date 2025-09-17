@@ -135,9 +135,21 @@ matrix_synapse_ext_s3_storage_provider_data_path: "{{ matrix_synapse_ext_s3_stor
 
 matrix_synapse_container_client_api_port: 8008
 
+# Controls the `x_forwarded` setting for the "Insecure HTTP listener (Client API)".
+# We default this to `true`, because such insecure HTTP listeners are most likely behind a reverse-proxy (that handles TLS).
+matrix_synapse_container_client_api_x_forwarded: true
+
 matrix_synapse_container_federation_api_tls_port: 8448
 
+# Controls the `x_forwarded` setting for the "TLS-enabled federation listener".
+# We default this to `false`, because TLS-enabled listeners are likely to be exposed directly (instead of being behind a reverse-proxy).
+matrix_synapse_container_federation_api_tls_x_forwarded: false
+
 matrix_synapse_container_federation_api_plain_port: 8048
+
+# Controls the `x_forwarded` setting for the "Insecure federation listener".
+# We default this to `true`, because such insecure HTTP listeners are most likely behind a reverse-proxy (that handles TLS).
+matrix_synapse_container_federation_api_plain_x_forwarded: true
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 matrix_synapse_container_network: ''
@@ -837,6 +849,10 @@ matrix_synapse_manhole_enabled: false
 
 # Enable support for Synapse workers
 matrix_synapse_workers_enabled: false
+
+# Controls the `x_forwarded` setting for the main `http` listener for Synapse workers.
+# We default this to `true`, because such insecure HTTP listeners are most likely behind a reverse-proxy (that handles TLS).
+matrix_synapse_worker_listeners_http_main_x_forwarded: true
 
 # Specifies worker configuration that should be used when workers are enabled.
 #
