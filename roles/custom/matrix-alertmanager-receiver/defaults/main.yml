@@ -11,7 +11,7 @@
 matrix_alertmanager_receiver_enabled: true
 
 # renovate: datasource=docker depName=docker.io/metio/matrix-alertmanager-receiver
-matrix_alertmanager_receiver_version: 2025.9.10
+matrix_alertmanager_receiver_version: 2025.9.17
 
 matrix_alertmanager_receiver_scheme: https
 
@@ -159,30 +159,20 @@ matrix_alertmanager_receiver_config_templating_external_url_mapping: {}
 #   "http://prometheus:8081": https://another.prometheus.example.com
 matrix_alertmanager_receiver_config_templating_generator_url_mapping: {}
 
-# Controls the `templating.computed-values` configuration setting.
-matrix_alertmanager_receiver_config_templating_computed_values: "{{ matrix_alertmanager_receiver_config_templating_computed_values_default + matrix_alertmanager_receiver_config_templating_computed_values_auto + matrix_alertmanager_receiver_config_templating_computed_values_custom }}"
-matrix_alertmanager_receiver_config_templating_computed_values_default:
-  - values:  # always set 'color' to 'yellow'
-      color: yellow
-  - values:  # set 'color' to 'orange' when alert label 'severity' is 'warning'
-      color: orange
-    when-matching-labels:
-      severity: warning
-  - values:  # set 'color' to 'red' when alert label 'severity' is 'critical'
-      color: red
-    when-matching-labels:
-      severity: critical
-  - values:  # set 'color' to 'green' when alert status is 'resolved'
-      color: green
-    when-matching-status: resolved
-matrix_alertmanager_receiver_config_templating_computed_values_auto: []
-matrix_alertmanager_receiver_config_templating_computed_values_custom: []
-
 # Controls the `templating.firing-template` configuration setting.
 matrix_alertmanager_receiver_config_templating_firing_template: |-
   {% raw %}
+  {{ $color := "yellow" }}
+  {{ if eq .Alert.Labels.severity "warning" }}
+  {{ $color = "orange" }}
+  {{ else if eq .Alert.Labels.severity "critical" }}
+  {{ $color = "red" }}
+  {{ end }}
+  {{ if eq .Alert.status "resolved" }}
+  {{ $color = "green" }}
+  {{ end }}
   <p>
-    <strong><font color="{{ .ComputedValues.color }}">{{ .Alert.Status | ToUpper }}</font></strong>
+    <strong><font color="{{ $color }}">{{ .Alert.Status | ToUpper }}</font></strong>
     {{ if .Alert.Labels.name }}
       {{ .Alert.Labels.name }}
     {{ else if .Alert.Labels.alertname }}
@@ -211,7 +201,7 @@ matrix_alertmanager_receiver_config_templating_firing_template: |-
 # Controls the `templating.resolved-template` configuration setting.
 matrix_alertmanager_receiver_config_templating_resolved_template: |-
   {% raw %}
-  <strong><font color="{{ .ComputedValues.color }}">{{ .Alert.Status | ToUpper }}</font></strong>
+  <strong><font color="green">{{ .Alert.Status | ToUpper }}</font></strong>
   {{ if .Alert.Labels.name }}
     {{ .Alert.Labels.name }}
   {{ else if .Alert.Labels.alertname }}
