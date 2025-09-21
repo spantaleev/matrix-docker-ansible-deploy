@@ -31,7 +31,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_mautrix_gmessages_docker_image }} \
-			/usr/bin/mautrix-gmessages -c /config/config.yaml -r /config/registration.yaml
+			/usr/bin/mautrix-gmessages -c /config/config.yaml -r /config/registration.yaml --no-update
 
 {% for network in matrix_mautrix_gmessages_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-mautrix-gmessages
