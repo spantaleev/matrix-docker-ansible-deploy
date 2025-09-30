@@ -3793,10 +3793,10 @@ etherpad_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if postgres_enabled else [])
   }}
 
-etherpad_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+etherpad_database_postgres_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 etherpad_database_name: matrix_etherpad
-etherpad_database_username: matrix_etherpad
-etherpad_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'etherpad.db', rounds=655555) | to_uuid }}"
+etherpad_database_postgres_username: matrix_etherpad
+etherpad_database_postgres_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'etherpad.db', rounds=655555) | to_uuid }}"
 
 ######################################################################
 #
@@ -4492,9 +4492,9 @@ postgres_managed_databases_auto: |
     +
     ([{
       'name': etherpad_database_name,
-      'username': etherpad_database_username,
-      'password': etherpad_database_password,
-    }] if (etherpad_enabled and etherpad_database_type == 'postgres' and etherpad_database_hostname == postgres_connection_hostname) else [])
+      'username': etherpad_database_postgres_username,
+      'password': etherpad_database_postgres_password,
+    }] if (etherpad_enabled and etherpad_database_type == 'postgres' and etherpad_database_postgres_hostname == postgres_connection_hostname) else [])
     +
     ([{
       'name': prometheus_postgres_exporter_database_name,
