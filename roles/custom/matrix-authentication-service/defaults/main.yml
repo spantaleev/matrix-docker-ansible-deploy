@@ -326,6 +326,8 @@ matrix_authentication_service_config_http_listener_web_resources_default: |-
       {'name': 'graphql'},
       {'name': 'assets'},
     ]
+    +
+    [{'name': 'adminapi'} if matrix_authentication_service_admin_api_enabled else []]
   }}
 matrix_authentication_service_config_http_listener_web_resources_auto: []
 matrix_authentication_service_config_http_listener_web_resources_custom: []
@@ -624,6 +626,10 @@ matrix_authentication_service_syn2mas_subcommand_extra_options: []
 # - disable the integration between the homeserver and Matrix Authentication Service
 # - avoid setting up the "compatibility layer" (that is, avoid installing container labels that capture login endpoints like `/_matrix/client/*/login`, etc.)
 matrix_authentication_service_migration_in_progress: false
+
+# Controls whether the admin API is enabled.
+# Ref: https://element-hq.github.io/matrix-authentication-service/topics/admin-api.html#enabling-the-api
+matrix_authentication_service_admin_api_enabled: false
 
 ########################################################################################
 #                                                                                      #
