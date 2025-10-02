@@ -1,3 +1,14 @@
+# 2025-10-02
+
+## Element Admin support
+
+The playbook now supports [Element Admin](./docs/configuring-playbook-element-admin.md) - a new web-based administration panel for Synapse and [Matrix Authentication Service](./docs/configuring-playbook-matrix-authentication-service.md).
+
+Deployments based on Matrix Authentication Service may find it useful to run both Synapse Admin and Element Admin at the same time.
+
+Deployments that don't rely on Matrix Authentication Service are unlikely to find anything useful in Element Admin right now (it's too basic in its current form).
+
+
 # 2025-04-26
 
 ## Continuwuity support

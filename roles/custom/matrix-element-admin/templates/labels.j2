@@ -1,0 +1,45 @@
+{#
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_element_admin_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_element_admin_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_element_admin_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-element-admin.loadbalancer.server.port=8080
+
+{% set middlewares = [] %}
+
+{% if matrix_element_admin_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-element-admin-slashless-redirect.redirectregex.regex=({{ matrix_element_admin_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-element-admin-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-element-admin-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_element_admin_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-element-admin-strip-prefix.stripprefix.prefixes={{ matrix_element_admin_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-element-admin-strip-prefix'] %}
+{% endif %}
+
+traefik.http.routers.matrix-element-admin.rule={{ matrix_element_admin_container_labels_traefik_rule }}
+{% if matrix_element_admin_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-element-admin.priority={{ matrix_element_admin_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-element-admin.service=matrix-element-admin
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-element-admin.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-element-admin.entrypoints={{ matrix_element_admin_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-element-admin.tls={{ matrix_element_admin_container_labels_traefik_tls | to_json }}
+{% if matrix_element_admin_container_labels_traefik_tls %}
+traefik.http.routers.matrix-element-admin.tls.certResolver={{ matrix_element_admin_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+
+{{ matrix_element_admin_container_labels_additional_labels }}

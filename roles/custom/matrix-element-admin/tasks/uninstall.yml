@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of Element Admin service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-admin.service"
+  register: matrix_element_admin_service_stat
+
+- when: matrix_element_admin_service_stat.stat.exists | bool
+  block:
+    - name: Ensure Element Admin is stopped
+      ansible.builtin.service:
+        name: matrix-element-admin
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure Element Admin systemd service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-admin.service"
+        state: absent
+
+    - name: Ensure Element Admin paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_element_admin_base_path }}"
+        state: absent

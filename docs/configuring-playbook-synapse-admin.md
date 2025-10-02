@@ -18,6 +18,8 @@ synapse-admin is a web UI tool you can use to **administrate users, rooms, media
 
 💡 **Note**: the latest version of synapse-admin is hosted by [etke.cc](https://etke.cc/) at [admin.etke.cc](https://admin.etke.cc/). If you only need this service occasionally and trust giving your admin credentials to a 3rd party Single Page Application, you can consider using it from there and avoiding the (small) overhead of self-hosting.
 
+💡 **Note**: The playbook also supports an alternative management UI in the shape of [Element Admin](./configuring-playbook-element-admin.md). However, it's currently less feature-rich than Synapse Admin and has a dependency on [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md).
+
 ## Adjusting DNS records (optional)
 
 By default, this playbook installs Synapse Admin on the `matrix.` subdomain, at the `/synapse-admin` path (https://matrix.example.com/synapse-admin). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
@@ -40,7 +42,7 @@ matrix_synapse_admin_enabled: true
 By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/etkecc/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) — the one managed by the playbook. To adjust these restrictions, tweak the `matrix_synapse_admin_config_restrictBaseUrl` variable.
 
 > [!WARNING]
-> If you're using [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS) for authentication, you will be able to [log into synapse-admin with an access token](https://github.com/etkecc/synapse-admin/pull/58), but certain synapse-admin features (especially those around user management) will be limited or not work at all.
+> If you're using [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS) for authentication, you will be able to [log into synapse-admin with an access token](https://github.com/etkecc/synapse-admin/pull/58), but certain synapse-admin features (especially those around user management) will be limited or not work at all. You may be interested in using [Element Admin](docs/configuring-playbook-element-admin.md) for these purposes.
 
 ### Adjusting the Synapse Admin URL (optional)
 
