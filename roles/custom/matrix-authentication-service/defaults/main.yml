@@ -314,6 +314,22 @@ matrix_authentication_service_config_secrets_keys: |-
 #                                                                                      #
 ########################################################################################
 
+# Controls the resources exposed by the `web` HTTP listener.
+matrix_authentication_service_config_http_listener_web_resources: "{{ matrix_authentication_service_config_http_listener_web_resources_default + matrix_authentication_service_config_http_listener_web_resources_auto + matrix_authentication_service_config_http_listener_web_resources_custom }}"
+matrix_authentication_service_config_http_listener_web_resources_default: |-
+  {{
+    [
+      {'name': 'discovery'},
+      {'name': 'human'},
+      {'name': 'oauth'},
+      {'name': 'compat'},
+      {'name': 'graphql'},
+      {'name': 'assets'},
+    ]
+  }}
+matrix_authentication_service_config_http_listener_web_resources_auto: []
+matrix_authentication_service_config_http_listener_web_resources_custom: []
+
 # Controls the `http.public_base` configuration setting.
 matrix_authentication_service_config_http_public_base: "https://{{ matrix_authentication_service_hostname }}{{ '/' if matrix_authentication_service_path_prefix == '/' else (matrix_authentication_service_path_prefix + '/') }}"
 
