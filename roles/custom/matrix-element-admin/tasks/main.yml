@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- tags:
+    - setup-all
+    - setup-element-admin
+    - install-all
+    - install-element-admin
+  block:
+    - when: matrix_element_admin_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_element_admin_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- tags:
+    - setup-all
+    - setup-element-admin
+  block:
+    - when: not matrix_element_admin_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
