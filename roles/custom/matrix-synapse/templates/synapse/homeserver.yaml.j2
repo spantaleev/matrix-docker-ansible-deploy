@@ -2731,6 +2731,15 @@ stats:
 #  system_mxid_display_name: "Server Notices"
 #  system_mxid_avatar_url: "mxc://example.com/oumMVlgDnLYFaPVkExemNVVZ"
 #  room_name: "Server Notices"
+{% if matrix_synapse_server_notices_enabled %}
+server_notices:
+  system_mxid_localpart: {{ matrix_synapse_server_notices_system_mxid_localpart | string | to_json }}
+  system_mxid_display_name: {{ matrix_synapse_server_notices_system_mxid_display_name | string | to_json }}
+{% if matrix_synapse_server_notices_system_mxid_avatar_url %}
+  system_mxid_avatar_url: {{ matrix_synapse_server_notices_system_mxid_avatar_url | string | to_json }}
+{% endif %}
+  room_name: {{ matrix_synapse_server_notices_room_name | string | to_json }}
+{% endif %}
 
 
 
