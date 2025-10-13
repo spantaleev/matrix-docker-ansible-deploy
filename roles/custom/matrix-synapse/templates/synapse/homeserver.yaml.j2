@@ -1161,7 +1161,10 @@ url_preview_ip_range_whitelist: {{ matrix_synapse_url_preview_ip_range_whitelist
 # specified component matches for a given list item succeed, the URL is
 # blacklisted.
 #
-#url_preview_url_blacklist:
+{% if matrix_synapse_url_preview_url_blacklist | length > 0 %}
+url_preview_url_blacklist: {{ matrix_synapse_url_preview_url_blacklist | to_json }}
+{% endif %}
+
 #  # blacklist any URL with a username in its URI
 #  - username: '*'
 #
