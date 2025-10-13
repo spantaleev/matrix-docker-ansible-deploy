@@ -45,11 +45,7 @@ RUN pip install synapse-auto-accept-invite=={{ matrix_synapse_ext_synapse_auto_a
 {% endif %}
 
 {% if matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled %}
-{% if matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled %}
-RUN pip install 'boto3<1.36.0' 'botocore<1.36.0' synapse-s3-storage-provider=={{ matrix_synapse_ext_synapse_s3_storage_provider_version }}
-{% else %}
 RUN pip install synapse-s3-storage-provider=={{ matrix_synapse_ext_synapse_s3_storage_provider_version }}
-{% endif %}
 {% endif %}
 
 {% if matrix_synapse_container_image_customizations_templates_enabled %}
