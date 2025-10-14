@@ -1178,6 +1178,9 @@ url_preview_ip_range_whitelist: {{ matrix_synapse_url_preview_ip_range_whitelist
 #
 #  # blacklist any URL with a literal IPv4 address
 #  - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+{% if matrix_synapse_url_preview_url_blacklist | length > 0 %}
+url_preview_url_blacklist: {{ matrix_synapse_url_preview_url_blacklist | to_json }}
+{% endif %}
 
 # The largest allowed URL preview spidering size in bytes
 #
