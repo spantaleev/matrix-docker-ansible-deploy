@@ -41,9 +41,6 @@ matrix_synapse_admin_enabled: true
 
 By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/etkecc/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) — the one managed by the playbook. To adjust these restrictions, tweak the `matrix_synapse_admin_config_restrictBaseUrl` variable.
 
-> [!WARNING]
-> If you're using [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS) for authentication, you will be able to [log into synapse-admin with an access token](https://github.com/etkecc/synapse-admin/pull/58), but certain synapse-admin features (especially those around user management) will be limited or not work at all. You may be interested in using [Element Admin](docs/configuring-playbook-element-admin.md) for these purposes.
-
 ### Adjusting the Synapse Admin URL (optional)
 
 By tweaking the `matrix_synapse_admin_hostname` and `matrix_synapse_admin_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
