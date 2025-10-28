@@ -17,6 +17,32 @@ network:
     steam_bridge_auto_start: true
     steam_bridge_startup_timeout: 30
 
+    # Presence synchronization settings
+    presence:
+        # Enable presence tracking from Matrix to Steam
+        # When enabled, your Steam status will automatically change based on
+        # your Matrix presence and activity
+        enabled: {{ matrix_steam_bridge_network_presence_enabled | to_json }}
+
+        # Inactivity timeout in minutes before changing Steam status
+        # This is used as a fallback when your Matrix server doesn't support
+        # presence tracking. After this many minutes without Matrix activity,
+        # your Steam status will change (see inactivity_status below)
+        # Set to 0 to disable automatic away
+        inactivity_timeout: 15
+
+        # Status to set after inactivity timeout
+        # Valid values: "snooze" (appear away/idle) or "invisible" (appear offline)
+        inactivity_status: {{ matrix_steam_bridge_network_presence_inactivity_status | to_json }}
+        # Whether typing events in Matrix should reset the inactivity timer
+        # When true, typing will count as activity and keep you marked as online
+        typing_resets_presence: true
+
+        # Whether sending read receipts in Matrix should reset the inactivity timer
+        # When true, reading messages will count as activity and keep you marked as online
+        read_receipts_reset_presence: false
+
+
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
