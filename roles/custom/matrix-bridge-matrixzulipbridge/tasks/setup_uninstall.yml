@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2021 - 2022 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2021 Michael Sasser
+# SPDX-FileCopyrightText: 2021 Toni Spets
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-heisenbridge service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-heisenbridge.service"
+  register: matrix_heisenbridge_service_stat
+
+- when: matrix_heisenbridge_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-heisenbridge is stopped
+      ansible.builtin.service:
+        name: matrix-heisenbridge
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-heisenbridge.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-heisenbridge.service"
+        state: absent

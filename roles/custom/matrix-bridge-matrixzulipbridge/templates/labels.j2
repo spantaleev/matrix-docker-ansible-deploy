@@ -1,0 +1,58 @@
+{#
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_heisenbridge_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_heisenbridge_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_heisenbridge_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-heisenbridge.loadbalancer.server.port=9898
+
+{% set middlewares = [] %}
+
+{% if matrix_heisenbridge_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-heisenbridge-strip-prefix.stripprefix.prefixes={{ matrix_heisenbridge_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-heisenbridge-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_heisenbridge_container_labels_traefik_media_enabled %}
+##########################################################################
+#                                                                        #
+# Media                                                                  #
+#                                                                        #
+##########################################################################
+
+traefik.http.routers.matrix-heisenbridge-media.rule={{ matrix_heisenbridge_container_labels_traefik_media_rule }}
+
+{% if matrix_heisenbridge_container_labels_traefik_media_priority | int > 0 %}
+traefik.http.routers.matrix-heisenbridge-media.priority={{ matrix_heisenbridge_container_labels_traefik_media_priority }}
+{% endif %}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-heisenbridge-media.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-heisenbridge-media.service=matrix-heisenbridge
+traefik.http.routers.matrix-heisenbridge-media.entrypoints={{ matrix_heisenbridge_container_labels_traefik_entrypoints }}
+
+traefik.http.routers.matrix-heisenbridge-media.tls={{ matrix_heisenbridge_container_labels_traefik_media_tls | to_json }}
+{% if matrix_heisenbridge_container_labels_traefik_media_entrypoints %}
+traefik.http.routers.matrix-heisenbridge-media.tls.certResolver={{ matrix_heisenbridge_container_labels_traefik_media_tls_certResolver }}
+{% endif %}
+
+##########################################################################
+#                                                                        #
+# /Media                                                                 #
+#                                                                        #
+##########################################################################
+{% endif %}
+
+
+{% endif %}
+
+{{ matrix_heisenbridge_container_labels_additional_labels }}
