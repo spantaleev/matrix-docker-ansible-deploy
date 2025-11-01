@@ -194,6 +194,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md)
 
+- [Setting up MatrixZulipBridge](configuring-playbook-bridge-matrixzulipbridge.md)
+
 - [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md)
 
 - [Setting up WeChat bridging](configuring-playbook-bridge-wechat.md)

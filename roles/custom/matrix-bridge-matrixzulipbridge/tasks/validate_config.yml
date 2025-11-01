@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if required Heisenbridge settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_heisenbridge_container_network', when: true}
+    - {'name': 'matrix_heisenbridge_homeserver_url', when: true}

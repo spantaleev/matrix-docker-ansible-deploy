@@ -1,0 +1,125 @@
+# SPDX-FileCopyrightText: 2021 - 2022 Toni Spets
+# SPDX-FileCopyrightText: 2022 - 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Heisenbridge is a bouncer-style Matrix IRC bridge
+# Project source code URL: https://github.com/hifi/heisenbridge
+
+matrix_heisenbridge_enabled: true
+
+matrix_heisenbridge_scheme: https
+matrix_heisenbridge_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_heisenbridge_path_prefix: "/heisenbridge"
+
+# renovate: datasource=docker depName=hif1/heisenbridge
+matrix_heisenbridge_version: 1.15.4
+matrix_heisenbridge_docker_image: "{{ matrix_heisenbridge_docker_image_registry_prefix }}hif1/heisenbridge:{{ matrix_heisenbridge_version }}"
+matrix_heisenbridge_docker_image_registry_prefix: "{{ matrix_heisenbridge_docker_image_registry_prefix_upstream }}"
+matrix_heisenbridge_docker_image_registry_prefix_upstream: "{{ matrix_heisenbridge_docker_image_registry_prefix_upstream_default }}"
+matrix_heisenbridge_docker_image_registry_prefix_upstream_default: "docker.io/"
+matrix_heisenbridge_docker_image_force_pull: "{{ matrix_heisenbridge_docker_image.endswith(':latest') }}"
+
+# Set this to your Matrix ID if you want to enforce the owner, otherwise first _local_ user becomes one
+matrix_heisenbridge_owner: ""
+
+# Enabling identd will bind to host port 113/TCP
+matrix_heisenbridge_identd_enabled: false
+
+matrix_heisenbridge_base_path: "{{ matrix_base_data_path }}/heisenbridge"
+
+matrix_heisenbridge_container_network: ""
+
+matrix_heisenbridge_container_additional_networks: "{{ matrix_heisenbridge_container_additional_networks_auto + matrix_heisenbridge_container_additional_networks_custom }}"
+matrix_heisenbridge_container_additional_networks_auto: []
+matrix_heisenbridge_container_additional_networks_custom: []
+
+# Controls how long to wait for the container to stop gracefully before killing it.
+# We use a small value here, because this container does not seem to handle the SIGTERM signal.
+matrix_heisenbridge_container_stop_grace_time_seconds: 1
+
+# matrix_heisenbridge_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_heisenbridge_container_labels_additional_labels`.
+matrix_heisenbridge_container_labels_traefik_enabled: true
+matrix_heisenbridge_container_labels_traefik_docker_network: "{{ matrix_heisenbridge_container_network }}"
+matrix_heisenbridge_container_labels_traefik_hostname: "{{ matrix_heisenbridge_hostname }}"
+matrix_heisenbridge_container_labels_traefik_path_prefix: "{{ matrix_heisenbridge_path_prefix }}"
+matrix_heisenbridge_container_labels_traefik_entrypoints: web-secure
+matrix_heisenbridge_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls if the media router is enabled
+matrix_heisenbridge_container_labels_traefik_media_enabled: true
+matrix_heisenbridge_container_labels_traefik_media_hostname: "{{ matrix_heisenbridge_container_labels_traefik_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/heisenbridge`).
+matrix_heisenbridge_container_labels_traefik_media_path_prefix: "{{ '' if matrix_heisenbridge_container_labels_traefik_path_prefix == '/' else (matrix_heisenbridge_container_labels_traefik_path_prefix) }}/_heisenbridge/media"
+matrix_heisenbridge_container_labels_traefik_media_rule: "Host(`{{ matrix_heisenbridge_container_labels_traefik_media_hostname }}`){% if matrix_heisenbridge_container_labels_traefik_media_path_prefix != '/' %} && PathPrefix(`{{ matrix_heisenbridge_container_labels_traefik_media_path_prefix }}`){% endif %}"
+matrix_heisenbridge_container_labels_traefik_media_priority: 0
+matrix_heisenbridge_container_labels_traefik_media_entrypoints: "{{ matrix_heisenbridge_container_labels_traefik_entrypoints }}"
+matrix_heisenbridge_container_labels_traefik_media_tls: "{{ matrix_heisenbridge_container_labels_traefik_media_entrypoints != 'web' }}"
+matrix_heisenbridge_container_labels_traefik_media_tls_certResolver: "{{ matrix_heisenbridge_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_heisenbridge_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_heisenbridge_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_heisenbridge_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_heisenbridge_container_extra_arguments: []
+
+# List of systemd services that service depends on.
+matrix_heisenbridge_systemd_required_services_list: "{{ matrix_heisenbridge_systemd_required_services_list_default + matrix_heisenbridge_systemd_required_services_list_auto + matrix_heisenbridge_systemd_required_services_list_custom }}"
+matrix_heisenbridge_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_heisenbridge_systemd_required_services_list_auto: []
+matrix_heisenbridge_systemd_required_services_list_custom: []
+
+# List of systemd services that service wants
+matrix_heisenbridge_systemd_wanted_services_list: []
+
+matrix_heisenbridge_homeserver_url: ""
+
+matrix_heisenbridge_appservice_token: ''
+matrix_heisenbridge_homeserver_token: ''
+
+matrix_heisenbridge_config_media_url: "{{ matrix_heisenbridge_scheme }}://{{ matrix_heisenbridge_hostname }}"
+# This matches the hardcoded `DEFAULT_MEDIA_PATH` in Heisenbridge, but uses `matrix_heisenbridge_path_prefix` as the path prefix.
+# See: https://github.com/hifi/heisenbridge/blob/7e18a5818f4a8c86cc62e474eee1631d16cb2602/heisenbridge/__main__.py#L66
+matrix_heisenbridge_config_media_path: "{{ matrix_heisenbridge_container_labels_traefik_media_path_prefix }}/{server}/{media_id}/{checksum}{filename}"
+matrix_heisenbridge_config_media_key: "{{ matrix_heisenbridge_homeserver_token }}"
+matrix_heisenbridge_config_displayname: "Heisenbridge"
+
+matrix_heisenbridge_registration_yaml_heisenbridge:
+  media_url: "{{ matrix_heisenbridge_config_media_url }}"
+  media_path: "{{ matrix_heisenbridge_config_media_path }}"
+  media_key: "{{ matrix_heisenbridge_config_media_key }}"
+  displayname: "{{ matrix_heisenbridge_config_displayname }}"
+
+# Default registration file consumed by both the homeserver and Heisenbridge.
+# Besides registration information, it contains configuration (see the Heisenbridge key).
+matrix_heisenbridge_registration_yaml:
+  id: heisenbridge
+  url: http://matrix-heisenbridge:9898
+  as_token: "{{ matrix_heisenbridge_appservice_token }}"
+  hs_token: "{{ matrix_heisenbridge_homeserver_token }}"
+  rate_limited: false
+  sender_localpart: heisenbridge
+  namespaces:
+    users:
+      - regex: '@hbirc_.*'
+        exclusive: true
+    aliases: []
+    rooms: []
+  heisenbridge: "{{ matrix_heisenbridge_registration_yaml_heisenbridge }}"
+
+matrix_heisenbridge_registration: "{{ matrix_heisenbridge_registration_yaml | from_yaml }}"
