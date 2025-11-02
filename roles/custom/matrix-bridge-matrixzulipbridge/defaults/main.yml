@@ -10,7 +10,7 @@
 
 ---
 # MatrixZulipBridge is a bouncer-style Matrix IRC bridge
-# Project source code URL: https://github.com/hifi/matrixzulipbridge
+# Project source code URL: https://github.com/GearKite/MatrixZulipBridge
 
 matrix_matrixzulipbridge_enabled: true
 
@@ -18,12 +18,12 @@ matrix_matrixzulipbridge_scheme: https
 matrix_matrixzulipbridge_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_matrixzulipbridge_path_prefix: "/matrixzulipbridge"
 
-# renovate: datasource=docker depName=hif1/matrixzulipbridge
-matrix_matrixzulipbridge_version: 1.15.4
-matrix_matrixzulipbridge_docker_image: "{{ matrix_matrixzulipbridge_docker_image_registry_prefix }}hif1/matrixzulipbridge:{{ matrix_matrixzulipbridge_version }}"
+# renovate: datasource=docker depName=ghcr.io/gearkite/matrixzulipbridge
+matrix_matrixzulipbridge_version: v0.4.1
+matrix_matrixzulipbridge_docker_image: "{{ matrix_matrixzulipbridge_docker_image_registry_prefix }}gearkite/matrixzulipbridge:{{ matrix_matrixzulipbridge_version }}"
 matrix_matrixzulipbridge_docker_image_registry_prefix: "{{ matrix_matrixzulipbridge_docker_image_registry_prefix_upstream }}"
 matrix_matrixzulipbridge_docker_image_registry_prefix_upstream: "{{ matrix_matrixzulipbridge_docker_image_registry_prefix_upstream_default }}"
-matrix_matrixzulipbridge_docker_image_registry_prefix_upstream_default: "docker.io/"
+matrix_matrixzulipbridge_docker_image_registry_prefix_upstream_default: ghcr.io/
 matrix_matrixzulipbridge_docker_image_force_pull: "{{ matrix_matrixzulipbridge_docker_image.endswith(':latest') }}"
 
 # Set this to your Matrix ID if you want to enforce the owner, otherwise first _local_ user becomes one
@@ -94,7 +94,7 @@ matrix_matrixzulipbridge_homeserver_token: ''
 
 matrix_matrixzulipbridge_config_media_url: "{{ matrix_matrixzulipbridge_scheme }}://{{ matrix_matrixzulipbridge_hostname }}"
 # This matches the hardcoded `DEFAULT_MEDIA_PATH` in MatrixZulipBridge, but uses `matrix_matrixzulipbridge_path_prefix` as the path prefix.
-# See: https://github.com/hifi/matrixzulipbridge/blob/7e18a5818f4a8c86cc62e474eee1631d16cb2602/matrixzulipbridge/__main__.py#L66
+# See: https://github.com/GearKite/MatrixZulipBridge/blob/7e18a5818f4a8c86cc62e474eee1631d16cb2602/matrixzulipbridge/__main__.py#L66
 matrix_matrixzulipbridge_config_media_path: "{{ matrix_matrixzulipbridge_container_labels_traefik_media_path_prefix }}/{server}/{media_id}/{checksum}{filename}"
 matrix_matrixzulipbridge_config_media_key: "{{ matrix_matrixzulipbridge_homeserver_token }}"
 matrix_matrixzulipbridge_config_displayname: "MatrixZulipBridge"
