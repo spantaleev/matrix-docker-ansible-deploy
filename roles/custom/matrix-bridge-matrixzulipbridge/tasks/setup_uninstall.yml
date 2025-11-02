@@ -7,21 +7,21 @@
 
 ---
 
-- name: Check existence of matrix-heisenbridge service
+- name: Check existence of matrix-matrixzulipbridge service
   ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-heisenbridge.service"
-  register: matrix_heisenbridge_service_stat
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-matrixzulipbridge.service"
+  register: matrix_matrixzulipbridge_service_stat
 
-- when: matrix_heisenbridge_service_stat.stat.exists | bool
+- when: matrix_matrixzulipbridge_service_stat.stat.exists | bool
   block:
-    - name: Ensure matrix-heisenbridge is stopped
+    - name: Ensure matrix-matrixzulipbridge is stopped
       ansible.builtin.service:
-        name: matrix-heisenbridge
+        name: matrix-matrixzulipbridge
         state: stopped
         enabled: false
         daemon_reload: true
 
-    - name: Ensure matrix-heisenbridge.service doesn't exist
+    - name: Ensure matrix-matrixzulipbridge.service doesn't exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-heisenbridge.service"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-matrixzulipbridge.service"
         state: absent
