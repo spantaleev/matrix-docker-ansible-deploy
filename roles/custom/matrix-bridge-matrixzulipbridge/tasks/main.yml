@@ -1,26 +1,29 @@
 # SPDX-FileCopyrightText: 2021 Toni Spets
 # SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
-- tags:
+- name: Perform MatrixZulipBridge installation tasks
+  when: matrixzulipbridge_enabled | bool
+  tags:
     - setup-all
     - setup-matrixzulipbridge
     - install-all
     - install-matrixzulipbridge
   block:
-    - when: matrix_matrixzulipbridge_enabled | bool
+    - name: Validate MatrixZulipBridge configuration
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-
-    - when: matrix_matrixzulipbridge_enabled | bool
+    - name: Install MatrixZulipBridge
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
-- tags:
+- name: Perform MatrixZulipBridge uninstallation tasks
+  when: not matrixzulipbridge_enabled | bool
+  tags:
     - setup-all
     - setup-matrixzulipbridge
   block:
-    - when: not matrix_matrixzulipbridge_enabled | bool
+    - name: Uninstall MatrixZulipBridge
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
