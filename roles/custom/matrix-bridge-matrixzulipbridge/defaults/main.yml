@@ -33,6 +33,9 @@ matrix_matrixzulipbridge_base_path: "{{ matrix_base_data_path }}/matrixzulipbrid
 
 matrix_matrixzulipbridge_container_network: ""
 
+# The port number in the container
+matrix_matrixzulipbridge_container_http_port: 9898
+
 matrix_matrixzulipbridge_container_additional_networks: "{{ matrix_matrixzulipbridge_container_additional_networks_auto + matrix_matrixzulipbridge_container_additional_networks_custom }}"
 matrix_matrixzulipbridge_container_additional_networks_auto: []
 matrix_matrixzulipbridge_container_additional_networks_custom: []
@@ -106,7 +109,7 @@ matrix_matrixzulipbridge_registration_yaml_matrixzulipbridge:
 # Besides registration information, it contains configuration (see the MatrixZulipBridge key).
 matrix_matrixzulipbridge_registration_yaml:
   id: matrixzulipbridge
-  url: http://matrix-matrixzulipbridge:9898
+  url: http://matrix-matrixzulipbridge:{{ matrix_matrixzulipbridge_container_http_port }}
   as_token: "{{ matrix_matrixzulipbridge_appservice_token }}"
   hs_token: "{{ matrix_matrixzulipbridge_homeserver_token }}"
   rate_limited: false
