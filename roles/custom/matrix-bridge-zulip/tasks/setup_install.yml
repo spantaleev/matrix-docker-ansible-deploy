@@ -11,10 +11,10 @@
 ---
 - name: Ensure MatrixZulipBridge image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_matrixzulipbridge_docker_image }}"
+    name: "{{ matrix_bridge_zulip_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_matrixzulipbridge_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_matrixzulipbridge_docker_image_force_pull }}"
+    force_source: "{{ matrix_bridge_zulip_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bridge_zulip_docker_image_force_pull }}"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -28,12 +28,12 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - "{{ matrix_matrixzulipbridge_base_path }}"
+    - "{{ matrix_bridge_zulip_base_path }}"
 
 - name: Ensure MatrixZulipBridge registration.yaml installed if provided
   ansible.builtin.copy:
-    content: "{{ matrix_matrixzulipbridge_registration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_matrixzulipbridge_base_path }}/registration.yaml"
+    content: "{{ matrix_bridge_zulip_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_zulip_base_path }}/registration.yaml"
     mode: "0644"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
@@ -41,7 +41,7 @@
 - name: Ensure MatrixZulipBridge support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ matrix_matrixzulipbridge_base_path }}/{{ item }}"
+    dest: "{{ matrix_bridge_zulip_base_path }}/{{ item }}"
     mode: "0640"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
@@ -51,12 +51,12 @@
 - name: Ensure MatrixZulipBridge container network is created
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-    name: "{{ matrix_matrixzulipbridge_container_network }}"
+    name: "{{ matrix_bridge_zulip_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
-- name: Ensure matrix-matrixzulipbridge.service installed
+- name: Ensure matrix-bridge-zulip.service installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrix-matrixzulipbridge.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-matrixzulipbridge.service"
+    src: "{{ role_path }}/templates/systemd/matrix-bridge-zulip.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bridge-zulip.service"
     mode: "0644"
