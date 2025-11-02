@@ -30,19 +30,12 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_matrixzulipbridge_container_network }} \
-			{% if matrix_matrixzulipbridge_identd_enabled %}
-			-p 113:13113 \
-			{% endif %}
 			--mount type=bind,src={{ matrix_matrixzulipbridge_base_path }},dst=/config \
 			--label-file={{ matrix_matrixzulipbridge_base_path }}/labels \
 			{% for arg in matrix_matrixzulipbridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_matrixzulipbridge_docker_image }} \
-			{% if matrix_matrixzulipbridge_identd_enabled %}
-			--identd \
-			--identd-port 13113 \
-			{% endif %}
 			{% if matrix_matrixzulipbridge_owner %}
 			-o {{ matrix_matrixzulipbridge_owner }} \
 			{% endif %}
