@@ -9,9 +9,9 @@
 - name: Check existence of matrix-bridge-zulip service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bridge-zulip.service"
-  register: matrix_bridge_zulip_service_stat
+  register: matrix_zulip_bridge_service_stat
 
-- when: matrix_bridge_zulip_service_stat.stat.exists | bool
+- when: matrix_zulip_bridge_service_stat.stat.exists | bool
   block:
     - name: Ensure matrix-bridge-zulip is stopped
       ansible.builtin.service:

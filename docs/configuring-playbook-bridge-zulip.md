@@ -23,23 +23,23 @@ If you wish to adjust it, see the section [below](#adjusting-the-zulip-bridge-ur
 To enable the Zulip bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_bridge_zulip_enabled: true
+matrix_zulip_bridge_enabled: true
 
 # Setting the owner is optional as the first local user to DM `@matrixzulipbridge:example.com` will be made the owner.
 # If you are not using a local user you must set it as otherwise you can't DM it at all.
-matrix_bridge_zulip_owner: "@alice:{{ matrix_domain }}"
+matrix_zulip_bridge_owner: "@alice:{{ matrix_domain }}"
 ```
 
 ### Adjusting the Zulip bridge URL (optional)
 
-By tweaking the `matrix_bridge_zulip_hostname` and `matrix_bridge_zulip_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+By tweaking the `matrix_zulip_bridge_hostname` and `matrix_zulip_bridge_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix
-matrix_bridge_zulip_hostname: zulip.example.com
-matrix_bridge_zulip_path_prefix: /
+matrix_zulip_bridge_hostname: zulip.example.com
+matrix_zulip_bridge_path_prefix: /
 ```
 
 If you've changed the default hostname, you may need to create a CNAME record for the Zulip bridge domain (`zulip.example.com`), which targets `matrix.example.com`.
