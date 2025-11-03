@@ -5347,17 +5347,17 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     ] if matrix_heisenbridge_enabled else [])
     +
     ([
+      '^@zulipbot:'+(matrix_domain | regex_escape)+'$',
+      '^@zulip_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bridge_zulip_enabled else [])
+    +
+    ([
       '^@hookshot:'+(matrix_domain | regex_escape)+'$',
       '^@_github_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
       '^@_gitlab_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
       '^@_jira_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
       '^@'+(matrix_hookshot_generic_userIdPrefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_hookshot_enabled else [])
-    +
-    ([
-      '^@matrixzulipbridge:'+(matrix_domain | regex_escape)+'$',
-      '^@zulip_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_bridge_zulip_enabled else [])
     +
     ([
       '^@'+(matrix_mautrix_bluesky_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
