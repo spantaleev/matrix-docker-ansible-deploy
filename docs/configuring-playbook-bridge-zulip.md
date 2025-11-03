@@ -6,7 +6,7 @@ SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Setting up MatrixZulipBridge (optional)
+# Setting up a Zulip bridge (optional)
 
 The playbook can install and configure [MatrixZulipBridge](https://github.com/GearKite/MatrixZulipBridge) for you.
 
@@ -14,13 +14,13 @@ See the project's [documentation](https://github.com/GearKite/MatrixZulipBridge/
 
 ## Adjusting DNS records (optional)
 
-By default, this playbook installs MatrixZulipBridge on the `matrix.` subdomain, at the `/zulip` path (https://matrix.example.com/zulip). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
+By default, this playbook installs the Zulip bridge on the `matrix.` subdomain, at the `/zulip` path (https://matrix.example.com/zulip). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section.
 
-If you wish to adjust it, see the section [below](#adjusting-the-matrixzulipbridge-url-optional) for details about DNS configuration.
+If you wish to adjust it, see the section [below](#adjusting-the-zulip-bridge-url-optional) for details about DNS configuration.
 
 ## Adjusting the playbook configuration
 
-To enable MatrixZulipBridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+To enable the Zulip bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
 matrix_bridge_zulip_enabled: true
@@ -30,7 +30,7 @@ matrix_bridge_zulip_enabled: true
 matrix_bridge_zulip_owner: "@alice:{{ matrix_domain }}"
 ```
 
-### Adjusting the MatrixZulipBridge URL (optional)
+### Adjusting the Zulip bridge URL (optional)
 
 By tweaking the `matrix_bridge_zulip_hostname` and `matrix_bridge_zulip_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
@@ -42,7 +42,7 @@ matrix_bridge_zulip_hostname: zulip.example.com
 matrix_bridge_zulip_path_prefix: /
 ```
 
-If you've changed the default hostname, you may need to create a CNAME record for the MatrixZulipBridge domain (`zulip.example.com`), which targets `matrix.example.com`.
+If you've changed the default hostname, you may need to create a CNAME record for the Zulip bridge domain (`zulip.example.com`), which targets `matrix.example.com`.
 
 When setting, replace `example.com` with your own.
 

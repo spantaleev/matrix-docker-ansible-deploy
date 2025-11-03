@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Perform MatrixZulipBridge installation tasks
+- name: Perform the Zulip bridge installation tasks
   when: matrix_bridge_zulip_enabled | bool
   tags:
     - setup-all
@@ -14,16 +14,16 @@
     - install-all
     - install-bridge-zulip
   block:
-    - name: Validate MatrixZulipBridge configuration
+    - name: Validate the Zulip bridge configuration
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-    - name: Install MatrixZulipBridge
+    - name: Install the Zulip bridge
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
-- name: Perform MatrixZulipBridge uninstallation tasks
+- name: Perform the Zulip bridge uninstallation tasks
   when: not matrix_bridge_zulip_enabled | bool
   tags:
     - setup-all
     - setup-bridge-zulip
   block:
-    - name: Uninstall MatrixZulipBridge
+    - name: Uninstall the Zulip bridge
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
