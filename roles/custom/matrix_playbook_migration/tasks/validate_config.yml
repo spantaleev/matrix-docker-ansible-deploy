@@ -559,6 +559,18 @@
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mx_puppet_discord_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_discord_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report mx-puppet-instagram variables
+  ansible.builtin.fail:
+    msg: |-
+      The MX Puppet Instagram bridge was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mx_puppet_instagram_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mx-puppet-instagram.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mx_puppet_instagram_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_instagram_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report mx-puppet-twitter variables
   ansible.builtin.fail:
     msg: |-
