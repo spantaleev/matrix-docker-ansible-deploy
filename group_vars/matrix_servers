@@ -343,7 +343,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-hookshot.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'hookshot', 'bridge-hookshot']}] if matrix_hookshot_enabled else [])
     +
-    ([{'name': 'matrix-bridge-zulip.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'matrixzulipbridge']}] if matrix_zulip_bridge_enabled else [])
+    ([{'name': 'matrix-zulip-bridge.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'zulip']}] if matrix_zulip_bridge_enabled else [])
     +
     ([{'name': 'matrix-mautrix-bluesky.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-bluesky']}] if matrix_mautrix_bluesky_enabled else [])
     +
@@ -2386,6 +2386,9 @@ matrix_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_zulip_bridge_enabled: false
 
 matrix_zulip_bridge_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+# Set this to your Matrix ID if you want to enforce the owner, otherwise first _local_ user becomes one
+matrix_zulip_bridge_owner: "{{ matrix_admin if matrix_admin else '' }}"
 
 matrix_zulip_bridge_systemd_required_services_list_auto: |
   {{

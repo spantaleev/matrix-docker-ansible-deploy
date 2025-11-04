@@ -8,7 +8,7 @@
 ---
 - name: Check existence of matrix-bridge-zulip service
   ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bridge-zulip.service"
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-zulip-bridge.service"
   register: matrix_zulip_bridge_service_stat
 
 - when: matrix_zulip_bridge_service_stat.stat.exists | bool
@@ -20,7 +20,7 @@
         enabled: false
         daemon_reload: true
 
-    - name: Ensure matrix-bridge-zulip.service doesn't exist
+    - name: Ensure matrix-zulip-bridge.service doesn't exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bridge-zulip.service"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-zulip-bridge.service"
         state: absent

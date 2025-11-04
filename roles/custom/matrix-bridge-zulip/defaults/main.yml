@@ -26,9 +26,6 @@ matrix_zulip_bridge_docker_image_registry_prefix_upstream: "{{ matrix_zulip_brid
 matrix_zulip_bridge_docker_image_registry_prefix_upstream_default: ghcr.io/
 matrix_zulip_bridge_docker_image_force_pull: "{{ matrix_zulip_bridge_docker_image.endswith(':latest') }}"
 
-# Set this to your Matrix ID if you want to enforce the owner, otherwise first _local_ user becomes one
-matrix_zulip_bridge_owner: "{{ matrix_admin if matrix_admin else '' }}"
-
 matrix_zulip_bridge_base_path: "{{ matrix_base_data_path }}/zulip"
 
 matrix_zulip_bridge_container_network: ""
@@ -109,7 +106,7 @@ matrix_zulip_bridge_registration_yaml_bridge_zulip:
 # Besides registration information, it contains configuration (see the Zulip bridge key).
 matrix_zulip_bridge_registration_yaml:
   id: zulipbridge
-  url: http://matrix-bridge-zulip:{{ matrix_zulip_bridge_container_http_port }}
+  url: http://matrix-zulip-bridge:{{ matrix_zulip_bridge_container_http_port }}
   as_token: "{{ matrix_zulip_bridge_appservice_token }}"
   hs_token: "{{ matrix_zulip_bridge_homeserver_token }}"
   rate_limited: false
