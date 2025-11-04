@@ -148,8 +148,6 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mx_puppet_groupme_config_path + '/registration.yaml,dst=/matrix-mx-puppet-groupme-registration.yaml,ro'] if matrix_mx_puppet_groupme_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_mx_puppet_slack_config_path + '/registration.yaml,dst=/matrix-mx-puppet-slack-registration.yaml,ro'] if matrix_mx_puppet_slack_enabled else [])
-    +
     (['--mount type=bind,src=' + matrix_mx_puppet_steam_config_path + '/registration.yaml,dst=/matrix-mx-puppet-steam-registration.yaml,ro'] if matrix_mx_puppet_steam_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_sms_bridge_config_path + '/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro'] if matrix_sms_bridge_enabled else [])
@@ -214,8 +212,6 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-mautrix-imessage-registration.yaml'] if matrix_mautrix_wsproxy_enabled else [])
     +
     (['/matrix-mx-puppet-groupme-registration.yaml'] if matrix_mx_puppet_groupme_enabled else [])
-    +
-    (['/matrix-mx-puppet-slack-registration.yaml'] if matrix_mx_puppet_slack_enabled else [])
     +
     (['/matrix-mx-puppet-steam-registration.yaml'] if matrix_mx_puppet_steam_enabled else [])
     +
@@ -352,8 +348,6 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-mautrix-wsproxy-syncproxy.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-wsproxy-syncproxy']}] if matrix_mautrix_wsproxy_enabled else [])
     +
     ([{'name': 'matrix-mx-puppet-groupme.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-groupme']}] if matrix_mx_puppet_groupme_enabled else [])
-    +
-    ([{'name': 'matrix-mx-puppet-slack.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-slack']}] if matrix_mx_puppet_slack_enabled else [])
     +
     ([{'name': 'matrix-mx-puppet-steam.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-steam']}] if matrix_mx_puppet_steam_enabled else [])
     +
@@ -2296,67 +2290,6 @@ matrix_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
 #
 ######################################################################
 
-
-######################################################################
-#
-# matrix-bridge-mx-puppet-slack
-#
-######################################################################
-
-# We don't enable bridges by default.
-matrix_mx_puppet_slack_enabled: false
-
-matrix_mx_puppet_slack_hostname: "{{ matrix_server_fqn_matrix }}"
-
-matrix_mx_puppet_slack_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_slack_database_hostname == postgres_connection_hostname) else [])
-  }}
-
-matrix_mx_puppet_slack_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_slack_docker_image_registry_prefix_upstream_default }}"
-
-matrix_mx_puppet_slack_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
-
-matrix_mx_puppet_slack_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_mx_puppet_slack_container_additional_networks_auto: |-
-  {{
-    (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([postgres_container_network] if (postgres_enabled and matrix_mx_puppet_slack_database_hostname == postgres_connection_hostname and matrix_mx_puppet_slack_container_network != postgres_container_network) else [])
-      +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_mx_puppet_slack_container_labels_traefik_enabled) else [])
-    ) | unique
-  }}
-
-matrix_mx_puppet_slack_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_mx_puppet_slack_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mx_puppet_slack_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_mx_puppet_slack_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
-matrix_mx_puppet_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxslk.as.tok', rounds=655555) | to_uuid }}"
-
-matrix_mx_puppet_slack_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mx_puppet_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxslk.hs.tok', rounds=655555) | to_uuid }}"
-
-matrix_mx_puppet_slack_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
-
-matrix_mx_puppet_slack_presence_enabled: "{{ matrix_homeserver_implementation != 'synapse' or matrix_synapse_presence_enabled }}"
-
-# Postgres is the default, except if not using internal Postgres server
-matrix_mx_puppet_slack_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
-matrix_mx_puppet_slack_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mx_puppet_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.slack.db', rounds=655555) | to_uuid }}"
-
-######################################################################
-#
-# /matrix-bridge-mx-puppet-slack
-#
-######################################################################
-
 ######################################################################
 #
 # matrix-bridge-mx-puppet-steam
@@ -4204,12 +4137,6 @@ postgres_managed_databases_auto: |
     }] if (matrix_mautrix_slack_enabled and matrix_mautrix_slack_database_engine == 'postgres' and matrix_mautrix_slack_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_mx_puppet_slack_database_name,
-      'username': matrix_mx_puppet_slack_database_username,
-      'password': matrix_mx_puppet_slack_database_password,
-    }] if (matrix_mx_puppet_slack_enabled and matrix_mx_puppet_slack_database_engine == 'postgres' and matrix_mx_puppet_slack_database_hostname == postgres_connection_hostname) else [])
-    +
-    ([{
       'name': matrix_mx_puppet_steam_database_name,
       'username': matrix_mx_puppet_steam_database_username,
       'password': matrix_mx_puppet_steam_database_password,
@@ -5108,10 +5035,6 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     ([
       '^@_groupmepuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_mx_puppet_groupme_enabled else [])
-    +
-    ([
-      '^@_slackpuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_mx_puppet_slack_enabled else [])
     +
     ([
       '^@_steampuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
