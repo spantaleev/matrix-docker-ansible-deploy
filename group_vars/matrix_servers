@@ -156,8 +156,6 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mx_puppet_steam_config_path + '/registration.yaml,dst=/matrix-mx-puppet-steam-registration.yaml,ro'] if matrix_mx_puppet_steam_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_mx_puppet_twitter_config_path + '/registration.yaml,dst=/matrix-mx-puppet-twitter-registration.yaml,ro'] if matrix_mx_puppet_twitter_enabled else [])
-    +
     (['--mount type=bind,src=' + matrix_sms_bridge_config_path + '/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro'] if matrix_sms_bridge_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_steam_bridge_config_path + '/registration.yaml,dst=/matrix-steam-bridge-registration.yaml,ro'] if matrix_steam_bridge_enabled else [])
@@ -228,8 +226,6 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-mx-puppet-slack-registration.yaml'] if matrix_mx_puppet_slack_enabled else [])
     +
     (['/matrix-mx-puppet-steam-registration.yaml'] if matrix_mx_puppet_steam_enabled else [])
-    +
-    (['/matrix-mx-puppet-twitter-registration.yaml'] if matrix_mx_puppet_twitter_enabled else [])
     +
     (['/matrix-sms-bridge-registration.yaml'] if matrix_sms_bridge_enabled else [])
     +
@@ -372,8 +368,6 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-mx-puppet-slack.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-slack']}] if matrix_mx_puppet_slack_enabled else [])
     +
     ([{'name': 'matrix-mx-puppet-steam.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-steam']}] if matrix_mx_puppet_steam_enabled else [])
-    +
-    ([{'name': 'matrix-mx-puppet-twitter.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-twitter']}] if matrix_mx_puppet_twitter_enabled else [])
     +
     ([{'name': 'matrix-postmoogle.service', 'priority': 2200, 'groups': ['matrix', 'bridges', 'postmoogle']}] if matrix_postmoogle_enabled else [])
     +
@@ -2377,69 +2371,6 @@ matrix_mx_puppet_slack_database_password: "{{ '%s' | format(matrix_homeserver_ge
 
 ######################################################################
 #
-# matrix-bridge-mx-puppet-twitter
-#
-######################################################################
-
-# We don't enable bridges by default.
-matrix_mx_puppet_twitter_enabled: false
-
-matrix_mx_puppet_twitter_hostname: "{{ matrix_server_fqn_matrix }}"
-
-matrix_mx_puppet_twitter_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_twitter_database_hostname == postgres_connection_hostname) else [])
-  }}
-
-matrix_mx_puppet_twitter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_twitter_docker_image_registry_prefix_upstream_default }}"
-
-matrix_mx_puppet_twitter_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
-
-matrix_mx_puppet_twitter_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '' ~ matrix_mx_puppet_twitter_appservice_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
-
-matrix_mx_puppet_twitter_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_mx_puppet_twitter_container_additional_networks_auto: |-
-  {{
-    (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([postgres_container_network] if (postgres_enabled and matrix_mx_puppet_twitter_database_hostname == postgres_connection_hostname and matrix_mx_puppet_twitter_container_network != postgres_container_network) else [])
-      +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_mx_puppet_twitter_container_labels_traefik_enabled) else [])
-    ) | unique
-  }}
-
-matrix_mx_puppet_twitter_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_mx_puppet_twitter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mx_puppet_twitter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_mx_puppet_twitter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
-matrix_mx_puppet_twitter_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxtwt.as.tok', rounds=655555) | to_uuid }}"
-
-matrix_mx_puppet_twitter_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mx_puppet_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxtwt.hs.tok', rounds=655555) | to_uuid }}"
-
-matrix_mx_puppet_twitter_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
-
-matrix_mx_puppet_twitter_presence_enabled: "{{ matrix_homeserver_implementation != 'synapse' or matrix_synapse_presence_enabled }}"
-
-# Postgres is the default, except if not using internal Postgres server
-matrix_mx_puppet_twitter_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
-matrix_mx_puppet_twitter_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mx_puppet_twitter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.twitter.db', rounds=655555) | to_uuid }}"
-
-######################################################################
-#
-# /matrix-bridge-mx-puppet-twitter
-#
-######################################################################
-
-
-######################################################################
-#
 # matrix-bridge-mx-puppet-instagram
 #
 ######################################################################
@@ -4393,12 +4324,6 @@ postgres_managed_databases_auto: |
     }] if (matrix_mx_puppet_slack_enabled and matrix_mx_puppet_slack_database_engine == 'postgres' and matrix_mx_puppet_slack_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_mx_puppet_twitter_database_name,
-      'username': matrix_mx_puppet_twitter_database_username,
-      'password': matrix_mx_puppet_twitter_database_password,
-    }] if (matrix_mx_puppet_twitter_enabled and matrix_mx_puppet_twitter_database_engine == 'postgres' and matrix_mx_puppet_twitter_database_hostname == postgres_connection_hostname) else [])
-    +
-    ([{
       'name': matrix_mx_puppet_instagram_database_name,
       'username': matrix_mx_puppet_instagram_database_username,
       'password': matrix_mx_puppet_instagram_database_password,
@@ -5325,11 +5250,6 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     ([
       '^@_steampuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_mx_puppet_steam_enabled else [])
-    +
-    ([
-      '^@'+(matrix_mx_puppet_twitter_bot_localpart | default('') | regex_escape)+':'+ (matrix_domain | regex_escape)+'$',
-      '^@'+(matrix_mx_puppet_twitter_namespace_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_mx_puppet_twitter_enabled else [])
     +
     ([
       '^@smsbot:'+(matrix_domain | regex_escape)+'$',
