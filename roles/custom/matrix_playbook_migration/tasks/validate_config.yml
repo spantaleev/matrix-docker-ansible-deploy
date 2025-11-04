@@ -558,3 +558,15 @@
 
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_email2matrix_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_email2matrix_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report go-skype-bridge variables
+  ansible.builtin.fail:
+    msg: |-
+      The go-skype-bridge was completely removed from the playbook in November 2025, as Skype has been discontinued since May 2025.
+
+      Please remove all `matrix_go_skype_bridge_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-go-skype-bridge.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | length > 0"

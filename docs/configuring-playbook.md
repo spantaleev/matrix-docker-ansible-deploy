@@ -188,8 +188,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md)
 
-- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md)
-
 - [Setting up Postmoogle email bridging](configuring-playbook-bridge-postmoogle.md)
 
 - [Setting up Matrix SMS bridging](configuring-playbook-bridge-matrix-bridge-sms.md)
@@ -280,6 +278,8 @@ Various services that don't fit any other categories.
 - [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (removed; the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-postmoogle.md))
 
 - [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (unmaintained; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md))
+
+- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md) (removed; Skype has been discontinued since May 2025)
 
 - [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bot-baibot.md))
 
