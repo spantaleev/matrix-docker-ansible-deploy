@@ -25,9 +25,14 @@ To enable the Zulip bridge, add the following configuration to your `inventory/h
 ```yaml
 matrix_zulip_bridge_enabled: true
 
-# Setting the owner is optional as the first local user to DM `@zulipbridge:example.com` will be made the owner.
-# If you are not using a local user you must set it as otherwise you can't DM it at all.
-matrix_zulip_bridge_owner: "@alice:{{ matrix_domain }}"
+# Uncomment to add one or more admins to this bridge:
+#
+# matrix_zulip_bridge_owner:
+#  - '@yourAdminAccount:{{ matrix_domain }}'
+#
+# … unless you've made yourself an admin of all bots/bridges like this:
+#
+# matrix_admin: '@yourAdminAccount:{{ matrix_domain }}'
 ```
 
 ### Adjusting the Zulip bridge URL (optional)
