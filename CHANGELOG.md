@@ -1,28 +1,22 @@
-# 2025-11-04
+# 2025-11-05
 
-## The MX Puppet Discord bridge has been removed from the playbook
+## The MX Puppet bridges for Discord, Instagram, Slack, and Twitter have been removed from the playbook
 
-The [mx-puppet-discord](./docs/configuring-playbook-bridge-mx-puppet-discord.md) bridge has been removed from the playbook, as it has been unmaintained for a long time more than several years and does not support important features like authenticated media. See [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3867) for the context.
+The MX Puppet bridges for Discord, Instagram, Slack, and Twitter have been removed from the playbook, as they have been unmaintained for more than several years and do not support important features like authenticated media. See [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3867) for the context.
 
-The playbook will let you know if you're using any `matrix_mx_puppet_discord_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mx-puppet-discord.md#uninstalling-the-bridge-manually).
+The playbook will let you know if you're using any variables for those bridges:
 
-## The MX Puppet Instagram bridge has been removed from the playbook
+- `matrix_mx_puppet_discord_*`
+- `matrix_mx_puppet_instagram_*`
+- `matrix_mx_puppet_slack_*`
+- `matrix_mx_puppet_twitter_*`
 
-The [mx-puppet-instagram](./docs/configuring-playbook-bridge-mx-puppet-instagram.md) bridge has been removed from the playbook, as it has been unmaintained for a long time more than several years and does not support important features like authenticated media. See [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3867) for the context.
+You'll need to remove them from `vars.yml` and potentially uninstall them manually. Consult pages below for details:
 
-The playbook will let you know if you're using any `matrix_mx_puppet_instagram_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mx-puppet-instagram.md#uninstalling-the-bridge-manually).
-
-## The MX Puppet Slack bridge has been removed from the playbook
-
-The [mx-puppet-slack](./docs/configuring-playbook-bridge-mx-puppet-slack.md) bridge has been removed from the playbook, as it has been unmaintained for a long time more than several years and does not support important features like authenticated media. See [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3867) for the context.
-
-The playbook will let you know if you're using any `matrix_mx_puppet_slack_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mx-puppet-slack.md#uninstalling-the-bridge-manually).
-
-## The MX Puppet Twitter bridge has been removed from the playbook
-
-The [mx-puppet-twitter](./docs/configuring-playbook-bridge-mx-puppet-twitter.md) bridge has been removed from the playbook, as it has been unmaintained for a long time more than several years and does not support important features like authenticated media. See [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3867) for the context.
-
-The playbook will let you know if you're using any `matrix_mx_puppet_twitter_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mx-puppet-twitter.md#uninstalling-the-bridge-manually).
+- [Instruction for MX Puppet Discord bridge](./docs/configuring-playbook-bridge-mx-puppet-discord.md#uninstalling-the-bridge-manually)
+- [Instruction for MX Puppet Instagram bridge](./docs/configuring-playbook-bridge-mx-puppet-instagram.md#uninstalling-the-bridge-manually)
+- [Instruction for MX Puppet Slack bridge](./docs/configuring-playbook-bridge-mx-puppet-slack.md#uninstalling-the-bridge-manually)
+- [Instruction for MX Puppet Twitter bridge](./docs/configuring-playbook-bridge-mx-puppet-twitter.md#uninstalling-the-bridge-manually)
 
 # 2025-11-04
 
