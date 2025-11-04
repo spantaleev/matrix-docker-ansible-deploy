@@ -146,8 +146,6 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mautrix_wsproxy_config_path + '/imessage-registration.yaml,dst=/matrix-mautrix-imessage-registration.yaml,ro'] if matrix_mautrix_wsproxy_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_mx_puppet_discord_config_path + '/registration.yaml,dst=/matrix-mx-puppet-discord-registration.yaml,ro'] if matrix_mx_puppet_discord_enabled else [])
-    +
     (['--mount type=bind,src=' + matrix_mx_puppet_groupme_config_path + '/registration.yaml,dst=/matrix-mx-puppet-groupme-registration.yaml,ro'] if matrix_mx_puppet_groupme_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mx_puppet_instagram_config_path + '/registration.yaml,dst=/matrix-mx-puppet-instagram-registration.yaml,ro'] if matrix_mx_puppet_instagram_enabled else [])
@@ -216,8 +214,6 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-mautrix-androidsms-registration.yaml'] if matrix_mautrix_wsproxy_enabled else [])
     +
     (['/matrix-mautrix-imessage-registration.yaml'] if matrix_mautrix_wsproxy_enabled else [])
-    +
-    (['/matrix-mx-puppet-discord-registration.yaml'] if matrix_mx_puppet_discord_enabled else [])
     +
     (['/matrix-mx-puppet-groupme-registration.yaml'] if matrix_mx_puppet_groupme_enabled else [])
     +
@@ -358,8 +354,6 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-mautrix-wsproxy.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-wsproxy']}] if matrix_mautrix_wsproxy_enabled else [])
     +
     ([{'name': 'matrix-mautrix-wsproxy-syncproxy.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-wsproxy-syncproxy']}] if matrix_mautrix_wsproxy_enabled else [])
-    +
-    ([{'name': 'matrix-mx-puppet-discord.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-discord']}] if matrix_mx_puppet_discord_enabled else [])
     +
     ([{'name': 'matrix-mx-puppet-groupme.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mx-puppet-groupme']}] if matrix_mx_puppet_groupme_enabled else [])
     +
@@ -2422,57 +2416,6 @@ matrix_mx_puppet_instagram_database_password: "{{ '%s' | format(matrix_homeserve
 
 ######################################################################
 #
-# matrix-bridge-mx-puppet-discord
-#
-######################################################################
-
-# We don't enable bridges by default.
-matrix_mx_puppet_discord_enabled: false
-
-matrix_mx_puppet_discord_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mx_puppet_discord_database_hostname == postgres_connection_hostname) else [])
-  }}
-
-matrix_mx_puppet_discord_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mx_puppet_discord_docker_image_registry_prefix_upstream_default }}"
-
-matrix_mx_puppet_discord_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
-
-matrix_mx_puppet_discord_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_mx_puppet_discord_container_additional_networks_auto: |-
-  {{
-    (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([postgres_container_network] if (postgres_enabled and matrix_mx_puppet_discord_database_hostname == postgres_connection_hostname and matrix_mx_puppet_discord_container_network != postgres_container_network) else [])
-    ) | unique
-  }}
-
-matrix_mx_puppet_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxdsc.as.tok', rounds=655555) | to_uuid }}"
-
-matrix_mx_puppet_discord_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mx_puppet_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxdsc.hs.tok', rounds=655555) | to_uuid }}"
-
-matrix_mx_puppet_discord_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
-
-matrix_mx_puppet_discord_presence_enabled: "{{ matrix_homeserver_implementation != 'synapse' or matrix_synapse_presence_enabled }}"
-
-# Postgres is the default, except if not using internal Postgres server
-matrix_mx_puppet_discord_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
-matrix_mx_puppet_discord_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mx_puppet_discord_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.dsc.db', rounds=655555) | to_uuid }}"
-
-######################################################################
-#
-# /matrix-bridge-mx-puppet-discord
-#
-######################################################################
-
-######################################################################
-#
 # matrix-bridge-mx-puppet-steam
 #
 ######################################################################
@@ -4330,12 +4273,6 @@ postgres_managed_databases_auto: |
     }] if (matrix_mx_puppet_instagram_enabled and matrix_mx_puppet_instagram_database_engine == 'postgres' and matrix_mx_puppet_instagram_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_mx_puppet_discord_database_name,
-      'username': matrix_mx_puppet_discord_database_username,
-      'password': matrix_mx_puppet_discord_database_password,
-    }] if (matrix_mx_puppet_discord_enabled and matrix_mx_puppet_discord_database_engine == 'postgres' and matrix_mx_puppet_discord_database_hostname == postgres_connection_hostname) else [])
-    +
-    ([{
       'name': matrix_mx_puppet_steam_database_name,
       'username': matrix_mx_puppet_steam_database_username,
       'password': matrix_mx_puppet_steam_database_password,
@@ -5230,10 +5167,6 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
       '^@'+(matrix_mautrix_imessage_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
       '^@imessage_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_mautrix_wsproxy_enabled else [])
-    +
-    ([
-      '^@_discordpuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_mx_puppet_discord_enabled else [])
     +
     ([
       '^@_groupmepuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',

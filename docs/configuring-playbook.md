@@ -178,8 +178,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up MX Puppet Instagram bridging](configuring-playbook-bridge-mx-puppet-instagram.md)
 
-- [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md)
-
 - [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md)
 
 - [Setting up Steam bridging](configuring-playbook-bridge-steam.md)
@@ -284,6 +282,8 @@ Various services that don't fit any other categories.
 - [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-messenger](configuring-playbook-bridge-mautrix-meta-messenger.md))
 
 - [Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-instagram](configuring-playbook-bridge-mautrix-meta-instagram.md))
+
+- [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md))
 
 - [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (removed; this component has been broken for a long time, so it has been removed from the playbook. Consider [setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md))
 
