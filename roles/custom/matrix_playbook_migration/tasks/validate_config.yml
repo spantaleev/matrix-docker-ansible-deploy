@@ -547,6 +547,18 @@
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mautrix_hangouts_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_mautrix_hangouts_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report mx-puppet-discord variables
+  ansible.builtin.fail:
+    msg: |-
+      The MX Puppet Discord bridge was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mx_puppet_discord_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mx-puppet-discord.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mx_puppet_discord_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_discord_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report mx-puppet-twitter variables
   ansible.builtin.fail:
     msg: |-

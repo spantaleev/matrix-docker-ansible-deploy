@@ -137,7 +137,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [Heisenbridge](https://github.com/hifi/heisenbridge) | ❌ | Bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-heisenbridge.md) |
 | [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) | ❌ | Bridge to [Slack](https://slack.com) | [Link](docs/configuring-playbook-bridge-mx-puppet-slack.md) |
 | [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) | ❌ | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-instagram.md) |
-| [mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) | ❌ | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-discord.md) |
 | [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) | ❌ | Bridge to [GroupMe](https://groupme.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-groupme.md) |
 | [mx-puppet-steam](https://codeberg.org/icewind/mx-puppet-steam) | ❌ | Bridge to [Steam](https://steamapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-steam.md) |
 | [Postmoogle](https://github.com/etkecc/postmoogle) | ❌ | Email to Matrix bridge | [Link](docs/configuring-playbook-bridge-postmoogle.md) |
