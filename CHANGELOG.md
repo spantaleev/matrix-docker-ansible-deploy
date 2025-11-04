@@ -6,6 +6,12 @@ The [mx-puppet-discord](./docs/configuring-playbook-bridge-mx-puppet-discord.md)
 
 The playbook will let you know if you're using any `matrix_mx_puppet_discord_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mx-puppet-discord.md#uninstalling-the-bridge-manually).
 
+## The MX Puppet Instagram bridge has been removed from the playbook
+
+The [mx-puppet-instagram](./docs/configuring-playbook-bridge-mx-puppet-instagram.md) bridge has been removed from the playbook, as it has been unmaintained for a long time more than several years and does not support important features like authenticated media. See [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3867) for the context.
+
+The playbook will let you know if you're using any `matrix_mx_puppet_instagram_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mx-puppet-instagram.md#uninstalling-the-bridge-manually).
+
 ## The MX Puppet Twitter bridge has been removed from the playbook
 
 The [mx-puppet-twitter](./docs/configuring-playbook-bridge-mx-puppet-twitter.md) bridge has been removed from the playbook, as it has been unmaintained for a long time more than several years and does not support important features like authenticated media. See [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3867) for the context.
