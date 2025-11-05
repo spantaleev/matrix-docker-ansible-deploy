@@ -18,7 +18,7 @@ matrix_mautrix_gmessages_container_image_self_build_repo: "https://github.com/ma
 matrix_mautrix_gmessages_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_gmessages_version == 'latest' else matrix_mautrix_gmessages_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/gmessages
-matrix_mautrix_gmessages_version: v0.7.0
+matrix_mautrix_gmessages_version: v0.2510.0
 
 # See: https://mau.dev/mautrix/gmessages/container_registry
 matrix_mautrix_gmessages_docker_image: "{{ matrix_mautrix_gmessages_docker_image_registry_prefix }}mautrix/gmessages:{{ matrix_mautrix_gmessages_version }}"
@@ -40,6 +40,7 @@ matrix_mautrix_gmessages_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_gmessages_appservice_address: "http://matrix-mautrix-gmessages:8080"
 
 matrix_mautrix_gmessages_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+matrix_mautrix_gmessages_self_sign_enabled: "{{ matrix_bridges_self_sign_enabled }}"
 
 matrix_mautrix_gmessages_backfill_enabled: true
 matrix_mautrix_gmessages_backfill_max_initial_messages: 50
@@ -167,7 +168,7 @@ matrix_mautrix_gmessages_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix
 # For compatibility with the older Gmessages bridge, you may wish to set the pickle key to: "go.mau.fi/mautrix-gmessages"
 matrix_mautrix_gmessages_bridge_encryption_pickle_key: mautrix.bridge.e2ee
 
-matrix_mautrix_gmessages_network_displayname_template: "{% raw %}{{or .FullName .PhoneNumber}}{% endraw %}"
+matrix_mautrix_gmessages_network_displayname_template: "{% raw %}{{or .FullName .PhoneNumber}} (GMessages){% endraw %}"
 matrix_mautrix_gmessages_appservice_username_template: "{% raw %}gmessages_{{.}}{% endraw %}"
 
 matrix_mautrix_gmessages_public_media_signing_key: ''

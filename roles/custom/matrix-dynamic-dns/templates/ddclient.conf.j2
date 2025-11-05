@@ -22,6 +22,18 @@ web-skip='{{ matrix_dynamic_dns_web_skip }}'
 {% for dynamic_dns_domain_configuration in matrix_dynamic_dns_domain_configurations %}
 protocol={{ dynamic_dns_domain_configuration.protocol }}
 
+{% if 'apikey' in dynamic_dns_domain_configuration %}
+apikey={{ dynamic_dns_domain_configuration.apikey }}
+{% endif %}
+
+{% if 'secretapikey' in dynamic_dns_domain_configuration %}
+secretapikey={{ dynamic_dns_domain_configuration.secretapikey }}
+{% endif %}
+
+{% if 'rootdomain' in dynamic_dns_domain_configuration %}
+root-domain={{ dynamic_dns_domain_configuration.rootdomain }}
+{% endif %}
+
 {% if 'provider' in dynamic_dns_domain_configuration %}
 server={{ dynamic_dns_domain_configuration.provider }}
 {% endif %}

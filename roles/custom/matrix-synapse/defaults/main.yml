@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.139.0
+matrix_synapse_version: v1.141.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -47,10 +47,6 @@ matrix_synapse_container_image_customizations_enabled: |-
 # Controls whether custom build steps will be added to the Dockerfile for installing s3-storage-provider.
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_s3_storage_provider_version`.
 matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"
-
-# Controls whether to install an old version of boto3 and botocore, to work around the following issue:
-# https://github.com/aws/aws-cli/issues/9214
-matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled: true
 
 # Controls whether custom build steps will be added to the Dockerfile for installing auto-accept-invite module.
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_auto_accept_invite_version`.
@@ -369,7 +365,7 @@ matrix_synapse_goofys_systemd_required_services_list_custom: []
 # This can be set to 0 to remove the delay.
 matrix_synapse_systemd_service_post_start_delay_seconds: 10
 
-matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.12/site-packages"
+matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.13/site-packages"
 
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
@@ -823,6 +819,11 @@ matrix_synapse_url_preview_ip_range_blacklist:
 # List of IP address CIDR ranges that the URL preview spider is allowed to access even if they are specified in `matrix_synapse_url_preview_ip_range_blacklist`.
 matrix_synapse_url_preview_ip_range_whitelist: []
 
+# List of URL matches that the URL preview spider is denied from accessing.
+# See https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#url_preview_url_blacklist
+# for more details.
+matrix_synapse_url_preview_url_blacklist: []
+
 # A list of values for the Accept-Language HTTP header used when downloading webpages during URL preview generation
 matrix_url_preview_accept_language: ['en-US', 'en']
 
@@ -1244,13 +1245,6 @@ matrix_synapse_email_invite_client_location: "https://app.element.io"
 # - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
 matrix_synapse_experimental_features_msc2409_to_device_messages_enabled: false
 
-# Controls whether to enable the "device masquerading" for encrypted appservices experimental feature.
-#
-# See:
-# - https://github.com/matrix-org/matrix-spec-proposals/pull/3202
-# - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
-matrix_synapse_experimental_features_msc3202_device_masquerading_enabled: false
-
 # Controls whether to enable the "transaction extensions" for encrypted appservices experimental feature.
 #
 # See:
@@ -1314,13 +1308,6 @@ matrix_synapse_experimental_features_msc4140_enabled: false
 #
 # See `matrix_synapse_experimental_features_msc4140_enabled`.
 matrix_synapse_max_event_delay_duration: 24h
-
-# Controls whether to enable the MSC4133 experimental feature (Custom profile fields).
-#
-# This allows clients to set custom profile fields (e.g. User Time Zone in Element Web)
-#
-# See https://github.com/matrix-org/matrix-spec-proposals/pull/4133
-matrix_synapse_experimental_features_msc4133_enabled: false
 
 # Controls whether to enable the MSC4222 experimental feature (adding `state_after` to sync v2).
 #
@@ -1471,7 +1458,8 @@ matrix_synapse_ext_encryption_config_yaml: |
 # Installing it requires building a customized Docker image for Synapse (see `matrix_synapse_container_image_customizations_enabled`).
 # Enabling this will enable customizations and inject the appropriate Dockerfile clauses for installing synapse-s3-storage-provider.
 matrix_synapse_ext_synapse_s3_storage_provider_enabled: false
-matrix_synapse_ext_synapse_s3_storage_provider_version: 1.5.0
+# renovate: datasource=github-releases depName=matrix-org/synapse-s3-storage-provider
+matrix_synapse_ext_synapse_s3_storage_provider_version: 1.6.0
 # Controls whether media from this (local) server is stored in s3-storage-provider
 matrix_synapse_ext_synapse_s3_storage_provider_store_local: true
 # Controls whether media from remote servers is stored in s3-storage-provider
@@ -1543,6 +1531,17 @@ matrix_s3_media_store_path: "{{ matrix_synapse_media_store_path }}"
 
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_synapse_self_check_validate_certificates: true
+
+# Controls whether server notices are enabled.
+matrix_synapse_server_notices_enabled: false
+# The localpart of the user that will send server notices, this user will be created if it doesn't exist.
+matrix_synapse_server_notices_system_mxid_localpart: "notices"
+# The display name of the user that will send server notices.
+matrix_synapse_server_notices_system_mxid_display_name: "Server Notices"
+# Optional avatar URL for the user that will send server notices, example: mxc://example.com/abc123
+matrix_synapse_server_notices_system_mxid_avatar_url: ~
+# The name of the room where server notices will be sent, this room will be created if it doesn't exist.
+matrix_synapse_server_notices_room_name: "Server Notices"
 
 # Controls whether searching the public room list is enabled.
 matrix_synapse_enable_room_list_search: true

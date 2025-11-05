@@ -11,9 +11,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 **Note**: This bridge has been deprecated in favor of the [matrix-steam-bridge](https://github.com/jasonlaguidice/matrix-steam-bridge) bridge for Steam, which can be [installed using this playbook](configuring-playbook-bridge-steam.md). Consider using that bridge instead of this one.
 
-The playbook can install and configure [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) for you.
+The playbook can install and configure [mx-puppet-steam](https://codeberg.org/icewind/mx-puppet-steam) for you.
 
-See the project's [documentation](https://github.com/icewind1991/mx-puppet-steam/blob/master/README.md) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://codeberg.org/icewind/mx-puppet-steam/blob/master/README.md) to learn what it does and why it might be useful to you.
 
 ## Adjusting the playbook configuration
 
@@ -40,7 +40,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 To use the bridge, you need to start a chat with `Steam Puppet Bridge` with the handle `@_steampuppet_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Three authentication methods are available, Legacy Token, OAuth and xoxc token. See mx-puppet-steam [documentation](https://github.com/icewind1991/mx-puppet-steam) for more information about how to configure the bridge.
+Three authentication methods are available, Legacy Token, OAuth and xoxc token. See mx-puppet-steam [documentation](https://codeberg.org/icewind/mx-puppet-steam) for more information about how to configure the bridge.
 
 Once logged in, send `list` to the bot user to list the available rooms.
 

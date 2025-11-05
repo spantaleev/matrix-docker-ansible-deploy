@@ -22,7 +22,7 @@ matrix_authentication_service_container_repo_version: "{{ 'main' if matrix_authe
 matrix_authentication_service_container_src_files_path: "{{ matrix_base_data_path }}/matrix-authentication-service/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/matrix-authentication-service
-matrix_authentication_service_version: 1.3.0
+matrix_authentication_service_version: 1.5.0
 matrix_authentication_service_container_image_registry_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else matrix_authentication_service_container_image_registry_prefix_upstream }}"
 matrix_authentication_service_container_image_registry_prefix_upstream: "{{ matrix_authentication_service_container_image_registry_prefix_upstream_default }}"
 matrix_authentication_service_container_image_registry_prefix_upstream_default: "ghcr.io/"
@@ -219,6 +219,11 @@ matrix_authentication_service_config_account_displayname_change_allowed: true
 # This has no effect if password login is disabled.
 matrix_authentication_service_config_account_password_registration_enabled: false
 
+# Controls the `account.password_registration_email_required` configuration setting.
+#
+# Whether self-service password registrations require a valid email.
+matrix_authentication_service_config_account_password_registration_email_required: true
+
 # Controls the `account.password_change_allowed` configuration setting.
 #
 # Whether users are allowed to change their passwords.
@@ -230,6 +235,24 @@ matrix_authentication_service_config_account_password_change_allowed: true
 # Whether email-based password recovery is enabled.
 # This has no effect if password login is disabled.
 matrix_authentication_service_config_account_password_recovery_enabled: false
+
+# Controls the `account.account_deactivation_allowed` configuration setting.
+#
+# Whether users are allowed to delete their own account
+matrix_authentication_service_config_account_account_deactivation_allowed: true
+
+# Controls the `account.login_with_email_allowed` configuration setting.
+#
+# Whether users can log in with their email address.
+# This has no effect if password login is disabled.
+matrix_authentication_service_config_account_login_with_email_allowed: false
+
+# Controls the `account.registration_token_required` configuration setting.
+#
+# Whether registration tokens are required for password registrations.
+# When enabled, users must provide a valid registration token during password
+# registration. This has no effect if password registration is disabled.
+matrix_authentication_service_config_account_registration_token_required: false
 
 ########################################################################################
 #                                                                                      #
@@ -327,7 +350,7 @@ matrix_authentication_service_config_http_listener_web_resources_default: |-
       {'name': 'assets'},
     ]
     +
-    [{'name': 'adminapi'} if matrix_authentication_service_admin_api_enabled else []]
+    ([{'name': 'adminapi'}] if matrix_authentication_service_admin_api_enabled else [])
   }}
 matrix_authentication_service_config_http_listener_web_resources_auto: []
 matrix_authentication_service_config_http_listener_web_resources_custom: []

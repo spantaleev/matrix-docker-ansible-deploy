@@ -22,7 +22,7 @@ matrix_mautrix_twitter_container_image_self_build_repo: "https://github.com/maut
 matrix_mautrix_twitter_container_image_self_build_repo_version: "{{ 'master' if matrix_mautrix_twitter_version == 'latest' else matrix_mautrix_twitter_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/twitter
-matrix_mautrix_twitter_version: v0.5.0
+matrix_mautrix_twitter_version: v0.2510.0
 # See: https://mau.dev/tulir/mautrix-twitter/container_registry
 matrix_mautrix_twitter_docker_image: "{{ matrix_mautrix_twitter_docker_image_registry_prefix }}mautrix/twitter:{{ matrix_mautrix_twitter_version }}"
 matrix_mautrix_twitter_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_twitter_container_image_self_build else matrix_mautrix_twitter_docker_image_registry_prefix_upstream }}"
@@ -43,6 +43,7 @@ matrix_mautrix_twitter_homeserver_domain: '{{ matrix_domain }}'
 matrix_mautrix_twitter_appservice_address: 'http://matrix-mautrix-twitter:29327'
 
 matrix_mautrix_twitter_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+matrix_mautrix_twitter_self_sign_enabled: "{{ matrix_bridges_self_sign_enabled }}"
 
 # A public address that external services can use to reach this appservice.
 matrix_mautrix_twitter_appservice_public_address: ''
@@ -50,7 +51,7 @@ matrix_mautrix_twitter_appservice_public_address: ''
 # Displayname template for Twitter users.
 # {{ .DisplayName }} is replaced with the display name of the Twitter user.
 # {{ .Username }} is replaced with the username of the Twitter user.
-matrix_mautrix_twitter_network_displayname_template: "{% raw %}{{ .DisplayName }}{% endraw %} (Twitter)"
+matrix_mautrix_twitter_network_displayname_template: "{% raw %}{{ .DisplayName }} (Twitter){% endraw %}"
 
 matrix_mautrix_twitter_bridge_command_prefix: "!tw"
 

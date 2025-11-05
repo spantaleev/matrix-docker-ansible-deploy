@@ -2,9 +2,6 @@
 # Network-specific config options
 network:
     # Displayname template for SMS users.
-    # {% raw %}{{.FullName}}{% endraw %} - Full name provided by the phone
-    # {% raw %}{{.FirstName}}{% endraw %} - First name provided by the phone
-    # {% raw %}{{.PhoneNumber}}{% endraw %} - Formatted phone number provided by the phone
     displayname_template: {{ matrix_mautrix_gmessages_network_displayname_template | to_json }}
     # Settings for how the bridge appears to the phone.
     device_meta:
@@ -359,6 +356,9 @@ encryption:
     # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
     # Changing this option requires updating the appservice registration file.
     msc4190: {{ matrix_mautrix_gmessages_msc4190_enabled | to_json }}
+    # Whether to enable self-signing for bridges (Only the bridge bot uses this for now)
+    # Requires msc4190 to replace keys on reset
+    self_sign: {{ matrix_mautrix_gmessages_self_sign_enabled | to_json }}
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
     allow_key_sharing: {{ matrix_mautrix_gmessages_bridge_encryption_key_sharing_allow | to_json }}

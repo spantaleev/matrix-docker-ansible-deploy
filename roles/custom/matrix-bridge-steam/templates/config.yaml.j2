@@ -7,10 +7,6 @@ network:
     get_proxy_url: null
 
     # Displayname template for Steam users.
-    # {% raw %}
-    # {{ .DisplayName }} is replaced with the display name of the Steam user.
-    # {{ .Username }} is replaced with the username of the Steam user.
-    # {% endraw %}
     displayname_template: {{ matrix_steam_bridge_network_displayname_template | to_json }}
 
     # Maximum number of conversations to sync on startup
@@ -20,6 +16,32 @@ network:
     steam_bridge_address: localhost:50051
     steam_bridge_auto_start: true
     steam_bridge_startup_timeout: 30
+
+    # Presence synchronization settings
+    presence:
+        # Enable presence tracking from Matrix to Steam
+        # When enabled, your Steam status will automatically change based on
+        # your Matrix presence and activity
+        enabled: {{ matrix_steam_bridge_network_presence_enabled | to_json }}
+
+        # Inactivity timeout in minutes before changing Steam status
+        # This is used as a fallback when your Matrix server doesn't support
+        # presence tracking. After this many minutes without Matrix activity,
+        # your Steam status will change (see inactivity_status below)
+        # Set to 0 to disable automatic away
+        inactivity_timeout: 15
+
+        # Status to set after inactivity timeout
+        # Valid values: "snooze" (appear away/idle) or "invisible" (appear offline)
+        inactivity_status: {{ matrix_steam_bridge_network_presence_inactivity_status | to_json }}
+        # Whether typing events in Matrix should reset the inactivity timer
+        # When true, typing will count as activity and keep you marked as online
+        typing_resets_presence: true
+
+        # Whether sending read receipts in Matrix should reset the inactivity timer
+        # When true, reading messages will count as activity and keep you marked as online
+        read_receipts_reset_presence: false
+
 
 # Config options that affect the central bridge module.
 bridge:
@@ -380,6 +402,9 @@ encryption:
     # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
     # Changing this option requires updating the appservice registration file.
     msc4190: {{ matrix_steam_bridge_msc4190_enabled | to_json }}
+    # Whether to enable self-signing for bridges (Only the bridge bot uses this for now)
+    # Requires msc4190 to replace keys on reset
+    self_sign: {{ matrix_steam_bridge_self_sign_enabled | to_json }}
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
     allow_key_sharing: {{ matrix_steam_bridge_bridge_encryption_key_sharing_allow | to_json }}

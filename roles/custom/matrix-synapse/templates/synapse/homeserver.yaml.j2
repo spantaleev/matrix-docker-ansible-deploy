@@ -1178,6 +1178,9 @@ url_preview_ip_range_whitelist: {{ matrix_synapse_url_preview_ip_range_whitelist
 #
 #  # blacklist any URL with a literal IPv4 address
 #  - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+{% if matrix_synapse_url_preview_url_blacklist | length > 0 %}
+url_preview_url_blacklist: {{ matrix_synapse_url_preview_url_blacklist | to_json }}
+{% endif %}
 
 # The largest allowed URL preview spidering size in bytes
 #
@@ -2731,6 +2734,15 @@ stats:
 #  system_mxid_display_name: "Server Notices"
 #  system_mxid_avatar_url: "mxc://example.com/oumMVlgDnLYFaPVkExemNVVZ"
 #  room_name: "Server Notices"
+{% if matrix_synapse_server_notices_enabled %}
+server_notices:
+  system_mxid_localpart: {{ matrix_synapse_server_notices_system_mxid_localpart | string | to_json }}
+  system_mxid_display_name: {{ matrix_synapse_server_notices_system_mxid_display_name | string | to_json }}
+{% if matrix_synapse_server_notices_system_mxid_avatar_url %}
+  system_mxid_avatar_url: {{ matrix_synapse_server_notices_system_mxid_avatar_url | string | to_json }}
+{% endif %}
+  room_name: {{ matrix_synapse_server_notices_room_name | string | to_json }}
+{% endif %}
 
 
 
@@ -2986,9 +2998,6 @@ experimental_features:
   {% if matrix_synapse_experimental_features_msc2409_to_device_messages_enabled %}
   msc2409_to_device_messages_enabled: true
   {% endif %}
-  {% if matrix_synapse_experimental_features_msc3202_device_masquerading_enabled %}
-  msc3202_device_masquerading: true
-  {% endif %}
   {% if matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled %}
   msc3202_transaction_extensions: true
   {% endif %}
@@ -2997,9 +3006,6 @@ experimental_features:
   {% endif %}
   {% if matrix_synapse_experimental_features_msc4108_enabled %}
   msc4108_enabled: true
-  {% endif %}
-  {% if matrix_synapse_experimental_features_msc4133_enabled %}
-  msc4133_enabled: true
   {% endif %}
   {% if matrix_synapse_experimental_features_msc4140_enabled %}
   msc4140_enabled: true
