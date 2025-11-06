@@ -174,21 +174,11 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) — a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira).
 
-- [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md)
-
-- [Setting up MX Puppet Instagram bridging](configuring-playbook-bridge-mx-puppet-instagram.md)
-
-- [Setting up MX Puppet Twitter bridging](configuring-playbook-bridge-mx-puppet-twitter.md)
-
-- [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md)
-
 - [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md)
 
 - [Setting up Steam bridging](configuring-playbook-bridge-steam.md)
 
 - [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md)
-
-- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md)
 
 - [Setting up Postmoogle email bridging](configuring-playbook-bridge-postmoogle.md)
 
@@ -283,10 +273,20 @@ Various services that don't fit any other categories.
 
 - [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (unmaintained; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md))
 
+- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md) (removed; Skype has been discontinued since May 2025)
+
 - [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bot-baibot.md))
 
 - [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-messenger](configuring-playbook-bridge-mautrix-meta-messenger.md))
 
 - [Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-instagram](configuring-playbook-bridge-mautrix-meta-instagram.md))
 
+- [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md))
+
+- [Setting up MX Puppet Instagram bridging](configuring-playbook-bridge-mx-puppet-instagram.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md))
+
 - [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (removed; this component has been broken for a long time, so it has been removed from the playbook. Consider [setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md))
+
+- [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Slack bridging](configuring-playbook-bridge-mautrix-slack.md))
+
+- [Setting up MX Puppet Twitter bridging](configuring-playbook-bridge-mx-puppet-twitter.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Twitter bridging](configuring-playbook-bridge-mautrix-twitter.md))
