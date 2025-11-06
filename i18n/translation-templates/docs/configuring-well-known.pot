@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,238 +16,238 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-well-known.md:1
+#: ../../../docs/configuring-well-known.md:14
 msgid "Configuring Service Discovery via .well-known"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:3
+#: ../../../docs/configuring-well-known.md:16
 msgid "This documentation page explains how to configure Service discovery via `/.well-known/` files. Service discovery is a way for the Matrix network to discover where a Matrix server is."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:5
+#: ../../../docs/configuring-well-known.md:18
 msgid "Types of well-known service discovery mechanism"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:7
+#: ../../../docs/configuring-well-known.md:20
 msgid "There are 3 types of well-known service discovery mechanism that Matrix makes use of:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:9
+#: ../../../docs/configuring-well-known.md:22
 msgid "(important) **Federation Server discovery** (`/.well-known/matrix/server`) — assists other servers in the Matrix network with finding your server. With the default playbook configuration specified on the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), this is necessary for federation to work. Without a proper configuration, your server will effectively not be part of the Matrix network."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:11
+#: ../../../docs/configuring-well-known.md:24
 msgid "(less important) **Client Server discovery** (`/.well-known/matrix/client`) — assists programs that you use to connect to your server (e.g. Element Web), so that they can make it more convenient for you by automatically configuring the \"Homeserver URL\" and \"Identity Server URL\" addresses."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:13
+#: ../../../docs/configuring-well-known.md:26
 msgid "(optional) **Support service discovery** (`/.well-known/matrix/support`) — returns server admin contact and support page of the domain."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:15
+#: ../../../docs/configuring-well-known.md:28
 msgid "Federation Server Discovery"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:17
+#: ../../../docs/configuring-well-known.md:30
 msgid "All services created by this playbook are meant to be installed on their own server (such as `matrix.example.com`), instead of the base domain (`example.com`)."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:19
+#: ../../../docs/configuring-well-known.md:32
 msgid "As [per the Server-Server specification](https://matrix.org/docs/spec/server_server/r0.1.0.html#server-discovery), in order to use a short Matrix user ID like `@alice:example.com` instead of `@alice:matrix.example.com` while hosting services on a subdomain such as `matrix.example.com`, the Matrix network needs to be instructed of [server delegation](howto-server-delegation.md) / redirection."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:21
+#: ../../../docs/configuring-well-known.md:34
 msgid "For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:23
+#: ../../../docs/configuring-well-known.md:36
 msgid "If you set up the DNS SRV record for server delegation instead, take a look at this documentation for more information: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:25
+#: ../../../docs/configuring-well-known.md:38
 msgid "Client Server Discovery"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:27
+#: ../../../docs/configuring-well-known.md:40
 msgid "Client Server Service discovery lets various client programs which support it, to receive a full user ID (e.g. `@alice:example.com`) and determine where the Matrix server is automatically (e.g. `https://matrix.example.com`)."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:29
+#: ../../../docs/configuring-well-known.md:42
 msgid "This lets you (and your users) easily connect to your Matrix server without having to customize connection URLs. When using client programs that support it, you won't need to point them to `https://matrix.example.com` in Custom Server options manually anymore. The connection URL would be discovered automatically from your full username."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:31
+#: ../../../docs/configuring-well-known.md:44
 msgid "Without /.well-known/matrix/client, the client will make the wrong \"homeserver URL\" assumption (it will default to using https://example.com, and users will need to notice and adjust it manually (changing it to https://matrix.example.com)."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:33
+#: ../../../docs/configuring-well-known.md:46
 msgid "As [per the Client-Server specification](https://matrix.org/docs/spec/client_server/r0.4.0.html#server-discovery) Matrix does Client Server service discovery using a `/.well-known/matrix/client` file hosted on the base domain (e.g. `example.com`)."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:35
+#: ../../../docs/configuring-well-known.md:48
 msgid "However, this playbook installs your Matrix server on another domain (e.g. `matrix.example.com`) and not on the base domain (e.g. `example.com`), so it takes a little extra manual effort to set up the file."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:37
+#: ../../../docs/configuring-well-known.md:50
 msgid "Support Service Discovery (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:39
+#: ../../../docs/configuring-well-known.md:52
 msgid "[MSC 1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929), which was added to [Matrix Specification version v1.10](https://spec.matrix.org/v1.10/client-server-api/#getwell-knownmatrixsupport), specifies a way to add contact details of admins, as well as a link to a support page for users who are having issues with the service. Automated services may also index this information and use it for abuse reports, etc."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:41
+#: ../../../docs/configuring-well-known.md:54
 msgid "To enable it, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:62
+#: ../../../docs/configuring-well-known.md:75
 msgid "Installing well-known files on the base domain's server"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:64
+#: ../../../docs/configuring-well-known.md:77
 msgid "To implement the service discovery mechanisms, your base domain's server (e.g. `example.com`) needs to run an HTTPS-capable webserver."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:66
+#: ../../../docs/configuring-well-known.md:79
 msgid "Serving the base domain from the Matrix server via the playbook"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:68
+#: ../../../docs/configuring-well-known.md:81
 msgid "If you don't have a server for your base domain at all, you can use the Matrix server for this. If you don't need the base domain (e.g. `example.com`) for anything else (hosting a website, etc.), you can point it to the Matrix server's IP address and tell the playbook to configure it."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:70
+#: ../../../docs/configuring-well-known.md:83
 msgid "**This is the easiest way to set up well-known serving** — letting the playbook handle the whole base domain for you (including SSL certificates, etc.) and take care to serve the appropriate well-known files automatically."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:72
+#: ../../../docs/configuring-well-known.md:85
 msgid "If you decide to go this route, you don't need to read ahead in this document. Instead, go to [Serving the base domain](configuring-playbook-base-domain-serving.md) to learn how the playbook can help you set it up."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:74
+#: ../../../docs/configuring-well-known.md:87
 msgid "However, if you need to use the base domain for other things, this method is less suitable than the one explained below."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:76
+#: ../../../docs/configuring-well-known.md:89
 msgid "Manually installing well-known files on the base domain's server"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:78
+#: ../../../docs/configuring-well-known.md:91
 msgid "If you're managing the base domain by yourself somehow, you'll need to set up serving of some `/.well-known/matrix/*` files from it via HTTPS."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:80
+#: ../../../docs/configuring-well-known.md:93
 msgid "To make things easy for you to set up, this playbook generates and hosts a few well-known files on the Matrix domain's server. The files are generated at the `/matrix/static-files/public/.well-known/matrix/` path on the server and hosted at URLs like `https://matrix.example.com/.well-known/matrix/server` and `https://matrix.example.com/.well-known/matrix/client`, even though this is the wrong place to host them."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:82
+#: ../../../docs/configuring-well-known.md:95
 msgid "You have two options when it comes to installing the files on the base domain's server:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:84
+#: ../../../docs/configuring-well-known.md:97
 msgid "(Option 1): **Copying the files manually** to your base domain's server"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:86
+#: ../../../docs/configuring-well-known.md:99
 msgid "**Hint**: Option 2 is generally a better way to do this. Make sure to go with it, if possible."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:88
+#: ../../../docs/configuring-well-known.md:101
 msgid "All you need to do is:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:90
+#: ../../../docs/configuring-well-known.md:103
 msgid "copy `/.well-known/matrix/server` and `/.well-known/matrix/client` from the Matrix server (e.g. `matrix.example.com`) to your base domain's server (`example.com`). You can find these files in the `/matrix/static-files/.well-known/matrix` directory on the Matrix server. They are also accessible on URLs like this: `https://matrix.example.com/.well-known/matrix/server` (same for `client`)."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:92
+#: ../../../docs/configuring-well-known.md:105
 msgid "set up the server at your base domain (e.g. `example.com`) so that it adds an extra HTTP header when serving the `/.well-known/matrix/client` file. [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), the `Access-Control-Allow-Origin` header should be set with a value of `*`. If you don't do this step, web-based Matrix clients (like Element Web) may fail to work. Setting up headers for the `/.well-known/matrix/server` file is not necessary, as this file is only consumed by non-browsers, which don't care about CORS."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:94
+#: ../../../docs/configuring-well-known.md:107
 msgid "This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server. It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:96
+#: ../../../docs/configuring-well-known.md:109
 msgid "(Option 2): **Setting up reverse-proxying** of the well-known files from the base domain's server to the Matrix server"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:98
+#: ../../../docs/configuring-well-known.md:111
 msgid "This option is less fragile and generally better."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:100
-msgid "On the base domain's server (e.g. `example.com`), you can set up reverse-proxying, so that any access for the `/.well-known/matrix` location prefix is forwarded to the Matrix domain's server (e.g. `matrix.example.com`)."
+#: ../../../docs/configuring-well-known.md:113
+msgid "On the base domain's server (e.g. `example.com`), you can set up reverse-proxying (or simply a 302 redirect), so that any access for the `/.well-known/matrix` location prefix is forwarded to the Matrix domain's server (e.g. `matrix.example.com`)."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:102
+#: ../../../docs/configuring-well-known.md:115
 msgid "With this method, you **don't need** to add special HTTP headers for [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) reasons (like `Access-Control-Allow-Origin`), because your Matrix server (where requests ultimately go) will be configured by this playbook correctly."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:104
+#: ../../../docs/configuring-well-known.md:117
 msgid "**For nginx**, it would be something like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:121
+#: ../../../docs/configuring-well-known.md:134
 msgid "**For Apache2**, it would be something like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:135
+#: ../../../docs/configuring-well-known.md:148
 msgid "**For Caddy 2**, it would be something like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:145
+#: ../../../docs/configuring-well-known.md:158
 msgid "**For HAProxy**, it would be something like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:164
+#: ../../../docs/configuring-well-known.md:177
 msgid "**For Netlify**, configure a [redirect](https://docs.netlify.com/routing/redirects/) using a `_redirects` file in the [publish directory](https://docs.netlify.com/configure-builds/overview/#definitions) with contents like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:170
+#: ../../../docs/configuring-well-known.md:183
 msgid "**For AWS CloudFront**"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:172
+#: ../../../docs/configuring-well-known.md:185
 msgid "Add a custom origin with matrix.example.com to your distribution"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:173
+#: ../../../docs/configuring-well-known.md:186
 msgid "Add two behaviors, one for `.well-known/matrix/client` and one for `.well-known/matrix/server` and point them to your new origin."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:175
+#: ../../../docs/configuring-well-known.md:188
 msgid "Make sure to:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:177
+#: ../../../docs/configuring-well-known.md:190
 msgid "**replace `example.com`** in the server configuration with your actual domain name"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:178
+#: ../../../docs/configuring-well-known.md:191
 msgid "and: to **do this for the HTTPS-enabled server block**, as that's where Matrix expects the file to be"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:180
+#: ../../../docs/configuring-well-known.md:193
 msgid "Confirming it works"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:182
+#: ../../../docs/configuring-well-known.md:195
 msgid "No matter which method you've used to set up the well-known files, if you've done it correctly you should be able to see a JSON file at these URLs:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:184
+#: ../../../docs/configuring-well-known.md:197
 msgid "`https://example.com/.well-known/matrix/server`"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:185
+#: ../../../docs/configuring-well-known.md:198
 msgid "`https://example.com/.well-known/matrix/client`"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:186
+#: ../../../docs/configuring-well-known.md:199
 msgid "`https://example.com/.well-known/matrix/support`"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:188
-msgid "You can also check if everything is configured correctly, by [checking if services work](maintenance-checking-services.md)."
+#: ../../../docs/configuring-well-known.md:201
+msgid "You can also check if everything is configured correctly, by [checking if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)."
 msgstr ""

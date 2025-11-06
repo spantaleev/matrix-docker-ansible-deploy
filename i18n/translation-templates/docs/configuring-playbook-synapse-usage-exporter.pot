@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,90 +16,126 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:1
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:9
 msgid "Enabling synapse-usage-exporter for Synapse usage statistics (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:3
-msgid "[synapse-usage-exporter](https://github.com/loelkes/synapse-usage-exporter) allows you to export the usage statistics of a Synapse homeserver to this container service and for the collected metrics to later be scraped by Prometheus."
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:11
+msgid "The playbook can install and configure [synapse-usage-exporter](https://github.com/loelkes/synapse-usage-exporter) for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:5
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:13
+msgid "It allows you to export the usage statistics of a Synapse homeserver to this container service and for the collected metrics to later be scraped by Prometheus."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:15
 msgid "Synapse does not include usage statistics in its Prometheus metrics. They can be reported to an HTTP `PUT` endpoint 5 minutes after startup and from then on at a fixed interval of once every three hours. This role integrates a simple [Flask](https://flask.palletsprojects.com) project that offers an HTTP `PUT` endpoint and holds the most recent received record available to be scraped by Prometheus."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:7
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:17
+msgid "See the project's [documentation](https://github.com/loelkes/synapse-usage-exporter/blob/main/README.md) to learn what it does and why it might be useful to you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:19
+msgid "What does it do?"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:21
 msgid "Enabling this service will automatically:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:9
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:23
 msgid "install the synapse-usage-exporter service"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:10
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:24
 msgid "re-configure Synapse to push (via HTTP `PUT`) usage statistics information to synapse-usage-exporter"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:11
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:25
 msgid "re-configure [Prometheus](./configuring-playbook-prometheus-grafana.md) (if Prometheus is enabled), to periodically scrape metrics from synapse-usage-exporter"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:12
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:26
 msgid "add a new [Grafana](./configuring-playbook-prometheus-grafana.md) dashboard (if Grafana is enabled) containing Synapse usage statistics"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:14
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:28
 msgid "Adjusting DNS records (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:16
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:30
 msgid "By default, this playbook installs synapse-usage-exporter on the `matrix.` subdomain, at the `/report-usage-stats/push` path (https://matrix.example.com/report-usage-stats/push). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:18
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:32
 msgid "If you wish to adjust it, see the section [below](#adjusting-the-synapse-usage-exporter-url-optional) for details about DNS configuration."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:20
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:34
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:22
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:36
 msgid "To enable synapse-usage-exporter, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:34
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:48
 msgid "Adjusting the synapse-usage-exporter URL (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:36
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:50
 msgid "By tweaking the `matrix_synapse_usage_exporter_hostname` and `matrix_synapse_usage_exporter_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:38
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:52
 msgid "Example additional configuration for your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:47
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:61
 msgid "If you've changed the default hostname, you may need to create a CNAME record for the synapse-usage-exporter domain (`sue.example.com`), which targets `matrix.example.com`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:49
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:63
 msgid "When setting, replace `example.com` with your own."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:51
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:65
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:67
+msgid "There are some additional things you may wish to configure about the component."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:69
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:71
+msgid "`roles/custom/matrix-synapse-usage-exporter/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:73
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:53
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:75
 msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:60
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:82
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:62
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:84
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:86
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse-usage-exporter.md:88
+msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse-usage-exporter`."
 msgstr ""

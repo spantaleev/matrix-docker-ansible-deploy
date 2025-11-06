@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,218 +16,258 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-ntfy.md:1
+#: ../../../docs/configuring-playbook-ntfy.md:12
 msgid "Setting up the ntfy push notifications server (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:3
-msgid "The playbook can install and configure the [ntfy](https://ntfy.sh/) push notifications server for you."
+#: ../../../docs/configuring-playbook-ntfy.md:14
+msgid "The playbook can install and configure the [ntfy](https://ntfy.sh/) (pronounced \"notify\") push notifications server for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:5
-msgid "Using the [UnifiedPush](https://unifiedpush.org) standard, ntfy enables self-hosted (Google-free) push notifications from Matrix (and other) servers to UnifiedPush-compatible Matrix compatible client apps running on Android and other devices."
+#: ../../../docs/configuring-playbook-ntfy.md:16
+msgid "ntfy lets you send push notifications to your phone or desktop via scripts from any computer, using simple HTTP PUT or POST requests. It makes it possible to send/receive notifications, without relying on servers owned and controlled by third parties."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:7
-msgid "This role is intended to support UnifiedPush notifications for use with the Matrix and Matrix-related services that this playbook installs. This role is not intended to support all of ntfy's other features."
+#: ../../../docs/configuring-playbook-ntfy.md:18
+msgid "With the [UnifiedPush](https://unifiedpush.org) standard, ntfy also enables self-hosted push notifications from Matrix (and other) servers to UnifiedPush-compatible Matrix client apps running on Android devices."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:9
-msgid "**Note**: In contrast to push notifications using Google's FCM or Apple's APNs, the use of UnifiedPush allows each end-user to choose the push notification server that they prefer.  As a consequence, deploying this ntfy server does not by itself ensure any particular user or device or client app will use it."
+#: ../../../docs/configuring-playbook-ntfy.md:20
+msgid "See the project's [documentation](https://docs.ntfy.sh/) to learn what ntfy does and why it might be useful to you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:11
+#: ../../../docs/configuring-playbook-ntfy.md:22
+msgid "The [Ansible role for ntfy](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy) is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting). For details about configuring ntfy, you can check them via:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:23
+msgid "🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md) online"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:24
+msgid "📁 `roles/galaxy/ntfy/docs/configuring-ntfy.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:26
+msgid "**Note**: this playbook focuses on setting up a ntfy server for getting it send push notifications with UnifiedPush to Matrix-related services that this playbook installs, while the installed server will be available for other non-Matrix apps like [Tusky](https://tusky.app/) and [DAVx⁵](https://www.davx5.com/) as well. This playbook does not intend to support all of ntfy's features. If you want to use them as well, refer the role's documentation for details to configure them by yourself."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:28
+msgid "Improve push notification's privacy with ntfy"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:30
+msgid "By default, push notifications received on Matrix apps on Android/iOS act merely as \"wake-up calls\" for the application, which contain only event IDs, and do not transmit actual message payload such as text message data."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:32
+msgid "While your messages remain private even without ntfy, it makes it possible to improve privacy and sovereignty of your Matrix installation, offering greater control over your data, by avoiding routing these \"application wake-up calls\" through Google or Apple servers and having them pass through the self-hosted ntfy instance on your Matrix server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:34
+msgid "How ntfy works with UnifiedPush"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:36
+msgid "⚠️ [UnifiedPush does not work on iOS.](https://unifiedpush.org/users/faq/#will-unifiedpush-ever-work-on-ios)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:38
+msgid "ntfy implements UnifiedPush, the standard which makes it possible to send and receive push notifications without using Google's Firebase Cloud Messaging (FCM) service."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:40
+msgid "Working as a **Push Server**, a ntfy server can forward messages via [the ntfy Android app](https://docs.ntfy.sh/subscribe/phone/) as a **Distributor** to a UnifiedPush-compatible Matrix client such as Element Android and FluffyChat Android (see [here](https://unifiedpush.org/users/distributors/#definitions) for the definition of the Push Server and the Distributor)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:42
+msgid "Note that UnifiedPush-compatible applications must be able to communicate with the ntfy Android app which works as the Distributor on the same device, in order to receive push notifications from the Push Server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:44
+msgid "As the ntfy Android app functions as the Distributor, you do not have to install something else on your device, besides a UnifiedPush-compatible Matrix client."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:46
 msgid "Adjusting DNS records"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:13
+#: ../../../docs/configuring-playbook-ntfy.md:48
 msgid "By default, this playbook installs ntfy on the `ntfy.` subdomain (`ntfy.example.com`) and requires you to create a CNAME record for `ntfy`, which targets `matrix.example.com`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:15
+#: ../../../docs/configuring-playbook-ntfy.md:50
 msgid "When setting, replace `example.com` with your own."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:17
+#: ../../../docs/configuring-playbook-ntfy.md:52
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:19
-msgid "To enable ntfy, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:33
-msgid "For a more complete list of variables that you could override, see the [`defaults/main.yml` file](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/defaults/main.yml) of the ntfy Ansible role."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:35
-msgid "For a complete list of ntfy config options that you could put in `ntfy_configuration_extension_yaml`, see the [ntfy config documentation](https://ntfy.sh/docs/config/#config-options)."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:37
-msgid "Adjusting the ntfy URL (optional)"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:39
-msgid "By tweaking the `ntfy_hostname` variable, you can easily make the service available at a **different hostname** than the default one."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:41
-msgid "Example additional configuration for your `vars.yml` file:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:48
-msgid "After changing the domain, **you may need to adjust your DNS** records to point the ntfy domain to the Matrix server."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:50
-msgid "Installing"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:52
-msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:59
-msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:61
-msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:63
-msgid "Usage"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:65
-msgid "To make use of your ntfy installation, on Android for example, you need two things:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:67
-msgid "the `ntfy` app"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:68
-msgid "a UnifiedPush-compatible Matrix app"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:70
-msgid "You need to install the `ntfy` app on each device on which you want to receive push notifications through your ntfy server. The `ntfy` app will provide UnifiedPush notifications to any number of UnifiedPush-compatible messaging apps installed on the same device."
+#: ../../../docs/configuring-playbook-ntfy.md:54
+msgid "To enable a ntfy server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:72
-msgid "Setting up the `ntfy` Android app"
+msgid "As the most of the necessary settings for the role have been taken care of by the playbook, you can enable the ntfy server on your Matrix server with this minimum configuration."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:74
-msgid "Install the [ntfy Android app](https://ntfy.sh/docs/subscribe/phone/) from F-droid or Google Play."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:75
-msgid "In its Settings -> `General: Default server`, enter your ntfy server URL, such as `https://ntfy.example.com`."
+msgid "See the role's documentation for details about configuring ntfy per your preference (such as [setting access control with authentication](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#enable-access-control-with-authentication-optional))."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:76
-msgid "In its Settings -> `Advanced: Connection protocol`, choose `WebSockets`."
+msgid "Adjusting the ntfy URL (optional)"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:78
-msgid "That is all you need to do in the ntfy app. It has many other features, but for our purposes you can ignore them. In particular you do not need to follow any instructions about subscribing to a notification topic as UnifiedPush will do that automatically."
+msgid "By tweaking the `ntfy_hostname` variable, you can easily make the service available at a **different hostname** than the default one."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:80
-msgid "Setting up a UnifiedPush-compatible Matrix app"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:82
-msgid "Install any UnifiedPush-enabled Matrix app on that same device. The Matrix app will learn from the `ntfy` app that you have configured UnifiedPush on this device, and then it will tell your Matrix server to use it."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:84
-msgid "Steps needed for specific Matrix apps:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:86
-msgid "FluffyChat-android:"
+msgid "Example additional configuration for your `vars.yml` file:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:87
-msgid "Should auto-detect and use it. No manual settings."
+msgid "After changing the domain, **you may need to adjust your DNS** records to point the ntfy domain to the Matrix server."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:89
-msgid "SchildiChat-android:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:90
-msgid "enable `Settings` -> `Notifications` -> `UnifiedPush: Force custom push gateway`."
+msgid "Enable web app (optional)"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:91
-msgid "choose `Settings` -> `Notifications` -> `UnifiedPush: Re-register push distributor`. *(For info, a more complex alternative to achieve the same is: delete the relevant unifiedpush registration in `ntfy` app, force-close SchildiChat, re-open it.)*"
+msgid "The ntfy server can be accessed via its web app where you can subscribe to and push to \"topics\" from the browser. The web app may be helpful to troubleshoot notification issues or to use ntfy for other purposes than getting ntfy send UnifiedPush notifications to your Matrix-related services."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:92
-msgid "verify `Settings` -> `Notifications` -> `UnifiedPush: Notification targets` as described below in the \"Troubleshooting\" section."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:94
-msgid "Element-android v1.4.26+:"
+#: ../../../docs/configuring-playbook-ntfy.md:93
+msgid "**Note**: subscribing to a topic is not necessary for using the nfty server as the Push Server for UnifiedPush."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:95
-msgid "choose `Settings` -> `Notifications` -> `Notification method` -> `ntfy`"
+msgid "To enable the web app, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:96
-msgid "verify `Settings` -> `Troubleshoot` -> `Troubleshoot notification settings`"
+#: ../../../docs/configuring-playbook-ntfy.md:101
+msgid "See [the official documentation](https://docs.ntfy.sh/subscribe/web/) for details about how to use it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:98
-msgid "If the Matrix app asks, \"Choose a distributor: FCM Fallback or ntfy\", then choose \"ntfy\"."
+#: ../../../docs/configuring-playbook-ntfy.md:103
+msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-ntfy.md:100
-msgid "If the Matrix app doesn't seem to pick it up, try restarting it and try the Troubleshooting section below."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:102
-msgid "Web App"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:104
-msgid "ntfy also has a web app to subscribe to and push to topics from the browser. This may be helpful to further troubleshoot UnifiedPush problems or to use ntfy for other purposes. The web app only runs in the browser locally (after downloading the JavaScript)."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:106
-msgid "The web app is disabled in this playbook by default as the expectation is that most users won't use it. You can either use the [official hosted one](https://ntfy.sh/app) (it supports using other public reachable ntfy instances) or host it yourself by setting `ntfy_web_root: \"app\"` and re-running Ansible."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:108
-msgid "Troubleshooting"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-ntfy.md:110
-msgid "First check that the Matrix client app you are using supports UnifiedPush. There may well be different variants of the app."
+#: ../../../docs/configuring-playbook-ntfy.md:105
+msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:112
-msgid "Set the ntfy server's log level to 'DEBUG', as shown in the example settings above, and watch the server's logs with `sudo journalctl -fu matrix-ntfy`."
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:114
-msgid "To check if UnifiedPush is correctly configured on the client device, look at \"Settings -> Notifications -> Notification Targets\" in Element Android or SchildiChat Android, or \"Settings -> Notifications -> Devices\" in FluffyChat. There should be one entry for each Matrix client app that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL."
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:116
-msgid "In the \"Notification Targets\" screen in Element Android or SchildiChat Android, two relevant URLs are shown, \"push\\_key\" and \"Url\", and both should begin with your ntfy server's URL. If \"push\\_key\" shows your server but \"Url\" shows an external server such as `up.schildi.chat` then push notifications will still work but are being routed through that external server before they reach your ntfy server. To rectify that, in SchildiChat (at least around version 1.4.20.sc55) you must enable the `Force custom push gateway` setting as described in the \"Usage\" section above."
+msgid "Usage"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:118
-msgid "If it is not working, useful tools are \"Settings -> Notifications -> Re-register push distributor\" and \"Settings -> Notifications -> Troubleshoot Notifications\" in SchildiChat Android (possibly also Element Android). In particular the \"Endpoint/FCM\" step of that troubleshooter should display your ntfy server's URL that it has discovered from the ntfy client app."
+msgid "To receive push notifications with UnifiedPush from the ntfy server, you need to **install [the ntfy Android app](https://docs.ntfy.sh/subscribe/phone/)** which works as the Distributor, **log in to the account on the ntfy app** if you have enabled the access control, and then **configure a UnifiedPush-compatible Matrix client**. After setting up the ntfy Android app, the Matrix client listens to it, and push notifications are \"distributed\" from it."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-ntfy.md:120
+msgid "For details about installing and configuring the ntfy Android app, take a look at [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#install-the-ntfy-androidios-app) on the role's documentation."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:122
+msgid "⚠️ Though the ntfy app is available for iOS ([App Store](https://apps.apple.com/us/app/ntfy/id1625396347); the app's source code can be retrieved from [here](https://github.com/binwiederhier/ntfy-ios)), **any Matrix clients for iOS currently do not support ntfy** due to [technical limitations of the iOS platform](https://github.com/binwiederhier/ntfy-ios/blob/main/docs/TECHNICAL_LIMITATIONS.md). If you develop your own Matrix client app for iOS, you may need to use the [Sygnal](configuring-playbook-sygnal.md) push gateway service to deliver push notifications to it."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:124
+msgid "Setting up a UnifiedPush-compatible Matrix client"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:126
+msgid "Having configured the ntfy Android app, you can configure a UnifiedPush-compatible Matrix client on the same device."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:128
+msgid "Steps needed for specific Matrix clients:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:130
+msgid "FluffyChat-Android: this should auto-detect and use the app. No manual settings required."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:132
+msgid "SchildiChat-Android:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:133
+msgid "enable `Settings` -> `Notifications` -> `UnifiedPush: Force custom push gateway`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:134
+msgid "choose `Settings` -> `Notifications` -> `UnifiedPush: Re-register push distributor`. *(For info, a more complex alternative to achieve the same is: delete the relevant unifiedpush registration in the ntfy Android app, force-close SchildiChat, re-open it.)*"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:135
+msgid "verify `Settings` -> `Notifications` -> `UnifiedPush: Notification targets` as described below in the \"Troubleshooting\" section."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:137
+msgid "Element-Android v1.4.26+:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:138
+msgid "choose `Settings` -> `Notifications` -> `Notification method` -> `ntfy`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:139
+msgid "verify `Settings` -> `Troubleshoot` -> `Troubleshoot notification settings`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:141
+msgid "If the Matrix client asks, \"Choose a distributor: FCM Fallback or ntfy\", then choose \"ntfy\"."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:143
+msgid "If the Matrix client doesn't seem to pick it up, try restarting it and try the Troubleshooting section below."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:145
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:147
 msgid "The simple [UnifiedPush troubleshooting](https://unifiedpush.org/users/troubleshooting/) app [UP-Example](https://f-droid.org/en/packages/org.unifiedpush.example/) can be used to manually test UnifiedPush registration and operation on an Android device."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:149
+msgid "Check the Matrix client"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:151
+msgid "Make sure that the Matrix client you are using supports UnifiedPush. There may well be different variants of the app."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:153
+msgid "To check if UnifiedPush is correctly configured on the client device, look at \"Settings -> Notifications -> Notification Targets\" in Element Android or SchildiChat Android, or \"Settings -> Notifications -> Devices\" in FluffyChat. There should be one entry for each Matrix client that has enabled push notifications, and when that client is using UnifiedPush you should see a URL that begins with your ntfy server's URL."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:155
+msgid "In the \"Notification Targets\" screen in Element Android or SchildiChat Android, two relevant URLs are shown, \"push\\_key\" and \"Url\", and both should begin with your ntfy server's URL. If \"push\\_key\" shows your server but \"Url\" shows an external server such as `up.schildi.chat` then push notifications will still work but are being routed through that external server before they reach your ntfy server. To rectify that, in SchildiChat (at least around version 1.4.20.sc55) you must enable the `Force custom push gateway` setting as described in the \"Usage\" section above."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:157
+msgid "If it is not working, useful tools are \"Settings -> Notifications -> Re-register push distributor\" and \"Settings -> Notifications -> Troubleshoot Notifications\" in SchildiChat Android (possibly also Element Android). In particular the \"Endpoint/FCM\" step of that troubleshooter should display your ntfy server's URL that it has discovered from the ntfy client app."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:159
+msgid "Check the service's logs"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-ntfy.md:161
+msgid "See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#check-the-services-logs) on the role's documentation for details."
 msgstr ""

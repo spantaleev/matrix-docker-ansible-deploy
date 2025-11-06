@@ -1,0 +1,361 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-ipv6.md:6
+msgid "Configuring IPv6"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:8
+msgid "Since 2025-03-08, the [default example configuration](../examples/vars.yml) for the playbook recommends enabling [IPv6](https://en.wikipedia.org/wiki/IPv6) support for Docker's container networks."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:10
+msgid "**If you have IPv6 support on your server/network** (see [How do I check if my server has IPv6 connectivity?](#how-do-i-check-if-my-server-has-ipv6-connectivity)), then [enabling IPv6 support for the playbook](#enabling-ipv6-support-for-the-playbook) would give you:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:12
+msgid "📥 incoming IPv6 connectivity to the server via the server's IPv6 address/addresses (containers won't have their own individual publicly accessible IPs)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:13
+msgid "📤 outgoing IPv6 connectivity from the server via the server's IPv6 address/addresses (containers won't exit via their own individual IPv6 address)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:14
+msgid "🔄 IPv6 connectivity for cross-container communication"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:16
+msgid "**If you still don't have IPv6 support on your server/network**, then enabling IPv6 support for the playbook will only enable IPv6 connectivity for cross-container communication and shouldn't affect your server's incoming/outgoing communication. You may also be interested in reading if [there's a performance penalty to enabling IPv6 if the server/network doesn't support IPv6 connectivity?](#is-there-a-performance-penalty-to-enabling-ipv6-if-the-server-network-doesn-t-support-ipv6-connectivity)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:18
+msgid "As such, **we recommend that you follow the default example configuration and leave IPv6 support for Docker enabled in all cases**."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:20
+msgid "Enabling IPv6 consists of 2 steps:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:22
+msgid "[Enabling IPv6 support for the playbook](#enabling-ipv6-support-for-the-playbook)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:23
+msgid "[Configuring DNS records for IPv6](#configuring-dns-records-for-ipv6)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:25
+msgid "💡 If you've followed a recent version of our documentation, you would have already done these steps, so there's nothing else to do."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:27
+msgid "Enabling IPv6 support for the playbook"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:29
+msgid "You can enable IPv6 support for all components' Docker container networks by using the following `vars.yml` configuration:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:50
+msgid "Doing this:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:52
+msgid "all container networks will be IPv6-enabled"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:54
+msgid "NAT66 will be used, so that:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:55
+msgid "containers will get [Unique Local Addresses (ULA)](https://en.wikipedia.org/wiki/Unique_local_address)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:56
+msgid "the outgoing IPv6 address for containers will be the same as the one on the server"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:57
+msgid "traffic destined for the IPv6 address of the server will be forwarded to the containers that handle (and publish) that specific port"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:59
+msgid "[!WARNING] Without enabling this and assuming you have IPv6 `AAAA` DNS records pointing to the server (see [Configuring DNS records for IPv6](#configuring-dns-records-for-ipv6)), IPv6 traffic will still be handled, but NAT64 will be used instead of NAT66. As such, containers will only have an IPv4 address and all IPv6 traffic that reaches them will seem to originate from a local IP. Containers also won't be able to make outgoing (even cross-container) IPv6 requests."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:63
+msgid "To confirm connectivity, see the following other resources:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:65
+msgid "[How do I check if my server has IPv6 connectivity?](#how-do-i-check-if-my-server-has-ipv6-connectivity)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:66
+msgid "[How do I check outgoing IPv6 connectivity for containers?](#how-do-i-check-outgoing-ipv6-connectivity-for-containers)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:67
+msgid "[How do I check incoming IPv6 connectivity for containers?](#how-do-i-check-incoming-ipv6-connectivity-for-containers)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:68
+msgid "[How do I confirm if my container networks are IPv6-enabled?](#how-do-i-confirm-if-my-container-networks-are-ipv6-enabled)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:69
+msgid "Ensure that the [Federation Tester](https://federationtester.matrix.org/) reports that your server is reachable over IPv6."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:71
+msgid "Configuring DNS records for IPv6"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:73
+msgid "[Enabling IPv6 support for the playbook](#enabling-ipv6-support-for-the-playbook) tells you how to prepare for IPv6 on the container (Docker) side."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:75
+msgid "For full public IPv6 connectivity (and not just IPv6 connectivity for containers inside the container networks) you also need to **ensure that your domain names** (e.g. `matrix.example.com` and others) have IPv6 (`AAAA`) DNS records pointing to the server's IPv6 address."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:77
+msgid "Also see the [Configuring DNS settings](configuring-dns.md) documentation page for more details."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:79
+msgid "A note about old Docker"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:81
+msgid "With our [default example configuration](../examples/vars.yml), the playbook manages Docker for you and installs a modern-enough version."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:83
+msgid "Docker versions newer than 27.0.1 enable IPv6 integration at the Docker daemon level out of the box. This still requires that networks are created with IPv6 support as described in the [Enabling IPv6 support for the playbook](#enabling-ipv6-support-for-the-playbook) section above."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:85
+msgid "**If you're on an old Docker version** (Docker 27.0.0 or older) for some reason, it's likely that your Docker installation is not enabled for IPv6 at all. In such a case:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:87
+msgid "if Docker is managed by the playbook, you can tell it to force-enable IPv6 via `devture_systemd_docker_base_ipv6_daemon_options_changing_enabled: true`"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:89
+msgid "if Docker is managed by you manually, you can add `{\"experimental\": true, \"ip6tables\": true}` to the Docker daemon options and restart the Docker service (`docker.service`)."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:91
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:93
+msgid "How do I check if my server has IPv6 connectivity?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:95
+msgid "With curl"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:97
+msgid "You can run `curl https://icanhazip.com` and see if it returns an [IPv6 address](https://en.wikipedia.org/wiki/IPv6_address) (an address with `:` characters in it, like `2001:db8:1234:5678::1`). If it does, then your server has IPv6 connectivity and prefers it over using IPv4. This is common."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:99
+msgid "If you see an IPv4 address instead (e.g. `1.2.3.4`), it may be that your server prefers IPv4 over IPv6 or that your network does not support IPv6. You can try forcing `curl` to use IPv6 by running `curl -6 https://icanhazip.com` and see if it returns an IPv6 address."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:101
+msgid "With other network utilities"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:103
+msgid "You can run `ip -6 addr` to see if you have any IPv6 addresses assigned to your server, besides the link-local (`fe80::*`) addresses that everyone has (unless they have force-disabled IPv6 support on their system)."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:105
+msgid "If you do have an IPv6 address, it's still worth [using curl](#with-curl) to confirm that your server can successfully make outgoing requests over IPv6."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:107
+msgid "What does the `devture_systemd_docker_base_ipv6_enabled` setting actually do?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:109
+msgid "The `devture_systemd_docker_base_ipv6_enabled` setting controls whether container networks will be created with IPv6 support."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:111
+msgid "Changing this setting subsequently requires manual work (deleting all container networks). See [I've changed the `devture_systemd_docker_base_ipv6_enabled` setting, but it doesn't seem to have any effect](#i-ve-changed-the-devture_systemd_docker_base_ipv6_enabled-setting-but-it-doesn-t-seem-to-have-any-effect)."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:114
+msgid "I've changed the `devture_systemd_docker_base_ipv6_enabled` setting, but it doesn't seem to have any effect."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:116
+msgid "If you're using an older Docker version (Docker 27.0.0 or older), see [A note about old Docker](#a-note-about-old-docker)."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:118
+msgid "If you've previously installed with one `devture_systemd_docker_base_ipv6_enabled` value and then changed it to another, you need to:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:120
+msgid "stop all services (`just stop-all`)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:121
+msgid "delete all container networks on the server: `docker network rm $(docker network ls -q)`"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:122
+msgid "re-run the playbook fully: `just install-all`"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:124
+msgid "How do I confirm if my container networks are IPv6-enabled?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:126
+msgid "You can list container networks by running `docker network ls` on the server."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:128
+msgid "For each container network (e.g. `matrix-homeserver`), you can check if it has IPv6 connectivity by running a command like this: `docker network inspect matrix-homeserver`."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:130
+msgid "Ensure that there's an IPv6 subnet/gateway in the `IPAM.Config` section. If yes, you may wish to proceed with [How do I check outgoing IPv6 connectivity for containers?](#how-do-i-check-outgoing-ipv6-connectivity-for-containers)"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:132
+msgid "If there's no IPv6 subnet/gateway in the `IPAM.Config` section, this container network was not created with IPv6 support. See [I've changed the `devture_systemd_docker_base_ipv6_enabled` setting, but it doesn't seem to have any effect](#i-ve-changed-the-devture_systemd_docker_base_ipv6_enabled-setting-but-it-doesn-t-seem-to-have-any-effect)."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:135
+msgid "How do I check outgoing IPv6 connectivity for containers?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:141
+msgid "💡 This one-off container is connected to the `matrix-homeserver` container network, not to the default Docker bridge network. The default Docker `bridge` network does not have IPv6 connectivity by default (yet) and is not influenced by the `devture_systemd_docker_base_ipv6_enabled` setting, so using that network (by omitting `--network=..` from the command above) will not show an IPv6 address"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:143
+msgid "✅ If this command returns an IPv6 address, you're all good."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:145
+msgid "❌ If this command doesn't return an IPv6 address, it may be that:"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:147
+msgid "your container network does not have IPv6 connectivity. See [How do I confirm if my container networks are IPv6-enabled?](#how-do-i-confirm-if-my-container-networks-are-ipv6-enabled) for more details."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:149
+msgid "your server does not have IPv6 connectivity. See [How do I check if my server has IPv6 connectivity?](#how-do-i-check-if-my-server-has-ipv6-connectivity) for more details. If you do have IPv6 connectivity, then the issue is with Docker's IPv6 configuration. Otherwise, you need to check your server's network configuration/firewall/routing and get back to configuring the playbook later on."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:151
+msgid "How do I check incoming IPv6 connectivity for containers?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:153
+msgid "Only containers that publish ports will be exposed (reachable) publicly on the server's own IPv6 address. Containers will not get their own individual public IPv6 address."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:155
+msgid "For this playbook, a commonly exposed container is the Traefik reverse-proxy container (unless [you're using your own webserver](./configuring-playbook-own-webserver.md))."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:157
+msgid "You can either do something like `curl -6 https://matrix.example.com` from an IPv6-enabled host (including the server itself) and see if it works."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:159
+msgid "An alternative is to use the [IPv6 Port Checker](https://port.tools/port-checker-ipv6/) with a hostname of `matrix.example.com` and a port of `443`."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:161
+msgid "💡 Trying to connect to `matrix.example.com` via IPv6 requires that you have already [configured the DNS records for IPv6](#configuring-dns-records-for-ipv6) as described above. If you wish to eliminate DNS as a potential issue, you can also try connecting to the server's own IPv6 address directly: `curl -6 -H 'Host: matrix.example.com' https://[2001:db8:1234:5678::1]` (we pass a `Host` header to tell Traefik which host we'd like it to serve)."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:163
+msgid "Why enable IPv6 if my network doesn't support it yet?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:165
+msgid "Because when your network does get support for IPv6 later on (even if that's 5 years away), you won't have to change anything besides [configuring the DNS records for IPv6](#configuring-dns-records-for-ipv6)."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:167
+msgid "Can I use a custom subnet for IPv6?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:169
+msgid "Not easily."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:171
+msgid "The playbook and the various roles only support passing an `enable_ipv6` flag (`true` or `false` value depending on the `devture_systemd_docker_base_ipv6_enabled` Ansible variable) when creating the Docker container networks."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:173
+msgid "There's no support for passing a custom subnet for IPv4 and IPv6. We let Docker auto-generate the subnets for us."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:175
+msgid "You can either create a Pull Request that adds support for this to the various playbook roles, or you can manually recreate the networks from the command-line (e.g. `docker network rm matrix-homeserver && docker network create --ipv6 --subnet=2001:db8:1234:5678::/64 matrix-homeserver`)."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:177
+msgid "Can I use Global Unicast Addresses (GUA) for IPv6?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:179
+msgid "No. You cannot have GUA addresses where each container is individually addressable over the public internet."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:181
+msgid "The playbook only supports NAT66, which should be good enough for most use cases."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:183
+msgid "Having containers get IPv6 addresses from your own GUA subnet requires complex configuration (ndp-proxy, etc.) and is not supported."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:185
+msgid "You may find [this Reddit post](https://www.reddit.com/r/ipv6/comments/1alpzmb/comment/kphpw11/) interesting."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:187
+msgid "Is there a performance penalty to enabling IPv6 if the server/network doesn't support IPv6 connectivity?"
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:189
+msgid "Probably a tiny one, as services may try to make (unsuccessful) outgoing requests over IPv6."
+msgstr ""
+
+#: ../../../docs/configuring-ipv6.md:191
+msgid "In practice, it's probably negligible."
+msgstr ""

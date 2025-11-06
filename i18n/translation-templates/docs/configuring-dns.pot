@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,23 +16,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-dns.md:1
-msgid "Configuring your DNS settings"
+#: ../../../docs/configuring-dns.md:18
+msgid "Configuring DNS settings"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:3
-msgid "<sup>[Prerequisites](prerequisites.md) > Configuring your DNS settings > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>"
+#: ../../../docs/configuring-dns.md:20
+msgid "<sup>[Prerequisites](prerequisites.md) > Configuring DNS settings > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > [Installing](installing.md)</sup>"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:5
+#: ../../../docs/configuring-dns.md:22
 msgid "To set up Matrix on your domain, you'd need to do some DNS configuration."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:7
+#: ../../../docs/configuring-dns.md:24
 msgid "DNS settings for services enabled by default"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:9
+#: ../../../docs/configuring-dns.md:26
 msgid "To serve the base domain (`example.com`) and [Element Web](configuring-playbook-client-element-web.md) with the default subdomain, adjust DNS records as below."
 msgstr ""
 
@@ -73,7 +73,15 @@ msgid "-"
 msgstr ""
 
 #: ../../../docs/configuring-dns.md:0
-msgid "`matrix-server-IP`"
+msgid "`matrix-server-IPv4`"
+msgstr ""
+
+#: ../../../docs/configuring-dns.md:0
+msgid "AAAA"
+msgstr ""
+
+#: ../../../docs/configuring-dns.md:0
+msgid "`matrix-server-IPv6`"
 msgstr ""
 
 #: ../../../docs/configuring-dns.md:0
@@ -88,58 +96,62 @@ msgstr ""
 msgid "`matrix.example.com`"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:16
-msgid "As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IP address (DNS `A` record or `CNAME` record is fine)."
+#: ../../../docs/configuring-dns.md:34
+msgid "As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IPv4/IPv6 address."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:18
+#: ../../../docs/configuring-dns.md:36
+msgid "If you don't have IPv6 connectivity yet, you can skip the `AAAA` record. For more details about IPv6, see the [Configuring IPv6](./configuring-ipv6.md) documentation page."
+msgstr ""
+
+#: ../../../docs/configuring-dns.md:38
 msgid "The `element.example.com` subdomain is necessary, because this playbook installs the [Element Web](https://github.com/element-hq/element-web) client for you by default. If you'd rather instruct the playbook not to install Element Web (`matrix_client_element_enabled: false` when [Configuring the playbook](configuring-playbook.md) later), feel free to skip the `element.example.com` DNS record."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:20
+#: ../../../docs/configuring-dns.md:40
 msgid "Be mindful as to how long it will take for the DNS records to propagate."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:22
+#: ../../../docs/configuring-dns.md:42
 msgid "**Note**: if you are using Cloudflare DNS, make sure to disable the proxy and set all records to \"DNS only\". Otherwise, fetching certificates will fail."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:24
+#: ../../../docs/configuring-dns.md:44
 msgid "DNS setting for server delegation (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:26
+#: ../../../docs/configuring-dns.md:46
 msgid "In the sample `vars.yml` ([`examples/vars.yml`](../examples/vars.yml)), we recommend to use a short user ID like `@alice:example.com` instead of `@alice:matrix.example.com`."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:28
+#: ../../../docs/configuring-dns.md:48
 msgid "To use such an ID, you don't need to install anything on the actual `example.com` server. Instead, you need to instruct the Matrix network that Matrix services for `example.com` are redirected over to `matrix.example.com`. This redirection is also known as \"delegation\"."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:30
+#: ../../../docs/configuring-dns.md:50
 msgid "As we discuss in [Server Delegation](howto-server-delegation.md), server delegation can be configured in either of these ways:"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:32
+#: ../../../docs/configuring-dns.md:52
 msgid "Setting up a `/.well-known/matrix/server` file on the base domain (`example.com`)"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:33
+#: ../../../docs/configuring-dns.md:53
 msgid "Setting up a `_matrix._tcp` DNS SRV record"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:35
+#: ../../../docs/configuring-dns.md:55
 msgid "For simplicity reasons, this playbook recommends you to set up server delegation via a `/.well-known/matrix/server` file, instead of using a DNS SRV record."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:37
+#: ../../../docs/configuring-dns.md:57
 msgid "If you choose the recommended method (file-based delegation), you do not need to configure the DNS record to enable server delegation. You will need to add a necessary configuration later, when you [finalize the installation](installing.md#finalize-the-installation) after installing and starting Matrix services."
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:39
+#: ../../../docs/configuring-dns.md:59
 msgid "On the other hand, if you choose this method (setting up a DNS SRV record), you need to configure the additional DNS record as well as adjust SSL certificate handling. Take a look at this documentation for more information: [Server Delegation via a DNS SRV record (advanced)](howto-server-delegation.md#server-delegation-via-a-dns-srv-record-advanced)"
 msgstr ""
 
-#: ../../../docs/configuring-dns.md:43
+#: ../../../docs/configuring-dns.md:63
 msgid "[▶️](getting-the-playbook.md) When you're done with the DNS configuration and ready to proceed, continue with [Getting the playbook](getting-the-playbook.md)."
 msgstr ""
