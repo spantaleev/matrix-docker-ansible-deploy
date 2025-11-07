@@ -534,6 +534,18 @@
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-chatgpt-bot variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-chatgpt-bot was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_bot_chatgpt_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bot manually. See `docs/configuring-playbook-bot-chatgpt.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_bot_chatgpt_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_bot_chatgpt_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report mautrix-hangouts variables
   ansible.builtin.fail:
     msg: |-
