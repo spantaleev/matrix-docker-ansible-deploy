@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,66 +16,158 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/maintenance-and-troubleshooting.md:1
+#: ../../../docs/maintenance-and-troubleshooting.md:12
 msgid "Maintenance and Troubleshooting"
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:3
-msgid "How to see the current status of your services"
+#: ../../../docs/maintenance-and-troubleshooting.md:14
+msgid "Maintenance"
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:5
-msgid "You can check the status of your services by using `systemctl status`. Example:"
+#: ../../../docs/maintenance-and-troubleshooting.md:16
+msgid "How to back up the data on your server"
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:15
-msgid "Docker containers that the playbook configures are supervised by [systemd](https://wiki.archlinux.org/title/Systemd) and their logs are configured to go to [systemd-journald](https://wiki.archlinux.org/title/Systemd/Journal)."
+#: ../../../docs/maintenance-and-troubleshooting.md:18
+msgid "We haven't documented this properly yet, but the general advice is to:"
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:17
-msgid "To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you **cannot** view logs using `docker logs`."
+#: ../../../docs/maintenance-and-troubleshooting.md:20
+msgid "back up Postgres by making a database dump. See [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql)"
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:19
-msgid "To view systemd-journald logs using [journalctl](https://man.archlinux.org/man/journalctl.1), run a command like this:"
+#: ../../../docs/maintenance-and-troubleshooting.md:22
+msgid "back up all `/matrix` files, except for `/matrix/postgres/data` (you already have a dump) and `/matrix/postgres/data-auto-upgrade-backup` (this directory may exist and contain your old data if you've [performed a major Postgres upgrade](maintenance-postgres.md#upgrading-postgresql))."
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:25
-msgid "Increase logging verbosity"
+#: ../../../docs/maintenance-and-troubleshooting.md:24
+msgid "You can later restore these by:"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:26
+msgid "Restoring the `/matrix` directory and files on the new server manually"
 msgstr ""
 
 #: ../../../docs/maintenance-and-troubleshooting.md:27
-msgid "Because the [Synapse](https://github.com/element-hq/synapse) Matrix server is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`."
+msgid "Following the instruction described on [Installing a server into which you'll import old data](installing.md#installing-a-server-into-which-youll-import-old-data)"
 msgstr ""
 
 #: ../../../docs/maintenance-and-troubleshooting.md:29
-msgid "If you'd like to debug an issue or [report a Synapse bug](https://github.com/element-hq/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increasing the logging level to `INFO`."
+msgid "If your server's IP address has changed, you may need to [set up DNS](configuring-dns.md) again."
 msgstr ""
 
 #: ../../../docs/maintenance-and-troubleshooting.md:31
-msgid "Example configuration (`inventory/host_vars/matrix.example.com/vars.yml`):"
-msgstr ""
-
-#: ../../../docs/maintenance-and-troubleshooting.md:39
-msgid "Re-run the playbook after making these configuration changes."
-msgstr ""
-
-#: ../../../docs/maintenance-and-troubleshooting.md:41
 msgid "Remove unused Docker data"
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:43
-msgid "You can free some disk space from Docker, see [docker system prune](https://docs.docker.com/engine/reference/commandline/system_prune/) for more information."
+#: ../../../docs/maintenance-and-troubleshooting.md:33
+msgid "You can free some disk space from Docker by removing its unused data. See [docker system prune](https://docs.docker.com/engine/reference/commandline/system_prune/) for more information."
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:49
+#: ../../../docs/maintenance-and-troubleshooting.md:39
 msgid "The shortcut command with `just` program is also available: `just run-tags run-docker-prune`"
 msgstr ""
 
-#: ../../../docs/maintenance-and-troubleshooting.md:51
+#: ../../../docs/maintenance-and-troubleshooting.md:41
 msgid "Postgres"
 msgstr ""
 
+#: ../../../docs/maintenance-and-troubleshooting.md:43
+msgid "See the dedicated [PostgreSQL maintenance](maintenance-postgres.md) documentation page."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:45
+msgid "Synapse"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:47
+msgid "See the dedicated [Synapse maintenance](maintenance-synapse.md) documentation page."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:49
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:51
+msgid "How to see the current status of your services"
+msgstr ""
+
 #: ../../../docs/maintenance-and-troubleshooting.md:53
-msgid "See the dedicated [PostgreSQL Maintenance](maintenance-postgres.md) documentation page."
+msgid "You can check the status of your services by using `systemctl status`. Example:"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:63
+msgid "How to see the logs"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:65
+msgid "Docker containers that the playbook configures are supervised by [systemd](https://wiki.archlinux.org/title/Systemd) and their logs are configured to go to [systemd-journald](https://wiki.archlinux.org/title/Systemd/Journal)."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:67
+msgid "For example, you can find the logs of `matrix-synapse` in `systemd-journald` by logging in to the server with SSH and running the command as below:"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:73
+msgid "Available service names can be seen by doing `ls /etc/systemd/system/matrix*.service` on the server. Some services also log to files in `/matrix/*/data/..`, but we're slowly moving away from that."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:75
+msgid "We just simply delegate logging to journald and it takes care of persistence and expiring old data."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:77
+msgid "Enable systemd/journald logs persistence"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:79
+msgid "On some distros, the journald logs are just in-memory and not persisted to disk."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:81
+msgid "Consult (and feel free to adjust) your distro's journald logging configuration in `/etc/systemd/journald.conf`."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:83
+msgid "To enable persistence and put some limits on how large the journal log files can become, adjust your configuration like this:"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:94
+msgid "How to check if services work"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:96
+msgid "The playbook can perform a check to ensure that you've configured things correctly and that services are running."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:98
+msgid "To perform the check, run:"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:104
+msgid "The shortcut command with `just` program is also available: `just run-tags self-check`"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:106
+msgid "If it's all green, everything is probably running correctly."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:108
+msgid "Besides this self-check, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:110
+msgid "How to debug or force SSL certificate renewal"
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:112
+msgid "SSL certificates are managed automatically by the [Traefik](https://doc.traefik.io/traefik/) reverse-proxy server."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:114
+msgid "If you're having trouble with SSL certificate renewal, check the Traefik logs (`journalctl -fu matrix-traefik`)."
+msgstr ""
+
+#: ../../../docs/maintenance-and-troubleshooting.md:116
+msgid "If you're [using your own webserver](configuring-playbook-own-webserver.md) instead of the integrated one (Traefik), you should investigate in another way."
 msgstr ""

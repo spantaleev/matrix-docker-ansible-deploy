@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,58 +16,86 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:1
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:10
 msgid "Setting up Appservice IRC bridging (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:3
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:12
 msgid "**Note**: bridging to [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) can also happen via the [Heisenbridge](configuring-playbook-bridge-heisenbridge.md) bridge supported by the playbook."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:5
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:14
 msgid "The playbook can install and configure the [matrix-appservice-irc](https://github.com/matrix-org/matrix-appservice-irc) bridge for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:7
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:16
 msgid "See the project's [documentation](https://github.com/matrix-org/matrix-appservice-irc/blob/master/HOWTO.md) to learn what it does and why it might be useful to you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:9
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:18
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:11
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:20
 msgid "To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:63
-msgid "Installing"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:65
-msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
-msgstr ""
-
 #: ../../../docs/configuring-playbook-bridge-appservice-irc.md:72
-msgid "**Notes**:"
+msgid "Extending the configuration"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bridge-appservice-irc.md:74
-msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
+msgid "There are some additional things you may wish to configure about the bridge."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bridge-appservice-irc.md:76
-msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgid "Take a look at:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bridge-appservice-irc.md:78
-msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
+msgid "`roles/custom/matrix-bridge-appservice-irc/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:80
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:79
+msgid "`roles/custom/matrix-bridge-appservice-irc/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_irc_configuration_extension_yaml` variable"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:81
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:83
+msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:90
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:92
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:94
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:82
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:96
 msgid "To use the bridge, you need to start a chat with `@irc_bot:example.com` (where `example.com` is your base domain, not the `matrix.` domain)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:98
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:100
+msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-appservice-irc`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:102
+msgid "Configuring for logging"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-appservice-irc.md:104
+msgid "The default logging level for this component is `debug`, and the log is output to the console only. If you want to change the verbosity or enable logging to a file, add the following configuration to your `vars.yml` file (adapt to your needs) and re-run the playbook:"
 msgstr ""

@@ -93,7 +93,7 @@ docker run \
 --rm \
 -w /work \
 --mount type=bind,src=`pwd`,dst=/work \
---mount type=bind,src$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro \
+--mount type=bind,src=$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro \
 --entrypoint=/bin/sh \
 ghcr.io/devture/ansible:11.6.0-r0-0
 ```

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,110 +16,110 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/maintenance-upgrading-services.md:1
+#: ../../../docs/maintenance-upgrading-services.md:12
 msgid "Upgrading the Matrix services"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:3
+#: ../../../docs/maintenance-upgrading-services.md:14
 msgid "This playbook not only installs the various Matrix services for you, but can also upgrade them as new versions are made available."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:5
+#: ../../../docs/maintenance-upgrading-services.md:16
 msgid "While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:7
+#: ../../../docs/maintenance-upgrading-services.md:18
 msgid "The upstream projects, which this playbook makes use of, occasionally if not often suffer from security vulnerabilities (for example, see [here](https://github.com/element-hq/element-web/security) for known ones on Element Web)."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:9
+#: ../../../docs/maintenance-upgrading-services.md:20
 msgid "Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:11
+#: ../../../docs/maintenance-upgrading-services.md:22
 msgid "The developers of this playbook strive to maintain the playbook updated, so that you can re-run the playbook to address such vulnerabilities. It is **your responsibility** to keep your server and the services on it up-to-date."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:13
+#: ../../../docs/maintenance-upgrading-services.md:24
 msgid "If you want to be notified when new versions of Synapse are released, you should join the Synapse Homeowners room: [#homeowners:matrix.org](https://matrix.to/#/#homeowners:matrix.org)."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:15
+#: ../../../docs/maintenance-upgrading-services.md:26
 msgid "Steps to upgrade the Matrix services"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:17
+#: ../../../docs/maintenance-upgrading-services.md:28
 msgid "Check the changelog"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:19
+#: ../../../docs/maintenance-upgrading-services.md:30
 msgid "Before updating the playbook and the Ansible roles in the playbook, take a look at [the changelog](../CHANGELOG.md) to see if there have been any backward-incompatible changes that you need to take care of."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:21
+#: ../../../docs/maintenance-upgrading-services.md:32
 msgid "Update the playbook and the Ansible roles"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:23
+#: ../../../docs/maintenance-upgrading-services.md:34
 msgid "If it looks good to you, go to the `matrix-docker-ansible-deploy` directory, update your playbook directory and all upstream Ansible roles (defined in the `requirements.yml` file) by running:"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:25
+#: ../../../docs/maintenance-upgrading-services.md:36
 msgid "either: `just update`"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:26
+#: ../../../docs/maintenance-upgrading-services.md:37
 msgid "or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:28
+#: ../../../docs/maintenance-upgrading-services.md:39
 msgid "If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:30
+#: ../../../docs/maintenance-upgrading-services.md:41
 msgid "**Note**: for details about `just` commands, take a look at: [Running `just` commands](just.md)."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:32
+#: ../../../docs/maintenance-upgrading-services.md:43
 msgid "Re-run the playbook setup"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:34
+#: ../../../docs/maintenance-upgrading-services.md:45
 msgid "After updating the Ansible roles, then re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:40
+#: ../../../docs/maintenance-upgrading-services.md:51
 msgid "If you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with the `setup-all` tag as below:"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:46
+#: ../../../docs/maintenance-upgrading-services.md:57
 msgid "**Notes**:"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:48
+#: ../../../docs/maintenance-upgrading-services.md:59
 msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account, if any."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:50
+#: ../../../docs/maintenance-upgrading-services.md:61
 msgid "Our estimation is that running `--tags=install-all,start` is approximately from **2 to 5 times faster** than running `setup-all,ensure-matrix-users-created,start`. See [this entry](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) on `CHANGELOG.md` for more information."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:52
+#: ../../../docs/maintenance-upgrading-services.md:63
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`. Note these shortcuts run the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:54
+#: ../../../docs/maintenance-upgrading-services.md:65
 msgid "See [this page on the playbook tags](playbook-tags.md) for more information about those tags."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:56
+#: ../../../docs/maintenance-upgrading-services.md:67
 msgid "PostgreSQL major version upgrade"
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:58
+#: ../../../docs/maintenance-upgrading-services.md:69
 msgid "Major version upgrades to the internal PostgreSQL database are not done automatically. Upgrades must be performed manually."
 msgstr ""
 
-#: ../../../docs/maintenance-upgrading-services.md:60
+#: ../../../docs/maintenance-upgrading-services.md:71
 msgid "For details about upgrading it, refer to the [upgrading PostgreSQL guide](maintenance-postgres.md#upgrading-postgresql)."
 msgstr ""

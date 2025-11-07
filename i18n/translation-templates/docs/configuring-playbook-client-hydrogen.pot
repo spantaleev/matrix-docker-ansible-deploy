@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,70 +16,98 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:1
+#: ../../../docs/configuring-playbook-client-hydrogen.md:10
 msgid "Setting up Hydrogen (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:3
+#: ../../../docs/configuring-playbook-client-hydrogen.md:12
 msgid "The playbook can install and configure the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:5
+#: ../../../docs/configuring-playbook-client-hydrogen.md:14
 msgid "Hydrogen is a lightweight web client that supports mobile and legacy web browsers. It can be installed alongside or instead of Element Web."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:7
+#: ../../../docs/configuring-playbook-client-hydrogen.md:16
 msgid "Adjusting DNS records"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:9
+#: ../../../docs/configuring-playbook-client-hydrogen.md:18
 msgid "By default, this playbook installs Hydrogen on the `hydrogen.` subdomain (`hydrogen.example.com`) and requires you to create a CNAME record for `hydrogen`, which targets `matrix.example.com`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:11
+#: ../../../docs/configuring-playbook-client-hydrogen.md:20
 msgid "When setting, replace `example.com` with your own."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:13
+#: ../../../docs/configuring-playbook-client-hydrogen.md:22
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:15
+#: ../../../docs/configuring-playbook-client-hydrogen.md:24
 msgid "To enable Hydrogen, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:21
+#: ../../../docs/configuring-playbook-client-hydrogen.md:30
 msgid "Adjusting the Hydrogen URL (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:23
+#: ../../../docs/configuring-playbook-client-hydrogen.md:32
 msgid "By tweaking the `matrix_client_hydrogen_hostname` and `matrix_client_hydrogen_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:25
+#: ../../../docs/configuring-playbook-client-hydrogen.md:34
 msgid "Example additional configuration for your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:36
+#: ../../../docs/configuring-playbook-client-hydrogen.md:45
 msgid "After changing the domain, **you may need to adjust your DNS** records to point the Hydrogen domain to the Matrix server."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:38
+#: ../../../docs/configuring-playbook-client-hydrogen.md:47
 msgid "If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-client-hydrogen.md:40
-msgid "Installing"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-client-hydrogen.md:42
-msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
-msgstr ""
-
 #: ../../../docs/configuring-playbook-client-hydrogen.md:49
-msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgid "Extending the configuration"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-client-hydrogen.md:51
+msgid "There are some additional things you may wish to configure about the client."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:53
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:55
+msgid "`roles/custom/matrix-client-hydrogen/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:56
+msgid "`roles/custom/matrix-client-hydrogen/templates/config.json.j2` for the client's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_hydrogen_configuration_extension_json` variable"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:58
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:60
+msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:67
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:69
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:71
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-client-hydrogen.md:73
+msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-client-hydrogen`."
 msgstr ""

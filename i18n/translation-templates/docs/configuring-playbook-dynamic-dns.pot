@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,58 +16,90 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:1
+#: ../../../docs/configuring-playbook-dynamic-dns.md:9
 msgid "Setting up Dynamic DNS (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:3
+#: ../../../docs/configuring-playbook-dynamic-dns.md:11
 msgid "The playbook can configure Dynamic DNS with [ddclient⁠](https://github.com/ddclient/ddclient) for you. It is a Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:5
+#: ../../../docs/configuring-playbook-dynamic-dns.md:13
 msgid "Most cloud providers / ISPs will charge you extra for a static IP address. If you're not hosting a highly reliable homeserver you can workaround this via dynamic DNS."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:7
+#: ../../../docs/configuring-playbook-dynamic-dns.md:15
 msgid "Prerequisite"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:9
-msgid "You'll need to get a username and password from your DNS provider. Please consult with the provider about how to retrieve them."
+#: ../../../docs/configuring-playbook-dynamic-dns.md:17
+msgid "You'll need to authenticate with your DNS provider somehow, in most cases this is simply a username and password but can differ from provider to provider. Please consult with your providers documentation and the upstream [ddclient documentation](https://github.com/ddclient/ddclient/blob/main/ddclient.conf.in) to determine what you'll need to provide to authenticate."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:11
+#: ../../../docs/configuring-playbook-dynamic-dns.md:19
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:13
+#: ../../../docs/configuring-playbook-dynamic-dns.md:21
 msgid "To enable dynamic DNS, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:26
+#: ../../../docs/configuring-playbook-dynamic-dns.md:34
+msgid "Keep in mind that certain providers may require a different configuration of the `matrix_dynamic_dns_domain_configurations` variable, for provider specific examples see the [upstream documentation](https://github.com/ddclient/ddclient/blob/main/ddclient.conf.in)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dynamic-dns.md:36
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dynamic-dns.md:38
+msgid "There are some additional things you may wish to configure about the component."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dynamic-dns.md:40
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dynamic-dns.md:42
+msgid "`roles/custom/matrix-dynamic-dns/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dynamic-dns.md:44
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:28
+#: ../../../docs/configuring-playbook-dynamic-dns.md:46
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:35
+#: ../../../docs/configuring-playbook-dynamic-dns.md:53
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:37
+#: ../../../docs/configuring-playbook-dynamic-dns.md:55
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:39
+#: ../../../docs/configuring-playbook-dynamic-dns.md:57
 msgid "Additional Reading"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:41
+#: ../../../docs/configuring-playbook-dynamic-dns.md:59
 msgid "Additional resources:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dynamic-dns.md:43
+#: ../../../docs/configuring-playbook-dynamic-dns.md:61
 msgid "https://matrix.org/docs/guides/free-small-matrix-server"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dynamic-dns.md:62
+msgid "https://github.com/linuxserver/docker-ddclient"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dynamic-dns.md:64
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dynamic-dns.md:66
+msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dynamic-dns`. However, due to an [upstream issue](https://github.com/linuxserver/docker-ddclient/issues/54#issuecomment-1153143132) the logging output is not always complete. For advanced debugging purposes running the `ddclient` tool outside of the container is useful via the following: `ddclient -file ./ddclient.conf -daemon=0 -debug -verbose -noquiet`."
 msgstr ""
