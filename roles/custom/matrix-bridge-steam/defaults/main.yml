@@ -13,7 +13,7 @@ matrix_steam_bridge_container_image_self_build_repo: "https://github.com/jasonla
 matrix_steam_bridge_container_image_self_build_repo_version: "{{ 'main' if matrix_steam_bridge_version == 'latest' else matrix_steam_bridge_version }}"
 
 # renovate: datasource=docker depName=ghcr.io/jasonlaguidice/matrix-steam-bridge
-matrix_steam_bridge_version: 1.0.7
+matrix_steam_bridge_version: 1.0.8
 matrix_steam_bridge_docker_image: "{{ matrix_steam_bridge_docker_image_registry_prefix }}jasonlaguidice/matrix-steam-bridge:{{ matrix_steam_bridge_version }}"
 matrix_steam_bridge_docker_image_registry_prefix: "{{ 'localhost/' if matrix_steam_bridge_container_image_self_build else matrix_steam_bridge_docker_image_registry_prefix_upstream }}"
 matrix_steam_bridge_docker_image_registry_prefix_upstream: "{{ matrix_steam_bridge_docker_image_registry_prefix_upstream_default }}"
@@ -52,10 +52,14 @@ matrix_steam_bridge_public_media_signing_key: ''
 matrix_steam_bridge_public_media_expiry: 0
 matrix_steam_bridge_public_media_hash_length: 32
 
-# Displayname template for Steam users
-# {{ .DisplayName }} is replaced with the display name of the Steam user
-# {{ .Username }} is replaced with the username of the Steam user
-matrix_steam_bridge_network_displayname_template: "{% raw %}{{ .DisplayName }} (Steam){% endraw %}"
+# Display name template for Steam users.
+# Available template variables:
+# {{.PersonaName}} - The Steam display name/persona name (most commonly used)
+# {{.AccountName}} - The Steam account/login name
+# {{.SteamID}}     - The numeric Steam ID
+# {{.ProfileURL}}  - The Steam profile URL
+# You can use template functions like {{or}} to provide fallbacks.
+matrix_steam_bridge_network_displayname_template: "{% raw %}{{ .PersonaName }} (Steam){% endraw %}"
 
 matrix_steam_bridge_command_prefix: "!steam"
 

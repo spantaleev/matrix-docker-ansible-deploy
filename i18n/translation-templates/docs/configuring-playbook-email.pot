@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,74 +16,114 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-email.md:1
+#: ../../../docs/configuring-playbook-email.md:10
 msgid "Adjusting email-sending settings (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:3
-msgid "By default, this playbook sets up an [Exim](https://www.exim.org/) email server through which all Matrix services send emails."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-email.md:5
-msgid "The email server would attempt to deliver emails directly to their final destination. This may or may not work, depending on your domain configuration (SPF settings, etc.)"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-email.md:7
-msgid "By default, emails are sent from `matrix@matrix.example.com`, as specified by the `exim_relay_sender_address` playbook variable."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-email.md:9
-msgid "[!WARNING] On some cloud providers (Google Cloud, etc.), [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible. You will need to [relay email through another SMTP server](#relaying-email-through-another-smtp-server)."
-msgstr ""
-
 #: ../../../docs/configuring-playbook-email.md:12
-msgid "💡 To improve deliverability, we recommend [relaying email through another SMTP server](#relaying-email-through-another-smtp-server) anyway."
+msgid "By default, this playbook sets up an [Exim](https://www.exim.org/) relay SMTP mailer service (powered by [exim-relay](https://github.com/devture/exim-relay) and the [ansible-role-exim-relay](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay) Ansible role), through which all Matrix services send emails."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:14
-msgid "Firewall settings"
+msgid "**With the default setting, exim-relay attempts to deliver emails directly with the address `matrix@matrix.example.com`**, as specified by the `exim_relay_sender_address` playbook variable. See below if you want to configure the playbook to relay email through another SMTP server."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:16
-msgid "No matter whether you send email directly (the default) or you relay email through another host (see how below), you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration)."
+msgid "The [Ansible role for exim-relay](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay) is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting). For details about configuring exim-relay, you can check them via:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:17
+msgid "🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md) online"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:18
-msgid "Adjusting the playbook configuration"
+msgid "📁 `roles/galaxy/exim_relay/docs/configuring-exim-relay.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:20
-msgid "Relaying email through another SMTP server"
+msgid "Firewall settings"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:22
-msgid "If you'd like to relay email through another SMTP server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file (adapt to your needs):"
+msgid "No matter whether you send email directly (the default) or you relay email through another host, you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:24
+msgid "Docker automatically opens these ports in the server's firewall, so you likely don't need to do anything. If you use another firewall in front of the server, you may need to adjust it."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:26
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:28
+msgid "Enable DKIM authentication to improve deliverability (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:30
+msgid "By default, exim-relay attempts to deliver emails directly. This may or may not work, depending on your domain configuration."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:32
+msgid "To improve email deliverability, you can configure authentication methods such as DKIM (DomainKeys Identified Mail), SPF, and DMARC for your domain. Without setting any of these authentication methods, your outgoing email is most likely to be quarantined as spam at recipient's mail servers."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:34
-msgid "**Note**: only the secure submission protocol (using `STARTTLS`, usually on port `587`) is supported. **SMTPS** (encrypted SMTP, usually on port `465`) **is not supported**."
+msgid "For details about configuring DKIM, refer [this section](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md#enable-dkim-support-optional) on the role's documentation."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:36
-msgid "Sending emails using Sendgrid"
+msgid "💡 If you cannot enable DKIM, SPF, or DMARC on your domain for some reason, we recommend relaying email through another SMTP server."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:38
-msgid "An easy and free SMTP service to set up is [Sendgrid](https://sendgrid.com/). Its free tier allows for up to 100 emails per day to be sent."
+msgid "Relaying email through another SMTP server (optional)"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-email.md:40
-msgid "To set it up, add the following configuration to your `vars.yml` file (adapt to your needs):"
+msgid "**On some cloud providers such as Google Cloud, [port 25 is always blocked](https://cloud.google.com/compute/docs/tutorials/sending-mail/), so sending email directly from your server is not possible.** In this case, you will need to relay email through another SMTP server."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:57
+#: ../../../docs/configuring-playbook-email.md:42
+msgid "For details about configuration, refer [this section](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md#relaying-email-through-another-smtp-server) on the role's document."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:44
+msgid "Disable mail service (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:46
+msgid "For a low-power server you might probably want to disable exim-relay. To do so, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:52
+msgid "Note that disabling exim-relay will stop email-notifications and other similar functions from working."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:54
+msgid "See [this entry on the FAQ](faq.md#how-do-i-optimize-this-setup-for-a-low-power-server) for other possible optimizations for a low-power server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:56
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:58
+msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:65
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:67
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-email.md:69
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-email.md:59
-msgid "If you're having trouble with email not being delivered, it may be useful to inspect the mailer logs."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-email.md:61
-msgid "To do so, log in to the server with SSH and run `journalctl -f -u matrix-exim-relay`."
+#: ../../../docs/configuring-playbook-email.md:71
+msgid "See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md#troubleshooting) on the role's documentation for details."
 msgstr ""

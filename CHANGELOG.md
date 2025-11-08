@@ -1,3 +1,11 @@
+# 2025-11-07
+
+## The matrix-chatgpt-bot has been removed from the playbook
+
+The [matrix-bot-chatgpt](./docs/configuring-playbook-bot-chatgpt.md) has been removed from the playbook, as it has been deprecated since September 2024.
+
+The playbook will let you know if you're using any `matrix_bot_chatgpt_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bot manually](./docs/configuring-playbook-bot-chatgpt.md#uninstalling-matrix-chatgpt-bot-manually).
+
 # 2025-11-05
 
 ## The MX Puppet bridges for Discord, Instagram, Slack, and Twitter have been removed from the playbook

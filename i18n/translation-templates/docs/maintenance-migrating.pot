@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,118 +16,118 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/maintenance-migrating.md:1
+#: ../../../docs/maintenance-migrating.md:10
 msgid "Migrating to new server"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:3
+#: ../../../docs/maintenance-migrating.md:12
 msgid "This documentation explains how to migrate your Matrix services (server, client, bridges, etc.) and data **from an old server to a new server**."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:5
+#: ../../../docs/maintenance-migrating.md:14
 msgid "**Notes**:"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:6
+#: ../../../docs/maintenance-migrating.md:15
 msgid "This migration guide is applicable if you migrate from one server to another server having the same CPU architecture (e.g. both servers being `amd64`)."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:8
+#: ../../../docs/maintenance-migrating.md:17
 msgid "If you're trying to migrate between different architectures (e.g. `amd64` --> `arm64`), simply copying the complete `/matrix` directory is **not** possible as it would move the raw PostgreSQL data (`/matrix/postgres/data`) between different architectures. In this specific case, you can use the guide below as a reference, but you would also need to avoid syncing `/matrix/postgres/data` to the new host, and also dump the database on your current server and import it properly on the new server. See our [Backing up PostgreSQL](maintenance-postgres.md#backing-up-postgresql) docs for help with PostgreSQL backup/restore."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:9
+#: ../../../docs/maintenance-migrating.md:18
 msgid "If you have any questions about migration or encountered an issue during migration, do not hesitate to ask for help on [our Matrix room](https://matrix.to/#/%23matrix-docker-ansible-deploy:devture.com). You probably might want to prepare a temporary/sub account on another Matrix server in case it becomes impossible to use your server due to migration failure by any chance."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:11
+#: ../../../docs/maintenance-migrating.md:20
 msgid "You can't change the domain (specified in the `matrix_domain` variable) after the initial deployment."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:13
+#: ../../../docs/maintenance-migrating.md:22
 msgid "Lower DNS TTL"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:15
+#: ../../../docs/maintenance-migrating.md:24
 msgid "Prepare by lowering DNS TTL for your domains (`matrix.example.com`, etc.), so that DNS record changes would happen faster, leading to less downtime."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:17
+#: ../../../docs/maintenance-migrating.md:26
 msgid "Stop services on the old server completely"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:19
+#: ../../../docs/maintenance-migrating.md:28
 msgid "Before migrating, you need to stop all services on the old server and make sure they won't be starting again."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:21
+#: ../../../docs/maintenance-migrating.md:30
 msgid "To do so, it is recommended to run the `systemctl` command on the server. Running the playbook's `stop` tag also stops the services, but just once; they will start again if you reboot the server."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:23
+#: ../../../docs/maintenance-migrating.md:32
 msgid "Log in to the old server and run the command as `root` (or a user that can run it with `sudo`):"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:29
+#: ../../../docs/maintenance-migrating.md:38
 msgid "Copy data directory to the new server"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:31
+#: ../../../docs/maintenance-migrating.md:40
 msgid "After you've confirmed that all services were stopped, copy the `/matrix` directory from the old server to the new server. When copying, make sure to preserve ownership and permissions (use `cp -p` or `rsync -ar`)!"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:33
+#: ../../../docs/maintenance-migrating.md:42
 msgid "Adjust DNS records"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:35
+#: ../../../docs/maintenance-migrating.md:44
 msgid "Make sure your DNS records are adjusted to point to the new server's IP address."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:37
+#: ../../../docs/maintenance-migrating.md:46
 msgid "Update `inventory/hosts` file"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:39
+#: ../../../docs/maintenance-migrating.md:48
 msgid "Having adjusted DNS records, replace the old server's external IP address on the `inventory/hosts` file with that of the new server."
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:41
+#: ../../../docs/maintenance-migrating.md:50
 msgid "Create `matrix` user and group on the new server"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:43
+#: ../../../docs/maintenance-migrating.md:52
 msgid "Then, run the command below on your local computer to create the `matrix` user and group on the new server:"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:49
+#: ../../../docs/maintenance-migrating.md:58
 msgid "The shortcut command with `just` program is also available: `just run-tags setup-system-user`"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:51
+#: ../../../docs/maintenance-migrating.md:60
 msgid "**Note**: because the `matrix` user and group are created dynamically on each server, the user/group ID may differ between the old and new server. We suggest that you adjust ownership of `/matrix` files. To adjust the ownership, log in to the new server and run the command:"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:57
+#: ../../../docs/maintenance-migrating.md:66
 msgid "Install and start all services on the new server"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:59
+#: ../../../docs/maintenance-migrating.md:68
 msgid "Finally, run the command below on your local computer to finish the installation and start all services:"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:65
+#: ../../../docs/maintenance-migrating.md:74
 msgid "The shortcut command with `just` program is also available: `just run-tags install-all,start`"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:67
+#: ../../../docs/maintenance-migrating.md:76
 msgid "Check if services work"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:69
-msgid "After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-checking-services.md)"
+#: ../../../docs/maintenance-migrating.md:78
+msgid "After starting the services, you probably might want to ensure that you've migrated things correctly and that services are running. For instructions, see: [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)"
 msgstr ""
 
-#: ../../../docs/maintenance-migrating.md:71
+#: ../../../docs/maintenance-migrating.md:80
 msgid "Having make sure that both services and federation work as expected, you can safely shutdown the old server."
 msgstr ""

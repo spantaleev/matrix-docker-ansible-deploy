@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,78 +16,94 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-dendrite.md:1
+#: ../../../docs/configuring-playbook-dendrite.md:9
 msgid "Configuring Dendrite (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:3
+#: ../../../docs/configuring-playbook-dendrite.md:11
 msgid "The playbook can install and configure the [Dendrite](https://github.com/element-hq/dendrite) Matrix server for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:5
+#: ../../../docs/configuring-playbook-dendrite.md:13
 msgid "See the project's [documentation](https://element-hq.github.io/dendrite/) to learn what it does and why it might be useful to you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:7
+#: ../../../docs/configuring-playbook-dendrite.md:15
 msgid "By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:9
-msgid "⚠️ **Warnings**:"
+#: ../../../docs/configuring-playbook-dendrite.md:17
+msgid "[!WARNING]"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:11
+#: ../../../docs/configuring-playbook-dendrite.md:18
 msgid "**You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Dendrite). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:13
+#: ../../../docs/configuring-playbook-dendrite.md:19
 msgid "**Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:15
+#: ../../../docs/configuring-playbook-dendrite.md:21
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:17
+#: ../../../docs/configuring-playbook-dendrite.md:23
 msgid "To use Dendrite, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:23
+#: ../../../docs/configuring-playbook-dendrite.md:29
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:25
+#: ../../../docs/configuring-playbook-dendrite.md:31
 msgid "There are some additional things you may wish to configure about the server."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:27
+#: ../../../docs/configuring-playbook-dendrite.md:33
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:29
+#: ../../../docs/configuring-playbook-dendrite.md:35
 msgid "`roles/custom/matrix-dendrite/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:30
+#: ../../../docs/configuring-playbook-dendrite.md:36
 msgid "`roles/custom/matrix-dendrite/templates/dendrite.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_dendrite_configuration_extension_yaml` variable"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:32
+#: ../../../docs/configuring-playbook-dendrite.md:38
 msgid "For example, to override some Dendrite settings, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:53
+#: ../../../docs/configuring-playbook-dendrite.md:59
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:55
+#: ../../../docs/configuring-playbook-dendrite.md:61
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:62
+#: ../../../docs/configuring-playbook-dendrite.md:68
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-dendrite.md:64
+#: ../../../docs/configuring-playbook-dendrite.md:70
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dendrite.md:72
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dendrite.md:74
+msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dendrite`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dendrite.md:76
+msgid "Increase logging verbosity"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-dendrite.md:78
+msgid "The default logging level for this component is `warning`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:"
 msgstr ""

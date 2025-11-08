@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,214 +16,214 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:1
+#: ../../../docs/configuring-playbook-user-verification-service.md:8
 msgid "Setting up Matrix User Verification Service (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:3
+#: ../../../docs/configuring-playbook-user-verification-service.md:10
 msgid "The playbook can install and configure [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:5
+#: ../../../docs/configuring-playbook-user-verification-service.md:12
 msgid "See the project's [documentation](https://github.com/matrix-org/matrix-user-verification-service/blob/master/README.md) to learn what it does and why it might be useful to you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:7
+#: ../../../docs/configuring-playbook-user-verification-service.md:14
 msgid "Currently, the main purpose of this role is to allow Jitsi to authenticate Matrix users and check if they are authorized to join a conference. If the Jitsi server is also configured by this playbook, all plugging of variables and secrets is handled in `group_vars/matrix_servers`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:9
+#: ../../../docs/configuring-playbook-user-verification-service.md:16
 msgid "What does it do?"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:11
+#: ../../../docs/configuring-playbook-user-verification-service.md:18
 msgid "UVS can be used to verify two claims:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:13
+#: ../../../docs/configuring-playbook-user-verification-service.md:20
 msgid "(A) Whether a given OpenID token is valid for a given server and"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:14
+#: ../../../docs/configuring-playbook-user-verification-service.md:21
 msgid "(B) whether a user is member of a given room and the corresponding PowerLevel"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:16
+#: ../../../docs/configuring-playbook-user-verification-service.md:23
 msgid "Verifying an OpenID token ID done by finding the corresponding Homeserver via `/.well-known/matrix/server` for the given domain. The configured `matrix_user_verification_service_uvs_homeserver_url` does **not** factor into this. By default, this playbook only checks against `matrix_server_fqn_matrix`. Therefore, the request will be made against the public `openid` API for `matrix_server_fqn_matrix`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:18
+#: ../../../docs/configuring-playbook-user-verification-service.md:25
 msgid "Verifying RoomMembership and PowerLevel is done against `matrix_user_verification_service_uvs_homeserver_url` which is by default done via the docker network. UVS will verify the validity of the token beforehand though."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:20
+#: ../../../docs/configuring-playbook-user-verification-service.md:27
 msgid "Prerequisites"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:22
+#: ../../../docs/configuring-playbook-user-verification-service.md:29
 msgid "Open Matrix Federation port"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:24
+#: ../../../docs/configuring-playbook-user-verification-service.md:31
 msgid "Enabling the UVS service will automatically reconfigure your Synapse homeserver to expose the `openid` API endpoints on the Matrix Federation port (usually `8448`), even if [federation](configuring-playbook-federation.md) is disabled. If you enable the component, make sure that the port is accessible."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:26
+#: ../../../docs/configuring-playbook-user-verification-service.md:33
 msgid "Install Matrix services"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:28
+#: ../../../docs/configuring-playbook-user-verification-service.md:35
 msgid "UVS can only be installed after Matrix services are installed and running. If you're just installing Matrix services for the first time, please continue with the [Configuration](configuring-playbook.md) / [Installation](installing.md) and come back here later."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:30
+#: ../../../docs/configuring-playbook-user-verification-service.md:37
 msgid "Register a dedicated Matrix user (optional, recommended)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:32
+#: ../../../docs/configuring-playbook-user-verification-service.md:39
 msgid "We recommend that you create a dedicated Matrix user for uvs (`uvs` is a good username). **Because UVS requires an access token as an admin user, that user needs to be an admin.**"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:34
+#: ../../../docs/configuring-playbook-user-verification-service.md:41
 msgid "Generate a strong password for the user. You can create one with a command like `pwgen -s 64 1`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:36
+#: ../../../docs/configuring-playbook-user-verification-service.md:43
 msgid "You can use the playbook to [register a new user](registering-users.md):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:42
+#: ../../../docs/configuring-playbook-user-verification-service.md:49
 msgid "Obtain an access token"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:44
+#: ../../../docs/configuring-playbook-user-verification-service.md:51
 msgid "UVS requires an access token as an admin user to verify RoomMembership and PowerLevel against `matrix_user_verification_service_uvs_homeserver_url`. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:46
+#: ../../../docs/configuring-playbook-user-verification-service.md:53
 msgid "[!WARNING] Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:49
+#: ../../../docs/configuring-playbook-user-verification-service.md:56
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:51
+#: ../../../docs/configuring-playbook-user-verification-service.md:58
 msgid "To enable UVS, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:59
+#: ../../../docs/configuring-playbook-user-verification-service.md:66
 msgid "In the default configuration, the UVS Server is only reachable via the docker network, which is fine if e.g. Jitsi is also running in a container on the host. However, it is possible to expose UVS via setting `matrix_user_verification_service_container_http_host_bind_port`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:61
+#: ../../../docs/configuring-playbook-user-verification-service.md:68
 msgid "Custom Auth Token (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:63
+#: ../../../docs/configuring-playbook-user-verification-service.md:70
 msgid "It is possible to set an API Auth Token to restrict access to the UVS. If this is enabled, anyone making a request to UVS must provide it via the header `Authorization: Bearer YOUR_TOKEN_HERE`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:65
+#: ../../../docs/configuring-playbook-user-verification-service.md:72
 msgid "By default, the token (`YOUR_TOKEN_HERE`) will be derived from `matrix_homeserver_generic_secret_key` in `group_vars/matrix_servers`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:67
+#: ../../../docs/configuring-playbook-user-verification-service.md:74
 msgid "To set your own token, add the following configuration to your `vars.yml` file. Make sure to replace `YOUR_TOKEN_HERE` with your own."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:73
+#: ../../../docs/configuring-playbook-user-verification-service.md:80
 msgid "If a Jitsi instance is also managed by this playbook and [`matrix` authentication](configuring-playbook-jitsi.md#authenticate-using-matrix-openid-auth-type-matrix) is enabled there, this collection will automatically configure Jitsi to use the configured auth token."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:75
+#: ../../../docs/configuring-playbook-user-verification-service.md:82
 msgid "Disable Authorization (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:77
+#: ../../../docs/configuring-playbook-user-verification-service.md:84
 msgid "Authorization is enabled by default. To disable it, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:83
+#: ../../../docs/configuring-playbook-user-verification-service.md:90
 msgid "Federation (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:85
+#: ../../../docs/configuring-playbook-user-verification-service.md:92
 msgid "In theory (however currently untested), UVS can handle federation. To enable it, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:91
+#: ../../../docs/configuring-playbook-user-verification-service.md:98
 msgid "This will instruct UVS to verify the OpenID token against any domain given in a request. Homeserver discovery is done via `.well-known/matrix/server` of the given domain."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:93
+#: ../../../docs/configuring-playbook-user-verification-service.md:100
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:95
+#: ../../../docs/configuring-playbook-user-verification-service.md:102
 msgid "There are some additional things you may wish to configure about the component."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:97
+#: ../../../docs/configuring-playbook-user-verification-service.md:104
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:99
+#: ../../../docs/configuring-playbook-user-verification-service.md:106
 msgid "`roles/custom/matrix-user-verification-service/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:101
+#: ../../../docs/configuring-playbook-user-verification-service.md:108
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:103
+#: ../../../docs/configuring-playbook-user-verification-service.md:110
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:110
+#: ../../../docs/configuring-playbook-user-verification-service.md:117
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-service matrix-user-verification-service` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:112
+#: ../../../docs/configuring-playbook-user-verification-service.md:119
 msgid "`just install-service matrix-user-verification-service` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:114
+#: ../../../docs/configuring-playbook-user-verification-service.md:121
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:116
+#: ../../../docs/configuring-playbook-user-verification-service.md:123
 msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-user-verification-service`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:118
+#: ../../../docs/configuring-playbook-user-verification-service.md:125
 msgid "Increase logging verbosity"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:120
+#: ../../../docs/configuring-playbook-user-verification-service.md:127
 msgid "The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:127
+#: ../../../docs/configuring-playbook-user-verification-service.md:134
 msgid "TLS Certificate Checking"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:129
+#: ../../../docs/configuring-playbook-user-verification-service.md:136
 msgid "If the Matrix Homeserver does not provide a valid TLS certificate, UVS will fail with the following error message:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:131
+#: ../../../docs/configuring-playbook-user-verification-service.md:138
 msgid "message: 'No response received: [object Object]',"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:133
+#: ../../../docs/configuring-playbook-user-verification-service.md:140
 msgid "This also applies to self-signed and Let's Encrypt staging certificates."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:135
+#: ../../../docs/configuring-playbook-user-verification-service.md:142
 msgid "To disable certificate validation altogether (INSECURE! Not suitable for production use!) set: `NODE_TLS_REJECT_UNAUTHORIZED=0`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-user-verification-service.md:137
+#: ../../../docs/configuring-playbook-user-verification-service.md:144
 msgid "Alternatively, it is possible to inject your own CA certificates into the container by mounting a PEM file with additional trusted CAs into the container and pointing the `NODE_EXTRA_CA_CERTS` environment variable to it."
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,165 +16,177 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/ansible.md:2
-msgid "Running this playbook"
+#: ../../../docs/ansible.md:11
+msgid "Using Ansible for the playbook"
 msgstr ""
 
-#: ../../../docs/ansible.md:4
+#: ../../../docs/ansible.md:13
 msgid "This playbook is meant to be run using [Ansible](https://www.ansible.com/)."
 msgstr ""
 
-#: ../../../docs/ansible.md:6
+#: ../../../docs/ansible.md:15
 msgid "Ansible typically runs on your local computer and carries out tasks on a remote server. If your local computer cannot run Ansible, you can also run Ansible on some server somewhere (including the server you wish to install to)."
 msgstr ""
 
-#: ../../../docs/ansible.md:8
+#: ../../../docs/ansible.md:17
 msgid "Supported Ansible versions"
 msgstr ""
 
-#: ../../../docs/ansible.md:10
+#: ../../../docs/ansible.md:19
 msgid "To manually check which version of Ansible you're on, run: `ansible --version`."
 msgstr ""
 
-#: ../../../docs/ansible.md:12
+#: ../../../docs/ansible.md:21
 msgid "For the **best experience**, we recommend getting the **latest version of Ansible available**."
 msgstr ""
 
-#: ../../../docs/ansible.md:14
-msgid "We're not sure what's the minimum version of Ansible that can run this playbook successfully. The lowest version that we've confirmed (on 2022-11-26) to be working fine is: `ansible-core` (`2.11.7`) combined with `ansible` (`4.10.0`)."
+#: ../../../docs/ansible.md:23
+msgid "We're not sure what's the minimum version of Ansible that can run this playbook successfully. The lowest version that we suspect (on 2025-09-03) to be working fine is: `ansible-core` (`2.15.1`)."
 msgstr ""
 
-#: ../../../docs/ansible.md:16
+#: ../../../docs/ansible.md:25
 msgid "If your distro ships with an Ansible version older than this, you may run into issues. Consider [Upgrading Ansible](#upgrading-ansible) or [using Ansible via Docker](#using-ansible-via-docker)."
 msgstr ""
 
-#: ../../../docs/ansible.md:18
-msgid "Upgrading Ansible"
-msgstr ""
-
-#: ../../../docs/ansible.md:20
-msgid "Depending on your distribution, you may be able to upgrade Ansible in a few different ways:"
-msgstr ""
-
-#: ../../../docs/ansible.md:22
-msgid "by using an additional repository (PPA, etc.), which provides newer Ansible versions. See instructions for [CentOS](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-rhel-centos-or-fedora), [Debian](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-debian), or [Ubuntu](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-ubuntu) on the Ansible website."
-msgstr ""
-
-#: ../../../docs/ansible.md:24
-msgid "by removing the Ansible package (`yum remove ansible` or `apt-get remove ansible`) and installing via [pip](https://pip.pypa.io/en/stable/installation/) (`pip install ansible`)."
-msgstr ""
-
-#: ../../../docs/ansible.md:26
-msgid "If using the `pip` method, do note that the `ansible-playbook` binary may not be on the `$PATH` (https://linuxconfig.org/linux-path-environment-variable), but in some more special location like `/usr/local/bin/ansible-playbook`. You may need to invoke it using the full path."
-msgstr ""
-
-#: ../../../docs/ansible.md:28
-msgid "**Note**: Both of the above methods are a bad way to run system software such as Ansible. If you find yourself needing to resort to such hacks, please consider reporting a bug to your distribution and/or switching to a sane distribution, which provides up-to-date software."
+#: ../../../docs/ansible.md:27
+msgid "[!WARNING] One reason for the version requirement being as such is that the playbook by default installs Docker for you using [this Docker role](https://github.com/geerlingguy/ansible-role-docker) which [has a hard requirement on Ansible v2.15.1](https://github.com/geerlingguy/ansible-role-docker/commit/7f44a1d9ad8132819ea9852918bca5dab8757cd0). If you install Docker yourself another way, you can tell the playbook to skip running this role (by adding `matrix_playbook_docker_installation_enabled: false` to your `vars.yml` configuration). It may then be possible to get the playbook running on an older version of Ansible. Still, this is a complication and your mileage may vary. We recommend [upgrading Ansible](#upgrading-ansible) instead of going into uncharted territory."
 msgstr ""
 
 #: ../../../docs/ansible.md:30
-msgid "Using Ansible via Docker"
+msgid "Upgrading Ansible"
 msgstr ""
 
 #: ../../../docs/ansible.md:32
-msgid "Alternatively, you can run Ansible inside a Docker container (powered by the [devture/ansible](https://hub.docker.com/r/devture/ansible/) Docker image)."
+msgid "Depending on your distribution, you may be able to upgrade Ansible in a few different ways:"
 msgstr ""
 
 #: ../../../docs/ansible.md:34
-msgid "This ensures that you're using a very recent Ansible version, which is less likely to be incompatible with the playbook."
+msgid "by using an additional repository (PPA, etc.), which provides newer Ansible versions. See instructions for [CentOS](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-rhel-centos-or-fedora), [Debian](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-debian), or [Ubuntu](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-ubuntu) on the Ansible website."
 msgstr ""
 
 #: ../../../docs/ansible.md:36
-msgid "You can either [run Ansible in a container on the Matrix server itself](#running-ansible-in-a-container-on-the-matrix-server-itself) or [run Ansible in a container on another computer (not the Matrix server)](#running-ansible-in-a-container-on-another-computer-not-the-matrix-server)."
+msgid "by removing the Ansible package (`yum remove ansible` or `apt-get remove ansible`) and installing via [pip](https://pip.pypa.io/en/stable/installation/) (`pip install ansible`)."
 msgstr ""
 
 #: ../../../docs/ansible.md:38
-msgid "Running Ansible in a container on the Matrix server itself"
+msgid "If using the `pip` method, do note that the `ansible-playbook` binary may not be on the `$PATH` (https://linuxconfig.org/linux-path-environment-variable), but in some more special location like `/usr/local/bin/ansible-playbook`. You may need to invoke it using the full path."
 msgstr ""
 
 #: ../../../docs/ansible.md:40
-msgid "To run Ansible in a (Docker) container on the Matrix server itself, you need to have a working Docker installation. Docker is normally installed by the playbook, so this may be a bit of a chicken and egg problem. To solve it:"
+msgid "**Note**: Both of the above methods are a bad way to run system software such as Ansible. If you find yourself needing to resort to such hacks, please consider reporting a bug to your distribution and/or switching to a sane distribution, which provides up-to-date software."
 msgstr ""
 
 #: ../../../docs/ansible.md:42
-msgid "you **either** need to install Docker manually first. Follow [the upstream instructions](https://docs.docker.com/engine/install/) for your distribution and consider setting `matrix_playbook_docker_installation_enabled: false` in your `vars.yml` file, to prevent the playbook from installing Docker"
+msgid "Using Ansible via Docker"
 msgstr ""
 
-#: ../../../docs/ansible.md:43
-msgid "**or** you need to run the playbook in another way (e.g. [Running Ansible in a container on another computer (not the Matrix server)](#running-ansible-in-a-container-on-another-computer-not-the-matrix-server)) at least the first time around"
+#: ../../../docs/ansible.md:44
+msgid "Alternatively, you can run Ansible inside a Docker container (powered by the [ghcr.io/devture/ansible](https://github.com/devture/docker-ansible/pkgs/container/ansible) Docker image)."
 msgstr ""
 
-#: ../../../docs/ansible.md:45
-msgid "Once you have a working Docker installation on the server, **clone the playbook** somewhere on the server and configure it as per usual (`inventory/hosts`, `inventory/host_vars/…`, etc.), as described in [configuring the playbook](configuring-playbook.md)."
+#: ../../../docs/ansible.md:46
+msgid "This ensures that:"
 msgstr ""
 
-#: ../../../docs/ansible.md:47
-msgid "You would then need to add `ansible_connection=community.docker.nsenter` to the host line in `inventory/hosts`. This tells Ansible to connect to the \"remote\" machine by switching Linux namespaces with [nsenter](https://man7.org/linux/man-pages/man1/nsenter.1.html), instead of using SSH."
+#: ../../../docs/ansible.md:48
+msgid "you're using a very recent Ansible version, which is less likely to be incompatible with the playbook"
 msgstr ""
 
 #: ../../../docs/ansible.md:49
-msgid "Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `ansible-playbook --connection=community.docker.nsenter …`"
+msgid "you also get access to the [agru](https://github.com/etkecc/agru) tool for quicker Ansible role installation (when running `just roles`) compared to `ansible-galaxy`"
 msgstr ""
 
 #: ../../../docs/ansible.md:51
-#: ../../../docs/ansible.md:71
+msgid "You can either [run Ansible in a container on the Matrix server itself](#running-ansible-in-a-container-on-the-matrix-server-itself) or [run Ansible in a container on another computer (not the Matrix server)](#running-ansible-in-a-container-on-another-computer-not-the-matrix-server)."
+msgstr ""
+
+#: ../../../docs/ansible.md:53
+msgid "Running Ansible in a container on the Matrix server itself"
+msgstr ""
+
+#: ../../../docs/ansible.md:55
+msgid "To run Ansible in a (Docker) container on the Matrix server itself, you need to have a working Docker installation. Docker is normally installed by the playbook, so this may be a bit of a chicken and egg problem. To solve it:"
+msgstr ""
+
+#: ../../../docs/ansible.md:57
+msgid "you **either** need to install Docker manually first. Follow [the upstream instructions](https://docs.docker.com/engine/install/) for your distribution and consider setting `matrix_playbook_docker_installation_enabled: false` in your `vars.yml` file, to prevent the playbook from installing Docker"
+msgstr ""
+
+#: ../../../docs/ansible.md:58
+msgid "**or** you need to run the playbook in another way (e.g. [Running Ansible in a container on another computer (not the Matrix server)](#running-ansible-in-a-container-on-another-computer-not-the-matrix-server)) at least the first time around"
+msgstr ""
+
+#: ../../../docs/ansible.md:60
+msgid "Once you have a working Docker installation on the server, **clone the playbook** somewhere on the server and configure it as per usual (`inventory/hosts`, `inventory/host_vars/…`, etc.), as described in [configuring the playbook](configuring-playbook.md)."
+msgstr ""
+
+#: ../../../docs/ansible.md:62
+msgid "You would then need to add `ansible_connection=community.docker.nsenter` to the host line in `inventory/hosts`. This tells Ansible to connect to the \"remote\" machine by switching Linux namespaces with [nsenter](https://man7.org/linux/man-pages/man1/nsenter.1.html), instead of using SSH."
+msgstr ""
+
+#: ../../../docs/ansible.md:64
+msgid "Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `just install-all --connection=community.docker.nsenter` (or `ansible-playbook --connection=community.docker.nsenter …`)."
+msgstr ""
+
+#: ../../../docs/ansible.md:66
+#: ../../../docs/ansible.md:88
 msgid "Run this from the playbook's directory:"
 msgstr ""
 
-#: ../../../docs/ansible.md:63
-#: ../../../docs/ansible.md:84
+#: ../../../docs/ansible.md:80
+#: ../../../docs/ansible.md:103
 msgid "Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code."
 msgstr ""
 
-#: ../../../docs/ansible.md:65
-#: ../../../docs/ansible.md:86
+#: ../../../docs/ansible.md:82
+#: ../../../docs/ansible.md:105
 msgid "First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues)."
 msgstr ""
 
-#: ../../../docs/ansible.md:67
-msgid "Finally, you can execute `ansible-playbook …` (or `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now."
+#: ../../../docs/ansible.md:84
+msgid "Finally, you can execute `just` or `ansible-playbook …` (e.g. `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now."
 msgstr ""
 
-#: ../../../docs/ansible.md:69
+#: ../../../docs/ansible.md:86
 msgid "Running Ansible in a container on another computer (not the Matrix server)"
 msgstr ""
 
-#: ../../../docs/ansible.md:82
-msgid "The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`). If your SSH key is at a different path (not in `$HOME/.ssh/id_rsa`), adjust that part."
+#: ../../../docs/ansible.md:101
+msgid "The above command tries to mount an SSH key (`$HOME/.ssh/id_ed25519`) into the container (at `/root/.ssh/id_ed25519`). If your SSH key is at a different path (not in `$HOME/.ssh/id_ed25519`), adjust that part."
 msgstr ""
 
-#: ../../../docs/ansible.md:88
-msgid "Finally, you execute `ansible-playbook …` commands as per normal now."
+#: ../../../docs/ansible.md:107
+msgid "Finally, you execute `just` or `ansible-playbook …` commands as per normal now."
 msgstr ""
 
-#: ../../../docs/ansible.md:90
+#: ../../../docs/ansible.md:109
 msgid "If you don't use SSH keys for authentication"
 msgstr ""
 
-#: ../../../docs/ansible.md:92
-msgid "If you don't use SSH keys for authentication, simply remove that whole line (`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro`)."
+#: ../../../docs/ansible.md:111
+msgid "If you don't use SSH keys for authentication, simply remove that whole line (`--mount type=bind,src$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro`)."
 msgstr ""
 
-#: ../../../docs/ansible.md:94
+#: ../../../docs/ansible.md:113
 msgid "To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (the previously used `docker run -it …` command), run:"
 msgstr ""
 
-#: ../../../docs/ansible.md:100
-msgid "Then, to be asked for the password whenever running an  `ansible-playbook` command add `--ask-pass` to the arguments of the command."
+#: ../../../docs/ansible.md:119
+msgid "Then, to be asked for the password whenever running an `ansible-playbook` command add `--ask-pass` to the arguments of the command."
 msgstr ""
 
-#: ../../../docs/ansible.md:102
+#: ../../../docs/ansible.md:121
 msgid "Resolve directory ownership issues"
 msgstr ""
 
-#: ../../../docs/ansible.md:104
-msgid "Because you're `root` in the container running Ansible and this likely differs fom the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:"
+#: ../../../docs/ansible.md:123
+msgid "Because you're `root` in the container running Ansible and this likely differs from the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:"
 msgstr ""
 
-#: ../../../docs/ansible.md:106
+#: ../../../docs/ansible.md:125
 msgid "fatal: unsafe repository ('/work' is owned by someone else) To add an exception for this directory, call:  git config --global --add safe.directory /work"
 msgstr ""
 
-#: ../../../docs/ansible.md:110
+#: ../../../docs/ansible.md:129
 msgid "These errors can be resolved by making `git` trust the playbook directory by running `git config --global --add safe.directory /work`"
 msgstr ""
