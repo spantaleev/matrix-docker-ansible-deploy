@@ -1,3 +1,9 @@
+# 2025-11-08
+
+Thanks to [Suguru Hirahara](https://github.com/luixxiul), the playbook now supports the [GearKite/MatrixZulipBridg](https://github.com/GearKite/MatrixZulipBridg) bridge for bridging Matrix to [Zulip](https://zulip.com/).
+
+To learn more, see our [Setting up Zulip bridging](docs/configuring-playbook-bridge-zulip.md) documentation page.
+
 # 2025-11-07
 
 ## The matrix-chatgpt-bot has been removed from the playbook
