@@ -74,7 +74,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-To use the bridge, you need to start a chat with `@zulipbridge:example.com` (where `example.com` is your base domain, not the `matrix.` domain). If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
+To use the bridge, you need to start a chat with `@zulipbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain). If the bridge ignores you and a DM is not accepted then the owner setting may be wrong.
 
 If you encounter issues or feel lost you can join the project room at [#matrixzulipbridge:shema.lv](https://matrix.to/#/#matrixzulipbridge:shema.lv) for help.
 

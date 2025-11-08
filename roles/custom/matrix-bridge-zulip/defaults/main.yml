@@ -94,7 +94,7 @@ matrix_zulip_bridge_config_media_url: "{{ matrix_zulip_bridge_scheme }}://{{ mat
 # See: https://github.com/GearKite/MatrixZulipBridge/blob/2ba51f3da2ad8bd33460c953ef91a9cfc585a2d4/matrixzulipbridge/__main__.py#L87
 matrix_zulip_bridge_config_media_path: "{{ matrix_zulip_bridge_container_labels_traefik_media_path_prefix }}/v3/download/{netloc}{path}{filename}"
 matrix_zulip_bridge_config_media_key: "{{ matrix_zulip_bridge_homeserver_token }}"
-matrix_zulip_bridge_config_displayname: "MatrixZulipBridge"
+matrix_zulip_bridge_config_displayname: "Zulip bridge bot"
 
 matrix_zulip_bridge_registration_yaml_bridge_zulip:
   media_url: "{{ matrix_zulip_bridge_config_media_url }}"
@@ -105,18 +105,18 @@ matrix_zulip_bridge_registration_yaml_bridge_zulip:
 # Default registration file consumed by both the homeserver and MatrixZulipBridge.
 # Besides registration information, it contains configuration (see the Zulip bridge key).
 matrix_zulip_bridge_registration_yaml:
-  id: zulipbridge
+  id: zulip
   url: http://matrix-zulip-bridge:{{ matrix_zulip_bridge_container_http_port }}
   as_token: "{{ matrix_zulip_bridge_appservice_token }}"
   hs_token: "{{ matrix_zulip_bridge_homeserver_token }}"
   rate_limited: false
-  sender_localpart: zulipbridge
+  sender_localpart: zulipbot
   namespaces:
     users:
       - regex: '@zulip_.*'
         exclusive: true
     aliases: []
     rooms: []
-  matrixzulipbridge: "{{ matrix_zulip_bridge_registration_yaml_bridge_zulip }}"
+  zulipbridge: "{{ matrix_zulip_bridge_registration_yaml_bridge_zulip }}"
 
 matrix_zulip_bridge_registration: "{{ matrix_zulip_bridge_registration_yaml | from_yaml }}"
