@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: 2021 Toni Spets
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Ensure the Zulip bridge image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_zulip_bridge_docker_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_zulip_bridge_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_zulip_bridge_docker_image_force_pull }}"
+  register: result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: result is not failed
+
+- name: Ensure the Zulip bridge paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - "{{ matrix_zulip_bridge_base_path }}"
+
+- name: Ensure the Zulip bridge registration.yaml installed if provided
+  ansible.builtin.copy:
+    content: "{{ matrix_zulip_bridge_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_zulip_bridge_base_path }}/registration.yaml"
+    mode: "0644"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+
+- name: Ensure the Zulip bridge support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_zulip_bridge_base_path }}/{{ item }}"
+    mode: "0640"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - labels
+
+- name: Ensure the Zulip bridge container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_zulip_bridge_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Ensure matrix-zulip-bridge.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-zulip-bridge.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-zulip-bridge.service"
+    mode: "0644"

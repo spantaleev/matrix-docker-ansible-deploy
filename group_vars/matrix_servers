@@ -116,6 +116,8 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_hookshot_base_path + '/registration.yml,dst=/hookshot-registration.yml,ro'] if matrix_hookshot_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_zulip_bridge_base_path + '/registration.yaml,dst=/matrixzulipbridge-registration.yaml,ro'] if matrix_zulip_bridge_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_mautrix_bluesky_config_path + '/registration.yaml,dst=/matrix-mautrix-bluesky-registration.yaml,ro'] if matrix_mautrix_bluesky_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_mautrix_discord_enabled else [])
@@ -180,6 +182,8 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/heisenbridge-registration.yaml'] if matrix_heisenbridge_enabled else [])
     +
     (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
+    +
+    (['/matrixzulipbridge-registration.yaml'] if matrix_zulip_bridge_enabled else [])
     +
     (['/matrix-mautrix-bluesky-registration.yaml'] if matrix_mautrix_bluesky_enabled else [])
     +
@@ -314,6 +318,8 @@ devture_systemd_service_manager_services_list_auto: |
     ([{'name': 'matrix-heisenbridge.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'heisenbridge']}] if matrix_heisenbridge_enabled else [])
     +
     ([{'name': 'matrix-hookshot.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'hookshot', 'bridge-hookshot']}] if matrix_hookshot_enabled else [])
+    +
+    ([{'name': 'matrix-zulip-bridge.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'zulip']}] if matrix_zulip_bridge_enabled else [])
     +
     ([{'name': 'matrix-mautrix-bluesky.service', 'priority': 2000, 'groups': ['matrix', 'bridges', 'mautrix-bluesky']}] if matrix_mautrix_bluesky_enabled else [])
     +
@@ -2285,6 +2291,55 @@ matrix_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
 ######################################################################
 #
 # /matrix-bridge-hookshot
+#
+######################################################################
+
+######################################################################
+#
+# matrix-bridge-zulip
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_zulip_bridge_enabled: false
+
+matrix_zulip_bridge_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+# Set this to your Matrix ID if you want to enforce the owner, otherwise first _local_ user becomes one
+matrix_zulip_bridge_owner: "{{ matrix_admin if matrix_admin else '' }}"
+
+matrix_zulip_bridge_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+  }}
+
+matrix_zulip_bridge_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_zulip_bridge_docker_image_registry_prefix_upstream_default }}"
+
+matrix_zulip_bridge_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_zulip_bridge_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+      +
+      [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_zulip_bridge_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else []
+    ) | unique
+  }}
+
+matrix_zulip_bridge_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_zulip_bridge_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_zulip_bridge_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_zulip_bridge_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_zulip_bridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'zulip.as.tok', rounds=655555) | to_uuid }}"
+
+matrix_zulip_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'zulip.hs.tok', rounds=655555) | to_uuid }}"
+
+matrix_zulip_bridge_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+
+######################################################################
+#
+# /matrix-bridge-zulip
 #
 ######################################################################
 
@@ -4920,6 +4975,11 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
       '^@heisenbridge:'+(matrix_domain | regex_escape)+'$',
       '^@hbirc_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_heisenbridge_enabled else [])
+    +
+    ([
+      '^@zulipbot:'+(matrix_domain | regex_escape)+'$',
+      '^@zulip_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_zulip_bridge_enabled else [])
     +
     ([
       '^@hookshot:'+(matrix_domain | regex_escape)+'$',
