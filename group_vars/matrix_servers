@@ -431,8 +431,6 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-registration.service', 'priority': 4000, 'groups': ['matrix', 'registration', 'matrix-registration']}] if matrix_registration_enabled else [])
     +
-    ([{'name': 'matrix-sliding-sync.service', 'priority': 1500, 'groups': ['matrix', 'sliding-sync']}] if matrix_sliding_sync_enabled else [])
-    +
     ([{'name': 'matrix-sygnal.service', 'priority': 800, 'groups': ['matrix', 'sygnal']}] if matrix_sygnal_enabled else [])
     +
     ([{'name': 'matrix-goofys.service', 'priority': 800, 'groups': ['matrix', 'goofys']}] if matrix_s3_media_store_enabled else [])
@@ -3930,12 +3928,6 @@ postgres_managed_databases_auto: |
     }] if (matrix_authentication_service_enabled and matrix_authentication_service_config_database_host == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_sliding_sync_database_name,
-      'username': matrix_sliding_sync_database_username,
-      'password': matrix_sliding_sync_database_password,
-    }] if (matrix_sliding_sync_enabled) else [])
-    +
-    ([{
       'name': matrix_ma1sd_database_name,
       'username': matrix_ma1sd_database_username,
       'password': matrix_ma1sd_database_password,
@@ -5450,73 +5442,6 @@ matrix_registration_database_password: "{{ '%s' | format(matrix_homeserver_gener
 # /matrix-registration
 #
 ######################################################################
-
-
-######################################################################
-#
-# matrix-sliding-sync
-#
-######################################################################
-
-# We don't enable the sliding sync proxy by default.
-matrix_sliding_sync_enabled: false
-
-matrix_sliding_sync_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
-
-matrix_sliding_sync_hostname: "{{ matrix_server_fqn_matrix }}"
-
-matrix_sliding_sync_path_prefix: /sliding-sync
-
-matrix_sliding_sync_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_sliding_sync_container_image_registry_prefix_upstream_default }}"
-
-matrix_sliding_sync_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
-
-matrix_sliding_sync_container_network: "{{ matrix_homeserver_container_network }}"
-
-matrix_sliding_sync_container_additional_networks: |
-  {{
-    (
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_sliding_sync_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
-      +
-      ([] if matrix_homeserver_container_network in ['', matrix_sliding_sync_container_network] else [matrix_homeserver_container_network])
-      +
-      ([postgres_container_network] if postgres_enabled and postgres_container_network != matrix_sliding_sync_container_network else [])
-    ) | unique
-  }}
-
-matrix_sliding_sync_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_sliding_sync_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_sliding_sync_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_sliding_sync_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
-matrix_sliding_sync_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_sliding_sync_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
-
-matrix_sliding_sync_systemd_required_services_list_auto: |
-  {{
-    matrix_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_sliding_sync_database_hostname == postgres_connection_hostname) else [])
-  }}
-
-matrix_sliding_sync_environment_variable_syncv3_server: "{{ matrix_homeserver_container_url }}"
-matrix_sliding_sync_environment_variable_syncv3_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ss.secret', rounds=655555) | to_uuid }}"
-
-matrix_sliding_sync_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_sliding_sync_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'ss.db', rounds=655555) | to_uuid }}"
-
-matrix_sliding_sync_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
-
-matrix_sliding_sync_metrics_proxying_enabled: "{{ matrix_sliding_sync_metrics_enabled and matrix_metrics_exposure_enabled }}"
-matrix_sliding_sync_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
-matrix_sliding_sync_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/sliding-sync"
-
-#####################################################################
-#
-# /matrix-sliding-sync
-#
-######################################################################
-
 
 ######################################################################
 #
