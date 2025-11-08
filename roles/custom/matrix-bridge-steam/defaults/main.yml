@@ -52,10 +52,14 @@ matrix_steam_bridge_public_media_signing_key: ''
 matrix_steam_bridge_public_media_expiry: 0
 matrix_steam_bridge_public_media_hash_length: 32
 
-# Displayname template for Steam users
-# {{ .DisplayName }} is replaced with the display name of the Steam user
-# {{ .Username }} is replaced with the username of the Steam user
-matrix_steam_bridge_network_displayname_template: "{% raw %}{{ .DisplayName }} (Steam){% endraw %}"
+# Display name template for Steam users.
+# Available template variables:
+# {{.PersonaName}} - The Steam display name/persona name (most commonly used)
+# {{.AccountName}} - The Steam account/login name
+# {{.SteamID}}     - The numeric Steam ID
+# {{.ProfileURL}}  - The Steam profile URL
+# You can use template functions like {{or}} to provide fallbacks.
+matrix_steam_bridge_network_displayname_template: "{% raw %}{{ .PersonaName }} (Steam){% endraw %}"
 
 matrix_steam_bridge_command_prefix: "!steam"
 
