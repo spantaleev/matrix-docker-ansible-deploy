@@ -630,3 +630,15 @@
 
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report the Sliding Sync proxy variables
+  ansible.builtin.fail:
+    msg: |-
+      The Sliding Sync proxy was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_sliding_sync_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the proxy manually. See `docs/configuring-playbook-sliding-sync-proxy.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_sliding_sync_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_sliding_sync_.+', wantlist=True) | length > 0"
