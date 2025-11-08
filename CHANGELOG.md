@@ -8,7 +8,9 @@ The playbook will let you know if you're using any `matrix_appservice_webhooks_*
 
 # 2025-11-08
 
-Thanks to [Suguru Hirahara](https://github.com/luixxiul), the playbook now supports the [GearKite/MatrixZulipBridg](https://github.com/GearKite/MatrixZulipBridg) bridge for bridging Matrix to [Zulip](https://zulip.com/).
+## MatrixZulipBridge support
+
+Thanks to [Suguru Hirahara](https://github.com/luixxiul), the playbook now supports the [GearKite/MatrixZulipBridge](https://github.com/GearKite/MatrixZulipBridg) bridge for bridging Matrix to [Zulip](https://zulip.com/).
 
 To learn more, see our [Setting up Zulip bridging](docs/configuring-playbook-bridge-zulip.md) documentation page.
 
