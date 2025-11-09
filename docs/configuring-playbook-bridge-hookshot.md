@@ -16,8 +16,6 @@ Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from softw
 
 See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/latest/hookshot.html) to learn what it does and why it might be useful to you.
 
-**Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however was deprecated by its author.
-
 ## Prerequisites
 
 ### Download GitHub app private key (optional)
@@ -130,10 +128,6 @@ aux_file_definitions:
 ```
 
 For more information, see the documentation in the [default configuration of the aux role](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml).
-
-### Collision with matrix-appservice-webhooks
-
-If you are also running [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), it reserves its namespace by the default setting `matrix_appservice_webhooks_user_prefix: '_webhook_'`. You should take care if you modify its or hookshot's prefix that they do not collide with each other's namespace (default `matrix_hookshot_generic_userIdPrefix: '_webhooks_'`).
 
 ### Enable metrics
 
