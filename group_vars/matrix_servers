@@ -1077,7 +1077,7 @@ matrix_mautrix_discord_container_additional_networks_auto: |-
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([postgres_container_network] if postgres_enabled and matrix_mautrix_facebook_database_hostname == postgres_connection_hostname else [])
+      ([postgres_container_network] if postgres_enabled and matrix_mautrix_discord_database_hostname == postgres_connection_hostname else [])
       +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_discord_container_labels_traefik_enabled) else [])
     ) | unique
@@ -1750,7 +1750,7 @@ matrix_mautrix_gmessages_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_facebook_database_hostname == postgres_connection_hostname) else [])
+    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_gmessages_database_hostname == postgres_connection_hostname) else [])
   }}
 
 matrix_mautrix_gmessages_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_gmessages_docker_image_registry_prefix_upstream_default }}"
@@ -2006,8 +2006,6 @@ matrix_sms_bridge_enabled: false
 matrix_sms_bridge_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_facebook_database_hostname == postgres_connection_hostname) else [])
   }}
 
 matrix_sms_bridge_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_sms_bridge_docker_image_registry_prefix_upstream_default }}"
@@ -5316,7 +5314,7 @@ matrix_registration_container_additional_networks_auto: |-
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([postgres_container_network] if (postgres_enabled and matrix_registration_database_hostname == postgres_connection_hostname and matrix_mautrix_facebook_container_network != postgres_container_network) else [])
+      ([postgres_container_network] if (postgres_enabled and matrix_registration_database_hostname == postgres_connection_hostname and matrix_registration_container_network != postgres_container_network) else [])
       +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_registration_container_labels_traefik_enabled) else [])
     ) | unique
