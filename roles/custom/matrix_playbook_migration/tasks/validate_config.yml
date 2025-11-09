@@ -534,6 +534,18 @@
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-appservice-webhooks variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-appservice-webhooks was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_appservice_webhooks_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-appservice-webhooks.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_appservice_webhooks_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_appservice_webhooks_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report matrix-chatgpt-bot variables
   ansible.builtin.fail:
     msg: |-
