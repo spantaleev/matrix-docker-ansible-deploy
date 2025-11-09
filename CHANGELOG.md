@@ -6,11 +6,19 @@
 
 The playbook will let you know if you're using any `matrix_appservice_webhooks_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-appservice-webhooks.md#uninstalling-the-bridge-manually).
 
-## mautrix-facebook has been removed from the playbook
+## mautrix-facebook and mautrix-instagram have been removed from the playbook
 
-[mautrix-facebook](./docs/configuring-playbook-bridge-mautrix-facebook.md) has been removed from the playbook, as it has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge.
+[mautrix-facebook](./docs/configuring-playbook-bridge-mautrix-facebook.md) and [mautrix-instagram](./docs/configuring-playbook-bridge-mautrix-instagram.md) have been removed from the playbook, as they have been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, integrated to the playbook at [2024-02-19](#2024-02-19).
 
-The playbook will let you know if you're using any `matrix_mautrix_facebook_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mautrix-facebook.md#uninstalling-the-bridge-manually).
+The playbook will let you know if you're using any variables for those bridges:
+
+- `matrix_mautrix_facebook_*`
+- `matrix_mautrix_instagram_*`
+
+You'll need to remove them from `vars.yml` and potentially uninstall them manually. Consult pages below for details:
+
+- [Instruction for mautrix-facebook](./docs/configuring-playbook-bridge-mautrix-facebook.md#uninstalling-the-bridge-manually)
+- [Instruction for mautrix-instagram](./docs/configuring-playbook-bridge-mautrix-instagram.md#uninstalling-the-bridge-manually)
 
 # 2025-11-08
 
