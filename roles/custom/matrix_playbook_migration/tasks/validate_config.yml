@@ -558,6 +558,18 @@
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_bot_chatgpt_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_bot_chatgpt_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report mautrix-facebook variables
+  ansible.builtin.fail:
+    msg: |-
+      mautrix-facebook was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mautrix_facebook_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mautrix-facebook.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mautrix_facebook_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mautrix_facebook_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report mautrix-hangouts variables
   ansible.builtin.fail:
     msg: |-
