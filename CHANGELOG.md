@@ -6,6 +6,12 @@
 
 The playbook will let you know if you're using any `matrix_appservice_webhooks_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-appservice-webhooks.md#uninstalling-the-bridge-manually).
 
+## mautrix-facebook has been removed from the playbook
+
+[mautrix-facebook](./docs/configuring-playbook-bridge-mautrix-facebook.md) has been removed from the playbook, as it has been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge.
+
+The playbook will let you know if you're using any `matrix_mautrix_facebook_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-mautrix-facebook.md#uninstalling-the-bridge-manually).
+
 # 2025-11-08
 
 ## MatrixZulipBridge support
