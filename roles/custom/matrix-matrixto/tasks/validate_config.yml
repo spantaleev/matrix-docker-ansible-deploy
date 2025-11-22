@@ -10,12 +10,12 @@
       You need to define a required configuration setting (`{{ item }}`).
   when: "lookup('vars', item, default='') | string | length == 0"
   with_items:
-    - matrixto_hostname
-    - matrixto_path_prefix
-    - matrixto_container_network
+    - matrix_matrixto_hostname
+    - matrix_matrixto_path_prefix
+    - matrix_matrixto_container_network
 
 - name: Run if Traefik is enabled
-  when: matrixto_container_labels_traefik_enabled | bool
+  when: matrix_matrixto_container_labels_traefik_enabled | bool
   block:
     - name: Fail if Traefik settings required for Matrix.to are not defined
       ansible.builtin.fail:
@@ -23,21 +23,21 @@
           You need to define a required configuration setting (`{{ item }}`).
       when: "lookup('vars', item, default='') | string | length == 0"
       with_items:
-        - matrixto_container_labels_traefik_hostname
-        - matrixto_container_labels_traefik_path_prefix
+        - matrix_matrixto_container_labels_traefik_hostname
+        - matrix_matrixto_container_labels_traefik_path_prefix
 
-    - name: Fail if matrixto_container_labels_traefik_path_prefix is different than /
+    - name: Fail if matrix_matrixto_container_labels_traefik_path_prefix is different than /
       ansible.builtin.fail:
         msg: >-
-          matrixto_container_labels_traefik_path_prefix (`{{ matrixto_container_labels_traefik_path_prefix }}`) must be `/`.
+          matrix_matrixto_container_labels_traefik_path_prefix (`{{ matrix_matrixto_container_labels_traefik_path_prefix }}`) must be `/`.
           Matrix.to does not support hosting under a subpath yet.
-      when: "matrixto_container_labels_traefik_path_prefix != '/'"
+      when: "matrix_matrixto_container_labels_traefik_path_prefix != '/'"
 
     # We ensure it doesn't end with a slash, because we handle both (slash and no-slash).
-    # Knowing that `matrixto_container_labels_traefik_path_prefix` does not end with a slash
+    # Knowing that `matrix_matrixto_container_labels_traefik_path_prefix` does not end with a slash
     # ensures we know how to set these routes up without having to do "does it end with a slash" checks elsewhere.
-    - name: Fail if matrixto_container_labels_traefik_path_prefix ends with a slash
+    - name: Fail if matrix_matrixto_container_labels_traefik_path_prefix ends with a slash
       ansible.builtin.fail:
         msg: >-
-          matrixto_container_labels_traefik_path_prefix (`{{ matrixto_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/matrixto`).
-      when: "matrixto_container_labels_traefik_path_prefix != '/' and matrixto_container_labels_traefik_path_prefix[-1] == '/'"
+          matrix_matrixto_container_labels_traefik_path_prefix (`{{ matrix_matrixto_container_labels_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/matrixto`).
+      when: "matrix_matrixto_container_labels_traefik_path_prefix != '/' and matrix_matrixto_container_labels_traefik_path_prefix[-1] == '/'"

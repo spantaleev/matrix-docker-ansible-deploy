@@ -6,28 +6,28 @@
 ---
 - name: Check existence of Matrix.to systemd service
   ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrixto_identifier }}.service"
-  register: matrixto_service_stat
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_matrixto_identifier }}.service"
+  register: matrix_matrixto_service_stat
 
 - name: Uninstall Matrix.to systemd services and files
-  when: matrixto_service_stat.stat.exists | bool
+  when: matrix_matrixto_service_stat.stat.exists | bool
   block:
     - name: Ensure Matrix.to systemd service is stopped
       ansible.builtin.service:
-        name: "{{ matrixto_identifier }}"
+        name: "{{ matrix_matrixto_identifier }}"
         state: stopped
         enabled: false
         daemon_reload: true
 
     - name: Ensure Matrix.to systemd service does not exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrixto_identifier }}.service"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_matrixto_identifier }}.service"
         state: absent
 
     - name: Ensure Matrix.to container network does not exist via community.docker.docker_network
       when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
       community.docker.docker_network:
-        name: "{{ matrixto_container_network }}"
+        name: "{{ matrix_matrixto_container_network }}"
         state: absent
 
     - name: Ensure Matrix.to container network does not exist via ansible.builtin.command
@@ -35,11 +35,11 @@
       ansible.builtin.command:
         cmd: >-
           {{ devture_systemd_docker_base_host_command_docker }} network rm
-          {{ matrixto_container_network }}
+          {{ matrix_matrixto_container_network }}
       register: network_deletion_result
-      changed_when: matrixto_container_network in network_deletion_result.stdout
+      changed_when: matrix_matrixto_container_network in network_deletion_result.stdout
 
     - name: Ensure Matrix.to path does not exist
       ansible.builtin.file:
-        path: "{{ matrixto_base_path }}"
+        path: "{{ matrix_matrixto_base_path }}"
         state: absent
