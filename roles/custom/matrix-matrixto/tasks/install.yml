@@ -9,8 +9,8 @@
     path: "{{ item }}"
     state: directory
     mode: "0750"
-    owner: "{{ matrixto_uid }}"
-    group: "{{ matrixto_gid }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - "{{ matrixto_base_path }}"
 
@@ -19,8 +19,8 @@
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrixto_base_path }}/{{ item }}"
     mode: "0640"
-    owner: "{{ matrixto_uid }}"
-    group: "{{ matrixto_gid }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - env
     - labels
@@ -95,6 +95,6 @@
 
 - name: Ensure Matrix.to systemd service is present
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrixto.service.j2"
+    src: "{{ role_path }}/templates/systemd/matrix-matrixto.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrixto_identifier }}.service"
     mode: "0644"
