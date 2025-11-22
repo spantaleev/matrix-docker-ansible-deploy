@@ -1,3 +1,11 @@
+# 2025-XX-XX
+
+## Go-NEB has been removed from the playbook
+
+[Go-NEB](./docs/configuring-playbook-bot-go-neb.md) has been removed from the playbook, as it has been discontinued since June 2023.
+
+The playbook will let you know if you're using any `matrix_bot_go_neb_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bot manually](./docs/configuring-playbook-bot-go-neb.md#uninstalling-go-neb-manually).
+
 # 2025-11-09
 
 ## matrix-appservice-webhooks has been removed from the playbook
