@@ -1,0 +1,59 @@
+{#
+SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_matrixto_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_matrixto_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_matrixto_container_labels_traefik_docker_network }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if matrix_matrixto_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.{{ matrix_matrixto_identifier }}-slashless-redirect.redirectregex.regex=^({{ matrix_matrixto_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.{{ matrix_matrixto_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + [matrix_matrixto_identifier + '-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_matrixto_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.{{ matrix_matrixto_identifier }}-strip-prefix.stripprefix.prefixes={{ matrix_matrixto_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + [matrix_matrixto_identifier + '-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_matrixto_container_labels_traefik_additional_request_headers.keys() | length > 0 %}
+{% for name, value in matrix_matrixto_container_labels_traefik_additional_request_headers.items() %}
+traefik.http.middlewares.{{ matrix_matrixto_identifier }}-add-request-headers.headers.customrequestheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [matrix_matrixto_identifier + '-add-request-headers'] %}
+{% endif %}
+
+{% if matrix_matrixto_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_matrixto_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.{{ matrix_matrixto_identifier }}-add-response-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [matrix_matrixto_identifier + '-add-response-headers'] %}
+{% endif %}
+
+traefik.http.routers.{{ matrix_matrixto_identifier }}.rule={{ matrix_matrixto_container_labels_traefik_rule }}
+{% if matrix_matrixto_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.{{ matrix_matrixto_identifier }}.priority={{ matrix_matrixto_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.{{ matrix_matrixto_identifier }}.service={{ matrix_matrixto_identifier }}
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ matrix_matrixto_identifier }}.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.{{ matrix_matrixto_identifier }}.entrypoints={{ matrix_matrixto_container_labels_traefik_entrypoints }}
+traefik.http.routers.{{ matrix_matrixto_identifier }}.tls={{ matrix_matrixto_container_labels_traefik_tls | to_json }}
+{% if matrix_matrixto_container_labels_traefik_tls %}
+traefik.http.routers.{{ matrix_matrixto_identifier }}.tls.certResolver={{ matrix_matrixto_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ matrix_matrixto_identifier }}.loadbalancer.server.port={{ matrix_matrixto_container_http_port }}
+{% endif %}
+
+{{ matrix_matrixto_container_labels_additional_labels }}

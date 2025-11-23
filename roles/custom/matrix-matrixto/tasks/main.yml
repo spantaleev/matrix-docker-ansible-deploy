@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Perform Matrix.to installation tasks
+  when: matrix_matrixto_enabled | bool
+  tags:
+    - setup-all
+    - setup-matrixto
+    - install-all
+    - install-matrixto
+  block:
+    - name: Validate Matrix.to configuration
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - name: Install Matrix.to
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- name: Perform Matrix.to uninstallation tasks
+  when: not matrix_matrixto_enabled | bool
+  tags:
+    - setup-all
+    - setup-matrixto
+  block:
+    - name: Uninstall Matrix.to
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

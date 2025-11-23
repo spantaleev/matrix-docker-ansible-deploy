@@ -1,0 +1,178 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
+# SPDX-FileCopyrightText: 2025 MASH project contributors
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Project source code URL: https://app.radicle.xyz/nodes/seed.radicle.garden/rad%3Az3Re1EQbd186vUQDwHByYiLadsVWY
+
+matrix_matrixto_enabled: true
+
+matrix_matrixto_identifier: matrix-matrixto
+matrix_matrixto_base_path: "/{{ matrix_matrixto_identifier }}"
+
+matrix_matrixto_version: 1.2.17-1
+
+matrix_matrixto_scheme: https
+
+# The hostname at which Matrix.to is served.
+matrix_matrixto_hostname: ""
+
+# The path at which Matrix.to is exposed.
+# This value must either be `/` or not end with a slash (e.g. `/matrixto`).
+#
+# Hosting Matrix.to under a subpath does not seem to be possible due to Matrix.to's
+# technical limitations.
+matrix_matrixto_path_prefix: /
+
+matrix_matrixto_container_image: "{{ matrix_matrixto_container_image_registry_prefix }}shirahara/matrixto:{{ matrix_matrixto_container_image_tag }}"
+matrix_matrixto_container_image_tag: "{{ matrix_matrixto_version }}"
+matrix_matrixto_container_image_registry_prefix: "{{ matrix_matrixto_container_image_registry_prefix_upstream }}"
+matrix_matrixto_container_image_registry_prefix_upstream: "{{ matrix_matrixto_container_image_registry_prefix_upstream_default }}"
+matrix_matrixto_container_image_registry_prefix_upstream_default: ""
+matrix_matrixto_container_image_force_pull: "{{ matrix_matrixto_container_image.endswith(':latest') }}"
+
+matrix_matrixto_container_image_self_build: true
+matrix_matrixto_container_image_self_build_name: "shirahara/matrixto:{{ matrix_matrixto_container_image_self_build_repo_version }}"
+matrix_matrixto_container_image_self_build_repo: "https://seed.radicle.garden/z3Re1EQbd186vUQDwHByYiLadsVWY.git"
+matrix_matrixto_container_image_self_build_repo_version: "{{ matrix_matrixto_version if matrix_matrixto_version != 'latest' else 'main' }}"
+matrix_matrixto_container_image_self_build_src_files_path: "{{ matrix_matrixto_base_path }}/docker-src"
+
+# Controls whether the container exposes its HTTP port (tcp/8080 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
+matrix_matrixto_container_http_host_bind_port: ""
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_matrixto_container_network: "{{ matrix_matrixto_identifier }}"
+
+# The port number in the container
+matrix_matrixto_container_http_port: 5000
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_matrixto_container_additional_networks: "{{ matrix_matrixto_container_additional_networks_auto + matrix_matrixto_container_additional_networks_custom }}"
+matrix_matrixto_container_additional_networks_auto: []
+matrix_matrixto_container_additional_networks_custom: []
+
+# A list of additional "volumes" to mount in the container.
+# This list gets populated dynamically at runtime. You can provide a different default value,
+# if you wish to mount your own files into the container.
+# Contains definition objects like this: `{"type": "bind", "src": "/outside", "dst": "/inside", "options": "readonly"}.
+# See the `--mount` documentation for the `docker run` command.
+matrix_matrixto_container_additional_volumes: "{{ matrix_matrixto_container_additional_volumes_auto + matrix_matrixto_container_additional_volumes_custom }}"
+matrix_matrixto_container_additional_volumes_auto: []
+matrix_matrixto_container_additional_volumes_custom: []
+
+# matrix_matrixto_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_matrixto_container_labels_additional_labels`.
+matrix_matrixto_container_labels_traefik_enabled: true
+matrix_matrixto_container_labels_traefik_docker_network: "{{ matrix_matrixto_container_network }}"
+matrix_matrixto_container_labels_traefik_hostname: "{{ matrix_matrixto_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/matrixto`).
+matrix_matrixto_container_labels_traefik_path_prefix: "{{ matrix_matrixto_path_prefix }}"
+matrix_matrixto_container_labels_traefik_rule: "Host(`{{ matrix_matrixto_container_labels_traefik_hostname }}`){% if matrix_matrixto_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_matrixto_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_matrixto_container_labels_traefik_priority: 0
+matrix_matrixto_container_labels_traefik_entrypoints: web-secure
+matrix_matrixto_container_labels_traefik_tls: "{{ matrix_matrixto_container_labels_traefik_entrypoints != 'web' }}"
+matrix_matrixto_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP requests.
+# To add your own custom request headers, use `matrix_matrixto_container_labels_traefik_additional_request_headers_custom`
+matrix_matrixto_container_labels_traefik_additional_request_headers: "{{ matrix_matrixto_container_labels_traefik_additional_request_headers_auto | combine(matrix_matrixto_container_labels_traefik_additional_request_headers_custom) }}"
+matrix_matrixto_container_labels_traefik_additional_request_headers_auto: {}
+matrix_matrixto_container_labels_traefik_additional_request_headers_custom: {}
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own custom response headers, use `matrix_matrixto_container_labels_traefik_additional_response_headers_custom`
+matrix_matrixto_container_labels_traefik_additional_response_headers: "{{ matrix_matrixto_container_labels_traefik_additional_response_headers_auto | combine(matrix_matrixto_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_matrixto_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine ({'X-XSS-Protection': matrix_matrixto_http_header_xss_protection} if matrix_matrixto_http_header_xss_protection else {})
+    | combine ({'X-Content-Type-Options': matrix_matrixto_http_header_content_type_options} if matrix_matrixto_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': matrix_matrixto_http_header_content_security_policy} if matrix_matrixto_http_header_content_security_policy else {})
+    | combine ({'Permissions-Policy': matrix_matrixto_http_header_permissions_policy} if matrix_matrixto_http_header_permissions_policy else {})
+    | combine ({'Strict-Transport-Security': matrix_matrixto_http_header_strict_transport_security} if matrix_matrixto_http_header_strict_transport_security and matrix_matrixto_container_labels_traefik_tls else {})
+  }}
+matrix_matrixto_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_matrixto_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_matrixto_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_matrixto_container_labels_additional_labels: ""
+
+# A list of extra arguments to pass to the container (`docker run` command)
+matrix_matrixto_container_extra_arguments: []
+
+# Specifies the value of the `X-XSS-Protection` header
+# Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
+#
+# Learn more about it is here:
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+# - https://portswigger.net/web-security/cross-site-scripting/reflected
+matrix_matrixto_http_header_xss_protection: "1; mode=block"
+
+# Specifies the value of the `X-Content-Type-Options` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+matrix_matrixto_http_header_content_type_options: nosniff
+
+# Specifies the value of the `Content-Security-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+matrix_matrixto_http_header_content_security_policy: frame-ancestors 'self'
+
+# Specifies the value of the `Permissions-Policy` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
+matrix_matrixto_http_header_permissions_policy: "{{ 'interest-cohort=()' if matrix_matrixto_floc_optout_enabled else '' }}"
+
+# Specifies the value of the `Strict-Transport-Security` header.
+# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+matrix_matrixto_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_matrixto_hsts_preload_enabled else '' }}"
+
+# Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
+#
+# Learn more about what it is here:
+# - https://www.eff.org/deeplinks/2021/03/googles-floc-terrible-idea
+# - https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network
+# - https://amifloced.org/
+#
+# Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
+# See: `matrix_matrixto_http_header_permissions_policy`
+matrix_matrixto_floc_optout_enabled: true
+
+# Controls if HSTS preloading is enabled
+#
+# In its strongest and recommended form, the [HSTS policy](https://www.chromium.org/hsts) includes all subdomains, and
+# indicates a willingness to be "preloaded" into browsers:
+# `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+# For more information visit:
+# - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+# - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+# - https://hstspreload.org/#opt-in
+# See: `matrix_matrixto_http_header_strict_transport_security`
+matrix_matrixto_hsts_preload_enabled: false
+
+# List of systemd services that the Matrix.to systemd service depends on
+matrix_matrixto_systemd_required_services_list: "{{ matrix_matrixto_systemd_required_services_list_default + matrix_matrixto_systemd_required_services_list_auto + matrix_matrixto_systemd_required_services_list_custom }}"
+matrix_matrixto_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_matrixto_systemd_required_services_list_auto: []
+matrix_matrixto_systemd_required_services_list_custom: []
+
+# List of systemd services that the Matrix.to systemd service wants
+matrix_matrixto_systemd_wanted_services_list: "{{ matrix_matrixto_systemd_wanted_services_list_default + matrix_matrixto_systemd_wanted_services_list_auto + matrix_matrixto_systemd_wanted_services_list_custom }}"
+matrix_matrixto_systemd_wanted_services_list_default: []
+matrix_matrixto_systemd_wanted_services_list_auto: []
+matrix_matrixto_systemd_wanted_services_list_custom: []
+
+# Additional environment variables.
+matrix_matrixto_environment_variables_additional_variables: ""

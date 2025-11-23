@@ -1,0 +1,59 @@
+{#
+SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+SPDX-FileCopyrightText: 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+[Unit]
+Description=Matrix.to ({{ matrix_matrixto_identifier }})
+{% for service in matrix_matrixto_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_matrixto_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_matrixto_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_matrixto_identifier }} 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+      --rm \
+      --name={{ matrix_matrixto_identifier }} \
+      --log-driver=none \
+      --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+      --cap-drop=ALL \
+      --read-only \
+      --network={{ matrix_matrixto_container_network }} \
+      {% if matrix_matrixto_container_http_host_bind_port %}
+      -p {{ matrix_matrixto_container_http_host_bind_port }}:{{ matrix_matrixto_container_http_port }} \
+      {% endif %}
+      --env-file={{ matrix_matrixto_base_path }}/env \
+      --label-file={{ matrix_matrixto_base_path }}/labels \
+      --tmpfs=/tmp:rw,noexec,nosuid,size=128m \
+      {% for arg in matrix_matrixto_container_extra_arguments %}
+      {{ arg }} \
+      {% endfor %}
+      {{ matrix_matrixto_container_image_self_build_name if matrix_matrixto_container_image_self_build else matrix_matrixto_container_image }}
+
+{% for network in matrix_matrixto_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_matrixto_identifier }}
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ matrix_matrixto_identifier }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_matrixto_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_matrixto_identifier }} 2>/dev/null || true'
+
+Restart=always
+RestartSec=30
+SyslogIdentifier={{ matrix_matrixto_identifier }}
+
+[Install]
+WantedBy=multi-user.target

@@ -363,6 +363,8 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-coturn.service', 'priority': (900 if devture_systemd_service_manager_service_restart_mode == 'clean-stop-start' else 1500), 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
     +
+    ([{'name': 'matrix-matrixto.service', 'priority': 4000, 'groups': ['matrix', 'matrixto']}] if matrix_matrixto_enabled else [])
+    +
     ([{'name': 'matrix-rageshake.service', 'priority': 4000, 'groups': ['matrix', 'rageshake']}] if matrix_rageshake_enabled else [])
     +
     ([{'name': 'matrix-coturn-reload.timer', 'priority': 5000, 'groups': ['matrix', 'coturn']}] if (matrix_coturn_enabled and matrix_coturn_tls_enabled) else [])
@@ -3077,6 +3079,36 @@ matrix_corporal_matrix_registration_shared_secret: "{{ matrix_synapse_registrati
 #
 ######################################################################
 
+######################################################################
+#
+# matrix-matrixto
+#
+######################################################################
+
+# We don't enable matrixto by default.
+matrix_matrixto_enabled: false
+
+# The container image is not provided at https://github.com/matrix-org/matrix.to
+matrix_matrixto_container_image_self_build: true
+
+matrix_matrixto_hostname: "{{ matrix_server_fqn_matrixto }}"
+
+matrix_matrixto_container_network: matrix-matrixto
+
+matrix_matrixto_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
+matrix_matrixto_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '5000') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_matrixto_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
+matrix_matrixto_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_matrixto_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_matrixto_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+######################################################################
+#
+# /matrix-matrixto
+#
+######################################################################
 
 ######################################################################
 #
