@@ -10,7 +10,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using matrix-corporal.
-  when: "vars[item] == ''"
+  when: "lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_corporal_container_network"
     - "matrix_corporal_matrix_homeserver_api_endpoint"
