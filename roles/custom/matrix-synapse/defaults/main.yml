@@ -675,7 +675,7 @@ matrix_synapse_caches_sync_response_cache_duration: "2m"
 # Controls how much memory this role thinks is available for cache-size-related calculations.
 # By default, all of the server's memory is taken into account, but you can adjust this.
 # You can also go for directly adjusting cache-sizes (matrix_synapse_cache_autotuning_max_cache_memory_usage, matrix_synapse_cache_autotuning_target_cache_memory_usage) instead of adjusting this.
-matrix_synapse_cache_size_calculations_memtotal_bytes: "{{ (ansible_memtotal_mb * 1024 * 1024) | int }}"
+matrix_synapse_cache_size_calculations_memtotal_bytes: "{{ (ansible_facts['memtotal_mb'] * 1024 * 1024) | int }}"
 
 # Controls the cap to use for matrix_synapse_cache_autotuning_max_cache_memory_usage.
 matrix_synapse_cache_size_calculations_max_cache_memory_usage_cap_bytes: "{{ (2 * 1024 * 1024 * 1024) }}"  # 2GB
