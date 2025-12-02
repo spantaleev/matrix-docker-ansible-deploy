@@ -9,7 +9,7 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) for using FluffyChat Web.
-  when: "vars[item] == ''"
+  when: "lookup('vars', item, default='') == ''"
   with_items:
     - matrix_client_fluffychat_container_network
 
@@ -27,7 +27,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`).
-      when: "vars[item] == ''"
+      when: "lookup('vars', item, default='') == ''"
       with_items:
         - matrix_client_fluffychat_container_labels_traefik_hostname
         - matrix_client_fluffychat_container_labels_traefik_path_prefix
