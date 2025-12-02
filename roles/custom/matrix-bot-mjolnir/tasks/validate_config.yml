@@ -18,14 +18,14 @@
     - {'name': 'matrix_bot_mjolnir_raw_homeserver_url', when: true}
     - {'name': 'matrix_bot_mjolnir_pantalaimon_username', when: "{{ matrix_bot_mjolnir_pantalaimon_use }}"}
     - {'name': 'matrix_bot_mjolnir_pantalaimon_password', when: "{{ matrix_bot_mjolnir_pantalaimon_use }}"}
-  when: "item.when | bool and (vars[item.name] == '' or vars[item.name] is none)"
+  when: "item.when | bool and (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
 
 - name: Fail if inappropriate variables are defined
   ansible.builtin.fail:
     msg: "The `{{ item.name }}` variable must be undefined or have a null value."
   with_items:
     - {'name': 'matrix_bot_mjolnir_access_token', when: "{{ matrix_bot_mjolnir_pantalaimon_use }}"}
-  when: "item.when | bool and not (vars[item.name] == '' or vars[item.name] is none)"
+  when: "item.when | bool and not (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
 
 - name: (Deprecation) Catch and report renamed Mjolnir settings
   ansible.builtin.fail:

@@ -9,7 +9,7 @@
     msg: "The `{{ item }}` variable must be defined and have a non-null value."
   with_items:
     - "matrix_pantalaimon_homeserver_url"
-  when: "vars[item] == '' or vars[item] is none"
+  when: "lookup('vars', item, default='') == '' or lookup('vars', item, default='') is none"
 
 - name: (Deprecation) Catch and report renamed Pantalaimon variables
   ansible.builtin.fail:

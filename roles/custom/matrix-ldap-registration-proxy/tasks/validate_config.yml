@@ -11,7 +11,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
+  when: "lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_ldap_registration_proxy_hostname"
     - "matrix_ldap_registration_proxy_ldap_uri"

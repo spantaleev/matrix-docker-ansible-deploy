@@ -13,7 +13,7 @@
   with_items:
     - "matrix_appservice_draupnir_for_all_config_adminRoom"
     - "matrix_bot_draupnir_container_network"
-  when: "vars[item] == '' or vars[item] is none"
+  when: "lookup('vars', item, default='') == '' or lookup('vars', item, default='') is none"
 
 - name: (Deprecation) Catch and report renamed matrix-appservice-draupnir-for-all settings
   ansible.builtin.fail:

@@ -138,7 +138,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_enabled`.
-      when: "vars[item] == ''"
+      when: "lookup('vars', item, default='') == ''"
       with_items:
         - matrix_synapse_container_image_customizations_templates_git_repository_url
         - matrix_synapse_container_image_customizations_templates_git_repository_branch
@@ -147,7 +147,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_git_repository_keyscan`.
-      when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and vars[item] == ''"
+      when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and lookup('vars', item, default='') == ''"
       with_items:
         - matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname
 
