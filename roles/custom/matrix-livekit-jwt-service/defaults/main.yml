@@ -25,7 +25,7 @@ matrix_livekit_jwt_service_container_additional_networks_auto: []
 matrix_livekit_jwt_service_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/lk-jwt-service
-matrix_livekit_jwt_service_version: 0.3.0
+matrix_livekit_jwt_service_version: 0.4.0
 
 matrix_livekit_jwt_service_container_image_self_build: false
 matrix_livekit_jwt_service_container_repo: "https://github.com/element-hq/lk-jwt-service.git"
@@ -68,8 +68,15 @@ matrix_livekit_jwt_service_container_labels_additional_labels: ''
 # A list of extra arguments to pass to the container
 matrix_livekit_jwt_service_container_extra_arguments: []
 
-# Controls the LK_JWT_PORT environment variable
-matrix_livekit_jwt_service_environment_variable_livekit_jwt_port: 8080
+# Controls the port that the service listens on internally in the container.
+# This is still used for Traefik configuration and container port binding.
+matrix_livekit_jwt_service_container_port: 8080
+
+# Controls the LIVEKIT_JWT_BIND environment variable.
+# This is the preferred method in v0.4.0+, replacing the deprecated LIVEKIT_JWT_PORT.
+# Format: "host:port" or ":port" (to bind to all interfaces).
+# The default ":8080" binds to all interfaces on port 8080.
+matrix_livekit_jwt_service_environment_variable_livekit_jwt_bind: ":{{ matrix_livekit_jwt_service_container_port }}"
 
 # Controls the LIVEKIT_KEY environment variable
 matrix_livekit_jwt_service_environment_variable_livekit_key: ""
