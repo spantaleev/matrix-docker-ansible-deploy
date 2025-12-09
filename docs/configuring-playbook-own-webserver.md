@@ -51,7 +51,7 @@ matrix_playbook_reverse_proxy_type: other-traefik-container
 # Adjust to point to your Traefik container
 matrix_playbook_reverse_proxy_hostname: name-of-your-traefik-container
 
-traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/directory"
+traefik_certs_dumper_ssl_path: "/path/to/your/traefiks/acme.json/directory"
 
 # Uncomment and adjust the variable below if the name of your federation entrypoint is different
 # than the default value (matrix-federation).
