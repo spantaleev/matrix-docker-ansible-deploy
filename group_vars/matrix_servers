@@ -2242,8 +2242,8 @@ matrix_postmoogle_container_image_self_build: "{{ matrix_architecture not in ['a
 matrix_postmoogle_ssl_path: |-
   {{
     {
-      'playbook-managed-traefik': (traefik_certs_dumper_dumped_certificates_dir_path if traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': (traefik_certs_dumper_dumped_certificates_dir_path if traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': (traefik_certs_dumper_dumped_certificates_path if traefik_certs_dumper_enabled else ''),
+      'other-traefik-container': (traefik_certs_dumper_dumped_certificates_path if traefik_certs_dumper_enabled else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -3191,12 +3191,12 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/' + matrix_server_fqn_matrix + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + matrix_server_fqn_matrix + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/' + matrix_server_fqn_matrix + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + matrix_server_fqn_matrix + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
@@ -5881,7 +5881,7 @@ traefik_certs_dumper_base_path: "{{ matrix_base_data_path }}/traefik-certs-dumpe
 traefik_certs_dumper_uid: "{{ matrix_user_uid }}"
 traefik_certs_dumper_gid: "{{ matrix_user_gid }}"
 
-traefik_certs_dumper_ssl_dir_path: "{{ traefik_ssl_dir_path if traefik_enabled else '' }}"
+traefik_certs_dumper_ssl_path: "{{ traefik_ssl_dir_path if traefik_enabled else '' }}"
 
 traefik_certs_dumper_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else traefik_certs_dumper_container_image_registry_prefix_upstream_default }}"
 
@@ -5990,12 +5990,12 @@ livekit_server_container_additional_volumes_auto: |
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/' + livekit_server_config_turn_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + livekit_server_config_turn_domain + '/certificate.crt'),
          'dst': livekit_server_config_turn_cert_file,
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/' + livekit_server_config_turn_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + livekit_server_config_turn_domain + '/privatekey.key'),
          'dst': livekit_server_config_turn_key_file,
          'options': 'ro',
        },
