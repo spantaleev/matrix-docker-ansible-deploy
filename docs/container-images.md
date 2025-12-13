@@ -153,7 +153,6 @@ Various services that don't fit any other categories.
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
-| [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | ❌ | Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync) |
 | [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | ❌ | Synapse module to automatically accept invites |
 | [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [mb-saces/rust-synapse-tools](https://gitlab.com/mb-saces/rust-synapse-tools/container_registry) | ❌ | Cli tool that automatically compresses Synapse's `state_groups` database table in background |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | ❌ | Reconciliator and gateway for a managed Matrix server |
@@ -186,3 +185,4 @@ The list of the deprecated or unmaintained services is available [here](configur
 | [mx-puppet-instagram](configuring-playbook-bridge-mx-puppet-instagram.md) | [sorunome/mx-puppet-instagram](https://hub.docker.com/r/sorunome/mx-puppet-instagram) | ❌ | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) |
 | [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) | [mx-puppet/slack/mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack/container_registry) | ❌ | Bridge to [Slack](https://slack.com) |
 | [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) | [sorunome/mx-puppet-twitter](https://hub.docker.com/r/sorunome/mx-puppet-twitter) | ❌ | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) |
+| [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | ❌ | Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync) |
