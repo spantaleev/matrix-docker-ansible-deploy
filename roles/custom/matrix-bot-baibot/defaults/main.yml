@@ -17,7 +17,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v1.10.0
+matrix_bot_baibot_version: v1.11.0
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_registry_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else matrix_bot_baibot_container_image_registry_prefix_upstream }}"
 matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
@@ -69,6 +69,23 @@ matrix_bot_baibot_config_user_password: ''
 #
 # Also see: `matrix_bot_baibot_config_user_mxid_localpart`
 matrix_bot_baibot_config_user_name: baibot
+
+# Controls the `user.avatar` configuration setting.
+#
+# An optional path to an image file to be used as a custom avatar image.
+# This path should be an in-container path (e.g., `/data/avatar.png`).
+# Any type of content type is supported, but stick to common image formats (PNG, JPG, ..) for better compatibility with various Matrix clients.
+#
+# To use a custom avatar:
+# - Use the auxiliary role (`aux_` variables) to upload your avatar file to the server (e.g. to {{ matrix_bot_baibot_data_path }}/avatar.png on the host),
+#   or do it any other way (without Ansible) you prefer
+# - Set this variable to something like `/data/avatar.png` (the in-container path)
+#
+# Possible values:
+# - null or empty string: use the default baibot avatar
+# - "keep": don't touch the avatar, keep whatever is already set (useful if you manage the avatar via other means)
+# - any other value: path to a custom avatar image file (must be an in-container path like `/data/avatar.png`)
+matrix_bot_baibot_config_user_avatar: null
 
 # Controls the `user.encryption.recovery_passphrase` configuration setting.
 #
