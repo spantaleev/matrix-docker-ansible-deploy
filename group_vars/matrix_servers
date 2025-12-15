@@ -5836,6 +5836,15 @@ traefik_gid: "{{ matrix_user_gid }}"
 # This override (for the `web` entrypoint) also cascades to overriding the `web-secure` entrypoint and the `matrix-federation` entrypoint.
 traefik_config_entrypoint_web_transport_respondingTimeouts_readTimeout: 300s
 
+# Traefik v3.6.3+ blocks encoded characters in request paths by default for security.
+# Matrix API endpoints require encoded slashes (e.g., in room keys URLs) and encoded hashes (e.g., in room directory URLs).
+# Ref:
+# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4798
+# - https://doc.traefik.io/traefik/migrate/v3/#v364
+traefik_config_entrypoint_web_secure_http_encodedCharacters_enabled: true
+traefik_config_entrypoint_web_secure_http_encodedCharacters_allowEncodedSlash: true
+traefik_config_entrypoint_web_secure_http_encodedCharacters_allowEncodedHash: true
+
 traefik_additional_entrypoints_auto: |
   {{
     ([matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition] if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled else [])
