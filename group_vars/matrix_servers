@@ -5844,6 +5844,11 @@ traefik_config_entrypoint_web_transport_respondingTimeouts_readTimeout: 300s
 traefik_config_entrypoint_web_secure_http_encodedCharacters_enabled: true
 traefik_config_entrypoint_web_secure_http_encodedCharacters_allowEncodedSlash: true
 traefik_config_entrypoint_web_secure_http_encodedCharacters_allowEncodedHash: true
+# Doing the same for the `web` entrypoint, for people who disable SSL for the playbook
+# and actually go through this entrypoint.
+traefik_config_entrypoint_web_http_encodedCharacters_enabled: "{{ not matrix_playbook_ssl_enabled }}"
+traefik_config_entrypoint_web_http_encodedCharacters_allowEncodedSlash: "{{ not matrix_playbook_ssl_enabled }}"
+traefik_config_entrypoint_web_http_encodedCharacters_allowEncodedHash: "{{ not matrix_playbook_ssl_enabled }}"
 
 traefik_additional_entrypoints_auto: |
   {{
