@@ -11,6 +11,9 @@ container_id=$(\
 	--workdir=/data \
 	--network={{ matrix_synapse_container_network }} \
 	--entrypoint=/bin/bash \
+	{% for arg in matrix_synapse_ext_s3_storage_provider_container_arguments %}
+	{{ arg }} \
+	{% endfor %}
 	{{ matrix_synapse_docker_image_final }} \
 	-c 's3_media_upload update-db $UPDATE_DB_DURATION && s3_media_upload --no-progress check-deleted $MEDIA_PATH && s3_media_upload --no-progress upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT {% if matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled %}--sse-customer-algo $SSE_CUSTOMER_ALGO --sse-customer-key $SSE_CUSTOMER_KEY{% endif %}' \
 )
