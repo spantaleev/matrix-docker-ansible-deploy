@@ -7,15 +7,15 @@
 matrix_coturn_turn_uris: |-
   {{
     ([
-      'turns:' + matrix_server_fqn_matrix + '?transport=udp',
-      'turns:' + matrix_server_fqn_matrix + '?transport=tcp',
+      'turns:' + matrix_coturn_hostname + '?transport=udp',
+      'turns:' + matrix_coturn_hostname + '?transport=tcp',
     ] if matrix_coturn_tls_enabled else [])
     +
     ([
-      'turn:' + matrix_server_fqn_matrix + '?transport=udp',
+      'turn:' + matrix_coturn_hostname + '?transport=udp',
     ] if (matrix_coturn_container_stun_plain_host_bind_port_udp != '' or matrix_coturn_container_network == 'host')  else [])
     +
     ([
-      'turn:' + matrix_server_fqn_matrix + '?transport=tcp',
+      'turn:' + matrix_coturn_hostname + '?transport=tcp',
     ] if (matrix_coturn_container_stun_plain_host_bind_port_tcp != '' or matrix_coturn_container_network == 'host')  else [])
   }}

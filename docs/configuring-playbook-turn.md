@@ -49,6 +49,23 @@ Regardless of the selected authentication method, the playbook generates secrets
 
 If [Jitsi](configuring-playbook-jitsi.md) is installed, note that switching to `lt-cred-mech` will disable the integration between Jitsi and your coturn server, as Jitsi seems to support the `auth-secret` authentication method only.
 
+### Customize the Coturn hostname (optional)
+
+By default, Coturn uses the same hostname as your Matrix homeserver (the value of `matrix_server_fqn_matrix`, which is typically `matrix.example.com`).
+
+If you'd like to use a custom subdomain for Coturn (e.g., `turn.example.com` or `t.matrix.example.com`), add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_coturn_hostname: turn.example.com
+```
+
+The playbook will automatically:
+- Configure Coturn to use this hostname
+- Obtain an SSL certificate for the custom domain via Traefik
+- Update all TURN URIs to point to the custom domain
+
+**Note**: Make sure the custom hostname resolves to your server's IP address via DNS before running the playbook.
+
 ### Use your own external coturn server (optional)
 
 If you'd like to use another TURN server (be it coturn or some other one), add the following configuration to your `vars.yml` file. Make sure to replace `HOSTNAME_OR_IP` with your own.

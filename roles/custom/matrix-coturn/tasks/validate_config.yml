@@ -29,6 +29,7 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
+    - {'name': 'matrix_coturn_hostname', when: true}
     - {'name': 'matrix_coturn_turn_static_auth_secret', when: "{{ matrix_coturn_authentication_method == 'auth-secret' }}"}
     - {'name': 'matrix_coturn_lt_cred_mech_username', when: "{{ matrix_coturn_authentication_method == 'lt-cred-mech' }}"}
     - {'name': 'matrix_coturn_lt_cred_mech_password', when: "{{ matrix_coturn_authentication_method == 'lt-cred-mech' }}"}

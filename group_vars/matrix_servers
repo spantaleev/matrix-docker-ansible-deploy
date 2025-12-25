@@ -3152,6 +3152,8 @@ matrix_rageshake_container_labels_traefik_tls_certResolver: "{{ traefik_certReso
 
 matrix_coturn_enabled: true
 
+matrix_coturn_hostname: "{{ matrix_server_fqn_matrix }}"
+
 matrix_coturn_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_coturn_docker_image_registry_prefix_upstream_default }}"
 
 matrix_coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
@@ -3191,12 +3193,12 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + matrix_server_fqn_matrix + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + matrix_coturn_hostname + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + matrix_server_fqn_matrix + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + matrix_coturn_hostname + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
@@ -3206,7 +3208,7 @@ matrix_coturn_container_additional_volumes: |
 
 matrix_coturn_systemd_required_services_list_auto: |
   {{
-    ([traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_server_fqn_matrix + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else [])
+    ([traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_coturn_hostname + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else [])
   }}
 
 ######################################################################
@@ -5871,6 +5873,11 @@ traefik_systemd_required_services_list: |
     ([devture_systemd_docker_base_docker_service_name])
     +
     ([container_socket_proxy_identifier + '.service'] if container_socket_proxy_enabled else [])
+  }}
+
+traefik_additional_domains_to_obtain_certificates_for_auto: |
+  {{
+    ([matrix_coturn_hostname] if (matrix_coturn_enabled and matrix_coturn_tls_enabled and matrix_coturn_hostname != matrix_server_fqn_matrix) else [])
   }}
 
 ########################################################################
