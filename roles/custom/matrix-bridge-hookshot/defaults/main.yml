@@ -72,8 +72,9 @@ matrix_hookshot_cache_redisUri: "{{ ('redis://' + matrix_hookshot_cache_redis_ho
 # Controls whether the end-to-bridge encryption support is enabled.
 # This requires that:
 # - support to also be enabled in the homeserver, see the documentation of Hookshot.
-# - Hookshot to be pointed at a Redis instance via the `matrix_hookshot_cache_redis*` variables.
+# - Hookshot to be pointed at a Redis instance via the `matrix_hookshot_cache_redis*` variables. Note that this is configured automatically by the playbook when encryption is enabled.
 # See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
+# NOTE: Encryption is not currently (2025-12-30) supported when using MAS (https://github.com/matrix-org/matrix-hookshot/issues/1084)
 matrix_hookshot_encryption_enabled: "{{ matrix_bridges_encryption_enabled }}"
 
 # Controls whether metrics are enabled in the bridge configuration.
