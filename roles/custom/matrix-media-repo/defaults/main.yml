@@ -891,17 +891,19 @@ matrix_media_repo_plugins:
 matrix_media_repo_redis_enabled: false
 
 # The database number to use. Leave at zero if using a dedicated Redis instance.
-matrix_media_repo_redis_database_number: 0
+# Use next redis index since Synapse is on 0. You can chose between index 0 and 15.
+matrix_media_repo_redis_database_number: 1
 
 # The Redis shards that should be used by the media repo in the ring. The names of the
 # shards are for your reference and have no bearing on the connection, but must be unique.
+# As default it uses the valkey instance provided by this project
 matrix_media_repo_redis_shards:
-  - name: "server1"
-    addr: ":7000"
-  - name: "server2"
-    addr: ":7001"
-  - name: "server3"
-    addr: ":7002"
+  - name: "valkey"
+    addr: "{{ valkey_identifier }}:{{ valkey_container_http_port }}"
+#  - name: "server2"
+#    addr: ":7001"
+#  - name: "server3"
+#    addr: ":7002"
 
 # Optional sentry (https://sentry.io/) configuration for the media repo
 

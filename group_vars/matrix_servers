@@ -3648,6 +3648,8 @@ matrix_media_repo_container_additional_networks: |
       ([postgres_container_network] if (postgres_enabled and matrix_media_repo_database_hostname == postgres_connection_hostname and postgres_container_network != matrix_media_repo_container_network) else [])
       +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_media_repo_container_labels_traefik_enabled) else [])
+      +
+      ([valkey_container_network] if valkey_enabled else [])
     ) | unique
   }}
 
