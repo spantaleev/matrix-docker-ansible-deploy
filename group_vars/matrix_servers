@@ -3715,6 +3715,21 @@ matrix_media_repo_homeservers_auto:
 
 matrix_media_repo_homeserver_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
 
+matrix_media_repo_redis_enabled: "{{ valkey_enabled }}"
+
+# Use next redis index since Synapse is on 0. You can chose between index 0 and 15.
+matrix_media_repo_redis_database_number: 1
+
+matrix_media_repo_redis_shards: |
+  {{
+    ([{
+          'name': 'valkey',
+          'addr': (valkey_identifier + valkey_container_http_port | string),
+    }])
+    if valkey_enabled and matrix_media_repo_redis_enabled
+    else []
+  }}
+
 ######################################################################
 #
 # /matrix-media-repo
