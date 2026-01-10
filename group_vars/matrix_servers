@@ -3648,6 +3648,8 @@ matrix_media_repo_container_additional_networks: |
       ([postgres_container_network] if (postgres_enabled and matrix_media_repo_database_hostname == postgres_connection_hostname and postgres_container_network != matrix_media_repo_container_network) else [])
       +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_media_repo_container_labels_traefik_enabled) else [])
+      +
+      ([valkey_container_network] if valkey_enabled and matrix_media_repo_redis_enabled else [])
     ) | unique
   }}
 
@@ -3712,6 +3714,21 @@ matrix_media_repo_homeservers_auto:
     signingKeyPath: "{{ '/config/' + matrix_media_repo_identifier + '.signing.key' if matrix_media_repo_generate_signing_key else '' }}"
 
 matrix_media_repo_homeserver_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
+
+matrix_media_repo_redis_enabled: "{{ valkey_enabled }}"
+
+# Use next redis index since Synapse is on 0. You can chose between index 0 and 15.
+matrix_media_repo_redis_database_number: 1
+
+matrix_media_repo_redis_shards: |
+  {{
+    ([{
+          'name': 'valkey',
+          'addr': (valkey_identifier + valkey_container_http_port | string),
+    }])
+    if valkey_enabled and matrix_media_repo_redis_enabled
+    else []
+  }}
 
 ######################################################################
 #
