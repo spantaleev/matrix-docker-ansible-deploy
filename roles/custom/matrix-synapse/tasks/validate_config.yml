@@ -1,10 +1,16 @@
+# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Charles Wright
+# SPDX-FileCopyrightText: 2024 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Fail if required Synapse settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] | length == 0"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_synapse_username', when: true}
     - {'name': 'matrix_synapse_uid', when: true}
@@ -22,6 +28,7 @@
     - {'name': 'matrix_synapse_container_labels_public_client_api_traefik_hostname', when: "{{ matrix_synapse_container_labels_public_client_api_enabled }}"}
 
     - {'name': 'matrix_synapse_container_labels_internal_client_api_traefik_entrypoints', when: "{{ matrix_synapse_container_labels_internal_client_api_enabled }}"}
+    - {'name': 'matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_entrypoints', when: "{{ matrix_synapse_container_labels_internal_client_synapse_admin_api_enabled }}"}
 
     - {'name': 'matrix_synapse_container_labels_public_client_synapse_client_api_traefik_hostname', when: "{{ matrix_synapse_container_labels_public_client_synapse_client_api_enabled }}"}
     - {'name': 'matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_hostname', when: "{{ matrix_synapse_container_labels_public_client_synapse_admin_api_enabled }}"}
@@ -32,12 +39,8 @@
     - {'name': 'matrix_synapse_metrics_proxying_hostname', when: "{{ matrix_synapse_metrics_proxying_enabled }}"}
     - {'name': 'matrix_synapse_metrics_proxying_path_prefix', when: "{{ matrix_synapse_metrics_proxying_enabled }}"}
 
-    - {'name': 'matrix_synapse_experimental_features_msc3861_issuer', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
-    - {'name': 'matrix_synapse_experimental_features_msc3861_client_id', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
-    - {'name': 'matrix_synapse_experimental_features_msc3861_client_auth_method', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
-    - {'name': 'matrix_synapse_experimental_features_msc3861_client_secret', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
-    - {'name': 'matrix_synapse_experimental_features_msc3861_admin_token', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
-    - {'name': 'matrix_synapse_experimental_features_msc3861_account_management_url', when: "{{ matrix_synapse_experimental_features_msc3861_enabled }}"}
+    - {'name': 'matrix_synapse_matrix_authentication_service_endpoint', when: "{{ matrix_synapse_matrix_authentication_service_enabled }}"}
+    - {'name': 'matrix_synapse_matrix_authentication_service_secret', when: "{{ matrix_synapse_matrix_authentication_service_enabled }}"}
 
     - {'name': 'matrix_synapse_container_labels_traefik_compression_middleware_name', when: "{{ matrix_synapse_container_labels_traefik_compression_middleware_enabled }}"}
 
@@ -45,7 +48,7 @@
   ansible.builtin.fail:
     msg: >-
       `{{ item }}` cannot be more than 1. This is a single-instance worker.
-  when: "vars[item] | int > 1"
+  when: "lookup('vars', item, default='') | int > 1"
   with_items:
     - "matrix_synapse_workers_appservice_workers_count"
     - "matrix_synapse_workers_user_dir_workers_count"
@@ -66,8 +69,8 @@
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
-  when: "item.old in vars"
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_synapse_email_riot_base_url', 'new': '<superseded by client_base_url>'}
     - {'old': 'matrix_synapse_container_expose_api_port', 'new': '<superseded by matrix_synapse_container_federation_api_plain_host_bind_port>'}
@@ -102,12 +105,29 @@
     - {'old': 'matrix_synapse_caches_autotuning_target_cache_memory_usage', 'new': 'matrix_synapse_cache_autotuning_target_cache_memory_usage'}
     - {'old': 'matrix_synapse_caches_autotuning_min_cache_ttl', 'new': 'matrix_synapse_cache_autotuning_min_cache_ttl'}
     - {'old': 'matrix_synapse_memtotal_kb', 'new': '<superseded by matrix_synapse_cache_size_calculations_memtotal_bytes>'}
+    - {'old': 'matrix_synapse_docker_image_name_prefix', 'new': 'matrix_synapse_docker_image_registry_prefix'}
+    - {'old': 'matrix_s3_goofys_docker_image_name_prefix', 'new': 'matrix_s3_goofys_docker_image_registry_prefix'}
+    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix', 'new': 'matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix'}
+
+    - {'old': 'matrix_synapse_experimental_features_msc3202_device_masquerading_enabled', 'new': '<removed - this feature is enabled by default now'}
+
+    - {'old': 'matrix_synapse_experimental_features_msc3861_enabled', 'new': 'matrix_synapse_matrix_authentication_service_enabled'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_issuer', 'new': '<superseded by matrix_synapse_matrix_authentication_service_endpoint>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_client_id', 'new': '<removed>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_client_auth_method', 'new': '<removed>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_client_secret', 'new': '<removed>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_admin_token', 'new': '<removed>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_account_management_url', 'new': '<removed>'}
+
+    - {'old': 'matrix_synapse_experimental_features_msc4133_enabled', 'new': '<removed - this feature is enabled by default now>'}
+
+    - {'old': 'matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled', 'new': '<removed; see https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4637>'}
 
 - name: (Deprecation) Catch and report renamed settings in matrix_synapse_configuration_extension_yaml
   ansible.builtin.fail:
     msg: >-
       Your matrix_synapse_configuration_extension_yaml configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "item.old in matrix_synapse_configuration_extension"
   with_items:
     - {'old': 'federation_ip_range_blacklist', 'new': 'ip_range_blacklist'}
@@ -118,7 +138,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_enabled`.
-      when: "vars[item] == ''"
+      when: "lookup('vars', item, default='') == ''"
       with_items:
         - matrix_synapse_container_image_customizations_templates_git_repository_url
         - matrix_synapse_container_image_customizations_templates_git_repository_branch
@@ -127,7 +147,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_git_repository_keyscan`.
-      when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and vars[item] == ''"
+      when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and lookup('vars', item, default='') == ''"
       with_items:
         - matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname
 
@@ -145,8 +165,8 @@
 
 - name: Fail if known Synapse password provider modules are enabled when auth is delegated to Matrix Authentication Service
   ansible.builtin.fail:
-    msg: "When Synapse is delegating authentication to Matrix Authentication Service, it does not make sense to enable password provider modules, because it is not Synapse that is handling authentication. Please disable {{ item }} before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
-  when: matrix_synapse_experimental_features_msc3861_enabled and vars[item] | bool
+    msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it does not make sense to enable password provider modules, because it is not Synapse that is handling authentication. Please disable {{ item }} before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
+  when: matrix_synapse_matrix_authentication_service_enabled and lookup('vars', item, default='') | bool
   with_items:
     - matrix_synapse_ext_password_provider_rest_auth_enabled
     - matrix_synapse_ext_password_provider_shared_secret_auth_enabled
@@ -154,10 +174,30 @@
 
 - name: Fail if password config is enabled for Synapse when auth is delegated to Matrix Authentication Service
   ansible.builtin.fail:
-    msg: "When Synapse is delegating authentication to Matrix Authentication Service, it doesn't make sense to enable the password config (`matrix_synapse_password_config_enabled: true`), because it is not Synapse that is handling authentication. Please remove your `matrix_synapse_password_config_enabled: true` setting before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
-  when: matrix_synapse_experimental_features_msc3861_enabled and matrix_synapse_password_config_enabled
+    msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it doesn't make sense to enable the password config (`matrix_synapse_password_config_enabled: true`), because it is not Synapse that is handling authentication. Please remove your `matrix_synapse_password_config_enabled: true` setting before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
+  when: matrix_synapse_matrix_authentication_service_enabled and matrix_synapse_password_config_enabled
 
-- name: Fail if QR code login (MSC4108) is enabled while Next-Gen Auth (MSC3861) is not
+- name: Fail if registration is enabled for Synapse when auth is delegated to Matrix Authentication Service
   ansible.builtin.fail:
-    msg: "When Synapse QR code login is enabled (MSC4108 via `matrix_synapse_experimental_features_msc4108_enabled`), Next-Gen auth (MSC3861 via `matrix_synapse_experimental_features_msc3861_enabled`) must also be enabled."
-  when: matrix_synapse_experimental_features_msc4108_enabled and not matrix_synapse_experimental_features_msc3861_enabled
+    msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it doesn't make sense to enable registration (`matrix_synapse_enable_registration: true`), because it is not Synapse that is handling authentication. Synapse will refuse to start otherwise."
+  when: matrix_synapse_matrix_authentication_service_enabled and matrix_synapse_enable_registration
+
+- name: Fail if registration CAPTCHA is enabled for Synapse when auth is delegated to Matrix Authentication Service
+  ansible.builtin.fail:
+    msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it doesn't make sense to enable registration CAPTCHA (`matrix_synapse_enable_registration_captcha: true`), because it is not Synapse that is handling authentication. Synapse will refuse to start otherwise."
+  when: matrix_synapse_matrix_authentication_service_enabled and matrix_synapse_enable_registration_captcha
+
+- name: Fail if OpenID Connect is enabled for Synapse when auth is delegated to Matrix Authentication Service
+  ansible.builtin.fail:
+    msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it doesn't make sense to enable OpenID Connect (`matrix_synapse_oidc_enabled: true`), because it is not Synapse that is handling authentication. Synapse will refuse to start otherwise."
+  when: matrix_synapse_matrix_authentication_service_enabled and matrix_synapse_oidc_enabled
+
+- name: Fail if CAS config is enabled for Synapse when auth is delegated to Matrix Authentication Service
+  ansible.builtin.fail:
+    msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it doesn't make sense to enable CAS config (`matrix_synapse_cas_config_enabled: true`), because it is not Synapse that is handling authentication. Synapse will refuse to start otherwise."
+  when: matrix_synapse_matrix_authentication_service_enabled and matrix_synapse_cas_config_enabled
+
+- name: Fail if QR code login (MSC4108) is enabled while Matrix Authentication Service is not
+  ansible.builtin.fail:
+    msg: "When Synapse QR code login is enabled (MSC4108 via `matrix_synapse_experimental_features_msc4108_enabled`), Matrix Authentication Service integration (`matrix_synapse_matrix_authentication_service_enabled`) must also be enabled."
+  when: matrix_synapse_experimental_features_msc4108_enabled and not matrix_synapse_matrix_authentication_service_enabled

@@ -1,4 +1,4 @@
-[![Support room on Matrix](https://img.shields.io/matrix/matrix-docker-ansible-deploy:devture.com.svg?label=%23matrix-docker-ansible-deploy%3Adevture.com&logo=matrix&style=for-the-badge&server_fqdn=matrix.devture.com)](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) [![donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/s.pantaleev/donate)
+[![Support room on Matrix](https://img.shields.io/matrix/matrix-docker-ansible-deploy:devture.com.svg?label=%23matrix-docker-ansible-deploy%3Adevture.com&logo=matrix&style=for-the-badge&server_fqdn=matrix.devture.com&fetchMode=summary)](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com) [![donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/s.pantaleev/donate) [![REUSE status](https://api.reuse.software/badge/github.com/spantaleev/matrix-docker-ansible-deploy)](https://api.reuse.software/info/github.com/spantaleev/matrix-docker-ansible-deploy)
 
 # Matrix (An open network for secure, decentralized communication) server setup using Ansible and Docker
 
@@ -53,6 +53,7 @@ The homeserver is the backbone of your Matrix system. Choose one from the follow
 | [Synapse](https://github.com/element-hq/synapse) | ✅ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network | [Link](docs/configuring-playbook-synapse.md) |
 | [Conduit](https://conduit.rs) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Conduit is a lightweight open-source server implementation of the Matrix Specification with a focus on easy setup and low system requirements | [Link](docs/configuring-playbook-conduit.md) |
 | [conduwuit](https://conduwuit.puppyirl.gay/) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. conduwuit is a fork of Conduit. | [Link](docs/configuring-playbook-conduwuit.md) |
+| [continuwuity](https://continuwuity.org) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. continuwuity is a continuation of conduwuit. | [Link](docs/configuring-playbook-continuwuity.md) |
 | [Dendrite](https://github.com/element-hq/dendrite) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse. | [Link](docs/configuring-playbook-dendrite.md) |
 
 ### Clients
@@ -65,6 +66,7 @@ Web clients for Matrix that you can host on your own domains.
 | [Hydrogen](https://github.com/element-hq/hydrogen-web) | ❌ | Lightweight Matrix client with legacy and mobile browser support | [Link](docs/configuring-playbook-client-hydrogen.md) |
 | [Cinny](https://github.com/ajbura/cinny) |  ❌ | Simple, elegant and secure web client | [Link](docs/configuring-playbook-client-cinny.md) |
 | [SchildiChat Web](https://schildi.chat/) | ❌ | Based on Element Web, with a more traditional instant messaging experience | [Link](docs/configuring-playbook-client-schildichat-web.md) |
+| [FluffyChat Web](https://fluffychat.im/) | ❌ | The cutest messenger in Matrix | [Link](docs/configuring-playbook-client-fluffychat-web.md) |
 
 ### Server Components
 
@@ -79,6 +81,8 @@ Services that run on the server to make the various parts of your installation w
 | [Exim](https://www.exim.org/) | ✅ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
 | [ma1sd](https://github.com/ma1uta/ma1sd) | ❌ | Matrix Identity Server | [Link](docs/configuring-playbook-ma1sd.md)
 | [ddclient](https://github.com/linuxserver/docker-ddclient) | ❌ | Dynamic DNS | [Link](docs/configuring-playbook-dynamic-dns.md) |
+| [LiveKit Server](https://github.com/livekit/livekit) | ❌ | WebRTC server for audio/video calls | [Link](docs/configuring-playbook-livekit-server.md) |
+| [Livekit JWT Service](https://github.com/livekit/livekit-jwt-service) | ❌ | JWT service for integrating [Element Call](./configuring-playbook-element-call.md) with [LiveKit Server](./configuring-playbook-livekit-server.md) | [Link](docs/configuring-playbook-livekit-jwt-service.md) |
 
 ### Authentication
 
@@ -91,7 +95,7 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-synapse-ldap3](https://github.com/matrix-org/matrix-synapse-ldap3) (advanced) | ❌ | LDAP Auth password provider module | [Link](docs/configuring-playbook-ldap-auth.md) |
 | [matrix-ldap-registration-proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy) (advanced) | ❌ | Proxy that handles Matrix registration requests and forwards them to LDAP | [Link](docs/configuring-playbook-matrix-ldap-registration-proxy.md) |
 | [matrix-registration](https://github.com/ZerataX/matrix-registration) | ❌ | Simple python application to have a token based Matrix registration | [Link](docs/configuring-playbook-matrix-registration.md) |
-| [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (UVS) | ❌ | Service to verify details of a user based on an Open ID token | [Link](docs/configuring-playbook-user-verification-service.md) |
+| [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) | ❌ | Service to verify details of a user based on an Open ID token | [Link](docs/configuring-playbook-user-verification-service.md) |
 | [synapse-simple-antispam](https://github.com/t2bot/synapse-simple-antispam) (advanced) | ❌ | Spam checker module | [Link](docs/configuring-playbook-synapse-simple-antispam.md) |
 
 ### File Storage
@@ -116,6 +120,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mautrix-gmessages](https://github.com/mautrix/gmessages) | ❌ | Bridge to [Google Messages](https://messages.google.com/) | [Link](docs/configuring-playbook-bridge-mautrix-gmessages.md) |
 | [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | ❌ | Bridge to [WhatsApp](https://www.whatsapp.com/) | [Link](docs/configuring-playbook-bridge-mautrix-whatsapp.md) |
 | [mautrix-wsproxy](https://github.com/mautrix/wsproxy) | ❌ | Bridge to Android SMS or Apple iMessage | [Link](docs/configuring-playbook-bridge-mautrix-wsproxy.md) |
+| [mautrix-bluesky](https://github.com/mautrix/bluesky) | ❌ | Bridge to [Bluesky](https://bsky.social/) | [Link](docs/configuring-playbook-bridge-mautrix-bluesky.md) |
 | [mautrix-twitter](https://github.com/mautrix/twitter) | ❌ | Bridge to [Twitter](https://twitter.com/) | [Link](docs/configuring-playbook-bridge-mautrix-twitter.md) |
 | [mautrix-googlechat](https://github.com/mautrix/googlechat) | ❌ | Bridge to [Google Chat](https://en.wikipedia.org/wiki/Google_Chat) | [Link](docs/configuring-playbook-bridge-mautrix-googlechat.md) |
 | [mautrix-meta](https://github.com/mautrix/instagram) | ❌ | Bridge to [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) | Link for [Messenger](docs/configuring-playbook-bridge-mautrix-meta-messenger.md) / [Instagram](docs/configuring-playbook-bridge-mautrix-meta-instagram.md) |
@@ -127,15 +132,12 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) | ❌ | Bridge to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-appservice-slack.md) |
 | [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) | ❌ | Bridge for generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular | [Link](docs/configuring-playbook-bridge-hookshot.md) |
 | [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) | ❌ | Bridge to SMS | [Link](docs/configuring-playbook-bridge-matrix-bridge-sms.md) |
+| [matrix-steam-bridge](https://github.com/jasonlaguidice/matrix-steam-bridge) | ❌ | Bridge to [Steam](https://steampowered.com/) | [Link](docs/configuring-playbook-bridge-steam.md) |
 | [matrix-wechat](https://github.com/duo/matrix-wechat) | ❌ | Bridge to [WeChat](https://www.wechat.com/) | [Link](docs/configuring-playbook-bridge-wechat.md) |
+| [MatrixZulipBridge](https://github.com/GearKite/MatrixZulipBridge) | ❌ | Puppeting appservice bridge for [Zulip](https://zulip.com/) | [Link](docs/configuring-playbook-bridge-zulip.md) |
 | [Heisenbridge](https://github.com/hifi/heisenbridge) | ❌ | Bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-heisenbridge.md) |
-| [go-skype-bridge](https://github.com/kelaresg/go-skype-bridge) | ❌ | Bridge to [Skype](https://www.skype.com) | [Link](docs/configuring-playbook-bridge-go-skype-bridge.md) |
-| [mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack) | ❌ | Bridge to [Slack](https://slack.com) | [Link](docs/configuring-playbook-bridge-mx-puppet-slack.md) |
-| [mx-puppet-instagram](https://github.com/Sorunome/mx-puppet-instagram) | ❌ | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-instagram.md) |
-| [mx-puppet-twitter](https://github.com/Sorunome/mx-puppet-twitter) | ❌ | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) | [Link](docs/configuring-playbook-bridge-mx-puppet-twitter.md) |
-| [mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord) | ❌ | Bridge to [Discord](https://discordapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-discord.md) |
 | [mx-puppet-groupme](https://gitlab.com/xangelix-pub/matrix/mx-puppet-groupme) | ❌ | Bridge to [GroupMe](https://groupme.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-groupme.md) |
-| [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) | ❌ | Bridge to [Steam](https://steamapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-steam.md) |
+| [mx-puppet-steam](https://codeberg.org/icewind/mx-puppet-steam) | ❌ | Bridge to [Steam](https://steamapp.com/) | [Link](docs/configuring-playbook-bridge-mx-puppet-steam.md) |
 | [Postmoogle](https://github.com/etkecc/postmoogle) | ❌ | Email to Matrix bridge | [Link](docs/configuring-playbook-bridge-postmoogle.md) |
 
 ### Bots
@@ -177,12 +179,14 @@ Various services that don't fit any other categories.
 | [synapse_auto_accept_invite](https://github.com/matrix-org/synapse-auto-accept-invite) | ❌ | Synapse module to automatically accept invites | [Link](docs/configuring-playbook-synapse-auto-accept-invite.md) |
 | [synapse_auto_compressor](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) | ❌ | Cli tool that automatically compresses `state_groups` database table in background | [Link](docs/configuring-playbook-synapse-auto-compressor.md) |
 | [Matrix Corporal](https://github.com/devture/matrix-corporal) (advanced) | ❌ | Reconciliator and gateway for a managed Matrix server | [Link](docs/configuring-playbook-matrix-corporal.md) |
+| [Matrix.to](https://github.com/matrix-org/matrix.to) | ❌ | Simple URL redirection service for the Matrix ecosystem | [Link](docs/configuring-playbook-matrixto.md) |
 | [Etherpad](https://etherpad.org) | ❌ | Open source collaborative text editor | [Link](docs/configuring-playbook-etherpad.md) |
 | [Jitsi](https://jitsi.org/) | ❌ | Open source video-conferencing platform | [Link](docs/configuring-playbook-jitsi.md) |
 | [Cactus Comments](https://cactus.chat) | ❌ | Federated comment system built on Matrix | [Link](docs/configuring-playbook-cactus-comments.md) |
 | [Pantalaimon](https://github.com/matrix-org/pantalaimon) | ❌ | E2EE aware proxy daemon | [Link](docs/configuring-playbook-pantalaimon.md) |
 | [Sygnal](https://github.com/matrix-org/sygnal) | ❌ | Push gateway | [Link](docs/configuring-playbook-sygnal.md) |
 | [ntfy](https://ntfy.sh) | ❌ | Push notifications server | [Link](docs/configuring-playbook-ntfy.md) |
+| [Element Call](https://github.com/element-hq/element-call) | ❌ | A native Matrix video conferencing application | [Link](docs/configuring-playbook-element-call.md) |
 
 ## 🆕 Changes
 

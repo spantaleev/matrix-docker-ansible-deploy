@@ -1,3 +1,15 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Arthur Brugière
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2023 Luke Moch
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - ansible.builtin.include_role:
@@ -9,8 +21,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_hookshot_base_path }}", when: true}
     - {path: "{{ matrix_hookshot_docker_src_files_path }}", when: "{{ matrix_hookshot_container_image_self_build }}"}
@@ -35,7 +47,7 @@
     version: "{{ matrix_hookshot_container_image_self_build_branch }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_hookshot_git_pull_results
   when: "matrix_hookshot_container_image_self_build | bool"
 
@@ -61,7 +73,7 @@
     cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_hookshot_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096"
     creates: "{{ matrix_hookshot_base_path }}/passkey.pem"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   when: "not hookshot_passkey_file.stat.exists"
 
 - name: Ensure hookshot config.yml installed if provided
@@ -69,8 +81,8 @@
     content: "{{ matrix_hookshot_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_hookshot_base_path }}/config.yml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Validate hookshot config.yml
   ansible.builtin.command:
@@ -95,16 +107,16 @@
     content: "{{ matrix_hookshot_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_hookshot_base_path }}/registration.yml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure hookshot github private key file installed if github is enabled
   ansible.builtin.copy:
     content: "{{ matrix_hookshot_github_private_key }}"
     dest: "{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}"
     mode: 0400
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   when: matrix_hookshot_github_enabled | bool and matrix_hookshot_github_private_key|length > 0
 
 - name: Ensure matrix-hookshot container network is created
@@ -119,8 +131,8 @@
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_hookshot_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

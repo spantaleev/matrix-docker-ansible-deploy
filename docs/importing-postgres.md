@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 - 2021 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Kim Brose
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Importing an existing Postgres database from another installation (optional)
 
 You can manually import your database from a previous default installation of Synapse.

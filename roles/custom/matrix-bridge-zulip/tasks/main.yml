@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2021 Toni Spets
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Perform the Zulip bridge installation tasks
+  when: matrix_zulip_bridge_enabled | bool
+  tags:
+    - setup-all
+    - setup-bridge-zulip
+    - install-all
+    - install-bridge-zulip
+  block:
+    - name: Validate the Zulip bridge configuration
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - name: Install the Zulip bridge
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- name: Perform the Zulip bridge uninstallation tasks
+  when: not matrix_zulip_bridge_enabled | bool
+  tags:
+    - setup-all
+    - setup-bridge-zulip
+  block:
+    - name: Uninstall the Zulip bridge
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

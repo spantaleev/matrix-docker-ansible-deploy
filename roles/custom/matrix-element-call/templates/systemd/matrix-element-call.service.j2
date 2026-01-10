@@ -1,0 +1,46 @@
+#jinja2: lstrip_blocks: True
+[Unit]
+Description=Element Call
+{% for service in matrix_element_call_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-element-call 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-element-call 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+    --rm \
+    --name=matrix-element-call \
+    --log-driver=none \
+    --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+    --cap-drop=ALL \
+    --network={{ matrix_element_call_container_network }} \
+    --mount type=bind,src={{ matrix_element_call_base_path }}/config.json,dst=/app/config.json,ro \
+    {% if matrix_element_call_container_http_host_bind_port %}
+    -p {{ matrix_element_call_container_http_host_bind_port }}:8080 \
+    {% endif %}
+    --label-file={{ matrix_element_call_base_path }}/labels \
+    {% for arg in matrix_element_call_container_extra_arguments %}
+    {{ arg }} \
+    {% endfor %}
+    {{ matrix_element_call_container_image }}
+
+{% for network in matrix_element_call_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-element-call
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-element-call
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-element-call 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-element-call 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-element-call
+
+[Install]
+WantedBy=multi-user.target

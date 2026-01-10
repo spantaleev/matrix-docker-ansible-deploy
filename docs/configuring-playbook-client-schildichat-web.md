@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2023 Nikita Chernyi
+SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up SchildiChat Web (optional)
 
 The playbook can install and configure the [SchildiChat Web](https://github.com/SchildiChat/schildichat-desktop) Matrix client for you.

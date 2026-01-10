@@ -1,0 +1,52 @@
+#jinja2: lstrip_blocks: True
+[Unit]
+Description=continuwuity Matrix homeserver
+{% for service in matrix_continuwuity_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-continuwuity 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-continuwuity 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-continuwuity \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_continuwuity_tmp_directory_size_mb }}m \
+			--network={{ matrix_continuwuity_container_network }} \
+			--env CONDUWUIT_CONFIG=/etc/continuwuity/continuwuity.toml \
+			--env CONDUWUIT_DATABASE_PATH=/var/lib/continuwuity \
+			--label-file={{ matrix_continuwuity_base_path }}/labels \
+			--mount type=bind,src={{ matrix_continuwuity_data_path }},dst=/var/lib/continuwuity \
+			--mount type=bind,src={{ matrix_continuwuity_config_path }},dst=/etc/continuwuity,ro \
+			{% for arg in matrix_continuwuity_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_continuwuity_docker_image }}
+
+{% for network in matrix_continuwuity_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-continuwuity
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-continuwuity
+
+{% if matrix_continuwuity_systemd_service_post_start_delay_seconds != 0 %}
+ExecStartPost=-{{ matrix_host_command_sleep }} {{ matrix_continuwuity_systemd_service_post_start_delay_seconds }}
+{% endif %}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-continuwuity 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-continuwuity 2>/dev/null || true'
+ExecReload={{ devture_systemd_docker_base_host_command_docker }} exec matrix-continuwuity /bin/sh -c 'kill -HUP 1'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-continuwuity
+
+[Install]
+WantedBy=multi-user.target

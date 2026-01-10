@@ -1,3 +1,10 @@
+{#
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 # Default configuration for baibot.
 # To extend it, use `matrix_bot_baibot_configuration_extension_yaml`.
 
@@ -13,6 +20,12 @@ user:
   # The name the bot uses as a display name and when it refers to itself.
   # Leave empty to use the default (baibot).
   name: {{ matrix_bot_baibot_config_user_name | to_json }}
+
+  # An optional path to an image file to be used as a custom avatar image.
+  # - null or empty string: use the default avatar
+  # - "keep": don't touch the avatar, keep whatever is already set
+  # - any other value: path to a custom avatar image file
+  avatar: {{ matrix_bot_baibot_config_user_avatar | to_json }}
 
   encryption:
     # An optional passphrase to use for backing up and recovering the bot's encryption keys.
@@ -34,6 +47,10 @@ user:
 
 # Command prefix. Leave empty to use the default (!bai).
 command_prefix: {{ matrix_bot_baibot_config_command_prefix | to_json }}
+
+room:
+  # Whether the bot should send an introduction message after joining a room.
+  post_join_self_introduction_enabled: {{ matrix_bot_baibot_config_room_post_join_self_introduction_enabled | to_json }}
 
 access:
   # Space-separated list of MXID patterns which specify who is an admin.

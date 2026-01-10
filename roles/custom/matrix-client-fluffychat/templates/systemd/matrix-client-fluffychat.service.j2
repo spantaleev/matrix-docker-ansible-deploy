@@ -1,0 +1,48 @@
+#jinja2: lstrip_blocks: True
+[Unit]
+Description=Matrix FluffyChat Web server
+{% for service in matrix_client_fluffychat_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-fluffychat 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-fluffychat 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-client-fluffychat \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_client_fluffychat_container_network }} \
+			{% if matrix_client_fluffychat_container_http_host_bind_port %}
+			-p {{ matrix_client_fluffychat_container_http_host_bind_port }}:{{ matrix_client_fluffychat_container_http_port }} \
+			{% endif %}
+			--label-file={{ matrix_client_fluffychat_data_path }}/labels \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
+			{% for arg in matrix_client_fluffychat_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_client_fluffychat_docker_image }}
+
+{% for network in matrix_client_fluffychat_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-client-fluffychat
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-client-fluffychat
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-fluffychat 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-fluffychat 2>/dev/null || true'
+
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-client-fluffychat
+
+[Install]
+WantedBy=multi-user.target

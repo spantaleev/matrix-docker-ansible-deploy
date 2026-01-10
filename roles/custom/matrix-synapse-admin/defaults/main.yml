@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2020 - 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Dennis Ciba
+# SPDX-FileCopyrightText: 2021 - 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 - 2025 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # matrix-synapse-admin is a web UI for managing the Synapse Matrix server
 # Project source code URL: https://github.com/Awesome-Technologies/synapse-admin
@@ -14,9 +25,11 @@ matrix_synapse_admin_container_image_self_build: false
 matrix_synapse_admin_container_image_self_build_repo: "https://github.com/etkecc/synapse-admin.git"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/synapse-admin
-matrix_synapse_admin_version: v0.10.3-etke37
-matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
-matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else 'ghcr.io/' }}"
+matrix_synapse_admin_version: v0.11.1-etke52
+matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
+matrix_synapse_admin_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_synapse_admin_docker_image_registry_prefix_upstream }}"
+matrix_synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_synapse_admin_docker_image_registry_prefix_upstream_default }}"
+matrix_synapse_admin_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
 
 # The base container network
@@ -153,6 +166,8 @@ matrix_synapse_admin_path_prefix: /synapse-admin
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
 matrix_synapse_admin_configuration_default:
   restrictBaseUrl: "{{ matrix_synapse_admin_config_restrictBaseUrl }}"
+  externalAuthProvider: "{{ matrix_synapse_admin_config_externalAuthProvider }}"
+  corsCredentials: "{{ matrix_synapse_admin_config_corsCredentials }}"
   asManagedUsers: "{{ matrix_synapse_admin_config_asManagedUsers }}"
   menu: "{{ matrix_synapse_admin_config_menu }}"
 
@@ -174,9 +189,9 @@ matrix_synapse_admin_configuration_default:
 matrix_synapse_admin_configuration_extension_json: '{}'
 
 # This is similar to `matrix_synapse_admin_configuration_extension_json`, but intended for use by playbook or group vars
-matrix_synapse_admin_configuration_extension_json_auto: {}
+matrix_synapse_admin_configuration_extension_json_auto: '{}'
 
-matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json_auto | combine(matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
+matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json_auto | from_json | combine(matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
 
 # Holds the final synapse-admin configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_synapse_admin_configuration_default`.
@@ -184,7 +199,16 @@ matrix_synapse_admin_configuration: "{{ matrix_synapse_admin_configuration_defau
 
 # Controls the restrictBaseUrl configuration setting, which, if defined,
 # restricts the homeserver(s), so that the user can no longer define a homeserver manually during login.
-matrix_synapse_admin_config_restrictBaseUrl: "{{ [matrix_homeserver_url] }}"  # noqa var-naming
+matrix_synapse_admin_config_restrictBaseUrl: "{{ matrix_homeserver_url }}"  # noqa var-naming
+
+# Controls the externalAuthProvider configuration setting, which, if defined,
+# enables a special compatibility mode that works better for external auth providers like LDAP, MAS, etc.
+matrix_synapse_admin_config_externalAuthProvider: false  # noqa var-naming
+
+# Controls the corsCredentials configuration setting, which, if defined,
+# allows including credentials (cookies, authorization headers, or TLS client certificates) in requests
+# ref: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#including_credentials
+matrix_synapse_admin_config_corsCredentials: "same-origin"  # noqa var-naming
 
 # Controls the menu configuration setting, which, if defined, adds new menu items to the Synapse Admin UI.
 # The format is a list of objects, where each object has the following keys:

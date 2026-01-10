@@ -1,22 +1,30 @@
+# SPDX-FileCopyrightText: 2019 Thomas Kuehne
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Fail if required mautrix-whatsapp settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_mautrix_whatsapp_appservice_token', when: true}
     - {'name': 'matrix_mautrix_whatsapp_homeserver_address', when: true}
     - {'name': 'matrix_mautrix_whatsapp_homeserver_token', when: true}
     - {'name': 'matrix_mautrix_whatsapp_database_hostname', when: "{{ matrix_mautrix_whatsapp_database_engine == 'postgres' }}"}
 
-- name: (Deprecation) Catch and report renamed settings
+- name: (Deprecation) Catch and report renamed mautrix-whatsapp variables
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
-  when: "item.old in vars"
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_mautrix_whatsapp_log_level', 'new': 'matrix_mautrix_whatsapp_logging_level'}
     - {'old': 'matrix_mautrix_whatsapp_login_shared_secret', 'new': '<removed>'}
@@ -24,3 +32,4 @@
     - {'old': 'matrix_mautrix_whatsapp_bridge_double_puppet_server_map', 'new': '<removed>'}
     - {'old': 'matrix_mautrix_whatsapp_bridge_allow_user_invite', 'new': '<removed>'}
     - {'old': 'matrix_mautrix_whatsapp_bridge_mute_bridging', 'new': '<removed>'}
+    - {'old': 'matrix_mautrix_whatsapp_docker_image_name_prefix', 'new': 'matrix_mautrix_whatsapp_docker_image_registry_prefix'}

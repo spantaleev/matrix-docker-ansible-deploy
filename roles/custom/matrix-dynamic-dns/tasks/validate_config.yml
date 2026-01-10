@@ -1,24 +1,37 @@
+# SPDX-FileCopyrightText: 2020 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Scott Crossen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
-- name: Fail if no configurations specified
+- name: Fail if no matrix-dynamic-dns configurations specified
   ansible.builtin.fail:
     msg: >-
       You need to define at least one configuration in `matrix_dynamic_dns_domain_configurations` for using matrix-dynamic-dns.
   when: "matrix_dynamic_dns_domain_configurations | length == 0"
 
-- name: Fail if required settings not defined in configuration blocks
+- name: Fail if required matrix-dynamic-dns settings not defined in configuration blocks
   ansible.builtin.fail:
     msg: >-
-      One of the configurations in matrix_dynamic_dns_domain_configurations is missing a required key (domain, provider, protocol).
-  when: "'domain' not in configuration or 'provider' not in configuration or 'protocol' not in configuration"
+      One of the configurations in matrix_dynamic_dns_domain_configurations is missing a required key (domain, protocol).
+  when: "'domain' not in configuration or 'protocol' not in configuration"
   with_items: "{{ matrix_dynamic_dns_domain_configurations }}"
   loop_control:
     loop_var: configuration
 
-- name: Fail if required mautrix-dynamic-dns settings not defined
+- name: Fail if required matrix-dynamic-dns settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_dynamic_dns_container_network', when: true}
+
+- name: (Deprecation) Catch and report renamed matrix-dynamic-dns variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
+  with_items:
+    - {'old': 'matrix_dynamic_dns_container_image_name_prefix', 'new': 'matrix_dynamic_dns_docker_image_registry_prefix'}

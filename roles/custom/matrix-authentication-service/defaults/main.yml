@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # matrix-authentication-service (MAS) is an OAuth 2.0 and OpenID Provider server for Matrix.
@@ -17,9 +22,11 @@ matrix_authentication_service_container_repo_version: "{{ 'main' if matrix_authe
 matrix_authentication_service_container_src_files_path: "{{ matrix_base_data_path }}/matrix-authentication-service/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/matrix-authentication-service
-matrix_authentication_service_version: 0.13.0
-matrix_authentication_service_container_image: "{{ matrix_authentication_service_container_image_name_prefix }}element-hq/matrix-authentication-service:{{ matrix_authentication_service_version }}"
-matrix_authentication_service_container_image_name_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else 'ghcr.io/' }}"
+matrix_authentication_service_version: 1.8.0
+matrix_authentication_service_container_image_registry_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else matrix_authentication_service_container_image_registry_prefix_upstream }}"
+matrix_authentication_service_container_image_registry_prefix_upstream: "{{ matrix_authentication_service_container_image_registry_prefix_upstream_default }}"
+matrix_authentication_service_container_image_registry_prefix_upstream_default: "ghcr.io/"
+matrix_authentication_service_container_image: "{{ matrix_authentication_service_container_image_registry_prefix }}element-hq/matrix-authentication-service:{{ matrix_authentication_service_version }}"
 matrix_authentication_service_container_image_force_pull: "{{ matrix_authentication_service_container_image.endswith(':latest') }}"
 
 matrix_authentication_service_base_path: "{{ matrix_base_data_path }}/matrix-authentication-service"
@@ -212,6 +219,11 @@ matrix_authentication_service_config_account_displayname_change_allowed: true
 # This has no effect if password login is disabled.
 matrix_authentication_service_config_account_password_registration_enabled: false
 
+# Controls the `account.password_registration_email_required` configuration setting.
+#
+# Whether self-service password registrations require a valid email.
+matrix_authentication_service_config_account_password_registration_email_required: true
+
 # Controls the `account.password_change_allowed` configuration setting.
 #
 # Whether users are allowed to change their passwords.
@@ -223,6 +235,24 @@ matrix_authentication_service_config_account_password_change_allowed: true
 # Whether email-based password recovery is enabled.
 # This has no effect if password login is disabled.
 matrix_authentication_service_config_account_password_recovery_enabled: false
+
+# Controls the `account.account_deactivation_allowed` configuration setting.
+#
+# Whether users are allowed to delete their own account
+matrix_authentication_service_config_account_account_deactivation_allowed: true
+
+# Controls the `account.login_with_email_allowed` configuration setting.
+#
+# Whether users can log in with their email address.
+# This has no effect if password login is disabled.
+matrix_authentication_service_config_account_login_with_email_allowed: false
+
+# Controls the `account.registration_token_required` configuration setting.
+#
+# Whether registration tokens are required for password registrations.
+# When enabled, users must provide a valid registration token during password
+# registration. This has no effect if password registration is disabled.
+matrix_authentication_service_config_account_registration_token_required: false
 
 ########################################################################################
 #                                                                                      #
@@ -306,6 +336,24 @@ matrix_authentication_service_config_secrets_keys: |-
 # HTTP configuration                                                                 #
 #                                                                                      #
 ########################################################################################
+
+# Controls the resources exposed by the `web` HTTP listener.
+matrix_authentication_service_config_http_listener_web_resources: "{{ matrix_authentication_service_config_http_listener_web_resources_default + matrix_authentication_service_config_http_listener_web_resources_auto + matrix_authentication_service_config_http_listener_web_resources_custom }}"
+matrix_authentication_service_config_http_listener_web_resources_default: |-
+  {{
+    [
+      {'name': 'discovery'},
+      {'name': 'human'},
+      {'name': 'oauth'},
+      {'name': 'compat'},
+      {'name': 'graphql'},
+      {'name': 'assets'},
+    ]
+    +
+    ([{'name': 'adminapi'}] if matrix_authentication_service_admin_api_enabled else [])
+  }}
+matrix_authentication_service_config_http_listener_web_resources_auto: []
+matrix_authentication_service_config_http_listener_web_resources_custom: []
 
 # Controls the `http.public_base` configuration setting.
 matrix_authentication_service_config_http_public_base: "https://{{ matrix_authentication_service_hostname }}{{ '/' if matrix_authentication_service_path_prefix == '/' else (matrix_authentication_service_path_prefix + '/') }}"
@@ -552,27 +600,34 @@ matrix_authentication_service_container_labels_additional_labels: ''
 
 matrix_authentication_service_syn2mas_start_wait_time_seconds: 5
 
-matrix_authentication_service_syn2mas_dry_run: false
+# The syn2mas sub-command to run.
+# Valid values: migrate, check
+matrix_authentication_service_syn2mas_subcommand: migrate
 
-# renovate: datasource=docker depName=ghcr.io/element-hq/matrix-authentication-service/syn2mas
-matrix_authentication_service_syn2mas_version: 0.13.0
-matrix_authentication_service_syn2mas_container_image: "{{ matrix_authentication_service_container_image_name_prefix }}element-hq/matrix-authentication-service/syn2mas:{{ matrix_authentication_service_syn2mas_version }}"
-matrix_authentication_service_syn2mas_container_image_name_prefix: "{{ 'localhost/' if matrix_authentication_service_container_image_self_build else 'ghcr.io/' }}"
-matrix_authentication_service_syn2mas_container_image_force_pull: "{{ matrix_authentication_service_syn2mas_container_image.endswith(':latest') }}"
-
-matrix_authentication_service_syn2mas_container_image_self_build: "{{ matrix_authentication_service_container_image_self_build }}"
-
-matrix_authentication_service_syn2mas_container_network: "{{ matrix_authentication_service_container_network }}"
+# Whether to pass a `--dry-run` flag to the 'migrate' sub-command.
+# See `matrix_authentication_service_syn2mas_subcommand`
+matrix_authentication_service_syn2mas_migrate_dry_run: false
 
 # Path to Synapse's homeserver.yaml configuration file.
 matrix_authentication_service_syn2mas_synapse_homeserver_config_path: ""
 
-# Additional arguments passed to the syn2mas process.
+matrix_authentication_service_syn2mas_container_network: "{{ matrix_authentication_service_container_network }}"
+
+# Additional options passed to the syn2mas sub-command (e.g. `mas-cli syn2mas [OPTIONS] migrate|check`).
+# Also see: `matrix_authentication_service_syn2mas_subcommand_extra_options`
 #
 # Example:
-# matrix_authentication_service_syn2mas_process_extra_arguments:
-#   - "--upstreamProviderMapping oidc-keycloak:01H8PKNWKKRPCBW4YGH1RWV279"
-matrix_authentication_service_syn2mas_process_extra_arguments: []
+# matrix_authentication_service_syn2mas_command_extra_options:
+#   - "--something"
+matrix_authentication_service_syn2mas_command_extra_options: []
+
+# Additional options passed to the syn2mas sub-command (e.g. `mas-cli syn2mas migrate|check [OPTIONS]`).
+# Also see: `matrix_authentication_service_syn2mas_command_extra_options`
+#
+# Example:
+# matrix_authentication_service_syn2mas_subcommand_extra_options:
+#   - "--dry-run"
+matrix_authentication_service_syn2mas_subcommand_extra_options: []
 
 ########################################################################################
 #                                                                                      #
@@ -594,6 +649,10 @@ matrix_authentication_service_syn2mas_process_extra_arguments: []
 # - disable the integration between the homeserver and Matrix Authentication Service
 # - avoid setting up the "compatibility layer" (that is, avoid installing container labels that capture login endpoints like `/_matrix/client/*/login`, etc.)
 matrix_authentication_service_migration_in_progress: false
+
+# Controls whether the admin API is enabled.
+# Ref: https://element-hq.github.io/matrix-authentication-service/topics/admin-api.html#enabling-the-api
+matrix_authentication_service_admin_api_enabled: false
 
 ########################################################################################
 #                                                                                      #

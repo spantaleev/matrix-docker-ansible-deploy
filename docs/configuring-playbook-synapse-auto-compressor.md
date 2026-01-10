@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2023 Nikita Chernyi
+SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up synapse-auto-compressor (optional)
 
 The playbook can install and configure [synapse_auto_compressor](https://github.com/matrix-org/rust-synapse-compress-state/#automated-tool-synapse_auto_compressor) for you.
@@ -16,12 +24,15 @@ matrix_synapse_auto_compressor_enabled: true
 
 ### Edit the schedule (optional)
 
-By default the task will run 0 a.m. every day based on the `matrix_synapse_auto_compressor_schedule` variable. It is defined in the format of systemd timer calendar.
+By default the task will around 0 a.m. every day based on the `matrix_synapse_auto_compressor_schedule` variable with a randomized delay of 6 hours (controlled by the `matrix_synapse_auto_compressor_schedule_randomized_delay_sec` variable). It is defined in the format of systemd timer calendar.
 
 To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 matrix_synapse_auto_compressor_schedule: "*-*-* 00:00:00"
+
+# Consider adjusting the randomized delay or setting it to 0 to disable randomized delays.
+# matrix_synapse_auto_compressor_schedule_randomized_delay_sec: 6h
 ```
 
 ### Extending the configuration

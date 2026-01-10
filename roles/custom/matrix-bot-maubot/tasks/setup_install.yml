@@ -1,3 +1,12 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2022 Stuart Mumford
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure maubot paths exist
@@ -5,8 +14,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0755
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_bot_maubot_base_path }}", when: true}
     - {path: "{{ matrix_bot_maubot_config_path }}", when: true}
@@ -22,8 +31,8 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/config.yaml.j2"
     dest: "{{ matrix_bot_maubot_config_path }}/config.yaml"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: "u=rwx"
 
 - name: Ensure maubot image is pulled
@@ -47,7 +56,7 @@
         dest: "{{ matrix_bot_maubot_docker_src_files_path }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_bot_maubot_git_pull_results
 
     - name: Ensure maubot image is built
@@ -67,8 +76,8 @@
       ansible.builtin.template:
         src: "{{ role_path }}/templates/customizations/Dockerfile.j2"
         dest: "{{ matrix_bot_maubot_customized_docker_src_files_path }}/Dockerfile"
-        owner: "{{ matrix_user_username }}"
-        group: "{{ matrix_user_groupname }}"
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
         mode: 0640
       register: matrix_bot_maubot_container_image_customizations_dockerfile_result
 
@@ -87,8 +96,8 @@
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_bot_maubot_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

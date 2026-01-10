@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # Controls if (`matrix_prometheus_node_exporter` -> `prometheus_node_exporter`) validation will run.
@@ -50,7 +55,7 @@ matrix_playbook_migration_matrix_postmoogle_migration_validation_enabled: true
 # - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2999
 # - https://github.com/geerlingguy/ansible-role-docker/pull/410
 matrix_playbook_migration_debian_signedby_migration_enabled: true
-matrix_playbook_migration_debian_signedby_migration_repository_path: "/etc/apt/sources.list.d/download_docker_com_linux_{{ ansible_distribution | lower }}.list"
+matrix_playbook_migration_debian_signedby_migration_repository_path: "/etc/apt/sources.list.d/download_docker_com_linux_{{ ansible_facts['distribution'] | lower }}.list"
 
 # Controls if the old apt repository for Docker (`signed-by=/etc/apt/trusted.gpg.d/docker.asc`) will be removed,
 # so that the Docker role (7.2.0+) can install a new non-conflicting one (`signed-by=/etc/apt/keyrings/docker.asc`).
@@ -76,7 +81,7 @@ matrix_playbook_migration_matrix_nginx_proxy_leftover_variable_validation_checks
 matrix_playbook_migration_matrix_ssl_leftover_variable_checks_enabled: true
 
 # Controls whether this role will delete old files left over from `matrix-nginx-proxy`.
-# Regardless of this value, if discovered, a `matrix-nginx-proxy.service` systemd serivce will be stopped and removed.
+# Regardless of this value, if discovered, a `matrix-nginx-proxy.service` systemd service will be stopped and removed.
 matrix_playbook_migration_matrix_nginx_proxy_uninstallation_enabled: true
 
 # Controls whether this role will try to detect and clean up the /matrix/ssl files.

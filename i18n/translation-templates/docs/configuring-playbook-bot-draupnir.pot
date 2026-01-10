@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,390 +16,419 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:1
+#: ../../../docs/configuring-playbook-bot-draupnir.md:10
 msgid "Setting up Draupnir (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:3
+#: ../../../docs/configuring-playbook-bot-draupnir.md:12
 msgid "The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation bot for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:5
+#: ../../../docs/configuring-playbook-bot-draupnir.md:14
 msgid "See the project's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) to learn what it does and why it might be useful to you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:7
+#: ../../../docs/configuring-playbook-bot-draupnir.md:16
 msgid "This documentation page is about installing Draupnir in bot mode. As an alternative, you can run a multi-instance Draupnir deployment by installing [Draupnir in appservice mode](./configuring-playbook-appservice-draupnir-for-all.md) (called Draupnir-for-all) instead."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:9
+#: ../../../docs/configuring-playbook-bot-draupnir.md:18
 msgid "If your migrating from [Mjolnir](configuring-playbook-bot-mjolnir.md), skip to [this section](#migrating-from-mjolnir-only-required-if-migrating)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:11
+#: ../../../docs/configuring-playbook-bot-draupnir.md:20
 msgid "Prerequisites"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:13
+#: ../../../docs/configuring-playbook-bot-draupnir.md:22
 msgid "Create a management room"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:15
+#: ../../../docs/configuring-playbook-bot-draupnir.md:24
 msgid "Using your own account, create a new invite only room that you will use to manage the bot. This is the room where you will see the status of the bot and where you will send commands to the bot, such as the command to ban a user from another room."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:17
+#: ../../../docs/configuring-playbook-bot-draupnir.md:26
 msgid "[!WARNING] Anyone in this room can control the bot so it is important that you only invite trusted users to this room."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:20
+#: ../../../docs/configuring-playbook-bot-draupnir.md:29
 msgid "It is possible to make the management room encrypted (E2EE). If doing so, then you need to enable the native E2EE support (see [below](#native-e2ee-support))."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:22
+#: ../../../docs/configuring-playbook-bot-draupnir.md:31
 msgid "Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking \"Advanced\". The room ID will look something like `!qporfwt:example.com`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:24
+#: ../../../docs/configuring-playbook-bot-draupnir.md:33
 msgid "End-to-End Encryption support"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:26
+#: ../../../docs/configuring-playbook-bot-draupnir.md:35
 msgid "Decide whether you want to support having an encrypted management room or not. Draupnir can still protect encrypted rooms without encryption support enabled."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:28
+#: ../../../docs/configuring-playbook-bot-draupnir.md:37
 msgid "Refer to Draupnir's [documentation](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#protecting-encrypted-rooms) for more details about why you might want to care about encryption support for protected rooms."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:30
+#: ../../../docs/configuring-playbook-bot-draupnir.md:39
 msgid "Disable Pantalaimon for Draupnir (since v2.0.0; optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:32
+#: ../../../docs/configuring-playbook-bot-draupnir.md:41
 msgid "It is known that running Draupnir along with Pantalaimon breaks all workflows that involve answering prompts with reactions."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:34
+#: ../../../docs/configuring-playbook-bot-draupnir.md:43
 msgid "If you are updating Draupnir from v1.x.x and have enabled Pantalaimon for it, you can disable Pantalaimon in favor of the native E2EE support. To disable Pantalaimon, remove the configuration `matrix_bot_draupnir_pantalaimon_use: true` from your `vars.yml` file."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:36
+#: ../../../docs/configuring-playbook-bot-draupnir.md:45
 msgid "**Note**: because the management room is still encrypted, disabling it without enabling the native E2EE support will break the management room."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:38
+#: ../../../docs/configuring-playbook-bot-draupnir.md:47
 msgid "Native E2EE support"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:40
+#: ../../../docs/configuring-playbook-bot-draupnir.md:49
 msgid "To enable the native E2EE support, you need to obtain an access token for Draupnir and set it on your `vars.yml` file."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:42
+#: ../../../docs/configuring-playbook-bot-draupnir.md:51
 msgid "Note that native E2EE requires a clean access token that has not touched E2EE so curl is recommended as a method to obtain it. **The access token obtained via Element Web does not work with it**. Refer to the documentation on [how to obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:44
+#: ../../../docs/configuring-playbook-bot-draupnir.md:53
 msgid "To enable the native E2EE support, add the following configuration to your `vars.yml` file. Make sure to replace `CLEAN_ACCESS_TOKEN_HERE` with the access token you obtained just now."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:55
+#: ../../../docs/configuring-playbook-bot-draupnir.md:64
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:57
+#: ../../../docs/configuring-playbook-bot-draupnir.md:66
 msgid "To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the one of the room which you have created earlier."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:76
+#: ../../../docs/configuring-playbook-bot-draupnir.md:85
 msgid "Create and invite the bot to the management room"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:78
+#: ../../../docs/configuring-playbook-bot-draupnir.md:87
 msgid "Before proceeding to the next step, run the playbook with the following command to create the bot user."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:84
+#: ../../../docs/configuring-playbook-bot-draupnir.md:93
 msgid "**Note**: the `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:86
+#: ../../../docs/configuring-playbook-bot-draupnir.md:95
 msgid "Then, invite the bot (`@bot.draupnir:example.com`) to its management room which you have created earlier."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:88
+#: ../../../docs/configuring-playbook-bot-draupnir.md:97
 msgid "Make sure the account is free from rate limiting (optional, recommended)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:90
+#: ../../../docs/configuring-playbook-bot-draupnir.md:99
 msgid "If your homeserver's implementation is Synapse, you will need to prevent it from rate limiting the bot's account. **This is a highly recommended step. If you do not configure it, Draupnir performance will be degraded.**"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:92
+#: ../../../docs/configuring-playbook-bot-draupnir.md:101
 msgid "This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#override-ratelimiting-for-users). They can be accessed both externally and internally."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:94
+#: ../../../docs/configuring-playbook-bot-draupnir.md:103
 msgid "**Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:96
+#: ../../../docs/configuring-playbook-bot-draupnir.md:105
 msgid "The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:98
+#: ../../../docs/configuring-playbook-bot-draupnir.md:107
 msgid "Add the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:100
+#: ../../../docs/configuring-playbook-bot-draupnir.md:109
 msgid "To expose the APIs publicly, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:106
+#: ../../../docs/configuring-playbook-bot-draupnir.md:115
 msgid "Obtain an access token for admin account"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:108
+#: ../../../docs/configuring-playbook-bot-draupnir.md:117
 msgid "Manual access to Synapse's Admin APIs requires an access token for a homeserver admin account. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:110
+#: ../../../docs/configuring-playbook-bot-draupnir.md:119
 msgid "[!WARNING] Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:113
+#: ../../../docs/configuring-playbook-bot-draupnir.md:122
 msgid "Run the `curl` command"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:115
+#: ../../../docs/configuring-playbook-bot-draupnir.md:124
 msgid "To disable rate limiting, run the following command on systems that ship curl. Before running it, make sure to replace:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:117
+#: ../../../docs/configuring-playbook-bot-draupnir.md:126
 msgid "`ADMIN_ACCESS_TOKEN_HERE` with the access token of the admin account"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:118
+#: ../../../docs/configuring-playbook-bot-draupnir.md:127
 msgid "`example.com` with your base domain"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:119
+#: ../../../docs/configuring-playbook-bot-draupnir.md:128
 msgid "`@bot.draupnir:example.com` with the MXID of your Draupnir bot user"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:125
+#: ../../../docs/configuring-playbook-bot-draupnir.md:134
+#: ../../../docs/configuring-playbook-bot-draupnir.md:207
 msgid "**Notes**:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:126
+#: ../../../docs/configuring-playbook-bot-draupnir.md:135
 msgid "This does not work on outdated Windows 10 as curl is not available there."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:127
+#: ../../../docs/configuring-playbook-bot-draupnir.md:136
 msgid "Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:129
+#: ../../../docs/configuring-playbook-bot-draupnir.md:138
 msgid "Abuse Reports"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:131
+#: ../../../docs/configuring-playbook-bot-draupnir.md:140
 msgid "Draupnir can receive reports in the management room."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:133
+#: ../../../docs/configuring-playbook-bot-draupnir.md:142
 msgid "The bot can intercept the report API endpoint of the client-server API, which requires integration with the reverse proxy in front of the homeserver. If you are using Traefik, this playbook can set this up for you:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:145
+#: ../../../docs/configuring-playbook-bot-draupnir.md:148
+msgid "Enabling synapse-http-antispam support"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:150
+msgid "Certain protections in Draupnir require the [synapse-http-antispam](https://github.com/maunium/synapse-http-antispam) module and a Synapse homeserver plus homeserver admin status to function. This module can be enabled in the playbook via setting `matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled` to `true` and making sure that Draupnir admin API access is enabled."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:160
+msgid "These protections need to be manually activated and consulting the [enabling protections](#enabling-built-in-protections) guide can be helpful or consulting upstream documentation."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:168
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:147
+#: ../../../docs/configuring-playbook-bot-draupnir.md:170
 msgid "There are some additional things you may wish to configure about the bot."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:149
+#: ../../../docs/configuring-playbook-bot-draupnir.md:172
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:151
+#: ../../../docs/configuring-playbook-bot-draupnir.md:174
 msgid "`roles/custom/matrix-bot-draupnir/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_draupnir_configuration_extension_yaml` variable"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:153
+#: ../../../docs/configuring-playbook-bot-draupnir.md:176
 msgid "For example, to change Draupnir's `acceptInvitesFromSpace` option to `!qporfwt:example.com`, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:167
+#: ../../../docs/configuring-playbook-bot-draupnir.md:190
 msgid "Migrating from Mjolnir (Only required if migrating)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:169
+#: ../../../docs/configuring-playbook-bot-draupnir.md:192
 msgid "Replace your `matrix_bot_mjolnir` config with `matrix_bot_draupnir` config. Also disable Mjolnir if you're doing migration."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:171
+#: ../../../docs/configuring-playbook-bot-draupnir.md:194
 msgid "Note that Draupnir supports E2EE natively, so you can enable it instead of Pantalaimon. It is recommended to consult the instruction [here](#native-e2ee-support)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:173
+#: ../../../docs/configuring-playbook-bot-draupnir.md:196
 msgid "That is all you need to do due to that Draupnir can complete migration on its own."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:175
+#: ../../../docs/configuring-playbook-bot-draupnir.md:198
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:177
+#: ../../../docs/configuring-playbook-bot-draupnir.md:200
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:184
+#: ../../../docs/configuring-playbook-bot-draupnir.md:209
+msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:211
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:186
+#: ../../../docs/configuring-playbook-bot-draupnir.md:213
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:188
+#: ../../../docs/configuring-playbook-bot-draupnir.md:215
+msgid "If you change the bot password (`matrix_bot_draupnir_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_draupnir_password` to let the bot know its new password."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:217
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:190
+#: ../../../docs/configuring-playbook-bot-draupnir.md:219
 msgid "You can refer to the upstream [documentation](https://the-draupnir-project.github.io/draupnir-documentation/) for additional ways to use and configure Draupnir and for a more detailed usage guide."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:192
+#: ../../../docs/configuring-playbook-bot-draupnir.md:221
 msgid "Below is a **non-exhaustive quick-start guide** for the impatient."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:194
+#: ../../../docs/configuring-playbook-bot-draupnir.md:223
 msgid "Making Draupnir join and protect a room"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:196
+#: ../../../docs/configuring-playbook-bot-draupnir.md:225
 msgid "Draupnir can be told to self-join public rooms, but it's better to follow this flow which works well for all kinds of rooms:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:198
+#: ../../../docs/configuring-playbook-bot-draupnir.md:227
 msgid "Invite the bot to the room manually ([inviting Draupnir to rooms](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#inviting-draupnir-to-rooms)). Before joining, the bot *may* ask for confirmation in the Management Room"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:200
+#: ../../../docs/configuring-playbook-bot-draupnir.md:229
 msgid "[Give the bot permissions to do its job](#giving-draupnir-permissions-to-do-its-job)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:202
+#: ../../../docs/configuring-playbook-bot-draupnir.md:231
 msgid "Tell it to protect the room (using the [rooms command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#using-the-draupnir-rooms-command)) by sending the following command to the Management Room: `!draupnir rooms add !qporfwt:example.com`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:204
+#: ../../../docs/configuring-playbook-bot-draupnir.md:233
 msgid "To have Draupnir provide useful room protection, you need do to a bit more work (at least the first time around). You may wish to [Subscribe to a public policy list](#subscribing-to-a-public-policy-list), [Create your own own policy and rules](#creating-your-own-policy-lists-and-rules) and [Enabling built-in protections](#enabling-built-in-protections)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:206
+#: ../../../docs/configuring-playbook-bot-draupnir.md:235
 msgid "Giving Draupnir permissions to do its job"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:208
+#: ../../../docs/configuring-playbook-bot-draupnir.md:237
 msgid "For Draupnir to do its job, you need to [give it permissions](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-protected-rooms#giving-draupnir-permissions) in rooms it's protecting. This involves **giving it an Administrator power level**."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:210
+#: ../../../docs/configuring-playbook-bot-draupnir.md:239
 msgid "**We recommend setting this power level as soon as the bot joins your room** (and before you create new rules), so that it can apply rules as soon as they are available. If the bot is under-privileged, it may fail to apply protections and may not retry for a while (or until your restart it)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:212
+#: ../../../docs/configuring-playbook-bot-draupnir.md:241
 msgid "Subscribing to a public policy list"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:214
+#: ../../../docs/configuring-playbook-bot-draupnir.md:243
 msgid "We recommend **subscribing to a public [policy list](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists)** using the [watch command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-watch-command-to-subscribe-to-policy-rooms)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:216
-msgid "Polcy lists are maintained in Matrix rooms. A popular policy list is maintained in the public `#community-moderation-effort-bl:neko.dev` room."
+#: ../../../docs/configuring-playbook-bot-draupnir.md:245
+msgid "Policy lists are maintained in Matrix rooms. Popular ones maintained in the public are:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-draupnir.md:218
-msgid "You can tell Draupnir to subscribe to it by sending the following command to the Management Room: `!draupnir watch #community-moderation-effort-bl:neko.dev`"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:220
-msgid "Creating your own policy lists and rules"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:222
-msgid "We also recommend **creating your own policy lists** with the [list create](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-list-create-command-to-create-a-policy-room) command."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:224
-msgid "You can do so by sending the following command to the Management Room: `!draupnir list create my-bans my-bans-bl`. This will create a policy list having a name (shortcode) of `my-bans` and stored in a public `#my-bans-bl:example.com` room on your server. As soon as you run this command, the bot will invite you to the policy list room."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:226
-msgid "A policy list does nothing by itself, so the next step is **adding some rules to your policy list**. Policies target a so-called `entity` (one of: `user`, `room` or `server`). These entities are mentioned on the [policy lists](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists) documentation page and in the Matrix Spec [here](https://spec.matrix.org/v1.11/client-server-api/#mban-recommendation)."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:228
-msgid "The simplest and most useful entity to target is `user`. Below are a few examples using the [ban command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#the-ban-command) and targeting users."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:230
-msgid "To create rules, you run commands in the Management Room (**not** in the policy list room)."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:232
-msgid "(ban a single user on a given homeserver): `!draupnir ban @charles:example.com my-bans Rude to others`"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:233
-msgid "(ban all users on a given homeserver by using a [wildcard](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#wildcards)): `!draupnir ban @*:example.org my-bans Spam server - all users are fake`"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:235
-msgid "As a result of running these commands, you may observe:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:237
-msgid "Draupnir creating `m.policy.rule.user` state events in the `#my-bans-bl:example.com` room on your server"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:238
-msgid "applying these rules against all rooms that Draupnir is an Administrator in"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:240
-msgid "You can undo bans with the [unban command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#the-unban-command)."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:242
-msgid "Enabling built-in protections"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:244
-msgid "You can also **turn on various built-in [protections](https://the-draupnir-project.github.io/draupnir-documentation/protections)** like `JoinWaveShortCircuit` (\"If X amount of users join in Y time, set the room to invite-only\")."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-draupnir.md:246
-msgid "To **see which protections are available and which are enabled**, send a `!draupnir protections` command to the Management Room."
+#: ../../../docs/configuring-playbook-bot-draupnir.md:247
+msgid "`#community-moderation-effort-bl:neko.dev`"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-draupnir.md:248
-msgid "To **see the configuration options for a given protection**, send a `!draupnir protections show PROTECTION_NAME` (e.g. `!draupnir protections show JoinWaveShortCircuit`)."
+msgid "`#huginn-muninn-active-threats:feline.support`"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-draupnir.md:250
-msgid "To **set a specific option for a given protection**, send a command like this: `!draupnir config set PROTECTION_NAME.OPTION VALUE` (e.g. `!draupnir config set JoinWaveShortCircuit.timescaleMinutes 30`)."
+msgid "You can tell Draupnir to subscribe to each of these by sending the following command to the Management Room: `!draupnir watch POLICY_LIST_ADDRESS_HERE` (e.g. `!draupnir watch #community-moderation-effort-bl:neko.dev`)"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-draupnir.md:252
-msgid "To **enable a given protection**, send a command like this: `!draupnir enable PROTECTION_NAME` (e.g. `!draupnir enable JoinWaveShortCircuit`)."
+msgid "Creating your own policy lists and rules"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-draupnir.md:254
-msgid "To **disable a given protection**, send a command like this: `!draupnir disable PROTECTION_NAME` (e.g. `!draupnir disable JoinWaveShortCircuit`)."
+msgid "We also recommend **creating your own policy lists** with the [list create](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-list-create-command-to-create-a-policy-room) command."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:256
+msgid "You can do so by sending the following command to the Management Room: `!draupnir list create my-bans my-bans-bl`. This will create a policy list having a name (shortcode) of `my-bans` and stored in a public `#my-bans-bl:example.com` room on your server. As soon as you run this command, the bot will invite you to the policy list room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:258
+msgid "A policy list does nothing by itself, so the next step is **adding some rules to your policy list**. Policies target a so-called `entity` (one of: `user`, `room` or `server`). These entities are mentioned on the [policy lists](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists) documentation page and in the Matrix Spec [here](https://spec.matrix.org/v1.11/client-server-api/#mban-recommendation)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:260
+msgid "The simplest and most useful entity to target is `user`. Below are a few examples using the [ban command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#the-ban-command) and targeting users."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:262
+msgid "To create rules, you run commands in the Management Room (**not** in the policy list room)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:264
+msgid "(ban a single user on a given homeserver): `!draupnir ban @charles:example.com my-bans Rude to others`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:265
+msgid "(ban all users on a given homeserver by using a [wildcard](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#wildcards)): `!draupnir ban @*:example.org my-bans Spam server, all users are fake`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:267
+msgid "As a result of running these commands, you may observe:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:269
+msgid "Draupnir creating `m.policy.rule.user` state events in the `#my-bans-bl:example.com` room on your server"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:270
+msgid "applying these rules against all rooms that Draupnir is an Administrator in"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:272
+msgid "You can undo bans with the [unban command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#the-unban-command)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:274
+msgid "Enabling built-in protections"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:276
+msgid "You can also **turn on various built-in [protections](https://the-draupnir-project.github.io/draupnir-documentation/protections)** like `JoinWaveShortCircuitProtection` (\"If X amount of users join in Y time, set the room to invite-only\")."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:278
+msgid "To **see which protections are available and which are enabled**, send a `!draupnir protections` command to the Management Room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:280
+msgid "To [**see the configuration options for a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/configuring-protections#displaying-the-protection-settings), send a `!draupnir protections show PROTECTION_NAME` (e.g. `!draupnir protections show JoinWaveShortCircuitProtection`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:282
+msgid "To [**set a specific option for a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/configuring-protections#changing-protection-settings), send a command like this: `!draupnir protections config set PROTECTION_NAME OPTION VALUE` (e.g. `!draupnir protections config set JoinWaveShortCircuitProtection timescaleMinutes 30`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:284
+msgid "To [**enable a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/block-invitations-on-server-protection#enabling-the-protection), send a command like this: `!draupnir protections enable PROTECTION_NAME` (e.g. `!draupnir protections enable JoinWaveShortCircuitProtection`)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-draupnir.md:286
+msgid "To **disable a given protection**, send a command like this: `!draupnir protections disable PROTECTION_NAME` (e.g. `!draupnir protections disable JoinWaveShortCircuitProtection`)."
 msgstr ""

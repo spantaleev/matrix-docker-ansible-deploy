@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2020 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Importing `media_store` data files from an existing Synapse installation (optional)
 
 You can manually import your `media_store` files from a previous installation of Synapse.

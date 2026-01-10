@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Christian Wolf
+SPDX-FileCopyrightText: 2020 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Marcel Partap
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring a TURN server (optional, advanced)
 
 By default, this playbook installs and configures the [coturn](https://github.com/coturn/coturn) as a TURN server, through which clients can make audio/video calls even from [NAT](https://en.wikipedia.org/wiki/Network_address_translation)-ed networks. It also configures the Synapse chat server by default, so that it points to the coturn TURN server installed by the playbook. If that's okay, you can skip this document.
@@ -38,6 +48,23 @@ matrix_coturn_authentication_method: lt-cred-mech
 Regardless of the selected authentication method, the playbook generates secrets automatically and passes them to the homeserver and coturn.
 
 If [Jitsi](configuring-playbook-jitsi.md) is installed, note that switching to `lt-cred-mech` will disable the integration between Jitsi and your coturn server, as Jitsi seems to support the `auth-secret` authentication method only.
+
+### Customize the Coturn hostname (optional)
+
+By default, Coturn uses the same hostname as your Matrix homeserver (the value of `matrix_server_fqn_matrix`, which is typically `matrix.example.com`).
+
+If you'd like to use a custom subdomain for Coturn (e.g., `turn.example.com` or `t.matrix.example.com`), add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_coturn_hostname: turn.example.com
+```
+
+The playbook will automatically:
+- Configure Coturn to use this hostname
+- Obtain an SSL certificate for the custom domain via Traefik
+- Update all TURN URIs to point to the custom domain
+
+**Note**: Make sure the custom hostname resolves to your server's IP address via DNS before running the playbook.
 
 ### Use your own external coturn server (optional)
 

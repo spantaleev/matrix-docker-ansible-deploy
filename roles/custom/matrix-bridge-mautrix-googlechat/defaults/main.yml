@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+# SPDX-FileCopyrightText: 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2022 - 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 László Várady
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Ruben Hias
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # mautrix-googlechat is a Matrix <-> googlechat bridge
 # Project source code URL: https://github.com/mautrix/googlechat
@@ -11,8 +22,10 @@ matrix_mautrix_googlechat_container_image_self_build_repo_version: "{{ 'master' 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/googlechat
 matrix_mautrix_googlechat_version: v0.5.2
 # See: https://mau.dev/mautrix/googlechat/container_registry
-matrix_mautrix_googlechat_docker_image: "{{ matrix_mautrix_googlechat_docker_image_name_prefix }}mautrix/googlechat:{{ matrix_mautrix_googlechat_version }}"
-matrix_mautrix_googlechat_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_googlechat_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_googlechat_docker_image: "{{ matrix_mautrix_googlechat_docker_image_registry_prefix }}mautrix/googlechat:{{ matrix_mautrix_googlechat_version }}"
+matrix_mautrix_googlechat_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_googlechat_container_image_self_build else matrix_mautrix_googlechat_docker_image_registry_prefix_upstream }}"
+matrix_mautrix_googlechat_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_googlechat_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_googlechat_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_mautrix_googlechat_docker_image_force_pull: "{{ matrix_mautrix_googlechat_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_googlechat_base_path: "{{ matrix_base_data_path }}/mautrix-googlechat"
@@ -186,6 +199,7 @@ matrix_mautrix_googlechat_registration_yaml: |
   sender_localpart: _bot_{{ matrix_mautrix_googlechat_appservice_bot_username }}
   rate_limited: false
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
 
 matrix_mautrix_googlechat_registration: "{{ matrix_mautrix_googlechat_registration_yaml | from_yaml }}"
 

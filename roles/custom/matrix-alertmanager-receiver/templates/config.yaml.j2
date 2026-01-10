@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 # configuration of the HTTP server
 http:
   address: 0.0.0.0 # bind address for this service. Can be left unspecified to bind on all interfaces
@@ -25,10 +25,6 @@ templating:
   # key is the original value taken from the Alertmanager payload
   # value is the mapped value which will be available as '.GeneratorURL' in templates
   generator-url-mapping: {{ matrix_alertmanager_receiver_config_templating_generator_url_mapping | to_json }}
-
-  # computation of arbitrary values based on matching alert annotations, labels, or status
-  # values will be evaluated top to bottom, last entry wins
-  computed-values: {{ matrix_alertmanager_receiver_config_templating_computed_values | to_json }}
 
   # template for alerts in status 'firing'
   firing-template: {{ matrix_alertmanager_receiver_config_templating_firing_template | to_json }}

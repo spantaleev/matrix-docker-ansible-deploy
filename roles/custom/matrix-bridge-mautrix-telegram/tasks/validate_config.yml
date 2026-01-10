@@ -1,10 +1,16 @@
+# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Fail if required mautrix-telegram settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_mautrix_telegram_hostname', when: true}
     - {'name': 'matrix_mautrix_telegram_path_prefix', when: true}
@@ -19,15 +25,23 @@
     - {'name': 'matrix_mautrix_telegram_metrics_proxying_hostname', when: "{{ matrix_mautrix_telegram_metrics_proxying_enabled }}"}
     - {'name': 'matrix_mautrix_telegram_metrics_proxying_path_prefix', when: "{{ matrix_mautrix_telegram_metrics_proxying_enabled }}"}
 
-- name: (Deprecation) Catch and report renamed Telegram variables
+- name: (Deprecation) Catch and report renamed mautrix-telegram variables
   ansible.builtin.fail:
     msg: >-
       Your configuration contains a variable, which now has a different name.
-      Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
-  when: "item.old in vars"
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_mautrix_telegram_container_exposed_port_number', 'new': '<superseded by matrix_mautrix_telegram_container_http_host_bind_port>'}
     - {'old': 'matrix_mautrix_telegram_container_self_build', 'new': 'matrix_mautrix_telegram_container_image_self_build'}
-    - {'old': 'matrix_telegram_lottieconverter_container_self_build', 'new': 'matrix_mautrix_telegram_container_image_self_build'}
-    - {'old': 'matrix_telegram_lottieconverter_container_self_build_mask_arch', 'new': 'matrix_telegram_lottieconverter_container_image_self_build_mask_arch'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_self_build', 'new': 'matrix_mautrix_telegram_container_image_self_build'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_self_build_mask_arch', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_self_build_mask_arch'}
     - {'old': 'matrix_mautrix_telegram_login_shared_secret', 'new': '<removed>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_name_prefix', 'new': 'matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix'}
+    - {'old': 'matrix_mautrix_telegram_docker_image_name_prefix', 'new': 'matrix_mautrix_telegram_docker_image_registry_prefix'}
+    - {'old': 'matrix_telegram_lottieconverter_container_image_self_build', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_self_build'}
+    - {'old': 'matrix_telegram_lottieconverter_container_image_self_build_mask_arch', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_self_build_mask_arch'}
+    - {'old': 'matrix_telegram_lottieconverter_docker_repo', 'new': 'matrix_mautrix_telegram_lottieconverter_docker_repo'}
+    - {'old': 'matrix_telegram_lottieconverter_docker_repo_version', 'new': 'matrix_mautrix_telegram_lottieconverter_docker_repo_version'}
+    - {'old': 'matrix_telegram_lottieconverter_docker_src_files_path', 'new': 'matrix_mautrix_telegram_lottieconverter_docker_src_files_path'}
+    - {'old': 'matrix_telegram_lottieconverter_docker_image', 'new': 'matrix_mautrix_telegram_lottieconverter_docker_image'}

@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2023 Christian González
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+SPDX-FileCopyrightText: 2024 Uğur İLTER
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Synapse Admin (optional)
 
 The playbook can install and configure [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin), community room: [#synapse-admin:etke.cc](https://matrix.to/#/#synapse-admin:etke.cc)) for you.
@@ -5,6 +17,8 @@ The playbook can install and configure [etkecc/synapse-admin](https://github.com
 synapse-admin is a web UI tool you can use to **administrate users, rooms, media, etc. on your Matrix server**. It's designed to work with the Synapse homeserver implementation and WON'T work with Dendrite because [Dendrite Admin API](https://element-hq.github.io/dendrite/administration/adminapi) differs from [Synapse Admin API](https://element-hq.github.io/synapse/latest/usage/administration/admin_api/).
 
 💡 **Note**: the latest version of synapse-admin is hosted by [etke.cc](https://etke.cc/) at [admin.etke.cc](https://admin.etke.cc/). If you only need this service occasionally and trust giving your admin credentials to a 3rd party Single Page Application, you can consider using it from there and avoiding the (small) overhead of self-hosting.
+
+💡 **Note**: The playbook also supports an alternative management UI in the shape of [Element Admin](./configuring-playbook-element-admin.md). However, it's currently less feature-rich than Synapse Admin and has a dependency on [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md).
 
 ## Adjusting DNS records (optional)
 
@@ -26,9 +40,6 @@ matrix_synapse_admin_enabled: true
 - for [Dendrite](./configuring-playbook-dendrite.md): `matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: true`
 
 By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/etkecc/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) — the one managed by the playbook. To adjust these restrictions, tweak the `matrix_synapse_admin_config_restrictBaseUrl` variable.
-
-> [!WARNING]
-> If you're using [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS) for authentication, you will be able to [log into synapse-admin with an access token](https://github.com/etkecc/synapse-admin/pull/58), but certain synapse-admin features (especially those around user management) will be limited or not work at all.
 
 ### Adjusting the Synapse Admin URL (optional)
 

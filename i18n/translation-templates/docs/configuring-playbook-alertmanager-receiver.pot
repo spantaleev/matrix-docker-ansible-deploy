@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,182 +16,174 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:1
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:9
 msgid "Setting up Prometheus Alertmanager integration via matrix-alertmanager-receiver (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:3
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:11
 msgid "The playbook can install and configure the [matrix-alertmanager-receiver](https://github.com/metio/matrix-alertmanager-receiver) service for you. It's a [client](https://prometheus.io/docs/alerting/latest/clients/) for Prometheus' [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/), allowing you to deliver alerts to Matrix rooms."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:5
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:13
 msgid "See the project's [documentation](https://github.com/metio/matrix-alertmanager-receiver/blob/main/README.md) to learn what it does and why it might be useful to you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:7
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:15
 msgid "This service is meant to be used with an external [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) instance. It's **not** meant to be integrated with the [Prometheus & Grafana stack](./configuring-playbook-prometheus-grafana.md) installed by this playbook, because the Alertmanager component is not installed by it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:9
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:17
 msgid "Prerequisites"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:11
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:19
 msgid "Register the bot account"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:13
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:21
 msgid "This service uses a bot (with a username specified in `matrix_alertmanager_receiver_config_matrix_user_id_localpart`) for delivering messages."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:15
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:23
 msgid "The playbook does not automatically create users for you. You **need to register the bot user manually** before setting up the bot."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:17
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:25
 msgid "Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:19
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:27
 msgid "You can use the playbook to [register a new user](registering-users.md):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:25
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:33
 msgid "Obtain an access token"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:27
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:35
 msgid "The bot requires an access token to be able to connect to your homeserver. Refer to the documentation on [how to obtain an access token](obtaining-access-tokens.md)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:29
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:37
 msgid "[!WARNING] Access tokens are sensitive information. Do not include them in any bug reports, messages, or logs. Do not share the access token with anyone."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:32
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:40
 msgid "Join to rooms as the bot manually"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:34
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:42
 msgid "ℹ️ **This bot does not accept room invitations automatically**. To deliver messages to rooms, the bot must be joined to all rooms manually."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:36
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:44
 msgid "For each new room you would like the bot to deliver alerts to, invite the bot to the room."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:38
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:46
 msgid "Then, log in as the bot using any Matrix client of your choosing, accept the room invitation from the bot's account, and log out."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:40
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:48
 msgid "Adjusting DNS records (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:42
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:50
 msgid "By default, this playbook installs matrix-alertmanager-receiver on the `matrix.` subdomain, at the `/matrix-alertmanager-receiver` path (https://matrix.example.com/matrix-alertmanager-receiver). This makes it easy to install it, because it **doesn't require additional DNS records to be set up**. If that's okay, you can skip this section."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:44
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:52
 msgid "If you wish to adjust it, see the section [below](#adjusting-the-matrix-alertmanager-receiver-url-optional) for details about DNS configuration."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:46
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:54
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:48
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:56
 msgid "Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `ACCESS_TOKEN_HERE` with the one created [above](#obtain-an-access-token)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:69
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:77
 msgid "Adjusting the matrix-alertmanager-receiver URL (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:71
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:79
 msgid "By tweaking the `matrix_alertmanager_receiver_hostname` and `matrix_alertmanager_receiver_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:73
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:81
 msgid "Example additional configuration for your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:81
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:89
 msgid "If you've changed the default hostname, you may need to create a CNAME record for the matrix-alertmanager-receiver domain (`alertmanager.example.com`), which targets `matrix.example.com`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:83
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:91
 msgid "When setting, replace `example.com` with your own."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:85
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:93
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:87
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:95
 msgid "There are some additional things you may wish to configure about the component."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:89
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:97
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:91
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:99
 msgid "`roles/custom/matrix-alertmanager-receiver/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:92
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:100
 msgid "`roles/custom/matrix-alertmanager-receiver/templates/config.yaml.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_alertmanager_receiver_configuration_extension_yaml` variable"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:94
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:102
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:96
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:104
 msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:103
-msgid "**Notes**:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:105
-msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:107
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:111
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:109
-msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:113
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:111
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:115
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:113
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:117
 msgid "Configure your Prometheus Alertmanager with configuration like this:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:132
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:136
 msgid "where `URL_HERE` looks like `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/some-room-name` or `https://matrix.example.com/matrix-alertmanager-receiver-RANDOM_VALUE_HERE/alert/!qporfwt:example.com`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:134
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:138
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:136
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:140
 msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-alertmanager-receiver`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:138
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:142
 msgid "Increase logging verbosity"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-alertmanager-receiver.md:140
+#: ../../../docs/configuring-playbook-alertmanager-receiver.md:144
 msgid "The default logging level for this component is `info`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:"
 msgstr ""

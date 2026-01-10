@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2019 Aaron Raimist
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Dark Decoy
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Registering users
 
 This documentation page tells you how to create user accounts on your Matrix server.
@@ -151,6 +161,6 @@ You can then proceed to run the query above.
 
 ### Adding/Removing Administrator privileges to an existing user in Matrix Authentication Service
 
-Promoting/demoting a user in Matrix Authentication Service cannot currently (2024-10-19) be done via the [`mas-cli` Management tool](./configuring-playbook-matrix-authentication-service.md#management).
+Promoting/demoting a user in Matrix Authentication Service can be done using the [`mas-cli`](./configuring-playbook-matrix-authentication-service.md#management) management tool's [`manage promote-admin`](https://element-hq.github.io/matrix-authentication-service/reference/cli/manage.html#manage-promote-admin) and [`manage demote-admin`](https://element-hq.github.io/matrix-authentication-service/reference/cli/manage.html#manage-demote-admin) commands. For example: `/matrix/matrix-authentication-service/bin/mas-cli manage promote-admin some.username`.
 
-You can do it via the [MAS Admin API](https://element-hq.github.io/matrix-authentication-service/api/index.html)'s `POST /api/admin/v1/users/{id}/set-admin` endpoint.
+You can also do it via the [MAS Admin API](https://element-hq.github.io/matrix-authentication-service/api/index.html)'s `POST /api/admin/v1/users/{id}/set-admin` endpoint.

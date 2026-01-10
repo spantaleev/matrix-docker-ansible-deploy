@@ -1,6 +1,22 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Sabine Laszakovits
+SPDX-FileCopyrightText: 2021 Cody Neiman
+SPDX-FileCopyrightText: 2021 Matthew Cengia
+SPDX-FileCopyrightText: 2021 Toni Spets
+SPDX-FileCopyrightText: 2022 Julian Foad
+SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2022 Vladimir Panteleev
+SPDX-FileCopyrightText: 2023 Shreyas Ajjarapu
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring the playbook
 
-<sup>[Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > Configuring the playbook > [Installing](installing.md)</sup>
+<sup>[Prerequisites](prerequisites.md) > [Configuring DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > Configuring the playbook > [Installing](installing.md)</sup>
 
 If you've configured your DNS records and retrieved the playbook's source code to your computer, you can start configuring the playbook. To do so, follow these steps inside the playbook directory:
 
@@ -8,13 +24,13 @@ If you've configured your DNS records and retrieved the playbook's source code t
 
 2. copy the sample configuration file (`cp examples/vars.yml inventory/host_vars/matrix.example.com/vars.yml`)
 
-3. edit the configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) to your liking. You may also take a look at the various `roles/*/ROLE_NAME_HERE/defaults/main.yml` files and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
+3. edit the configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) to your liking. You may also take a look at the various `roles/*/ROLE_NAME_HERE/defaults/main.yml` files (after importing external roles with `just update` into `roles/galaxy`) and see if there's something you'd like to copy over and override in your `vars.yml` configuration file.
 
 4. copy the sample inventory hosts file (`cp examples/hosts inventory/hosts`)
 
 5. edit the inventory hosts file (`inventory/hosts`) to your liking
 
-6. (optional, advanced) you may wish to keep your `inventory` directory under version control with [git](https://git-scm.com/) or any other version-control system.
+6. (optional, advanced) you may wish to keep your `inventory` directory under version control with [git](https://git-scm.com/) or any other version-control system. The `inventory` directory path is ignored via `.gitignore`, so it won't be part of the playbook repository. You can safely create a new git repository inside that directory with `git init`, etc.
 
 7. (optional, advanced) to run Ansible against multiple servers with different `sudo` credentials, you can copy the sample inventory hosts yaml file for each of your hosts: (`cp examples/host.yml inventory/my_host1.yml` …) and use the [`ansible-all-hosts.sh`](../bin/ansible-all-hosts.sh) script [in the installation step](installing.md).
 
@@ -36,6 +52,8 @@ For a more custom setup, see the [Other configuration options](#other-configurat
   - [Configuring Conduit](configuring-playbook-conduit.md), if you've switched to the [Conduit](https://conduit.rs) homeserver implementation
 
   - [Configuring conduwuit](configuring-playbook-conduwuit.md), if you've switched to the [conduwuit](https://conduwuit.puppyirl.gay/) homeserver implementation
+
+  - [Configuring continuwuity](configuring-playbook-continuwuity.md), if you've switched to the [continuwuity](https://continuwuity.org) homeserver implementation
 
   - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation
 
@@ -61,6 +79,8 @@ For a more custom setup, see the [Other configuration options](#other-configurat
 
   - [Controlling Matrix federation](configuring-playbook-federation.md)
 
+  - [Configuring IPv6](./configuring-ipv6.md)
+
 ### Clients
 
 Web clients for Matrix that you can host on your own domains.
@@ -72,6 +92,9 @@ Web clients for Matrix that you can host on your own domains.
 - [Setting up Cinny](configuring-playbook-client-cinny.md), if you've enabled [Cinny](https://github.com/ajbura/cinny), a web client focusing primarily on simple, elegant and secure interface
 
 - [Setting up SchildiChat Web](configuring-playbook-client-schildichat-web.md), if you've enabled [SchildiChat Web](https://schildi.chat/), a web client based on [Element Web](https://element.io/) with some extras and tweaks
+
+- [Setting up FluffyChat Web](configuring-playbook-client-fluffychat-web.md), if you've enabled [FluffyChat Web](https://github.com/krille-chan/fluffychat), a cute cross-platform messenger (web, iOS, Android) for Matrix written in [Flutter](https://flutter.dev/)
+
 
 ### Authentication and user-related
 
@@ -101,17 +124,21 @@ Extend and modify how users are authenticated on your homeserver.
 
 Use alternative file storage to the default `media_store` folder.
 
-- [Storing Matrix media files on Amazon S3 with Goofys](configuring-playbook-s3-goofys.md)
+- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
 
 - [Storing Synapse media files on Amazon S3 or another compatible Object Storage](configuring-playbook-s3.md)
 
-- [Storing Matrix media files using matrix-media-repo](configuring-playbook-matrix-media-repo.md)
+- [Storing Synapse media files on Amazon S3 with Goofys](configuring-playbook-s3-goofys.md)
+
+- [Storing Synapse media files on Amazon S3 with synapse-s3-storage-provider](configuring-playbook-synapse-s3-storage-provider.md)
 
 ### Bridging other networks
 
 Bridges can be used to connect your Matrix installation with third-party communication networks.
 
 - [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md) — a common guide for configuring mautrix bridges
+
+- [Setting up Mautrix Bluesky bridging](configuring-playbook-bridge-mautrix-bluesky.md)
 
 - [Setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md)
 
@@ -147,19 +174,11 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) — a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira).
 
-- [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md)
-
-- [Setting up MX Puppet Instagram bridging](configuring-playbook-bridge-mx-puppet-instagram.md)
-
-- [Setting up MX Puppet Twitter bridging](configuring-playbook-bridge-mx-puppet-twitter.md)
-
-- [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md)
-
 - [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md)
 
-- [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md)
+- [Setting up Steam bridging](configuring-playbook-bridge-steam.md)
 
-- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md)
+- [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md)
 
 - [Setting up Postmoogle email bridging](configuring-playbook-bridge-postmoogle.md)
 
@@ -168,6 +187,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 - [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md)
 
 - [Setting up WeChat bridging](configuring-playbook-bridge-wechat.md)
+
+- [Setting up Zulip bridging](configuring-playbook-bridge-zulip.md)
 
 ### Bots
 
@@ -212,11 +233,21 @@ Services that help you in administrating and monitoring your Matrix installation
 
 Various services that don't fit any other categories.
 
+- [Setting up Element Call](configuring-playbook-element-call.md) — a native Matrix video conferencing application, built on top of the [Matrix RTC stack](configuring-playbook-matrix-rtc.md) (optional)
+
+- [Setting up LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) - a component of the [Matrix RTC stack](configuring-playbook-matrix-rtc.md) (optional)
+
+- [Setting up LiveKit Server](configuring-playbook-livekit-server.md) - a component of the [Matrix RTC stack](configuring-playbook-matrix-rtc.md) (optional)
+
+- [Setting up Matrix RTC](configuring-playbook-matrix-rtc.md) (optional)
+
 - [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md)
 
 - [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced)
+
+- [Setting up Matrix.to](configuring-playbook-matrixto.md)
 
 - [Setting up Etherpad](configuring-playbook-etherpad.md)
 
@@ -236,18 +267,28 @@ Various services that don't fit any other categories.
 
 - [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like old Element X versions, before it got switched to Simplified Sliding Sync)
 
-- [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
+- [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md))
 
 - [Setting up the Dimension integration manager](configuring-playbook-dimension.md) ([unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
 
-- [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (unmaintained; the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-postmoogle.md))
+- [Setting up Email2Matrix](configuring-playbook-email2matrix.md) (removed; the author suggests taking a look at [Postmoogle](https://github.com/etkecc/postmoogle) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-postmoogle.md))
 
-- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (unmaintained; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bridge-hookshot.md))
+- [Setting up Go-NEB](configuring-playbook-bot-go-neb.md) (unmaintained; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md))
 
-- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be installed using [this playbook](configuring-playbook-bot-baibot.md))
+- [Setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md) (removed; Skype has been discontinued since May 2025)
+
+- [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bot-baibot.md))
 
 - [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-messenger](configuring-playbook-bridge-mautrix-meta-messenger.md))
 
 - [Setting up Mautrix Instagram bridging](configuring-playbook-bridge-mautrix-instagram.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-instagram](configuring-playbook-bridge-mautrix-meta-instagram.md))
 
+- [Setting up MX Puppet Discord bridging](configuring-playbook-bridge-mx-puppet-discord.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Discord bridging](configuring-playbook-bridge-mautrix-discord.md))
+
+- [Setting up MX Puppet Instagram bridging](configuring-playbook-bridge-mx-puppet-instagram.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md))
+
 - [Setting up MX Puppet Skype bridging](configuring-playbook-bridge-mx-puppet-skype.md) (removed; this component has been broken for a long time, so it has been removed from the playbook. Consider [setting up Go Skype Bridge bridging](configuring-playbook-bridge-go-skype-bridge.md))
+
+- [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Slack bridging](configuring-playbook-bridge-mautrix-slack.md))
+
+- [Setting up MX Puppet Twitter bridging](configuring-playbook-bridge-mx-puppet-twitter.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Twitter bridging](configuring-playbook-bridge-mautrix-twitter.md))

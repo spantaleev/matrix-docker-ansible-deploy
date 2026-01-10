@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2022 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Fabio Bonelli
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up maubot (optional)
 
 The playbook can install and configure [maubot](https://github.com/maubot/maubot) for you.

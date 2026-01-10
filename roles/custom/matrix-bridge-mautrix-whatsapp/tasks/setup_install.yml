@@ -1,3 +1,20 @@
+# SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2018 Hugues Morisset
+# SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2019 Jan Christian Grünhage
+# SPDX-FileCopyrightText: 2019 Thomas Kuehne
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2020 MDAD project contributors
+# SPDX-FileCopyrightText: 2020 Stuart Mumford
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - ansible.builtin.set_fact:
@@ -33,8 +50,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_mautrix_whatsapp_base_path }}", when: true}
     - {path: "{{ matrix_mautrix_whatsapp_config_path }}", when: true}
@@ -61,7 +78,7 @@
     version: "{{ matrix_mautrix_whatsapp_container_image_self_build_branch }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_mautrix_whatsapp_git_pull_results
   when: "matrix_mautrix_whatsapp_container_image_self_build | bool"
 
@@ -115,24 +132,24 @@
     content: "{{ matrix_mautrix_whatsapp_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_whatsapp_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-whatsapp registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_whatsapp_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_whatsapp_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-whatsapp support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_mautrix_whatsapp_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

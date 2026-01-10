@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up matrix-registration (optional)
 
 > [!WARNING]

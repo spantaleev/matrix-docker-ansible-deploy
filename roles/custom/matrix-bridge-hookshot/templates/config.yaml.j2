@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 bridge:
   # Basic homeserver configuration
   #
@@ -80,6 +80,9 @@ generic:
   userIdPrefix: {{ matrix_hookshot_generic_userIdPrefix | to_json }}
   allowJsTransformationFunctions: {{ matrix_hookshot_generic_allowJsTransformationFunctions | to_json }}
   waitForComplete: {{ matrix_hookshot_generic_waitForComplete | to_json }}
+  sendExpiryNotice: {{ matrix_hookshot_generic_sendExpiryNotice | to_json }}
+  requireExpiryTime: {{ matrix_hookshot_generic_requireExpiryTime | to_json }}
+  maxExpiryTime: {{ matrix_hookshot_generic_maxExpiryTime | to_json }}
 {% endif %}
 {% if matrix_hookshot_feeds_enabled %}
 feeds:
@@ -89,12 +92,6 @@ feeds:
   pollIntervalSeconds: {{ matrix_hookshot_feeds_pollIntervalSeconds | to_json }}
   pollTimeoutSeconds: {{ matrix_hookshot_feeds_pollTimeoutSeconds | to_json }}
 {% endif %}
-{% if matrix_hookshot_provisioning_enabled %}
-provisioning:
-  # (Optional) Provisioning API for integration managers
-  #
-  secret: {{ matrix_hookshot_provisioning_secret | to_json }}
-{% endif %}
 passFile:
   # A passkey used to encrypt tokens stored inside the bridge.
   # Run openssl genpkey -out passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 to generate
@@ -103,7 +100,7 @@ passFile:
 bot:
   # (Optional) Define profile information for the bot user
   #
-  displayname: {{ matrix_hookshot_bot_displayname | to_json }}
+  displayname: {{ matrix_hookshot_bot_displayname | to_json(ensure_ascii=False) }}
   avatar: {{ matrix_hookshot_bot_avatar | to_json }}
 metrics:
   # (Optional) Prometheus metrics support
@@ -143,7 +140,7 @@ permissions: {{ matrix_hookshot_permissions | to_json }}
 listeners:
   # (Optional) HTTP Listener configuration.
   # Bind resource endpoints to ports and addresses.
-  # 'resources' may be any of webhooks, widgets, metrics, provisioning, appservice
+  # 'resources' may be any of webhooks, widgets, metrics
   #
 {# always enabled since all services need it #}
   - port: {{ matrix_hookshot_webhook_port }}
@@ -155,12 +152,6 @@ listeners:
     bindAddress: 0.0.0.0
     resources:
       - metrics
-{% endif %}
-{% if matrix_hookshot_provisioning_enabled %}
-  - port: {{ matrix_hookshot_provisioning_port }}
-    bindAddress: 0.0.0.0
-    resources:
-      - provisioning
 {% endif %}
 {% if matrix_hookshot_widgets_enabled %}
   - port: {{ matrix_hookshot_widgets_port }}

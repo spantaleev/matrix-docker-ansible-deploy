@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if required Element Admin settings not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_element_admin_hostname', when: true}
+    - {'name': 'matrix_element_admin_path_prefix', when: true}
+    - {'name': 'matrix_element_admin_container_network', when: true}
+    - {'name': 'matrix_element_admin_environment_variable_server_name', when: true}
+
+# Element Admin appears to hardcode all paths to `/` (e.g. `/config.json`, `/assets/...`).
+# While we can properly serve the homepage and handle stripping the path prefix on our side,
+# the hardcoded URLs in the Element Admin are pointing people to the wrong place, which is a problem.
+- name: Fail if Element Admin path prefix is different than /
+  ansible.builtin.fail:
+    msg: >-
+      Element Admin with a path prefix other than '/' is not supported yet.
+      You have configured matrix_element_admin_path_prefix to '{{ matrix_element_admin_path_prefix }}'.
+  when: "matrix_element_admin_path_prefix != '/'"

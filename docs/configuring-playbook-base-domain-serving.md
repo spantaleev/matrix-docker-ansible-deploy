@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Serving the base domain (optional)
 
 By default, this playbook sets up services on your Matrix server (`matrix.example.com`), but has it configured so that it presents itself as the base domain (`example.com`). To have this server officially be responsible for Matrix services for the base domain (`example.com`), you need to set up server delegation / redirection.

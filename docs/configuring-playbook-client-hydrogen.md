@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2021 MDAD project contributors
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Hydrogen (optional)
 
 The playbook can install and configure the [Hydrogen](https://github.com/element-hq/hydrogen-web) Matrix web client for you.

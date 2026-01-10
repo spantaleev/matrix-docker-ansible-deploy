@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.124.0
+matrix_synapse_version: v1.144.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -47,10 +47,6 @@ matrix_synapse_container_image_customizations_enabled: |-
 # Controls whether custom build steps will be added to the Dockerfile for installing s3-storage-provider.
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_s3_storage_provider_version`.
 matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled: "{{ matrix_synapse_ext_synapse_s3_storage_provider_enabled }}"
-
-# Controls whether to install an old version of boto3 and botocore, to work around the following issue:
-# https://github.com/aws/aws-cli/issues/9214
-matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled: true
 
 # Controls whether custom build steps will be added to the Dockerfile for installing auto-accept-invite module.
 # The version that will be installed is specified in `matrix_synapse_ext_synapse_auto_accept_invite_version`.
@@ -93,12 +89,13 @@ matrix_synapse_container_image_customizations_templates_git_repository_keyscan_h
 #  RUN echo 'You do NOT need to include a FROM clause yourself.'
 matrix_synapse_container_image_customizations_dockerfile_body_custom: ''
 
-matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_name_prefix }}{{ matrix_synapse_docker_image_name }}:{{ matrix_synapse_docker_image_tag }}"
-matrix_synapse_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_synapse_docker_image_registry_prefix }}"
+matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_registry_prefix }}{{ matrix_synapse_docker_image_name }}:{{ matrix_synapse_docker_image_tag }}"
 matrix_synapse_docker_image_name: "{{ matrix_synapse_github_org_and_repo }}"
 matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
 matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
-matrix_synapse_docker_image_registry_prefix: ghcr.io/
+matrix_synapse_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_synapse_docker_image_registry_prefix_upstream }}"
+matrix_synapse_docker_image_registry_prefix_upstream: "{{ matrix_synapse_docker_image_registry_prefix_upstream_default }}"
+matrix_synapse_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 
 # matrix_synapse_docker_image_customized is the name of the locally built Synapse image
 # which adds various customizations on top of the original (upstream) Synapse image.
@@ -131,12 +128,26 @@ matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
 matrix_synapse_ext_s3_storage_provider_base_path: "{{ matrix_synapse_base_path }}/ext/s3-storage-provider"
 matrix_synapse_ext_s3_storage_provider_bin_path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/bin"
 matrix_synapse_ext_s3_storage_provider_data_path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/data"
+# extra arguments to pass to s3-storage-provider script when starting Synapse container
+matrix_synapse_ext_s3_storage_provider_container_arguments: []
 
 matrix_synapse_container_client_api_port: 8008
 
+# Controls the `x_forwarded` setting for the "Insecure HTTP listener (Client API)".
+# We default this to `true`, because such insecure HTTP listeners are most likely behind a reverse-proxy (that handles TLS).
+matrix_synapse_container_client_api_x_forwarded: true
+
 matrix_synapse_container_federation_api_tls_port: 8448
 
+# Controls the `x_forwarded` setting for the "TLS-enabled federation listener".
+# We default this to `false`, because TLS-enabled listeners are likely to be exposed directly (instead of being behind a reverse-proxy).
+matrix_synapse_container_federation_api_tls_x_forwarded: false
+
 matrix_synapse_container_federation_api_plain_port: 8048
+
+# Controls the `x_forwarded` setting for the "Insecure federation listener".
+# We default this to `true`, because such insecure HTTP listeners are most likely behind a reverse-proxy (that handles TLS).
+matrix_synapse_container_federation_api_plain_x_forwarded: true
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 matrix_synapse_container_network: ''
@@ -267,6 +278,16 @@ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_entrypoi
 matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_tls: "{{ matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_entrypoints != 'web' }}"
 matrix_synapse_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_synapse_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
+# Controls whether labels will be added that expose the /_synapse/admin paths on the internal Traefik entrypoint.
+# Following these recommendations (https://github.com/element-hq/synapse/blob/master/docs/reverse_proxy.md), by default, we don't.
+# Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
+
+matrix_synapse_container_labels_internal_client_synapse_admin_api_enabled: false
+matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_path_prefix: /_synapse/admin
+matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_rule: "PathPrefix(`{{ matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_path_prefix }}`)"
+matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_priority: 0
+matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_entrypoints: ""
+
 # Controls whether labels will be added that expose the Server-Server API (Federation API).
 # Regardless of whether this is enabled, it may or may not take effect due to the value of other variables.
 # See `matrix_synapse_container_labels_traefik_enabled` or `matrix_synapse_container_labels_matrix_related_labels_enabled`
@@ -346,7 +367,7 @@ matrix_synapse_goofys_systemd_required_services_list_custom: []
 # This can be set to 0 to remove the delay.
 matrix_synapse_systemd_service_post_start_delay_seconds: 10
 
-matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.12/site-packages"
+matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.13/site-packages"
 
 # Specifies which template files to use when configuring Synapse.
 # If you'd like to have your own different configuration, feel free to copy and paste
@@ -362,6 +383,10 @@ matrix_synapse_macaroon_secret_key: ""
 matrix_synapse_registration_shared_secret: "{{ matrix_synapse_macaroon_secret_key }}"
 matrix_synapse_allow_guest_access: false
 matrix_synapse_form_secret: "{{ matrix_synapse_macaroon_secret_key }}"
+
+
+# Controls how to reach server admin, used in ResouceLimitError
+matrix_synapse_admin_contact: ~
 
 matrix_synapse_max_upload_size_mb: 50
 
@@ -415,8 +440,8 @@ matrix_synapse_root_log_level: "WARNING"
 
 # Rate limits
 matrix_synapse_rc_message:
-  per_second: 0.2
-  burst_count: 10
+  per_second: 0.5
+  burst_count: 30
 
 matrix_synapse_rc_registration:
   per_second: 0.17
@@ -467,6 +492,13 @@ matrix_synapse_rc_federation:
 
 matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 
+# Controls the rate limit for delayed event management.
+#
+# This is only applied if `matrix_synapse_experimental_features_msc4140_enabled` is set to `true`.
+matrix_synapse_rc_delayed_event_mgmt:
+  per_second: 1
+  burst_count: 20
+
 # Controls the templates directory setting.
 #
 # See:
@@ -483,7 +515,7 @@ matrix_synapse_tls_federation_listener_enabled: true
 matrix_synapse_tls_certificate_path: "/data/{{ matrix_server_fqn_matrix }}.tls.crt"
 matrix_synapse_tls_private_key_path: "/data/{{ matrix_server_fqn_matrix }}.tls.key"
 
-# Resource names used by the unsecure HTTP listener. Here only the Client API
+# Resource names used by the insecure HTTP listener. Here only the Client API
 # is defined, see the homeserver config for a full list of valid resource
 # names.
 matrix_synapse_http_listener_resource_names: ["client"]
@@ -543,6 +575,7 @@ matrix_synapse_include_profile_data_on_invite: true
 # User search behaviour
 matrix_synapse_user_directory_search_all_users: false
 matrix_synapse_user_directory_prefer_local_users: false
+matrix_synapse_user_directory_exclude_remote_users: false
 
 # Controls whether people with access to the homeserver can register by themselves.
 matrix_synapse_enable_registration: false
@@ -561,6 +594,10 @@ matrix_synapse_registration_requires_token: false
 
 # A list of 3PID types which users must supply when registering (possible values: email, msisdn).
 matrix_synapse_registrations_require_3pid: []
+
+# Explicitly disable asking for MSISDNs from the registration
+# flow (overrides matrix_synapse_registrations_require_3pid if MSISDNs are set as required)
+matrix_synapse_disable_msisdn_registration: false
 
 # A list of patterns 3pids must match in order to permit registration, e.g.:
 #  - medium: email
@@ -640,7 +677,7 @@ matrix_synapse_caches_sync_response_cache_duration: "2m"
 # Controls how much memory this role thinks is available for cache-size-related calculations.
 # By default, all of the server's memory is taken into account, but you can adjust this.
 # You can also go for directly adjusting cache-sizes (matrix_synapse_cache_autotuning_max_cache_memory_usage, matrix_synapse_cache_autotuning_target_cache_memory_usage) instead of adjusting this.
-matrix_synapse_cache_size_calculations_memtotal_bytes: "{{ (ansible_memtotal_mb * 1024 * 1024) | int }}"
+matrix_synapse_cache_size_calculations_memtotal_bytes: "{{ (ansible_facts['memtotal_mb'] * 1024 * 1024) | int }}"
 
 # Controls the cap to use for matrix_synapse_cache_autotuning_max_cache_memory_usage.
 matrix_synapse_cache_size_calculations_max_cache_memory_usage_cap_bytes: "{{ (2 * 1024 * 1024 * 1024) }}"  # 2GB
@@ -703,6 +740,9 @@ matrix_synapse_oidc_providers: []
 # Note: internally, this uses the `--mount` flag for mounting the specified volumes.
 matrix_synapse_container_additional_volumes: []
 
+# Controls whether cas_config is enabled
+matrix_synapse_cas_config_enabled: false
+
 # A list of additional loggers to register in synapse.log.config.
 # This list gets populated dynamically based on Synapse extensions that have been enabled.
 # Contains definition objects like this: `{"name": "..", "level": "DEBUG"}
@@ -750,9 +790,41 @@ matrix_synapse_password_providers_enabled: false
 # to load message content directly from the homeserver.
 matrix_synapse_push_include_content: true
 
-# If url previews should be generated. This will cause a request from Synapse to
-# URLs shared by users.
+# If url previews should be generated. This will cause a request from Synapse to URLs shared by users.
+# Also see `matrix_synapse_url_preview_ip_range_blacklist`.
 matrix_synapse_url_preview_enabled: true
+
+# List of IP address CIDR ranges that the URL preview spider is denied from accessing.
+# Note: The value is ignored when an HTTP proxy is in use
+# See the comment about this setting in `templates/synapse/homeserver.yaml.j2` for more details.
+matrix_synapse_url_preview_ip_range_blacklist:
+  - '127.0.0.0/8'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+  - '100.64.0.0/10'
+  - '192.0.0.0/24'
+  - '169.254.0.0/16'
+  - '192.88.99.0/24'
+  - '198.18.0.0/15'
+  - '192.0.2.0/24'
+  - '198.51.100.0/24'
+  - '203.0.113.0/24'
+  - '224.0.0.0/4'
+  - '::1/128'
+  - 'fe80::/10'
+  - 'fc00::/7'
+  - '2001:db8::/32'
+  - 'ff00::/8'
+  - 'fec0::/10'
+
+# List of IP address CIDR ranges that the URL preview spider is allowed to access even if they are specified in `matrix_synapse_url_preview_ip_range_blacklist`.
+matrix_synapse_url_preview_ip_range_whitelist: []
+
+# List of URL matches that the URL preview spider is denied from accessing.
+# See https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#url_preview_url_blacklist
+# for more details.
+matrix_synapse_url_preview_url_blacklist: []
 
 # A list of values for the Accept-Language HTTP header used when downloading webpages during URL preview generation
 matrix_url_preview_accept_language: ['en-US', 'en']
@@ -781,9 +853,13 @@ matrix_synapse_manhole_enabled: false
 # Enable support for Synapse workers
 matrix_synapse_workers_enabled: false
 
+# Controls the `x_forwarded` setting for the main `http` listener for Synapse workers.
+# We default this to `true`, because such insecure HTTP listeners are most likely behind a reverse-proxy (that handles TLS).
+matrix_synapse_worker_listeners_http_main_x_forwarded: true
+
 # Specifies worker configuration that should be used when workers are enabled.
 #
-# The posible values (as seen in `matrix_synapse_workers_presets`) are:
+# The possible values (as seen in `matrix_synapse_workers_presets`) are:
 # - "little-federation-helper" - a very minimal worker configuration to improve federation performance
 # - "one-of-each" - one worker of each supported type + a generic worker
 # - "specialized-workers" - one worker of each supported type + specialized workers
@@ -1117,6 +1193,7 @@ matrix_synapse_redis_host: ""
 matrix_synapse_redis_port: 6379
 matrix_synapse_redis_password: ""
 matrix_synapse_redis_dbid: 0
+matrix_synapse_redis_use_tls: false
 
 # Controls whether Synapse starts a replication listener necessary for workers.
 #
@@ -1163,6 +1240,19 @@ matrix_synapse_email_app_name: Matrix
 matrix_synapse_email_client_base_url: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_server_fqn_element }}"
 matrix_synapse_email_invite_client_location: "https://app.element.io"
 
+# Controls whether to enable the "send typing, presence and receipts to appservices" experimental feature.
+#
+# See:
+# - https://github.com/matrix-org/matrix-spec-proposals/pull/2409
+# - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
+matrix_synapse_experimental_features_msc2409_to_device_messages_enabled: false
+
+# Controls whether to enable the "transaction extensions" for encrypted appservices experimental feature.
+#
+# See:
+# - https://github.com/matrix-org/matrix-spec-proposals/pull/3202
+# - https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html#running-with-synapse
+matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: false
 
 ################################################################################
 #
@@ -1170,50 +1260,23 @@ matrix_synapse_email_invite_client_location: "https://app.element.io"
 #
 ################################################################################
 
-# Controls whether to enable the "Next-generation auth for Matrix, based on OAuth 2.0/OIDC" experimental feature.
-#
+# Controls whether to enable "Matrix Authentication Service" integration ("Next-generation auth for Matrix, based on OAuth 2.0/OIDC").
 # See:
+# - https://github.com/element-hq/matrix-authentication-service
 # - https://matrix.org/blog/2023/09/better-auth/
 # - https://github.com/matrix-org/matrix-spec-proposals/pull/3861
-matrix_synapse_experimental_features_msc3861_enabled: false
+matrix_synapse_matrix_authentication_service_enabled: false
 
-# Specifies the issuer URL for the OAuth 2.0/OIDC authentication provider.
-#
-# This can be set to a private (container) URL.
-#
-# Example: https://matrix.example.com/auth/
-matrix_synapse_experimental_features_msc3861_issuer: ''
+# Specifies the base URL where the Matrix Authentication Service is running.
+matrix_synapse_matrix_authentication_service_endpoint: ""
 
-# Specifies the introspection endpoint URL for the OAuth 2.0/OIDC authentication provider.
-#
-# This can be set to a private (container) URL.
-#
-# If this is left empty, `{issuer}/.well-known/openid-configuration` will be fetched and the `introspection_endpoint` will be extracted from there.
-# We define it explicitly, because this allows us to override it and use an internal (container network) URL instead of using the public one.
-# Avoiding public addresses is an optimization that decreases overhead due to public networking and SSL termination.
-#
-# Example: https://matrix.example.com/auth/oauth2/introspect
-matrix_synapse_experimental_features_msc3861_introspection_endpoint: "{{ matrix_synapse_experimental_features_msc3861_issuer + 'oauth2/introspect' }}"
-
-# A unique identifier for the client.
-#
-# It must be a valid ULID (https://github.com/ulid/spec),
-# and it happens that 0000000000000000000SYNAPSE is a valid ULID.
-matrix_synapse_experimental_features_msc3861_client_id: '0000000000000000000SYNAPSE'
-
-matrix_synapse_experimental_features_msc3861_client_auth_method: client_secret_basic
-
-matrix_synapse_experimental_features_msc3861_client_secret: ''
-
-# A token that can be used to make admin API calls.
-# Matches `matrix.secret` in the matrix-authentication-service config
-matrix_synapse_experimental_features_msc3861_admin_token: ''
-
-# URL to advertise to clients where users can self-manage their account.
-matrix_synapse_experimental_features_msc3861_account_management_url: ''
+# Specifies the shared secret used to authenticate Matrix Authentication Service requests.
+# Must be the same as `matrix.secret` in the Matrix Authentication Service configuration.
+# See https://element-hq.github.io/matrix-authentication-service/reference/configuration.html#matrix
+matrix_synapse_matrix_authentication_service_secret: ""
 
 # Controls whether to enable the "QR code login" experimental feature.
-# Enabling this requires that MSC3861 (see `matrix_synapse_experimental_features_msc3861_enabled`) is also enabled.
+# Enabling this requires that Matrix Authentication Service integration (see `matrix_synapse_matrix_authentication_service_enabled`) is also enabled.
 matrix_synapse_experimental_features_msc4108_enabled: false
 
 ################################################################################
@@ -1222,6 +1285,39 @@ matrix_synapse_experimental_features_msc4108_enabled: false
 #
 ################################################################################
 
+
+# Controls whether to enable the "room summary API" experimental feature.
+# See https://github.com/matrix-org/matrix-spec-proposals/pull/3266
+# Despite being experimental, this feature is mandatory for the next-generation Element X clients, which is why it is enabled by default:
+# https://github.com/element-hq/element-x-ios/issues/3713#issuecomment-2620958291
+# If you're worried about the privacy implications of this unauthenticated API, see:
+# https://github.com/deepbluev7/matrix-doc/blob/room-summaries/proposals/3266-room-summary.md#client-server-api
+# Set this to false if you still want to disable to API for some reason. Note that doing so breaks Element X compatibility though.
+matrix_synapse_experimental_features_msc3266_enabled: true
+
+# Controls whether to enable the "Delayed Events" experimental feature.
+# Delayed events are required for proper call (Element Call) participation signalling.
+# If disabled it is very likely that you end up with stuck calls in Matrix rooms.
+#
+# Related to:
+# - `matrix_synapse_max_event_delay_duration`
+# - `matrix_synapse_rc_delayed_event_mgmt`
+#
+# See https://github.com/matrix-org/matrix-spec-proposals/pull/4140
+matrix_synapse_experimental_features_msc4140_enabled: false
+
+# Controls the maximum allowed duration by which sent events can be delayed, as per MSC4140.
+#
+# See `matrix_synapse_experimental_features_msc4140_enabled`.
+matrix_synapse_max_event_delay_duration: 24h
+
+# Controls whether to enable the MSC4222 experimental feature (adding `state_after` to sync v2).
+#
+# Allow clients to opt-in to a change of the sync v2 API that allows them to correctly track the state of the room.
+# This is required by Element Call to track room state reliably.
+#
+# See https://github.com/matrix-org/matrix-spec-proposals/pull/4222
+matrix_synapse_experimental_features_msc4222_enabled: false
 
 # Enable this to activate the REST auth password provider module.
 # See: https://github.com/ma1uta/matrix-synapse-rest-password-provider
@@ -1259,6 +1355,7 @@ matrix_synapse_ext_password_provider_ldap_bind_password: ""
 matrix_synapse_ext_password_provider_ldap_filter: ""
 matrix_synapse_ext_password_provider_ldap_active_directory: false
 matrix_synapse_ext_password_provider_ldap_default_domain: ""
+matrix_synapse_ext_password_provider_ldap_tls_options_validate: true
 
 # Enable this to activate the Synapse Antispam spam-checker module.
 # See: https://github.com/t2bot/synapse-simple-antispam
@@ -1271,7 +1368,8 @@ matrix_synapse_ext_spam_checker_synapse_simple_antispam_config_blocked_homeserve
 # See: https://github.com/matrix-org/mjolnir#synapse-module
 matrix_synapse_ext_spam_checker_mjolnir_antispam_enabled: false
 matrix_synapse_ext_spam_checker_mjolnir_antispam_git_repository_url: "https://github.com/matrix-org/mjolnir"
-matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "v1.6.4"
+# renovate: datasource=docker depName=matrixdotorg/mjolnir
+matrix_synapse_ext_spam_checker_mjolnir_antispam_git_version: "v1.11.0"
 matrix_synapse_ext_spam_checker_mjolnir_antispam_config_block_invites: true
 # Flag messages sent by servers/users in the ban lists as spam. Currently
 # this means that spammy messages will appear as empty to users. Default
@@ -1297,6 +1395,43 @@ matrix_synapse_ext_spam_checker_mjolnir_antispam_config:
   ban_lists: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_ban_lists }}"
   message_max_length: "{{ matrix_synapse_ext_spam_checker_mjolnir_antispam_config_message_max_length }}"
 
+# Enable this to activate the synapse-http-antispam module.
+# See: github.com/maunium/synapse-http-antispam
+matrix_synapse_ext_synapse_http_antispam_enabled: false
+matrix_synapse_ext_synapse_http_antispam_git_repository_url: "https://github.com/maunium/synapse-http-antispam"
+# renovate: datasource=github-releases depName=maunium/synapse-http-antispam
+matrix_synapse_ext_synapse_http_antispam_git_version: "v0.5.0"
+# Where Synapse can locate the consumer of the antispam API. Currently
+# Draupnir is the only consumer of this API that is playbook supported.
+# But https://github.com/maunium/meowlnir also supports the API.
+matrix_synapse_ext_synapse_http_antispam_config_base_url: ''
+# This is a shared secret that is established between the consumer and the
+# homeserver a lot like how AS authentication is done. This is fully managed
+# the same way AS authentication is by the playbook.
+matrix_synapse_ext_synapse_http_antispam_config_authorization: ''
+# This controls if the module will ping the consumer or not for ease of troubleshooting. This defaults
+# to enabled to help assure users that the connection is working.
+# Due to that its only a single log line per worker per startup this default is deemed acceptable.
+matrix_synapse_ext_synapse_http_antispam_config_do_ping: true
+# This controls what callbacks are activated. This list is fully dependent on what consumer is in play.
+# And what capabilities said consumer should or shouldn't have. There are also performance implications
+# to these choices.
+matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks: []
+# Controls if a loss of connectivity to the consumer results in fail open or closed.
+# As in if failure results in events getting flagged automatically as spam or not.
+matrix_synapse_ext_synapse_http_antispam_config_fail_open: {}
+# Controls if the checking is blocking or not. This allows the homeserver to skip waiting for a consumer response.
+matrix_synapse_ext_synapse_http_antispam_config_async: {}
+# Actual configuration passed to the synapse-http-antispam module
+matrix_synapse_ext_synapse_http_antispam_config: "{{ matrix_synapse_ext_synapse_http_antispam_config_yaml | from_yaml }}"
+matrix_synapse_ext_synapse_http_antispam_config_yaml: |
+  base_url: {{ matrix_synapse_ext_synapse_http_antispam_config_base_url | to_json }}
+  authorization: {{ matrix_synapse_ext_synapse_http_antispam_config_authorization | to_json }}
+  do_ping: {{ matrix_synapse_ext_synapse_http_antispam_config_do_ping | to_json }}
+  enabled_callbacks: {{ matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks | to_json }}
+  fail_open: {{ matrix_synapse_ext_synapse_http_antispam_config_fail_open | to_json }}
+  async: {{ matrix_synapse_ext_synapse_http_antispam_config_async | to_json }}
+
 # Enable this to activate the E2EE disabling Synapse module.
 # See: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_enabled: false
@@ -1311,7 +1446,7 @@ matrix_synapse_ext_encryption_disabler_deny_encryption_for_rooms_of: ["{{ matrix
 # Specifies whether the power levels event (setting) provided during room creation should be patched.
 # This makes it impossible for anybody (locally or over federation) from enabling room encryption
 # for the lifetime of rooms created while this setting is enabled (irreversible).
-# Enabling this may have incompatiblity consequences with servers / clients.
+# Enabling this may have incompatibility consequences with servers / clients.
 # Familiarize yourself with the caveats upstream: https://github.com/digitalentity/matrix_encryption_disabler
 matrix_synapse_ext_encryption_disabler_patch_power_levels: false
 matrix_synapse_ext_encryption_config: "{{ matrix_synapse_ext_encryption_config_yaml | from_yaml }}"
@@ -1325,7 +1460,8 @@ matrix_synapse_ext_encryption_config_yaml: |
 # Installing it requires building a customized Docker image for Synapse (see `matrix_synapse_container_image_customizations_enabled`).
 # Enabling this will enable customizations and inject the appropriate Dockerfile clauses for installing synapse-s3-storage-provider.
 matrix_synapse_ext_synapse_s3_storage_provider_enabled: false
-matrix_synapse_ext_synapse_s3_storage_provider_version: 1.5.0
+# renovate: datasource=github-releases depName=matrix-org/synapse-s3-storage-provider
+matrix_synapse_ext_synapse_s3_storage_provider_version: 1.6.0
 # Controls whether media from this (local) server is stored in s3-storage-provider
 matrix_synapse_ext_synapse_s3_storage_provider_store_local: true
 # Controls whether media from remote servers is stored in s3-storage-provider
@@ -1383,8 +1519,10 @@ matrix_synapse_ext_media_repo_enabled: false
 
 matrix_s3_media_store_enabled: false
 matrix_s3_media_store_custom_endpoint_enabled: false
-matrix_s3_goofys_docker_image: "{{ matrix_s3_goofys_docker_image_name_prefix }}ewoutp/goofys:latest"
-matrix_s3_goofys_docker_image_name_prefix: "docker.io/"
+matrix_s3_goofys_docker_image: "{{ matrix_s3_goofys_docker_image_registry_prefix }}ewoutp/goofys:latest"
+matrix_s3_goofys_docker_image_registry_prefix: "{{ matrix_s3_goofys_docker_image_registry_prefix_upstream }}"
+matrix_s3_goofys_docker_image_registry_prefix_upstream: "{{ matrix_s3_goofys_docker_image_registry_prefix_upstream_default }}"
+matrix_s3_goofys_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_s3_goofys_docker_image_force_pull: "{{ matrix_s3_goofys_docker_image.endswith(':latest') }}"
 matrix_s3_media_store_custom_endpoint: "your-custom-endpoint"
 matrix_s3_media_store_bucket_name: "your-bucket-name"
@@ -1395,6 +1533,17 @@ matrix_s3_media_store_path: "{{ matrix_synapse_media_store_path }}"
 
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_synapse_self_check_validate_certificates: true
+
+# Controls whether server notices are enabled.
+matrix_synapse_server_notices_enabled: false
+# The localpart of the user that will send server notices, this user will be created if it doesn't exist.
+matrix_synapse_server_notices_system_mxid_localpart: "notices"
+# The display name of the user that will send server notices.
+matrix_synapse_server_notices_system_mxid_display_name: "Server Notices"
+# Optional avatar URL for the user that will send server notices, example: mxc://example.com/abc123
+matrix_synapse_server_notices_system_mxid_avatar_url: ~
+# The name of the room where server notices will be sent, this room will be created if it doesn't exist.
+matrix_synapse_server_notices_room_name: "Server Notices"
 
 # Controls whether searching the public room list is enabled.
 matrix_synapse_enable_room_list_search: true
@@ -1413,7 +1562,7 @@ matrix_synapse_room_list_publication_rules:
     room_id: "*"
     action: allow
 
-matrix_synapse_default_room_version: "10"
+matrix_synapse_default_room_version: "12"
 
 # Controls whether leaving a room will automatically forget it.
 # The upstream default is `false`, but we try to make Synapse less wasteful of resources, so we do things differently.
@@ -1454,6 +1603,11 @@ matrix_synapse_encryption_enabled_by_default_for_room_type: "off"
 matrix_synapse_trusted_key_servers:
   - server_name: "matrix.org"
 
+
+# Enable the following to disable the warning that is emitted when the
+# matrix_synapse_trusted_key_servers include 'matrix.org'. See above.
+matrix_synapse_suppress_key_server_warning: false
+
 matrix_synapse_redaction_retention_period: 7d
 
 # Controls how long to keep locally forgotten rooms before purging them from the DB.
@@ -1465,8 +1619,12 @@ matrix_synapse_forgotten_room_retention_period: 28d
 matrix_synapse_user_ips_max_age: 28d
 
 
-matrix_synapse_rust_synapse_compress_state_docker_image: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix }}mb-saces/rust-synapse-tools:v0.0.1"
-matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix: "registry.gitlab.com/"
+matrix_synapse_rust_synapse_compress_state_docker_image: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix }}mb-saces/rust-synapse-tools:{{ matrix_synapse_rust_synapse_compress_state_docker_image_version }}"
+# renovate: datasource=docker depName=registry.gitlab.com/mb-saces/rust-synapse-tools
+matrix_synapse_rust_synapse_compress_state_docker_image_version: v0.0.3
+matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream }}"
+matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream_default }}"
+matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream_default: "registry.gitlab.com/"
 matrix_synapse_rust_synapse_compress_state_docker_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':stable') or matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':latest') }}"
 
 matrix_synapse_rust_synapse_compress_state_base_path: "{{ matrix_base_data_path }}/rust-synapse-compress-state"

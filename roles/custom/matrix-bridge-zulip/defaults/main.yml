@@ -1,0 +1,122 @@
+# SPDX-FileCopyrightText: 2021 - 2022 Toni Spets
+# SPDX-FileCopyrightText: 2022 - 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# MatrixZulipBridge is a puppeting appservice bridge for Zulip
+# Project source code URL: https://github.com/GearKite/MatrixZulipBridge
+
+matrix_zulip_bridge_enabled: true
+
+matrix_zulip_bridge_scheme: https
+matrix_zulip_bridge_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_zulip_bridge_path_prefix: "/zulip"
+
+# renovate: datasource=docker depName=ghcr.io/gearkite/matrixzulipbridge
+matrix_zulip_bridge_version: v0.4.1
+matrix_zulip_bridge_docker_image: "{{ matrix_zulip_bridge_docker_image_registry_prefix }}gearkite/matrixzulipbridge:{{ matrix_zulip_bridge_version }}"
+matrix_zulip_bridge_docker_image_registry_prefix: "{{ matrix_zulip_bridge_docker_image_registry_prefix_upstream }}"
+matrix_zulip_bridge_docker_image_registry_prefix_upstream: "{{ matrix_zulip_bridge_docker_image_registry_prefix_upstream_default }}"
+matrix_zulip_bridge_docker_image_registry_prefix_upstream_default: ghcr.io/
+matrix_zulip_bridge_docker_image_force_pull: "{{ matrix_zulip_bridge_docker_image.endswith(':latest') }}"
+
+matrix_zulip_bridge_base_path: "{{ matrix_base_data_path }}/zulip"
+
+matrix_zulip_bridge_container_network: ""
+
+# The port number in the container
+matrix_zulip_bridge_container_http_port: 9898
+
+matrix_zulip_bridge_container_additional_networks: "{{ matrix_zulip_bridge_container_additional_networks_auto + matrix_zulip_bridge_container_additional_networks_custom }}"
+matrix_zulip_bridge_container_additional_networks_auto: []
+matrix_zulip_bridge_container_additional_networks_custom: []
+
+# Controls how long to wait for the container to stop gracefully before killing it.
+# We use a small value here, because this container does not seem to handle the SIGTERM signal.
+matrix_zulip_bridge_container_stop_grace_time_seconds: 1
+
+# matrix_zulip_bridge_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_zulip_bridge_container_labels_additional_labels`.
+matrix_zulip_bridge_container_labels_traefik_enabled: true
+matrix_zulip_bridge_container_labels_traefik_docker_network: "{{ matrix_zulip_bridge_container_network }}"
+matrix_zulip_bridge_container_labels_traefik_hostname: "{{ matrix_zulip_bridge_hostname }}"
+matrix_zulip_bridge_container_labels_traefik_path_prefix: "{{ matrix_zulip_bridge_path_prefix }}"
+matrix_zulip_bridge_container_labels_traefik_entrypoints: web-secure
+matrix_zulip_bridge_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls if the media router is enabled
+matrix_zulip_bridge_container_labels_traefik_media_enabled: true
+matrix_zulip_bridge_container_labels_traefik_media_hostname: "{{ matrix_zulip_bridge_container_labels_traefik_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/zulip`).
+matrix_zulip_bridge_container_labels_traefik_media_path_prefix: "{{ '' if matrix_zulip_bridge_container_labels_traefik_path_prefix == '/' else (matrix_zulip_bridge_container_labels_traefik_path_prefix) }}/_bridge_zulip/media"
+matrix_zulip_bridge_container_labels_traefik_media_rule: "Host(`{{ matrix_zulip_bridge_container_labels_traefik_media_hostname }}`){% if matrix_zulip_bridge_container_labels_traefik_media_path_prefix != '/' %} && PathPrefix(`{{ matrix_zulip_bridge_container_labels_traefik_media_path_prefix }}`){% endif %}"
+matrix_zulip_bridge_container_labels_traefik_media_priority: 0
+matrix_zulip_bridge_container_labels_traefik_media_entrypoints: "{{ matrix_zulip_bridge_container_labels_traefik_entrypoints }}"
+matrix_zulip_bridge_container_labels_traefik_media_tls: "{{ matrix_zulip_bridge_container_labels_traefik_media_entrypoints != 'web' }}"
+matrix_zulip_bridge_container_labels_traefik_media_tls_certResolver: "{{ matrix_zulip_bridge_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_zulip_bridge_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_zulip_bridge_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_zulip_bridge_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_zulip_bridge_container_extra_arguments: []
+
+# List of systemd services that service depends on.
+matrix_zulip_bridge_systemd_required_services_list: "{{ matrix_zulip_bridge_systemd_required_services_list_default + matrix_zulip_bridge_systemd_required_services_list_auto + matrix_zulip_bridge_systemd_required_services_list_custom }}"
+matrix_zulip_bridge_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_zulip_bridge_systemd_required_services_list_auto: []
+matrix_zulip_bridge_systemd_required_services_list_custom: []
+
+# List of systemd services that service wants
+matrix_zulip_bridge_systemd_wanted_services_list: []
+
+matrix_zulip_bridge_homeserver_url: ""
+
+matrix_zulip_bridge_appservice_token: ''
+matrix_zulip_bridge_homeserver_token: ''
+
+matrix_zulip_bridge_config_media_url: "{{ matrix_zulip_bridge_scheme }}://{{ matrix_zulip_bridge_hostname }}"
+# This matches the hardcoded `DEFAULT_MEDIA_PATH` in MatrixZulipBridge, but uses `matrix_zulip_bridge_path_prefix` as the path prefix.
+# See: https://github.com/GearKite/MatrixZulipBridge/blob/2ba51f3da2ad8bd33460c953ef91a9cfc585a2d4/matrixzulipbridge/__main__.py#L87
+matrix_zulip_bridge_config_media_path: "{{ matrix_zulip_bridge_container_labels_traefik_media_path_prefix }}/v3/download/{netloc}{path}{filename}"
+matrix_zulip_bridge_config_media_key: "{{ matrix_zulip_bridge_homeserver_token }}"
+matrix_zulip_bridge_config_displayname: "Zulip bridge bot"
+
+matrix_zulip_bridge_registration_yaml_bridge_zulip:
+  media_url: "{{ matrix_zulip_bridge_config_media_url }}"
+  media_path: "{{ matrix_zulip_bridge_config_media_path }}"
+  media_key: "{{ matrix_zulip_bridge_config_media_key }}"
+  displayname: "{{ matrix_zulip_bridge_config_displayname }}"
+
+# Default registration file consumed by both the homeserver and MatrixZulipBridge.
+# Besides registration information, it contains configuration (see the Zulip bridge key).
+matrix_zulip_bridge_registration_yaml:
+  id: zulip
+  url: http://matrix-zulip-bridge:{{ matrix_zulip_bridge_container_http_port }}
+  as_token: "{{ matrix_zulip_bridge_appservice_token }}"
+  hs_token: "{{ matrix_zulip_bridge_homeserver_token }}"
+  rate_limited: false
+  sender_localpart: zulipbot
+  namespaces:
+    users:
+      - regex: '@zulip_.*'
+        exclusive: true
+    aliases: []
+    rooms: []
+  zulipbridge: "{{ matrix_zulip_bridge_registration_yaml_bridge_zulip }}"
+
+matrix_zulip_bridge_registration: "{{ matrix_zulip_bridge_registration_yaml | from_yaml }}"

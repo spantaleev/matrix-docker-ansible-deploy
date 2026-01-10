@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Antoine-Ali Zarrouk
+SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Server Delegation via a DNS SRV record (advanced)
 
 **Reminder** : unless you are affected by the [Downsides of well-known-based Server Delegation](howto-server-delegation.md#downsides-of-well-known-based-server-delegation), we suggest you **stay on the simple/default path**: [Server Delegation](howto-server-delegation.md) by [configuring well-known files](configuring-well-known.md) at the base domain.
@@ -18,7 +26,7 @@ The up-to-date list can be accessed on [traefik's documentation](https://doc.tra
 
 **Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
 
-- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [conduwuit](./configuring-playbook-conduwuit.md) or [Dendrite](./configuring-playbook-dendrite.md))
+- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [conduwuit](./configuring-playbook-conduwuit.md), [continuwuity](./configuring-playbook-continuwuity.md) or [Dendrite](./configuring-playbook-dendrite.md))
 - if you're using [Synapse with workers enabled](./configuring-playbook-synapse.md#load-balancing-with-workers) (`matrix_synapse_workers_enabled: true`). In that case, it's actually the `matrix-synapse-reverse-proxy-companion` service which has Traefik labels attached
 
 Also, all instructions below are from an older version of the playbook and may not work anymore.
@@ -34,7 +42,7 @@ This is because with SRV federation, some servers / tools (one of which being th
 
 ### Tell Traefik which certificate to serve for the federation endpoint
 
-Now that the federation endpoint is not bound to a domain anymore we need to explicitely tell Traefik to use a wildcard certificate in addition to one containing the base name.
+Now that the federation endpoint is not bound to a domain anymore we need to explicitly tell Traefik to use a wildcard certificate in addition to one containing the base name.
 
 This is because the Matrix specification expects the federation endpoint to be served using a certificate compatible with the base domain, however, the other resources on the endpoint still need a valid certificate to work.
 
@@ -71,8 +79,8 @@ traefik_configuration_extension_yaml: |
             - "8.8.8.8:53"
         storage: {{ traefik_config_certificatesResolvers_acme_storage | to_json }}
 
-# 2. Configure the environment variables needed by Rraefik to automate the ACME DNS Challenge (example for Cloudflare)
-traefik_environment_variables_additional_variables: |
+# 2. Configure the environment variables needed by Traefik to automate the ACME DNS Challenge (example for Cloudflare)
+traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
@@ -104,12 +112,12 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
@@ -150,7 +158,7 @@ traefik_configuration_extension_yaml: |
 traefik_certResolver_primary: "dns"
 
 # Configure the environment variables needed by Traefik to automate the ACME DNS Challenge (example for Cloudflare)
-traefik_environment_variables_additional_variables: |
+traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
   CF_DNS_API_TOKEN=redacted
@@ -165,12 +173,12 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },

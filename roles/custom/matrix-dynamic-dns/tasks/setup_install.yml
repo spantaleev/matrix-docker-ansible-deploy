@@ -1,3 +1,12 @@
+# SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Scott Crossen
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure Dynamic DNS image is pulled
@@ -17,8 +26,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0751
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_dynamic_dns_base_path }}", when: true}
     - {path: "{{ matrix_dynamic_dns_config_path }}", when: true}
@@ -32,7 +41,7 @@
     dest: "{{ matrix_dynamic_dns_docker_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_dynamic_dns_git_pull_results
   when: "matrix_dynamic_dns_enabled | bool and matrix_dynamic_dns_container_image_self_build | bool"
 
@@ -53,8 +62,8 @@
     src: "{{ role_path }}/templates/ddclient.conf.j2"
     dest: "{{ matrix_dynamic_dns_config_path }}/ddclient.conf"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-dynamic-dns container network is created
   community.general.docker_network:

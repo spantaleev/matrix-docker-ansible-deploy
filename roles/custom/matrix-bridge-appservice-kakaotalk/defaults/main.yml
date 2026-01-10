@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2024 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # matrix-appservice-kakaotalk is a Matrix <-> Kakaotalk bridge
 # Project source code URL: https://src.miscworks.net/fair/matrix-appservice-kakaotalk/
@@ -29,13 +35,17 @@ matrix_appservice_kakaotalk_container_image_self_build_repo: "https://src.miscwo
 matrix_appservice_kakaotalk_container_image_self_build_repo_version: "{{ 'master' if matrix_appservice_kakaotalk_version == 'latest' else matrix_appservice_kakaotalk_version }}"
 
 matrix_appservice_kakaotalk_node_version: "{{ matrix_appservice_kakaotalk_version }}"
-matrix_appservice_kakaotalk_node_docker_image: "{{ matrix_appservice_kakaotalk_node_docker_image_prefix }}fair/matrix-appservice-kakaotalk-node:{{ matrix_appservice_kakaotalk_node_version }}"
-matrix_appservice_kakaotalk_node_docker_image_prefix: "localhost/"
+matrix_appservice_kakaotalk_node_docker_image: "{{ matrix_appservice_kakaotalk_node_docker_image_registry_prefix }}fair/matrix-appservice-kakaotalk-node:{{ matrix_appservice_kakaotalk_node_version }}"
+matrix_appservice_kakaotalk_node_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_kakaotalk_container_image_self_build else matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream }}"
+matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream: "{{ matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream_default: ""
 matrix_appservice_kakaotalk_node_docker_image_force_pull: "{{ matrix_appservice_kakaotalk_node_docker_image.endswith(':latest') }}"
 
 matrix_appservice_kakaotalk_version: 86c038fd2ffee5e0aebf65136f085cce7e38b54e
-matrix_appservice_kakaotalk_docker_image: "{{ matrix_appservice_kakaotalk_docker_image_name_prefix }}fair/matrix-appservice-kakaotalk:{{ matrix_appservice_kakaotalk_version }}"
-matrix_appservice_kakaotalk_docker_image_name_prefix: "localhost/"
+matrix_appservice_kakaotalk_docker_image: "{{ matrix_appservice_kakaotalk_docker_image_registry_prefix }}fair/matrix-appservice-kakaotalk:{{ matrix_appservice_kakaotalk_version }}"
+matrix_appservice_kakaotalk_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_kakaotalk_container_image_self_build else matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream }}"
+matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream: "{{ matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream_default: ""
 matrix_appservice_kakaotalk_docker_image_force_pull: "{{ matrix_appservice_kakaotalk_docker_image.endswith(':latest') }}"
 
 matrix_appservice_kakaotalk_base_path: "{{ matrix_base_data_path }}/appservice-kakaotalk"
@@ -47,6 +57,9 @@ matrix_appservice_kakaotalk_command_prefix: "!kt"
 
 matrix_appservice_kakaotalk_homeserver_address: ""
 matrix_appservice_kakaotalk_homeserver_domain: '{{ matrix_domain }}'
+# Whether asynchronous uploads via MSC2246 should be enabled for media.
+# Requires a homeserver that supports MSC2246 (https://github.com/matrix-org/matrix-spec-proposals/pull/2246).
+matrix_appservice_kakaotalk_homeserver_async_media: false
 matrix_appservice_kakaotalk_appservice_address: 'http://matrix-appservice-kakaotalk:11115'
 
 
@@ -172,7 +185,7 @@ matrix_appservice_kakaotalk_configuration: "{{ matrix_appservice_kakaotalk_confi
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_appservice_kakaotalk_node_configuration_default: "{{ lookup('template', 'templates/node-config.json.j2') }}"
+matrix_appservice_kakaotalk_node_configuration_default: "{{ lookup('template', 'templates/node-config.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for appservice-kakaotalk-node should go to `matrix_appservice_kakaotalk_node_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_appservice_kakaotalk_node_configuration_default`).

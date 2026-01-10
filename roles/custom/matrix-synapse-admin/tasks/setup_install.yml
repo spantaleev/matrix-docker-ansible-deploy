@@ -1,3 +1,14 @@
+# SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Dennis Ciba
+# SPDX-FileCopyrightText: 2021 Aaron Raimist
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure matrix-synapse-admin paths exists
@@ -5,8 +16,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_synapse_admin_base_path }}", when: true}
     - {path: "{{ matrix_synapse_admin_config_path }}", when: true}
@@ -17,8 +28,8 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ matrix_synapse_admin_base_path }}/labels"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0640
 
 - name: Ensure matrix-synapse-admin configuration installed
@@ -26,8 +37,8 @@
     content: "{{ matrix_synapse_admin_configuration | to_nice_json }}"
     dest: "{{ matrix_synapse_admin_config_path }}/config.json"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-synapse-admin image is pulled
   community.docker.docker_image:
@@ -48,7 +59,7 @@
     version: "{{ matrix_synapse_admin_docker_image.split(':')[1] }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_synapse_admin_git_pull_results
   when: matrix_synapse_admin_container_image_self_build | bool
 

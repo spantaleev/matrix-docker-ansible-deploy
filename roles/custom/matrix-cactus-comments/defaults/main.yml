@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Cactus Comments is a federated comment system built on Matrix.
 # This role installs the backend appservice.
@@ -27,7 +33,11 @@ matrix_cactus_comments_container_port: 5000
 
 # renovate: datasource=docker depName=cactuscomments/cactus-appservice
 matrix_cactus_comments_version: 0.9.0
-matrix_cactus_comments_docker_image: "{{ matrix_container_global_registry_prefix }}cactuscomments/cactus-appservice:{{ matrix_cactus_comments_version }}"
+matrix_cactus_comments_docker_image: "{{ matrix_cactus_comments_docker_image_registry_prefix }}cactuscomments/cactus-appservice:{{ matrix_cactus_comments_docker_image_tag }}"
+matrix_cactus_comments_docker_image_registry_prefix: "{{ 'localhost/' if matrix_cactus_comments_container_image_self_build else matrix_cactus_comments_docker_image_registry_prefix_upstream }}"
+matrix_cactus_comments_docker_image_registry_prefix_upstream: "{{ matrix_cactus_comments_docker_image_registry_prefix_upstream_default }}"
+matrix_cactus_comments_docker_image_registry_prefix_upstream_default: docker.io/
+matrix_cactus_comments_docker_image_tag: "{{ matrix_cactus_comments_version }}"
 matrix_cactus_comments_docker_image_force_pull: "{{ matrix_cactus_comments_docker_image.endswith(':latest') }}"
 
 matrix_cactus_comments_container_network: ""

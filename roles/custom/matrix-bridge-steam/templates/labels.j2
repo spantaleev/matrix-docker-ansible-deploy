@@ -1,0 +1,78 @@
+{#
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_steam_bridge_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_steam_bridge_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_steam_bridge_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-steam-bridge.loadbalancer.server.port={{ matrix_steam_bridge_appservice_port }}
+traefik.http.services.matrix-steam-bridge-metrics.loadbalancer.server.port=8000
+
+{% if matrix_steam_bridge_container_labels_metrics_enabled %}
+############################################################
+#                                                          #
+# Metrics                                                  #
+#                                                          #
+############################################################
+
+{% if matrix_steam_bridge_container_labels_metrics_middleware_basic_auth_enabled %}
+traefik.http.middlewares.matrix-steam-bridge-metrics-basic-auth.basicauth.users={{ matrix_steam_bridge_container_labels_metrics_middleware_basic_auth_users }}
+traefik.http.routers.matrix-steam-bridge-metrics.middlewares=matrix-steam-bridge-metrics-basic-auth
+{% endif %}
+
+traefik.http.routers.matrix-steam-bridge-metrics.rule={{ matrix_steam_bridge_container_labels_metrics_traefik_rule }}
+
+{% if matrix_steam_bridge_container_labels_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-steam-bridge-metrics.priority={{ matrix_steam_bridge_container_labels_metrics_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-steam-bridge-metrics.service=matrix-steam-bridge-metrics
+traefik.http.routers.matrix-steam-bridge-metrics.entrypoints={{ matrix_steam_bridge_container_labels_metrics_traefik_entrypoints }}
+
+traefik.http.routers.matrix-steam-bridge-metrics.tls={{ matrix_steam_bridge_container_labels_metrics_traefik_tls | to_json }}
+{% if matrix_steam_bridge_container_labels_metrics_traefik_tls %}
+traefik.http.routers.matrix-steam-bridge-metrics.tls.certResolver={{ matrix_steam_bridge_container_labels_metrics_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Metrics                                                 #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% if matrix_steam_bridge_public_media_enabled %}
+############################################################
+#                                                          #
+# Public Media                                             #
+#                                                          #
+############################################################
+
+# Router for public media
+traefik.http.routers.matrix-steam-bridge-public-media.rule=Host(`{{ matrix_server_fqn_matrix }}`) && PathPrefix(`/_mautrix/publicmedia/{{ matrix_domain }}/`)
+traefik.http.routers.matrix-steam-bridge-public-media.service=matrix-steam-bridge
+traefik.http.routers.matrix-steam-bridge-public-media.entrypoints={{ matrix_steam_bridge_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-steam-bridge-public-media.tls={{ matrix_steam_bridge_container_labels_traefik_tls | to_json }}
+{% if matrix_steam_bridge_container_labels_traefik_tls %}
+traefik.http.routers.matrix-steam-bridge-public-media.tls.certResolver={{ matrix_steam_bridge_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+
+############################################################
+#                                                          #
+# /Public Media                                            #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% endif %}
+
+{{ matrix_steam_bridge_container_labels_additional_labels }}

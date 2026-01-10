@@ -1,11 +1,22 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Jip J. Dekker
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2023 Isaiah Becker-Mayer
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 - name: Ensure Dendrite paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - path: "{{ matrix_dendrite_config_dir_path }}"
       when: true
@@ -33,8 +44,8 @@
     path: "{{ matrix_dendrite_media_store_path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   when: "not local_path_media_store_stat.failed and not local_path_media_store_stat.stat.exists"
 
 - name: Ensure Dendrite Docker image is pulled
@@ -68,16 +79,16 @@
   ansible.builtin.file:
     path: "{{ matrix_dendrite_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.pem"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure Dendrite configuration installed
   ansible.builtin.copy:
     content: "{{ matrix_dendrite_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_dendrite_config_dir_path }}/dendrite.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - when: "matrix_dendrite_container_image_self_build | bool"
   block:
@@ -88,7 +99,7 @@
         version: "{{ matrix_dendrite_docker_image.split(':')[1] }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_dendrite_git_pull_results
 
     - name: Check if Dendrite Docker image exists
@@ -119,8 +130,8 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - src: labels.j2
       dest: "{{ matrix_dendrite_base_path }}/labels"

@@ -1,0 +1,26 @@
+---
+default_install_hook_types: [pre-push]
+
+exclude: "LICENSES/"
+
+# See: https://pre-commit.com/hooks.html
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # - id: check-executables-have-shebangs
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-toml
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        args: ["--skip=*.po,*.pot,i18n/"]
+  - repo: https://github.com/fsfe/reuse-tool  # https://reuse.software/dev/#pre-commit-hook
+    rev: v6.2.0
+    hooks:
+      - id: reuse

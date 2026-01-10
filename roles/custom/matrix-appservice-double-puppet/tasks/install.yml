@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure matrix-appservice-double-puppet paths exist
@@ -5,8 +9,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - path: "{{ matrix_appservice_double_puppet_base_path }}"
       when: true
@@ -19,5 +23,5 @@
     content: "{{ matrix_appservice_double_puppet_registration_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_double_puppet_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Download matrix_encryption_disabler
@@ -30,7 +35,7 @@
       {{
         matrix_synapse_container_extra_arguments | default([])
         +
-        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/matrix_e2ee_filter.py,dst={{ matrix_synapse_in_container_python_packages_path }}/matrix_e2ee_filter.py,ro"]
+        ["--mount type=bind,src=" + matrix_synapse_ext_path + "/matrix_e2ee_filter.py,dst=" + matrix_synapse_in_container_python_packages_path + "/matrix_e2ee_filter.py,ro"]
       }}
 
     matrix_synapse_additional_loggers_auto: >

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - tags:
@@ -6,7 +10,7 @@
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-- when: ansible_os_family == 'Debian' and matrix_playbook_docker_installation_enabled | bool and matrix_playbook_migration_debian_signedby_migration_enabled | bool
+- when: ansible_facts.os_family == 'Debian' and matrix_playbook_docker_installation_enabled | bool and matrix_playbook_migration_debian_signedby_migration_enabled | bool
   tags:
     - setup-all
     - install-all
@@ -15,7 +19,7 @@
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/debian_docker_signedby_migration.yml"
 
-- when: ansible_os_family == 'Debian' and matrix_playbook_docker_installation_enabled | bool and matrix_playbook_migration_docker_trusted_gpg_d_migration_enabled | bool
+- when: ansible_facts.os_family == 'Debian' and matrix_playbook_docker_installation_enabled | bool and matrix_playbook_migration_docker_trusted_gpg_d_migration_enabled | bool
   tags:
     - setup-all
     - install-all
@@ -23,6 +27,15 @@
     - install-docker
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/debian_docker_trusted_gpg_d_migration_migration.yml"
+
+- when: matrix_playbook_docker_installation_enabled | bool
+  tags:
+    - setup-all
+    - install-all
+    - setup-docker
+    - install-docker
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/docker_daemon_options_file_cleanup.yml"
 
 - tags:
     - setup-all

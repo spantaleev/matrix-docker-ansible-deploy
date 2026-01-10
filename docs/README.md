@@ -1,6 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2021 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2019 Lyubomir Popov
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Table of Contents
 
-## ⬇️ Installaton guides <!-- NOTE: the 🚀 emoji is used by "Getting started" on README.md -->
+## ⬇️ Installation guides <!-- NOTE: the 🚀 emoji is used by "Getting started" on README.md -->
 
 There are two installation guides available for beginners and advanced users.
 
@@ -10,7 +19,7 @@ There are two installation guides available for beginners and advanced users.
 
     - [Prerequisites](prerequisites.md)
 
-    - [Configuring your DNS settings](configuring-dns.md)
+    - [Configuring DNS settings](configuring-dns.md)
 
     - [Getting the playbook](getting-the-playbook.md)
 
@@ -82,3 +91,5 @@ If your server and services experience issues, feel free to come to [our support
 - [Uninstalling](uninstalling.md)
 
 - [Updating users passwords](updating-users-passwords.md)
+
+- [Using Ansible for the playbook](ansible.md)

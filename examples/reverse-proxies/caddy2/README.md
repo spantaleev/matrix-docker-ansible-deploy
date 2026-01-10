@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Rafael Girão
+SPDX-FileCopyrightText: 2024 Rubén Cabrera
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Caddy reverse-proxy fronting the playbook's integrated Traefik reverse-proxy
 
 This directory contains a sample config that shows you how to front the integrated [Traefik](https://traefik.io/) reverse-proxy webserver with your own [Caddy](https://caddyserver.com/) reverse-proxy.

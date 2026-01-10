@@ -1,3 +1,21 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020 - 2021 Agustin Ferrario
+SPDX-FileCopyrightText: 2020 Eneko Nieto
+SPDX-FileCopyrightText: 2020 Julian Foad
+SPDX-FileCopyrightText: 2020 Tomas Strand
+SPDX-FileCopyrightText: 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2021 Colin Shea
+SPDX-FileCopyrightText: 2022 François Darveau
+SPDX-FileCopyrightText: 2022 Jaden Down
+SPDX-FileCopyrightText: 2023 - 2024 Jost Alemann
+SPDX-FileCopyrightText: 2023 Tilo Spannagel
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Using your own webserver, instead of this playbook's Traefik reverse-proxy (optional, advanced)
 
 By default, this playbook installs its own [Traefik](https://traefik.io/) reverse-proxy server (in a Docker container) which listens on ports 80 and 443. If that's okay, you can skip this document.
@@ -8,7 +26,7 @@ By default, this playbook installs its own [Traefik](https://traefik.io/) revers
 
 - serving public traffic and providing SSL-termination with certificates obtained from [Let's Encrypt](https://letsencrypt.org/). See [Adjusting SSL certificate retrieval](./configuring-playbook-ssl-certificates.md).
 
-- assists internal communication between addon services (briges, bots, etc.) and the homeserver via an internal entrypoint (`matrix-internal-matrix-client-api`).
+- assists internal communication between addon services (bridges, bots, etc.) and the homeserver via an internal entrypoint (`matrix-internal-matrix-client-api`).
 
 There are 2 ways to use Traefik with this playbook, as described below.
 
@@ -33,7 +51,7 @@ matrix_playbook_reverse_proxy_type: other-traefik-container
 # Adjust to point to your Traefik container
 matrix_playbook_reverse_proxy_hostname: name-of-your-traefik-container
 
-traefik_certs_dumper_ssl_dir_path: "/path/to/your/traefiks/acme.json/directory"
+traefik_certs_dumper_ssl_path: "/path/to/your/traefiks/acme.json/directory"
 
 # Uncomment and adjust the variable below if the name of your federation entrypoint is different
 # than the default value (matrix-federation).

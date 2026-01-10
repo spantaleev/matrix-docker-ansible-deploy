@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2020 Aaron Raimist
+SPDX-FileCopyrightText: 2019 Lyubomir Popov
+SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Dennis Ciba
+SPDX-FileCopyrightText: 2022 Marko Weltzer
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Updating users passwords
 
 ## Option 1 (if you are using the integrated Postgres database):

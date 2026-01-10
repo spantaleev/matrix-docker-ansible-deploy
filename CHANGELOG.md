@@ -1,3 +1,275 @@
+# 2025-12-09
+
+## Traefik Cert Dumper upgrade
+
+The variable `traefik_certs_dumper_ssl_dir_path` was renamed to `traefik_certs_dumper_ssl_path`. Users who use [their own webserver with Traefik](docs/configuring-playbook-own-webserver.md) may need to adjust their configuration.
+
+The variable `traefik_certs_dumper_dumped_certificates_dir_path` was renamed to `traefik_certs_dumper_dumped_certificates_path`. Users who use [SRV Server Delegation](docs/howto-srv-server-delegation.md) may need to adjust their configuration.
+
+# 2025-11-23
+
+## Matrix.to support
+
+The playbook now supports [Matrix.to](https://github.com/matrix-org/matrix.to) — a simple URL redirection service which powers [matrix.to](https://matrix.to).
+
+To learn more, see our [Setting up Matrix.to](docs/configuring-playbook-matrixto.md) documentation page.
+
+# 2025-11-09
+
+## matrix-appservice-webhooks has been removed from the playbook
+
+[matrix-appservice-webhooks](./docs/configuring-playbook-bridge-appservice-webhooks.md) has been removed from the playbook, as it has been deprecated since more than several years.
+
+The playbook will let you know if you're using any `matrix_appservice_webhooks_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-appservice-webhooks.md#uninstalling-the-bridge-manually).
+
+## mautrix-facebook and mautrix-instagram have been removed from the playbook
+
+[mautrix-facebook](./docs/configuring-playbook-bridge-mautrix-facebook.md) and [mautrix-instagram](./docs/configuring-playbook-bridge-mautrix-instagram.md) have been removed from the playbook, as they have been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, integrated to the playbook at [2024-02-19](#2024-02-19).
+
+The playbook will let you know if you're using any variables for those bridges:
+
+- `matrix_mautrix_facebook_*`
+- `matrix_mautrix_instagram_*`
+
+You'll need to remove them from `vars.yml` and potentially uninstall them manually. Consult pages below for details:
+
+- [Instruction for mautrix-facebook](./docs/configuring-playbook-bridge-mautrix-facebook.md#uninstalling-the-bridge-manually)
+- [Instruction for mautrix-instagram](./docs/configuring-playbook-bridge-mautrix-instagram.md#uninstalling-the-bridge-manually)
+
+# 2025-11-08
+
+## MatrixZulipBridge support
+
+Thanks to [Suguru Hirahara](https://github.com/luixxiul), the playbook now supports the [GearKite/MatrixZulipBridge](https://github.com/GearKite/MatrixZulipBridg) bridge for bridging Matrix to [Zulip](https://zulip.com/).
+
+To learn more, see our [Setting up Zulip bridging](docs/configuring-playbook-bridge-zulip.md) documentation page.
+
+# 2025-11-07
+
+## The matrix-chatgpt-bot has been removed from the playbook
+
+The [matrix-bot-chatgpt](./docs/configuring-playbook-bot-chatgpt.md) has been removed from the playbook, as it has been deprecated since September 2024.
+
+The playbook will let you know if you're using any `matrix_bot_chatgpt_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bot manually](./docs/configuring-playbook-bot-chatgpt.md#uninstalling-matrix-chatgpt-bot-manually).
+
+# 2025-11-05
+
+## The MX Puppet bridges for Discord, Instagram, Slack, and Twitter have been removed from the playbook
+
+The MX Puppet bridges for Discord, Instagram, Slack, and Twitter have been removed from the playbook, as they have been unmaintained for more than several years and do not support important features like authenticated media. See [this issue](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3867) for the context.
+
+The playbook will let you know if you're using any variables for those bridges:
+
+- `matrix_mx_puppet_discord_*`
+- `matrix_mx_puppet_instagram_*`
+- `matrix_mx_puppet_slack_*`
+- `matrix_mx_puppet_twitter_*`
+
+You'll need to remove them from `vars.yml` and potentially uninstall them manually. Consult pages below for details:
+
+- [Instruction for MX Puppet Discord bridge](./docs/configuring-playbook-bridge-mx-puppet-discord.md#uninstalling-the-bridge-manually)
+- [Instruction for MX Puppet Instagram bridge](./docs/configuring-playbook-bridge-mx-puppet-instagram.md#uninstalling-the-bridge-manually)
+- [Instruction for MX Puppet Slack bridge](./docs/configuring-playbook-bridge-mx-puppet-slack.md#uninstalling-the-bridge-manually)
+- [Instruction for MX Puppet Twitter bridge](./docs/configuring-playbook-bridge-mx-puppet-twitter.md#uninstalling-the-bridge-manually)
+
+# 2025-11-04
+
+## The Go Skype bridge has been removed from the playbook
+
+The [go-skype-bridge](./docs/configuring-playbook-bridge-go-skype-bridge.md) has been removed from the playbook, as Skype has been discontinued since the May 2025.
+
+The playbook will let you know if you're using any `matrix_go_skype_bridge_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-go-skype-bridge.md#uninstalling-the-bridge-manually).
+
+# 2025-10-02
+
+## Element Admin support
+
+The playbook now supports [Element Admin](./docs/configuring-playbook-element-admin.md) - a new web-based administration panel for Synapse and [Matrix Authentication Service](./docs/configuring-playbook-matrix-authentication-service.md).
+
+Deployments based on Matrix Authentication Service may find it useful to run both Synapse Admin and Element Admin at the same time.
+
+Deployments that don't rely on Matrix Authentication Service are unlikely to find anything useful in Element Admin right now (it's too basic in its current form).
+
+
+# 2025-04-26
+
+## Continuwuity support
+
+Thanks to [Virkkunen](https://github.com/Virkkunen), we now have optional experimental [Continuwuity](./docs/configuring-playbook-continuwuity.md) homeserver support.
+
+Continuwuity is a fork of [conduwuit](./docs/configuring-playbook-conduwuit.md), which the playbook also supports. It appears that conduwuit has been abandoned and various forks (like Continuwuity, [Tuwunel](https://github.com/matrix-construct/tuwunel) and possibly others) are continuing in its path.
+
+Existing installations do **not** need to be updated. **Synapse is still the default homeserver implementation** installed by the playbook.
+
+People that used to run conduwuit, may wish to:
+
+- either [migrate from conduwuit to Continuwuity](./docs/configuring-playbook-continuwuity.md#migrating-from-conduwuit)
+- or wait for some of the other forks to progress and for support for them to get added to the playbook
+
+**The homeserver implementation of an existing server cannot be changed** (e.g. from Synapse/Conduit/Dendrite to Continuwuity) without data loss.
+
+
+# 2025-04-09
+
+## Element Call frontend installation is now optional
+
+Because all Element clients (Element Web and Element X mobile) now embed and use their own Element Call frontend application (and not the one hosted via the playbook), it makes little sense for the playbook to self-host the Element Call frontend for you. Setting up the frontend requires an additional hostname (DNS setup) and it won't be used by Element clients anyway, so **we now recommend not installing the Element Call frontend**.
+
+💡 A reason you may wish to continue installing the Element Call frontend (despite Matrix clients not making use of it), is if you need to use it standalone - directly via a browser (without a Matrix client).
+
+The playbook now lets you [Decide between Element Call vs just the Matrix RTC stack](./docs/configuring-playbook-element-call.md#decide-between-element-call-vs-just-the-matrix-rtc-stack).
+
+If you've already installed Element Call (via `matrix_element_call_enabled: true`), you can switch to installing just the [Matrix RTC (Real-Time Communication) stack](./docs/configuring-playbook-matrix-rtc.md) (all supporting services **without the Element Call frontend**) by:
+
+1. Adjusting your `vars.yml` configuration like this:
+
+```diff
+-matrix_element_call_enabled: true
++matrix_rtc_enabled: true
+```
+
+2. [Re-running the playbook](./docs/installing.md) with the `setup-all` Ansible tag (e.g. `just setup-all`)
+
+3. Getting rid of the `call.element.example.com` DNS record
+
+
+# 2025-03-15
+
+## Element Call support
+
+The playbook now supports [Element Call](https://github.com/element-hq/element-call) as an optional feature. Thanks to [wjbeckett](https://github.com/wjbeckett) for getting us started via [PR#3562](https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/3562).
+
+Element Call is a native Matrix video conferencing application developed by [Element](https://element.io/) that has the goal of replacing [Jitsi](./docs/configuring-playbook-jitsi.md) and the old WebRTC stack used in previous Element versions.
+
+💡 For now, Element Call is only supported with the [Synapse](docs/configuring-playbook-synapse.md) homeserver (with [federation](docs/configuring-playbook-federation.md) enabled) and [Element Web](docs/configuring-playbook-client-element-web.md) and Element X mobile clients. See the [Prerequisites](docs/configuring-playbook-element-call.md#prerequisites) section of the [Element Call documentation](docs/configuring-playbook-element-call.md) for more details.
+
+To get started, see the [Configuring Element Call](docs/configuring-playbook-element-call.md) documentation page.
+
+
+# 2025-03-08
+
+## 6️⃣ IPv6 support enablement recommended by default
+
+Our [default example configuration](./examples/vars.yml) and [Configuring DNS](./docs/configuring-dns.md) guides now recommend enabling [IPv6](https://en.wikipedia.org/wiki/IPv6) support. We recommend that everyone enables IPv6 support for their Matrix server, even if they don't have IPv6 connectivity yet.
+
+Our new [Configuring IPv6](./docs/configuring-ipv6.md) documentation page has more details about the playbook's IPv6 support.
+
+**Existing playbook users** will **need to do some manual work** to enable IPv6 support. This consists of:
+
+- enabling IPv6 support for the Docker container networks:
+	- add `devture_systemd_docker_base_ipv6_enabled: true` to their `vars.yml` configuration file
+	- stop all services (`just stop-all`)
+	- delete all container networks on the server: `docker network rm $(docker network ls -q)`
+	- re-run the playbook fully: `just install-all`
+
+- [configuring IPv6 (`AAAA`) DNS records](./docs/configuring-ipv6.md#configuring-dns-records-for-ipv6)
+
+# 2025-02-26
+
+## 🪦 Bye-bye, Email2Matrix
+
+The [Email2Matrix](./docs/configuring-playbook-email2matrix.md) service has been superseded by the [Postmoogle](./docs/configuring-playbook-bridge-postmoogle.md) bridge for a long time now and was completely removed from the playbook today.
+
+If you still have the Email2Matrix component installed on your Matrix server, the playbook can no longer help you uninstall it and you will need to do it manually as described in the [Uninstalling Email2Matrix manually](./docs/configuring-playbook-email2matrix.md#uninstalling-email2matrix-manually) section of the documentation. The playbook will warn you if there are any `matrix_email2matrix_*` variables still remaining in your configuration.
+
+
+# 2025-02-23
+
+## The playbook defaults to exposing the Coturn STUN port (3478) over UDP once again
+
+Recently, we made the playbook [default to exposing the Coturn STUN port (3478) only over TCP](#the-playbook-now-defaults-to-exposing-the-coturn-stun-port-3478-only-over-tcp) to reduce the severity of DDoS amplification/reflection attacks.
+
+It seems like old Element clients on mobile devices only support talking to the STUN port over UDP, not TCP.
+To accommodate such ancient clients, we're now **reversing this change** and **defaulting to exposing the Coturn STUN port (3478) over UDP once again**.
+
+In light of this new information, you have 2 options:
+
+1. **If you already adapted to the previous change and would like to adapt to this change one again**:
+
+- make sure the `3478/udp` port is whitelisted in your external firewall (if you have one) once again.
+
+2. **If you don't care about old Element clients and wish to reduce the severity of DDoS amplification/reflection attacks**:
+
+- Consider closing the STUN/UDP port with the following configuration:
+
+  ```yaml
+  matrix_coturn_container_stun_plain_host_bind_port_udp: ""
+  ```
+
+- Consider keeping `3478/udp` blocked in your external firewall (if you have one)
+
+# 2025-02-21
+
+## Docker daemon options are no longer adjusted when IPv6 is enabled
+
+We landed [initial IPv6 support](#initial-work-on-ipv6-support) in the past via a `devture_systemd_docker_base_ipv6_enabled` variable that one had to toggle to `true`.
+
+This variable did **2 different things at once**:
+
+- ensured that container networks were created with IPv6 being enabled
+- adjusted the Docker daemon's configuration to set `experimental: true` and `ip6tables: true` (a necessary prerequisite for creating IPv6-enabled networks)
+
+Since Docker 27.0.1's [changes to how it handles IPv6](https://docs.docker.com/engine/release-notes/27/#ipv6), **adjusting the Docker daemon's configuration is no longer necessary**, because:
+- `ip6tables` defaults to `true` for everyone
+- `ip6tables` is out of the experimental phase, so `experimental` is no longer necessary
+
+In light of this, we're introducing a new variable (`devture_systemd_docker_base_ipv6_daemon_options_changing_enabled`) for controlling if IPv6 should be force-enabled in the Docker daemon's configuration options.
+Since most people should be on a modern enough Docker daemon version which doesn't require such changes, this variable defaults to `false`.
+
+This change affects you like this:
+
+- ✅ if you're **not explicitly enabling IPv6** (via `devture_systemd_docker_base_ipv6_enabled` in your configuration): you're unaffected
+- ❓ if you're **explicitly enabling IPv6** (via `devture_systemd_docker_base_ipv6_enabled` in your configuration):
+  - ✅ .. and you're on a modern enough Docker version (which you most likely are): the playbook will no longer mess with your Docker daemon options. You're unaffected.
+  - 🔧 .. and you're on an old Docker version, you **are affected** and need to use the following configuration to restore the old behavior:
+
+    ```yml
+    # Force-enable IPv6 by changing the Docker daemon's options.
+    # This is necessary for Docker < 27.0.1, but not for newer versions.
+    devture_systemd_docker_base_ipv6_daemon_options_changing_enabled: true
+
+    # Request that individual container networks are created with IPv6 enabled.
+    devture_systemd_docker_base_ipv6_enabled: true
+    ```
+
+## Support for bridging to Bluesky via mautrix-bluesky
+
+Thanks to [Zepmann](https://github.com/Zepmann), the playbook now supports bridging to [Bluesky](https://bsky.app/) via [mautrix-bluesky](https://github.com/mautrix/bluesky).
+
+To learn more, see our [Setting up mautrix-bluesky](./docs/configuring-playbook-bridge-mautrix-bluesky.md) documentation page.
+
+
+# 2025-02-19
+
+## The playbook now defaults to exposing the Coturn STUN port (3478) only over TCP
+
+We've previously done some work to **decrease the severity** of DDoS amplification attacks done through the [Coturn](./docs/configuring-playbook-turn.md)'s STUN port (2.8x -> 1.6x) as reported in [coturn: Lower DDoS amplification/reflection factor from 2.8 to 1.6 #2592](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2592).
+
+To **completely eliminate the problem** of DDoS amplification attacks done through the [Coturn](./docs/configuring-playbook-turn.md) STUN port even further (read more about this in [this article](https://stormwall.network/resources/blog/protect-against-ddos-based-on-stun-exploit)), the playbook now **disables exposure of the Coturn STUN port (`3478`) over UDP**. This is a bit heavy-handed, but is probably the only way to completely eliminate the problem.
+
+The playbook now **only exposes the Coturn STUN port (`3478`) over TCP by default**.
+
+💡 Users may wish to further remove the (now unnecessary) firewall rule allowing access to `3478/udp`.
+
+If you'd like the Coturn STUN port to be exposed over UDP like before, you can revert to the previous behavior by using the following configuration in your `vars.yml` file:
+
+```yaml
+matrix_coturn_container_stun_plain_host_bind_port_udp: "3478"
+```
+
+> [!WARNING]
+> People running Coturn directly on the `host` network (using `matrix_coturn_container_network: host`) will still have the STUN port exposed over UDP, as port exposure is done directly via Coturn and not via Docker. In such cases, the playbook cannot prevent `3478/udp` port exposure and you'd need to do it in another way (separate firewall rule, etc).
+
+
+# 2025-02-17
+
+## FluffyChat Web support
+
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook now supports [FluffyChat Web](https://github.com/krille-chan/fluffychat) as an additional Matrix client you can self-host.
+
+To learn more, see our [Setting up FluffyChat Web](docs/configuring-playbook-client-fluffychat-web.md) documentation page.
+
+
 # 2025-02-03
 
 ## The mautrix-hangouts bridge has been removed from the playbook
@@ -13,7 +285,7 @@ The playbook will let you know if you're using any `matrix_mautrix_hangouts_*` v
 
 ## Redis and KeyDB are no longer part of the playbook
 
-**TLDR**: The playbook now exclusively uses Valkey as its Redis-compatible memorystore implementation, removing support for Redis and KeyDB. Most users are unaffected by this change unless they explicitly configured Redis or KeyDB variables. Only users that were explicitly definining `redis_*` or `keydb_*` variables will need to update their configuration to use `valkey_*` variables instead.
+**TLDR**: The playbook now exclusively uses Valkey as its Redis-compatible memorystore implementation, removing support for Redis and KeyDB. Most users are unaffected by this change unless they explicitly configured Redis or KeyDB variables. Only users that were explicitly defining `redis_*` or `keydb_*` variables will need to update their configuration to use `valkey_*` variables instead.
 
 The playbook has gone through several iterations of memorystore implementations:
 
@@ -239,8 +511,8 @@ If upstream synapse-admin picks up the pace and improves, the etke.cc fork may d
 If you'd like to switch back to the original synapse-admin software, you can do so by adding the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_name_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
-matrix_synapse_admin_docker_image_name_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
+matrix_synapse_admin_docker_image_registry_prefix_upstream: docker.io/
 
 matrix_synapse_admin_version: 0.10.3
 
@@ -566,7 +838,7 @@ For people building commercial products on top of Synapse, they may have to eith
 
 We're no lawyers and this changelog entry does not aim to give you the best legal advice, so please research on your own!
 
-If you'd like to continue using the old Apache-2.0-licensed Synapse (for a while longer anyway), the playbook makes it possible by intruducing a new Ansible variable. You can do it like this:
+If you'd like to continue using the old Apache-2.0-licensed Synapse (for a while longer anyway), the playbook makes it possible by introducing a new Ansible variable. You can do it like this:
 
 ```yaml
 # Switch the organization that Synapse container images (or source code for self-building) are pulled from.
@@ -649,7 +921,7 @@ Despite these downsides (which the playbook manages automatically), we believe i
 
 People running the default Traefik setup do not need to do anything to make Traefik take on this extra job. Your Traefik configuration will be updated automatically.
 
-**People runnning their own Traefik reverse-proxy need to do [minor adjustments](#people-managing-their-own-traefik-instance-need-to-do-minor-changes)**, as described in the section below.
+**People running their own Traefik reverse-proxy need to do [minor adjustments](#people-managing-their-own-traefik-instance-need-to-do-minor-changes)**, as described in the section below.
 
 You may disable Traefik acting as an intermediary by explicitly setting `matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled` to `false`. Services would then be configured to talk to the homeserver directly, giving you a slight performance boost and a "simpler" Traefik setup. However, such a configuration is less tested and will cause troubles, especially if you enable more services (like `matrix-media-repo`, etc.) in the future. As such, it's not recommended.
 
@@ -690,7 +962,7 @@ If you were using these values as a way to stay away from Traefik, you now have 
 
 Now that `matrix-nginx-proxy` is not in the mix, it became easier to clear out some other long-overdue technical debt.
 
-Since the very beginning of this playbook, all playbook services were connected to a single (shared) `matrix` container network. Later on, some additional container networks appeared, but most services (database, etc.) still remained in the `matrix` container network.  This meant that any random container in this network could try to talk (or attack) the Postgres database operating in the same `matrix` network.
+Since the very beginning of this playbook, all playbook services were connected to a single (shared) `matrix` container network. Later on, some additional container networks appeared, but most services (database, etc.) still remained in the `matrix` container network. This meant that any random container in this network could try to talk (or attack) the Postgres database operating in the same `matrix` network.
 
 Moving components (especially the database) into other container networks was difficult — it required changes to many other components to ensure correct connectivity.
 
@@ -2635,7 +2907,7 @@ See our [Migrating to Element Web](docs/configuring-playbook-riot-web.md#migrati
 
 ## Steam bridging support via mx-puppet-steam
 
-Thanks to [Hugues Morisset](https://github.com/izissise)'s efforts, the playbook now supports bridging to [Steam](https://steamapp.com/) via the [mx-puppet-steam](https://github.com/icewind1991/mx-puppet-steam) bridge. See our [Setting up MX Puppet Steam bridging](docs/configuring-playbook-bridge-mx-puppet-steam.md) documentation page for getting started.
+Thanks to [Hugues Morisset](https://github.com/izissise)'s efforts, the playbook now supports bridging to [Steam](https://steamapp.com/) via the [mx-puppet-steam](https://codeberg.org/icewind/mx-puppet-steam) bridge. See our [Setting up MX Puppet Steam bridging](docs/configuring-playbook-bridge-mx-puppet-steam.md) documentation page for getting started.
 
 
 # 2020-07-01
@@ -2672,7 +2944,7 @@ As always, re-running the playbook is enough to get the updated bits.
 
 ## SMS bridging requires db reset
 
-The current version of [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) needs you to delete the database to work as expected. Just remove `/matrix/matrix-sms-bridge/database/*`. It also adds a new requried var `matrix_sms_bridge_default_region`.
+The current version of [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) needs you to delete the database to work as expected. Just remove `/matrix/matrix-sms-bridge/database/*`. It also adds a new required var `matrix_sms_bridge_default_region`.
 
 To reuse your existing rooms, invite `@smsbot:yourServer` to the room or write a message. You are also able to use automated room creation with telephonenumers by writing `sms send -t 01749292923 "Hello World"` in a room with `@smsbot:yourServer`. See [the docs](https://github.com/benkuly/matrix-sms-bridge) for more information.
 
@@ -2702,12 +2974,12 @@ Until the issue gets fixed, we're making User Directory search not go to ma1sd b
 
 ## Newer IRC bridge (with potential breaking change)
 
-This upgrades matrix-appservice-irc from 0.14.1 to 0.16.0.  Upstream
-made a change to how you define manual mappings.  If you added a
-`mapping` to your configuration, you will need to update it accoring
+This upgrades matrix-appservice-irc from 0.14.1 to 0.16.0. Upstream
+made a change to how you define manual mappings. If you added a
+`mapping` to your configuration, you will need to update it according
 to the [upstream
 instructions](https://github.com/matrix-org/matrix-appservice-irc/blob/master/CHANGELOG.md#0150-2020-02-05). If you did not include `mappings` in your configuration for IRC, no
-change is necessary.  `mappings` is not part of the default
+change is necessary. `mappings` is not part of the default
 configuration.
 
 
@@ -2867,7 +3139,7 @@ As per this [advisory blog post](https://matrix.org/blog/2019/11/09/avoiding-unw
 
 Our general goal is to favor privacy and security when running personal (family & friends) and corporate homeservers. Both of these likely benefit from having a more secure default of **not showing the room directory without authentication** and **not publishing the room directory over federation**.
 
-As with anything else, these new defaults can be overriden by changing the `matrix_synapse_allow_public_rooms_without_auth` and `matrix_synapse_allow_public_rooms_over_federation` variables, respectively.
+As with anything else, these new defaults can be overridden by changing the `matrix_synapse_allow_public_rooms_without_auth` and `matrix_synapse_allow_public_rooms_over_federation` variables, respectively.
 
 
 # 2019-10-05
@@ -3421,7 +3693,7 @@ The following changes had to be done:
 
 - glue variables had to be introduced to the playbook, so it can wire together the various components. Those glue vars are stored in the [`group_vars/matrix-servers`](group_vars/matrix-servers) file. When overriding variables for a given component (role), you need to be aware of both the role defaults (`role/ROLE/defaults/main.yml`) and the role's corresponding section in the [`group_vars/matrix-servers`](group_vars/matrix-servers) file.
 
-- `matrix_postgres_use_external` has been superceeded by the more consistently named `matrix_postgres_enabled` variable and a few other `matrix_synapse_database_` variables. See the [Using an external PostgreSQL server (optional)](docs/configuring-playbook-external-postgres.md) documentation page for an up-to-date replacement.
+- `matrix_postgres_use_external` has been superseded by the more consistently named `matrix_postgres_enabled` variable and a few other `matrix_synapse_database_` variables. See the [Using an external PostgreSQL server (optional)](docs/configuring-playbook-external-postgres.md) documentation page for an up-to-date replacement.
 
 - Postgres tools (`matrix-postgres-cli` and `matrix-make-user-admin`) are no longer installed if you're not enabling the `matrix-postgres` role (`matrix_postgres_enabled: false`)
 
@@ -3610,7 +3882,7 @@ matrix_riot_web_integrations_jitsi_widget_url: "https://dimension.t2bot.io/widge
 
 There's now a new `matrix_nginx_proxy_ssl_protocols` playbook variable, which controls the SSL protocols used to serve Riot and Synapse. Its default value is `TLSv1.1 TLSv1.2`. This playbook previously used `TLSv1 TLSv1.1 TLSv1.2` to serve Riot and Synapse.
 
-You may wish to reenable TLSv1 if you need to access Riot in older browsers.
+You may wish to re-enable TLSv1 if you need to access Riot in older browsers.
 
 Note: Currently the dockerized nginx doesn't support TLSv1.3. See https://github.com/nginxinc/docker-nginx/issues/190 for more details.
 

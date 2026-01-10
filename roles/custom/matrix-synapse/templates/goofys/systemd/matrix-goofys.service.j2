@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix Goofys media store
 {% for service in matrix_synapse_goofys_systemd_required_services_list %}
@@ -10,7 +10,7 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} %n
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} %n
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm %n
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name %n \
@@ -33,7 +33,7 @@ ExecStartPost={{ matrix_host_command_sleep }} 3
 
 TimeoutStartSec=5min
 ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} stop %n
-ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} %n
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} %n
 ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm %n
 ExecStop=-{{ matrix_host_command_fusermount }} -u {{ matrix_s3_media_store_path }}
 Restart=always

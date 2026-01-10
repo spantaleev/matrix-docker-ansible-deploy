@@ -1,10 +1,15 @@
+# SPDX-FileCopyrightText: 2023 Johan Swetzén
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Fail if required settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
+  when: "lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_mautrix_androidsms_appservice_token"
     - "matrix_mautrix_androidsms_homeserver_token"

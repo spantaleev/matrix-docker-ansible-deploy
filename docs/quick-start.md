@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Quick start
 
 <!--
@@ -37,18 +43,21 @@ One of the main reasons of basic errors is using an incompatible version of requ
 
 ## Configure your DNS settings
 
-<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Configuring your DNS settings](configuring-dns.md)</sup>
+<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Configuring DNS settings](configuring-dns.md)</sup>
 
 After installing and configuring prerequisites, you will need to **configure DNS records**.
 
 To configure Matrix services in the default settings, go to your DNS service provider, and adjust DNS records as below.
 
-| Type  | Host                         | Priority | Weight | Port | Target               |
-| ----- | ---------------------------- | -------- | ------ | ---- | ---------------------|
-| A     | `matrix`                     | -        | -      | -    | `matrix-server-IP`   |
-| CNAME | `element`                    | -        | -      | -    | `matrix.example.com` |
+| Type  | Host      | Priority | Weight | Port | Target               |
+| ----- | ----------| -------- | ------ | ---- | ---------------------|
+| A     | `matrix`  | -        | -      | -    | `matrix-server-IPv4` |
+| AAAA  | `matrix`  | -        | -      | -    | `matrix-server-IPv6` |
+| CNAME | `element` | -        | -      | -    | `matrix.example.com` |
 
-As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IP address (DNS `A` record or `CNAME` record is fine).
+As the table illustrates, you need to create 2 subdomains (`matrix.example.com` and `element.example.com`) and point both of them to your server's IPv4/IPv6 address.
+
+If you don't have IPv6 connectivity yet, you can skip the `AAAA` record. For more details about IPv6, see the [Configuring IPv6](./configuring-ipv6.md) documentation page.
 
 It might take some time for the DNS records to propagate after creation.
 
@@ -191,7 +200,7 @@ Finally, let's make sure that you can log in to the created account with the spe
 
 You should be able to log in to it with your own [Element Web](configuring-playbook-client-element-web.md) client which you have set up at `element.example.com` by running the playbook. Open the URL (`https://element.example.com`) in a web browser and enter your credentials to log in.
 
-**If you successfully logged in to your account, installing and configuring is complete**🎉
+**If you successfully logged in to your account, the installation and configuration have completed successfully**🎉
 
 Come say Hi👋 in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 
@@ -207,4 +216,4 @@ While this playbook helps you to set up Matrix services and maintain them, it wi
 
 Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
 
-For more information about upgrading or maintaining services with the playbook, take at look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
+For more information about upgrading or maintaining services with the playbook, take a look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)

@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2025 Nikita Chernyi
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- ansible.builtin.set_fact:
+    matrix_client_fluffychat_url_endpoint_public: "{{ matrix_client_fluffychat_scheme }}://{{ matrix_client_fluffychat_hostname }}/"
+
+- name: Check FluffyChat Web
+  ansible.builtin.uri:
+    url: "{{ matrix_client_fluffychat_url_endpoint_public }}"
+    follow_redirects: none
+    validate_certs: "{{ matrix_client_fluffychat_self_check_validate_certificates }}"
+  register: matrix_client_fluffychat_self_check_result
+  check_mode: false
+  ignore_errors: true
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Fail if FluffyChat Web not working
+  ansible.builtin.fail:
+    msg: "Failed checking FluffyChat Web is up at `{{ matrix_server_fqn_fluffychat }}` (checked endpoint: `{{ matrix_client_fluffychat_url_endpoint_public }}`). Is FluffyChat Web running? Is port 443 open in your firewall? Full error: {{ matrix_client_fluffychat_self_check_result }}"
+  when: "matrix_client_fluffychat_self_check_result.failed or 'json' not in matrix_client_fluffychat_self_check_result"
+
+- name: Report working FluffyChat Web
+  ansible.builtin.debug:
+    msg: "FluffyChat Web at `{{ matrix_server_fqn_fluffychat }}` is working (checked endpoint: `{{ matrix_client_fluffychat_url_endpoint_public }}`)"

@@ -1,3 +1,12 @@
+# SPDX-FileCopyrightText: 2019 - 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 Michael Haak
+# SPDX-FileCopyrightText: 2020 Christian Wolf
+# SPDX-FileCopyrightText: 2022 Aaron Raimist
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Fail if Synapse Simple Antispam blocked homeservers is not set
@@ -35,5 +44,5 @@
       {{
         matrix_synapse_container_extra_arguments | default([])
         +
-        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/synapse-simple-antispam/synapse_simple_antispam,dst={{ matrix_synapse_in_container_python_packages_path }}/synapse_simple_antispam,ro"]
+        ["--mount type=bind,src=" + matrix_synapse_ext_path + "/synapse-simple-antispam/synapse_simple_antispam,dst=" + matrix_synapse_in_container_python_packages_path + "/synapse_simple_antispam,ro"]
       }}

@@ -1,3 +1,20 @@
+# SPDX-FileCopyrightText: 2018 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2018 Hugues Morisset
+# SPDX-FileCopyrightText: 2019 Aaron Raimist
+# SPDX-FileCopyrightText: 2019 Dan Arnfield
+# SPDX-FileCopyrightText: 2019 Jan Christian Grünhage
+# SPDX-FileCopyrightText: 2020 - 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2020 Stuart Mumford
+# SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - ansible.builtin.set_fact:
@@ -32,8 +49,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_mautrix_telegram_base_path }}", when: true}
     - {path: "{{ matrix_mautrix_telegram_config_path }}", when: true}
@@ -55,26 +72,26 @@
 
 - name: Ensure lottieconverter is present when self-building
   ansible.builtin.git:
-    repo: "{{ matrix_telegram_lottieconverter_docker_repo }}"
-    version: "{{ matrix_telegram_lottieconverter_docker_repo_version }}"
-    dest: "{{ matrix_telegram_lottieconverter_docker_src_files_path }}"
+    repo: "{{ matrix_mautrix_telegram_lottieconverter_docker_repo }}"
+    version: "{{ matrix_mautrix_telegram_lottieconverter_docker_repo_version }}"
+    dest: "{{ matrix_mautrix_telegram_lottieconverter_docker_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
-  register: matrix_telegram_lottieconverter_git_pull_results
-  when: "matrix_telegram_lottieconverter_container_image_self_build | bool and matrix_mautrix_telegram_container_image_self_build | bool"
+  become_user: "{{ matrix_user_name }}"
+  register: matrix_mautrix_telegram_lottieconverter_git_pull_results
+  when: "matrix_mautrix_telegram_lottieconverter_container_image_self_build | bool and matrix_mautrix_telegram_container_image_self_build | bool"
 
 - name: Ensure lottieconverter Docker image is built
   community.docker.docker_image:
-    name: "{{ matrix_telegram_lottieconverter_docker_image }}"
+    name: "{{ matrix_mautrix_telegram_lottieconverter_docker_image }}"
     source: build
-    force_source: "{{ matrix_telegram_lottieconverter_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_telegram_lottieconverter_git_pull_results.changed }}"
+    force_source: "{{ matrix_mautrix_telegram_lottieconverter_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_telegram_lottieconverter_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_telegram_lottieconverter_docker_src_files_path }}"
+      path: "{{ matrix_mautrix_telegram_lottieconverter_docker_src_files_path }}"
       pull: true
-  when: "matrix_telegram_lottieconverter_container_image_self_build | bool and matrix_telegram_lottieconverter_git_pull_results.changed and matrix_mautrix_telegram_container_image_self_build | bool"
+  when: "matrix_mautrix_telegram_lottieconverter_container_image_self_build | bool and matrix_mautrix_telegram_lottieconverter_git_pull_results.changed and matrix_mautrix_telegram_container_image_self_build | bool"
 
 - name: Ensure matrix-mautrix-telegram repository is present when self-building
   ansible.builtin.git:
@@ -83,7 +100,7 @@
     dest: "{{ matrix_mautrix_telegram_docker_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_mautrix_telegram_git_pull_results
   when: "matrix_mautrix_telegram_container_image_self_build | bool"
 
@@ -96,7 +113,7 @@
     build:
       dockerfile: Dockerfile
       path: "{{ matrix_mautrix_telegram_docker_src_files_path }}"
-      pull: "{{ not matrix_telegram_lottieconverter_container_image_self_build_mask_arch | bool }}"
+      pull: "{{ not matrix_mautrix_telegram_lottieconverter_container_image_self_build_mask_arch | bool }}"
       args:
         TARGETARCH: ""
   when: "matrix_mautrix_telegram_container_image_self_build | bool and matrix_mautrix_telegram_git_pull_results.changed"
@@ -127,24 +144,24 @@
     content: "{{ matrix_mautrix_telegram_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_telegram_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-telegram registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_telegram_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_telegram_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-telegram support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_mautrix_telegram_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

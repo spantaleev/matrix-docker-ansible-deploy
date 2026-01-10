@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure synapse-auto-compressor paths exist
@@ -5,8 +11,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   when: item.when | bool
   with_items:
     - path: "{{ matrix_synapse_auto_compressor_base_path }}"
@@ -19,16 +25,16 @@
     src: "{{ role_path }}/templates/env.j2"
     dest: "{{ matrix_synapse_auto_compressor_base_path }}/env"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure synapse-auto-compressor workaround script is installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/matrix-synapse-auto-compressor-fix.sh.j2"
     dest: "{{ matrix_synapse_auto_compressor_base_path }}/matrix-synapse-auto-compressor-fix.sh"
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure synapse-auto-compressor image is pulled
   community.docker.docker_image:
@@ -52,7 +58,7 @@
         dest: "{{ matrix_synapse_auto_compressor_container_src_files_path }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_synapse_auto_compressor_git_pull_results
 
     - name: Check if synapse-auto-compressor image exists

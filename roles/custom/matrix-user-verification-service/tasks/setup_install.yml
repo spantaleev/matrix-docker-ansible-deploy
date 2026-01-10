@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 MDAD project contributors
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: "Ensure Matrix User Verification Service paths exist"
@@ -5,8 +11,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_user_verification_service_config_path }}", when: true}
     - {path: "{{ matrix_user_verification_service_docker_src_files_path }}", when: "{{ matrix_user_verification_service_container_image_self_build }}"}
@@ -31,7 +37,7 @@
     version: "{{ matrix_user_verification_service_container_image_self_build_branch }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_user_verification_service_git_pull_results
   when: "matrix_user_verification_service_container_image_self_build | bool"
 
@@ -51,8 +57,8 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/.env.j2"
     dest: "{{ matrix_user_verification_service_config_env_file }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0644
 
 - name: Ensure matrix-user-verification-service container network is created

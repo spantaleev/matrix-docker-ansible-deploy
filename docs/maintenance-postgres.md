@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 - 2021 Aaron Raimist
+SPDX-FileCopyrightText: 2020 Hardy Erlinger
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 Marc Leuser
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Kim Brose
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # PostgreSQL maintenance
 
 This document shows you how to perform various maintenance tasks related to the Postgres database server used by Matrix.
@@ -11,7 +23,7 @@ Table of contents:
 
 ## Getting a database terminal
 
-You can use the `/matrix/postgres/bin/cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/11/app-psql.html)) to the PostgreSQL server.
+You can use the `/matrix/postgres/bin/cli` tool to get interactive terminal access ([psql](https://www.postgresql.org/docs/current/app-psql.html)) to the PostgreSQL server.
 
 If you are using an [external Postgres server](configuring-playbook-external-postgres.md), the above tool will not be available.
 
@@ -47,9 +59,9 @@ Example playbook invocations:
 
 ## Backing up PostgreSQL
 
-To automatically make Postgres database backups on a fixed schedule, see [Setting up Postgres backup](configuring-playbook-postgres-backup.md).
+To automatically make Postgres database backups on a fixed schedule, consider enabling the [Postgres Backup](configuring-playbook-postgres-backup.md) service.
 
-To make a one off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
+To make a one-off back up of the current PostgreSQL database, make sure it's running and then execute a command like this on the server:
 
 ```sh
 /usr/bin/docker exec \
@@ -86,18 +98,18 @@ As part of the upgrade, the database is dumped to `/tmp`, an upgraded and empty 
 
 To save disk space in `/tmp`, the dump file is gzipped on the fly at the expense of CPU usage. If you have plenty of space in `/tmp` and would rather avoid gzipping, you can explicitly pass a dump filename which doesn't end in `.gz`. Example: `--extra-vars="postgres_dump_name=matrix-postgres-dump.sql"`
 
-**All databases, roles, etc. on the Postgres server are migrated**.
+**All databases, roles, etc. on the Postgres server are migrated**. However, other components that depend on specific Postgres versions (like the [Postgres Backup](configuring-playbook-postgres-backup.md) service) may need to be updated after the upgrade by using `just install-all`
 
 ## Tuning PostgreSQL
 
 PostgreSQL can be [tuned](https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server) to make it run faster. This is done by passing extra arguments to the Postgres process.
 
-The [Postgres Ansible role](https://github.com/mother-of-all-self-hosting/ansible-role-postgres) **already does some tuning by default**, which matches the [tuning logic](https://github.com/le0pard/pgtune/blob/master/src/features/configuration/configurationSlice.js) done by websites like https://pgtune.leopard.in.ua/. You can manually influence some of the tuning variables. These parameters (variables) are injected via the `postgres_postgres_process_extra_arguments_auto` variable.
+The [Postgres Ansible role](https://github.com/mother-of-all-self-hosting/ansible-role-postgres) **already does some tuning by default**, which matches the [tuning logic](https://github.com/le0pard/pgtune/blob/master/src/features/configuration/configurationSlice.js) done by websites like https://pgtune.leopard.in.ua/. You can manually influence some of the tuning variables. These parameters (variables) are injected via the `postgres_postgres_process_extra_arguments_default` variable.
 
 Most users should be fine with the automatically-done tuning. However, you may wish to:
 
-- **adjust the automatically-determined tuning parameters manually**: change the values for the tuning variables defined in the Postgres role's [default configuration file](https://github.com/mother-of-all-self-hosting/ansible-role-postgres/blob/main/defaults/main.yml) (see `postgres_max_connections`, `postgres_data_storage` etc). These variables are ultimately passed to Postgres via a `postgres_postgres_process_extra_arguments_auto` variable
+- **adjust the automatically-determined tuning parameters manually**: change the values for the tuning variables defined in the Postgres role's [default configuration file](https://github.com/mother-of-all-self-hosting/ansible-role-postgres/blob/main/defaults/main.yml) (see `postgres_max_connections`, `postgres_data_storage` etc). These variables are ultimately passed to Postgres via a `postgres_postgres_process_extra_arguments_default` variable
 
-- **turn automatically-performed tuning off**: override it like this: `postgres_postgres_process_extra_arguments_auto: []`
+- **turn automatically-performed tuning off**: override it like this: `postgres_postgres_process_extra_arguments_default: []`
 
-- **add additional tuning parameters**: define your additional Postgres configuration parameters in `postgres_postgres_process_extra_arguments_custom`. See `postgres_postgres_process_extra_arguments_auto` defined in the Postgres role's [default configuration file](https://github.com/mother-of-all-self-hosting/ansible-role-postgres/blob/main/defaults/main.yml) for inspiration
+- **add additional tuning parameters**: define your additional Postgres configuration parameters in `postgres_postgres_process_extra_arguments_custom`. See `postgres_postgres_process_extra_arguments_default` defined in the Postgres role's [default configuration file](https://github.com/mother-of-all-self-hosting/ansible-role-postgres/blob/main/defaults/main.yml) for inspiration

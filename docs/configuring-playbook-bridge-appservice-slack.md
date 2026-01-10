@@ -1,7 +1,18 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2020 Udo Rader
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Joel Bennett
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Fabio Bonelli
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Appservice Slack bridging (optional)
 
 **Notes**:
-- Bridging to [Slack](https://slack.com) can also happen via the [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) and [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) bridges supported by the playbook.
+- Bridging to [Slack](https://slack.com) can also happen via the [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) bridge supported by the playbook.
 - Currently (as of November, 2024) **this component is not available for new installation unless you have already created a classic Slack application** (which the bridge makes use of in order to enable bridging between Slack and Matrix), because the creation of classic Slack applications has been discontinued since June 4 2024. The author of the bridge claims [here](https://github.com/matrix-org/matrix-appservice-slack/issues/789#issuecomment-2172947787) that he plans to support the modern Slack application and until then "the best (and only) option for new installations is to use the webhook bridging".
 
 The playbook can install and configure [matrix-appservice-slack](https://github.com/matrix-org/matrix-appservice-slack) for you.
@@ -83,16 +94,12 @@ After configuring the playbook, run it with [playbook tags](playbook-tags.md) as
 
 <!-- NOTE: let this conservative command run (instead of install-all) to make it clear that failure of the command means something is clearly broken. -->
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-users-created,start
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
-**Notes**:
+The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
-- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
-
-- The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
-
-  `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
+`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too.
 
 ## Usage
 

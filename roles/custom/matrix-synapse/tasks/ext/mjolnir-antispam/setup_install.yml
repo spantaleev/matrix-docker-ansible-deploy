@@ -1,3 +1,10 @@
+# SPDX-FileCopyrightText: 2021 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 - 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure git installed
@@ -28,5 +35,5 @@
       {{
         matrix_synapse_container_extra_arguments | default([])
         +
-        ["--mount type=bind,src={{ matrix_synapse_ext_path }}/mjolnir/synapse_antispam/mjolnir,dst={{ matrix_synapse_in_container_python_packages_path }}/mjolnir,ro"]
+        ["--mount type=bind,src=" + matrix_synapse_ext_path + "/mjolnir/synapse_antispam/mjolnir,dst=" + matrix_synapse_in_container_python_packages_path + "/mjolnir,ro"]
       }}

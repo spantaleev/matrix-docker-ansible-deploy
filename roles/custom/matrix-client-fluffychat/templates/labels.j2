@@ -1,0 +1,52 @@
+{#
+SPDX-FileCopyrightText: 2025 Nikita Chernyi
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_client_fluffychat_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_client_fluffychat_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_client_fluffychat_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-client-fluffychat.loadbalancer.server.port={{ matrix_client_fluffychat_container_labels_traefik_http_service_load_balancer_port }}
+
+{% set middlewares = [] %}
+
+{% if matrix_client_fluffychat_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-client-fluffychat-slashless-redirect.redirectregex.regex=({{ matrix_client_fluffychat_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-client-fluffychat-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-client-fluffychat-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_client_fluffychat_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-client-fluffychat-strip-prefix.stripprefix.prefixes={{ matrix_client_fluffychat_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-client-fluffychat-strip-prefix'] %}
+{% endif %}
+
+{% if matrix_client_fluffychat_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in matrix_client_fluffychat_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.matrix-client-fluffychat-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + ['matrix-client-fluffychat-add-headers'] %}
+{% endif %}
+
+traefik.http.routers.matrix-client-fluffychat.rule={{ matrix_client_fluffychat_container_labels_traefik_rule }}
+{% if matrix_client_fluffychat_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-client-fluffychat.priority={{ matrix_client_fluffychat_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.matrix-client-fluffychat.service=matrix-client-fluffychat
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-client-fluffychat.middlewares={{ middlewares | join(',') }}
+{% endif %}
+traefik.http.routers.matrix-client-fluffychat.entrypoints={{ matrix_client_fluffychat_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-client-fluffychat.tls={{ matrix_client_fluffychat_container_labels_traefik_tls | to_json }}
+{% if matrix_client_fluffychat_container_labels_traefik_tls %}
+traefik.http.routers.matrix-client-fluffychat.tls.certResolver={{ matrix_client_fluffychat_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+{% endif %}
+
+{{ matrix_client_fluffychat_container_labels_additional_labels }}

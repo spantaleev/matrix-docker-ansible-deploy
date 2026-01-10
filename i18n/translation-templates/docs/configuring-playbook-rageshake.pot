@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,90 +16,110 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-rageshake.md:1
+#: ../../../docs/configuring-playbook-rageshake.md:8
 msgid "Setting up the rageshake bug report server (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:3
+#: ../../../docs/configuring-playbook-rageshake.md:10
 msgid "The playbook can install and configure the [rageshake](https://github.com/matrix-org/rageshake) bug report server for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:5
+#: ../../../docs/configuring-playbook-rageshake.md:12
 msgid "See the project's [documentation](https://github.com/matrix-org/rageshake/blob/main/README.md) to learn what it does and why it might be useful to you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:7
+#: ../../../docs/configuring-playbook-rageshake.md:14
 msgid "**Note**: most people don't need to install rageshake to collect bug reports. This component is only useful to people who develop/build their own Matrix client applications themselves."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:9
+#: ../../../docs/configuring-playbook-rageshake.md:16
 msgid "Adjusting DNS records"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:11
+#: ../../../docs/configuring-playbook-rageshake.md:18
 msgid "By default, this playbook installs rageshake on the `rageshake.` subdomain (`rageshake.example.com`) and requires you to create a CNAME record for `rageshake`, which targets `matrix.example.com`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:13
+#: ../../../docs/configuring-playbook-rageshake.md:20
 msgid "When setting, replace `example.com` with your own."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:15
+#: ../../../docs/configuring-playbook-rageshake.md:22
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:17
+#: ../../../docs/configuring-playbook-rageshake.md:24
 msgid "To enable rageshake, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:23
-msgid "rageshake has various options which don't have dedicated Ansible variables. You can see the full list of options in the [`rageshake.sample.yaml` file](https://github.com/matrix-org/rageshake/blob/master/rageshake.sample.yaml)."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-rageshake.md:25
-msgid "To set these, you can make use of the  `matrix_rageshake_configuration_extension_yaml` variable like this:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-rageshake.md:35
+#: ../../../docs/configuring-playbook-rageshake.md:30
 msgid "Adjusting the rageshake URL (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:37
+#: ../../../docs/configuring-playbook-rageshake.md:32
 msgid "By tweaking the `matrix_rageshake_hostname` and `matrix_rageshake_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:39
+#: ../../../docs/configuring-playbook-rageshake.md:34
 msgid "Example additional configuration for your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:50
+#: ../../../docs/configuring-playbook-rageshake.md:45
 msgid "After changing the domain, **you may need to adjust your DNS** records to point the rageshake domain to the Matrix server."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:52
+#: ../../../docs/configuring-playbook-rageshake.md:47
 msgid "If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:54
-msgid "Installing"
+#: ../../../docs/configuring-playbook-rageshake.md:49
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-rageshake.md:51
+msgid "There are some additional things you may wish to configure about the server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-rageshake.md:53
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-rageshake.md:55
+msgid "`roles/custom/matrix-rageshake/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-rageshake.md:56
+msgid "`roles/custom/matrix-rageshake/templates/config.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_rageshake_configuration_extension_yaml` variable"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-rageshake.md:74
+msgid "Installing"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-rageshake.md:76
 msgid "After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records), run the playbook with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:63
+#: ../../../docs/configuring-playbook-rageshake.md:83
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:65
+#: ../../../docs/configuring-playbook-rageshake.md:85
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:67
+#: ../../../docs/configuring-playbook-rageshake.md:87
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-rageshake.md:69
+#: ../../../docs/configuring-playbook-rageshake.md:89
 msgid "Refer to the project's [documentation](https://github.com/matrix-org/rageshake/blob/main/README.md) for available APIs, etc."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-rageshake.md:91
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-rageshake.md:93
+msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-rageshake`."
 msgstr ""

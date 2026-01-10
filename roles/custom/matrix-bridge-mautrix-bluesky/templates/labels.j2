@@ -1,0 +1,52 @@
+{#
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_mautrix_bluesky_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_mautrix_bluesky_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_mautrix_bluesky_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-mautrix-bluesky-metrics.loadbalancer.server.port=8000
+
+{% if matrix_mautrix_bluesky_container_labels_metrics_enabled %}
+############################################################
+#                                                          #
+# Metrics                                                  #
+#                                                          #
+############################################################
+
+{% if matrix_mautrix_bluesky_container_labels_metrics_middleware_basic_auth_enabled %}
+traefik.http.middlewares.matrix-mautrix-bluesky-metrics-basic-auth.basicauth.users={{ matrix_mautrix_bluesky_container_labels_metrics_middleware_basic_auth_users }}
+traefik.http.routers.matrix-mautrix-bluesky-metrics.middlewares=matrix-mautrix-bluesky-metrics-basic-auth
+{% endif %}
+
+traefik.http.routers.matrix-mautrix-bluesky-metrics.rule={{ matrix_mautrix_bluesky_container_labels_metrics_traefik_rule }}
+
+{% if matrix_mautrix_bluesky_container_labels_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-bluesky-metrics.priority={{ matrix_mautrix_bluesky_container_labels_metrics_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-mautrix-bluesky-metrics.service=matrix-mautrix-bluesky-metrics
+traefik.http.routers.matrix-mautrix-bluesky-metrics.entrypoints={{ matrix_mautrix_bluesky_container_labels_metrics_traefik_entrypoints }}
+
+traefik.http.routers.matrix-mautrix-bluesky-metrics.tls={{ matrix_mautrix_bluesky_container_labels_metrics_traefik_tls | to_json }}
+{% if matrix_mautrix_bluesky_container_labels_metrics_traefik_tls %}
+traefik.http.routers.matrix-mautrix-bluesky-metrics.tls.certResolver={{ matrix_mautrix_bluesky_container_labels_metrics_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Metrics                                                 #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% endif %}
+
+{{ matrix_mautrix_bluesky_container_labels_additional_labels }}

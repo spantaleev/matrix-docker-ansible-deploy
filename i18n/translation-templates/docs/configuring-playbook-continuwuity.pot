@@ -1,0 +1,161 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2025, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-continuwuity.md:8
+msgid "Configuring Continuwuity (optional)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:10
+msgid "The playbook can install and configure the [Continuwuity](https://continuwuity.org) Matrix server for you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:12
+msgid "See the project's [documentation](https://continuwuity.org) to learn what it does and why it might be useful to you."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:14
+msgid "By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:16
+msgid "💡 **Note**: continuwuity is a fork of [conduwuit](./configuring-playbook-conduwuit.md), which the playbook also supports."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:18
+msgid "[!WARNING]"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:19
+msgid "**You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Continuwuity). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:20
+msgid "**Homeserver implementations other than Synapse may not be fully functional**. The playbook may also not assist you in an optimal way (like it does with Synapse). Make yourself familiar with the downsides before proceeding"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:22
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:24
+msgid "To use Continuwuity, you **generally** need to adjust the `matrix_homeserver_implementation: synapse` configuration on your `inventory/host_vars/matrix.example.com/vars.yml` file as below:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:38
+msgid "Extending the configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:40
+msgid "There are some additional things you may wish to configure about the server."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:42
+msgid "Take a look at:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:44
+msgid "`roles/custom/matrix-continuwuity/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:45
+msgid "`roles/custom/matrix-continuwuity/templates/continuwuity.toml.j2` for the server's default configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:47
+msgid "There are various Ansible variables that control settings in the `continuwuity.toml` file."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:49
+msgid "If a specific setting you'd like to change does not have a dedicated Ansible variable, you can either submit a PR to us to add it, or you can [override the setting using an environment variable](https://continuwuity.org/configuration#environment-variables) using `matrix_continuwuity_environment_variables_extension`. For example:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:57
+msgid "Creating the first user account"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:59
+msgid "Unlike other homeserver implementations (like Synapse and Dendrite), continuwuity does not support creating users via the command line or via the playbook."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:61
+msgid "If you followed the instructions above (see [Adjusting the playbook configuration](#adjusting-the-playbook-configuration)), you should have registration enabled and protected by a registration token."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:63
+msgid "This should allow you to create the first user account via any client (like [Element Web](./configuring-playbook-client-element-web.md)) which supports creating users."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:65
+msgid "The **first user account that you create will be marked as an admin** and **will be automatically invited to an admin room**."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:68
+msgid "Configuring bridges / appservices"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:70
+msgid "For other homeserver implementations (like Synapse and Dendrite), the playbook automatically registers appservices (for bridges, bots, etc.) with the homeserver."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:72
+msgid "For continuwuity, you will have to manually register appservices using the [`!admin appservices register` command](https://continuwuity.org/appservices.html#set-up-the-appservice---general-instructions) sent to the server bot account."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:74
+msgid "The server's bot account has a Matrix ID of `@conduit:example.com` (not `@continuwuity:example.com`!) due to continuwuity's historical legacy. Your first user account would already have been invited to an admin room with this bot."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:77
+msgid "Find the appservice file you'd like to register. This can be any `registration.yaml` file found in the `/matrix` directory, for example `/matrix/mautrix-signal/bridge/registration.yaml`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:79
+msgid "Then, send its content to the existing admin room:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:103
+msgid "Migrating from conduwuit"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:105
+msgid "Since Continuwuity is a drop-in replacement for [conduwuit](configuring-playbook-conduwuit.md), migration is possible."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:107
+msgid "Make sure that Continuwuity is properly set up on your `vars.yml` as described above"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:109
+msgid "Make sure that Conduwuit references are removed from your `vars.yml` file"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:111
+msgid "Run the installation in a way that installs new services and uninstalls old ones (e.g. `just setup-all`)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:113
+msgid "Run the playbook with the `continuwuity-migrate-from-conduwuit` tag (e.g. `just run-tags continuwuity-migrate-from-conduwuit`). This migrates data from `/matrix/conduwuit` to `/matrix/continuwuity`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:115
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-continuwuity.md:117
+msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-continuwuity`."
+msgstr ""

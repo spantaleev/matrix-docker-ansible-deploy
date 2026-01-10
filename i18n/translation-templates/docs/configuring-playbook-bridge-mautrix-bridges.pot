@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 09:54+0200\n"
+"POT-Creation-Date: 2025-11-06 23:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,284 +16,279 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:1
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:10
 msgid "Setting up a Generic Mautrix Bridge (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:3
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:12
 msgid "The playbook can install and configure various [mautrix](https://github.com/mautrix) bridges (twitter, discord, signal, googlechat, etc.), as well as many other (non-mautrix) bridges. This is a common guide for configuring mautrix bridges."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:5
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:14
 msgid "The author of the bridges maintains [the official docs](https://docs.mau.fi/bridges/index.html), whose source code is available at [mautrix/docs](https://github.com/mautrix/docs) repository on GitHub. You may as well to refer it while configuring them."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:7
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:16
 msgid "You can see each bridge's features on the `ROADMAP.md` file in its corresponding mautrix repository."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:9
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:18
 msgid "Adjusting the playbook configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:11
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:20
 msgid "To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:18
-msgid "**Note**: for bridging to Meta's Messenger or Instagram, you would need to add `meta` with an underscore symbol (`_`) or hyphen (`-`) based on the context as prefix to each `SERVICENAME`; add `_` to variables (as in `matrix_mautrix_meta_messenger_configuration_extension_yaml` for example) and `-` to paths of the configuration files (as in `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2`), respectively. **`matrix_mautrix_facebook_*` and `matrix_mautrix_instagram_*` variables belong to the deprecated components and do not control the new bridge** ([mautrix-meta](https://github.com/mautrix/meta)), which can be installed using [this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md)."
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:27
+msgid "**Note**: for bridging to Meta's Messenger or Instagram, you would need to add `meta` with an underscore symbol (`_`) or hyphen (`-`) based on the context as prefix to each `SERVICENAME`; add `_` to variables (as in `matrix_mautrix_meta_messenger_configuration_extension_yaml` for example) and `-` to paths of the configuration files (as in `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2`), respectively. **`matrix_mautrix_facebook_*` and `matrix_mautrix_instagram_*` variables belong to the deprecated components and do not control the new bridge** ([mautrix-meta](https://github.com/mautrix/meta)), which can be [installed using this playbook](configuring-playbook-bridge-mautrix-meta-messenger.md)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:20
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:29
 msgid "There are some additional things you may wish to configure about the bridge before you continue. Each bridge may have additional requirements besides `_enabled: true`. For example, the mautrix-telegram bridge (our documentation page about it is [here](configuring-playbook-bridge-mautrix-telegram.md)) requires the `matrix_mautrix_telegram_api_id` and `matrix_mautrix_telegram_api_hash` variables to be defined. Refer to each bridge's individual documentation page for details about enabling bridges."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:22
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:31
 msgid "Configure bridge permissions (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:24
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:33
 msgid "By default any user on your homeserver will be able to use the mautrix bridges. To limit who can use them you would need to configure their permissions settings."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:26
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:35
 msgid "Different levels of permission can be granted to users. For example, to **configure a user as an administrator for all bridges**, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:32
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:41
 msgid "If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin: @alice:example.com`), then there's no admin by default."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:34
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:43
 msgid "**Alternatively** (more verbose, but allows multiple admins to be configured), you can do the same on a per-bridge basis with:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:43
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:52
 msgid "This will add the admin permission to the specific user, while keeping the default permissions."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:45
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:54
 msgid "You could also redefine the default permissions settings completely, rather than adding extra permissions. You may wish to look at `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` to find information on the permission settings and other options you would like to configure."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:47
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:56
 msgid "Enable encryption (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:49
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:58
 msgid "[Encryption (End-to-Bridge Encryption, E2BE) support](https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html) is off by default. If you would like to enable encryption, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:51
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:60
 msgid "**for all bridges with encryption support**:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:58
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:77
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:67
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:86
 msgid "**Alternatively**, for a specific bridge:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:65
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:74
 msgid "Enable relay mode (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:67
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:76
 msgid "[Relay mode](https://docs.mau.fi/bridges/general/relay-mode.html) is off by default. Check [the table on the official documentation](https://docs.mau.fi/bridges/general/relay-mode.html#support-table) for bridges which support relay mode."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:69
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:78
 msgid "If you would like to enable it, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:71
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:80
 msgid "**for all bridges with relay mode support**:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:86
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:95
 msgid "You can only have one `matrix_mautrix_SERVICENAME_configuration_extension_yaml` definition in `vars.yml` per bridge, so if you need multiple pieces of configuration there, just merge them like this:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:100
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:109
 msgid "If you want to activate the relaybot in a room, send `!prefix set-relay` in the rooms where you want to use the bot (replace `!prefix` with the appropriate command prefix for the bridge, like `!signal` or `!wa`). To deactivate, send `!prefix unset-relay`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:102
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:111
 msgid "Use `!prefix set-pl 100` to be able for the bot to modify room settings and invite others."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:104
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:113
 msgid "Allow anyone on the homeserver to become a relay user (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:106
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:115
 msgid "By default, only admins are allowed to set themselves as relay users. To allow anyone on your homeserver to set themselves as relay users, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:112
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:121
 msgid "Set the bot's username (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:114
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:123
 msgid "To set the bot's username, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:120
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:129
 msgid "Configure the logging level (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:122
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:131
 msgid "To specify the logging level, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:128
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:137
 msgid "Replace `warn` with one of the following to control the verbosity of the logs generated: `trace`, `debug`, `info`, `warn`, `error` or `fatal`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:130
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:139
 msgid "If you have issues with a service, and are requesting support, the higher levels of logging (those that appear earlier in the list, like `trace`) will generally be more helpful."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:132
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:141
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:134
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:143
 msgid "There are some additional things you may wish to configure about the bridge."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:136
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:145
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:138
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:147
 msgid "`roles/custom/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:139
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:148
 msgid "`roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_mautrix_SERVICENAME_configuration_extension_yaml` variable"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:141
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:150
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:143
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:152
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:150
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:190
-msgid "**Notes**:"
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:152
-msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:154
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:159
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:156
-msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:161
+msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:158
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:163
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:160
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:165
 msgid "To use the bridge, you need to start a chat with `@SERVICENAMEbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:162
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:167
 msgid "For details about the next steps, refer to each bridge's individual documentation page."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:164
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:169
 msgid "Send `help` to the bot to see the available commands."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:166
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:171
 msgid "If you run into trouble, check the [Troubleshooting](#troubleshooting) section below."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:168
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:173
 msgid "Set up Double Puppeting (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:170
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:175
 msgid "After successfully enabling bridging, you may wish to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:172
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:177
 msgid "To set it up, you have 2 ways of going about it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:174
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:179
 msgid "Method 1: automatically, by enabling Appservice Double Puppet (recommended)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:176
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:181
 msgid "To set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html), you could enable the [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:178
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:183
 msgid "Appservice Double Puppet is a homeserver appservice through which bridges (and potentially other services) can impersonate any user on the homeserver."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:180
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:185
 msgid "To enable the Appservice Double Puppet service, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:186
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:191
 msgid "When enabled, double puppeting will automatically be enabled for all bridges that support double puppeting via the appservice method."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:188
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:193
 msgid "This is the recommended way of setting up Double Puppeting, as it's easier to accomplish, works for all your users automatically, and has less of a chance of breaking in the future."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:192
-msgid "Previously there were multiple different automatic double puppeting methods like one with the help of the [Shared Secret Auth password provider module](./configuring-playbook-shared-secret-auth.md), but they have been superseded by this Appservice Double Puppet method. Double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future as the older methods were completely removed in the megabridge rewrites on [the upstream project](https://docs.mau.fi/bridges/general/double-puppeting.html#automatically)."
-msgstr ""
-
 #: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:195
-msgid "Some bridges like [the deprecated Facebook mautrix bridge](configuring-playbook-bridge-mautrix-facebook.md) and [matrix-appservice-kakaotalk](configuring-playbook-bridge-appservice-kakaotalk.md), which is partially based on the Facebook bridge, are compatible with the Shared Secret Auth service only. These bridges automatically perform Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook."
+msgid "**Notes**:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:197
+msgid "Previously there were multiple different automatic double puppeting methods like one with the help of the [Shared Secret Auth password provider module](./configuring-playbook-shared-secret-auth.md), but they have been superseded by this Appservice Double Puppet method. Double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future as the older methods were completely removed in the megabridge rewrites on [the upstream project](https://docs.mau.fi/bridges/general/double-puppeting.html#automatically)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:200
+msgid "Some bridges like [the deprecated Facebook mautrix bridge](configuring-playbook-bridge-mautrix-facebook.md) and [matrix-appservice-kakaotalk](configuring-playbook-bridge-appservice-kakaotalk.md), which is partially based on the Facebook bridge, are compatible with the Shared Secret Auth service only. These bridges automatically perform Double Puppeting if [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service is configured and enabled on the server for this playbook."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:202
 msgid "Method 2: manually, by asking each user to provide a working access token"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:199
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:204
 msgid "When using this method, **each user** that wishes to enable Double Puppeting needs to follow the following steps:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:201
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:206
 msgid "retrieve a Matrix access token for yourself. Refer to the documentation on [how to obtain one](obtaining-access-tokens.md)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:203
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:208
 msgid "send the access token to the bot. Example: `login-matrix MATRIX_ACCESS_TOKEN_HERE`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:205
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:210
 msgid "make sure you don't log out the session for which you obtained an access token some time in the future, as that would break the Double Puppeting feature"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:207
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:212
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:209
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:214
 msgid "For troubleshooting information with a specific bridge, please see the playbook documentation about it (some other document in in `docs/`) and the upstream ([mautrix](https://github.com/mautrix)) bridge documentation for that specific bridge."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:211
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:216
 msgid "If the bridge's bot doesn't accept the invite to a chat, refer [the official troubleshooting page](https://docs.mau.fi/bridges/general/troubleshooting.html) as well."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:213
+#: ../../../docs/configuring-playbook-bridge-mautrix-bridges.md:218
 msgid "If you found bugs in mautrix bridges, they should be reported to the upstream project, in the corresponding mautrix repository, not to us."
 msgstr ""

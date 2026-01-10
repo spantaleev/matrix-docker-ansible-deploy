@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # SPDX-FileCopyrightText: 2024 Slavi Pantaleev <slavi@devture.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
 
 # This script extracts translation templates (original English strings) into the `translation-templates/` directory.
 # These templates are later used to generate locale files for each language in the `locales/` directory.

@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure matrix-cactus-comments paths exist
@@ -5,28 +11,28 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_cactus_comments_base_path }}", when: true}
     - {path: "{{ matrix_cactus_comments_container_tmp_path }}", when: true}
-    - {path: "{{ matrix_cactus_comments_docker_src_files_path }}", when: matrix_cactus_comments_container_image_self_build}
+    - {path: "{{ matrix_cactus_comments_docker_src_files_path }}", when: "{{ matrix_cactus_comments_container_image_self_build }}"}
   when: "item.when | bool"
 
 - name: Ensure matrix-cactus-comments environment file created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/env.j2"
     dest: "{{ matrix_cactus_comments_app_service_env_file }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0640
 
 - name: Ensure matrix-cactus-comments appservice file created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/cactus_appservice.yaml.j2"
     dest: "{{ matrix_cactus_comments_app_service_config_file }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
     mode: 0640
 
 - name: Ensure matrix-cactus-comments image is pulled
@@ -48,7 +54,7 @@
     dest: "{{ matrix_cactus_comments_docker_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_cactus_comments_git_pull_results
   when: "matrix_cactus_comments_container_image_self_build | bool"
 

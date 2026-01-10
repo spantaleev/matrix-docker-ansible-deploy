@@ -1,3 +1,15 @@
+# SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2020 Chris van Dijk
+# SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
+# SPDX-FileCopyrightText: 2022 Jim Myhrberg
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 Sebastian Gumprich
+# SPDX-FileCopyrightText: 2024 David Mehren
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure AppService Slack paths exist
@@ -5,8 +17,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_appservice_slack_base_path }}", when: true}
     - {path: "{{ matrix_appservice_slack_config_path }}", when: true}
@@ -50,7 +62,7 @@
     dest: "{{ matrix_appservice_slack_docker_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_appservice_slack_git_pull_results
   when: "matrix_appservice_slack_container_image_self_build | bool"
 
@@ -71,16 +83,16 @@
     content: "{{ matrix_appservice_slack_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_slack_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure appservice-slack registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_slack_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_slack_config_path }}/slack-registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure matrix-appservice-slack container network is created
   community.general.docker_network:
@@ -94,8 +106,8 @@
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_appservice_slack_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

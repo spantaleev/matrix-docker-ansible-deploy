@@ -1,5 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Aaron Raimist
+SPDX-FileCopyrightText: 2020 Hanno J. Gödecke
+SPDX-FileCopyrightText: 2022 Kai Biebel
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 
-# Running this playbook
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
+# Using Ansible for the playbook
 
 This playbook is meant to be run using [Ansible](https://www.ansible.com/).
 
@@ -11,9 +20,12 @@ To manually check which version of Ansible you're on, run: `ansible --version`.
 
 For the **best experience**, we recommend getting the **latest version of Ansible available**.
 
-We're not sure what's the minimum version of Ansible that can run this playbook successfully. The lowest version that we've confirmed (on 2022-11-26) to be working fine is: `ansible-core` (`2.11.7`) combined with `ansible` (`4.10.0`).
+We're not sure what's the minimum version of Ansible that can run this playbook successfully. The lowest version that we suspect (on 2025-09-03) to be working fine is: `ansible-core` (`2.15.1`).
 
 If your distro ships with an Ansible version older than this, you may run into issues. Consider [Upgrading Ansible](#upgrading-ansible) or [using Ansible via Docker](#using-ansible-via-docker).
+
+> [!WARNING]
+> One reason for the version requirement being as such is that the playbook by default installs Docker for you using [this Docker role](https://github.com/geerlingguy/ansible-role-docker) which [has a hard requirement on Ansible v2.15.1](https://github.com/geerlingguy/ansible-role-docker/commit/7f44a1d9ad8132819ea9852918bca5dab8757cd0). If you install Docker yourself another way, you can tell the playbook to skip running this role (by adding `matrix_playbook_docker_installation_enabled: false` to your `vars.yml` configuration). It may then be possible to get the playbook running on an older version of Ansible. Still, this is a complication and your mileage may vary. We recommend [upgrading Ansible](#upgrading-ansible) instead of going into uncharted territory.
 
 ## Upgrading Ansible
 
@@ -29,7 +41,7 @@ If using the `pip` method, do note that the `ansible-playbook` binary may not be
 
 ## Using Ansible via Docker
 
-Alternatively, you can run Ansible inside a Docker container (powered by the [devture/ansible](https://hub.docker.com/r/devture/ansible/) Docker image).
+Alternatively, you can run Ansible inside a Docker container (powered by the [ghcr.io/devture/ansible](https://github.com/devture/docker-ansible/pkgs/container/ansible) Docker image).
 
 This ensures that:
 
@@ -49,50 +61,54 @@ Once you have a working Docker installation on the server, **clone the playbook*
 
 You would then need to add `ansible_connection=community.docker.nsenter` to the host line in `inventory/hosts`. This tells Ansible to connect to the "remote" machine by switching Linux namespaces with [nsenter](https://man7.org/linux/man-pages/man1/nsenter.1.html), instead of using SSH.
 
-Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `ansible-playbook --connection=community.docker.nsenter …`
+Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `just install-all --connection=community.docker.nsenter` (or `ansible-playbook --connection=community.docker.nsenter …`).
 
 Run this from the playbook's directory:
 
 ```sh
-docker run -it --rm \
+docker run \
+-it \
+--rm \
 --privileged \
 --pid=host \
 -w /work \
--v `pwd`:/work \
+--mount type=bind,src=`pwd`,dst=/work \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.18.1-r0-2
+ghcr.io/devture/ansible:11.6.0-r0-0
 ```
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code.
 
 First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues).
 
-Finally, you can execute `ansible-playbook …` (or `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now.
+Finally, you can execute `just` or `ansible-playbook …` (e.g. `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now.
 
 ### Running Ansible in a container on another computer (not the Matrix server)
 
 Run this from the playbook's directory:
 
 ```sh
-docker run -it --rm \
+docker run \
+-it \
+--rm \
 -w /work \
--v `pwd`:/work \
--v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
+--mount type=bind,src=`pwd`,dst=/work \
+--mount type=bind,src=$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro \
 --entrypoint=/bin/sh \
-docker.io/devture/ansible:2.18.1-r0-2
+ghcr.io/devture/ansible:11.6.0-r0-0
 ```
 
-The above command tries to mount an SSH key (`$HOME/.ssh/id_rsa`) into the container (at `/root/.ssh/id_rsa`). If your SSH key is at a different path (not in `$HOME/.ssh/id_rsa`), adjust that part.
+The above command tries to mount an SSH key (`$HOME/.ssh/id_ed25519`) into the container (at `/root/.ssh/id_ed25519`). If your SSH key is at a different path (not in `$HOME/.ssh/id_ed25519`), adjust that part.
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code.
 
 First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues).
 
-Finally, you execute `ansible-playbook …` commands as per normal now.
+Finally, you execute `just` or `ansible-playbook …` commands as per normal now.
 
 #### If you don't use SSH keys for authentication
 
-If you don't use SSH keys for authentication, simply remove that whole line (`-v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro`).
+If you don't use SSH keys for authentication, simply remove that whole line (`--mount type=bind,src$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro`).
 
 To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (the previously used `docker run -it …` command), run:
 
@@ -100,11 +116,11 @@ To authenticate at your server using a password, you need to add a package. So, 
 apk add sshpass
 ```
 
-Then, to be asked for the password whenever running an  `ansible-playbook` command add `--ask-pass` to the arguments of the command.
+Then, to be asked for the password whenever running an `ansible-playbook` command add `--ask-pass` to the arguments of the command.
 
 #### Resolve directory ownership issues
 
-Because you're `root` in the container running Ansible and this likely differs fom the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:
+Because you're `root` in the container running Ansible and this likely differs from the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:
 
 > fatal: unsafe repository ('/work' is owned by someone else)
 > To add an exception for this directory, call:

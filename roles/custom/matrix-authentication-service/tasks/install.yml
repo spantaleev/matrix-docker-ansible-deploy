@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - name: Ensure Matrix Authentication Service paths exist
@@ -5,8 +9,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_authentication_service_base_path }}", when: true}
     - {path: "{{ matrix_authentication_service_bin_path }}", when: true}
@@ -34,16 +38,16 @@
     content: "{{ matrix_authentication_service_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_authentication_service_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure Matrix Authentication Service support files created
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - src: "{{ role_path }}/templates/env.j2"
       dest: "{{ matrix_authentication_service_config_path }}/env"
@@ -79,7 +83,7 @@
         dest: "{{ matrix_authentication_service_container_src_files_path }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
 
     - name: Ensure Matrix Authentication Service container image is built
       ansible.builtin.command:

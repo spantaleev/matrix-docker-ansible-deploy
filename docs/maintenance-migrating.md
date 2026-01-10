@@ -1,3 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2019 Michael Haak
+SPDX-FileCopyrightText: 2021 - 2023 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Migrating to new server
 
 This documentation explains how to migrate your Matrix services (server, client, bridges, etc.) and data **from an old server to a new server**.

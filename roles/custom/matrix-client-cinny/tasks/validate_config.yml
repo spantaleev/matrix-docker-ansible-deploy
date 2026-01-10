@@ -1,13 +1,26 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 - name: Fail if required Cinny settings not defined
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) to use Cinny.
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_client_cinny_default_hs_url', when: true}
     - {'name': 'matrix_client_cinny_container_network', when: true}
     - {'name': 'matrix_client_cinny_container_labels_traefik_compression_middleware_name', when: "{{ matrix_client_cinny_container_labels_traefik_compression_middleware_enabled }}"}
+
+- name: (Deprecation) Catch and report renamed Cinny variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
+  with_items:
+    - {'old': 'matrix_client_cinny_container_image_name_prefix', 'new': 'matrix_client_cinny_container_image_registry_prefix'}
 
 - name: Fail if matrix_client_cinny_path_prefix is not /
   ansible.builtin.fail:
@@ -23,7 +36,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`).
-      when: "vars[item] == ''"
+      when: "lookup('vars', item, default='') == ''"
       with_items:
         - matrix_client_cinny_container_labels_traefik_hostname
         - matrix_client_cinny_container_labels_traefik_path_prefix

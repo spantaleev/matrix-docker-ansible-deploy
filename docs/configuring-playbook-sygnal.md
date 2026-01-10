@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up the Sygnal push gateway (optional)
 
 The playbook can install and configure the [Sygnal](https://github.com/matrix-org/sygnal) push gateway for you.
@@ -42,8 +49,8 @@ aux_file_definitions:
       content
       here
     mode: '0600'
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 ```
 
 Configuring [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/) is easier, as it only requires that you provide some config values.

@@ -1,3 +1,10 @@
+{#
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
 {% if matrix_static_files_container_labels_traefik_enabled %}
 traefik.enable=true
 
@@ -18,27 +25,27 @@ traefik.http.services.{{ matrix_static_files_identifier }}.loadbalancer.server.p
 {% set well_known_matrix_endpoint_middlewares = [] %}
 
 {% if matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_enabled %}
-traefik.http.middlewares.{{ matrix_static_files_identifier }}-well-known-compress.compress=true
-traefik.http.middlewares.{{ matrix_static_files_identifier }}-well-known-compress.compress.minResponseBodyBytes={{ matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_minResponseBodyBytes }}
-{% set well_known_matrix_endpoint_middlewares = well_known_matrix_endpoint_middlewares + [matrix_static_files_identifier + '-well-known-compress'] %}
+traefik.http.middlewares.{{ matrix_static_files_identifier }}-well-known-matrix-compress.compress=true
+traefik.http.middlewares.{{ matrix_static_files_identifier }}-well-known-matrix-compress.compress.minResponseBodyBytes={{ matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_minResponseBodyBytes }}
+{% set well_known_matrix_endpoint_middlewares = well_known_matrix_endpoint_middlewares + [matrix_static_files_identifier + '-well-known-matrix-compress'] %}
 {% endif %}
 
-traefik.http.routers.{{ matrix_static_files_identifier }}-well-known.rule={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_rule }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-matrix.rule={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_rule }}
 
 {% if well_known_matrix_endpoint_middlewares | length > 0 %}
-traefik.http.routers.{{ matrix_static_files_identifier }}-well-known.middlewares={{ well_known_matrix_endpoint_middlewares | join(',') }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-matrix.middlewares={{ well_known_matrix_endpoint_middlewares | join(',') }}
 {% endif %}
 
 {% if matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority | int > 0 %}
-traefik.http.routers.{{ matrix_static_files_identifier }}-well-known.priority={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-matrix.priority={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority }}
 {% endif %}
 
-traefik.http.routers.{{ matrix_static_files_identifier }}-well-known.service={{ matrix_static_files_identifier }}
-traefik.http.routers.{{ matrix_static_files_identifier }}-well-known.entrypoints={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_entrypoints }}
-traefik.http.routers.{{ matrix_static_files_identifier }}-well-known.tls={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls | to_json }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-matrix.service={{ matrix_static_files_identifier }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-matrix.entrypoints={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_entrypoints }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-matrix.tls={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls | to_json }}
 
 {% if matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls %}
-traefik.http.routers.{{ matrix_static_files_identifier }}-well-known.tls.certResolver={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls_certResolver }}
+traefik.http.routers.{{ matrix_static_files_identifier }}-well-known-matrix.tls.certResolver={{ matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_tls_certResolver }}
 {% endif %}
 
 ############################################################

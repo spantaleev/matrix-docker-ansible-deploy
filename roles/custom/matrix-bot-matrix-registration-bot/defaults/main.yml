@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Erick Wibben
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # matrix-registration-bot creates and manages registration tokens for a Matrix server
 # Project source code URL: https://github.com/moan0s/matrix-registration-bot
@@ -11,8 +21,11 @@ matrix_bot_matrix_registration_bot_docker_src_files_path: "{{ matrix_bot_matrix_
 # renovate: datasource=docker depName=moanos/matrix-registration-bot
 matrix_bot_matrix_registration_bot_version: 1.3.0
 matrix_bot_matrix_registration_bot_docker_iteration: 0
-matrix_bot_matrix_registration_bot_docker_tag: "{{ matrix_bot_matrix_registration_bot_version }}-{{ matrix_bot_matrix_registration_bot_docker_iteration}}"
-matrix_bot_matrix_registration_bot_docker_image: "{{ matrix_container_global_registry_prefix }}moanos/matrix-registration-bot:{{ matrix_bot_matrix_registration_bot_docker_tag }}"
+matrix_bot_matrix_registration_bot_docker_tag: "{{ matrix_bot_matrix_registration_bot_version }}-{{ matrix_bot_matrix_registration_bot_docker_iteration }}"
+matrix_bot_matrix_registration_bot_docker_image: "{{ matrix_bot_matrix_registration_bot_docker_image_registry_prefix }}moanos/matrix-registration-bot:{{ matrix_bot_matrix_registration_bot_docker_tag }}"
+matrix_bot_matrix_registration_bot_docker_image_registry_prefix: "{{ 'localhost/' if matrix_bot_matrix_registration_bot_container_image_self_build else matrix_bot_matrix_registration_bot_docker_image_registry_prefix_upstream }}"
+matrix_bot_matrix_registration_bot_docker_image_registry_prefix_upstream: "{{ matrix_bot_matrix_registration_bot_docker_image_registry_prefix_upstream_default }}"
+matrix_bot_matrix_registration_bot_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_bot_matrix_registration_bot_docker_image_force_pull: "{{ matrix_bot_matrix_registration_bot_docker_image.endswith(':latest') }}"
 
 matrix_bot_matrix_registration_bot_base_path: "{{ matrix_base_data_path }}/matrix-registration-bot"
@@ -29,6 +42,9 @@ matrix_bot_matrix_registration_bot_matrix_user_id: '@{{ matrix_bot_matrix_regist
 
 # The bot's password (can also be used to login via a client like Element Web)
 matrix_bot_matrix_registration_bot_bot_password: ''
+
+# Optional bot command prefix
+matrix_bot_matrix_registration_bot_bot_prefix: ""
 
 # Homeserver base URL
 matrix_bot_matrix_registration_bot_api_base_url: "{{ matrix_homeserver_url }}"

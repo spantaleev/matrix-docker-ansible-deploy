@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Using an external PostgreSQL server (optional)
 
 By default, this playbook would set up a PostgreSQL database server on your machine, running in a Docker container. If that's okay, you can skip this document.

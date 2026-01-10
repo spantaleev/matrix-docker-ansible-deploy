@@ -1,4 +1,18 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
+
+- tags:
+    - setup-all
+    - setup-matrix-authentication-service
+    - install-all
+    - install-matrix-authentication-service
+    - matrix-authentication-service-mas-cli-syn2mas
+  block:
+    - when: matrix_authentication_service_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
 - tags:
     - setup-all
@@ -7,16 +21,21 @@
     - install-matrix-authentication-service
   block:
     - when: matrix_authentication_service_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-
-    - when: matrix_authentication_service_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
+# The tag 'matrix-authentication-service-syn2mas' has been replaced by the tag 'matrix-authentication-service-mas-cli-syn2mas'.
 - tags:
     - matrix-authentication-service-syn2mas
   block:
+    - name: Warn about deprecated tag
+      ansible.builtin.fail:
+        msg: "WARNING: The 'matrix-authentication-service-syn2mas' tag has been replaced by 'matrix-authentication-service-mas-cli-syn2mas'. Please update your command."
+
+- tags:
+    - matrix-authentication-service-mas-cli-syn2mas
+  block:
     - when: matrix_authentication_service_enabled | bool
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/syn2mas.yml"
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/mas_cli_syn2mas.yml"
 
 - tags:
     - matrix-authentication-service-mas-cli-doctor

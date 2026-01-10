@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Aaron Raimist
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Element Web (optional)
 
 By default, this playbook installs the [Element Web](https://github.com/element-hq/element-web) Matrix client for you. If that's okay, you can skip this document.

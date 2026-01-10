@@ -1,3 +1,20 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2022 Aaron Raimist
+SPDX-FileCopyrightText: 2021 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2021 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021 Cody Neiman
+SPDX-FileCopyrightText: 2021 Dan Arnfield
+SPDX-FileCopyrightText: 2021 Marcus Proest
+SPDX-FileCopyrightText: 2021 Matthew Cengia
+SPDX-FileCopyrightText: 2022 Cody Wyatt Neiman
+SPDX-FileCopyrightText: 2022 Julian Foad
+SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2023 Shreyas Ajjarapu
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Container images used by the playbook
 
 This page summarizes the container ([Docker](https://www.docker.com/)) images used by the playbook when setting up your server.
@@ -11,6 +28,7 @@ We try to stick to official images (provided by their respective projects) as mu
 | [Synapse](configuring-playbook-synapse.md) | [element-hq/synapse](https://ghcr.io/element-hq/synapse) | ✅ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network |
 | [Conduit](configuring-playbook-conduit.md) | [matrixconduit/matrix-conduit](https://hub.docker.com/r/matrixconduit/matrix-conduit) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Conduit is a lightweight open-source server implementation of the Matrix Specification with a focus on easy setup and low system requirements |
 | [conduwuit](configuring-playbook-conduwuit.md) | [girlbossceo/conduwuit](https://ghcr.io/girlbossceo/conduwuit) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. conduwuit is a fork of Conduit. |
+| [continuwuity](configuring-playbook-continuwuity.md) | [continuwuation/continuwuity](https://forgejo.ellis.link/continuwuation/continuwuity) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. continuwuity is a continuation of conduwuit. |
 | [Dendrite](configuring-playbook-dendrite.md) | [matrixdotorg/dendrite-monolith](https://hub.docker.com/r/matrixdotorg/dendrite-monolith/) | ❌ | Storing your data and managing your presence in the [Matrix](http://matrix.org/) network. Dendrite is a second-generation Matrix homeserver written in Go, an alternative to Synapse. |
 
 ## Clients
@@ -37,6 +55,8 @@ Services that run on the server to make the various parts of your installation w
 | [Exim](configuring-playbook-email.md) | [devture/exim-relay](https://hub.docker.com/r/devture/exim-relay/) | ✅ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) |
 | [ma1sd](configuring-playbook-ma1sd.md) | [ma1uta/ma1sd](https://hub.docker.com/r/ma1uta/ma1sd/) | ❌ | Matrix Identity Server |
 | [ddclient](configuring-playbook-dynamic-dns.md) | [linuxserver/ddclient](https://hub.docker.com/r/linuxserver/ddclient) | ❌ | Update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider |
+| [LiveKit Server](configuring-playbook-livekit-server.md) | [livekit/livekit-server](https://hub.docker.com/r/livekit/livekit-server/) | ❌ | WebRTC server for audio/video calls |
+| [Livekit JWT Service](configuring-playbook-livekit-jwt-service.md) | [element-hq/lk-jwt-service](https://ghcr.io/element-hq/lk-jwt-service) | ❌ | JWT service for integrating [Element Call](./configuring-playbook-element-call.md) with [LiveKit Server](./configuring-playbook-livekit-server.md) |
 
 ## Authentication
 
@@ -49,7 +69,7 @@ Extend and modify how users are authenticated on your homeserver.
 | [matrix-synapse-ldap3](configuring-playbook-ldap-auth.md) (advanced) | (N/A) | ❌ | LDAP Auth password provider module |
 | [matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) | [activism.international/matrix_ldap_registration_proxy](https://gitlab.com/activism.international/matrix_ldap_registration_proxy/container_registry) | ❌ | Proxy that handles Matrix registration requests and forwards them to LDAP |
 | [matrix-registration](configuring-playbook-matrix-registration.md) | [zeratax/matrix-registration](https://hub.docker.com/r/devture/zeratax-matrix-registration/) | ❌ | Simple python application to have a token based Matrix registration |
-| [Matrix User Verification Service](configuring-playbook-user-verification-service.md) (UVS) | [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/atrixdotorg/matrix-user-verification-service) | ❌ | Service to verify details of a user based on an Open ID token |
+| [Matrix User Verification Service](configuring-playbook-user-verification-service.md) | [matrixdotorg/matrix-user-verification-service](https://hub.docker.com/r/atrixdotorg/matrix-user-verification-service) | ❌ | Service to verify details of a user based on an Open ID token |
 | [synapse-simple-antispam](configuring-playbook-synapse-simple-antispam.md) (advanced) | (N/A) | ❌ | Spam checker module |
 
 ## File Storage
@@ -68,6 +88,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
+| [mautrix-bluesky](configuring-playbook-bridge-mautrix-bluesky.md) | [mautrix/bluesky](https://mau.dev/mautrix/bluesky/container_registry) | ❌ | Bridge to [Bluesky](https://bsky.social/about) |
 | [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) | [mautrix/discord](https://mau.dev/mautrix/discord/container_registry) | ❌ | Bridge to [Discord](https://discord.com/) |
 | [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) | [mautrix/slack](https://mau.dev/mautrix/slack/container_registry) | ❌ | Bridge to [Slack](https://slack.com/) |
 | [mautrix-telegram](configuring-playbook-bridge-mautrix-telegram.md) | [mautrix/telegram](https://mau.dev/mautrix/telegram/container_registry) | ❌ | Bridge to [Telegram](https://telegram.org/) |
@@ -86,13 +107,10 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [matrix-hookshot](configuring-playbook-bridge-hookshot.md) | [halfshot/matrix-hookshot](https://hub.docker.com/r/halfshot/matrix-hookshot) | ❌ | Bridge for generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular |
 | [matrix-sms-bridge](configuring-playbook-bridge-matrix-bridge-sms.md) | [folivonet/matrix-sms-bridge](https://hub.docker.com/repository/docker/folivonet/matrix-sms-bridge) | ❌ | Bridge to SMS |
 | [matrix-wechat](configuring-playbook-bridge-wechat.md) | [lxduo/matrix-wechat](https://hub.docker.com/r/lxduo/matrix-wechat) | ❌ | Bridge to [WeChat](https://www.wechat.com/) |
+| [MatrixZulipBridge](configuring-playbook-bridge-zulip.md) | [GearKite/MatrixZulipBridge](https://ghcr.io/gearkite/matrixzulipbridge) | ❌ | Puppeting appservice bridge for [Zulip](https://zulip.com/) |
 | [Heisenbridge](configuring-playbook-bridge-heisenbridge.md) | [hif1/heisenbridge](https://hub.docker.com/r/hif1/heisenbridge) | ❌ | Bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) |
-| [go-skype-bridge](configuring-playbook-bridge-go-skype-bridge.md) | [nodefyme/go-skype-bridge](https://hub.docker.com/r/nodefyme/go-skype-bridge) | ❌ | Bridge to [Skype](https://www.skype.com) |
-| [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) | [mx-puppet/slack/mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack/container_registry) | ❌ | Bridge to [Slack](https://slack.com) |
-| [mx-puppet-instagram](configuring-playbook-bridge-mx-puppet-instagram.md) | [sorunome/mx-puppet-instagram](https://hub.docker.com/r/sorunome/mx-puppet-instagram) | ❌ | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) |
-| [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) | [sorunome/mx-puppet-twitter](https://hub.docker.com/r/sorunome/mx-puppet-twitter) | ❌ | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) |
-| [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) | [mx-puppet/discord/mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord/container_registry) | ❌ | Bridge to [Discord](https://discordapp.com/) |
 | [mx-puppet-groupme](configuring-playbook-bridge-mx-puppet-groupme.md) | [xangelix/mx-puppet-groupme](https://hub.docker.com/r/xangelix/mx-puppet-groupme) | ❌ | Bridge to [GroupMe](https://groupme.com/) |
+| [matrix-steam-bridge](configuring-playbook-bridge-steam.md) | [jasonlaguidice/matrix-steam-bridge](https://github.com/jasonlaguidice/matrix-steam-bridge/pkgs/container/matrix-steam-bridge) | ❌ | Bridge to [Steam](https://steampowered.com/) |
 | [mx-puppet-steam](configuring-playbook-bridge-mx-puppet-steam.md) | [icewind1991/mx-puppet-steam](https://hub.docker.com/r/icewind1991/mx-puppet-steam) | ❌ | Bridge to [Steam](https://steamapp.com/) |
 | [Postmoogle](configuring-playbook-bridge-postmoogle.md) | [etke.cc/postmoogle](https://github.com/etkecc/postmoogle/container_registry) | ❌ | Email to Matrix bridge |
 
@@ -137,7 +155,7 @@ Various services that don't fit any other categories.
 | ------- | --------------- | -------- | ----------- |
 | [sliding-sync](configuring-playbook-sliding-sync-proxy.md) | [matrix-org/sliding-sync](https://ghcr.io/matrix-org/sliding-sync) | ❌ | Sliding Sync support for clients which require it (like old Element X versions, before it got switched to Simplified Sliding Sync) |
 | [synapse_auto_accept_invite](configuring-playbook-synapse-auto-accept-invite.md) | (N/A) | ❌ | Synapse module to automatically accept invites |
-| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [etke.cc/rust-synapse-compress-state](https://gitlab.com/etke.cc/rust-synapse-compress-state/container_registry) | ❌ | Cli tool that automatically compresses `state_groups` database table in background |
+| [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [mb-saces/rust-synapse-tools](https://gitlab.com/mb-saces/rust-synapse-tools/container_registry) | ❌ | Cli tool that automatically compresses Synapse's `state_groups` database table in background |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | ❌ | Reconciliator and gateway for a managed Matrix server |
 | [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | ❌ | Open source collaborative text editor |
 | [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | ❌ | [Jitsi](https://jitsi.org/) web UI |
@@ -149,6 +167,7 @@ Various services that don't fit any other categories.
 | [Pantalaimon](configuring-playbook-pantalaimon.md) | [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) | ❌ | E2EE aware proxy daemon |
 | [Sygnal](configuring-playbook-sygnal.md) | [matrixdotorg/sygnal](https://hub.docker.com/r/matrixdotorg/sygnal/) | ❌ | Reference Push Gateway for Matrix |
 | [ntfy](configuring-playbook-ntfy.md) | [binwiederhier/ntfy](https://hub.docker.com/r/binwiederhier/ntfy/) | ❌ | Self-hosted, UnifiedPush-compatible push notifications server |
+| [Element Call](configuring-playbook-element-call.md) | [element-hq/element-call](https://ghcr.io/element-hq/element-call) | ❌ | A native Matrix video conferencing application |
 
 ## Container images of deprecated / unmaintained services
 
@@ -156,10 +175,14 @@ The list of the deprecated or unmaintained services is available [here](configur
 
 | Service | Container image | Default? | Description |
 | ------- | --------------- | -------- | ----------- |
-| [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md) | [turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks) | ❌ | Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.) |
 | [Dimension](configuring-playbook-dimension.md) | [turt2live/matrix-dimension](https://hub.docker.com/r/turt2live/matrix-dimension) | ❌ | Open source integration manager for Matrix clients |
 | [Email2Matrix](configuring-playbook-email2matrix.md) | [devture/email2matrix](https://hub.docker.com/r/devture/email2matrix/) | ❌ | Bridge for relaying emails to Matrix rooms |
 | [Go-NEB](configuring-playbook-bot-go-neb.md) | [matrixdotorg/go-neb](https://hub.docker.com/r/matrixdotorg/go-neb) | ❌ | Multi functional bot written in Go |
+| [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md) | [turt2live/matrix-appservice-webhooks](https://hub.docker.com/r/turt2live/matrix-appservice-webhooks) | ❌ | Bridge for slack compatible webhooks ([ConcourseCI](https://concourse-ci.org/), [Slack](https://slack.com/) etc. pp.) |
 | [matrix-chatgpt-bot](configuring-playbook-bot-chatgpt.md) | [matrixgpt/matrix-chatgpt-bot](https://ghcr.io/matrixgpt/matrix-chatgpt-bot) | ❌ | Accessing ChatGPT via your favourite Matrix client |
 | [mautrix-facebook](configuring-playbook-bridge-mautrix-facebook.md) | [mautrix/facebook](https://mau.dev/mautrix/facebook/container_registry) | ❌ | Bridge to [Facebook](https://facebook.com/) |
 | [mautrix-instagram](configuring-playbook-bridge-mautrix-instagram.md) | [mautrix/instagram](https://mau.dev/mautrix/instagram/container_registry) | ❌ | Bridge to [Instagram](https://instagram.com/) |
+| [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) | [mx-puppet/discord/mx-puppet-discord](https://gitlab.com/mx-puppet/discord/mx-puppet-discord/container_registry) | ❌ | Bridge to [Discord](https://discordapp.com/) |
+| [mx-puppet-instagram](configuring-playbook-bridge-mx-puppet-instagram.md) | [sorunome/mx-puppet-instagram](https://hub.docker.com/r/sorunome/mx-puppet-instagram) | ❌ | Bridge for Instagram-DMs ([Instagram](https://www.instagram.com/)) |
+| [mx-puppet-slack](configuring-playbook-bridge-mx-puppet-slack.md) | [mx-puppet/slack/mx-puppet-slack](https://gitlab.com/mx-puppet/slack/mx-puppet-slack/container_registry) | ❌ | Bridge to [Slack](https://slack.com) |
+| [mx-puppet-twitter](configuring-playbook-bridge-mx-puppet-twitter.md) | [sorunome/mx-puppet-twitter](https://hub.docker.com/r/sorunome/mx-puppet-twitter) | ❌ | Bridge for Twitter-DMs ([Twitter](https://twitter.com/)) |

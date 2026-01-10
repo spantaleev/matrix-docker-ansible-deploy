@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2021 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2022 László Várady
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+SPDX-FileCopyrightText: 2024 Uğur İLTER
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Frequently Asked Questions
 
 This documentation page tries to answer various Frequently Asked Questions about all things [Matrix](https://matrix.org/), with a focus on this [Ansible](https://www.ansible.com/) playbook ([What is Ansible? How does it work?](#what-is-ansible-how-does-it-work)).
@@ -223,7 +235,7 @@ Running Matrix on a server with 1GB of memory is possible (especially if you dis
 
 **We recommend starting with a server having at least 2GB of memory** and even then using it sparingly. If you know for sure you'll be joining various large rooms, etc., then going for 4GB of memory or more is a good idea.
 
-Besides the regular Matrix stuff, we also support things like video-conferencing using [Jitsi](configuring-playbook-jitsi.md) and other additional services which (when installed) may use up a lot of memory. Things do add up. Besides the Synapse Matrix server, Jitsi is especially notorious for consuming a lot of resources. If you plan on running Jitsi, we recommend a server with at least 2GB of memory (preferrably more). See our [Jitsi documentation page](configuring-playbook-jitsi.md) to learn how to optimize its memory/CPU usage.
+Besides the regular Matrix stuff, we also support things like video-conferencing using [Jitsi](configuring-playbook-jitsi.md) and other additional services which (when installed) may use up a lot of memory. Things do add up. Besides the Synapse Matrix server, Jitsi is especially notorious for consuming a lot of resources. If you plan on running Jitsi, we recommend a server with at least 2GB of memory (preferably more). See our [Jitsi documentation page](configuring-playbook-jitsi.md) to learn how to optimize its memory/CPU usage.
 
 ### Can I run this in an LXC container?
 
@@ -296,9 +308,6 @@ See [Serving the base domain](configuring-playbook-base-domain-serving.md).
 You can disable some not-so-important services to save on memory.
 
 ```yaml
-# An identity server is not a must.
-matrix_ma1sd_enabled: false
-
 # Disabling this will prevent email-notifications and other such things from working.
 exim_relay_enabled: false
 
@@ -353,7 +362,7 @@ Configuration variables are defined in multiple places in this playbook and are 
 
 You can discover the variables you can override in each role (`roles/*/*/defaults/main.yml`).
 
-As described in [How is the effective configuration determined?](#how-is-the-effective-configuration-determined), these role-defaults may be overriden by values defined in `group_vars/matrix_servers`.
+As described in [How is the effective configuration determined?](#how-is-the-effective-configuration-determined), these role-defaults may be overridden by values defined in `group_vars/matrix_servers`.
 
 Refer to both of these for inspiration. Still, as mentioned in [Configuring the playbook](configuring-playbook.md), you're only ever supposed to edit your own `inventory/host_vars/matrix.example.com/vars.yml` file and nothing else inside the playbook (unless you're meaning to contribute new features).
 
@@ -430,6 +439,19 @@ After verifying that everything still works after the Postgres upgrade, you can 
 To prevent double-logging, Docker logging is disabled by explicitly passing `--log-driver=none` to all containers. Due to this, you cannot view logs using `docker logs matrix-*`.
 
 See [this section](maintenance-and-troubleshooting.md#how-to-see-the-logs) on the page for maintenance and troubleshooting for more details to see the logs.
+
+### The server fails to start due to the `Unable to start service matrix-coturn.service` error. Why and how to solve it?
+
+The error is most likely because Traefik cannot obtain SSL certificates due to certain reasons such as wrong domain name configuration or port 80 being unavailable due to other services.
+
+If Traefik fails to obtain an SSL certificate for domain names such as `matrix.`, Traefik Certs Dumper cannot extract the SSL certificate out of there, and coturn cannot be started and the error occurs. Refer to these comments for details:
+
+- <https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3957#issuecomment-2599590441>
+- <https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4570#issuecomment-3364111466>
+
+If you are not sure what the problem is, at first make sure that you have set the "base domain" (`example.com`, **not `matrix.example.com`**) to `matrix_domain`. You should be able to find it at the top of your `vars.yml`.
+
+If it is correctly specified, look Traefik's logs (`journalctl -fu matrix-traefik.service`) for errors by Let's Encrypt for troubleshooting.
 
 ## Miscellaneous
 

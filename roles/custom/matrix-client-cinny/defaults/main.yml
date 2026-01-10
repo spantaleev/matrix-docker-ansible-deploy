@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2022 - 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 László Várady
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # Project source code URL: https://github.com/ajbura/cinny
 
@@ -7,9 +17,11 @@ matrix_client_cinny_container_image_self_build: false
 matrix_client_cinny_container_image_self_build_repo: "https://github.com/ajbura/cinny.git"
 
 # renovate: datasource=docker depName=ajbura/cinny
-matrix_client_cinny_version: v4.3.0
-matrix_client_cinny_docker_image: "{{ matrix_client_cinny_docker_image_name_prefix }}ajbura/cinny:{{ matrix_client_cinny_version }}"
-matrix_client_cinny_docker_image_name_prefix: "{{ 'localhost/' if matrix_client_cinny_container_image_self_build else matrix_container_global_registry_prefix }}"
+matrix_client_cinny_version: v4.10.2
+matrix_client_cinny_docker_image: "{{ matrix_client_cinny_docker_image_registry_prefix }}ajbura/cinny:{{ matrix_client_cinny_version }}"
+matrix_client_cinny_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_cinny_container_image_self_build else matrix_client_cinny_docker_image_registry_prefix_upstream }}"
+matrix_client_cinny_docker_image_registry_prefix_upstream: "{{ matrix_client_cinny_docker_image_registry_prefix_upstream_default }}"
+matrix_client_cinny_docker_image_registry_prefix_upstream_default: docker.io/
 matrix_client_cinny_docker_image_force_pull: "{{ matrix_client_cinny_docker_image.endswith(':latest') }}"
 
 matrix_client_cinny_data_path: "{{ matrix_base_data_path }}/client-cinny"
@@ -147,6 +159,9 @@ matrix_client_cinny_self_check_validate_certificates: true
 # See `matrix_client_cinny_config_homeserverList`.
 matrix_client_cinny_default_hs_url: ""
 
+# Controls whether the Cinny access log is enabled
+matrix_client_cinny_access_log_enabled: true
+
 # Controls the `defaultHomeserver` value in the `config.json` file.
 matrix_client_cinny_config_defaultHomeserver: 0  # noqa var-naming
 
@@ -176,7 +191,7 @@ matrix_client_cinny_config_featuredCommunities_openAsDefault: false  # noqa var-
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_client_cinny_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+matrix_client_cinny_configuration_default: "{{ lookup('template', 'templates/config.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Cinny should go to `matrix_client_cinny_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_cinny_configuration_default`).

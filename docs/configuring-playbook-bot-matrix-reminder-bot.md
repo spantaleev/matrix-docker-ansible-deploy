@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2020 - 2022 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up matrix-reminder-bot (optional)
 
 The playbook can install and configure [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) for you.

@@ -1,9 +1,16 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Nikita Chernyi
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - tags:
     # This role intentionally doesn't do work on a `setup-all` tag.
-    # If it did, the initial installation (`--tags=setup-all`) would also potentially polute the database with data,
+    # If it did, the initial installation (`--tags=setup-all`) would also potentially pollute the database with data,
     # which would make importing a database dump problematic.
+    #
+    # See the variable "matrix_user_creator_users_auto" on group_vars/matrix_servers for actual values of users which running these tags can create with this role by default.
     - ensure-matrix-users-created
     - ensure-users-created
   block:

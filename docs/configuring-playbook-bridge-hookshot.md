@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 Kim Brose
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Paul Tötterman
+SPDX-FileCopyrightText: 2024 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up matrix-hookshot (optional)
 
 The playbook can install and configure [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) for you.
@@ -5,8 +15,6 @@ The playbook can install and configure [matrix-hookshot](https://github.com/matr
 Hookshot can bridge [Webhooks](https://en.wikipedia.org/wiki/Webhook) from software project management services such as GitHub, GitLab, Jira, and Figma, as well as generic webhooks.
 
 See the project's [documentation](https://matrix-org.github.io/matrix-hookshot/latest/hookshot.html) to learn what it does and why it might be useful to you.
-
-**Note**: the playbook also supports [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), which however was deprecated by its author.
 
 ## Prerequisites
 
@@ -25,7 +33,7 @@ matrix_hookshot_enabled: true
 
 # Uncomment to enable end-to-bridge encryption.
 # See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
-# matrix_hookshot_experimental_encryption_enabled: true
+# matrix_hookshot_encryption_enabled: true
 
 # Uncomment and paste the contents of GitHub app private key to enable GitHub bridge.
 # Alternatively, you can use one of the other methods explained below on the "Manage GitHub Private Key with aux role" section.
@@ -93,7 +101,6 @@ Unless indicated otherwise, the following endpoints are reachable on your `matri
 | github oauth | `/hookshot/webhooks/oauth` | `matrix_hookshot_github_oauth_endpoint` | GitHub "Callback URL" |
 | jira oauth | `/hookshot/webhooks/jira/oauth` | `matrix_hookshot_jira_oauth_endpoint` | Jira OAuth |
 | figma endpoint | `/hookshot/webhooks/figma/webhook` | `matrix_hookshot_figma_endpoint` | Figma |
-| provisioning | `/hookshot/v1/` | `matrix_hookshot_provisioning_endpoint` | Dimension [provisioning](#provisioning-api) |
 | appservice | `/hookshot/_matrix/app/` | `matrix_hookshot_appservice_endpoint` | Matrix server |
 | widgets | `/hookshot/widgetapi/` | `matrix_hookshot_widgets_endpoint` | Widgets |
 
@@ -116,19 +123,11 @@ aux_file_definitions:
   - dest: "{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}"
     content: "{{ lookup('file', '/path/to/your-github-private-key.pem') }}"
     mode: '0400'
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 ```
 
 For more information, see the documentation in the [default configuration of the aux role](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml).
-
-### Provisioning API
-
-The provisioning API will be enabled automatically if you set `matrix_dimension_enabled: true` and provided a `matrix_hookshot_provisioning_secret`, unless you override it either way. To use hookshot with Dimension, you will need to enter as "Provisioning URL": `http://matrix-hookshot:9002`, which is made up of the variables `matrix_hookshot_container_url` and `matrix_hookshot_provisioning_port`.
-
-### Collision with matrix-appservice-webhooks
-
-If you are also running [matrix-appservice-webhooks](configuring-playbook-bridge-appservice-webhooks.md), it reserves its namespace by the default setting `matrix_appservice_webhooks_user_prefix: '_webhook_'`. You should take care if you modify its or hookshot's prefix that they do not collide with each other's namespace (default `matrix_hookshot_generic_userIdPrefix: '_webhooks_'`).
 
 ### Enable metrics
 
@@ -162,7 +161,7 @@ To `matrix_hookshot_container_labels_metrics_middleware_basic_auth_users`, set t
 
 #### Enable Grafana (optional)
 
-Probably you wish to enable Grafana along with Prometheus for generating graphs of the metics.
+Probably you wish to enable Grafana along with Prometheus for generating graphs of the metrics.
 
 To enable Grafana, see [this section](configuring-playbook-prometheus-grafana.md#adjusting-the-playbook-configuration-grafana) for instructions.
 

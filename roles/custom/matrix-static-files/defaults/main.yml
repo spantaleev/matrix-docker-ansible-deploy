@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # matrix-static-files is a role which generates and serves `/.well-known/matrix` files for the purposes of Matrix Delegation.
@@ -8,13 +13,14 @@ matrix_static_files_enabled: true
 matrix_static_files_identifier: matrix-static-files
 
 # renovate: datasource=docker depName=joseluisq/static-web-server
-matrix_static_files_version: 2.36.0
+matrix_static_files_version: 2.40.1
 
 matrix_static_files_base_path: "{{ matrix_base_data_path }}/{{ 'static-files' if matrix_static_files_identifier == 'matrix-static-files' else matrix_static_files_identifier }}"
 matrix_static_files_config_path: "{{ matrix_static_files_base_path }}/config"
 matrix_static_files_public_path: "{{ matrix_static_files_base_path }}/public"
 matrix_static_files_public_well_known_path: "{{ matrix_static_files_public_path }}/.well-known"
 matrix_static_files_public_well_known_matrix_path: "{{ matrix_static_files_public_well_known_path }}/matrix"
+matrix_static_files_public_well_known_element_path: "{{ matrix_static_files_public_well_known_path }}/element"
 
 # List of systemd services that matrix-static-files.service depends on
 matrix_static_files_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
@@ -24,7 +30,10 @@ matrix_static_files_systemd_wanted_services_list: "{{ matrix_static_files_system
 matrix_static_files_systemd_wanted_services_list_auto: []
 matrix_static_files_systemd_wanted_services_list_custom: []
 
-matrix_static_files_container_image: "{{ matrix_container_global_registry_prefix }}joseluisq/static-web-server:{{ matrix_static_files_container_image_tag }}"
+matrix_static_files_container_image: "{{ matrix_static_files_container_image_registry_prefix }}joseluisq/static-web-server:{{ matrix_static_files_container_image_tag }}"
+matrix_static_files_container_image_registry_prefix: "{{ matrix_static_files_container_image_registry_prefix_upstream }}"
+matrix_static_files_container_image_registry_prefix_upstream: "{{ matrix_static_files_container_image_registry_prefix_upstream_default }}"
+matrix_static_files_container_image_registry_prefix_upstream_default: "docker.io/"
 matrix_static_files_container_image_tag: "{{ 'latest' if matrix_static_files_version == 'latest' else (matrix_static_files_version + '-alpine') }}"
 matrix_static_files_container_image_force_pull: "{{ matrix_static_files_container_image.endswith(':latest') }}"
 
@@ -48,7 +57,7 @@ matrix_static_files_container_labels_traefik_docker_network: "{{ matrix_static_f
 matrix_static_files_container_labels_traefik_entrypoints: web-secure
 matrix_static_files_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added that expose the well-known public endpoint on the Matrix domain.
+# Controls whether labels will be added that expose the `/.well-known/matrix` endpoint on the Matrix domain.
 matrix_static_files_container_labels_well_known_matrix_endpoint_enabled: true
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname: ''
 matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_path_prefix: /.well-known/matrix
@@ -83,7 +92,7 @@ matrix_static_files_container_labels_base_domain_traefik_tls: "{{ matrix_static_
 matrix_static_files_container_labels_base_domain_traefik_tls_certResolver: "{{ matrix_static_files_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 # Controls whether the root path (/) at the base domain would respond with a redirect to some URL.
 matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: false
-matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^{{ matrix_static_files_scheme }}://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}$"
+matrix_static_files_container_labels_base_domain_root_path_redirection_regex: "^{{ matrix_static_files_scheme }}://{{ matrix_static_files_container_labels_base_domain_traefik_hostname }}{{ matrix_static_files_container_labels_base_domain_traefik_path_prefix }}(\\?.*)?$"
 matrix_static_files_container_labels_base_domain_root_path_redirection_url: ""
 
 # matrix_static_files_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
@@ -163,29 +172,15 @@ matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: ""
 
 # Controls whether Element related entries (io.element.e2ee) should be added to the client well-known.
 # By default if any of the following change from their default this would be set to true:
-# `matrix_static_files_file_matrix_client_property_io_element_e2ee_default`
-# `matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_required`
-# `matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_setup_methods`
-matrix_static_files_file_matrix_client_property_io_element_e2ee_entries_enabled: "{{ not matrix_static_files_file_matrix_client_property_io_element_e2ee_default or matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_required or matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_setup_methods | length > 0 }}"
+# - `matrix_static_files_file_matrix_client_property_io_element_e2ee_default`
+# - `matrix_static_files_file_matrix_client_property_io_element_e2ee_force_disable`
+matrix_static_files_file_matrix_client_property_io_element_e2ee_entries_enabled: "{{ not matrix_static_files_file_matrix_client_property_io_element_e2ee_default or matrix_static_files_file_matrix_client_property_io_element_e2ee_force_disable }}"
 
 # Controls the io.element.e2ee/default property in the /.well-known/matrix/client file,
 # which instructs Element clients whether they should use End-to-End Encryption by default.
 # Setting this to false will update `/.well-known/matrix/client` and tell Element clients to avoid E2EE.
 # See: https://github.com/element-hq/element-web/blob/develop/docs/e2ee.md
 matrix_static_files_file_matrix_client_property_io_element_e2ee_default: true
-
-# Controls the io.element.e2ee/secure_backup_required property in the /.well-known/matrix/client file,
-# which instructs Element clients whether they should require a secure backup set up before they can be used.
-# Setting this to true will update `/.well-known/matrix/client` and tell Element clients require a secure backup.
-# See: https://github.com/element-hq/element-web/blob/develop/docs/e2ee.md
-matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_required: false
-
-# Controls the io.element.e2ee/secure_backup_setup_methods property in the /.well-known/matrix/client file,
-# which instructs Element clients which backup methods from ["key", "passphrase"] should be used.
-# When an empty list is provided, Element clients default to using both.
-# Setting this to other than empty will update `/.well-known/matrix/client` and tell Element clients which method to use.
-# See: https://github.com/element-hq/element-web/blob/develop/docs/e2ee.md
-matrix_static_files_file_matrix_client_property_io_element_e2ee_secure_backup_setup_methods: []
 
 # Controls the io.element.e2ee/force_disable property in the /.well-known/matrix/client file,
 # which can be set to `true` to instruct Element clients whether to disable End-to-End Encryption by default
@@ -203,12 +198,22 @@ matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin: "{{ matri
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: {}
 matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_custom: {}
 
+# Controls whether `org.matrix.msc4143.rtc_foci`-related entries should be added to the client well-known.
+# By default, if there are entries in `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci`, we show them (by enabling this).
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci | default({}) | dict2items | length > 0 }}"
+
+# Controls the org.matrix.msc4143.rtc_foci property in the /.well-known/matrix/client file.
+# See `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled`
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto+ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: []
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom: []
+
 # Default /.well-known/matrix/client configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
 # For a more advanced customization, you can extend the default (see `matrix_static_files_file_matrix_client_configuration_extension_json`)
 # or completely replace this variable with your own template.
-matrix_static_files_file_matrix_client_configuration_json: "{{ lookup('template', 'templates/public/.well-known/matrix/client.j2') }}"
+matrix_static_files_file_matrix_client_configuration_json: "{{ lookup('template', 'templates/public/.well-known/matrix/client.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for /.well-known/matrix/client should go to `matrix_static_files_file_matrix_client_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_static_files_file_matrix_client_configuration_extension_json`).
@@ -262,7 +267,7 @@ matrix_static_files_file_matrix_server_property_m_server: ''
 #
 # For a more advanced customization, you can extend the default (see `matrix_static_files_file_matrix_server_configuration_extension_json`)
 # or completely replace this variable with your own template.
-matrix_static_files_file_matrix_server_configuration_json: "{{ lookup('template', 'templates/public/.well-known/matrix/server.j2') }}"
+matrix_static_files_file_matrix_server_configuration_json: "{{ lookup('template', 'templates/public/.well-known/matrix/server.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for /.well-known/matrix/server should go to `matrix_static_files_file_matrix_server_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_static_files_file_matrix_server_configuration_extension_json`).
@@ -318,7 +323,7 @@ matrix_static_files_file_matrix_support_property_m_support_page: ""
 #
 # For a more advanced customization, you can extend the default (see `matrix_static_files_file_matrix_support_configuration_extension_json`)
 # or completely replace this variable with your own template.
-matrix_static_files_file_matrix_support_configuration_json: "{{ lookup('template', 'templates/public/.well-known/matrix/support.j2') }}"
+matrix_static_files_file_matrix_support_configuration_json: "{{ lookup('template', 'templates/public/.well-known/matrix/support.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for /.well-known/matrix/support should go to `matrix_static_files_file_matrix_support_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_static_files_file_matrix_support_configuration_extension_json`).
@@ -399,10 +404,3 @@ matrix_static_files_self_check_hostname_identity: ''
 # As per the spec (https://matrix.org/docs/spec/client_server/r0.6.0#well-known-uri), it shouldn't be,
 # so we default to not following redirects as well.
 matrix_static_files_self_check_well_known_matrix_client_follow_redirects: none
-
-# TODO - review this one
-# Specifies where requests for the root URI (`/`) on the `matrix.` domain should be redirected.
-# If this has an empty value, they're just passed to the homeserver, which serves a static page.
-# If you'd like to make `https://matrix.example.com` redirect to `https://element.example.com` (or something of that sort), specify the domain name here.
-# Example value: `element.example.com` (or `{{ matrix_server_fqn_element }}`).
-matrix_static_files_client_redirect_root_uri_to_domain: ""

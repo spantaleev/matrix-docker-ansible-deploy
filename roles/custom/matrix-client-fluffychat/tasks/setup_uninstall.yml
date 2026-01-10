@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2025 Nikita Chernyi
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-client-fluffychat.service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-fluffychat.service"
+  register: matrix_client_fluffychat_service_stat
+
+- when: matrix_client_fluffychat_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-client-fluffychat is stopped
+      ansible.builtin.service:
+        name: matrix-client-fluffychat
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-client-fluffychat.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-fluffychat.service"
+        state: absent
+
+    - name: Ensure FluffyChat Web path doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_client_fluffychat_data_path }}"
+        state: absent

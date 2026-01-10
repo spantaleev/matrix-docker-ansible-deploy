@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=matrix-cactus-comments-client server
 {% for service in matrix_cactus_comments_client_systemd_required_services_list %}
@@ -13,7 +13,7 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-cactus-comments-client 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-cactus-comments-client 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-cactus-comments-client 2>/dev/null || true'
 
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
@@ -29,7 +29,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endif %}
 			--env-file={{ matrix_cactus_comments_client_base_path }}/env \
 			--label-file={{ matrix_cactus_comments_client_base_path }}/labels \
-			--mount type=bind,src={{ matrix_cactus_comments_client_public_path }},dst=/public,ro \
+			--mount type=bind,src={{ matrix_cactus_comments_client_public_path }},dst=/var/public,ro \
 			{{ matrix_cactus_comments_client_container_image }}
 
 {% for network in matrix_cactus_comments_client_container_additional_networks %}
@@ -38,7 +38,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network conne
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-cactus-comments-client
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-cactus-comments-client 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-cactus-comments-client 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-cactus-comments-client 2>/dev/null || true'
 Restart=always
 RestartSec=30

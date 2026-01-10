@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix Element Web server
 {% for service in matrix_client_element_systemd_required_services_list %}
@@ -10,9 +10,13 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-element 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-element 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-element 2>/dev/null || true'
 
+{#
+	The custom healthcheck command is a patch until https://github.com/element-hq/element-web/pull/29471
+	lands in a release.
+#}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-client-element \
@@ -22,11 +26,15 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--network={{ matrix_client_element_container_network }} \
 			{% if matrix_client_element_container_http_host_bind_port %}
-			-p {{ matrix_client_element_container_http_host_bind_port }}:8080 \
+			-p {{ matrix_client_element_container_http_host_bind_port }}:{{ matrix_client_element_container_port }} \
 			{% endif %}
 			--label-file={{ matrix_client_element_data_path }}/labels \
+			--env-file={{ matrix_client_element_data_path }}/env \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
-			--mount type=bind,src={{ matrix_client_element_data_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
+			--tmpfs=/var/cache/nginx:rw,mode=777 \
+			--tmpfs=/var/run:rw,mode=777 \
+			--tmpfs=/tmp/element-web-config:rw,mode=777 \
+			--tmpfs=/etc/nginx/conf.d:rw,mode=777,uid={{ matrix_user_uid }} \
 			--mount type=bind,src={{ matrix_client_element_data_path }}/config.json,dst=/app/config.json,ro \
 			--mount type=bind,src={{ matrix_client_element_data_path }}/config.json,dst=/app/config.{{ matrix_server_fqn_element }}.json,ro \
 			{% if matrix_client_element_location_sharing_enabled %}
@@ -36,6 +44,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--mount type=bind,src={{ matrix_client_element_data_path }}/home.html,dst=/app/home.html,ro \
 			{% endif %}
 			--mount type=bind,src={{ matrix_client_element_data_path }}/welcome.html,dst=/app/welcome.html,ro \
+			{% if matrix_client_element_container_healthcheck_cmd %}
+			--health-cmd="{{ matrix_client_element_container_healthcheck_cmd }}" \
+			{% endif %}
 			{% for arg in matrix_client_element_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
@@ -47,7 +58,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network conne
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-client-element
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop --time={{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-element 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-element 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-element 2>/dev/null || true'
 
 Restart=always

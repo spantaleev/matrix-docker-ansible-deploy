@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2025 MDAD project contributors
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up Matrix User Verification Service (optional)
 
 The playbook can install and configure [Matrix User Verification Service](https://github.com/matrix-org/matrix-user-verification-service) (hereafter: UVS) for you.

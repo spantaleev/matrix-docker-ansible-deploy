@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Running `just` commands
 
 We have previously used [make](https://www.gnu.org/software/make/) for easily running some playbook commands (e.g. `make roles` which triggers [`ansible-galaxy`](https://docs.ansible.com/ansible/latest/cli/ansible-galaxy.html)). Our [`Makefile`](../Makefile) is still around, and you can still run these commands.
@@ -6,7 +13,7 @@ In addition, we have added support for running commands via [`just`](https://git
 
 The `just` utility executes shortcut commands (called as "recipes"), which invoke `ansible-playbook`, `ansible-galaxy` or [`agru`](https://github.com/etkecc/agru) (depending on what is available in your system). The targets of the recipes are defined in [`justfile`](../justfile). Most of the just recipes have no corresponding `Makefile` targets.
 
-For some recipes such as `just update`, our `justfile` recommends installing [`agru`](https://github.com/etkecc/agru) (a faster alternative to `ansible-galaxy`) to speed up the process.
+For some recipes such as `just update`, our `justfile` recommends installing `agru` (a faster alternative to `ansible-galaxy`) to speed up the process.
 
 Here are some examples of shortcuts:
 

@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Configuring Conduit (optional)
 
 The playbook can install and configure the [Conduit](https://conduit.rs) Matrix server for you.
@@ -58,6 +65,7 @@ Find the `registration.yaml` in the `/matrix` directory, for example `/matrix/ma
     ```
     as_token: <token>
     de.sorunome.msc2409.push_ephemeral: true
+    receive_ephemeral: true
     hs_token: <token>
     id: signal
     namespaces:

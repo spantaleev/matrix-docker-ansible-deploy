@@ -1,3 +1,12 @@
+# SPDX-FileCopyrightText: 2021 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2021 Ahmad Haghighi
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+# SPDX-FileCopyrightText: 2022 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 # Sygnal is a reference Push Gateway for Matrix.
@@ -27,7 +36,9 @@ matrix_sygnal_systemd_wanted_services_list: []
 
 matrix_sygnal_docker_image: "{{ matrix_sygnal_docker_image_registry_prefix }}matrixdotorg/sygnal:{{ matrix_sygnal_docker_image_tag }}"
 matrix_sygnal_docker_image_tag: "{{ matrix_sygnal_version }}"
-matrix_sygnal_docker_image_registry_prefix: "{{ matrix_container_global_registry_prefix }}"
+matrix_sygnal_docker_image_registry_prefix: "{{ matrix_sygnal_docker_image_registry_prefix_upstream }}"
+matrix_sygnal_docker_image_registry_prefix_upstream: "{{ matrix_sygnal_docker_image_registry_prefix_upstream_default }}"
+matrix_sygnal_docker_image_registry_prefix_upstream_default: "docker.io/"
 matrix_sygnal_docker_image_force_pull: "{{ matrix_sygnal_docker_image.endswith(':latest') }}"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.

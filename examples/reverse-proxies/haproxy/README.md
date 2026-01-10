@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2019 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Rubén Cabrera
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # HAproxy reverse-proxy
 
 This directory contains sample files that show you how to do reverse-proxying using HAproxy.

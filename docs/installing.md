@@ -1,6 +1,20 @@
+<!--
+SPDX-FileCopyrightText: 2018 - 2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 - 2024 MDAD project contributors
+SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2019 Edgars Voroboks
+SPDX-FileCopyrightText: 2019 Michael Haak
+SPDX-FileCopyrightText: 2020 Kevin Lanni
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024 Mitja Jež
+SPDX-FileCopyrightText: 2024 Nikita Chernyi
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Installing
 
-<sup>[Prerequisites](prerequisites.md) > [Configuring your DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
+<sup>[Prerequisites](prerequisites.md) > [Configuring DNS settings](configuring-dns.md) > [Getting the playbook](getting-the-playbook.md) > [Configuring the playbook](configuring-playbook.md) > Installing</sup>
 
 If you've configured your DNS records and the playbook, you can start the installation procedure.
 
@@ -120,9 +134,11 @@ After configuring the playbook, run the command below:
 ansible-playbook -i inventory/hosts setup.yml --tags=install-matrix-static-files,start
 ```
 
+**If an error is not returned, the installation has completed and the services have been started successfully**🎉
+
 ## Things to do next
 
-After finilizing the installation, you can:
+After completing the installation, you can:
 
 - [check if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)
 - or [set up additional services](configuring-playbook.md#other-configuration-options) (bridges to other chat networks, bots, etc.)
@@ -133,7 +149,7 @@ After finilizing the installation, you can:
   * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
 
-### Maintaining your setup in the future
+### ⚠️ Keep the playbook and services up-to-date
 
 While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**.
 
@@ -141,7 +157,9 @@ The upstream projects, which this playbook makes use of, occasionally if not oft
 
 Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
 
-For more information about upgrading or maintaining services with the playbook, take at look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
+Also, do not forget to update your system regularly. While this playbook may install basic services, such as Docker, it will not interfere further with system maintenance. Keeping the system itself up-to-date is out of scope for this playbook.
+
+For more information about upgrading or maintaining services with the playbook, take a look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
 
 Feel free to **re-run the setup command any time** you think something is wrong with the server configuration. Ansible will take your configuration and update your server to match.
 

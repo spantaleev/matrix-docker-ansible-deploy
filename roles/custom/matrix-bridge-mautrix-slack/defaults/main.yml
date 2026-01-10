@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 Cody Wyatt Neiman
+# SPDX-FileCopyrightText: 2023 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023 Samuel Meenzen
+# SPDX-FileCopyrightText: 2024 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 # mautrix-slack is a Matrix <-> Slack bridge
 # Project source code URL: https://github.com/mautrix/slack
@@ -9,10 +17,12 @@ matrix_mautrix_slack_container_image_self_build_repo: "https://mau.dev/mautrix/s
 matrix_mautrix_slack_container_image_self_build_branch: "{{ 'main' if matrix_mautrix_slack_version == 'latest' else matrix_mautrix_slack_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/slack
-matrix_mautrix_slack_version: v0.1.4
+matrix_mautrix_slack_version: v0.2511.0
 # See: https://mau.dev/mautrix/slack/container_registry
-matrix_mautrix_slack_docker_image: "{{ matrix_mautrix_slack_docker_image_name_prefix }}mautrix/slack:{{ matrix_mautrix_slack_version }}"
-matrix_mautrix_slack_docker_image_name_prefix: "{{ 'localhost/' if matrix_mautrix_slack_container_image_self_build else 'dock.mau.dev/' }}"
+matrix_mautrix_slack_docker_image: "{{ matrix_mautrix_slack_docker_image_registry_prefix }}mautrix/slack:{{ matrix_mautrix_slack_version }}"
+matrix_mautrix_slack_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_slack_container_image_self_build else matrix_mautrix_slack_docker_image_registry_prefix_upstream }}"
+matrix_mautrix_slack_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_slack_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_slack_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
 matrix_mautrix_slack_docker_image_force_pull: "{{ matrix_mautrix_slack_docker_image.endswith(':latest') }}"
 
 matrix_mautrix_slack_base_path: "{{ matrix_base_data_path }}/mautrix-slack"
@@ -22,7 +32,34 @@ matrix_mautrix_slack_docker_src_files_path: "{{ matrix_mautrix_slack_base_path }
 
 matrix_mautrix_slack_homeserver_address: ""
 matrix_mautrix_slack_homeserver_domain: "{{ matrix_domain }}"
+# Whether asynchronous uploads via MSC2246 should be enabled for media.
+# Requires a homeserver that supports MSC2246 (https://github.com/matrix-org/matrix-spec-proposals/pull/2246).
+matrix_mautrix_slack_homeserver_async_media: false
 matrix_mautrix_slack_appservice_address: "http://matrix-mautrix-slack:8080"
+
+matrix_mautrix_slack_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+matrix_mautrix_slack_self_sign_enabled: "{{ matrix_bridges_self_sign_enabled }}"
+
+# Displayname template for Slack users. Available variables:
+#  .Name - The username of the user
+#  .Team.Name - The name of the team the channel is in
+#  .Team.Domain - The Slack subdomain of the team the channel is in
+#  .ID - The internal ID of the user
+#  .IsBot - Whether the user is a bot
+#  .Profile.DisplayName - The username or real name of the user (depending on settings)
+# Variables only available for users (not bots):
+#  .TeamID - The internal ID of the workspace the user is in
+#  .TZ - The timezone region of the user (e.g. Europe/London)
+#  .TZLabel - The label of the timezone of the user (e.g. Greenwich Mean Time)
+#  .TZOffset - The UTC offset of the timezone of the user (e.g. 0)
+#  .Profile.RealName - The real name of the user
+#  .Profile.FirstName - The first name of the user
+#  .Profile.LastName - The last name of the user
+#  .Profile.Title - The job title of the user
+#  .Profile.Pronouns - The pronouns of the user
+#  .Profile.Email - The email address of the user
+#  .Profile.Phone - The formatted phone number of the user
+matrix_mautrix_slack_network_displayname_template: '{% raw %}{{or .Profile.DisplayName .Profile.RealName .Name}}{{if .IsBot}} (bot){{end}}{% endraw %}'
 
 matrix_mautrix_slack_command_prefix: "!slack"
 
@@ -141,6 +178,8 @@ matrix_mautrix_slack_registration_yaml: |
       - exclusive: true
         regex: '^@{{ matrix_mautrix_slack_appservice_bot_username | regex_escape }}:{{ matrix_mautrix_slack_homeserver_domain | regex_escape }}$'
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
+  io.element.msc4190: {{ matrix_mautrix_slack_msc4190_enabled | to_json }}
 
 matrix_mautrix_slack_registration: "{{ matrix_mautrix_slack_registration_yaml | from_yaml }}"
 
@@ -154,3 +193,12 @@ matrix_mautrix_slack_bridge_encryption_pickle_key: maunium.net/go/mautrix-whatsa
 
 matrix_mautrix_slack_provisioning_shared_secret: ''
 matrix_mautrix_slack_public_media_signing_key: ''
+
+# Controls whether relay mode is enabled
+matrix_mautrix_slack_bridge_relay_enabled: "{{ matrix_bridges_relay_enabled }}"
+
+# Controls whether only admins can set themselves as relay users
+matrix_mautrix_slack_bridge_relay_admin_only: true
+
+# List of user login IDs which anyone can set as a relay, as long as the relay user is in the room
+matrix_mautrix_slack_bridge_relay_default_relays: []

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2024 David Mehren
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 
 - ansible.builtin.set_fact:
@@ -44,8 +49,8 @@
     path: "{{ item.path }}"
     state: directory
     mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_mautrix_meta_messenger_base_path }}", when: true}
     - {path: "{{ matrix_mautrix_meta_messenger_config_path }}", when: true}
@@ -62,7 +67,7 @@
         version: "{{ matrix_mautrix_meta_messenger_container_image.split(':')[1] }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_mautrix_meta_messenger_git_pull_results
 
     - name: Ensure mautrix-meta-messenger container image is built
@@ -81,24 +86,24 @@
     content: "{{ matrix_mautrix_meta_messenger_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_meta_messenger_config_path }}/config.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-meta-messenger registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_meta_messenger_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_meta_messenger_config_path }}/registration.yaml"
     mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 - name: Ensure mautrix-meta-messenger support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_mautrix_meta_messenger_base_path }}/{{ item }}"
     mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
 

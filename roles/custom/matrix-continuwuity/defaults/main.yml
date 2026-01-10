@@ -1,0 +1,208 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# continuwuity is a continuation of conduwuit (https://conduwuit.puppyirl.gay/).
+# Project source code URL: https://forgejo.ellis.link/continuwuation/continuwuity/
+# See: https://continuwuity.org/
+
+matrix_continuwuity_enabled: true
+
+matrix_continuwuity_hostname: ''
+
+matrix_continuwuity_docker_image: "{{ matrix_continuwuity_docker_image_registry_prefix }}/continuwuation/continuwuity:{{ matrix_continuwuity_docker_image_tag }}"
+# renovate: datasource=docker depName=forgejo.ellis.link/continuwuation/-/packages/container/continuwuity/
+matrix_continuwuity_docker_image_tag: main
+matrix_continuwuity_docker_image_force_pull: "{{ matrix_continuwuity_docker_image.endswith(':latest') }}"
+matrix_continuwuity_docker_image_registry_prefix: "{{ matrix_continuwuity_docker_image_registry_prefix_upstream }}"
+matrix_continuwuity_docker_image_registry_prefix_upstream: "{{ matrix_continuwuity_docker_image_registry_prefix_upstream_default }}"
+matrix_continuwuity_docker_image_registry_prefix_upstream_default: forgejo.ellis.link
+
+matrix_continuwuity_base_path: "{{ matrix_base_data_path }}/continuwuity"
+matrix_continuwuity_config_path: "{{ matrix_continuwuity_base_path }}/config"
+matrix_continuwuity_data_path: "{{ matrix_continuwuity_base_path }}/data"
+
+matrix_continuwuity_config_port_number: 6167
+
+matrix_continuwuity_tmp_directory_size_mb: 500
+
+# List of systemd services that matrix-continuwuity.service depends on
+matrix_continuwuity_systemd_required_services_list: "{{ matrix_continuwuity_systemd_required_services_list_default + matrix_continuwuity_systemd_required_services_list_auto + matrix_continuwuity_systemd_required_services_list_custom }}"
+matrix_continuwuity_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_continuwuity_systemd_required_services_list_auto: []
+matrix_continuwuity_systemd_required_services_list_custom: []
+
+# List of systemd services that matrix-continuwuity.service wants
+matrix_continuwuity_systemd_wanted_services_list: []
+
+# Controls how long to sleep for after starting the matrix-synapse container.
+#
+# Delaying, so that the homeserver can manage to fully start and various services
+# that depend on it (`matrix_continuwuity_systemd_required_services_list` and `matrix_continuwuity_systemd_wanted_services_list`)
+# may only start after the homeserver is up and running.
+#
+# This can be set to 0 to remove the delay.
+matrix_continuwuity_systemd_service_post_start_delay_seconds: 3
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_continuwuity_container_network: ""
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_continuwuity_container_additional_networks: "{{ matrix_continuwuity_container_additional_networks_auto + matrix_continuwuity_container_additional_networks_custom }}"
+matrix_continuwuity_container_additional_networks_auto: []
+matrix_continuwuity_container_additional_networks_custom: []
+
+# matrix_continuwuity_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_continuwuity_container_labels_additional_labels`.
+matrix_continuwuity_container_labels_traefik_enabled: true
+matrix_continuwuity_container_labels_traefik_docker_network: "{{ matrix_continuwuity_container_network }}"
+matrix_continuwuity_container_labels_traefik_entrypoints: web-secure
+matrix_continuwuity_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added for handling the root (/) path on a public Traefik entrypoint.
+matrix_continuwuity_container_labels_public_client_root_enabled: true
+matrix_continuwuity_container_labels_public_client_root_traefik_hostname: "{{ matrix_continuwuity_hostname }}"
+matrix_continuwuity_container_labels_public_client_root_traefik_rule: "Host(`{{ matrix_continuwuity_container_labels_public_client_root_traefik_hostname }}`) && Path(`/`)"
+matrix_continuwuity_container_labels_public_client_root_traefik_priority: 0
+matrix_continuwuity_container_labels_public_client_root_traefik_entrypoints: "{{ matrix_continuwuity_container_labels_traefik_entrypoints }}"
+matrix_continuwuity_container_labels_public_client_root_traefik_tls: "{{ matrix_continuwuity_container_labels_public_client_root_traefik_entrypoints != 'web' }}"
+matrix_continuwuity_container_labels_public_client_root_traefik_tls_certResolver: "{{ matrix_continuwuity_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_continuwuity_container_labels_public_client_root_redirection_enabled: false
+matrix_continuwuity_container_labels_public_client_root_redirection_url: ""
+
+# Controls whether labels will be added that expose the Client-Server API on a public Traefik entrypoint.
+matrix_continuwuity_container_labels_public_client_api_enabled: true
+matrix_continuwuity_container_labels_public_client_api_traefik_hostname: "{{ matrix_continuwuity_hostname }}"
+matrix_continuwuity_container_labels_public_client_api_traefik_path_prefix: /_matrix
+matrix_continuwuity_container_labels_public_client_api_traefik_rule: "Host(`{{ matrix_continuwuity_container_labels_public_client_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_continuwuity_container_labels_public_client_api_traefik_path_prefix }}`)"
+matrix_continuwuity_container_labels_public_client_api_traefik_priority: 0
+matrix_continuwuity_container_labels_public_client_api_traefik_entrypoints: "{{ matrix_continuwuity_container_labels_traefik_entrypoints }}"
+matrix_continuwuity_container_labels_public_client_api_traefik_tls: "{{ matrix_continuwuity_container_labels_public_client_api_traefik_entrypoints != 'web' }}"
+matrix_continuwuity_container_labels_public_client_api_traefik_tls_certResolver: "{{ matrix_continuwuity_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose the Client-Server API on the internal Traefik entrypoint.
+# This is similar to `matrix_continuwuity_container_labels_public_client_api_enabled`, but the entrypoint and intent is different.
+matrix_continuwuity_container_labels_internal_client_api_enabled: false
+matrix_continuwuity_container_labels_internal_client_api_traefik_path_prefix: "{{ matrix_continuwuity_container_labels_public_client_api_traefik_path_prefix }}"
+matrix_continuwuity_container_labels_internal_client_api_traefik_rule: "PathPrefix(`{{ matrix_continuwuity_container_labels_internal_client_api_traefik_path_prefix }}`)"
+matrix_continuwuity_container_labels_internal_client_api_traefik_priority: "{{ matrix_continuwuity_container_labels_public_client_api_traefik_priority }}"
+matrix_continuwuity_container_labels_internal_client_api_traefik_entrypoints: ""
+
+# Controls whether labels will be added that expose the Server-Server API (Federation API) on a public Traefik entrypoint.
+matrix_continuwuity_container_labels_public_federation_api_enabled: "{{ matrix_continuwuity_config_allow_federation }}"
+matrix_continuwuity_container_labels_public_federation_api_traefik_hostname: "{{ matrix_continuwuity_hostname }}"
+matrix_continuwuity_container_labels_public_federation_api_traefik_path_prefix: /_matrix
+matrix_continuwuity_container_labels_public_federation_api_traefik_rule: "Host(`{{ matrix_continuwuity_container_labels_public_federation_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_continuwuity_container_labels_public_federation_api_traefik_path_prefix }}`)"
+matrix_continuwuity_container_labels_public_federation_api_traefik_priority: 0
+matrix_continuwuity_container_labels_public_federation_api_traefik_entrypoints: ''
+# TLS is force-enabled here, because the spec (https://spec.matrix.org/v1.9/server-server-api/#tls) says that the federation API must use HTTPS.
+matrix_continuwuity_container_labels_public_federation_api_traefik_tls: true
+matrix_continuwuity_container_labels_public_federation_api_traefik_tls_certResolver: "{{ matrix_continuwuity_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose the `/_continuwuity` path prefix on a public Traefik entrypoint.
+matrix_continuwuity_container_labels_public_continuwuity_api_enabled: true
+matrix_continuwuity_container_labels_public_continuwuity_api_traefik_hostname: "{{ matrix_continuwuity_hostname }}"
+matrix_continuwuity_container_labels_public_continuwuity_api_traefik_path_prefix: /_continuwuity
+matrix_continuwuity_container_labels_public_continuwuity_api_traefik_rule: "Host(`{{ matrix_continuwuity_container_labels_public_continuwuity_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_continuwuity_container_labels_public_continuwuity_api_traefik_path_prefix }}`)"
+matrix_continuwuity_container_labels_public_continuwuity_api_traefik_priority: 0
+matrix_continuwuity_container_labels_public_continuwuity_api_traefik_entrypoints: "{{ matrix_continuwuity_container_labels_traefik_entrypoints }}"
+matrix_continuwuity_container_labels_public_continuwuity_api_traefik_tls: "{{ matrix_continuwuity_container_labels_public_continuwuity_api_traefik_entrypoints != 'web' }}"
+matrix_continuwuity_container_labels_public_continuwuity_api_traefik_tls_certResolver: "{{ matrix_continuwuity_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_continuwuity_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_continuwuity_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_continuwuity_container_labels_additional_labels: ''
+
+# Extra arguments for the Docker container
+matrix_continuwuity_container_extra_arguments: []
+
+# Specifies which template files to use when configuring continuwuity.
+# If you'd like to have your own different configuration, feel free to copy and paste
+# the original files into your inventory (e.g. in `inventory/host_vars/matrix.example.com/`)
+# and then change the specific host's `vars.yml` file like this:
+# matrix_continuwuity_template_continuwuity_config: "{{ playbook_dir }}/inventory/host_vars/matrix.example.com/continuwuity.toml.j2"
+matrix_continuwuity_template_continuwuity_config: "{{ role_path }}/templates/continuwuity.toml.j2"
+
+# Max size for uploads, in bytes
+matrix_continuwuity_config_server_name: "{{ matrix_domain }}"
+
+# Max size for uploads, in bytes
+matrix_continuwuity_config_max_request_size: 20_000_000
+
+# Enables registration. If set to false, no users can register on this server.
+matrix_continuwuity_config_allow_registration: false
+
+# Controls if newly registered users are automatically suspended, requiring admin approval.
+matrix_continuwuity_config_suspend_on_register: false
+
+# Controls the `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse` setting.
+# This is only used when `matrix_continuwuity_config_allow_registration` is set to true and no registration token is configured.
+matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse: false
+
+# Controls the `registration_token` setting.
+# When registration is enabled (`matrix_continuwuity_config_allow_registration`) you:
+# - either need to set a token to protect registration from abuse
+# - or you need to enable the `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse` setting
+#   (see `matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`),
+#   to allow registration without any form of 2nd-step.
+matrix_continuwuity_config_registration_token: ''
+
+# Controls the `new_user_displayname_suffix` setting.
+# This is the suffix that will be added to the displayname of new users.
+# Upstream defaults this to "🏳️‍⚧️", but we keep this consistent across all homeserver implementations and do not enable a suffix.
+matrix_continuwuity_config_new_user_displayname_suffix: ""
+
+# Controls the `allow_check_for_updates` setting.
+matrix_continuwuity_config_allow_check_for_updates: false
+
+# Controls the `emergency_password` setting.
+matrix_continuwuity_config_emergency_password: ''
+
+# Controls the `matrix_continuwuity_trusted_servers`` setting.
+matrix_continuwuity_config_trusted_servers:
+ - "matrix.org"
+
+# Controls the `matrix_continuwuity_config_log` setting.
+matrix_continuwuity_config_log: "info,state_res=warn,rocket=off,_=off,sled=off"
+
+# TURN integration.
+# See: https://continuwuity.org/turn
+matrix_continuwuity_config_turn_uris: []
+matrix_continuwuity_config_turn_secret: ''
+matrix_continuwuity_config_turn_username: ''
+matrix_continuwuity_config_turn_password: ''
+
+# Controls whether the self-check feature should validate SSL certificates.
+matrix_continuwuity_self_check_validate_certificates: true
+
+# Controls server (de)federation settings.
+matrix_continuwuity_config_allow_federation: true
+matrix_continuwuity_config_allowed_remote_server_names: []
+matrix_continuwuity_config_forbidden_remote_server_names: []
+matrix_continuwuity_config_forbidden_remote_room_directory_server_names: []
+matrix_continuwuity_config_prevent_media_downloads_from: []
+matrix_continuwuity_config_ignore_messages_from_server_names: []
+
+# Controls the `url_preview_domain_contains_allowlist` setting.
+matrix_continuwuity_config_url_preview_domain_contains_allowlist: []
+
+# Additional environment variables to pass to the container.
+#
+# Environment variables take priority over settings in the configuration file.
+#
+# Example:
+# matrix_continuwuity_environment_variables_extension: |
+#   CONTINUWUITY_MAX_REQUEST_SIZE=50000000
+#   CONTINUWUITY_REQUEST_TIMEOUT=60
+matrix_continuwuity_environment_variables_extension: ''
