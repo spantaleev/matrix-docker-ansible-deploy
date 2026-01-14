@@ -200,12 +200,13 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(r0|v3|unstable)/notifications$
 
   # Encryption requests
-  # Note that ^/_matrix/client/(r0|v3|unstable)/keys/upload/ requires `worker_main_http_uri`
   - ^/_matrix/client/(r0|v3|unstable)/keys/query$
   - ^/_matrix/client/(r0|v3|unstable)/keys/changes$
   - ^/_matrix/client/(r0|v3|unstable)/keys/claim$
   - ^/_matrix/client/(r0|v3|unstable)/room_keys/
-  - ^/_matrix/client/(r0|v3|unstable)/keys/upload/
+  - ^/_matrix/client/(r0|v3|unstable)/keys/upload$
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/device_signing/upload$
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/signatures/upload$
 
   # Registration/login requests
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/login$
@@ -222,6 +223,12 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/join/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/knock/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/profile/
+
+  # Unstable MSC4140 support
+  - ^/_matrix/client/unstable/org.matrix.msc4140/delayed_events(/.*/restart)?$
+
+  # Admin API requests
+  - ^/_synapse/admin/v2/users/[^/]+$
 
   # Start of intentionally-ignored-endpoints
   #
