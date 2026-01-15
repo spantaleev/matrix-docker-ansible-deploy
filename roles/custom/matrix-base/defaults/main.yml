@@ -321,13 +321,6 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port: "{{ matrix
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port: "{{ matrix_federation_public_port }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_host_bind_port_udp: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled else '' }}"
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config: "{{ (matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_auto)) | combine(matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_custom, recursive=True) }}"
-# Traefik v3.6.3+ blocks encoded characters in request paths by default for security.
-# Matrix API endpoints require encoded slashes and hashes in endpoints containing room IDs, room aliases, etc.
-# Ref:
-# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4798
-# - https://doc.traefik.io/traefik/migrate/v3/#v364
-matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http_encodedCharacters_allowEncodedSlash: true  # noqa: var-naming[pattern]
-matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http_encodedCharacters_allowEncodedHash: true  # noqa: var-naming[pattern]
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_enabled: true
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_advertisedPort: "{{ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_port }}"  # noqa var-naming
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport_respondingTimeouts_readTimeout: "{{ traefik_config_entrypoint_web_secure_transport_respondingTimeouts_readTimeout }}"  # noqa var-naming
@@ -336,19 +329,6 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_transport
 matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_default: |
   {{
     {}
-
-    | combine(
-      (
-        {
-          'http': {
-            'encodedCharacters': {
-              'allowEncodedSlash': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http_encodedCharacters_allowEncodedSlash,
-              'allowEncodedHash': matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http_encodedCharacters_allowEncodedHash,
-            }
-          }
-        }
-      )
-    )
 
     | combine(
       (
@@ -412,30 +392,7 @@ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name: matrix-inter
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port: 8008
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_host_bind_port: ''
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config: "{{ (matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_default | combine(matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_auto)) | combine(matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_custom, recursive=True) }}"
-# Traefik v3.6.3+ blocks encoded characters in request paths by default for security.
-# Matrix API endpoints require encoded slashes and hashes in endpoints containing room IDs, room aliases, etc.
-# Ref:
-# - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4798
-# - https://doc.traefik.io/traefik/migrate/v3/#v364
-matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_http_encodedCharacters_allowEncodedSlash: true  # noqa: var-naming[pattern]
-matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_http_encodedCharacters_allowEncodedHash: true  # noqa: var-naming[pattern]
-matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_default: |
-  {{
-    {}
-
-    | combine(
-      (
-        {
-          'http': {
-            'encodedCharacters': {
-              'allowEncodedSlash': matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_http_encodedCharacters_allowEncodedSlash,
-              'allowEncodedHash': matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_http_encodedCharacters_allowEncodedHash,
-            }
-          }
-        }
-      )
-    )
-  }}
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_default: {}
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_auto: {}
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_custom: {}
 
