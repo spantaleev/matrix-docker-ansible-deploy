@@ -1092,6 +1092,11 @@ matrix_synapse_workers_media_repository_workers_container_arguments: []
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_enable_media_repo: "{{ not matrix_synapse_ext_media_repo_enabled and (not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length == 0)) }}"
 
+# matrix_synapse_enable_local_media_storage controls whether the local on-disk media storage provider is enabled in Synapse.
+# When disabled, media is stored only in configured `media_storage_providers` and temporary files are used for processing (no local caching).
+# Warning: If this option is set to false and no `media_storage_providers` are configured, all media requests will return 404 errors as there will be no storage backend available.
+matrix_synapse_enable_local_media_storage: true
+
 # matrix_synapse_enable_authenticated_media controls if authenticated media is enabled.
 # If enabled all "old" media remains accessible over the legacy endpoints but new media is blocked.
 # while this option is enabled all media access and downloads have to be done via authenticated endpoints.
