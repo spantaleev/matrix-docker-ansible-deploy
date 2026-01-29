@@ -11,7 +11,7 @@ traefik.enable=true
 traefik.docker.network={{ matrix_appservice_irc_container_labels_traefik_docker_network }}
 {% endif %}
 
-traefik.http.services.matrix-appservice-irc-media-proxy.loadbalancer.server.port={{ matrix_appservice_irc_homeserver_media_bind_port }}
+traefik.http.services.matrix-appservice-irc-media-proxy.loadbalancer.server.port={{ matrix_appservice_irc_ircService_mediaProxy_bindPort }}
 
 ############################################################
 #                                                          #
@@ -23,14 +23,14 @@ traefik.http.services.matrix-appservice-irc-media-proxy.loadbalancer.server.port
 
 traefik.http.routers.matrix-appservice-irc-media-proxy.rule={{ matrix_appservice_irc_container_labels_media_proxy_traefik_rule }}
 
-{% if matrix_appservice_irc_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.matrix-appservice-irc-media-proxy-slashless-redirect.redirectregex.regex=({{ matrix_appservice_irc_container_labels_traefik_path_prefix | quote }})$
+{% if matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-appservice-irc-media-proxy-slashless-redirect.redirectregex.regex=({{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix | quote }})$
 traefik.http.middlewares.matrix-appservice-irc-media-proxy-slashless-redirect.redirectregex.replacement=${1}/
 {% set middlewares = middlewares + ['matrix-appservice-irc-media-proxy-slashless-redirect'] %}
 {% endif %}
 
-{% if matrix_appservice_irc_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.matrix-appservice-irc-media-proxy-strip-prefix.stripprefix.prefixes={{ matrix_appservice_irc_container_labels_traefik_path_prefix }}
+{% if matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-appservice-irc-media-proxy-strip-prefix.stripprefix.prefixes={{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}
 {% set middlewares = middlewares + ['matrix-appservice-irc-media-proxy-strip-prefix'] %}
 {% endif %}
 
