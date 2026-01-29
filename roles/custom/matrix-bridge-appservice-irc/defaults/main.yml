@@ -490,10 +490,10 @@ matrix_appservice_irc_container_extra_arguments: []
 
 # matrix_appservice_irc_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # To inject your own other container labels, see `matrix_appservice_irc_container_labels_additional_labels`.
-matrix_appservice_irc_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_appservice_irc_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_appservice_irc_container_labels_traefik_tls_certresolver: "{{ traefik_certResolver_primary }}"
+matrix_appservice_irc_container_labels_traefik_enabled: true
+matrix_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_appservice_irc_container_network }}"
+matrix_appservice_irc_container_labels_traefik_entrypoints: web-secure
+matrix_appservice_irc_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
 # Controls whether Traefik labels for the media proxy will be applied
 matrix_appservice_irc_container_labels_media_proxy_enabled: true
@@ -502,7 +502,7 @@ matrix_appservice_irc_container_labels_media_proxy_traefik_rule: "Host(`{{ matri
 matrix_appservice_irc_container_labels_media_proxy_traefik_priority: 2000
 matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints: "{{ matrix_appservice_irc_container_labels_traefik_entrypoints }}"
 matrix_appservice_irc_container_labels_media_proxy_traefik_tls: "{{ matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints != 'web' }}"
-matrix_appservice_irc_container_labels_media_proxy_traefik_tls_certresolver: "{{ matrix_appservice_irc_container_labels_traefik_tls_certresolver }}"
+matrix_appservice_irc_container_labels_media_proxy_traefik_tls_certResolver: "{{ matrix_appservice_irc_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # matrix-appservice-irc container additional labels
 matrix_appservice_irc_container_labels_additional_labels: ''
