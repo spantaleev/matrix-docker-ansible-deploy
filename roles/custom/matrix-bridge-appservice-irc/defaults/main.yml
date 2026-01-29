@@ -497,7 +497,8 @@ matrix_appservice_irc_container_labels_traefik_tls_certResolver: default  # noqa
 
 # Controls whether Traefik labels for the media proxy will be applied
 matrix_appservice_irc_container_labels_media_proxy_enabled: true
-matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix: "/irc"
+# Derived from publicUrl_pathPrefix, stripping any trailing slash (unless it's just "/")
+matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix: "{{ '/' if matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix == '/' else matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix.rstrip('/') }}"
 matrix_appservice_irc_container_labels_media_proxy_traefik_rule: "Host(`{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_hostname }}`) && PathPrefix(`{{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}`)"
 matrix_appservice_irc_container_labels_media_proxy_traefik_priority: 2000
 matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints: "{{ matrix_appservice_irc_container_labels_traefik_entrypoints }}"
