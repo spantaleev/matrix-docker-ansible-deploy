@@ -862,6 +862,8 @@ matrix_appservice_irc_database_hostname: "{{ postgres_connection_hostname if pos
 matrix_appservice_irc_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.irc.db', rounds=655555) | to_uuid }}"
 matrix_appservice_irc_database_container_network: "{{ postgres_container_network if postgres_enabled else '' }}"
 
+matrix_appservice_irc_ircService_mediaProxy_publicUrl_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"  # noqa var-naming
+
 matrix_appservice_irc_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 matrix_appservice_irc_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
