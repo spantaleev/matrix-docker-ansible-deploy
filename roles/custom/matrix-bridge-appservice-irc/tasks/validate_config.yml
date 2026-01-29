@@ -44,3 +44,27 @@
     - {'old': 'matrix_appservice_irc_container_expose_client_server_api_port', 'new': '<superseded by matrix_appservice_irc_container_http_host_bind_port>'}
     - {'old': 'matrix_appservice_irc_container_self_build', 'new': 'matrix_appservice_irc_container_image_self_build'}
     - {'old': 'matrix_appservice_irc_docker_image_name_prefix', 'new': 'matrix_appservice_irc_docker_image_registry_prefix'}
+    - {'old': 'matrix_appservice_irc_homeserver_media_url', 'new': '<removed; media proxying now uses matrix_appservice_irc_ircService_mediaProxy_publicUrl>'}
+
+- name: Fail if matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix does not start with a slash
+  ansible.builtin.fail:
+    msg: >-
+      matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix (`{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}`) must start with a slash (e.g. `/` or `/irc/`).
+  when: "matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix[0] != '/'"
+
+- name: Fail if matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix does not end with a slash
+  ansible.builtin.fail:
+    msg: >-
+      matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix (`{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}`) must end with a slash (e.g. `/` or `/irc/`).
+  when: "matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix[-1] != '/'"
+
+- when: matrix_appservice_irc_container_labels_traefik_enabled | bool
+  block:
+    # We ensure it doesn't end with a slash, because we handle both (slash and no-slash).
+    # Knowing that the path_prefix does not end with a slash ensures we know how to set these routes up
+    # without having to do "does it end with a slash" checks elsewhere.
+    - name: Fail if matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix ends with a slash
+      ansible.builtin.fail:
+        msg: >-
+          matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix (`{{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/irc`).
+      when: "matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix != '/' and matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix[-1] == '/'"

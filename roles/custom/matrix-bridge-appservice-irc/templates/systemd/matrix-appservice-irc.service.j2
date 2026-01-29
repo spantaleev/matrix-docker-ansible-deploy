@@ -26,8 +26,12 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% if matrix_appservice_irc_container_http_host_bind_port %}
 			-p {{ matrix_appservice_irc_container_http_host_bind_port }}:9999 \
 			{% endif %}
+			{% if matrix_appservice_irc_container_media_proxy_host_bind_port %}
+			-p {{ matrix_appservice_irc_container_media_proxy_host_bind_port }}:{{ matrix_appservice_irc_ircService_mediaProxy_bindPort }} \
+			{% endif %}
 			--mount type=bind,src={{ matrix_appservice_irc_config_path }},dst=/config \
 			--mount type=bind,src={{ matrix_appservice_irc_data_path }},dst=/data \
+			--label-file={{ matrix_appservice_irc_base_path }}/labels \
 			{% for arg in matrix_appservice_irc_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
