@@ -21,11 +21,14 @@ matrix_synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
 matrix_synapse_admin_config_path: "{{ matrix_synapse_admin_base_path }}/config"
 matrix_synapse_admin_docker_src_files_path: "{{ matrix_synapse_admin_base_path }}/docker-src"
 
+matrix_synapse_admin_container_uid: ''
+matrix_synapse_admin_container_gid: ''
+
 matrix_synapse_admin_container_image_self_build: false
 matrix_synapse_admin_container_image_self_build_repo: "https://github.com/etkecc/synapse-admin.git"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/synapse-admin
-matrix_synapse_admin_version: v0.11.1-etke52
+matrix_synapse_admin_version: v0.11.1-etke53
 matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
 matrix_synapse_admin_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_synapse_admin_docker_image_registry_prefix_upstream }}"
 matrix_synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_synapse_admin_docker_image_registry_prefix_upstream_default }}"
@@ -40,7 +43,7 @@ matrix_synapse_admin_container_network: matrix-synapse-admin
 # Use this to expose this container to a reverse proxy, which runs in a different container network.
 matrix_synapse_admin_container_additional_networks: []
 
-# Controls whether the matrix-synapse-admin container exposes its HTTP port (tcp/80 in the container).
+# Controls whether the matrix-synapse-admin container exposes its HTTP port (tcp/8080 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8766"), or empty string to not expose.
 matrix_synapse_admin_container_http_host_bind_port: ''
@@ -212,15 +215,21 @@ matrix_synapse_admin_config_corsCredentials: "same-origin"  # noqa var-naming
 
 # Controls the menu configuration setting, which, if defined, adds new menu items to the Synapse Admin UI.
 # The format is a list of objects, where each object has the following keys:
-# - `label` (string): The label of the menu item.
-# - `icon` (string): The icon of the menu item, one of the https://github.com/etkecc/synapse-admin/blob/main/src/components/icons.ts
-# - `url` (string): The URL of the menu item.
+# - `label` (string, required): The label of the menu item.
+# - `i18n` (dict, optional): Dictionary of translations for the label. The keys should be BCP 47 language tags (e.g., en, fr, de) supported by Synapse Admin (see src/i18n).
+# - `icon` (string, optional): The icon of the menu item, one of the https://github.com/etkecc/synapse-admin/blob/main/src/components/icons.ts
+# - `url` (string, required): The URL of the menu item.
 # Example:
 # [
 #   {
 #     "label": "Contact support",
+#     "i18n": {
+#       "de": "Support kontaktieren",
+#       "fr": "Contacter le support",
+#       "zh": "联系支持"
+#     },
 #     "icon": "SupportAgent",
-#     "url": "https://github.com/spantaleev/matrix-docker-ansible-deploy/issues"
+#     "url": "https://github.com/etkecc/synapse-admin/issues"
 #   }
 # ]
 matrix_synapse_admin_config_menu: []
