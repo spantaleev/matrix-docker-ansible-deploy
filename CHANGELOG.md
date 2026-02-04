@@ -1,5 +1,18 @@
 # 2026-02-04
 
+## baibot now supports OpenAI's built-in tools (Web Search and Code Interpreter)
+
+**TLDR**: if you're using the [OpenAI provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#openai) with [baibot](docs/configuring-playbook-bot-baibot.md), you can now enable [built-in tools](https://github.com/etkecc/baibot/blob/61d18b2/docs/features.md#%EF%B8%8F-built-in-tools-openai-only) (`web_search` and `code_interpreter`) to extend the model's capabilities.
+
+These tools are **disabled by default** and can be enabled via Ansible variables for static agent configurations:
+
+```yaml
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_web_search: true
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_code_interpreter: true
+```
+
+Users who define agents dynamically at runtime will need to [update their agents](https://github.com/etkecc/baibot/blob/61d18b2/docs/agents.md#updating-agents) to enable these tools. See the [baibot v1.14.0 changelog](https://github.com/etkecc/baibot/blob/61d18b2/CHANGELOG.md) for details.
+
 ## Whoami-based sync worker routing for improved sticky sessions for Synapse
 
 Deployments using [Synapse workers](./docs/configuring-playbook-synapse.md#load-balancing-with-workers) now benefit from improved sync worker routing via a new whoami-based mechanism (making use of the [whoami Matrix Client-Server API](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3accountwhoami)).

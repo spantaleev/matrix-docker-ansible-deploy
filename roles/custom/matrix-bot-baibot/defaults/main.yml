@@ -17,7 +17,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v1.13.0
+matrix_bot_baibot_version: v1.14.0
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_registry_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else matrix_bot_baibot_container_image_registry_prefix_upstream }}"
 matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
@@ -395,6 +395,11 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_response_tokens: ~
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_completion_tokens: 128000
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_context_tokens: 400000
+# Built-in tools configuration (OpenAI only).
+# These tools extend the model's capabilities but are disabled by default following upstream defaults.
+# See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-built-in-tools-openai-only
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_web_search: false
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_code_interpreter: false
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_enabled: true
 matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_model_id: whisper-1
