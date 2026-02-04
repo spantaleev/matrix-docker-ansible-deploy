@@ -323,10 +323,6 @@ matrix_synapse_reverse_proxy_companion_njs_enabled: "{{ matrix_synapse_reverse_p
 # This works with any authentication system (native Synapse auth, MAS, etc.) because Synapse
 # handles the token validation internally.
 #
-# Without this, sticky routing falls back to parsing the username from the access token (only works
-# with native Synapse tokens of the form syt_<base64 username>_...), which only provides
-# device-level stickiness (same token -> same worker) rather than user-level stickiness.
-#
 # Enabled by default when there are sync workers, because sync workers benefit from user-level
 # stickiness due to their per-user in-memory caches.
 matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_enabled: "{{ matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'sync_worker') | list | length > 0 }}"
