@@ -41,20 +41,48 @@
 	{% endfor %}
 {% endmacro %}
 
+{% macro render_locations_to_upstream_with_whoami_sync_worker_router(locations, upstream_name) %}
+	{% for location in locations %}
+	location ~ {{ location }} {
+		# Use auth_request to call the whoami sync worker router.
+		# The handler resolves the access token to a user identifier and returns it
+		# in the X-User-Identifier header, which is then used for upstream hashing.
+		auth_request /_whoami_sync_worker_router;
+		auth_request_set $user_identifier $sent_http_x_user_identifier;
+
+		{% if matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_debug_headers_enabled %}
+		add_header X-Sync-Worker-Router-User-Identifier $user_identifier always;
+		add_header X-Sync-Worker-Router-Upstream $upstream_addr always;
+		{% endif %}
+
+		proxy_pass http://{{ upstream_name }}$request_uri;
+		proxy_http_version 1.1;
+		proxy_set_header Connection "";
+	}
+	{% endfor %}
+{% endmacro %}
+
 {% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
 
+# Access token to user identifier mapping logic.
+# This is used for sticky routing to ensure requests from the same user are routed to the same worker.
+{% if not matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_enabled %}
+# Extracts the base64-encoded localpart from native Synapse access tokens.
+# Native Synapse tokens have the format: syt_<base64 localpart>_<random>_<crc>
+# See: https://github.com/element-hq/synapse/blob/1bddd25a85d82b2ef4a2a42f6ecd476108d7dd96/synapse/handlers/auth.py#L1448-L1459
 # Maps from https://tcpipuk.github.io/synapse/deployment/nginx.html#mapsconf
-# Client username from access token
+# Note: This only works with native Synapse tokens, not with MAS or other auth systems.
 map $arg_access_token $accesstoken_from_urlparam {
-  default                    $arg_access_token;
-  "~syt_(?<username>.*?)_.*" $username;
+  default                          $arg_access_token;
+  "~syt_(?<b64localpart>.*?)_.*"  $b64localpart;
 }
-# Client username from MXID
-map $http_authorization $mxid_localpart {
-  default                           $http_authorization;
-  "~Bearer syt_(?<username>.*?)_.*" $username;
-  ""                                $accesstoken_from_urlparam;
+map $http_authorization $user_identifier {
+  default                                 $http_authorization;
+  "~Bearer syt_(?<b64localpart>.*?)_.*"   $b64localpart;
+  ""                                      $accesstoken_from_urlparam;
 }
+{% endif %}
+
 # Whether to upgrade HTTP connection
 map $http_upgrade $connection_upgrade {
   default upgrade;
@@ -76,7 +104,7 @@ map $request_uri $room_name {
 	{% endif %}
 
 	{% if sync_workers | length > 0 %}
-	{{- render_worker_upstream('sync_workers_upstream', sync_workers, 'hash $mxid_localpart consistent;') }}
+	{{- render_worker_upstream('sync_workers_upstream', sync_workers, 'hash $user_identifier consistent;') }}
 	{% endif %}
 
 	{% if client_reader_workers | length > 0 %}
@@ -133,6 +161,17 @@ server {
 	proxy_buffering on;
 	proxy_max_temp_file_size 0;
 	proxy_set_header Host $host;
+
+	{% if matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_enabled %}
+	# Internal location for whoami-based sync worker routing.
+	# This is called via auth_request from sync worker locations.
+	# The njs handler calls the whoami endpoint to resolve access tokens to usernames,
+	# then returns the username in the X-User-Identifier header for upstream hashing.
+	location = /_whoami_sync_worker_router {
+		internal;
+		js_content whoami_sync_worker_router.handleAuthRequest;
+	}
+	{% endif %}
 
 	{% if matrix_synapse_reverse_proxy_companion_synapse_workers_enabled %}
 		# Client-server overrides — These locations must go to the main Synapse process
@@ -207,7 +246,11 @@ server {
 			# sync workers
 			# https://tcpipuk.github.io/synapse/deployment/workers.html
 			# https://tcpipuk.github.io/synapse/deployment/nginx.html#locationsconf
+			{% if matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_enabled %}
+			{{ render_locations_to_upstream_with_whoami_sync_worker_router(matrix_synapse_reverse_proxy_companion_synapse_sync_worker_client_server_locations, 'sync_workers_upstream') }}
+			{% else %}
 			{{ render_locations_to_upstream(matrix_synapse_reverse_proxy_companion_synapse_sync_worker_client_server_locations, 'sync_workers_upstream') }}
+			{% endif %}
 		{% endif %}
 
 		{% if client_reader_workers | length > 0 %}
