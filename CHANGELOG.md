@@ -1,3 +1,11 @@
+# 2026-02-06
+
+## The Sliding Sync proxy has been removed from the playbook
+
+The [Sliding Sync proxy](./docs/configuring-playbook-sliding-sync-proxy.md) has been removed from the playbook, as it's been replaced with a different method (called Simplified Sliding Sync) integrated to newer homeservers by default (**Conduit** homeserver from version `0.6.0` or **Synapse** from version `1.114`).
+
+The playbook will let you know if you're using any `matrix_sliding_sync_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the proxy manually](./docs/configuring-playbook-sliding-sync-proxy.md#uninstalling-the-proxy-manually).
+
 # 2026-02-04
 
 ## baibot now supports OpenAI's built-in tools (Web Search and Code Interpreter)
@@ -83,12 +91,6 @@ You'll need to remove them from `vars.yml` and potentially uninstall them manual
 Thanks to [Suguru Hirahara](https://github.com/luixxiul), the playbook now supports the [GearKite/MatrixZulipBridge](https://github.com/GearKite/MatrixZulipBridg) bridge for bridging Matrix to [Zulip](https://zulip.com/).
 
 To learn more, see our [Setting up Zulip bridging](docs/configuring-playbook-bridge-zulip.md) documentation page.
-
-## The Sliding Sync proxy has been removed from the playbook
-
-The [Sliding Sync proxy](./docs/configuring-playbook-sliding-sync-proxy.md) has been removed from the playbook, as it's been replaced with a different method (called Simplified Sliding Sync) integrated to newer homeservers by default (**Conduit** homeserver from version `0.6.0` or **Synapse** from version `1.114`).
-
-The playbook will let you know if you're using any `matrix_sliding_sync_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the proxy manually](./docs/configuring-playbook-sliding-sync-proxy.md#uninstalling-the-proxy-manually).
 
 # 2025-11-07
 
