@@ -26,6 +26,8 @@ matrix_synapse_workers_room_worker_federation_endpoints:
 # Sync workers handle /sync and the (now deprecated) related endpoints
 matrix_synapse_workers_sync_worker_client_server_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/(sync|events|initialSync|rooms/[^/]+/initialSync)$
+  # Native Sliding Sync (MSC3575) - supported on generic workers since Synapse 1.114
+  - ^/_matrix/client/unstable/org.matrix.simplified_msc3575/sync$
 
 # Client reader workers handle generic client-server endpoints that don't contain a roomid or sync
 matrix_synapse_workers_client_reader_client_server_endpoints:
@@ -149,6 +151,8 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3)/events$
   - ^/_matrix/client/(api/v1|r0|v3)/initialSync$
   - ^/_matrix/client/(api/v1|r0|v3)/rooms/[^/]+/initialSync$
+  # Native Sliding Sync (MSC3575) - supported since Synapse 1.114
+  - ^/_matrix/client/unstable/org.matrix.simplified_msc3575/sync$
 
   # Federation requests
   - ^/_matrix/federation/v1/event/
@@ -200,12 +204,13 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(r0|v3|unstable)/notifications$
 
   # Encryption requests
-  # Note that ^/_matrix/client/(r0|v3|unstable)/keys/upload/ requires `worker_main_http_uri`
   - ^/_matrix/client/(r0|v3|unstable)/keys/query$
   - ^/_matrix/client/(r0|v3|unstable)/keys/changes$
   - ^/_matrix/client/(r0|v3|unstable)/keys/claim$
   - ^/_matrix/client/(r0|v3|unstable)/room_keys/
-  - ^/_matrix/client/(r0|v3|unstable)/keys/upload/
+  - ^/_matrix/client/(r0|v3|unstable)/keys/upload$
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/device_signing/upload$
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/signatures/upload$
 
   # Registration/login requests
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/login$
@@ -222,6 +227,12 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/join/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/knock/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/profile/
+
+  # Unstable MSC4140 support
+  - ^/_matrix/client/unstable/org.matrix.msc4140/delayed_events(/.*/restart)?$
+
+  # Admin API requests
+  - ^/_synapse/admin/v2/users/[^/]+$
 
   # Start of intentionally-ignored-endpoints
   #

@@ -26,7 +26,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`).
-      when: "vars[item] == ''"
+      when: "lookup('vars', item, default='') == ''"
       with_items:
         - matrix_synapse_admin_container_labels_traefik_hostname
         - matrix_synapse_admin_container_labels_traefik_path_prefix

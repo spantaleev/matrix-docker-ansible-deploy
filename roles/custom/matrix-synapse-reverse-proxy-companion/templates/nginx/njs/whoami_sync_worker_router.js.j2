@@ -1,0 +1,202 @@
+#jinja2: lstrip_blocks: True
+// Whoami-based sync worker router
+//
+// This script resolves access tokens to usernames by calling the whoami endpoint.
+// Results are cached to minimize latency impact. The username is returned via the
+// X-User-Identifier header, which nginx captures and uses for upstream hashing.
+//
+// This works with any authentication system (native Synapse auth, MAS, etc.) because
+// Synapse handles token validation internally.
+//
+// Why auth_request instead of js_set?
+// -----------------------------------
+// A simpler approach would be to use js_set to populate a variable (e.g., $user_identifier)
+// and then use that variable in an upstream's `hash` directive. However, this doesn't work
+// because:
+//
+// 1. The whoami lookup requires an HTTP subrequest (ngx.fetch), which is asynchronous.
+// 2. js_set handlers must return synchronously - nginx's variable evaluation doesn't support
+//    async operations. Using async functions with js_set causes errors like:
+//    "async operation inside variable handler"
+//
+// The auth_request approach solves this by:
+// 1. Making a subrequest to an internal location that uses js_content (which supports async)
+// 2. Returning the user identifier via a response header (X-User-Identifier)
+// 3. Capturing that header with auth_request_set into $user_identifier
+// 4. Using $user_identifier in the upstream's hash directive for consistent routing
+
+const WHOAMI_URL = {{ matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_url | to_json }};
+const CACHE_TTL_MS = {{ (matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_cache_ttl_seconds * 1000) | to_json }};
+
+const LOGGING_ENABLED = {{ matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_logging_enabled | to_json }};
+const LOGGING_TOKEN_LENGTH = {{ matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_logging_token_length | to_json }};
+
+function log(message) {
+    if (LOGGING_ENABLED) {
+        // Using WARN level because nginx's error_log is hardcoded to 'warn' and our logs won't be visible otherwise
+        ngx.log(ngx.WARN, 'whoami_sync_worker_router: ' + message);
+    }
+}
+
+// Truncate token for logging (show first X chars only for security)
+function truncateToken(token) {
+    if (!token || token.length <= LOGGING_TOKEN_LENGTH) {
+        return token;
+    }
+    return token.substring(0, LOGGING_TOKEN_LENGTH) + '...';
+}
+
+// Extract token from request (Authorization header or query parameter)
+function extractToken(r) {
+    // Try Authorization header first
+    const authHeader = r.headersIn['Authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        return authHeader.substring(7);
+    }
+
+    // Fall back to access_token query parameter (deprecated in Matrix v1.11, but homeservers must support it)
+    if (r.args.access_token) {
+        return r.args.access_token;
+    }
+
+    return null;
+}
+
+// Extract localpart from user_id (e.g., "@alice:example.com" -> "alice")
+function extractLocalpart(userId) {
+    if (!userId || !userId.startsWith('@')) {
+        return null;
+    }
+    const colonIndex = userId.indexOf(':');
+    if (colonIndex === -1) {
+        return null;
+    }
+    return userId.substring(1, colonIndex);
+}
+
+// Get cached username for token
+function getCachedUsername(token) {
+    const cache = ngx.shared.whoami_sync_worker_router_cache;
+    if (!cache) {
+        return null;
+    }
+
+    const entry = cache.get(token);
+    if (entry) {
+        try {
+            const data = JSON.parse(entry);
+            if (data.expires > Date.now()) {
+                log('cache hit for token ' + truncateToken(token) + ' -> ' + data.username);
+                return data.username;
+            }
+            // Expired, remove from cache
+            log('cache expired for token ' + truncateToken(token));
+            cache.delete(token);
+        } catch (e) {
+            cache.delete(token);
+        }
+    }
+    return null;
+}
+
+// Cache username for token
+function cacheUsername(token, username) {
+    const cache = ngx.shared.whoami_sync_worker_router_cache;
+    if (!cache) {
+        return;
+    }
+
+    try {
+        const entry = JSON.stringify({
+            username: username,
+            expires: Date.now() + CACHE_TTL_MS
+        });
+        cache.set(token, entry);
+        log('cached token ' + truncateToken(token) + ' -> ' + username);
+    } catch (e) {
+        // Cache full or other error, log and continue
+        ngx.log(ngx.WARN, 'whoami_sync_worker_router: cache error: ' + e.message);
+    }
+}
+
+// Call whoami endpoint to get user_id
+async function lookupWhoami(token) {
+    log('performing whoami lookup for token ' + truncateToken(token));
+    try {
+        const response = await ngx.fetch(WHOAMI_URL, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.user_id) {
+                const localpart = extractLocalpart(data.user_id);
+                log('whoami lookup success: ' + data.user_id + ' -> ' + localpart);
+                return localpart;
+            }
+        } else if (response.status === 401) {
+            // Token is invalid/expired - this is expected for some requests
+            log('whoami lookup returned 401 (invalid/expired token)');
+            return null;
+        } else {
+            ngx.log(ngx.WARN, 'whoami_sync_worker_router: whoami returned status ' + response.status);
+        }
+    } catch (e) {
+        ngx.log(ngx.ERR, 'whoami_sync_worker_router: whoami failed: ' + e.message);
+    }
+
+    return null;
+}
+
+// Set response header with the user identifier for upstream hashing
+function setUserIdentifier(r, identifier) {
+    log('resolved user identifier: ' + identifier);
+    r.headersOut['X-User-Identifier'] = identifier;
+}
+
+// Main handler for auth_request subrequest.
+// Returns 200 with X-User-Identifier header containing the user identifier for upstream hashing.
+async function handleAuthRequest(r) {
+    const token = extractToken(r);
+
+    if (!token) {
+        // No token found (e.g., OPTIONS preflight requests don't include Authorization header).
+        // We return a random value to distribute these requests across workers.
+        // Returning an empty string would cause all no-token requests to hash to the same value,
+        // routing them all to a single worker.
+        // This doesn't affect the cache since we only cache token -> username mappings.
+        log('no token found in request, distributing randomly');
+        setUserIdentifier(r, '_no_token_' + Math.random());
+        r.return(200);
+        return;
+    }
+
+    // Check cache first
+    const cachedUsername = getCachedUsername(token);
+    if (cachedUsername) {
+        setUserIdentifier(r, cachedUsername);
+        r.return(200);
+        return;
+    }
+
+    // Perform whoami lookup
+    log('cache miss for token ' + truncateToken(token));
+    const username = await lookupWhoami(token);
+    if (username) {
+        cacheUsername(token, username);
+        setUserIdentifier(r, username);
+        r.return(200);
+        return;
+    }
+
+    // Whoami lookup failed, fall back to using the token itself for hashing.
+    // This still provides device-level sticky routing (same token -> same worker).
+    log('whoami lookup failed, falling back to token-based routing');
+    setUserIdentifier(r, token);
+    r.return(200);
+}
+
+export default { handleAuthRequest };

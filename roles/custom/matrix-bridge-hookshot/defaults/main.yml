@@ -29,7 +29,7 @@ matrix_hookshot_container_additional_networks_auto: []
 matrix_hookshot_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=halfshot/matrix-hookshot
-matrix_hookshot_version: 7.2.0
+matrix_hookshot_version: 7.3.2
 
 matrix_hookshot_docker_image: "{{ matrix_hookshot_docker_image_registry_prefix }}matrix-org/matrix-hookshot:{{ matrix_hookshot_version }}"
 matrix_hookshot_docker_image_registry_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_hookshot_docker_image_registry_prefix_upstream }}"
@@ -72,8 +72,9 @@ matrix_hookshot_cache_redisUri: "{{ ('redis://' + matrix_hookshot_cache_redis_ho
 # Controls whether the end-to-bridge encryption support is enabled.
 # This requires that:
 # - support to also be enabled in the homeserver, see the documentation of Hookshot.
-# - Hookshot to be pointed at a Redis instance via the `matrix_hookshot_cache_redis*` variables.
+# - Hookshot to be pointed at a Redis instance via the `matrix_hookshot_cache_redis*` variables. Note that this is configured automatically by the playbook when encryption is enabled.
 # See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
+# NOTE: Encryption is not currently (2025-12-30) supported when using MAS (https://github.com/matrix-org/matrix-hookshot/issues/1084)
 matrix_hookshot_encryption_enabled: "{{ matrix_bridges_encryption_enabled }}"
 
 # Controls whether metrics are enabled in the bridge configuration.
@@ -240,6 +241,18 @@ matrix_hookshot_widgets_branding_widgetTitle: "Hookshot Configuration"   # noqa 
 #       - service: "*"
 #         level: admin
 matrix_hookshot_permissions: []
+
+# Static connections that can be configured by an administrator, as documented here:
+# https://matrix-org.github.io/matrix-hookshot/latest/usage/static_connections.html
+# Currently only generic webhooks are supported.
+# Example:
+# matrix_hookshot_connections:
+#   - connectionType: uk.half-shot.matrix-hookshot.generic.hook
+#     stateKey: my-unique-webhook-id
+#     roomId: "!room-id"
+#     state:
+#       name: My Static Webhook
+matrix_hookshot_connections: []
 
 matrix_hookshot_bot_displayname: Hookshot Bot
 matrix_hookshot_bot_avatar: 'mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d'

@@ -9,7 +9,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] | string | length == 0"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_authentication_service_hostname', when: true}
     - {'name': 'matrix_authentication_service_config_database_username', when: true}

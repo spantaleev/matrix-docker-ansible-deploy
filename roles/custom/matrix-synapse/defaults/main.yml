@@ -16,7 +16,7 @@ matrix_synapse_enabled: true
 matrix_synapse_github_org_and_repo: element-hq/synapse
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/synapse
-matrix_synapse_version: v1.141.0
+matrix_synapse_version: v1.146.0
 
 matrix_synapse_username: ''
 matrix_synapse_uid: ''
@@ -128,6 +128,8 @@ matrix_synapse_ext_path: "{{ matrix_synapse_base_path }}/ext"
 matrix_synapse_ext_s3_storage_provider_base_path: "{{ matrix_synapse_base_path }}/ext/s3-storage-provider"
 matrix_synapse_ext_s3_storage_provider_bin_path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/bin"
 matrix_synapse_ext_s3_storage_provider_data_path: "{{ matrix_synapse_ext_s3_storage_provider_base_path }}/data"
+# extra arguments to pass to s3-storage-provider script when starting Synapse container
+matrix_synapse_ext_s3_storage_provider_container_arguments: []
 
 matrix_synapse_container_client_api_port: 8008
 
@@ -675,7 +677,7 @@ matrix_synapse_caches_sync_response_cache_duration: "2m"
 # Controls how much memory this role thinks is available for cache-size-related calculations.
 # By default, all of the server's memory is taken into account, but you can adjust this.
 # You can also go for directly adjusting cache-sizes (matrix_synapse_cache_autotuning_max_cache_memory_usage, matrix_synapse_cache_autotuning_target_cache_memory_usage) instead of adjusting this.
-matrix_synapse_cache_size_calculations_memtotal_bytes: "{{ (ansible_memtotal_mb * 1024 * 1024) | int }}"
+matrix_synapse_cache_size_calculations_memtotal_bytes: "{{ (ansible_facts['memtotal_mb'] * 1024 * 1024) | int }}"
 
 # Controls the cap to use for matrix_synapse_cache_autotuning_max_cache_memory_usage.
 matrix_synapse_cache_size_calculations_max_cache_memory_usage_cap_bytes: "{{ (2 * 1024 * 1024 * 1024) }}"  # 2GB
@@ -1089,6 +1091,11 @@ matrix_synapse_workers_media_repository_workers_container_arguments: []
 # This is enabled if workers are disabled, or if they are enabled, but there are no media repository workers.
 # Adjusting this value manually is generally not necessary.
 matrix_synapse_enable_media_repo: "{{ not matrix_synapse_ext_media_repo_enabled and (not matrix_synapse_workers_enabled or (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length == 0)) }}"
+
+# matrix_synapse_enable_local_media_storage controls whether the local on-disk media storage provider is enabled in Synapse.
+# When disabled, media is stored only in configured `media_storage_providers` and temporary files are used for processing (no local caching).
+# Warning: If this option is set to false and no `media_storage_providers` are configured, all media requests will return 404 errors as there will be no storage backend available.
+matrix_synapse_enable_local_media_storage: true
 
 # matrix_synapse_enable_authenticated_media controls if authenticated media is enabled.
 # If enabled all "old" media remains accessible over the legacy endpoints but new media is blocked.

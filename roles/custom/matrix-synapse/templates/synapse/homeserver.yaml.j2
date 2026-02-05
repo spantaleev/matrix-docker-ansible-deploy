@@ -1035,11 +1035,15 @@ federation_rr_transactions_per_room_per_second: {{ matrix_synapse_federation_rr_
 #enable_media_repo: false
 enable_media_repo: {{ matrix_synapse_enable_media_repo | to_json }}
 
+# Enable the local on-disk media storage provider.
+# When disabled, media is stored only in configured media_storage_providers and temporary files are used for processing (no local caching).
+# Warning: If this option is set to false and no media_storage_providers are configured, all media requests will return 404 errors as there will be no storage backend available.
+enable_local_media_storage: {{ matrix_synapse_enable_local_media_storage | to_json }}
+
 # Enable authenticated media.
 # enable_authenticated_media blocks access to new media from the legacy endpoints
 # and freezes the unauthenticated media repo by blocking all downloads that are not using
 # the new authenticated endpoints. If this option is turned off all media reverts to being considered "old"
-
 enable_authenticated_media: {{ matrix_synapse_enable_authenticated_media | to_json }}
 
 # Directory where uploaded images and attachments are stored.

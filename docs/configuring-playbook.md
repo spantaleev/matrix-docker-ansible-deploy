@@ -247,6 +247,8 @@ Various services that don't fit any other categories.
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced)
 
+- [Setting up Matrix.to](configuring-playbook-matrixto.md)
+
 - [Setting up Etherpad](configuring-playbook-etherpad.md)
 
 - [Setting up the Jitsi video-conferencing platform](configuring-playbook-jitsi.md)

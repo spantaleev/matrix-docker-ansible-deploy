@@ -21,16 +21,14 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--name=matrix-synapse-admin \
 			--log-driver=none \
 			--cap-drop=ALL \
-			--cap-add=CHOWN \
-			--cap-add=NET_BIND_SERVICE \
-			--cap-add=SETUID \
-			--cap-add=SETGID \
+			--read-only \
+			--user={{ matrix_synapse_admin_container_uid }}:{{ matrix_synapse_admin_container_gid }} \
 			--network={{ matrix_synapse_admin_container_network }} \
 			{% if matrix_synapse_admin_container_http_host_bind_port %}
-			-p {{ matrix_synapse_admin_container_http_host_bind_port }}:80 \
+			-p {{ matrix_synapse_admin_container_http_host_bind_port }}:8080 \
 			{% endif %}
 			--label-file={{ matrix_synapse_admin_base_path }}/labels \
-			--mount type=bind,src={{ matrix_synapse_admin_config_path }}/config.json,dst=/app/config.json,ro \
+			--mount type=bind,src={{ matrix_synapse_admin_config_path }}/config.json,dst=/var/public/config.json,ro \
 			{% for arg in matrix_synapse_admin_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

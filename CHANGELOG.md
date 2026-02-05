@@ -1,3 +1,59 @@
+# 2026-02-04
+
+## baibot now supports OpenAI's built-in tools (Web Search and Code Interpreter)
+
+**TLDR**: if you're using the [OpenAI provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#openai) with [baibot](docs/configuring-playbook-bot-baibot.md), you can now enable [built-in tools](https://github.com/etkecc/baibot/blob/61d18b2/docs/features.md#%EF%B8%8F-built-in-tools-openai-only) (`web_search` and `code_interpreter`) to extend the model's capabilities.
+
+These tools are **disabled by default** and can be enabled via Ansible variables for static agent configurations:
+
+```yaml
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_web_search: true
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_code_interpreter: true
+```
+
+Users who define agents dynamically at runtime will need to [update their agents](https://github.com/etkecc/baibot/blob/61d18b2/docs/agents.md#updating-agents) to enable these tools. See the [baibot v1.14.0 changelog](https://github.com/etkecc/baibot/blob/61d18b2/CHANGELOG.md) for details.
+
+## Whoami-based sync worker routing for improved sticky sessions for Synapse
+
+Deployments using [Synapse workers](./docs/configuring-playbook-synapse.md#load-balancing-with-workers) now benefit from improved sync worker routing via a new whoami-based mechanism (making use of the [whoami Matrix Client-Server API](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3accountwhoami)).
+
+Previously, sticky routing for sync workers relied on parsing usernames from access tokens, which only worked with native Synapse tokens (`syt_<base64 username>_...`). This approach failed for [Matrix Authentication Service](docs/configuring-playbook-matrix-authentication-service.md) (MAS) deployments, where tokens are opaque and don't contain username information. This resulted in device-level stickiness (same token → same worker) rather than user-level stickiness (same user → same worker regardless of device), leading to suboptimal cache utilization on sync workers.
+
+The new implementation calls Synapse's `/whoami` endpoint to resolve access tokens to usernames, enabling proper user-level sticky routing regardless of the authentication system in use (native Synapse auth, MAS, etc.). Results are cached to minimize overhead.
+
+This change:
+- **Automatically enables** when sync workers are configured (no action required)
+- **Works universally** with any authentication system
+- **Replaces the old implementation** entirely to keep the codebase simple
+- **Adds minimal overhead** (one cached internal subrequest per sync request) for non-MAS deployments
+
+For debugging, you can enable verbose logging and/or response headers showing routing decisions:
+
+```yaml
+# Logs cache hits/misses and routing decisions to the container's stderr
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_logging_enabled: true
+
+# Adds X-Sync-Worker-Router-User-Identifier and X-Sync-Worker-Router-Upstream headers to sync responses
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_debug_headers_enabled: true
+```
+
+
+# 2025-12-09
+
+## Traefik Cert Dumper upgrade
+
+The variable `traefik_certs_dumper_ssl_dir_path` was renamed to `traefik_certs_dumper_ssl_path`. Users who use [their own webserver with Traefik](docs/configuring-playbook-own-webserver.md) may need to adjust their configuration.
+
+The variable `traefik_certs_dumper_dumped_certificates_dir_path` was renamed to `traefik_certs_dumper_dumped_certificates_path`. Users who use [SRV Server Delegation](docs/howto-srv-server-delegation.md) may need to adjust their configuration.
+
+# 2025-11-23
+
+## Matrix.to support
+
+The playbook now supports [Matrix.to](https://github.com/matrix-org/matrix.to) — a simple URL redirection service which powers [matrix.to](https://matrix.to).
+
+To learn more, see our [Setting up Matrix.to](docs/configuring-playbook-matrixto.md) documentation page.
+
 # 2025-11-09
 
 ## matrix-appservice-webhooks has been removed from the playbook
@@ -5,6 +61,20 @@
 [matrix-appservice-webhooks](./docs/configuring-playbook-bridge-appservice-webhooks.md) has been removed from the playbook, as it has been deprecated since more than several years.
 
 The playbook will let you know if you're using any `matrix_appservice_webhooks_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the bridge manually](./docs/configuring-playbook-bridge-appservice-webhooks.md#uninstalling-the-bridge-manually).
+
+## mautrix-facebook and mautrix-instagram have been removed from the playbook
+
+[mautrix-facebook](./docs/configuring-playbook-bridge-mautrix-facebook.md) and [mautrix-instagram](./docs/configuring-playbook-bridge-mautrix-instagram.md) have been removed from the playbook, as they have been deprecated in favor of the [mautrix-meta](https://github.com/mautrix/meta) Messenger/Instagram bridge, integrated to the playbook at [2024-02-19](#2024-02-19).
+
+The playbook will let you know if you're using any variables for those bridges:
+
+- `matrix_mautrix_facebook_*`
+- `matrix_mautrix_instagram_*`
+
+You'll need to remove them from `vars.yml` and potentially uninstall them manually. Consult pages below for details:
+
+- [Instruction for mautrix-facebook](./docs/configuring-playbook-bridge-mautrix-facebook.md#uninstalling-the-bridge-manually)
+- [Instruction for mautrix-instagram](./docs/configuring-playbook-bridge-mautrix-instagram.md#uninstalling-the-bridge-manually)
 
 # 2025-11-08
 

@@ -17,7 +17,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v1.8.1
+matrix_bot_baibot_version: v1.14.0
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_registry_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else matrix_bot_baibot_container_image_registry_prefix_upstream }}"
 matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
@@ -69,6 +69,23 @@ matrix_bot_baibot_config_user_password: ''
 #
 # Also see: `matrix_bot_baibot_config_user_mxid_localpart`
 matrix_bot_baibot_config_user_name: baibot
+
+# Controls the `user.avatar` configuration setting.
+#
+# An optional path to an image file to be used as a custom avatar image.
+# This path should be an in-container path (e.g., `/data/avatar.png`).
+# Any type of content type is supported, but stick to common image formats (PNG, JPG, ..) for better compatibility with various Matrix clients.
+#
+# To use a custom avatar:
+# - Use the auxiliary role (`aux_` variables) to upload your avatar file to the server (e.g. to {{ matrix_bot_baibot_data_path }}/avatar.png on the host),
+#   or do it any other way (without Ansible) you prefer
+# - Set this variable to something like `/data/avatar.png` (the in-container path)
+#
+# Possible values:
+# - null or empty string: use the default baibot avatar
+# - "keep": don't touch the avatar, keep whatever is already set (useful if you manage the avatar via other means)
+# - any other value: path to a custom avatar image file (must be an in-container path like `/data/avatar.png`)
+matrix_bot_baibot_config_user_avatar: null
 
 # Controls the `user.encryption.recovery_passphrase` configuration setting.
 #
@@ -204,8 +221,8 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_base_url: ht
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: ""
 
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_enabled: true
-# For valid model choices, see: https://platform.anthropic.com/docs/models
-matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: claude-3-7-sonnet-20250219
+# For valid model choices, see: https://docs.claude.com/en/docs/about-claude/models/overview
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: claude-sonnet-4-5-20250929
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
@@ -368,7 +385,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: ""
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_enabled: true
 # For valid model choices, see: https://platform.openai.com/docs/models
-matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-5
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-5.2
 # The prompt text to use (can be null or empty to not use a prompt).
 # See: https://huggingface.co/docs/transformers/en/tasks/prompting
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
@@ -378,6 +395,11 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_response_tokens: ~
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_completion_tokens: 128000
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_context_tokens: 400000
+# Built-in tools configuration (OpenAI only).
+# These tools extend the model's capabilities but are disabled by default following upstream defaults.
+# See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-built-in-tools-openai-only
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_web_search: false
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_code_interpreter: false
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_enabled: true
 matrix_bot_baibot_config_agents_static_definitions_openai_config_speech_to_text_model_id: whisper-1
@@ -389,7 +411,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_to_speech_response_format: opus
 
 matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_enabled: true
-matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_model_id: gpt-image-1
+matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_model_id: gpt-image-1.5
 matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_style: null
 matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_size: null
 matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_quality: null

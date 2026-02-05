@@ -112,12 +112,12 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
@@ -173,12 +173,12 @@ matrix_coturn_container_additional_volumes: |
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },

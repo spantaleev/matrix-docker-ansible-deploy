@@ -8,7 +8,7 @@
 # SPDX-FileCopyrightText: 2019 Lyubomir Popov
 # SPDX-FileCopyrightText: 2019 Sylvia van Os
 # SPDX-FileCopyrightText: 2020 John Goerzen
-# SPDX-FileCopyrightText: 2021 - 2023 Thom Wiggers
+# SPDX-FileCopyrightText: 2021 - 2026 Thom Wiggers
 # SPDX-FileCopyrightText: 2021 Ahmad Haghighi
 # SPDX-FileCopyrightText: 2021 Joseph Walton-Rivers
 # SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
@@ -33,7 +33,7 @@ matrix_appservice_irc_docker_src_files_path: "{{ matrix_base_data_path }}/appser
 # matrix_appservice_irc_version used to contain the full Docker image tag (e.g. `release-X.X.X`).
 # It's a bare version number now. We try to somewhat retain compatibility below.
 # renovate: datasource=docker depName=docker.io/matrixdotorg/matrix-appservice-irc
-matrix_appservice_irc_version: 1.0.1
+matrix_appservice_irc_version: 4.0.0
 matrix_appservice_irc_docker_image: "{{ matrix_appservice_irc_docker_image_registry_prefix }}matrixdotorg/matrix-appservice-irc:{{ matrix_appservice_irc_docker_image_tag }}"
 matrix_appservice_irc_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_irc_container_image_self_build else matrix_appservice_irc_docker_image_registry_prefix_upstream }}"
 matrix_appservice_irc_docker_image_registry_prefix_upstream: "{{ matrix_appservice_irc_docker_image_registry_prefix_upstream_default }}"
@@ -46,8 +46,15 @@ matrix_appservice_irc_config_path: "{{ matrix_appservice_irc_base_path }}/config
 matrix_appservice_irc_data_path: "{{ matrix_appservice_irc_base_path }}/data"
 
 matrix_appservice_irc_homeserver_url: ""
-matrix_appservice_irc_homeserver_media_url: '{{ matrix_homeserver_url }}'
 matrix_appservice_irc_homeserver_domain: '{{ matrix_domain }}'
+
+# ircService.mediaProxy configuration for serving publicly accessible URLs to authenticated Matrix media
+matrix_appservice_irc_ircService_mediaProxy_bindPort: 11111  # noqa var-naming
+matrix_appservice_irc_ircService_mediaProxy_publicUrl_scheme: https  # noqa var-naming
+matrix_appservice_irc_ircService_mediaProxy_publicUrl_hostname: '{{ matrix_server_fqn_matrix }}'  # noqa var-naming
+matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix: '/irc/'  # noqa var-naming
+matrix_appservice_irc_ircService_mediaProxy_publicUrl: "{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_scheme }}://{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_hostname }}{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}"  # noqa var-naming
+
 matrix_appservice_irc_homeserver_enablePresence: true  # noqa var-naming
 matrix_appservice_irc_appservice_address: 'http://matrix-appservice-irc:9999'
 
@@ -89,20 +96,25 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #     # It is also used in the Third Party Lookup API as the instance `desc`
 #     # property, where each server is an instance.
 #     name: "ExampleNet"
-
+#     # Additional addresses to connect to, used for load balancing between IRCDs.
 #     additionalAddresses: [ "irc2.example.com" ]
+#     # Typically additionalAddresses would be in addition to the address key given above,
+#     # but some configurations wish to exclusively use additional addresses while reserving
+#     # the top key for identification purposes. Set this to true to exclusively use the
+#     # additionalAddresses array when connecting to servers.
+#     onlyAdditionalAddresses: false
 #     #
 #     # [DEPRECATED] Use `name`, above, instead.
 #     # A human-readable description string
 #     # description: "Example.com IRC network"
-
+#
 #     # An ID for uniquely identifying this server amongst other servers being bridged.
 #     # networkId: "example"
-
-#     # URL to an icon used as the network icon whenever this network appear in
-#     # a network list. (Like in the Riot room directory, for instance.)
-#     # icon: https://example.com/images/hash.png
-
+#
+#     # MXC URL to an icon used as the network icon whenever this network appear in
+#     # a network list. (Like in the Element room directory, for instance.)
+#     # icon: mxc://matrix.org/LpsSLrbANVrEIEOgEaVteItf
+#
 #     # The port to connect to. Optional.
 #     port: 6697
 #     # Whether to use SSL or not. Default: false.
@@ -115,19 +127,26 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #     # Whether to allow expired certs when connecting to the IRC server.
 #     # Usually this should be off. Default: false.
 #     allowExpiredCerts: false
-#     # A specific CA to trust instead of the default CAs. Optional.
-#     #ca: |
-#     #  -----BEGIN CERTIFICATE-----
-#     #  …
-#     #  -----END CERTIFICATE-----
-
+#
+#     # Set additional TLS options for the connections to the IRC server.
+#     #tlsOptions:
+#       # A specific CA to trust instead of the default CAs. Optional.
+#       #ca: |
+#       #  -----BEGIN CERTIFICATE-----
+#       #  ...
+#       #  -----END CERTIFICATE-----
+#       # Server name for the SNI (Server Name Indication) TLS extension. If the address you
+#       # are using does not report the correct certificate name, you can override it here.
+#       # servername: real.server.name
+#       # ...or any options in https://nodejs.org/api/tls.html#tls_tls_connect_options_callback
+#
 #     #
 #     # The connection password to send for all clients as a PASS (or SASL, if enabled above) command. Optional.
 #     # password: 'pa$$w0rd'
 #     #
 #     # Whether or not to send connection/error notices to real Matrix users. Default: true.
 #     sendConnectionMessages: true
-
+#
 #     quitDebounce:
 #       # Whether parts due to net-splits are debounced for delayMs, to allow
 #       # time for the netsplit to resolve itself. A netsplit is detected as being
@@ -147,13 +166,13 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #       delayMinMs: 3600000 # 1h
 #       # Default: 7200000, = 2h
 #       delayMaxMs: 7200000 # 2h
-
+#
 #     # A map for conversion of IRC user modes to Matrix power levels. This enables bridging
 #     # of IRC ops to Matrix power levels only, it does not enable the reverse. If a user has
 #     # been given multiple modes, the one that maps to the highest power level will be used.
 #     modePowerMap:
 #       o: 50
-
+#       v: 1
 #     botConfig:
 #       # Enable the presence of the bot in IRC channels. The bot serves as the entity
 #       # which maps from IRC -> Matrix. You can disable the bot entirely which
@@ -176,6 +195,8 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #       enabled: true
 #       # The nickname to give the AS bot.
 #       nick: "MatrixBot"
+#       # The username to give to the AS bot. Defaults to "matrixbot"
+#       username: "matrixbot"
 #       # The password to give to NickServ or IRC Server for this nick. Optional.
 #       # password: "helloworld"
 #       #
@@ -184,7 +205,7 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #       # real Matrix users in them, even if there is a mapping for the channel.
 #       # Default: true
 #       joinChannelsIfNoUsers: true
-
+#
 #     # Configuration for PMs / private 1:1 communications between users.
 #     privateMessages:
 #       # Enable the ability for PMs to be sent to/from IRC/Matrix.
@@ -193,12 +214,12 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #       # Prevent Matrix users from sending PMs to the following IRC nicks.
 #       # Optional. Default: [].
 #       # exclude: ["Alice", "Bob"] # NOT YET IMPLEMENTED
-
+#
 #       # Should created Matrix PM rooms be federated? If false, only users on the
 #       # HS attached to this AS will be able to interact with this room.
 #       # Optional. Default: true.
 #       federate: true
-
+#
 #     # Configuration for mappings not explicitly listed in the 'mappings'
 #     # section.
 #     dynamicChannels:
@@ -212,27 +233,34 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #       # Should the AS publish the new Matrix room to the public room list so
 #       # anyone can see it? Default: true.
 #       published: true
+#       # Publish the rooms to the homeserver directory, as oppose to the appservice
+#       # room directory. Only used if `published` is on.
+#       # Default: false
+#       useHomeserverDirectory: true
 #       # What should the join_rule be for the new Matrix room? If 'public',
 #       # anyone can join the room. If 'invite', only users with an invite can
 #       # join the room. Note that if an IRC channel has +k or +i set on it,
 #       # join_rules will be set to 'invite' until these modes are removed.
 #       # Default: "public".
 #       joinRule: public
-#       # This will set the m.room.related_groups state event in newly created rooms
-#       # with the given groupId. This means flares will show up on IRC users in those rooms.
-#       # This should be set to the same thing as namespaces.users.group_id in irc_registration.
-#       # This does not alter existing rooms.
-#       # Leaving this option empty will not set the event.
-#       groupId: +myircnetwork:localhost
 #       # Should created Matrix rooms be federated? If false, only users on the
 #       # HS attached to this AS will be able to interact with this room.
 #       # Default: true.
 #       federate: true
+#       # Force this room version when creating IRC channels. Beware if the homeserver doesn't
+#       # support the room version then the request will fail. By default, no version is requested.
+#       # roomVersion: "1"
 #       # The room alias template to apply when creating new aliases. This only
 #       # applies if createAlias is 'true'. The following variables are exposed:
 #       # $SERVER => The IRC server address (e.g. "irc.example.com")
 #       # $CHANNEL => The IRC channel (e.g. "#python")
 #       # This MUST have $CHANNEL somewhere in it.
+#       #
+#       # In certain circumstances you might want to bridge your whole IRC network as a
+#       # homeserver (e.g. #matrix:libera.chat). For these use cases, you can set the
+#       # template to just be $CHANNEL. Doing so will preclude you from supporting
+#       # other prefix characters though.
+#       #
 #       # Default: '#irc_$SERVER_$CHANNEL'
 #       aliasTemplate: "#irc_$CHANNEL"
 #       # A list of user IDs which the AS bot will send invites to in response
@@ -244,7 +272,11 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #       # Prevent the given list of channels from being mapped under any
 #       # circumstances.
 #       # exclude: ["#foo", "#bar"]
-
+#
+#     # excludedUsers:
+#     #   - regex: "@.*:evilcorp.com"
+#     #     kickReason: "We don't like Evilcorp"
+#
 #     # Configuration for controlling how Matrix and IRC membership lists are
 #     # synced.
 #     membershipLists:
@@ -253,12 +285,12 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #       # synced. This must be enabled for anything else in this section to take
 #       # effect. Default: false.
 #       enabled: false
-
+#
 #       # Syncing membership lists at startup can result in hundreds of members to
 #       # process all at once. This timer drip feeds membership entries at the
 #       # specified rate. Default: 10000. (10s)
 #       floodDelayMs: 10000
-
+#
 #       global:
 #         ircToMatrix:
 #           # Get a snapshot of all real IRC users on a channel (via NAMES) and
@@ -267,7 +299,14 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #           # Make virtual Matrix clients join and leave rooms as their real IRC
 #           # counterparts join/part channels. Default: false.
 #           incremental: false
-
+#           # Should the bridge check if all Matrix users are connected to IRC and
+#           # joined to the channel before relaying messages into the room.
+#           #
+#           # This is considered a safety net to avoid any leakages by the bridge to
+#           # unconnected users, but given it ignores all IRC messages while users
+#           # are still connecting it may be overkill.
+#           requireMatrixJoined: false
+#
 #         matrixToIrc:
 #           # Get a snapshot of all real Matrix users in the room and join all of
 #           # them to the mapped IRC channel on startup. Default: false.
@@ -276,21 +315,32 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #           # counterparts join/leave rooms. Make sure your 'maxClients' value is
 #           # high enough! Default: false.
 #           incremental: false
-
+#
 #       # Apply specific rules to Matrix rooms. Only matrix-to-IRC takes effect.
 #       rooms:
 #         - room: "!qporfwt:localhost"
 #           matrixToIrc:
 #             initial: false
 #             incremental: false
-
+#
 #       # Apply specific rules to IRC channels. Only IRC-to-matrix takes effect.
 #       channels:
 #         - channel: "#foo"
 #           ircToMatrix:
 #             initial: false
 #             incremental: false
-
+#             requireMatrixJoined: false
+#
+#       # Should the bridge ignore users which are not considered active on the bridge
+#       # during startup
+#       ignoreIdleUsersOnStartup:
+#         enabled: true
+#         # How many hours can a user be considered idle for before they are considered
+#         # ignoreable
+#         idleForHours: 720
+#         # A regex which will exclude matching MXIDs from this check.
+#         exclude: "foobar"
+#
 #     mappings:
 #       # 1:many mappings from IRC channels to room IDs on this IRC server.
 #       # The Matrix room must already exist. Your Matrix client should expose
@@ -300,27 +350,27 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #         # Channel key/password to use. Optional. If provided, Matrix users do
 #         # not need to know the channel key in order to join the channel.
 #         # key: "secret"
-
+#
 #     # Configuration for virtual Matrix users. The following variables are
 #     # exposed:
 #     # $NICK => The IRC nick
 #     # $SERVER => The IRC server address (e.g. "irc.example.com")
 #     matrixClients:
 #       # The user ID template to use when creating virtual Matrix users. This
-#       # MUST have $NICK somewhere in it.
+#       # MUST start with an @ and have $NICK somewhere in it.
 #       # Optional. Default: "@$SERVER_$NICK".
 #       # Example: "@irc.example.com_Alice:example.com"
 #       userTemplate: "@irc_$NICK"
 #       # The display name to use for created Matrix clients. This should have
 #       # $NICK somewhere in it if it is specified. Can also use $SERVER to
 #       # insert the IRC domain.
-#       # Optional. Default: "$NICK (IRC)". Example: "Alice (IRC)"
-#       displayName: "$NICK (IRC)"
+#       # Optional. Default: "$NICK". Example: "Alice"
+#       displayName: "$NICK"
 #       # Number of tries a client can attempt to join a room before the request
 #       # is discarded. You can also use -1 to never retry or 0 to never give up.
 #       # Optional. Default: -1
 #       joinAttempts: -1
-
+#
 #     # Configuration for virtual IRC users. The following variables are exposed:
 #     # $LOCALPART => The user ID localpart ("alice" in @alice:localhost)
 #     # $USERID => The user ID
@@ -349,9 +399,20 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #         # connected user. If not specified, all users will connect from the same
 #         # (default) address. This may require additional OS-specific work to allow
 #         # for the node process to bind to multiple different source addresses
-#         # e.g IP_FREEBIND on Linux, which requires an LD_PRELOAD with the library
+#         # Linux kernels 4.3+ support sysctl net.ipv6.ip_nonlocal_bind=1
+#         # Older kernels will need IP_FREEBIND, which requires an LD_PRELOAD with the library
 #         # https://github.com/matrix-org/freebindfree as Node does not expose setsockopt.
 #         # prefix: "2001:0db8:85a3::"  # modify appropriately
+#
+#         # Optional. Define blocks of IPv6 addresses for different homeservers
+#         # which can be used to restrict users of those homeservers to a given
+#         # IP. These blocks should be considered immutable once set, as changing
+#         # the startFrom value will NOT adjust existing IP addresses.
+#         # Changing the startFrom value to a lower value may conflict with existing clients.
+#         # Multiple homeservers may NOT share blocks.
+#         blocks:
+#           - homeserver: another-server.org
+#             startFrom: '10:0000'
 #       #
 #       # The maximum amount of time in seconds that the client can exist
 #       # without sending another message before being disconnected. Use 0 to
@@ -388,11 +449,35 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 #       # through the bridge e.g. caller ID as there is no way to /ACCEPT.
 #       # Default: "" (no user modes)
 #       # userModes: "R"
+#       # The format of the realname defined for users, either mxid or reverse-mxid
+#       realnameFormat: "mxid"
+#       # The minimum time to wait between connection attempts if we were disconnected
+#       # due to throttling.
+#       # pingTimeoutMs: 600000
+#       # The rate at which to send pings to the IRCd if the client is being quiet for a while.
+#       # Whilst the IRCd *should* be sending pings to us to keep the connection alive, it appears
+#       # that sometimes they don't get around to it and end up ping timing us out.
+#       # pingRateMs: 60000
+#       # Choose which conditions the IRC bridge should kick Matrix users for. Decisions to this from
+#       # defaults should be taken with care as it may dishonestly represent Matrix users on the IRC
+#       # network, and cause your bridge to be banned.
+#       kickOn:
+#         # Kick a Matrix user from a bridged room if they fail to join the IRC channel.
+#         channelJoinFailure: true
+#         # Kick a Matrix user from ALL rooms if they are unable to get connected to IRC.
+#         ircConnectionFailure: true
+#         # Kick a Matrix user from ALL rooms if they choose to QUIT the IRC network.
+#         userQuit: true
 
-# Controls whether the matrix-appservice-discord container exposes its HTTP port (tcp/9999 in the container).
+# Controls whether the matrix-appservice-irc container exposes its HTTP port (tcp/9999 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9999"), or empty string to not expose.
 matrix_appservice_irc_container_http_host_bind_port: ''
+
+# Controls whether the matrix-appservice-irc container exposes its media proxy HTTP port.
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:11111"), or empty string to not expose.
+matrix_appservice_irc_container_media_proxy_host_bind_port: ''
 
 matrix_appservice_irc_container_network: ""
 
@@ -402,6 +487,26 @@ matrix_appservice_irc_container_additional_networks_custom: []
 
 # A list of extra arguments to pass to the container
 matrix_appservice_irc_container_extra_arguments: []
+
+# matrix_appservice_irc_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# To inject your own other container labels, see `matrix_appservice_irc_container_labels_additional_labels`.
+matrix_appservice_irc_container_labels_traefik_enabled: true
+matrix_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_appservice_irc_container_network }}"
+matrix_appservice_irc_container_labels_traefik_entrypoints: web-secure
+matrix_appservice_irc_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether Traefik labels for the media proxy will be applied
+matrix_appservice_irc_container_labels_media_proxy_enabled: true
+# Derived from publicUrl_pathPrefix, stripping any trailing slash (unless it's just "/")
+matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix: "{{ '/' if matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix == '/' else matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix.rstrip('/') }}"
+matrix_appservice_irc_container_labels_media_proxy_traefik_rule: "Host(`{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_hostname }}`) && PathPrefix(`{{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}`)"
+matrix_appservice_irc_container_labels_media_proxy_traefik_priority: 2000
+matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints: "{{ matrix_appservice_irc_container_labels_traefik_entrypoints }}"
+matrix_appservice_irc_container_labels_media_proxy_traefik_tls: "{{ matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints != 'web' }}"
+matrix_appservice_irc_container_labels_media_proxy_traefik_tls_certResolver: "{{ matrix_appservice_irc_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix-appservice-irc container additional labels
+matrix_appservice_irc_container_labels_additional_labels: ''
 
 # List of systemd services that matrix-appservice-irc.service depends on.
 matrix_appservice_irc_systemd_required_services_list: "{{ matrix_appservice_irc_systemd_required_services_list_default + matrix_appservice_irc_systemd_required_services_list_auto + matrix_appservice_irc_systemd_required_services_list_custom }}"

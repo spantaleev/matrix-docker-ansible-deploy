@@ -8,6 +8,12 @@
 # - various temp paths are changed to `/tmp`, so that a non-root user can write to them
 # - the `user` directive was removed, as we don't want nginx to switch users
 
+# load_module directives must be first or nginx will choke with:
+# > [emerg] "load_module" directive is specified too late.
+{% if matrix_synapse_reverse_proxy_companion_njs_enabled %}
+load_module modules/ngx_http_js_module.so;
+{% endif %}
+
 worker_processes {{ matrix_synapse_reverse_proxy_companion_worker_processes }};
 error_log /var/log/nginx/error.log warn;
 pid /tmp/nginx.pid;
@@ -22,7 +28,6 @@ events {
 {% endfor %}
 }
 
-
 http {
 	proxy_temp_path /tmp/proxy_temp;
 	client_body_temp_path /tmp/client_temp;
@@ -32,6 +37,16 @@ http {
 
 	include /etc/nginx/mime.types;
 	default_type application/octet-stream;
+
+	{% if matrix_synapse_reverse_proxy_companion_njs_enabled %}
+	js_path /njs/;
+	{% endif %}
+
+	{% if matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_enabled %}
+	# njs module for whoami-based sync worker routing
+	js_import whoami_sync_worker_router from whoami_sync_worker_router.js;
+	js_shared_dict_zone zone=whoami_sync_worker_router_cache:{{ matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_cache_size_mb }}m;
+	{% endif %}
 
 	log_format main '$remote_addr - $remote_user [$time_local] "$request" '
 		'$status $body_bytes_sent "$http_referer" '

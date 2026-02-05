@@ -10,7 +10,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] | string | length == 0"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_synapse_username', when: true}
     - {'name': 'matrix_synapse_uid', when: true}
@@ -48,7 +48,7 @@
   ansible.builtin.fail:
     msg: >-
       `{{ item }}` cannot be more than 1. This is a single-instance worker.
-  when: "vars[item] | int > 1"
+  when: "lookup('vars', item, default='') | int > 1"
   with_items:
     - "matrix_synapse_workers_appservice_workers_count"
     - "matrix_synapse_workers_user_dir_workers_count"
@@ -138,7 +138,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_enabled`.
-      when: "vars[item] == ''"
+      when: "lookup('vars', item, default='') == ''"
       with_items:
         - matrix_synapse_container_image_customizations_templates_git_repository_url
         - matrix_synapse_container_image_customizations_templates_git_repository_branch
@@ -147,7 +147,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`) when enabling `matrix_synapse_container_image_customizations_templates_git_repository_keyscan`.
-      when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and vars[item] == ''"
+      when: "matrix_synapse_container_image_customizations_templates_git_repository_keyscan_enabled | bool and lookup('vars', item, default='') == ''"
       with_items:
         - matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname
 
@@ -166,7 +166,7 @@
 - name: Fail if known Synapse password provider modules are enabled when auth is delegated to Matrix Authentication Service
   ansible.builtin.fail:
     msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it does not make sense to enable password provider modules, because it is not Synapse that is handling authentication. Please disable {{ item }} before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
-  when: matrix_synapse_matrix_authentication_service_enabled and vars[item] | bool
+  when: matrix_synapse_matrix_authentication_service_enabled and lookup('vars', item, default='') | bool
   with_items:
     - matrix_synapse_ext_password_provider_rest_auth_enabled
     - matrix_synapse_ext_password_provider_shared_secret_auth_enabled

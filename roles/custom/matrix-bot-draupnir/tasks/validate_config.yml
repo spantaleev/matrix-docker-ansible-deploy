@@ -44,7 +44,7 @@
     - {'name': 'matrix_bot_draupnir_config_rawHomeserverUrl', when: true}
     - {'name': 'matrix_bot_draupnir_pantalaimon_username', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
     - {'name': 'matrix_bot_draupnir_pantalaimon_password', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
-  when: "item.when | bool and (vars[item.name] == '' or vars[item.name] is none)"
+  when: "item.when | bool and (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
 
 - name: Fail if Draupnir room hijacking enabled without enabling the Synapse Admin API
   ansible.builtin.fail:
@@ -57,7 +57,7 @@
   with_items:
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_login_native }}"}
-  when: "item.when | bool and not (vars[item.name] == '' or vars[item.name] is none)"
+  when: "item.when | bool and not (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
 
 - name: Fail when matrix_bot_draupnir_config_experimentalRustCrypto is enabled together with matrix_bot_draupnir_pantalaimon_use
   ansible.builtin.fail:

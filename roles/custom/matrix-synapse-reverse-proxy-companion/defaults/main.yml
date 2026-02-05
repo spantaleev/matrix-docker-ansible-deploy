@@ -24,10 +24,11 @@
 matrix_synapse_reverse_proxy_companion_enabled: true
 
 # renovate: datasource=docker depName=nginx
-matrix_synapse_reverse_proxy_companion_version: 1.29.3-alpine
+matrix_synapse_reverse_proxy_companion_version: 1.29.5-alpine
 
 matrix_synapse_reverse_proxy_companion_base_path: "{{ matrix_synapse_base_path }}/reverse-proxy-companion"
 matrix_synapse_reverse_proxy_companion_confd_path: "{{ matrix_synapse_reverse_proxy_companion_base_path }}/conf.d"
+matrix_synapse_reverse_proxy_companion_njs_path: "{{ matrix_synapse_reverse_proxy_companion_base_path }}/njs"
 
 # List of systemd services that matrix-synapse-reverse-proxy-companion.service depends on
 matrix_synapse_reverse_proxy_companion_systemd_required_services_list: "{{ matrix_synapse_reverse_proxy_companion_systemd_required_services_list_default + matrix_synapse_reverse_proxy_companion_systemd_required_services_list_auto + matrix_synapse_reverse_proxy_companion_systemd_required_services_list_custom }}"
@@ -290,3 +291,73 @@ matrix_synapse_reverse_proxy_companion_synapse_cache_proxy_cache_valid_time: "24
 # As such, it trusts the protocol scheme forwarded by the upstream proxy.
 matrix_synapse_reverse_proxy_companion_trust_forwarded_proto: true
 matrix_synapse_reverse_proxy_companion_x_forwarded_proto_value: "{{ '$http_x_forwarded_proto' if matrix_synapse_reverse_proxy_companion_trust_forwarded_proto else '$scheme' }}"
+
+
+########################################################################################
+#                                                                                      #
+# njs module                                                                           #
+#                                                                                      #
+########################################################################################
+
+# Controls whether the njs module is loaded.
+matrix_synapse_reverse_proxy_companion_njs_enabled: "{{ matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_enabled }}"
+
+########################################################################################
+#                                                                                      #
+# /njs module                                                                          #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Whoami-based sync worker routing                                                     #
+#                                                                                      #
+########################################################################################
+
+# Controls whether the whoami-based sync worker router is enabled.
+# When enabled, the reverse proxy will call Synapse's /_matrix/client/v3/account/whoami endpoint
+# to resolve access tokens to usernames, allowing consistent routing of requests from the same user
+# to the same sync worker regardless of which device or token they use.
+#
+# This works with any authentication system (native Synapse auth, MAS, etc.) because Synapse
+# handles the token validation internally.
+#
+# Enabled by default when there are sync workers, because sync workers benefit from user-level
+# stickiness due to their per-user in-memory caches.
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_enabled: "{{ matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'sync_worker') | list | length > 0 }}"
+
+# The whoami endpoint path (Matrix spec endpoint).
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_endpoint: /_matrix/client/v3/account/whoami
+
+# The full URL to the whoami endpoint.
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_url: "http://{{ matrix_synapse_reverse_proxy_companion_client_api_addr }}{{ matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_endpoint }}"
+
+# Cache duration (in seconds) for whoami lookup results.
+# Token -> username mappings are cached to avoid repeated whoami calls.
+# A longer TTL reduces load on Synapse but means username changes take longer to take effect.
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_cache_ttl_seconds: 3600
+
+# Size of the shared memory zone for caching whoami results (in megabytes).
+# Each cached entry is approximately 100-200 bytes.
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_cache_size_mb: 1
+
+# Controls whether verbose logging is enabled for the whoami sync worker router.
+# When enabled, logs cache hits/misses and routing decisions.
+# Useful for debugging, but should be disabled in production.
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_logging_enabled: false
+
+# The length of the access token to show in logs when logging is enabled.
+# Keeping this short is a good idea from a security perspective.
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_logging_token_length: 12
+
+# Controls whether debug response headers are added to sync requests.
+# When enabled, adds X-Sync-Worker-Router-User-Identifier and X-Sync-Worker-Router-Upstream headers.
+# Useful for debugging routing behavior, but should be disabled in production.
+matrix_synapse_reverse_proxy_companion_whoami_sync_worker_router_debug_headers_enabled: false
+
+########################################################################################
+#                                                                                      #
+# /Whoami-based sync worker routing                                                    #
+#                                                                                      #
+########################################################################################
