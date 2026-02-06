@@ -73,6 +73,8 @@
     - {'old': 'matrix_playbook_reverse_proxy_traefik_middleware_compession_enabled', 'new': 'matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled'}
     - {'old': 'matrix_playbook_reverse_proxy_traefik_middleware_compession_name', 'new': 'matrix_playbook_reverse_proxy_traefik_middleware_compression_name'}
 
+    - {'old': 'matrix_synapse_account_threepid_delegates_msisdn_mas1sd_url', 'new': '<removed>'}
+
 - name: (Deprecation) Catch and report matrix_postgres variables
   ansible.builtin.fail:
     msg: |-
@@ -367,17 +369,17 @@
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_client_api_enabled'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled', 'new': '<replaced by matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled, but if you use matrix_synapse_oidc_enabled then it would be toggled automatically; see the new recommended OIDC example configuration in docs/configuring-playbook-synapse.md>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_admin_api_enabled'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_traefik_enabled and matrix_ma1sd_container_labels_matrix_identity_enabled>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_enabled', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container', 'new': '<removed>'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_traefik_enabled and matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container', 'new': '<removed>'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_matrix_client_user_directory_search_path_regexp>'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled', 'new': 'matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container', 'new': '<removed>'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_matrix_client_3pid_registration_path_regexp>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_conduit_enabled', 'new': 'matrix_conduit_container_labels_traefik_enabled'}
         - {'old': 'matrix_nginx_proxy_proxy_conduit_block_federation_api_on_client_port', 'new': '<not supported anymore - the /_matrix/federation endpoints are now also being served on the Client-Server API port>'}
         - {'old': 'matrix_nginx_proxy_proxy_conduit_federation_api_enabled', 'new': 'matrix_conduit_container_labels_public_federation_api_enabled'}
@@ -533,6 +535,18 @@
 
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report ma1sd variables
+  ansible.builtin.fail:
+    msg: |-
+      ma1sd was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_ma1sd_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-ma1sd.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_ma1sd_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_ma1sd_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report matrix-appservice-webhooks variables
   ansible.builtin.fail:

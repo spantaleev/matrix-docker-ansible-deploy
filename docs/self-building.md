@@ -34,7 +34,6 @@ Possibly outdated list of roles where self-building the Docker image is currentl
 - `matrix-coturn`
 - `matrix-corporal`
 - `matrix-dimension`
-- `matrix-ma1sd`
 - `exim-relay`
 - `matrix-bridge-hookshot`
 - `matrix-bridge-appservice-irc`
