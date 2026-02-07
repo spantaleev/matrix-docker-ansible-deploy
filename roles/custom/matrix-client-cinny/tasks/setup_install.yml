@@ -16,7 +16,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - {path: "{{ cinny_data_path }}", when: true}
+    - {path: "{{ cinny_base_path }}", when: true}
     - {path: "{{ cinny_docker_src_files_path }}", when: "{{ cinny_container_image_self_build }}"}
   when: "item.when | bool"
 
@@ -46,7 +46,7 @@
 - name: Ensure Cinny configuration installed
   ansible.builtin.copy:
     content: "{{ cinny_configuration | to_nice_json }}"
-    dest: "{{ cinny_data_path }}/config.json"
+    dest: "{{ cinny_base_path }}/config.json"
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
@@ -54,7 +54,7 @@
 - name: Ensure Cinny additional config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
-    dest: "{{ cinny_data_path }}/{{ item.name }}"
+    dest: "{{ cinny_base_path }}/{{ item.name }}"
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
