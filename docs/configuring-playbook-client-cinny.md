@@ -27,26 +27,26 @@ When setting, replace `example.com` with your own.
 To enable Cinny, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_client_cinny_enabled: true
+cinny_enabled: true
 ```
 
 ### Adjusting the Cinny URL (optional)
 
-By tweaking the `matrix_client_cinny_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
+By tweaking the `cinny_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to a different domain (`app.example.com`) than the default one (`cinny.example.com`)
-matrix_client_cinny_hostname: "app.{{ matrix_domain }}"
+cinny_hostname: "app.{{ matrix_domain }}"
 
 # Expose under the /cinny subpath
-# matrix_client_cinny_path_prefix: /cinny
+# cinny_path_prefix: /cinny
 ```
 
 After changing the domain, **you may need to adjust your DNS** records to point the Cinny domain to the Matrix server.
 
-**Note**: while there is a `matrix_client_cinny_path_prefix` variable for changing the path where Cinny is served, overriding it is [not possible](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701), because Cinny requires an application rebuild (with a tweaked build config) to be functional under a custom path. You'd need to serve Cinny at a dedicated subdomain.
+**Note**: while there is a `cinny_path_prefix` variable for changing the path where Cinny is served, overriding it is [not possible](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3701), because Cinny requires an application rebuild (with a tweaked build config) to be functional under a custom path. You'd need to serve Cinny at a dedicated subdomain.
 
 ### Extending the configuration
 
@@ -54,8 +54,8 @@ There are some additional things you may wish to configure about the component.
 
 Take a look at:
 
-- `roles/custom/matrix-client-cinny/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-client-cinny/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_cinny_configuration_extension_json` variable
+- `roles/galaxy/cinny/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/cinny/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `cinny_configuration_extension_json` variable
 
 ## Installing
 
