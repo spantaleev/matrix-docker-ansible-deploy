@@ -4290,7 +4290,8 @@ cinny_enabled: false
 
 cinny_identifier: matrix-client-cinny
 
-cinny_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else cinny_docker_image_registry_prefix_upstream_default }}"
+cinny_container_image_registry_prefix: "{{ 'localhost/' if cinny_container_image_self_build else cinny_container_image_registry_prefix_upstream }}"
+cinny_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else cinny_container_image_registry_prefix_upstream_default }}"
 
 cinny_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 

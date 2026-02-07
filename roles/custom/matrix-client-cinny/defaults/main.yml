@@ -18,11 +18,11 @@ cinny_container_image_self_build_repo: "https://github.com/ajbura/cinny.git"
 
 # renovate: datasource=docker depName=ajbura/cinny
 cinny_version: v4.10.2
-cinny_docker_image: "{{ cinny_docker_image_registry_prefix }}ajbura/cinny:{{ cinny_version }}"
-cinny_docker_image_registry_prefix: "{{ 'localhost/' if cinny_container_image_self_build else cinny_docker_image_registry_prefix_upstream }}"
-cinny_docker_image_registry_prefix_upstream: "{{ cinny_docker_image_registry_prefix_upstream_default }}"
-cinny_docker_image_registry_prefix_upstream_default: docker.io/
-cinny_docker_image_force_pull: "{{ cinny_docker_image.endswith(':latest') }}"
+cinny_container_image: "{{ cinny_container_image_registry_prefix }}ajbura/cinny:{{ cinny_version }}"
+cinny_container_image_registry_prefix: "{{ 'localhost/' if cinny_container_image_self_build else cinny_container_image_registry_prefix_upstream }}"
+cinny_container_image_registry_prefix_upstream: "{{ cinny_container_image_registry_prefix_upstream_default }}"
+cinny_container_image_registry_prefix_upstream_default: docker.io/
+cinny_container_image_force_pull: "{{ cinny_container_image.endswith(':latest') }}"
 
 cinny_data_path: "{{ matrix_base_data_path }}/client-cinny"
 cinny_docker_src_files_path: "{{ cinny_data_path }}/docker-src"
