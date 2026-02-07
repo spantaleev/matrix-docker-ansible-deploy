@@ -54,8 +54,8 @@ There are some additional things you may wish to configure about the component.
 
 Take a look at:
 
-- `roles/custom/matrix-client-cinny/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-client-cinny/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_cinny_configuration_extension_json` variable
+- `roles/galaxy/cinny/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/cinny/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_cinny_configuration_extension_json` variable
 
 ## Installing
 
