@@ -344,7 +344,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-cactus-comments-client.service', 'priority': 2000, 'groups': ['matrix', 'cactus-comments-client']}] if matrix_cactus_comments_client_enabled else [])
     +
-    ([{'name': 'cinny.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'cinny', 'client-cinny']}] if cinny_enabled else [])
+    ([{'name': (cinny_identifier + '.service'), 'priority': 2000, 'groups': ['matrix', 'clients', 'cinny', 'client-cinny']}] if cinny_enabled else [])
     +
     ([{'name': 'matrix-client-element.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'element', 'client-element']}] if matrix_client_element_enabled else [])
     +
@@ -4287,6 +4287,8 @@ matrix_client_hydrogen_self_check_validate_certificates: "{{ matrix_playbook_ssl
 ######################################################################
 
 cinny_enabled: false
+
+cinny_identifier: matrix-client-cinny
 
 cinny_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else cinny_docker_image_registry_prefix_upstream_default }}"
 
