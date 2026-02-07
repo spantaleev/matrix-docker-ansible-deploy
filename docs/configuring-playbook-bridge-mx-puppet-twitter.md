@@ -25,5 +25,5 @@ systemctl disable --now matrix-mx-puppet-twitter.service
 
 rm -rf /matrix/mx-puppet-twitter
 
-/matrix/postgres/bin/cli-non-interactive 'DROP DATABASE matrix_mx_puppet_twitter;'
+/matrix/postgres/bin/cli-non-interactive -c 'DROP DATABASE matrix_mx_puppet_twitter;'
 ```

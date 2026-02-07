@@ -22,5 +22,5 @@ systemctl disable --now matrix-go-skype-bridge.service
 
 rm -rf /matrix/go-skype-bridge
 
-/matrix/postgres/bin/cli-non-interactive 'DROP DATABASE matrix_go_skype_bridge;'
+/matrix/postgres/bin/cli-non-interactive -c 'DROP DATABASE matrix_go_skype_bridge;'
 ```

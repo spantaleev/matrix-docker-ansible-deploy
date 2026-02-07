@@ -26,5 +26,5 @@ systemctl disable --now matrix-mx-puppet-instagram.service
 
 rm -rf /matrix/mx-puppet-instagram
 
-/matrix/postgres/bin/cli-non-interactive 'DROP DATABASE matrix_mx_puppet_instagram;'
+/matrix/postgres/bin/cli-non-interactive -c 'DROP DATABASE matrix_mx_puppet_instagram;'
 ```

@@ -28,5 +28,5 @@ systemctl disable --now matrix-sliding-sync.service
 
 rm -rf /matrix/sliding-sync
 
-/matrix/postgres/bin/cli-non-interactive 'DROP DATABASE matrix_sliding_sync;'
+/matrix/postgres/bin/cli-non-interactive -c 'DROP DATABASE matrix_sliding_sync;'
 ```
