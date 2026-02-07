@@ -6,26 +6,26 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Check existence of matrix-client-cinny.service
+- name: Check existence of cinny.service
   ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-cinny.service"
-  register: matrix_client_cinny_service_stat
+    path: "{{ devture_systemd_docker_base_systemd_path }}/cinny.service"
+  register: cinny_service_stat
 
-- when: matrix_client_cinny_service_stat.stat.exists | bool
+- when: cinny_service_stat.stat.exists | bool
   block:
-    - name: Ensure matrix-client-cinny is stopped
+    - name: Ensure cinny is stopped
       ansible.builtin.service:
-        name: matrix-client-cinny
+        name: cinny
         state: stopped
         enabled: false
         daemon_reload: true
 
-    - name: Ensure matrix-client-cinny.service doesn't exist
+    - name: Ensure cinny.service doesn't exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-cinny.service"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/cinny.service"
         state: absent
 
     - name: Ensure Cinny paths doesn't exist
       ansible.builtin.file:
-        path: "{{ matrix_client_cinny_data_path }}"
+        path: "{{ cinny_data_path }}"
         state: absent

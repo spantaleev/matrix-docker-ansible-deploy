@@ -1,6 +1,6 @@
-# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2024 - 2025 MDAD project contributors
-# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2022-2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024, 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -557,6 +557,19 @@
 
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_bot_chatgpt_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_bot_chatgpt_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-client-cinny variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-client-cinny role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-cinny).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_client_cinny_`-prefixed variables (`matrix_client_cinny_*` -> `cinny_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report mautrix-facebook variables
   ansible.builtin.fail:
