@@ -1,5 +1,13 @@
 # 2026-02-08
 
+## (BC Break) Dynamic DNS role has been relocated and variable names need adjustments
+
+The role for Dynamic DNS has been relocated to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
+
+Along with the relocation, the `matrix_dynamic_dns_` prefix on its variable names has been renamed to `ddclient_`, so you need to adjust your `vars.yml` configuration.
+
+As always, the playbook would let you know about this and point out any variables you may have missed.
+
 ## ma1sd has been removed from the playbook
 
 [ma1sd](./docs/configuring-playbook-ma1sd.md) has been removed from the playbook, as it has been unmaintained for a long time.

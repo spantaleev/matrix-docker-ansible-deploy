@@ -80,6 +80,11 @@
     - {'old': 'cinny_docker_image_registry_prefix_upstream', 'new': 'cinny_container_image_registry_prefix_upstream'}
     - {'old': 'cinny_docker_image_registry_prefix_upstream_default', 'new': 'cinny_container_image_registry_prefix_upstream_default'}
 
+    - {'old': 'ddclient_docker_image', 'new': 'ddclient_container_image'}
+    - {'old': 'ddclient_docker_image_registry_prefix', 'new': 'ddclient_container_image_registry_prefix'}
+    - {'old': 'ddclient_docker_image_registry_prefix_upstream', 'new': 'ddclient_container_image_registry_prefix_upstream'}
+    - {'old': 'ddclient_docker_image_registry_prefix_upstream_default', 'new': 'ddclient_container_image_registry_prefix_upstream_default'}
+
 - name: (Deprecation) Catch and report matrix_postgres variables
   ansible.builtin.fail:
     msg: |-
@@ -589,6 +594,19 @@
 
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-dynamic-dns variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-dynamic-dns role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-ddclient).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_dynamic_dns_`-prefixed variables (`matrix_dynamic_dns_*` -> `ddclient_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report mautrix-facebook variables
   ansible.builtin.fail:
