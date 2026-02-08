@@ -42,7 +42,7 @@ ddclient_enabled: true
 
 ddclient_domain_configurations:
   - provider: example.net
-    protocol: dyndn2
+    protocol: dyndns2
     username: YOUR_USERNAME_HERE
     password: YOUR_PASSWORD_HERE
     domain: "{{ matrix_domain }}"
