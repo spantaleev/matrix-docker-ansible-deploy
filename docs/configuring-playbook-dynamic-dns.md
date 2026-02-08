@@ -1,7 +1,20 @@
 <!--
+SPDX-FileCopyrightText: 2020 Aaron Raimist
+SPDX-FileCopyrightText: 2020 Chris van Dijk
+SPDX-FileCopyrightText: 2020 Dominik Zajac
+SPDX-FileCopyrightText: 2020 Mickaël Cornière
 SPDX-FileCopyrightText: 2020 Scott Crossen
-SPDX-FileCopyrightText: 2020 Slavi Pantaleev
-SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2020-2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020-2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 François Darveau
+SPDX-FileCopyrightText: 2022 Julian Foad
+SPDX-FileCopyrightText: 2022 Warren Bailey
+SPDX-FileCopyrightText: 2023 Antonis Christofides
+SPDX-FileCopyrightText: 2023 Felix Stupp
+SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 Tiz
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -11,6 +24,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 The playbook can configure Dynamic DNS with [ddclient⁠](https://github.com/ddclient/ddclient) for you. It is a Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider.
 
 Most cloud providers / ISPs will charge you extra for a static IP address. If you're not hosting a highly reliable homeserver you can workaround this via dynamic DNS.
+
+For details about configuring the [Ansible role for ddclient](https://github.com/mother-of-all-self-hosting/ansible-role-ddclient), you can check them via:
+- 🌐 [the role's documentation](https://github.com/mother-of-all-self-hosting/ansible-role-ddclient/blob/main/docs/configuring-ddclient.md) online
+- 📁 `roles/galaxy/ddclient/docs/configuring-ddclient.md` locally, if you have [fetched the Ansible roles](../installing.md)
 
 ## Prerequisite
 
@@ -32,6 +49,12 @@ ddclient_domain_configurations:
 ```
 
 Keep in mind that certain providers may require a different configuration of the `ddclient_domain_configurations` variable, for provider specific examples see the [upstream documentation](https://github.com/ddclient/ddclient/blob/main/ddclient.conf.in).
+
+### Configuring the endpoint to obtain IP address (optional)
+
+The playbook sets the default endpoint for obtaining the IP address to `https://cloudflare.com/cdn-cgi/trace`. You can replace it by specifying yours to `ddclient_web` and `ddclient_web_skip` if necessary.
+
+Refer to [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ddclient/blob/main/docs/configuring-ddclient.md#setting-the-endpoint-to-obtain-ip-address-optional) for more information.
 
 ### Extending the configuration
 
@@ -63,4 +86,4 @@ Additional resources:
 
 ## Troubleshooting
 
-As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-dynamic-dns`. However, due to an [upstream issue](https://github.com/linuxserver/docker-ddclient/issues/54#issuecomment-1153143132) the logging output is not always complete. For advanced debugging purposes running the `ddclient` tool outside of the container is useful via the following: `ddclient -file ./ddclient.conf -daemon=0 -debug -verbose -noquiet`.
+See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-ddclient/blob/main/docs/configuring-ddclient.md#troubleshooting) on the role's documentation for details.
