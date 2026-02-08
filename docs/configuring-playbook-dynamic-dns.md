@@ -21,9 +21,9 @@ You'll need to authenticate with your DNS provider somehow, in most cases this i
 To enable dynamic DNS, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_dynamic_dns_enabled: true
+ddclient_enabled: true
 
-matrix_dynamic_dns_domain_configurations:
+ddclient_domain_configurations:
   - provider: example.net
     protocol: dyndn2
     username: YOUR_USERNAME_HERE
@@ -31,7 +31,7 @@ matrix_dynamic_dns_domain_configurations:
     domain: "{{ matrix_domain }}"
 ```
 
-Keep in mind that certain providers may require a different configuration of the `matrix_dynamic_dns_domain_configurations` variable, for provider specific examples see the [upstream documentation](https://github.com/ddclient/ddclient/blob/main/ddclient.conf.in).
+Keep in mind that certain providers may require a different configuration of the `ddclient_domain_configurations` variable, for provider specific examples see the [upstream documentation](https://github.com/ddclient/ddclient/blob/main/ddclient.conf.in).
 
 ### Extending the configuration
 

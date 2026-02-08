@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix Dynamic DNS
-{% for service in matrix_dynamic_dns_systemd_required_services_list %}
+{% for service in ddclient_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_dynamic_dns_systemd_wanted_services_list %}
+{% for service in ddclient_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -20,17 +20,17 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-dynamic-dns \
 			--log-driver=none \
-			--network={{ matrix_dynamic_dns_container_network }} \
+			--network={{ ddclient_container_network }} \
   			-e PUID={{ matrix_user_uid }} \
   			-e PGID={{ matrix_user_gid }} \
-			--mount type=bind,src={{ matrix_dynamic_dns_config_path }},dst=/config \
-			{% for arg in matrix_dynamic_dns_container_extra_arguments %}
+			--mount type=bind,src={{ ddclient_config_path }},dst=/config \
+			{% for arg in ddclient_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_dynamic_dns_docker_image }}
+			{{ ddclient_docker_image }}
 
 
-{% for network in matrix_dynamic_dns_container_additional_networks %}
+{% for network in ddclient_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-dynamic-dns
 {% endfor %}
 

@@ -5,21 +5,21 @@ SPDX-FileCopyrightText: 2022 Slavi Pantaleev
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
-daemon={{ matrix_dynamic_dns_daemon_interval }}
+daemon={{ ddclient_daemon_interval }}
 syslog=no
 pid=/var/run/ddclient/ddclient.pid
 ssl=yes
-use={{ matrix_dynamic_dns_use }}
-web='{{ matrix_dynamic_dns_web }}'
-{% if matrix_dynamic_dns_web_skip %}
-web-skip='{{ matrix_dynamic_dns_web_skip }}'
+use={{ ddclient_use }}
+web='{{ ddclient_web }}'
+{% if ddclient_web_skip %}
+web-skip='{{ ddclient_web_skip }}'
 {% endif %}
 
-{% for matrix_dynamic_dns_additional_configuration in matrix_dynamic_dns_additional_configuration_blocks %}
-{{ matrix_dynamic_dns_additional_configuration }}
+{% for ddclient_additional_configuration in ddclient_additional_configuration_blocks %}
+{{ ddclient_additional_configuration }}
 {% endfor %}
 
-{% for dynamic_dns_domain_configuration in matrix_dynamic_dns_domain_configurations %}
+{% for dynamic_dns_domain_configuration in ddclient_domain_configurations %}
 protocol={{ dynamic_dns_domain_configuration.protocol }}
 
 {% if 'apikey' in dynamic_dns_domain_configuration %}

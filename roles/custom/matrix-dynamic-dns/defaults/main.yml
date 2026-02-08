@@ -12,68 +12,68 @@
 # Project source code URL: https://github.com/linuxserver/docker-ddclient
 
 # Whether dynamic dns is enabled
-matrix_dynamic_dns_enabled: true
+ddclient_enabled: true
 
 # The dynamic dns daemon interval
-matrix_dynamic_dns_daemon_interval: '300'
+ddclient_daemon_interval: '300'
 
 # renovate: datasource=docker depName=linuxserver/ddclient versioning=semver
-matrix_dynamic_dns_version: 4.0.0
+ddclient_version: 4.0.0
 
 # The docker container to use when in mode
-matrix_dynamic_dns_docker_image: "{{ matrix_dynamic_dns_docker_image_registry_prefix }}linuxserver/ddclient:{{ matrix_dynamic_dns_version }}"
+ddclient_docker_image: "{{ ddclient_docker_image_registry_prefix }}linuxserver/ddclient:{{ ddclient_version }}"
 
-matrix_dynamic_dns_docker_image_registry_prefix: "{{ 'localhost/' if matrix_dynamic_dns_container_image_self_build else matrix_dynamic_dns_docker_image_registry_prefix_upstream }}"
-matrix_dynamic_dns_docker_image_registry_prefix_upstream: "{{ matrix_dynamic_dns_docker_image_registry_prefix_upstream_default }}"
-matrix_dynamic_dns_docker_image_registry_prefix_upstream_default: docker.io/
+ddclient_docker_image_registry_prefix: "{{ 'localhost/' if ddclient_container_image_self_build else ddclient_docker_image_registry_prefix_upstream }}"
+ddclient_docker_image_registry_prefix_upstream: "{{ ddclient_docker_image_registry_prefix_upstream_default }}"
+ddclient_docker_image_registry_prefix_upstream_default: docker.io/
 
 # The image to force pull
-matrix_dynamic_dns_docker_image_force_pull: "{{ matrix_dynamic_dns_docker_image.endswith(':latest') }}"
+ddclient_docker_image_force_pull: "{{ ddclient_docker_image.endswith(':latest') }}"
 
-matrix_dynamic_dns_container_network: ''
+ddclient_container_network: ''
 
-matrix_dynamic_dns_container_additional_networks: "{{ matrix_dynamic_dns_container_additional_networks_auto + matrix_dynamic_dns_container_additional_networks_custom }}"
-matrix_dynamic_dns_container_additional_networks_auto: []
-matrix_dynamic_dns_container_additional_networks_custom: []
+ddclient_container_additional_networks: "{{ ddclient_container_additional_networks_auto + ddclient_container_additional_networks_custom }}"
+ddclient_container_additional_networks_auto: []
+ddclient_container_additional_networks_custom: []
 
 # List of extra arguments to pass to the container mode
-matrix_dynamic_dns_container_extra_arguments: []
+ddclient_container_extra_arguments: []
 
 # List of wanted services when running in mode
-matrix_dynamic_dns_systemd_wanted_services_list: []
+ddclient_systemd_wanted_services_list: []
 
 # List of required services when running in mode
-matrix_dynamic_dns_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+ddclient_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 
 # Build the container from source when running in mode
-matrix_dynamic_dns_container_image_self_build: false
-matrix_dynamic_dns_container_image_self_build_repo: "https://github.com/linuxserver/docker-ddclient.git"
-matrix_dynamic_dns_container_image_self_build_repo_branch: "{{ matrix_dynamic_dns_version }}"
+ddclient_container_image_self_build: false
+ddclient_container_image_self_build_repo: "https://github.com/linuxserver/docker-ddclient.git"
+ddclient_container_image_self_build_repo_branch: "{{ ddclient_version }}"
 
 # Config paths
-matrix_dynamic_dns_base_path: "{{ matrix_base_data_path }}/dynamic-dns"
-matrix_dynamic_dns_config_path: "{{ matrix_dynamic_dns_base_path }}/config"
-matrix_dynamic_dns_docker_src_files_path: "{{ matrix_dynamic_dns_base_path }}/docker-src"
+ddclient_base_path: "{{ matrix_base_data_path }}/dynamic-dns"
+ddclient_config_path: "{{ ddclient_base_path }}/config"
+ddclient_docker_src_files_path: "{{ ddclient_base_path }}/docker-src"
 
 # Config options
-matrix_dynamic_dns_use: "web"
+ddclient_use: "web"
 
 # The endpoint to use to determine your external IP
-matrix_dynamic_dns_web: "https://cloudflare.com/cdn-cgi/trace"
+ddclient_web: "https://cloudflare.com/cdn-cgi/trace"
 
 # The field to extract the IP from
-# If your endpoint defined in `matrix_dynamic_dns_web` doesn't need this, just set it to ""
-matrix_dynamic_dns_web_skip: "ip="
+# If your endpoint defined in `ddclient_web` doesn't need this, just set it to ""
+ddclient_web_skip: "ip="
 
-matrix_dynamic_dns_additional_configuration_blocks: []
+ddclient_additional_configuration_blocks: []
 
 # Holds the configurations (the domains to update DNS for, the providers they use, etc.)
 #
 # Example:
-# matrix_dynamic_dns_domain_configurations:
+# ddclient_domain_configurations:
 #   - provider: domains.google.com
 #     protocol: dyndn2
 #     username: XXXXXXXXXXXXXXXX
 #     password: XXXXXXXXXXXXXXXX
 #     domain: "{{ matrix_domain }}"
-matrix_dynamic_dns_domain_configurations: []
+ddclient_domain_configurations: []
