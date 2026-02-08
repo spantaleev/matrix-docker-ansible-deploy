@@ -1887,10 +1887,10 @@ matrix_mautrix_whatsapp_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_mautrix_whatsapp_database_hostname == postgres_connection_hostname else [])
   }}
 
-matrix_mautrix_whatsapp_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':whats.as.token') | hash('sha512') | to_uuid }}"
+matrix_mautrix_whatsapp_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':wa.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_whatsapp_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':whats.hs.token') | hash('sha512') | to_uuid }}"
+matrix_mautrix_whatsapp_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':wa.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_whatsapp_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
