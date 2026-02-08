@@ -186,8 +186,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up WeChat bridging](configuring-playbook-bridge-wechat.md)
 
-- [Setting up Zulip bridging](configuring-playbook-bridge-zulip.md)
-
 ### Bots
 
 Bots provide various additional functionality to your installation.
