@@ -1,3 +1,13 @@
+# 2026-02-08
+
+## ma1sd has been removed from the playbook
+
+[ma1sd](./docs/configuring-playbook-ma1sd.md) has been removed from the playbook, as it has been unmaintained for a long time.
+
+The playbook will let you know if you're using any `matrix_ma1sd_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-ma1sd.md#uninstalling-the-component-manually).
+
+Please note that some of the functions can be achieved with other components. For example, if you wish to implement LDAP integration, you might as well check out [the LDAP provider module for Synapse](./docs/configuring-playbook-ldap-auth.md) instead.
+
 # 2026-02-07
 
 ## (BC Break) Cinny role has been relocated and variable names need adjustments
@@ -11,16 +21,6 @@ You need to do the following replacement:
 - `matrix_client_cinny_` -> `cinny_`
 
 As always, the playbook would let you know about this and point out any variables you may have missed.
-
-# 2026-02-06
-
-## ma1sd has been removed from the playbook
-
-[ma1sd](./docs/configuring-playbook-ma1sd.md) has been removed from the playbook, as it has been unmaintained for a long time.
-
-The playbook will let you know if you're using any `matrix_ma1sd_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-ma1sd.md#uninstalling-the-component-manually).
-
-Please note that some of the functions can be achieved with other components. For example, if you wish to implement LDAP integration, you might as well check out [the LDAP provider module for Synapse](./docs/configuring-playbook-ldap-auth.md) instead.
 
 ## The Sliding Sync proxy has been removed from the playbook
 
