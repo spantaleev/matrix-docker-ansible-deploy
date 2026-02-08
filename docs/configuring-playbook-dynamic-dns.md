@@ -39,7 +39,7 @@ There are some additional things you may wish to configure about the component.
 
 Take a look at:
 
-- `roles/custom/matrix-dynamic-dns/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/ddclient/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Installing
 
