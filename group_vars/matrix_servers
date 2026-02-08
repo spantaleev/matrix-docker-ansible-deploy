@@ -610,10 +610,10 @@ matrix_authentication_service_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_authentication_service_path_prefix: /auth
 
 matrix_authentication_service_config_database_host: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_authentication_service_config_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mas.db', rounds=655555) | to_uuid }}"
+matrix_authentication_service_config_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mas.db') | hash('sha512') | to_uuid }}"
 
 matrix_authentication_service_config_matrix_homeserver: "{{ matrix_domain }}"
-matrix_authentication_service_config_matrix_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mas.hs.secret', rounds=655555) | to_uuid }}"
+matrix_authentication_service_config_matrix_secret: "{{ (matrix_homeserver_generic_secret_key + ':mas.hs.secret') | hash('sha512') | to_uuid }}"
 matrix_authentication_service_config_matrix_endpoint: "{{ matrix_homeserver_container_url }}"
 
 # We're using a non-default configuration which:
@@ -727,15 +727,15 @@ matrix_appservice_discord_container_additional_networks_auto: |-
 # If the homeserver disables presence, it's likely better (less wasteful) to also disable presence on the bridge side.
 matrix_appservice_discord_bridge_disablePresence: "{{ (not matrix_synapse_presence_enabled) if matrix_homeserver_implementation == 'synapse' else false }}"
 
-matrix_appservice_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'discord.as.token', rounds=655555) | to_uuid }}"
+matrix_appservice_discord_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':discord.as.token') | hash('sha512') | to_uuid }}"
 
-matrix_appservice_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'discord.hs.token', rounds=655555) | to_uuid }}"
+matrix_appservice_discord_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':discord.hs.token') | hash('sha512') | to_uuid }}"
 
 # We only make this use Postgres if our own Postgres server is enabled.
 # It's only then (for now) that we can automatically create the necessary database and user for this service.
 matrix_appservice_discord_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_appservice_discord_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_appservice_discord_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.discord.db', rounds=655555) | to_uuid }}"
+matrix_appservice_discord_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.discord.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -785,17 +785,17 @@ matrix_appservice_slack_container_labels_traefik_docker_network: "{{ matrix_play
 matrix_appservice_slack_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_appservice_slack_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_appservice_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.as.token', rounds=655555) | to_uuid }}"
+matrix_appservice_slack_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':slack.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_appservice_slack_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_appservice_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.hs.token', rounds=655555) | to_uuid }}"
+matrix_appservice_slack_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':slack.hs.token') | hash('sha512') | to_uuid }}"
 
-matrix_appservice_slack_id_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'slack.id.token', rounds=655555) | to_uuid }}"
+matrix_appservice_slack_id_token: "{{ (matrix_homeserver_generic_secret_key + ':slack.id.token') | hash('sha512') | to_uuid }}"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_appservice_slack_database_engine: "{{ 'postgres' if postgres_enabled else 'nedb' }}"
 matrix_appservice_slack_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_appservice_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.slack.db', rounds=655555) | to_uuid }}"
+matrix_appservice_slack_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.slack.db') | hash('sha512') | to_uuid }}"
 matrix_appservice_slack_database_container_network: "{{ postgres_container_network if postgres_enabled else '' }}"
 
 ######################################################################
@@ -843,14 +843,14 @@ matrix_appservice_irc_container_additional_networks_auto: |-
 # IRC bridge presence, for performance reasons.
 matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_presence_enabled if matrix_homeserver_implementation == 'synapse' else true }}"
 
-matrix_appservice_irc_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'irc.as.token', rounds=655555) | to_uuid }}"
+matrix_appservice_irc_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':irc.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_appservice_irc_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_appservice_irc_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'irc.hs.token', rounds=655555) | to_uuid }}"
+matrix_appservice_irc_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':irc.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_appservice_irc_database_engine: "{{ 'postgres' if postgres_enabled else 'nedb' }}"
 matrix_appservice_irc_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_appservice_irc_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.irc.db', rounds=655555) | to_uuid }}"
+matrix_appservice_irc_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.irc.db') | hash('sha512') | to_uuid }}"
 matrix_appservice_irc_database_container_network: "{{ postgres_container_network if postgres_enabled else '' }}"
 
 matrix_appservice_irc_ircService_mediaProxy_publicUrl_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"  # noqa var-naming
@@ -897,10 +897,10 @@ matrix_appservice_kakaotalk_container_additional_networks_auto: |-
     ) | unique
   }}
 
-matrix_appservice_kakaotalk_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.kakao.hs', rounds=655555) | to_uuid }}"
+matrix_appservice_kakaotalk_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':as.kakao.hs') | hash('sha512') | to_uuid }}"
 
 matrix_appservice_kakaotalk_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_appservice_kakaotalk_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.kakao.hs', rounds=655555) | to_uuid }}"
+matrix_appservice_kakaotalk_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':as.kakao.hs') | hash('sha512') | to_uuid }}"
 
 matrix_appservice_kakaotalk_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -908,7 +908,7 @@ matrix_appservice_kakaotalk_login_shared_secret: "{{ matrix_synapse_ext_password
 
 matrix_appservice_kakaotalk_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_appservice_kakaotalk_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_appservice_kakaotalk_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.kakao.db', rounds=655555) | to_uuid }}"
+matrix_appservice_kakaotalk_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.kakao.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -948,10 +948,10 @@ matrix_beeper_linkedin_container_additional_networks_auto: |-
     ) | unique
   }}
 
-matrix_beeper_linkedin_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'linked.as.token', rounds=655555) | to_uuid }}"
+matrix_beeper_linkedin_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':linked.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_beeper_linkedin_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_beeper_linkedin_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'linked.hs.token', rounds=655555) | to_uuid }}"
+matrix_beeper_linkedin_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':linked.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_beeper_linkedin_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -971,7 +971,7 @@ matrix_beeper_linkedin_bridge_login_shared_secret_map_auto: |-
 matrix_beeper_linkedin_bridge_presence: "{{ (matrix_synapse_presence_enabled if matrix_synapse_enabled else true) if matrix_homeserver_implementation == 'synapse' else true }}"
 
 matrix_beeper_linkedin_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_beeper_linkedin_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maulinkedin.db', rounds=655555) | to_uuid }}"
+matrix_beeper_linkedin_database_password: "{{ (matrix_homeserver_generic_secret_key + ':maulinkedin.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1020,14 +1020,14 @@ matrix_mautrix_bluesky_container_labels_traefik_tls_certResolver: "{{ traefik_ce
 matrix_mautrix_bluesky_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_bluesky_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_bluesky_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'bsky.as.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_bluesky_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':bsky.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_bluesky_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_bluesky_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'bsky.hs.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_bluesky_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':bsky.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_bluesky_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
-matrix_mautrix_bluesky_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.bsky.prov', rounds=655555) | to_uuid }}"
+matrix_mautrix_bluesky_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':mau.bsky.prov') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_bluesky_double_puppet_secrets_auto: |-
   {{
@@ -1045,7 +1045,7 @@ matrix_mautrix_bluesky_metrics_proxying_hostname: "{{ matrix_metrics_exposure_ho
 matrix_mautrix_bluesky_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-bluesky"
 
 matrix_mautrix_bluesky_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_bluesky_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twt.db', rounds=655555) | to_uuid if postgres_enabled else '' }}"
+matrix_mautrix_bluesky_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.twt.db') | hash('sha512') | to_uuid if postgres_enabled else '' }}"
 
 ######################################################################
 #
@@ -1091,14 +1091,14 @@ matrix_mautrix_discord_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_discord_database_hostname == postgres_connection_hostname) else [])
   }}
 
-matrix_mautrix_discord_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.as.tok', rounds=655555) | to_uuid }}"
+matrix_mautrix_discord_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.as.tok') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_discord_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_discord_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.hs.tok', rounds=655555) | to_uuid }}"
+matrix_mautrix_discord_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.hs.tok') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_discord_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
-matrix_mautrix_discord_bridge_avatar_proxy_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudisc.avatar', rounds=655555) | to_uuid }}"
+matrix_mautrix_discord_bridge_avatar_proxy_key: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.avatar') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_discord_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_mautrix_discord_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
@@ -1119,7 +1119,7 @@ matrix_mautrix_discord_bridge_login_shared_secret_map_auto: |-
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_discord_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_discord_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_discord_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maudiscord.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_discord_database_password: "{{ (matrix_homeserver_generic_secret_key + ':maudiscord.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1159,10 +1159,10 @@ matrix_mautrix_slack_container_additional_networks_auto: |-
     ) | unique
   }}
 
-matrix_mautrix_slack_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.as.tok', rounds=655555) | to_uuid }}"
+matrix_mautrix_slack_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':mauslack.as.tok') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_slack_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_slack_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.hs.tok', rounds=655555) | to_uuid }}"
+matrix_mautrix_slack_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':mauslack.hs.tok') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_slack_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -1178,10 +1178,10 @@ matrix_mautrix_slack_double_puppet_secrets_auto: |-
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_slack_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_slack_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_slack_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauslack.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_slack_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mauslack.db') | hash('sha512') | to_uuid }}"
 
-matrix_mautrix_slack_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.slack.prov', rounds=655555) | to_uuid }}"
-matrix_mautrix_slack_public_media_signing_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.slack.pmed', rounds=655555) | to_uuid }}"
+matrix_mautrix_slack_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':mau.slack.prov') | hash('sha512') | to_uuid }}"
+matrix_mautrix_slack_public_media_signing_key: "{{ (matrix_homeserver_generic_secret_key + ':mau.slack.pmed') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1234,10 +1234,10 @@ matrix_mautrix_googlechat_container_labels_public_endpoint_hostname: "{{ matrix_
 matrix_mautrix_googlechat_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_googlechat_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_googlechat_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gc.as.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_googlechat_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':gc.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_googlechat_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_googlechat_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gc.hs.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_googlechat_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':gc.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_googlechat_login_shared_secret: |-
   {{
@@ -1259,7 +1259,7 @@ matrix_mautrix_googlechat_metrics_proxying_path_prefix: "{{ matrix_metrics_expos
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_googlechat_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_googlechat_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_googlechat_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.gc.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_googlechat_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.gc.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1310,11 +1310,11 @@ matrix_mautrix_signal_container_labels_metrics_middleware_basic_auth_users: "{{ 
 
 matrix_mautrix_signal_homeserver_domain: '{{ matrix_domain }}'
 matrix_mautrix_signal_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_signal_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'si.hs.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_signal_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':si.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_signal_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
-matrix_mautrix_signal_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'si.as.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_signal_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':si.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_signal_double_puppet_secrets_auto: |-
   {{
@@ -1333,10 +1333,10 @@ matrix_mautrix_signal_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_
 
 matrix_mautrix_signal_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_signal_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_signal_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.signal.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_signal_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.signal.db') | hash('sha512') | to_uuid }}"
 
-matrix_mautrix_signal_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.signal.prov', rounds=655555) | to_uuid }}"
-matrix_mautrix_signal_public_media_signing_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.signal.pmed', rounds=655555) | to_uuid }}"
+matrix_mautrix_signal_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':mau.signal.prov') | hash('sha512') | to_uuid }}"
+matrix_mautrix_signal_public_media_signing_key: "{{ (matrix_homeserver_generic_secret_key + ':mau.signal.pmed') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1386,11 +1386,11 @@ matrix_mautrix_meta_messenger_container_labels_traefik_tls_certResolver: "{{ tra
 matrix_mautrix_meta_messenger_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_meta_messenger_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_meta_messenger_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.meta.fb.as', rounds=655555) | to_uuid }}"
+matrix_mautrix_meta_messenger_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.fb.as') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_meta_messenger_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_mautrix_meta_messenger_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.meta.fb.hs', rounds=655555) | to_uuid }}"
+matrix_mautrix_meta_messenger_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.fb.hs') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_meta_messenger_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -1413,7 +1413,7 @@ matrix_mautrix_meta_messenger_metrics_proxying_path_prefix: "{{ matrix_metrics_e
 # and point them to a migration path.
 matrix_mautrix_meta_messenger_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite3-fk-wal' }}"
 matrix_mautrix_meta_messenger_database_hostname: "{{ postgres_connection_hostname if (postgres_enabled and matrix_mautrix_meta_messenger_database_engine == 'postgres') else '' }}"
-matrix_mautrix_meta_messenger_database_password: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.fb.db', rounds=655555) | to_uuid) if (postgres_enabled and matrix_mautrix_meta_messenger_database_engine == 'postgres') else '' }}"
+matrix_mautrix_meta_messenger_database_password: "{{ ((matrix_homeserver_generic_secret_key + ':mau.fb.db') | hash('sha512') | to_uuid) if (postgres_enabled and matrix_mautrix_meta_messenger_database_engine == 'postgres') else '' }}"
 
 ######################################################################
 #
@@ -1464,11 +1464,11 @@ matrix_mautrix_meta_instagram_container_labels_traefik_tls_certResolver: "{{ tra
 matrix_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_meta_instagram_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.meta.ig.as', rounds=655555) | to_uuid }}"
+matrix_mautrix_meta_instagram_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.ig.as') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_meta_instagram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_mautrix_meta_instagram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.meta.ig.hs', rounds=655555) | to_uuid }}"
+matrix_mautrix_meta_instagram_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.ig.hs') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_meta_instagram_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -1491,7 +1491,7 @@ matrix_mautrix_meta_instagram_metrics_proxying_path_prefix: "{{ matrix_metrics_e
 # and point them to a migration path.
 matrix_mautrix_meta_instagram_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite3-fk-wal' }}"
 matrix_mautrix_meta_instagram_database_hostname: "{{ postgres_connection_hostname if (postgres_enabled and matrix_mautrix_meta_instagram_database_engine == 'postgres') else '' }}"
-matrix_mautrix_meta_instagram_database_password: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.fb.db', rounds=655555) | to_uuid) if (postgres_enabled and matrix_mautrix_meta_instagram_database_engine == 'postgres') else '' }}"
+matrix_mautrix_meta_instagram_database_password: "{{ ((matrix_homeserver_generic_secret_key + ':mau.fb.db') | hash('sha512') | to_uuid) if (postgres_enabled and matrix_mautrix_meta_instagram_database_engine == 'postgres') else '' }}"
 
 ######################################################################
 #
@@ -1510,7 +1510,7 @@ matrix_mautrix_meta_instagram_database_password: "{{ ('%s' | format(matrix_homes
 matrix_mautrix_telegram_enabled: false
 
 matrix_mautrix_telegram_hostname: "{{ matrix_server_fqn_matrix }}"
-matrix_mautrix_telegram_path_prefix: "/{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'telegram', rounds=655555) | to_uuid }}"
+matrix_mautrix_telegram_path_prefix: "/{{ (matrix_homeserver_generic_secret_key + ':telegram') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_telegram_systemd_required_services_list_auto: |
   {{
@@ -1551,11 +1551,11 @@ matrix_mautrix_telegram_container_labels_traefik_tls_certResolver: "{{ traefik_c
 matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_telegram_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'telegr.as.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_telegram_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':telegr.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_telegram_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_telegram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_telegram_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'telegr.hs.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_telegram_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':telegr.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_telegram_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -1581,7 +1581,7 @@ matrix_mautrix_telegram_metrics_proxying_path_prefix: "{{ matrix_metrics_exposur
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_telegram_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_telegram_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_telegram_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.telegram.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_telegram_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.telegram.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1630,14 +1630,14 @@ matrix_mautrix_twitter_container_labels_traefik_tls_certResolver: "{{ traefik_ce
 matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_twitter_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'twt.as.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_twitter_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':twt.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_twitter_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_twitter_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'twt.hs.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_twitter_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':twt.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_twitter_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
-matrix_mautrix_twitter_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twit.prov', rounds=655555) | to_uuid }}"
+matrix_mautrix_twitter_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':mau.twit.prov') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_twitter_double_puppet_secrets_auto: |-
   {{
@@ -1655,7 +1655,7 @@ matrix_mautrix_twitter_metrics_proxying_hostname: "{{ matrix_metrics_exposure_ho
 matrix_mautrix_twitter_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-twitter"
 
 matrix_mautrix_twitter_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_twitter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twt.db', rounds=655555) | to_uuid if postgres_enabled else '' }}"
+matrix_mautrix_twitter_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.twt.db') | hash('sha512') | to_uuid if postgres_enabled else '' }}"
 
 ######################################################################
 #
@@ -1704,10 +1704,10 @@ matrix_mautrix_gmessages_container_labels_traefik_tls_certResolver: "{{ traefik_
 matrix_mautrix_gmessages_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_mautrix_gmessages_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_gmessages_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gmessa.as.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_gmessages_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':gmessa.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_gmessages_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_gmessages_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gmessa.hs.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_gmessages_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':gmessa.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_gmessages_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -1729,7 +1729,7 @@ matrix_mautrix_gmessages_metrics_proxying_path_prefix: "{{ matrix_metrics_exposu
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_gmessages_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_gmessages_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_gmessages_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'maugmessages.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_gmessages_database_password: "{{ (matrix_homeserver_generic_secret_key + ':maugmessages.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1781,7 +1781,7 @@ matrix_mautrix_wsproxy_container_labels_traefik_entrypoints: "{{ traefik_entrypo
 matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_mautrix_wsproxy_syncproxy_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_wsproxy_syncproxy_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'wsproxy.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_wsproxy_syncproxy_database_password: "{{ (matrix_homeserver_generic_secret_key + ':wsproxy.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1824,21 +1824,21 @@ matrix_wechat_container_additional_networks_auto: |-
     ) | unique
   }}
 
-matrix_wechat_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'wechat.as.token', rounds=655555) | to_uuid }}"
+matrix_wechat_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':wechat.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_wechat_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_wechat_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'wechat.hs.token', rounds=655555) | to_uuid }}"
+matrix_wechat_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':wechat.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_wechat_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
 matrix_wechat_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
-matrix_wechat_bridge_listen_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'wechat.lstn', rounds=655555) | to_uuid }}"
+matrix_wechat_bridge_listen_secret: "{{ (matrix_homeserver_generic_secret_key + ':wechat.lstn') | hash('sha512') | to_uuid }}"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_wechat_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_wechat_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_wechat_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'gowechat.db', rounds=655555) | to_uuid }}"
+matrix_wechat_database_password: "{{ (matrix_homeserver_generic_secret_key + ':gowechat.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1887,10 +1887,10 @@ matrix_mautrix_whatsapp_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_mautrix_whatsapp_database_hostname == postgres_connection_hostname else [])
   }}
 
-matrix_mautrix_whatsapp_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'whats.as.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_whatsapp_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':whats.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_whatsapp_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'whats.hs.token', rounds=655555) | to_uuid }}"
+matrix_mautrix_whatsapp_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':whats.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_whatsapp_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -1912,7 +1912,7 @@ matrix_mautrix_whatsapp_metrics_proxying_path_prefix: "{{ matrix_metrics_exposur
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_whatsapp_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_whatsapp_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_whatsapp_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mauwhatsapp.db', rounds=655555) | to_uuid }}"
+matrix_mautrix_whatsapp_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mauwhatsapp.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1943,11 +1943,11 @@ matrix_sms_bridge_container_additional_networks_auto: |-
     ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
   }}
 
-matrix_sms_bridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'sms.as.token', rounds=655555) | to_uuid }}"
+matrix_sms_bridge_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':sms.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_sms_bridge_homeserver_hostname: "{{ (matrix_homeserver_container_client_api_endpoint | split(':'))[0] }}"
 matrix_sms_bridge_homeserver_port: "{{ (matrix_homeserver_container_client_api_endpoint | split(':'))[1] }}"
-matrix_sms_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'sms.hs.token', rounds=655555) | to_uuid }}"
+matrix_sms_bridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':sms.hs.token') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -1989,9 +1989,9 @@ matrix_heisenbridge_container_labels_traefik_docker_network: "{{ matrix_playbook
 matrix_heisenbridge_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_heisenbridge_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_heisenbridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'heisen.as.tok', rounds=655555) | to_uuid }}"
+matrix_heisenbridge_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':heisen.as.tok') | hash('sha512') | to_uuid }}"
 
-matrix_heisenbridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'heisen.hs.tok', rounds=655555) | to_uuid }}"
+matrix_heisenbridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':heisen.hs.tok') | hash('sha512') | to_uuid }}"
 
 matrix_heisenbridge_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
@@ -2014,9 +2014,9 @@ matrix_hookshot_docker_image_registry_prefix_upstream: "{{ matrix_container_glob
 
 matrix_hookshot_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_hookshot_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.as.tok', rounds=655555) | to_uuid }}"
+matrix_hookshot_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':hookshot.as.tok') | hash('sha512') | to_uuid }}"
 
-matrix_hookshot_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hookshot.hs.tok', rounds=655555) | to_uuid }}"
+matrix_hookshot_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':hookshot.hs.tok') | hash('sha512') | to_uuid }}"
 
 matrix_hookshot_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
@@ -2111,9 +2111,9 @@ matrix_zulip_bridge_container_labels_traefik_docker_network: "{{ matrix_playbook
 matrix_zulip_bridge_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_zulip_bridge_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_zulip_bridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'zulip.as.tok', rounds=655555) | to_uuid }}"
+matrix_zulip_bridge_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':zulip.as.tok') | hash('sha512') | to_uuid }}"
 
-matrix_zulip_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'zulip.hs.tok', rounds=655555) | to_uuid }}"
+matrix_zulip_bridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':zulip.hs.tok') | hash('sha512') | to_uuid }}"
 
 matrix_zulip_bridge_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
@@ -2154,10 +2154,10 @@ matrix_mx_puppet_steam_container_additional_networks_auto: |-
     ) | unique
   }}
 
-matrix_mx_puppet_steam_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxste.as.tok', rounds=655555) | to_uuid }}"
+matrix_mx_puppet_steam_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':mxste.as.tok') | hash('sha512') | to_uuid }}"
 
 matrix_mx_puppet_steam_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mx_puppet_steam_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxste.hs.tok', rounds=655555) | to_uuid }}"
+matrix_mx_puppet_steam_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':mxste.hs.tok') | hash('sha512') | to_uuid }}"
 
 matrix_mx_puppet_steam_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
@@ -2166,7 +2166,7 @@ matrix_mx_puppet_steam_presence_enabled: "{{ matrix_homeserver_implementation !=
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_steam_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mx_puppet_steam_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mx_puppet_steam_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.steam.db', rounds=655555) | to_uuid }}"
+matrix_mx_puppet_steam_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mxpup.steam.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -2206,10 +2206,10 @@ matrix_mx_puppet_groupme_container_additional_networks_auto: |-
     ) | unique
   }}
 
-matrix_mx_puppet_groupme_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxgro.as.tok', rounds=655555) | to_uuid }}"
+matrix_mx_puppet_groupme_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':mxgro.as.tok') | hash('sha512') | to_uuid }}"
 
 matrix_mx_puppet_groupme_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mx_puppet_groupme_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxgro.hs.tok', rounds=655555) | to_uuid }}"
+matrix_mx_puppet_groupme_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':mxgro.hs.tok') | hash('sha512') | to_uuid }}"
 
 matrix_mx_puppet_groupme_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
 
@@ -2218,7 +2218,7 @@ matrix_mx_puppet_groupme_presence_enabled: "{{ matrix_homeserver_implementation 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mx_puppet_groupme_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mx_puppet_groupme_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mx_puppet_groupme_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.groupme.db', rounds=655555) | to_uuid }}"
+matrix_mx_puppet_groupme_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mxpup.groupme.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -2283,7 +2283,7 @@ matrix_postmoogle_systemd_required_services_list_auto: |
 # Postgres is the default, except if not using internal Postgres server
 matrix_postmoogle_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_postmoogle_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_postmoogle_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'postmoogle.db', rounds=655555) | to_uuid }}"
+matrix_postmoogle_database_password: "{{ (matrix_homeserver_generic_secret_key + ':postmoogle.db') | hash('sha512') | to_uuid }}"
 
 matrix_postmoogle_homeserver: "{{ matrix_addons_homeserver_client_api_url }}"
 
@@ -2345,16 +2345,16 @@ matrix_steam_bridge_container_labels_traefik_tls_certResolver: "{{ traefik_certR
 matrix_steam_bridge_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 matrix_steam_bridge_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_steam_bridge_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'steam.as.token', rounds=655555) | to_uuid }}"
+matrix_steam_bridge_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':steam.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_steam_bridge_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_steam_bridge_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'steam.hs.token', rounds=655555) | to_uuid }}"
+matrix_steam_bridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':steam.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_steam_bridge_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
-matrix_steam_bridge_public_media_signing_key: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'steam.pub.key', rounds=655555) | to_uuid) if matrix_steam_bridge_public_media_enabled else '' }}"
+matrix_steam_bridge_public_media_signing_key: "{{ ((matrix_homeserver_generic_secret_key + ':steam.pub.key') | hash('sha512') | to_uuid) if matrix_steam_bridge_public_media_enabled else '' }}"
 
-matrix_steam_bridge_provisioning_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'steam.prov', rounds=655555) | to_uuid }}"
+matrix_steam_bridge_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':steam.prov') | hash('sha512') | to_uuid }}"
 
 matrix_steam_bridge_double_puppet_secrets_auto: |-
   {{
@@ -2372,7 +2372,7 @@ matrix_steam_bridge_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostn
 matrix_steam_bridge_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/matrix-steam-bridge"
 
 matrix_steam_bridge_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_steam_bridge_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mau.twt.db', rounds=655555) | to_uuid if postgres_enabled else '' }}"
+matrix_steam_bridge_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.twt.db') | hash('sha512') | to_uuid if postgres_enabled else '' }}"
 
 ######################################################################
 #
@@ -2416,7 +2416,7 @@ matrix_bot_matrix_reminder_bot_matrix_homeserver_url: "{{ matrix_addons_homeserv
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_matrix_reminder_bot_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_bot_matrix_reminder_bot_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_bot_matrix_reminder_bot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'reminder.bot.db', rounds=655555) | to_uuid }}"
+matrix_bot_matrix_reminder_bot_database_password: "{{ (matrix_homeserver_generic_secret_key + ':reminder.bot.db') | hash('sha512') | to_uuid }}"
 
 matrix_bot_matrix_reminder_bot_allowlist_enabled: true
 matrix_bot_matrix_reminder_bot_allowlist_regexes_auto:
@@ -2521,7 +2521,7 @@ matrix_bot_maubot_container_labels_management_hostname: "{{ matrix_server_fqn_ma
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_maubot_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_bot_maubot_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_bot_maubot_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mxpup.dsc.db', rounds=655555) | to_uuid }}"
+matrix_bot_maubot_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mxpup.dsc.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -2579,7 +2579,7 @@ matrix_bot_honoroit_homeserver: "{{ matrix_addons_homeserver_client_api_url }}"
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_honoroit_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_bot_honoroit_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_bot_honoroit_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'honoroit.bot.db', rounds=655555) | to_uuid }}"
+matrix_bot_honoroit_database_password: "{{ (matrix_homeserver_generic_secret_key + ':honoroit.bot.db') | hash('sha512') | to_uuid }}"
 matrix_bot_honoroit_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
 ######################################################################
@@ -2633,7 +2633,7 @@ matrix_bot_buscarron_homeserver: "{{ matrix_addons_homeserver_client_api_url }}"
 # Postgres is the default, except if not using internal Postgres server
 matrix_bot_buscarron_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_bot_buscarron_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_bot_buscarron_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'buscarron.bot.db', rounds=655555) | to_uuid }}"
+matrix_bot_buscarron_database_password: "{{ (matrix_homeserver_generic_secret_key + ':buscarron.bot.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -2804,7 +2804,7 @@ matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints: "{{
 matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 #The salt is size restricted here as a maximum salt size of 16 characters exists due to the functions used.
-matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'draupnir.httpmod', rounds=655555) | to_uuid }}" # noqa var-naming
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: "{{ (matrix_homeserver_generic_secret_key + ':draupnir.httpmod') | hash('sha512') | to_uuid }}" # noqa var-naming
 
 ######################################################################
 #
@@ -2844,11 +2844,11 @@ matrix_appservice_draupnir_for_all_container_additional_networks_auto: |-
     ) | unique
   }}
 
-matrix_appservice_draupnir_for_all_appservice_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'd4a.as.token', rounds=655555) | to_uuid }}"
-matrix_appservice_draupnir_for_all_homeserver_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'd4a.hs.token', rounds=655555) | to_uuid }}"
+matrix_appservice_draupnir_for_all_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':d4a.as.token') | hash('sha512') | to_uuid }}"
+matrix_appservice_draupnir_for_all_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':d4a.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_appservice_draupnir_for_all_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_appservice_draupnir_for_all_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.d4a.db', rounds=655555) | to_uuid }}"
+matrix_appservice_draupnir_for_all_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.d4a.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -2865,8 +2865,8 @@ matrix_appservice_draupnir_for_all_database_password: "{{ '%s' | format(matrix_h
 
 matrix_appservice_double_puppet_enabled: false
 
-matrix_appservice_double_puppet_registration_as_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'as.doub.pup', rounds=655555) | to_uuid }}"
-matrix_appservice_double_puppet_registration_hs_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'hs.doub.pup', rounds=655555) | to_uuid }}"
+matrix_appservice_double_puppet_registration_as_token: "{{ (matrix_homeserver_generic_secret_key + ':as.doub.pup') | hash('sha512') | to_uuid }}"
+matrix_appservice_double_puppet_registration_hs_token: "{{ (matrix_homeserver_generic_secret_key + ':hs.doub.pup') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -2983,8 +2983,8 @@ matrix_cactus_comments_container_additional_networks_auto: |-
     ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
   }}
 
-matrix_cactus_comments_as_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'cactus.as.token', rounds=655555) | to_uuid }}"
-matrix_cactus_comments_hs_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'cactus.hs.token', rounds=655555) | to_uuid }}"
+matrix_cactus_comments_as_token: "{{ (matrix_homeserver_generic_secret_key + ':cactus.as.token') | hash('sha512') | to_uuid }}"
+matrix_cactus_comments_hs_token: "{{ (matrix_homeserver_generic_secret_key + ':cactus.hs.token') | hash('sha512') | to_uuid }}"
 
 matrix_cactus_comments_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
@@ -3163,10 +3163,10 @@ matrix_coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64
 # to allow auto-detection (via an EchoIP service) to happen at runtime.
 matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
 
-matrix_coturn_turn_static_auth_secret: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.sas', rounds=655555) | to_uuid) if matrix_coturn_authentication_method == 'auth-secret' else '' }}"
+matrix_coturn_turn_static_auth_secret: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.sas') | hash('sha512') | to_uuid) if matrix_coturn_authentication_method == 'auth-secret' else '' }}"
 
-matrix_coturn_lt_cred_mech_username: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.user', rounds=655555) | to_uuid) if matrix_coturn_authentication_method == 'lt-cred-mech' else '' }}"
-matrix_coturn_lt_cred_mech_password: "{{ ('%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'coturn.pass', rounds=655555) | to_uuid) if matrix_coturn_authentication_method == 'lt-cred-mech' else '' }}"
+matrix_coturn_lt_cred_mech_username: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.user') | hash('sha512') | to_uuid) if matrix_coturn_authentication_method == 'lt-cred-mech' else '' }}"
+matrix_coturn_lt_cred_mech_password: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.pass') | hash('sha512') | to_uuid) if matrix_coturn_authentication_method == 'lt-cred-mech' else '' }}"
 
 matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_enabled }}"
 
@@ -3278,7 +3278,7 @@ matrix_dimension_systemd_required_services_list_auto: |
 # Postgres is the default, except if not using internal Postgres server
 matrix_dimension_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_dimension_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_dimension_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dimension.db', rounds=655555) | to_uuid }}"
+matrix_dimension_database_password: "{{ (matrix_homeserver_generic_secret_key + ':dimension.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -3334,7 +3334,7 @@ etherpad_systemd_required_services_list_auto: |
 etherpad_database_postgres_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 etherpad_database_name: matrix_etherpad
 etherpad_database_postgres_username: matrix_etherpad
-etherpad_database_postgres_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'etherpad.db', rounds=655555) | to_uuid }}"
+etherpad_database_postgres_password: "{{ (matrix_homeserver_generic_secret_key + ':etherpad.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -3422,9 +3422,9 @@ jitsi_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxy
 jitsi_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 jitsi_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-jitsi_jibri_xmpp_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jibri', rounds=655555) | to_uuid }}"
-jitsi_jicofo_auth_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jicofo', rounds=655555) | to_uuid }}"
-jitsi_jvb_auth_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'jvb', rounds=655555) | to_uuid }}"
+jitsi_jibri_xmpp_password: "{{ (matrix_homeserver_generic_secret_key + ':jibri') | hash('sha512') | to_uuid }}"
+jitsi_jicofo_auth_password: "{{ (matrix_homeserver_generic_secret_key + ':jicofo') | hash('sha512') | to_uuid }}"
+jitsi_jvb_auth_password: "{{ (matrix_homeserver_generic_secret_key + ':jvb') | hash('sha512') | to_uuid }}"
 
 jitsi_web_stun_servers: |
   {{
@@ -3590,7 +3590,7 @@ matrix_media_repo_container_labels_traefik_metrics_middleware_basic_auth_users: 
 
 matrix_media_repo_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_media_repo_database_username: matrix_media_repo
-matrix_media_repo_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mediarepo.db', rounds=655555) | to_uuid }}"
+matrix_media_repo_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mediarepo.db') | hash('sha512') | to_uuid }}"
 matrix_media_repo_database_name: matrix_media_repo
 
 matrix_media_repo_systemd_required_services_list_auto: |
@@ -4403,9 +4403,9 @@ matrix_synapse_container_labels_internal_client_api_traefik_entrypoints: "{{ mat
 matrix_synapse_workers_container_host_bind_address: "{{ matrix_playbook_service_host_bind_interface_prefix[0:-1] if (matrix_synapse_workers_enabled and matrix_playbook_service_host_bind_interface_prefix) else '' }}"
 
 matrix_synapse_database_host: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_synapse_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'synapse.db', rounds=655555) | to_uuid }}"
+matrix_synapse_database_password: "{{ (matrix_homeserver_generic_secret_key + ':synapse.db') | hash('sha512') | to_uuid }}"
 
-matrix_synapse_macaroon_secret_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'synapse.mac', rounds=655555) | to_uuid }}"
+matrix_synapse_macaroon_secret_key: "{{ (matrix_homeserver_generic_secret_key + ':synapse.mac') | hash('sha512') | to_uuid }}"
 
 # We do not enable TLS in Synapse by default, since it's handled by Traefik.
 matrix_synapse_tls_federation_listener_enabled: false
@@ -4906,7 +4906,7 @@ prometheus_postgres_exporter_container_labels_metrics_middleware_basic_auth_user
 
 prometheus_postgres_exporter_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 prometheus_postgres_exporter_database_username: matrix_prometheus_postgres_exporter
-prometheus_postgres_exporter_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'prometheus.pg.db', rounds=655555) | to_uuid }}"
+prometheus_postgres_exporter_database_password: "{{ (matrix_homeserver_generic_secret_key + ':prometheus.pg.db') | hash('sha512') | to_uuid }}"
 prometheus_postgres_exporter_database_name: matrix_prometheus_postgres_exporter
 
 prometheus_postgres_exporter_systemd_required_services_list_auto: |
@@ -5223,7 +5223,7 @@ matrix_registration_api_validate_certs: "{{ matrix_playbook_ssl_enabled }}"
 # Postgres is the default, except if not using internal Postgres server
 matrix_registration_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_registration_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_registration_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'mx.registr.db', rounds=655555) | to_uuid }}"
+matrix_registration_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mx.registr.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -5282,11 +5282,11 @@ matrix_dendrite_metrics_proxying_enabled: "{{ matrix_dendrite_metrics_enabled an
 matrix_dendrite_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
 matrix_dendrite_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/dendrite"
 
-matrix_dendrite_client_api_registration_shared_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.rss', rounds=655555) | to_uuid }}"
+matrix_dendrite_client_api_registration_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':dendrite.rss') | hash('sha512') | to_uuid }}"
 
 matrix_dendrite_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 
-matrix_dendrite_database_password: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'dendrite.db', rounds=655555) | to_uuid }}"
+matrix_dendrite_database_password: "{{ (matrix_homeserver_generic_secret_key + ':dendrite.db') | hash('sha512') | to_uuid }}"
 
 matrix_dendrite_client_api_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
 matrix_dendrite_client_api_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
@@ -5581,7 +5581,7 @@ matrix_user_verification_service_uvs_homeserver_url: "{{ matrix_addons_homeserve
 # We connect via the container network (private IPs), so we need to disable IP checks
 matrix_user_verification_service_uvs_disable_ip_blacklist: "{{ matrix_synapse_enabled }}"
 
-matrix_user_verification_service_uvs_auth_token: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'uvs.auth.token', rounds=655555) | to_uuid }}"
+matrix_user_verification_service_uvs_auth_token: "{{ (matrix_homeserver_generic_secret_key + ':uvs.auth.token') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -5977,9 +5977,9 @@ matrix_livekit_jwt_service_container_labels_traefik_tls_certResolver: "{{ traefi
 
 matrix_livekit_jwt_service_environment_variable_livekit_url: "{{ livekit_server_websocket_public_url }}"
 
-matrix_livekit_jwt_service_environment_variable_livekit_key: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'lk.key', rounds=655555) | to_uuid }}"
+matrix_livekit_jwt_service_environment_variable_livekit_key: "{{ (matrix_homeserver_generic_secret_key + ':lk.key') | hash('sha512') | to_uuid }}"
 
-matrix_livekit_jwt_service_environment_variable_livekit_secret: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'lk.secret', rounds=655555) | to_uuid }}"
+matrix_livekit_jwt_service_environment_variable_livekit_secret: "{{ (matrix_homeserver_generic_secret_key + ':lk.secret') | hash('sha512') | to_uuid }}"
 
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list: ["{{ matrix_domain }}"]
 

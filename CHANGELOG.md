@@ -1,5 +1,17 @@
 # 2026-02-08
 
+## Switched to faster secret derivation for service passwords
+
+We've switched the method used for deriving service passwords (database passwords, appservice tokens, etc.) from the `matrix_homeserver_generic_secret_key` variable.
+
+The old method used `password_hash('sha512', rounds=655555)` (655,555 rounds of SHA-512 hashing), which was designed for protecting low-entropy human passwords against brute-force attacks. For deriving secrets from an already high-entropy secret key, this many rounds provide no additional security - the secret key's entropy is what protects the derived passwords, not the computational cost of hashing.
+
+The new method uses a single-round `hash('sha512')` with a unique salt per service. This is equally secure for this use case (SHA-512 remains preimage-resistant; brute-forcing a high-entropy key is infeasible regardless of rounds), while being dramatically faster.
+
+On a fast mini PC, evaluating `postgres_managed_databases` (which references multiple database passwords) dropped from **~10.7 seconds to ~0.6 seconds**. The Postgres role evaluates this variable multiple times during a run, so the cumulative savings are significant. All other roles that reference derived passwords also benefit.
+
+**What this means for users**: all derived service passwords (database passwords, appservice tokens, etc.) will change on the next playbook run. The main/superuser database password (`postgres_connection_password`) is not affected, as it is hardcoded in inventory variables rather than derived via hashing. All services will receive their new passwords as part of the same run, so this should be a seamless, non-user-impacting change.
+
 ## (BC Break) Dynamic DNS role has been relocated and variable names need adjustments
 
 The role for Dynamic DNS has been relocated to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
