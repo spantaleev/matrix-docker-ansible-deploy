@@ -344,7 +344,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-cactus-comments-client.service', 'priority': 2000, 'groups': ['matrix', 'cactus-comments-client']}] if matrix_cactus_comments_client_enabled else [])
     +
-    ([{'name': 'matrix-client-cinny.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'cinny', 'client-cinny']}] if matrix_client_cinny_enabled else [])
+    ([{'name': (cinny_identifier + '.service'), 'priority': 2000, 'groups': ['matrix', 'clients', 'cinny', 'client-cinny']}] if cinny_enabled else [])
     +
     ([{'name': 'matrix-client-element.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'element', 'client-element']}] if matrix_client_element_enabled else [])
     +
@@ -4183,39 +4183,49 @@ matrix_client_hydrogen_self_check_validate_certificates: "{{ matrix_playbook_ssl
 
 ######################################################################
 #
-# matrix-client-cinny
+# cinny
 #
 ######################################################################
 
-matrix_client_cinny_enabled: false
+cinny_enabled: false
 
-matrix_client_cinny_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_client_cinny_docker_image_registry_prefix_upstream_default }}"
+cinny_identifier: matrix-client-cinny
 
-matrix_client_cinny_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+cinny_uid: "{{ matrix_user_uid }}"
+cinny_gid: "{{ matrix_user_gid }}"
 
-matrix_client_cinny_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+cinny_container_image_registry_prefix: "{{ 'localhost/' if cinny_container_image_self_build else cinny_container_image_registry_prefix_upstream }}"
+cinny_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else cinny_container_image_registry_prefix_upstream_default }}"
 
-matrix_client_cinny_container_network: "{{ matrix_addons_container_network }}"
+cinny_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_client_cinny_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_client_cinny_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+cinny_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8080') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_client_cinny_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_client_cinny_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_cinny_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_client_cinny_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+cinny_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_client_cinny_container_labels_traefik_compression_middleware_enabled: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled }}"
-matrix_client_cinny_container_labels_traefik_compression_middleware_name: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_name if matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled else '' }}"
+cinny_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (cinny_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
 
-matrix_client_cinny_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+cinny_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+cinny_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+cinny_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+cinny_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_client_cinny_default_hs_url: "{{ matrix_homeserver_url }}"
+cinny_container_labels_traefik_compression_middleware_enabled: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled }}"
+cinny_container_labels_traefik_compression_middleware_name: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_name if matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled else '' }}"
 
-matrix_client_cinny_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
+cinny_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+cinny_default_hs_url: "{{ matrix_homeserver_url }}"
+
+cinny_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
+
+cinny_base_path: "{{ matrix_base_data_path }}/client-cinny"
+
+cinny_hostname: "{{ matrix_server_fqn_cinny }}"
 
 ######################################################################
 #
-# /matrix-client-cinny
+# /cinny
 #
 ######################################################################
 

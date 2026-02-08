@@ -28,5 +28,5 @@ systemctl disable --now matrix-mautrix-facebook.service
 
 rm -rf /matrix/mautrix-facebook
 
-/matrix/postgres/bin/cli-non-interactive 'DROP DATABASE matrix_mautrix_facebook;'
+/matrix/postgres/bin/cli-non-interactive -c 'DROP DATABASE matrix_mautrix_facebook;'
 ```

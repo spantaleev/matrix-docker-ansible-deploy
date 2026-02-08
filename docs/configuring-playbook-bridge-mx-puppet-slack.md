@@ -29,5 +29,5 @@ systemctl disable --now matrix-mx-puppet-slack.service
 
 rm -rf /matrix/mx-puppet-slack
 
-/matrix/postgres/bin/cli-non-interactive 'DROP DATABASE matrix_mx_puppet_slack;'
+/matrix/postgres/bin/cli-non-interactive -c 'DROP DATABASE matrix_mx_puppet_slack;'
 ```

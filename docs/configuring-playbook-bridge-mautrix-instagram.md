@@ -29,5 +29,5 @@ systemctl disable --now matrix-mautrix-instagram.service
 
 rm -rf /matrix/mautrix-instagram
 
-/matrix/postgres/bin/cli-non-interactive 'DROP DATABASE matrix_mautrix_instagram;'
+/matrix/postgres/bin/cli-non-interactive -c 'DROP DATABASE matrix_mautrix_instagram;'
 ```

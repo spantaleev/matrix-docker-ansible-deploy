@@ -1,3 +1,17 @@
+# 2026-02-07
+
+## (BC Break) Cinny role has been relocated and variable names need adjustments
+
+The role for Cinny has been relocated to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
+
+Along with the relocation, the `matrix_client_cinny_` prefix was dropped from its variable names, so you need to adjust your `vars.yml` configuration.
+
+You need to do the following replacement:
+
+- `matrix_client_cinny_` -> `cinny_`
+
+As always, the playbook would let you know about this and point out any variables you may have missed.
+
 # 2026-02-06
 
 ## ma1sd has been removed from the playbook
