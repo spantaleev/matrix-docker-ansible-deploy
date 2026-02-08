@@ -1,5 +1,9 @@
 # 2026-02-08
 
+## Zulip bridge has been removed from the playbook
+
+Zulip bridge has been removed from the playbook, as it doesn't work, and the maintainer seems to have abandoned it. See [this issue](https://github.com/GearKite/MatrixZulipBridge/issues/23) for more context.
+
 ## Switched to faster secret derivation for service passwords
 
 We've switched the method used for deriving service passwords (database passwords, appservice tokens, etc.) from the `matrix_homeserver_generic_secret_key` variable.
