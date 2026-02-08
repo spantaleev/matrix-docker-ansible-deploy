@@ -18,7 +18,7 @@ Add the following configuration to your `inventory/host_vars/matrix.example.com/
 
 ```yaml
 matrix_synapse_ext_password_provider_rest_auth_enabled: true
-matrix_synapse_ext_password_provider_rest_auth_endpoint: "http://matrix-ma1sd:8090"
+matrix_synapse_ext_password_provider_rest_auth_endpoint: SET_YOUR_ENDPOINT_HERE
 matrix_synapse_ext_password_provider_rest_auth_registration_enforce_lowercase: false
 matrix_synapse_ext_password_provider_rest_auth_registration_profile_name_autofill: true
 matrix_synapse_ext_password_provider_rest_auth_login_profile_name_autofill: false
@@ -47,9 +47,4 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-### Use ma1sd Identity Server for the backend (not recommended)
-
-This module does not provide direct integration with any backend. For the backend you can use [ma1sd](https://github.com/ma1uta/ma1sd) Identity Server, which can be configured with the playbook.
-
-> [!WARNING]
-> We recommend not bothering with installing ma1sd as it has been unmaintained for years. If you wish to install it anyway, consult the [ma1sd Identity Server configuration](configuring-playbook-ma1sd.md).
+This module does not provide direct integration with any backend. Please prepare one by yourself for it.
