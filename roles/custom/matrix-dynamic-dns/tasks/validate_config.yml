@@ -27,11 +27,3 @@
   when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'ddclient_container_network', when: true}
-
-- name: (Deprecation) Catch and report renamed matrix-dynamic-dns variables
-  ansible.builtin.fail:
-    msg: >-
-      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
-  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
-  with_items:
-    - {'old': 'ddclient_container_image_name_prefix', 'new': 'ddclient_docker_image_registry_prefix'}
