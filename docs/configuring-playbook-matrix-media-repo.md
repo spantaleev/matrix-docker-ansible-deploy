@@ -24,7 +24,20 @@ To enable matrix-media-repo, add the following configuration to your `inventory/
 
 ```yaml
 matrix_media_repo_enabled: true
+
+# Any unique alphanumeric string. Cannot be changed after first use.
+# For new installations, generate one with: pwgen -s 64 1
+# For existing installations, see below.
+matrix_media_repo_datastore_file_id: "CHANGE_ME_TO_A_UNIQUE_VALUE"
 ```
+
+**For existing installations**: retrieve the current datastore ID from the server's config file before proceeding:
+
+```sh
+grep 'id:' /matrix/media-repo/config/media-repo.yaml
+```
+
+Then use that value for `matrix_media_repo_datastore_file_id`. This is not a secret — it is a plain identifier used by matrix-media-repo to link media files to their storage backend.
 
 By default, the media-repo will use the local filesystem for data storage. You can alternatively use a `s3` cloud backend as well. Access token caching is also enabled by default since the logout endpoints are proxied through the media repo.
 
@@ -108,6 +121,11 @@ matrix_media_repo_admins: []
 #   archives      — Archives of content (GDPR and similar requests).
 matrix_media_repo_datastore_file_for_kinds: ["thumbnails", "remote_media", "local_media", "archives"]
 matrix_media_repo_datastore_s3_for_kinds: []
+
+# Required when S3 storage is enabled (matrix_media_repo_datastore_s3_for_kinds is non-empty).
+# Any unique alphanumeric string. Cannot be changed after first use.
+# For new installations, generate one with: pwgen -s 64 1
+# matrix_media_repo_datastore_s3_id: ""
 
 # The s3 uploader needs a temporary location to buffer files to reduce memory usage on
 # small file uploads. If the file size is unknown, the file is written to this location

@@ -1,3 +1,30 @@
+# 2026-02-09
+
+## (BC Break) matrix-media-repo datastore IDs are now required in `vars.yml`
+
+**Affects**: users with [matrix-media-repo](docs/configuring-playbook-matrix-media-repo.md) enabled (`matrix_media_repo_enabled: true`)
+
+The `matrix_media_repo_datastore_file_id` and `matrix_media_repo_datastore_s3_id` variables are no longer auto-configured with values. They must now be explicitly defined in your `vars.yml` file. The playbook will fail with a helpful error if they are not set (when needed).
+
+These were never meant to be auto-configured. They were derived from `matrix_homeserver_generic_secret_key`, which is intended for secrets that are OK to change subsequently (and Ansible would assist in propagating these changes). matrix-media-repo datastore IDs are not secrets — they are static identifiers linking media to storage backends, and **must not change** after first use.
+
+**For existing installations**, retrieve your current values from the server:
+
+```sh
+grep 'id:' /matrix/media-repo/config/media-repo.yaml
+```
+
+Then add to your `vars.yml`:
+
+```yaml
+matrix_media_repo_datastore_file_id: "YOUR_FILE_DATASTORE_ID_HERE"
+
+# Only if you use S3 storage:
+# matrix_media_repo_datastore_s3_id: "YOUR_S3_DATASTORE_ID_HERE"
+```
+
+**Why do this?**: This change allows us to **remove the [passlib](https://passlib.readthedocs.io/en/stable/index.html) Python library** from the [prerequisites](docs/prerequisites.md), as it was the last component that depended on it.
+
 # 2026-02-08
 
 ## Zulip bridge has been removed from the playbook

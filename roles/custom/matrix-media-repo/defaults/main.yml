@@ -414,8 +414,9 @@ matrix_media_repo_shared_secret_auth_token: "PutSomeRandomSecureValueHere"
 # thumbnails and other misc data is also stored in these places. The media repo, when looking
 # for a datastore to use, will always use the smallest datastore first.
 
-# ID for the file datastore (cannot change). Alphanumeric recommended.
-matrix_media_repo_datastore_file_id: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'filestore.db', rounds=655555) | to_uuid }}"
+# ID for the file datastore. Any unique alphanumeric string (e.g. generated via `pwgen -s 64 1`).
+# This value CANNOT be changed after media has been stored — matrix-media-repo ties media to this ID.
+matrix_media_repo_datastore_file_id: ""
 
 # Datastores can be split into many areas when handling uploads. Media is still de-duplicated
 # across all datastores (local content which duplicates remote content will re-use the remote
@@ -434,8 +435,9 @@ matrix_media_repo_datastore_file_for_kinds: ["thumbnails", "remote_media", "loca
 # Path to datastore, relative to matrix-media-repo directory root
 matrix_media_repo_datastore_opts_path: "/data/media"
 
-# ID for the s3 datastore (cannot change). Alphanumeric recommended.
-matrix_media_repo_datastore_s3_id: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 's3store.db', rounds=655555) | to_uuid }}"
+# ID for the S3 datastore. Any unique alphanumeric string (e.g. generated via `pwgen -s 64 1`).
+# This value CANNOT be changed after media has been stored — matrix-media-repo ties media to this ID.
+matrix_media_repo_datastore_s3_id: ""
 
 # Datastores can be split into many areas when handling uploads. Media is still de-duplicated
 # across all datastores (local content which duplicates remote content will re-use the remote
