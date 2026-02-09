@@ -1,0 +1,45 @@
+{#
+SPDX-FileCopyrightText: 2025 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+# Multi-stage build for mautrix-imessage with RustPush support
+# Stage 1: Rust + Go builder
+FROM docker.io/golang:1.24-bookworm AS builder
+
+# Install Rust toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    clang \
+    libclang-dev \
+    protobuf-compiler \
+    git \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+# Copy the source code
+COPY . /build/
+
+# Build the Go binary with CGO enabled (required for Rust FFI)
+RUN cd /build && make build
+
+# Stage 2: Runtime
+FROM docker.io/debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /build/mautrix-imessage-v2 /usr/bin/mautrix-imessage-v2
+
+VOLUME /data
+VOLUME /config
+
+CMD ["/usr/bin/mautrix-imessage-v2", "-c", "/config/config.yaml", "-r", "/config/registration.yaml", "--no-update"]
