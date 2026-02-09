@@ -31,10 +31,13 @@
     matrix_synapse_register_user_result.rc != 0
     and 'User ID already taken' not in matrix_synapse_register_user_result.stdout
     and 'HMAC incorrect' not in matrix_synapse_register_user_result.stdout
+    and 'Connection refused' not in matrix_synapse_register_user_result.stderr | default('')
 
-- when: "'HMAC incorrect' in matrix_synapse_register_user_result.stdout | default('')"
+- when: >-
+    'HMAC incorrect' in matrix_synapse_register_user_result.stdout | default('')
+    or 'Connection refused' in matrix_synapse_register_user_result.stderr | default('')
   block:
-    - name: Restart Synapse due to HMAC failure (likely a registration_shared_secret change)
+    - name: Restart Synapse due to registration failure (likely a registration_shared_secret or DB credentials change)
       ansible.builtin.service:
         name: "matrix-synapse.service"
         state: restarted
