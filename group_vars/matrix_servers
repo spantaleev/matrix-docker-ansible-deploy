@@ -238,12 +238,14 @@ matrix_addons_homeserver_systemd_services_list: "{{ ([traefik_identifier + '.ser
 #     (see `matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled`)
 # - core services (the homeserver) get a level of ~1000
 # - services that the homeserver depends on (database, Redis, ntfy, coturn, etc.) get a lower level — between 500 and 1000
-# - coturn gets a higher level if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
+# - coturn gets a higher priority level (= starts later) if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
 #  - starting services one by one means that the service manager role waits for each service to fully start before proceeding to the next one
 #  - if coturn has a lower priority than the homeserver, it would be started before it
 #  - since coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.example.com` certificate
 #  - thus, coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
 #  - only later, when the homeserver actually starts, would that certificate be fetched and dumped
+#  - this is not a problem with `all-at-once` (default) or `priority-batched` (services start concurrently),
+#    or with `clean-stop-start` (everything stops first, then starts in priority order — coturn at 900 is fine)
 # - reverse-proxying services get level 3000
 # - Matrix utility services (bridges, bots) get a level of 2000/2200, so that:
 #   - they can start before the reverse-proxy
@@ -352,7 +354,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-corporal.service', 'priority': 1500, 'groups': ['matrix', 'corporal']}] if matrix_corporal_enabled else [])
     +
-    ([{'name': 'matrix-coturn.service', 'priority': (900 if devture_systemd_service_manager_service_restart_mode == 'clean-stop-start' else 1500), 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
+    ([{'name': 'matrix-coturn.service', 'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900), 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
     +
     ([{'name': 'matrix-matrixto.service', 'priority': 4000, 'groups': ['matrix', 'matrixto']}] if matrix_matrixto_enabled else [])
     +
