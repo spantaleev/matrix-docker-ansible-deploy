@@ -15,6 +15,36 @@ user=$1
 password=$2
 admin=$3
 
+wait_for_synapse() {
+	local timeout_seconds=180
+	local interval_seconds=5
+	local elapsed=0
+	local last_reason=""
+
+	while [ "$elapsed" -lt "$timeout_seconds" ]; do
+		if ! {{ devture_systemd_docker_base_host_command_docker }} ps -a --format '{{"{{"}}.Names{{"}}"}}' | grep -q '^matrix-synapse$'; then
+			last_reason="container not found"
+		elif [ "$({{ devture_systemd_docker_base_host_command_docker }} inspect -f '{{"{{"}}.State.Running{{"}}"}}' matrix-synapse 2>/dev/null)" != "true" ]; then
+			last_reason="container not running"
+		elif ! {{ devture_systemd_docker_base_host_command_docker }} exec matrix-synapse \
+			curl -fsS "http://localhost:{{ matrix_synapse_container_client_api_port }}/health" >/dev/null 2>&1; then
+			last_reason="health endpoint not ready"
+		else
+			return 0
+		fi
+
+		sleep "$interval_seconds"
+		elapsed=$((elapsed + interval_seconds))
+	done
+
+	echo "Timed out waiting for matrix-synapse to become healthy after ${timeout_seconds}s (${last_reason})."
+	return 1
+}
+
+if ! wait_for_synapse; then
+	exit 1
+fi
+
 if [ "$admin" -eq "1" ]; then
 	{{ devture_systemd_docker_base_host_command_docker }} exec matrix-synapse register_new_matrix_user -u "$user" -p "$password" -c /data/homeserver.yaml --admin http://localhost:{{ matrix_synapse_container_client_api_port }}
 else
