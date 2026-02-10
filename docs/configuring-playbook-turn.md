@@ -1,9 +1,12 @@
 <!--
-SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018-2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020 Aaron Raimist
 SPDX-FileCopyrightText: 2020 Christian Wolf
-SPDX-FileCopyrightText: 2020 MDAD project contributors
 SPDX-FileCopyrightText: 2020 Marcel Partap
-SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2020-2024 MDAD project contributors
+SPDX-FileCopyrightText: 2022 Alejo Diaz
+SPDX-FileCopyrightText: 2022 Julian Foad
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -27,6 +30,9 @@ matrix_coturn_turn_external_ip_address: "YOUR_PUBLIC_IP"
 ```
 
 If you'd like to rely on external IP address auto-detection (not recommended unless you need it), set an empty value to the variable. The playbook will automatically contact an [echoip](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable.
+
+>[!NOTE]
+> You can self-host the echoip service by using the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting/mash-playbook) Ansible playbook. See [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/echoip.md) for the instruction to install it with the playbook. If you are wondering how to use it for your Matrix server, refer [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/setting-up-services-on-mdad-server.md).
 
 If your server has multiple external IP addresses, the coturn role offers a different variable for specifying them:
 
