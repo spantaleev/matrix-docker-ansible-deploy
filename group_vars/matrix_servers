@@ -354,13 +354,13 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-corporal.service', 'priority': 1500, 'groups': ['matrix', 'corporal']}] if matrix_corporal_enabled else [])
     +
-    ([{'name': 'matrix-coturn.service', 'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900), 'groups': ['matrix', 'coturn']}] if coturn_enabled else [])
+    ([{'name': (coturn_identifier + '.service'), 'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900), 'groups': ['matrix', 'coturn']}] if coturn_enabled else [])
     +
     ([{'name': 'matrix-matrixto.service', 'priority': 4000, 'groups': ['matrix', 'matrixto']}] if matrix_matrixto_enabled else [])
     +
     ([{'name': 'matrix-rageshake.service', 'priority': 4000, 'groups': ['matrix', 'rageshake']}] if matrix_rageshake_enabled else [])
     +
-    ([{'name': 'matrix-coturn-reload.timer', 'priority': 5000, 'groups': ['matrix', 'coturn']}] if (coturn_enabled and coturn_tls_enabled) else [])
+    ([{'name': (coturn_identifier + '-reload.timer'), 'priority': 5000, 'groups': ['matrix', 'coturn']}] if (coturn_enabled and coturn_tls_enabled) else [])
     +
     ([{'name': 'matrix-dimension.service', 'priority': 4000, 'groups': ['matrix', 'integration-managers', 'dimension']}] if matrix_dimension_enabled else [])
     +
@@ -3099,6 +3099,8 @@ matrix_rageshake_container_labels_traefik_tls_certResolver: "{{ traefik_certReso
 
 coturn_enabled: true
 
+coturn_identifier: matrix-coturn
+
 coturn_hostname: "{{ matrix_server_fqn_matrix }}"
 
 coturn_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else coturn_docker_image_registry_prefix_upstream_default }}"
@@ -4396,7 +4398,7 @@ matrix_synapse_systemd_required_services_list_auto: |
 
 matrix_synapse_systemd_wanted_services_list_auto: |
   {{
-    (['matrix-coturn.service'] if coturn_enabled else [])
+    ([coturn_identifier ~ '.service'] if coturn_enabled else [])
     +
     ([exim_relay_identifier ~ '.service'] if exim_relay_enabled else [])
   }}
@@ -5253,7 +5255,7 @@ matrix_dendrite_systemd_required_services_list_auto: |
 
 matrix_dendrite_systemd_wanted_services_list_auto: |
   {{
-    (['matrix-coturn.service'] if coturn_enabled else [])
+    ([coturn_identifier ~ '.service'] if coturn_enabled else [])
   }}
 
 matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
