@@ -5663,6 +5663,16 @@ traefik_certs_dumper_gid: "{{ matrix_user_gid }}"
 
 traefik_certs_dumper_ssl_path: "{{ traefik_ssl_dir_path if traefik_enabled else '' }}"
 
+# We make the certs dumper require the Traefik service (not just docker.service),
+# because when both restart simultaneously (e.g. in all-at-once mode), Traefik may
+# momentarily truncate or reinitialize acme.json, causing the certs dumper to read
+# an empty file and panic. By requiring Traefik, the certs dumper only starts after
+# Traefik is fully ready and acme.json is stable.
+traefik_certs_dumper_systemd_required_services_list_auto: |
+  {{
+    ([traefik_identifier + '.service'] if traefik_enabled else [])
+  }}
+
 traefik_certs_dumper_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else traefik_certs_dumper_container_image_registry_prefix_upstream_default }}"
 
 ########################################################################
