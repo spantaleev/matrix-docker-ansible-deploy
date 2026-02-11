@@ -322,6 +322,21 @@ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users: ''
 #   another.label="here"
 matrix_synapse_container_labels_additional_labels: ''
 
+# Specifies how often the container health check will run.
+#
+# The Synapse container image ships with a default HEALTHCHECK (curl to /health)
+# with an interval of 15s, timeout of 5s, and start period of 5s.
+#
+# For Traefik-based setups, it's important that the interval is short,
+# because the interval value also specifies the "initial wait time".
+# This is a Docker (moby) bug: https://github.com/moby/moby/issues/33410
+# Without a successful healthcheck, Traefik will not register the service for reverse-proxying.
+# A shorter interval also lets our systemd ExecStartPost health check
+# (see matrix_synapse_systemd_healthcheck_enabled) detect readiness faster at startup.
+#
+# For non-Traefik setups, we use the default healthcheck interval (15s) to decrease overhead.
+matrix_synapse_container_health_interval: "{{ '5s' if matrix_synapse_container_labels_traefik_enabled else '15s' }}"
+
 # A list of extra arguments to pass to the container
 # Also see `matrix_synapse_container_arguments`
 matrix_synapse_container_extra_arguments: []
@@ -359,25 +374,24 @@ matrix_synapse_goofys_systemd_required_services_list_auto: []
 matrix_synapse_goofys_systemd_required_services_list_custom: []
 
 # Controls the post-start health check in the systemd service.
-# When enabled, ExecStartPost polls Synapse's /health endpoint via `docker exec` + `curl`,
+# When enabled, ExecStartPost polls Docker's container health status via `docker inspect`,
 # keeping the service in "activating (start-post)" state until Synapse is ready.
 # Services with After=matrix-synapse.service will properly wait.
+# This relies on the container image's built-in HEALTHCHECK (curl to /health),
+# with the interval controlled by matrix_synapse_container_health_interval.
 matrix_synapse_systemd_healthcheck_enabled: true
 matrix_synapse_systemd_healthcheck_max_retries: 60
 matrix_synapse_systemd_healthcheck_interval_seconds: 1
 
 # The command used for the health check in ExecStartPost.
-# Uses `docker exec` + `curl` (available in the Synapse container image) to poll /health.
-# We intentionally don't rely on Docker's built-in container HEALTHCHECK (polling via `docker inspect`),
-# because its check interval (default: 15s) is too slow for our startup needs, and lowering it
-# would add unnecessary overhead for the entire container lifetime. We only need fast polling at startup.
+# Polls `docker inspect` for the container's health status until it reports "healthy".
 matrix_synapse_systemd_healthcheck_command: >-
   {{ devture_systemd_docker_base_host_command_sh }} -c
   'for i in $(seq 1 {{ matrix_synapse_systemd_healthcheck_max_retries }}); do
-  echo "[Attempt $i/{{ matrix_synapse_systemd_healthcheck_max_retries }}] Synapse systemd health check: checking readiness via /health..";
-  {{ devture_systemd_docker_base_host_command_docker }} exec matrix-synapse
-  curl -fSs http://localhost:8008/health > /dev/null 2>&1 && echo "[Attempt $i/{{ matrix_synapse_systemd_healthcheck_max_retries }}] Synapse systemd health check: passed" && exit 0;
-  echo "[Attempt $i/{{ matrix_synapse_systemd_healthcheck_max_retries }}] Synapse systemd health check: not ready yet, retrying in {{ matrix_synapse_systemd_healthcheck_interval_seconds }}s..";
+  echo "[Attempt $i/{{ matrix_synapse_systemd_healthcheck_max_retries }}] Synapse systemd health check: checking container health status..";
+  status=$( {{ devture_systemd_docker_base_host_command_docker }} inspect --format={{ '"{{' }}.State.Health.Status{{ '}}"' }} matrix-synapse 2>/dev/null);
+  if [ "$status" = "healthy" ]; then echo "[Attempt $i/{{ matrix_synapse_systemd_healthcheck_max_retries }}] Synapse systemd health check: passed" && exit 0; fi;
+  echo "[Attempt $i/{{ matrix_synapse_systemd_healthcheck_max_retries }}] Synapse systemd health check: not ready yet (status: $status), retrying in {{ matrix_synapse_systemd_healthcheck_interval_seconds }}s..";
   sleep {{ matrix_synapse_systemd_healthcheck_interval_seconds }};
   done; echo "[Attempt $i/{{ matrix_synapse_systemd_healthcheck_max_retries }}] Synapse systemd health check: failed after {{ matrix_synapse_systemd_healthcheck_max_retries }} attempts"; exit 1'
 
