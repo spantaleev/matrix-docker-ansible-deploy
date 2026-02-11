@@ -1503,6 +1503,14 @@ matrix_synapse_ext_synapse_s3_storage_provider_update_db_day_count: 0
 # This is a systemd timer OnCalendar definition. Learn more here: https://man.archlinux.org/man/systemd.time.7#CALENDAR_EVENTS
 matrix_synapse_ext_synapse_s3_storage_provider_periodic_migration_schedule: '*-*-* 05:00:00'
 
+# List of systemd services that matrix-synapse-s3-storage-provider-migrate.service requires.
+# We only depend on matrix-synapse.service here, because its own dependencies (Postgres, Docker, etc.)
+# are transitively resolved by systemd.
+matrix_synapse_ext_synapse_s3_storage_provider_migrate_systemd_required_services_list: ['matrix-synapse.service']
+
+# List of systemd services that matrix-synapse-s3-storage-provider-migrate.service wants
+matrix_synapse_ext_synapse_s3_storage_provider_migrate_systemd_wanted_services_list: []
+
 # Synapse module to automatically accept room invites.
 #
 # Since Synapse v1.109.0 (https://github.com/element-hq/synapse/pull/17147),
