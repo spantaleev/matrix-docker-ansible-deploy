@@ -115,7 +115,7 @@ There are some additional things you may wish to configure about the TURN server
 
 Take a look at:
 
-- `roles/custom/matrix-coturn/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/coturn/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Disabling coturn
 
