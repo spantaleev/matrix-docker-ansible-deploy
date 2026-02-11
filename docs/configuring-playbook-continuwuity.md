@@ -13,7 +13,7 @@ See the project's [documentation](https://continuwuity.org) to learn what it doe
 
 By default, the playbook installs [Synapse](https://github.com/element-hq/synapse) as it's the only full-featured Matrix server at the moment. If that's okay, you can skip this document.
 
-💡 **Note**: continuwuity is a fork of [conduwuit](./configuring-playbook-conduwuit.md), which the playbook also supports.
+💡 **Note**: continuwuity is a fork of [conduwuit](./configuring-playbook-conduwuit.md), which the playbook has supported.
 
 > [!WARNING]
 > - **You can't switch an existing Matrix server's implementation** (e.g. Synapse -> Continuwuity). Proceed below only if you're OK with losing data or you're dealing with a server on a new domain name, which hasn't participated in the Matrix federation yet.
