@@ -26,10 +26,10 @@ In the `hosts` file we explicitly ask for your server's external IP address when
 If you'd rather use a local IP for `ansible_host`, add the following configuration to your `vars.yml` file. Make sure to replace `YOUR_PUBLIC_IP` with the pubic IP used by the server.
 
 ```yaml
-matrix_coturn_turn_external_ip_address: "YOUR_PUBLIC_IP"
+coturn_turn_external_ip_address: "YOUR_PUBLIC_IP"
 ```
 
-If you'd like to rely on external IP address auto-detection (not recommended unless you need it), set an empty value to the variable. The playbook will automatically contact an [echoip](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `matrix_coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable.
+If you'd like to rely on external IP address auto-detection (not recommended unless you need it), set an empty value to the variable. The playbook will automatically contact an [echoip](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable.
 
 >[!NOTE]
 > You can self-host the echoip service by using the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting/mash-playbook) Ansible playbook. See [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/echoip.md) for the instruction to install it with the playbook. If you are wondering how to use it for your Matrix server, refer to [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/setting-up-services-on-mdad-server.md) for the overview.
@@ -37,8 +37,8 @@ If you'd like to rely on external IP address auto-detection (not recommended unl
 If your server has multiple external IP addresses, the coturn role offers a different variable for specifying them:
 
 ```yaml
-# Note: matrix_coturn_turn_external_ip_addresses is different than matrix_coturn_turn_external_ip_address
-matrix_coturn_turn_external_ip_addresses: ['1.2.3.4', '4.5.6.7']
+# Note: coturn_turn_external_ip_addresses is different than coturn_turn_external_ip_address
+coturn_turn_external_ip_addresses: ['1.2.3.4', '4.5.6.7']
 ```
 
 ### Change the authentication mechanism (optional)
@@ -48,7 +48,7 @@ The playbook uses the [`auth-secret` authentication method](https://github.com/c
 To do so, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_coturn_authentication_method: lt-cred-mech
+coturn_authentication_method: lt-cred-mech
 ```
 
 Regardless of the selected authentication method, the playbook generates secrets automatically and passes them to the homeserver and coturn.
@@ -62,7 +62,7 @@ By default, Coturn uses the same hostname as your Matrix homeserver (the value o
 If you'd like to use a custom subdomain for Coturn (e.g., `turn.example.com` or `t.matrix.example.com`), add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_coturn_hostname: turn.example.com
+coturn_hostname: turn.example.com
 ```
 
 The playbook will automatically:
@@ -78,7 +78,7 @@ If you'd like to use another TURN server (be it coturn or some other one), add t
 
 ```yaml
 # Disable integrated coturn server
-matrix_coturn_enabled: false
+coturn_enabled: false
 
 # Point Synapse to your other coturn server
 matrix_synapse_turn_uris:
@@ -99,15 +99,15 @@ You can put multiple host/port combinations if you'd like to.
 
 ### Edit the reloading schedule (optional)
 
-By default the service is reloaded on 6:30 a.m. every day based on the `matrix_coturn_reload_schedule` variable so that new SSL certificates can kick in. It is defined in the format of systemd timer calendar.
+By default the service is reloaded on 6:30 a.m. every day based on the `coturn_reload_schedule` variable so that new SSL certificates can kick in. It is defined in the format of systemd timer calendar.
 
 To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
-matrix_coturn_reload_schedule: "*-*-* 06:30:00"
+coturn_reload_schedule: "*-*-* 06:30:00"
 ```
 
-**Note**: the actual job may run with a delay. See `matrix_coturn_reload_schedule_randomized_delay_sec` for its default value.
+**Note**: the actual job may run with a delay. See `coturn_reload_schedule_randomized_delay_sec` for its default value.
 
 ### Extending the configuration
 
@@ -115,14 +115,14 @@ There are some additional things you may wish to configure about the TURN server
 
 Take a look at:
 
-- `roles/custom/matrix-coturn/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/coturn/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Disabling coturn
 
 If, for some reason, you'd like for the playbook to not install coturn (or to uninstall it if it was previously installed), add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_coturn_enabled: false
+coturn_enabled: false
 ```
 
 In that case, Synapse would not point to any coturn servers and audio/video call functionality may fail.

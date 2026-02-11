@@ -80,6 +80,11 @@
     - {'old': 'cinny_docker_image_registry_prefix_upstream', 'new': 'cinny_container_image_registry_prefix_upstream'}
     - {'old': 'cinny_docker_image_registry_prefix_upstream_default', 'new': 'cinny_container_image_registry_prefix_upstream_default'}
 
+    - {'old': 'coturn_docker_image', 'new': 'coturn_container_image'}
+    - {'old': 'coturn_docker_image_registry_prefix', 'new': 'coturn_container_image_registry_prefix'}
+    - {'old': 'coturn_docker_image_registry_prefix_upstream', 'new': 'coturn_container_image_registry_prefix_upstream'}
+    - {'old': 'coturn_docker_image_registry_prefix_upstream_default', 'new': 'coturn_container_image_registry_prefix_upstream_default'}
+
     - {'old': 'ddclient_docker_image', 'new': 'ddclient_container_image'}
     - {'old': 'ddclient_docker_image_registry_prefix', 'new': 'ddclient_container_image_registry_prefix'}
     - {'old': 'ddclient_docker_image_registry_prefix_upstream', 'new': 'ddclient_container_image_registry_prefix_upstream'}
@@ -594,6 +599,19 @@
 
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-coturn variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-coturn role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-coturn).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_coturn_`-prefixed variables (`matrix_coturn_*` -> `coturn_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_coturn_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_coturn_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report matrix-conduwuit variables
   ansible.builtin.fail:

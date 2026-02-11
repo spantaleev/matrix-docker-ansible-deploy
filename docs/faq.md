@@ -313,7 +313,7 @@ exim_relay_enabled: false
 
 # You can also disable this to save more RAM,
 # at the expense of audio/video calls being unreliable.
-matrix_coturn_enabled: false
+coturn_enabled: false
 
 # This makes Synapse not keep track of who is online/offline.
 #
