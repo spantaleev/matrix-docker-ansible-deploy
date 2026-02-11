@@ -1,3 +1,13 @@
+# 2026-02-XX
+
+## conduwuit has been removed from the playbook
+
+[conduwuit](./docs/configuring-playbook-conduwuit.md) has been removed from the playbook, as it has been abandoned.
+
+The playbook will let you know if you're using any `matrix_conduwuit_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the service manually](./docs/configuring-playbook-conduwuit.md#uninstalling-the-service-manually).
+
+Since [Continuwuity](configuring-playbook-continuwuity.md) is a drop-in replacement for conduwuit, migration is possible. Please refer to [this section](./configuring-playbook-continuwuity.md#migrating-from-conduwuit) for details.
+
 # 2026-02-09
 
 ## (BC Break) matrix-media-repo datastore IDs are now required in `vars.yml`

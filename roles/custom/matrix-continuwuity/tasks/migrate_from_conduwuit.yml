@@ -13,7 +13,7 @@
 - name: Check existence of conduwuit directory
   ansible.builtin.stat:
     path: "{{ matrix_base_data_path }}/conduwuit"
-  register: matrix_conduwuit_directory_stat
+  register: matrix_removed_conduwuit_directory_stat
 
 - name: Check existence of continuwuity directory
   ansible.builtin.stat:
@@ -21,7 +21,7 @@
   register: matrix_continuwuity_directory_stat
 
 - when: >
-        matrix_conduwuit_directory_stat.stat.exists | bool and
+        matrix_removed_conduwuit_directory_stat.stat.exists | bool and
         matrix_continuwuity_directory_stat.stat.exists | bool
   block:
     - name: Ensure matrix-continuwuity.service systemd service is stopped
