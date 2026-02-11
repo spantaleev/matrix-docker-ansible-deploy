@@ -551,6 +551,18 @@
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report Go-NEB variables
+  ansible.builtin.fail:
+    msg: |-
+      Go-NEB was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_bot_go_neb_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bot manually. See `docs/configuring-playbook-bot-go-neb.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_bot_go_neb_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_bot_go_neb_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report ma1sd variables
   ansible.builtin.fail:
     msg: |-
