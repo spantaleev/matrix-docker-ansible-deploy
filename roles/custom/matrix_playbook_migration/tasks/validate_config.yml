@@ -595,6 +595,18 @@
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-conduwuit variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-conduwuit was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_conduwuit*` variables from your configuration file (vars.yml).
+
+      You may wish to migrate to Continuwuity, a drop-in replacement for conduwuit. See `docs/configuring-playbook-continuwuity.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_conduwuit.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_conduwuit.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report matrix-dynamic-dns variables
   ansible.builtin.fail:
     msg: |-
