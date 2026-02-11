@@ -1,7 +1,7 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix coturn server
-{% for service in matrix_coturn_systemd_required_services_list %}
+{% for service in coturn_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
@@ -23,33 +23,33 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--entrypoint=turnserver \
 			--read-only \
 			--tmpfs=/var/tmp:rw,noexec,nosuid,size=100m \
-			--network={{ matrix_coturn_container_network }} \
-			{% if matrix_coturn_container_stun_plain_host_bind_port_tcp != '' %}
-			-p {{ matrix_coturn_container_stun_plain_host_bind_port_tcp }}:3478 \
+			--network={{ coturn_container_network }} \
+			{% if coturn_container_stun_plain_host_bind_port_tcp != '' %}
+			-p {{ coturn_container_stun_plain_host_bind_port_tcp }}:3478 \
 			{% endif %}
-			{% if matrix_coturn_container_stun_plain_host_bind_port_udp != '' %}
-			-p {{ matrix_coturn_container_stun_plain_host_bind_port_udp }}:3478/udp \
+			{% if coturn_container_stun_plain_host_bind_port_udp != '' %}
+			-p {{ coturn_container_stun_plain_host_bind_port_udp }}:3478/udp \
 			{% endif %}
-			{% if matrix_coturn_container_stun_tls_host_bind_port_tcp != '' %}
-			-p {{ matrix_coturn_container_stun_tls_host_bind_port_tcp }}:5349 \
+			{% if coturn_container_stun_tls_host_bind_port_tcp != '' %}
+			-p {{ coturn_container_stun_tls_host_bind_port_tcp }}:5349 \
 			{% endif %}
-			{% if matrix_coturn_container_stun_tls_host_bind_port_udp != '' %}
-			-p {{ matrix_coturn_container_stun_tls_host_bind_port_udp }}:5349/udp \
+			{% if coturn_container_stun_tls_host_bind_port_udp != '' %}
+			-p {{ coturn_container_stun_tls_host_bind_port_udp }}:5349/udp \
 			{% endif %}
-			{% if matrix_coturn_container_turn_range_listen_interface is not in [none, 'none'] %}
-			-p {{ matrix_coturn_container_turn_range_listen_interface }}{{ ':' if matrix_coturn_container_turn_range_listen_interface else '' }}{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}:{{ matrix_coturn_turn_udp_min_port }}-{{ matrix_coturn_turn_udp_max_port }}/udp \
+			{% if coturn_container_turn_range_listen_interface is not in [none, 'none'] %}
+			-p {{ coturn_container_turn_range_listen_interface }}{{ ':' if coturn_container_turn_range_listen_interface else '' }}{{ coturn_turn_udp_min_port }}-{{ coturn_turn_udp_max_port }}:{{ coturn_turn_udp_min_port }}-{{ coturn_turn_udp_max_port }}/udp \
 			{% endif %}
-			--mount type=bind,src={{ matrix_coturn_config_path }},dst=/turnserver.conf,ro \
-			{% for volume in matrix_coturn_container_additional_volumes %}
+			--mount type=bind,src={{ coturn_config_path }},dst=/turnserver.conf,ro \
+			{% for volume in coturn_container_additional_volumes %}
 			--mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
 			{% endfor %}
-			{% for arg in matrix_coturn_container_extra_arguments %}
+			{% for arg in coturn_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_coturn_docker_image }} \
+			{{ coturn_docker_image }} \
 			-c /turnserver.conf
 
-{% for network in matrix_coturn_container_additional_networks %}
+{% for network in coturn_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-coturn
 {% endfor %}
 

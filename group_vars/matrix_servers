@@ -354,13 +354,13 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-corporal.service', 'priority': 1500, 'groups': ['matrix', 'corporal']}] if matrix_corporal_enabled else [])
     +
-    ([{'name': 'matrix-coturn.service', 'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900), 'groups': ['matrix', 'coturn']}] if matrix_coturn_enabled else [])
+    ([{'name': 'matrix-coturn.service', 'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900), 'groups': ['matrix', 'coturn']}] if coturn_enabled else [])
     +
     ([{'name': 'matrix-matrixto.service', 'priority': 4000, 'groups': ['matrix', 'matrixto']}] if matrix_matrixto_enabled else [])
     +
     ([{'name': 'matrix-rageshake.service', 'priority': 4000, 'groups': ['matrix', 'rageshake']}] if matrix_rageshake_enabled else [])
     +
-    ([{'name': 'matrix-coturn-reload.timer', 'priority': 5000, 'groups': ['matrix', 'coturn']}] if (matrix_coturn_enabled and matrix_coturn_tls_enabled) else [])
+    ([{'name': 'matrix-coturn-reload.timer', 'priority': 5000, 'groups': ['matrix', 'coturn']}] if (coturn_enabled and coturn_tls_enabled) else [])
     +
     ([{'name': 'matrix-dimension.service', 'priority': 4000, 'groups': ['matrix', 'integration-managers', 'dimension']}] if matrix_dimension_enabled else [])
     +
@@ -3097,27 +3097,27 @@ matrix_rageshake_container_labels_traefik_tls_certResolver: "{{ traefik_certReso
 #
 ######################################################################
 
-matrix_coturn_enabled: true
+coturn_enabled: true
 
-matrix_coturn_hostname: "{{ matrix_server_fqn_matrix }}"
+coturn_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_coturn_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_coturn_docker_image_registry_prefix_upstream_default }}"
+coturn_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else coturn_docker_image_registry_prefix_upstream_default }}"
 
-matrix_coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
 # We make the assumption that `ansible_host` points to an external IP address, which may not always be the case.
-# Users are free to set `matrix_coturn_turn_external_ip_address` to an empty string
+# Users are free to set `coturn_turn_external_ip_address` to an empty string
 # to allow auto-detection (via an echoip service) to happen at runtime.
-matrix_coturn_turn_external_ip_address: "{{ ansible_host }}"
+coturn_turn_external_ip_address: "{{ ansible_host }}"
 
-matrix_coturn_turn_static_auth_secret: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.sas') | hash('sha512') | to_uuid) if matrix_coturn_authentication_method == 'auth-secret' else '' }}"
+coturn_turn_static_auth_secret: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.sas') | hash('sha512') | to_uuid) if coturn_authentication_method == 'auth-secret' else '' }}"
 
-matrix_coturn_lt_cred_mech_username: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.user') | hash('sha512') | to_uuid) if matrix_coturn_authentication_method == 'lt-cred-mech' else '' }}"
-matrix_coturn_lt_cred_mech_password: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.pass') | hash('sha512') | to_uuid) if matrix_coturn_authentication_method == 'lt-cred-mech' else '' }}"
+coturn_lt_cred_mech_username: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.user') | hash('sha512') | to_uuid) if coturn_authentication_method == 'lt-cred-mech' else '' }}"
+coturn_lt_cred_mech_password: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.pass') | hash('sha512') | to_uuid) if coturn_authentication_method == 'lt-cred-mech' else '' }}"
 
-matrix_coturn_tls_enabled: "{{ matrix_playbook_ssl_enabled }}"
+coturn_tls_enabled: "{{ matrix_playbook_ssl_enabled }}"
 
-matrix_coturn_tls_cert_path: |-
+coturn_tls_cert_path: |-
   {{
     {
       'playbook-managed-traefik': ('/certificate.crt' if traefik_certs_dumper_enabled else ''),
@@ -3126,7 +3126,7 @@ matrix_coturn_tls_cert_path: |-
     }[matrix_playbook_reverse_proxy_type]
   }}
 
-matrix_coturn_tls_key_path: |-
+coturn_tls_key_path: |-
   {{
     {
       'playbook-managed-traefik': ('/privatekey.key' if traefik_certs_dumper_enabled else ''),
@@ -3135,27 +3135,27 @@ matrix_coturn_tls_key_path: |-
     }[matrix_playbook_reverse_proxy_type]
   }}
 
-matrix_coturn_container_additional_volumes: |
+coturn_container_additional_volumes: |
   {{
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + matrix_coturn_hostname + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + coturn_hostname + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + matrix_coturn_hostname + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/' + coturn_hostname + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if (matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled and (matrix_coturn_tls_cert_path and matrix_coturn_tls_key_path)) else []
+      ] if (matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and coturn_tls_enabled and (coturn_tls_cert_path and coturn_tls_key_path)) else []
     )
   }}
 
-matrix_coturn_systemd_required_services_list_auto: |
+coturn_systemd_required_services_list_auto: |
   {{
-    ([traefik_certs_dumper_identifier + '-wait-for-domain@' + matrix_coturn_hostname + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else [])
+    ([traefik_certs_dumper_identifier + '-wait-for-domain@' + coturn_hostname + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and coturn_tls_enabled else [])
   }}
 
 ######################################################################
@@ -3382,7 +3382,7 @@ jitsi_web_stun_servers: |
       'stun:' + matrix_server_fqn_matrix + ':5349',
       'stun:' + matrix_server_fqn_matrix + ':3478',
     ]
-    if matrix_coturn_enabled
+    if coturn_enabled
     else [ 'stun:meet-jit-si-turnrelay.jitsi.net:443']
   }}
 
@@ -3391,11 +3391,11 @@ jitsi_web_framing_enabled: true
 
 # Jitsi (Prosody) only seems to support authenticating with coturn using `auth-secret`, not `lt-cred-mech`.
 # See: https://prosody.im/doc/coturn
-jitsi_turn_credentials: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
-jitsi_turn_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
-jitsi_turns_host: "{{ ('turn.' + matrix_server_fqn_matrix) if matrix_coturn_enabled else '' }}"
-jitsi_turn_port: "{{ matrix_coturn_container_stun_plain_host_bind_port_tcp.split(':')[-1] if matrix_coturn_enabled else '' }}"
-jitsi_turns_port: "{{ matrix_coturn_container_stun_tls_host_bind_port_tcp.split(':')[-1] if matrix_coturn_enabled else '' }}"
+jitsi_turn_credentials: "{{ coturn_turn_static_auth_secret if (coturn_enabled and coturn_authentication_method == 'auth-secret') else '' }}"
+jitsi_turn_host: "{{ ('turn.' + matrix_server_fqn_matrix) if coturn_enabled else '' }}"
+jitsi_turns_host: "{{ ('turn.' + matrix_server_fqn_matrix) if coturn_enabled else '' }}"
+jitsi_turn_port: "{{ coturn_container_stun_plain_host_bind_port_tcp.split(':')[-1] if coturn_enabled else '' }}"
+jitsi_turns_port: "{{ coturn_container_stun_tls_host_bind_port_tcp.split(':')[-1] if coturn_enabled else '' }}"
 
 # If the self-hosted Etherpad instance is available, it will also show up in Jitsi conferences,
 # unless explicitly disabled by setting `jitsi_etherpad_enabled` to false.
@@ -4376,10 +4376,10 @@ matrix_synapse_email_smtp_port: 8025
 matrix_synapse_email_smtp_require_transport_security: false
 matrix_synapse_email_notif_from: "Matrix <{{ exim_relay_sender_address }}>"
 
-matrix_synapse_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
-matrix_synapse_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
-matrix_synapse_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
-matrix_synapse_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_synapse_turn_uris: "{{ coturn_turn_uris if coturn_enabled else [] }}"
+matrix_synapse_turn_shared_secret: "{{ coturn_turn_static_auth_secret if (coturn_enabled and coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_synapse_turn_username: "{{ coturn_lt_cred_mech_username if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_synapse_turn_password: "{{ coturn_lt_cred_mech_password if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
 
 matrix_synapse_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
@@ -4396,7 +4396,7 @@ matrix_synapse_systemd_required_services_list_auto: |
 
 matrix_synapse_systemd_wanted_services_list_auto: |
   {{
-    (['matrix-coturn.service'] if matrix_coturn_enabled else [])
+    (['matrix-coturn.service'] if coturn_enabled else [])
     +
     ([exim_relay_identifier ~ '.service'] if exim_relay_enabled else [])
   }}
@@ -5233,10 +5233,10 @@ matrix_dendrite_database_hostname: "{{ postgres_connection_hostname if postgres_
 
 matrix_dendrite_database_password: "{{ (matrix_homeserver_generic_secret_key + ':dendrite.db') | hash('sha512') | to_uuid }}"
 
-matrix_dendrite_client_api_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
-matrix_dendrite_client_api_turn_shared_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
-matrix_dendrite_client_api_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
-matrix_dendrite_client_api_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_dendrite_client_api_turn_uris: "{{ coturn_turn_uris if coturn_enabled else [] }}"
+matrix_dendrite_client_api_turn_shared_secret: "{{ coturn_turn_static_auth_secret if (coturn_enabled and coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_dendrite_client_api_turn_username: "{{ coturn_lt_cred_mech_username if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_dendrite_client_api_turn_password: "{{ coturn_lt_cred_mech_password if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
 
 matrix_dendrite_disable_tls_validation: "{{ not matrix_playbook_ssl_enabled }}"
 
@@ -5253,7 +5253,7 @@ matrix_dendrite_systemd_required_services_list_auto: |
 
 matrix_dendrite_systemd_wanted_services_list_auto: |
   {{
-    (['matrix-coturn.service'] if matrix_coturn_enabled else [])
+    (['matrix-coturn.service'] if coturn_enabled else [])
   }}
 
 matrix_dendrite_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
@@ -5304,10 +5304,10 @@ matrix_conduit_container_labels_public_federation_api_traefik_tls: "{{ matrix_fe
 matrix_conduit_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_conduit_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
-matrix_conduit_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
-matrix_conduit_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
-matrix_conduit_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
-matrix_conduit_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_conduit_turn_uris: "{{ coturn_turn_uris if coturn_enabled else [] }}"
+matrix_conduit_turn_secret: "{{ coturn_turn_static_auth_secret if (coturn_enabled and coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_conduit_turn_username: "{{ coturn_lt_cred_mech_username if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_conduit_turn_password: "{{ coturn_lt_cred_mech_password if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
 
 ######################################################################
 #
@@ -5354,10 +5354,10 @@ matrix_conduwuit_container_labels_public_federation_api_traefik_tls: "{{ matrix_
 matrix_conduwuit_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_conduwuit_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
-matrix_conduwuit_config_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
-matrix_conduwuit_config_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
-matrix_conduwuit_config_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
-matrix_conduwuit_config_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_conduwuit_config_turn_uris: "{{ coturn_turn_uris if coturn_enabled else [] }}"
+matrix_conduwuit_config_turn_secret: "{{ coturn_turn_static_auth_secret if (coturn_enabled and coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_conduwuit_config_turn_username: "{{ coturn_lt_cred_mech_username if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_conduwuit_config_turn_password: "{{ coturn_lt_cred_mech_password if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
 
 matrix_conduwuit_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
@@ -5406,10 +5406,10 @@ matrix_continuwuity_container_labels_public_federation_api_traefik_tls: "{{ matr
 matrix_continuwuity_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_continuwuity_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
-matrix_continuwuity_config_turn_uris: "{{ matrix_coturn_turn_uris if matrix_coturn_enabled else [] }}"
-matrix_continuwuity_config_turn_secret: "{{ matrix_coturn_turn_static_auth_secret if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'auth-secret') else '' }}"
-matrix_continuwuity_config_turn_username: "{{ matrix_coturn_lt_cred_mech_username if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
-matrix_continuwuity_config_turn_password: "{{ matrix_coturn_lt_cred_mech_password if (matrix_coturn_enabled and matrix_coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_continuwuity_config_turn_uris: "{{ coturn_turn_uris if coturn_enabled else [] }}"
+matrix_continuwuity_config_turn_secret: "{{ coturn_turn_static_auth_secret if (coturn_enabled and coturn_authentication_method == 'auth-secret') else '' }}"
+matrix_continuwuity_config_turn_username: "{{ coturn_lt_cred_mech_username if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
+matrix_continuwuity_config_turn_password: "{{ coturn_lt_cred_mech_password if (coturn_enabled and coturn_authentication_method == 'lt-cred-mech') else '' }}"
 
 matrix_continuwuity_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
@@ -5668,7 +5668,7 @@ traefik_systemd_required_services_list: |
 
 traefik_additional_domains_to_obtain_certificates_for_auto: |
   {{
-    ([matrix_coturn_hostname] if (matrix_coturn_enabled and matrix_coturn_tls_enabled and matrix_coturn_hostname != matrix_server_fqn_matrix) else [])
+    ([coturn_hostname] if (coturn_enabled and coturn_tls_enabled and coturn_hostname != matrix_server_fqn_matrix) else [])
   }}
 
 ########################################################################

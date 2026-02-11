@@ -8,10 +8,10 @@
 - name: Check existence of matrix-coturn service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-coturn.service"
-  register: matrix_coturn_service_stat
-  when: "not matrix_coturn_enabled | bool"
+  register: coturn_service_stat
+  when: "not coturn_enabled | bool"
 
-- when: matrix_coturn_service_stat.stat.exists | bool
+- when: coturn_service_stat.stat.exists | bool
   block:
     - name: Ensure matrix-coturn is stopped
       ansible.builtin.service:
@@ -39,5 +39,5 @@
 
     - name: Ensure Matrix coturn paths don't exist
       ansible.builtin.file:
-        path: "{{ matrix_coturn_base_path }}"
+        path: "{{ coturn_base_path }}"
         state: absent

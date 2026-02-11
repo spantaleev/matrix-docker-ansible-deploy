@@ -4,18 +4,18 @@
 
 ---
 
-matrix_coturn_turn_uris: |-
+coturn_turn_uris: |-
   {{
     ([
-      'turns:' + matrix_coturn_hostname + '?transport=udp',
-      'turns:' + matrix_coturn_hostname + '?transport=tcp',
-    ] if matrix_coturn_tls_enabled else [])
+      'turns:' + coturn_hostname + '?transport=udp',
+      'turns:' + coturn_hostname + '?transport=tcp',
+    ] if coturn_tls_enabled else [])
     +
     ([
-      'turn:' + matrix_coturn_hostname + '?transport=udp',
-    ] if (matrix_coturn_container_stun_plain_host_bind_port_udp != '' or matrix_coturn_container_network == 'host')  else [])
+      'turn:' + coturn_hostname + '?transport=udp',
+    ] if (coturn_container_stun_plain_host_bind_port_udp != '' or coturn_container_network == 'host')  else [])
     +
     ([
-      'turn:' + matrix_coturn_hostname + '?transport=tcp',
-    ] if (matrix_coturn_container_stun_plain_host_bind_port_tcp != '' or matrix_coturn_container_network == 'host')  else [])
+      'turn:' + coturn_hostname + '?transport=tcp',
+    ] if (coturn_container_stun_plain_host_bind_port_tcp != '' or coturn_container_network == 'host')  else [])
   }}

@@ -1,3 +1,13 @@
+# 2026-02-XX
+
+## (BC Break) coturn role has been relocated and variable names need adjustments
+
+The role for coturn has been relocated to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
+
+Along with the relocation, the `matrix_coturn_` prefix on its variable names has been renamed to `coturn_`, so you need to adjust your `vars.yml` configuration.
+
+As always, the playbook would let you know about this and point out any variables you may have missed.
+
 # 2026-02-09
 
 ## (BC Break) matrix-media-repo datastore IDs are now required in `vars.yml`
@@ -314,7 +324,7 @@ In light of this new information, you have 2 options:
 - Consider closing the STUN/UDP port with the following configuration:
 
   ```yaml
-  matrix_coturn_container_stun_plain_host_bind_port_udp: ""
+  coturn_container_stun_plain_host_bind_port_udp: ""
   ```
 
 - Consider keeping `3478/udp` blocked in your external firewall (if you have one)
@@ -375,11 +385,11 @@ The playbook now **only exposes the Coturn STUN port (`3478`) over TCP by defaul
 If you'd like the Coturn STUN port to be exposed over UDP like before, you can revert to the previous behavior by using the following configuration in your `vars.yml` file:
 
 ```yaml
-matrix_coturn_container_stun_plain_host_bind_port_udp: "3478"
+coturn_container_stun_plain_host_bind_port_udp: "3478"
 ```
 
 > [!WARNING]
-> People running Coturn directly on the `host` network (using `matrix_coturn_container_network: host`) will still have the STUN port exposed over UDP, as port exposure is done directly via Coturn and not via Docker. In such cases, the playbook cannot prevent `3478/udp` port exposure and you'd need to do it in another way (separate firewall rule, etc).
+> People running Coturn directly on the `host` network (using `coturn_container_network: host`) will still have the STUN port exposed over UDP, as port exposure is done directly via Coturn and not via Docker. In such cases, the playbook cannot prevent `3478/udp` port exposure and you'd need to do it in another way (separate firewall rule, etc).
 
 
 # 2025-02-17
@@ -1722,12 +1732,12 @@ Other roles which aren't strictly related to Matrix are likely to follow this fa
 
 ## coturn can now use host-networking
 
-Large coturn deployments (with a huge range of ports specified via `matrix_coturn_turn_udp_min_port` and `matrix_coturn_turn_udp_max_port`) experience a huge slowdown with how Docker publishes all these ports (setting up firewall forwarding rules), which leads to a very slow coturn service startup and shutdown.
+Large coturn deployments (with a huge range of ports specified via `coturn_turn_udp_min_port` and `coturn_turn_udp_max_port`) experience a huge slowdown with how Docker publishes all these ports (setting up firewall forwarding rules), which leads to a very slow coturn service startup and shutdown.
 
 Such deployments don't need to run coturn within a private container network anymore. coturn can now run with host-networking by using configuration like this:
 
 ```yaml
-matrix_coturn_container_network: host
+coturn_container_network: host
 ```
 
 With such a configuration, **Docker no longer needs to configure thousands of firewall forwarding rules** each time coturn starts and stops. This, however, means that **you will need to ensure these ports are open** in your firewall yourself.
@@ -1736,11 +1746,11 @@ Thanks to us [tightening coturn security](#backward-compatibility-tightening-cot
 
 ## (Backward Compatibility) Tightening coturn security can lead to connectivity issues
 
-**TLDR**: users who run and access their Matrix server on a private network (likely a small minority of users) may experience connectivity issues with our new default coturn blocklists. They may need to override `matrix_coturn_denied_peer_ips` and remove some IP ranges from it.
+**TLDR**: users who run and access their Matrix server on a private network (likely a small minority of users) may experience connectivity issues with our new default coturn blocklists. They may need to override `coturn_denied_peer_ips` and remove some IP ranges from it.
 
 Inspired by [this security article](https://www.rtcsec.com/article/cve-2020-26262-bypass-of-coturns-access-control-protection/), we've decided to make use of coturn's `denied-peer-ip` functionality to prevent relaying network traffic to certain private IP subnets. This ensures that your coturn server won't accidentally try to forward traffic to certain services running on your local networks. We run coturn in a container and in a private container network by default, which should prevent such access anyway, but having additional block layers in place is better.
 
-If you access your Matrix server from a local network and need coturn to relay to private IP addresses, you may observe that relaying is now blocked due to our new default `denied-peer-ip` lists (specified in `matrix_coturn_denied_peer_ips`). If you experience such connectivity problems, consider overriding this setting in your `vars.yml` file and removing certain networks from it.
+If you access your Matrix server from a local network and need coturn to relay to private IP addresses, you may observe that relaying is now blocked due to our new default `denied-peer-ip` lists (specified in `coturn_denied_peer_ips`). If you experience such connectivity problems, consider overriding this setting in your `vars.yml` file and removing certain networks from it.
 
 We've also added `no-multicast-peers` to the default coturn configuration, but we don't expect this to cause trouble for most people.
 
@@ -2526,8 +2536,8 @@ To improve security, we've [removed TLSv1 and TLSv1.1 support](https://github.co
 If you need to support old clients, you can re-enable both (or whichever one you need) with the following configuration:
 
 ```yaml
-matrix_coturn_tls_v1_enabled: true
-matrix_coturn_tls_v1_1_enabled: true
+coturn_tls_v1_enabled: true
+coturn_tls_v1_1_enabled: true
 ```
 
 
@@ -3806,7 +3816,7 @@ Because people like using the playbook's components independently (outside of th
 With the new changes, **all roles are now only dependent on the minimal `matrix-base` role**. They are no longer dependent among themselves.
 
 In addition, the following components can now be completely disabled (for those who want/need to):
-- `matrix-coturn` by using `matrix_coturn_enabled: false`
+- `matrix-coturn` by using `coturn_enabled: false`
 - `matrix-mailer` by using `matrix_mailer_enabled: false`
 - `matrix-postgres` by using `matrix_postgres_enabled: false`
 
@@ -4026,7 +4036,7 @@ The following playbook variables were renamed:
 - from `matrix_docker_image_mautrix_telegram` to `matrix_mautrix_telegram_docker_image`
 - from `matrix_docker_image_mautrix_whatsapp` to `matrix_mautrix_whatsapp_docker_image`
 - from `matrix_docker_image_mailer` to `matrix_mailer_docker_image`
-- from `matrix_docker_image_coturn` to `matrix_coturn_docker_image`
+- from `matrix_docker_image_coturn` to `coturn_docker_image`
 - from `matrix_docker_image_goofys` to `matrix_s3_goofys_docker_image`
 - from `matrix_docker_image_riot` to `matrix_riot_web_docker_image`
 - from `matrix_docker_image_nginx` to `matrix_nginx_proxy_docker_image`
