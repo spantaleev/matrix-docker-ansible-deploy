@@ -4036,7 +4036,7 @@ The following playbook variables were renamed:
 - from `matrix_docker_image_mautrix_telegram` to `matrix_mautrix_telegram_docker_image`
 - from `matrix_docker_image_mautrix_whatsapp` to `matrix_mautrix_whatsapp_docker_image`
 - from `matrix_docker_image_mailer` to `matrix_mailer_docker_image`
-- from `matrix_docker_image_coturn` to `coturn_docker_image`
+- from `matrix_docker_image_coturn` to `coturn_container_image`
 - from `matrix_docker_image_goofys` to `matrix_s3_goofys_docker_image`
 - from `matrix_docker_image_riot` to `matrix_riot_web_docker_image`
 - from `matrix_docker_image_nginx` to `matrix_nginx_proxy_docker_image`
