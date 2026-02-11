@@ -335,7 +335,8 @@ matrix_synapse_container_labels_additional_labels: ''
 # (see matrix_synapse_systemd_healthcheck_enabled) detect readiness faster at startup.
 #
 # For non-Traefik setups, we use the default healthcheck interval (15s) to decrease overhead.
-matrix_synapse_container_health_interval: "{{ '5s' if matrix_synapse_container_labels_traefik_enabled else '15s' }}"
+matrix_synapse_container_health_interval_seconds: "{{ 5 if matrix_synapse_container_labels_traefik_enabled else 15 }}"
+matrix_synapse_container_health_interval: "{{ matrix_synapse_container_health_interval_seconds }}s"
 
 # A list of extra arguments to pass to the container
 # Also see `matrix_synapse_container_arguments`
@@ -397,13 +398,13 @@ matrix_synapse_systemd_healthcheck_command: >-
 
 # Controls how long to sleep for after the systemd health check passes.
 # Even after Synapse is healthy, the reverse proxy (e.g. Traefik) needs time to discover
-# the container and register its routes. Traefik's `providers.providersThrottleDuration`
-# (default: 2s; see https://doc.traefik.io/traefik/providers/overview/#providersthrottleduration)
-# adds a delay before applying new configuration from Docker events, meaning routes
-# typically become available ~2-3 seconds after a container starts.
+# the container and register its routes. Traefik waits `providers.providersThrottleDuration`
+# (see https://doc.traefik.io/traefik/v3.3/providers/overview/#providersprovidersthrottleduration)
+# before applying new configuration from Docker events.
 # Without this delay, services depending on Synapse may encounter 404 errors
 # when connecting through the reverse proxy.
-matrix_synapse_systemd_service_post_start_delay_seconds: 10
+# This value is meant to be wired to the Traefik throttle duration by the playbook's group vars.
+matrix_synapse_systemd_service_post_start_delay_seconds: 0
 
 matrix_synapse_in_container_python_packages_path: "/usr/local/lib/python3.13/site-packages"
 

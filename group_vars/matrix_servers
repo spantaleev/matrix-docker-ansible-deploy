@@ -4465,6 +4465,12 @@ matrix_synapse_password_config_enabled: "{{ not matrix_synapse_matrix_authentica
 
 matrix_synapse_register_user_script_matrix_authentication_service_path: "{{ matrix_authentication_service_bin_path }}/register-user"
 
+# After Synapse's systemd health check passes, the reverse proxy still needs time to
+# discover the container and register its routes. We derive this delay from Traefik's
+# providers.providersThrottleDuration setting (+1s grace for our healthcheck polling interval),
+# so it stays in sync automatically.
+matrix_synapse_systemd_service_post_start_delay_seconds: "{{ (traefik_config_providers_providersThrottleDuration_seconds | int + 1) if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] else 0 }}"
+
 ######################################################################
 #
 # /matrix-synapse
