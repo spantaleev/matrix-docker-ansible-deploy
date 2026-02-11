@@ -3117,6 +3117,9 @@ coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm
 # to allow auto-detection (via an echoip service) to happen at runtime.
 coturn_turn_external_ip_address: "{{ ansible_host }}"
 
+# By default, we use the official public instance.
+coturn_turn_external_ip_address_auto_detection_echoip_service_url: https://ifconfig.co/json
+
 coturn_turn_static_auth_secret: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.sas') | hash('sha512') | to_uuid) if coturn_authentication_method == 'auth-secret' else '' }}"
 
 coturn_lt_cred_mech_username: "{{ ((matrix_homeserver_generic_secret_key + ':coturn.user') | hash('sha512') | to_uuid) if coturn_authentication_method == 'lt-cred-mech' else '' }}"
