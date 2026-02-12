@@ -74,7 +74,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach m
 ExecStartPost={{ matrix_synapse_systemd_healthcheck_command }}
 {% endif %}
 
-{% if matrix_synapse_systemd_service_post_start_delay_seconds > 0 %}
+{% if matrix_synapse_systemd_service_post_start_delay_seconds | int > 0 %}
 ExecStartPost=-{{ matrix_host_command_sleep }} {{ matrix_synapse_systemd_service_post_start_delay_seconds }}
 {% endif %}
 
