@@ -357,7 +357,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-client-element.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'element', 'client-element']}] if matrix_client_element_enabled else [])
     +
-    ([{'name': 'hydrogen.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'hydrogen', 'client-hydrogen']}] if hydrogen_enabled else [])
+    ([{'name': (hydrogen_identifier + '.service'), 'priority': 2000, 'groups': ['matrix', 'clients', 'hydrogen', 'client-hydrogen']}] if hydrogen_enabled else [])
     +
     ([{'name': 'matrix-client-schildichat.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'schildichat', 'client-schildichat']}] if matrix_client_schildichat_enabled else [])
     +
@@ -4129,6 +4129,8 @@ matrix_client_element_element_call_url: "{{ matrix_element_call_public_url if ma
 ######################################################################
 
 hydrogen_enabled: false
+
+hydrogen_identifier: matrix-client-hydrogen
 
 hydrogen_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else hydrogen_docker_image_registry_prefix_upstream_default }}"
 
