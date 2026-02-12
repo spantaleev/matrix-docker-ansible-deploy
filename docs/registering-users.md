@@ -97,10 +97,6 @@ This `register-user` script actually invokes the `mas-cli manage register-user` 
 
 To manage users and your homeserver more easily (via a web interface), you can install [Ketesa](configuring-playbook-ketesa.md) — a fully-featured admin UI covering users, rooms, media, sessions, and MAS management.
 
-## Letting certain users register on your private server
-
-If you'd rather **keep your server private** (public registration closed, as is the default), and **let certain people create accounts by themselves** (instead of creating user accounts manually like this), consider installing and making use of [matrix-registration](configuring-playbook-matrix-registration.md).
-
 ## Enabling public user registration
 
 To **open up user registration publicly** (usually **not recommended**), add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
