@@ -375,8 +375,6 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': (coturn_identifier + '-reload.timer'), 'priority': 5000, 'groups': ['matrix', 'coturn']}] if (coturn_enabled and coturn_tls_enabled) else [])
     +
-    ([{'name': 'matrix-dimension.service', 'priority': 4000, 'groups': ['matrix', 'integration-managers', 'dimension']}] if matrix_dimension_enabled else [])
-    +
     ([{'name': (ddclient_identifier + '.service'), 'priority': 5000, 'groups': ['matrix', 'ddclient', 'dynamic-dns']}] if ddclient_enabled else [])
     +
     ([{'name': (etherpad_identifier + '.service'), 'priority': 4000, 'groups': ['matrix', 'etherpad']}] if etherpad_enabled else [])
@@ -546,8 +544,8 @@ matrix_homeserver_container_federation_api_endpoint: |-
     }[matrix_homeserver_implementation]
   }}
 
-matrix_integration_manager_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else None }}"
-matrix_integration_manager_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else None }}"
+matrix_integration_manager_rest_url: ""
+matrix_integration_manager_ui_url: ""
 
 ######################################################################
 #
@@ -3188,75 +3186,6 @@ coturn_systemd_required_services_list_auto: |
 
 ######################################################################
 #
-# matrix-dimension
-#
-######################################################################
-
-matrix_dimension_enabled: false
-
-matrix_dimension_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
-matrix_dimension_hostname: "{{ matrix_server_fqn_dimension }}"
-
-matrix_dimension_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_dimension_docker_image_registry_prefix_upstream_default }}"
-
-matrix_dimension_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
-
-matrix_dimension_container_network: "{{ matrix_addons_container_network }}"
-
-# Dimension is connected both to `matrix_addons_homeserver_container_network` and `matrix_homeserver_container_network`,
-# because `matrix_dimension_homeserver_clientServerUrl` and `matrix_dimension_homeserver_federationUrl` are potentially
-# going to different places.
-matrix_dimension_container_additional_networks: |
-  {{
-    (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([matrix_homeserver_container_network] if matrix_homeserver_container_network != matrix_dimension_container_network else [])
-      +
-      ([postgres_container_network] if (postgres_enabled and matrix_dimension_database_hostname == postgres_connection_hostname and postgres_container_network != matrix_dimension_container_network) else [])
-      +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
-    ) | unique
-  }}
-
-matrix_dimension_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8184') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
-
-matrix_dimension_container_labels_traefik_enabled: "{{ matrix_playbook_traefik_labels_enabled }}"
-matrix_dimension_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_dimension_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_dimension_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
-matrix_dimension_homeserver_clientServerUrl: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_dimension_homeserver_federationUrl: "{{ matrix_homeserver_container_federation_url }}"
-matrix_dimension_homeserver_mediaUrl: "{{ ('https' if matrix_playbook_ssl_enabled else 'http') }}://{{ matrix_server_fqn_matrix }}"
-
-# Dimension depends both on `matrix_addons_homeserver_systemd_services_list` and on the homeserver service,
-# because `matrix_dimension_homeserver_clientServerUrl` and `matrix_dimension_homeserver_federationUrl` are potentially
-# going to different places.
-matrix_dimension_systemd_required_services_list_auto: |
-  {{
-    (
-      matrix_addons_homeserver_systemd_services_list
-      +
-      ['matrix-' + matrix_homeserver_implementation + '.service']
-      +
-      ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_dimension_database_hostname == postgres_connection_hostname) else [])
-    ) | unique
-  }}
-
-# Postgres is the default, except if not using internal Postgres server
-matrix_dimension_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
-matrix_dimension_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_dimension_database_password: "{{ (matrix_homeserver_generic_secret_key + ':dimension.db') | hash('sha512') | to_uuid }}"
-
-######################################################################
-#
-# /matrix-dimension
-#
-######################################################################
-
-######################################################################
-#
 # etherpad
 #
 ######################################################################
@@ -3269,7 +3198,7 @@ etherpad_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
 etherpad_base_path: "{{ matrix_base_data_path }}/etherpad"
 
-etherpad_framing_enabled: "{{ matrix_dimension_enabled or jitsi_enabled }}"
+etherpad_framing_enabled: "{{ jitsi_enabled }}"
 
 etherpad_hostname: "{{ matrix_server_fqn_etherpad }}"
 
@@ -3878,12 +3807,6 @@ postgres_managed_databases_auto: |
     }] if (matrix_steam_bridge_enabled and matrix_steam_bridge_database_engine == 'postgres' and matrix_steam_bridge_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_dimension_database_name,
-      'username': matrix_dimension_database_username,
-      'password': matrix_dimension_database_password,
-    }] if (matrix_dimension_enabled and matrix_dimension_database_engine == 'postgres' and matrix_dimension_database_hostname == postgres_connection_hostname) else [])
-    +
-    ([{
       'name': etherpad_database_name,
       'username': etherpad_database_postgres_username,
       'password': etherpad_database_postgres_password,
@@ -4089,11 +4012,11 @@ matrix_client_element_container_labels_traefik_compression_middleware_name: "{{ 
 matrix_client_element_default_hs_url: "{{ matrix_homeserver_url }}"
 matrix_client_element_default_is_url: "{{ matrix_identity_server_url }}"
 
-# Use Dimension if enabled, otherwise fall back to Scalar
-matrix_client_element_integrations_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else 'https://scalar.vector.im/' }}"
-matrix_client_element_integrations_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else 'https://scalar.vector.im/api' }}"
-matrix_client_element_integrations_widgets_urls: "{{ matrix_dimension_integrations_widgets_urls if matrix_dimension_enabled else ['https://scalar.vector.im/api'] }}"
-matrix_client_element_integrations_jitsi_widget_url: "{{ matrix_dimension_integrations_jitsi_widget_url if matrix_dimension_enabled else 'https://scalar.vector.im/api/widgets/jitsi.html' }}"
+# Use Scalar by default
+matrix_client_element_integrations_ui_url: "https://scalar.vector.im/"
+matrix_client_element_integrations_rest_url: "https://scalar.vector.im/api"
+matrix_client_element_integrations_widgets_urls: "{{ ['https://scalar.vector.im/api'] }}"
+matrix_client_element_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
 
 matrix_client_element_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
@@ -4246,11 +4169,11 @@ matrix_client_schildichat_container_labels_traefik_tls_certResolver: "{{ traefik
 matrix_client_schildichat_default_hs_url: "{{ matrix_homeserver_url }}"
 matrix_client_schildichat_default_is_url: "{{ matrix_identity_server_url }}"
 
-# Use Dimension if enabled, otherwise fall back to Scalar
-matrix_client_schildichat_integrations_ui_url: "{{ matrix_dimension_integrations_ui_url if matrix_dimension_enabled else 'https://scalar.vector.im/' }}"
-matrix_client_schildichat_integrations_rest_url: "{{ matrix_dimension_integrations_rest_url if matrix_dimension_enabled else 'https://scalar.vector.im/api' }}"
-matrix_client_schildichat_integrations_widgets_urls: "{{ matrix_dimension_integrations_widgets_urls if matrix_dimension_enabled else ['https://scalar.vector.im/api'] }}"
-matrix_client_schildichat_integrations_jitsi_widget_url: "{{ matrix_dimension_integrations_jitsi_widget_url if matrix_dimension_enabled else 'https://scalar.vector.im/api/widgets/jitsi.html' }}"
+# Use Scalar by default
+matrix_client_schildichat_integrations_ui_url: "https://scalar.vector.im/"
+matrix_client_schildichat_integrations_rest_url: "https://scalar.vector.im/api"
+matrix_client_schildichat_integrations_widgets_urls: "{{ ['https://scalar.vector.im/api'] }}"
+matrix_client_schildichat_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
 
 matrix_client_schildichat_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
@@ -4394,7 +4317,7 @@ matrix_synapse_tls_federation_listener_enabled: false
 matrix_synapse_tls_certificate_path: ~
 matrix_synapse_tls_private_key_path: ~
 
-matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_federation_enabled and (matrix_dimension_enabled or matrix_user_verification_service_enabled or matrix_livekit_jwt_service_enabled) }}"
+matrix_synapse_federation_port_openid_resource_required: "{{ not matrix_synapse_federation_enabled and (matrix_user_verification_service_enabled or matrix_livekit_jwt_service_enabled) }}"
 
 matrix_synapse_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
