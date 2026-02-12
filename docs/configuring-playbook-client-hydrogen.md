@@ -52,8 +52,8 @@ There are some additional things you may wish to configure about the client.
 
 Take a look at:
 
-- `roles/custom/matrix-client-hydrogen/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-client-hydrogen/templates/config.json.j2` for the client's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_hydrogen_configuration_extension_json` variable
+- `roles/galaxy/hydrogen/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/hydrogen/templates/config.json.j2` for the client's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_hydrogen_configuration_extension_json` variable
 
 ## Installing
 
