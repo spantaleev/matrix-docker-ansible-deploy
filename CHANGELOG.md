@@ -1,3 +1,11 @@
+# 2026-02-XX
+
+## matrix-registration has been removed from the playbook
+
+The [matrix-registration](./docs/configuring-playbook-matrix-registration.md) service has been removed from the playbook, as it has been unmaintained since November, 2025.
+
+The playbook will let you know if you're using any `matrix_registration_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-matrix-registration.md#uninstalling-the-component-manually).
+
 # 2026-02-12
 
 ## Dimension integration manager has been removed from the playbook
