@@ -29,15 +29,15 @@
       ansible.builtin.git:
         repo: "{{ hydrogen_container_image_self_build_repo }}"
         dest: "{{ hydrogen_docker_src_files_path }}"
-        version: "{{ hydrogen_docker_image.split(':')[1] }}"
+        version: "{{ hydrogen_container_image.split(':')[1] }}"
         force: "yes"
       become: true
       become_user: "{{ matrix_user_name }}"
       register: hydrogen_git_pull_results
 
     - name: Check if Hydrogen Docker image exists
-      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ hydrogen_docker_image }}'"
-      register: hydrogen_docker_image_check_result
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ hydrogen_container_image }}'"
+      register: hydrogen_container_image_check_result
       changed_when: false
 
     # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
@@ -48,20 +48,20 @@
         chdir: "{{ hydrogen_docker_src_files_path }}"
         cmd: |
           {{ devture_systemd_docker_base_host_command_docker }} build \
-          -t "{{ hydrogen_docker_image }}" \
+          -t "{{ hydrogen_container_image }}" \
           -f Dockerfile \
           .
       environment:
         DOCKER_BUILDKIT: 1
       changed_when: true
-      when: "hydrogen_git_pull_results.changed | bool or hydrogen_docker_image_check_result.stdout == ''"
+      when: "hydrogen_git_pull_results.changed | bool or hydrogen_container_image_check_result.stdout == ''"
 
 - name: Ensure Hydrogen Docker image is pulled
   community.docker.docker_image:
-    name: "{{ hydrogen_docker_image }}"
+    name: "{{ hydrogen_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ hydrogen_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else hydrogen_docker_image_force_pull }}"
+    force_source: "{{ hydrogen_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else hydrogen_container_image_force_pull }}"
   when: "not hydrogen_container_image_self_build | bool"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"

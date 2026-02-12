@@ -4132,7 +4132,8 @@ hydrogen_enabled: false
 
 hydrogen_identifier: matrix-client-hydrogen
 
-hydrogen_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else hydrogen_docker_image_registry_prefix_upstream_default }}"
+hydrogen_container_image_registry_prefix: "{{ 'localhost/' if hydrogen_container_image_self_build else hydrogen_container_image_registry_prefix_upstream }}"
+hydrogen_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else hydrogen_container_image_registry_prefix_upstream_default }}"
 
 hydrogen_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
