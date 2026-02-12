@@ -19,7 +19,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - {path: "{{ hydrogen_data_path }}", when: true}
+    - {path: "{{ hydrogen_base_path }}", when: true}
     - {path: "{{ hydrogen_docker_src_files_path }}", when: "{{ hydrogen_container_image_self_build }}"}
   when: "item.when | bool"
 
@@ -71,7 +71,7 @@
 - name: Ensure Hydrogen configuration installed
   ansible.builtin.copy:
     content: "{{ hydrogen_configuration | to_nice_json }}"
-    dest: "{{ hydrogen_data_path }}/config.json"
+    dest: "{{ hydrogen_base_path }}/config.json"
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
@@ -79,7 +79,7 @@
 - name: Ensure Hydrogen additional config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
-    dest: "{{ hydrogen_data_path }}/{{ item.name }}"
+    dest: "{{ hydrogen_base_path }}/{{ item.name }}"
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"

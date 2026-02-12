@@ -24,10 +24,10 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% if hydrogen_container_http_host_bind_port %}
 			-p {{ hydrogen_container_http_host_bind_port }}:8080 \
 			{% endif %}
-			--label-file={{ hydrogen_data_path }}/labels \
+			--label-file={{ hydrogen_base_path }}/labels \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
-			--mount type=bind,src={{ hydrogen_data_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
-			--mount type=bind,src={{ hydrogen_data_path }}/config.json,dst=/config.json.bundled,ro \
+			--mount type=bind,src={{ hydrogen_base_path }}/nginx.conf,dst=/etc/nginx/nginx.conf,ro \
+			--mount type=bind,src={{ hydrogen_base_path }}/config.json,dst=/config.json.bundled,ro \
 			{% for arg in hydrogen_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
