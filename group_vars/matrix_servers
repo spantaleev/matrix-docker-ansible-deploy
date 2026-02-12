@@ -357,7 +357,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{'name': 'matrix-client-element.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'element', 'client-element']}] if matrix_client_element_enabled else [])
     +
-    ([{'name': 'matrix-client-hydrogen.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'hydrogen', 'client-hydrogen']}] if matrix_client_hydrogen_enabled else [])
+    ([{'name': (hydrogen_identifier + '.service'), 'priority': 2000, 'groups': ['matrix', 'clients', 'hydrogen', 'client-hydrogen']}] if hydrogen_enabled else [])
     +
     ([{'name': 'matrix-client-schildichat.service', 'priority': 2000, 'groups': ['matrix', 'clients', 'schildichat', 'client-schildichat']}] if matrix_client_schildichat_enabled else [])
     +
@@ -4124,39 +4124,49 @@ matrix_client_element_element_call_url: "{{ matrix_element_call_public_url if ma
 
 ######################################################################
 #
-# matrix-client-hydrogen
+# hydrogen
 #
 ######################################################################
 
-matrix_client_hydrogen_enabled: false
+hydrogen_enabled: false
 
-matrix_client_hydrogen_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_client_hydrogen_docker_image_registry_prefix_upstream_default }}"
+hydrogen_identifier: matrix-client-hydrogen
 
-matrix_client_hydrogen_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+hydrogen_uid: "{{ matrix_user_uid }}"
+hydrogen_gid: "{{ matrix_user_gid }}"
 
-matrix_client_hydrogen_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8768') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+hydrogen_container_image_registry_prefix: "{{ 'localhost/' if hydrogen_container_image_self_build else hydrogen_container_image_registry_prefix_upstream }}"
+hydrogen_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else hydrogen_container_image_registry_prefix_upstream_default }}"
 
-matrix_client_hydrogen_container_network: "{{ matrix_addons_container_network }}"
+hydrogen_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_client_hydrogen_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_client_hydrogen_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+hydrogen_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8768') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_client_hydrogen_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_client_hydrogen_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_hydrogen_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_client_hydrogen_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+hydrogen_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_client_hydrogen_container_labels_traefik_compression_middleware_enabled: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled }}"
-matrix_client_hydrogen_container_labels_traefik_compression_middleware_name: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_name if matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled else '' }}"
+hydrogen_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (hydrogen_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
 
-matrix_client_hydrogen_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+hydrogen_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+hydrogen_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+hydrogen_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+hydrogen_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_client_hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
+hydrogen_container_labels_traefik_compression_middleware_enabled: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled }}"
+hydrogen_container_labels_traefik_compression_middleware_name: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_name if matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled else '' }}"
 
-matrix_client_hydrogen_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
+hydrogen_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+hydrogen_default_hs_url: "{{ matrix_homeserver_url }}"
+
+hydrogen_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
+
+hydrogen_base_path: "{{ matrix_base_data_path }}/client-hydrogen"
+
+hydrogen_hostname: "{{ matrix_server_fqn_hydrogen }}"
 
 ######################################################################
 #
-# /matrix-client-hydrogen
+# /hydrogen
 #
 ######################################################################
 
