@@ -12,21 +12,21 @@
     - install-all
     - install-client-hydrogen
   block:
-    - when: matrix_client_hydrogen_enabled | bool
+    - when: hydrogen_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-    - when: matrix_client_hydrogen_enabled | bool
+    - when: hydrogen_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
 - tags:
     - setup-all
     - setup-client-hydrogen
   block:
-    - when: not matrix_client_hydrogen_enabled | bool
+    - when: not hydrogen_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
 
 - tags:
     - self-check
   block:
-    - when: matrix_client_hydrogen_enabled | bool
+    - when: hydrogen_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check.yml"
