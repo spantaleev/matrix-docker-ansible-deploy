@@ -741,6 +741,18 @@
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mx_puppet_twitter_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_twitter_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report the Dimension integration manager variables
+  ansible.builtin.fail:
+    msg: |-
+      The Dimension integration manager was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_dimension_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-dimension.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_dimension_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_dimension_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report Email2Matrix variables
   ansible.builtin.fail:
     msg: |-
