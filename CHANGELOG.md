@@ -1,5 +1,11 @@
 # 2026-02-12
 
+## Dimension integration manager has been removed from the playbook
+
+The [Dimension integration manager](./docs/configuring-playbook-dimension.md) has been removed from the playbook, as it has been unmaintained.
+
+The playbook will let you know if you're using any `matrix_dimension_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-dimension.md#uninstalling-the-component-manually).
+
 ## (BC Break) Hydrogen role has been relocated and variable names need adjustments
 
 The role for Hydrogen has been relocated to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
