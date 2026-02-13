@@ -46,10 +46,10 @@ Such kind of difference sometimes matters. For example, when you install a Matri
 
 ## Conditional service restart
 
-When using `just install-all` or `just install-service`, only services whose configuration or container image actually changed during the playbook run will be restarted. Unchanged services are left running (or get started if they were stopped). This reduces unnecessary downtime.
+When running `install-all` or `install-service` (whether via `just` or raw `ansible-playbook`), only services whose configuration or container image actually changed during the playbook run will be restarted. Unchanged services are left running (or get started if they were stopped). This reduces unnecessary downtime.
 
-When using `just setup-all`, all services are unconditionally restarted regardless of whether changes were detected. This is appropriate for `setup-all`'s thorough "full setup" semantics.
+When running with `setup-*` tags (e.g. `setup-all`, `setup-synapse`), all services are unconditionally restarted regardless of whether changes were detected. This is appropriate for setup's thorough "full setup" semantics.
 
-`just start-all` and `just start-group` always restart all targeted services, since no installation tasks run during these commands.
+`start-all` and `start-group` always restart all targeted services, since no installation tasks run during these commands.
 
-This behavior is controlled by the `devture_systemd_service_manager_conditional_restart_enabled` variable (default: `true`). To force unconditional restarts during installation, pass: `just install-all --extra-vars='devture_systemd_service_manager_conditional_restart_enabled=false'`
+This behavior is automatically determined based on the playbook tags in use. It can be overridden with the `devture_systemd_service_manager_conditional_restart_enabled` variable. For example, to force unconditional restarts during installation: `just install-all --extra-vars='devture_systemd_service_manager_conditional_restart_enabled=false'`

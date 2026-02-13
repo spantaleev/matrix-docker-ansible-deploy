@@ -265,6 +265,19 @@ matrix_addons_homeserver_systemd_services_list: |
 #   - so that, when the reverse-proxy is up (Matrix is up), all bots and bridges can be interacted with
 # - monitoring services (Prometheus, Grafana, …) get a level of 4000 — they can start later than all-of-Matrix
 # - services which aren't time-sensitive (various crons and timers) get a level of 5000 — they can start later than all-of-Matrix
+
+# The systemd_service_manager role supports conditional restart — only restarting services
+# whose configuration or container image actually changed, leaving unchanged services running.
+# This is controlled by `devture_systemd_service_manager_conditional_restart_enabled` (default: true in the role).
+#
+# We override it here to automatically match the intent of the playbook tags being used:
+# - install-* tags (regular upgrades): conditional restart ON — only changed services restart, reducing downtime
+# - setup-* tags (full setup/reconfiguration): conditional restart OFF — all services restart unconditionally
+#
+# This ensures consistent behavior whether users invoke the playbook via `just` shortcuts
+# or raw `ansible-playbook --tags=...` commands.
+devture_systemd_service_manager_conditional_restart_enabled: "{{ ansible_run_tags | select('match', 'setup-') | list | length == 0 }}"
+
 devture_systemd_service_manager_services_list_auto: |
   {{
     ([{
