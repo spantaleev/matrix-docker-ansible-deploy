@@ -63,7 +63,7 @@
       failed_when: false
 
 - ansible.builtin.set_fact:
-    matrix_appservice_irc_requires_restart: false
+    matrix_appservice_irc_migration_requires_restart: false
 
 - when: "matrix_appservice_irc_database_engine == 'postgres'"
   block:
@@ -77,7 +77,7 @@
         - ansible.builtin.include_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
 
         - ansible.builtin.set_fact:
-            matrix_appservice_irc_requires_restart: true
+            matrix_appservice_irc_migration_requires_restart: true
 
 - name: Ensure Appservice IRC image is pulled
   community.docker.docker_image:
@@ -264,4 +264,4 @@
     name: "matrix-appservice-irc.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_appservice_irc_requires_restart | bool"
+  when: "matrix_appservice_irc_migration_requires_restart | bool"

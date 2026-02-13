@@ -18,7 +18,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_telegram_requires_restart: false
+    matrix_mautrix_telegram_migration_requires_restart: false
 
 - when: "matrix_mautrix_telegram_database_engine == 'postgres'"
   block:
@@ -42,7 +42,7 @@
               systemd_services_to_stop: ['matrix-mautrix-telegram.service']
 
         - ansible.builtin.set_fact:
-            matrix_mautrix_telegram_requires_restart: true
+            matrix_mautrix_telegram_migration_requires_restart: true
 
 - name: Ensure Mautrix Telegram paths exist
   ansible.builtin.file:
@@ -183,4 +183,4 @@
     name: "matrix-mautrix-telegram.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mautrix_telegram_requires_restart | bool"
+  when: "matrix_mautrix_telegram_migration_requires_restart | bool"

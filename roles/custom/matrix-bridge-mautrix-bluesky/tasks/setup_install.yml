@@ -5,7 +5,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_bluesky_requires_restart: false
+    matrix_mautrix_bluesky_migration_requires_restart: false
 
 - name: Ensure Mautrix Bluesky image is pulled
   community.docker.docker_image:
@@ -99,4 +99,4 @@
     name: "matrix-mautrix-bluesky.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mautrix_bluesky_requires_restart | bool"
+  when: "matrix_mautrix_bluesky_migration_requires_restart | bool"

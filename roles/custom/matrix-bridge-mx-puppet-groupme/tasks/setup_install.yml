@@ -46,7 +46,7 @@
   when: "matrix_mx_puppet_groupme_stat_database.stat.exists"
 
 - ansible.builtin.set_fact:
-    matrix_mx_puppet_groupme_requires_restart: false
+    matrix_mx_puppet_groupme_migration_requires_restart: false
 
 - when: "matrix_mx_puppet_groupme_database_engine == 'postgres'"
   block:
@@ -70,7 +70,7 @@
               systemd_services_to_stop: ['matrix-mx-puppet-groupme.service']
 
         - ansible.builtin.set_fact:
-            matrix_mx_puppet_groupme_requires_restart: true
+            matrix_mx_puppet_groupme_migration_requires_restart: true
 
 - name: Ensure MX Puppet Groupme image is pulled
   community.docker.docker_image:
@@ -141,4 +141,4 @@
     name: "matrix-mx-puppet-groupme.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mx_puppet_groupme_requires_restart | bool"
+  when: "matrix_mx_puppet_groupme_migration_requires_restart | bool"

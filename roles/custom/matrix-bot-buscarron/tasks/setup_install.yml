@@ -8,7 +8,7 @@
 
 ---
 - ansible.builtin.set_fact:
-    matrix_bot_buscarron_requires_restart: false
+    matrix_bot_buscarron_migration_requires_restart: false
 
 - when: "matrix_bot_buscarron_database_engine == 'postgres'"
   block:
@@ -32,7 +32,7 @@
               systemd_services_to_stop: ['matrix-bot-buscarron.service']
 
         - ansible.builtin.set_fact:
-            matrix_bot_buscarron_requires_restart: true
+            matrix_bot_buscarron_migration_requires_restart: true
 
 - name: Ensure Buscarron paths exist
   ansible.builtin.file:
@@ -112,4 +112,4 @@
     name: "matrix-bot-buscarron.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_bot_buscarron_requires_restart | bool"
+  when: "matrix_bot_buscarron_migration_requires_restart | bool"

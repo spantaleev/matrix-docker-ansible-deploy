@@ -11,7 +11,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_twitter_requires_restart: false
+    matrix_mautrix_twitter_migration_requires_restart: false
 
 - name: Ensure Mautrix Twitter image is pulled
   community.docker.docker_image:
@@ -105,4 +105,4 @@
     name: "matrix-mautrix-twitter.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mautrix_twitter_requires_restart | bool"
+  when: "matrix_mautrix_twitter_migration_requires_restart | bool"

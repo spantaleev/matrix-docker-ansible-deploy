@@ -6,7 +6,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_meta_instagram_requires_restart: false
+    matrix_mautrix_meta_instagram_migration_requires_restart: false
 
 - when: "matrix_mautrix_meta_instagram_database_engine == 'postgres'"
   block:
@@ -30,7 +30,7 @@
               systemd_services_to_stop: "{{ [matrix_mautrix_meta_instagram_identifier + '.service'] }}"
 
         - ansible.builtin.set_fact:
-            matrix_mautrix_meta_instagram_requires_restart: true
+            matrix_mautrix_meta_instagram_migration_requires_restart: true
 
 - name: Ensure mautrix-meta-instagram container image is pulled
   community.docker.docker_image:
@@ -125,4 +125,4 @@
     name: "{{ matrix_mautrix_meta_instagram_identifier }}.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mautrix_meta_instagram_requires_restart | bool"
+  when: "matrix_mautrix_meta_instagram_migration_requires_restart | bool"

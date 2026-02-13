@@ -13,7 +13,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_signal_requires_restart: false
+    matrix_mautrix_signal_migration_requires_restart: false
 
 - when: "matrix_mautrix_signal_database_engine == 'postgres'"
   block:
@@ -38,7 +38,7 @@
               pgloader_options: ['--with "quote identifiers"']
 
         - ansible.builtin.set_fact:
-            matrix_mautrix_signal_requires_restart: true
+            matrix_mautrix_signal_migration_requires_restart: true
 
 - name: Ensure Mautrix signal paths exists
   ansible.builtin.file:
@@ -166,4 +166,4 @@
     name: "matrix-mautrix-signal.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mautrix_signal_requires_restart | bool"
+  when: "matrix_mautrix_signal_migration_requires_restart | bool"

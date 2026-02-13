@@ -5,7 +5,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_steam_bridge_requires_restart: false
+    matrix_steam_bridge_migration_requires_restart: false
 
 - name: Ensure Steam bridge image is pulled
   community.docker.docker_image:
@@ -99,4 +99,4 @@
     name: "matrix-steam-bridge.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_steam_bridge_requires_restart | bool"
+  when: "matrix_steam_bridge_migration_requires_restart | bool"

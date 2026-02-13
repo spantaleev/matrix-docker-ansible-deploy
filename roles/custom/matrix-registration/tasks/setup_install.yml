@@ -11,7 +11,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_registration_requires_restart: false
+    matrix_registration_migration_requires_restart: false
 
 - when: "matrix_registration_database_engine == 'postgres'"
   block:
@@ -40,7 +40,7 @@
               additional_psql_statements_db_name: "{{ matrix_registration_database_name }}"
 
         - ansible.builtin.set_fact:
-            matrix_registration_requires_restart: true
+            matrix_registration_migration_requires_restart: true
 
 - name: Ensure matrix-registration paths exist
   ansible.builtin.file:
@@ -135,4 +135,4 @@
     name: "matrix-registration.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_registration_requires_restart | bool"
+  when: "matrix_registration_migration_requires_restart | bool"

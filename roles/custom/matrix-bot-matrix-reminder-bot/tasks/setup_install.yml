@@ -12,7 +12,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_bot_matrix_reminder_bot_requires_restart: false
+    matrix_bot_matrix_reminder_bot_migration_requires_restart: false
 
 - when: "matrix_bot_matrix_reminder_bot_database_engine == 'postgres'"
   block:
@@ -36,7 +36,7 @@
               systemd_services_to_stop: ['matrix-bot-matrix-reminder-bot.service']
 
         - ansible.builtin.set_fact:
-            matrix_bot_matrix_reminder_bot_requires_restart: true
+            matrix_bot_matrix_reminder_bot_migration_requires_restart: true
 
 - name: Ensure matrix-reminder-bot paths exist
   ansible.builtin.file:
@@ -114,4 +114,4 @@
     name: "matrix-bot-matrix-reminder-bot.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_bot_matrix_reminder_bot_requires_restart | bool"
+  when: "matrix_bot_matrix_reminder_bot_migration_requires_restart | bool"

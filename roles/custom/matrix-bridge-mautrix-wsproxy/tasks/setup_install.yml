@@ -16,10 +16,10 @@
   when: "matrix_synapse_role_executed|default(False)"
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_wsproxy_requires_restart: false
+    matrix_mautrix_wsproxy_migration_requires_restart: false
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_wsproxy_syncproxy_requires_restart: false
+    matrix_mautrix_wsproxy_syncproxy_migration_requires_restart: false
 
 - name: Ensure Mautrix wsproxy paths exist
   ansible.builtin.file:
@@ -121,7 +121,7 @@
   ansible.builtin.service:
     name: "matrix-mautrix-wsproxy.service"
     state: restarted
-  when: "matrix_mautrix_wsproxy_requires_restart|bool"
+  when: "matrix_mautrix_wsproxy_migration_requires_restart|bool"
 
 - name: Ensure matrix-mautrix-wsproxy-syncproxy.service installed
   ansible.builtin.template:
@@ -139,4 +139,4 @@
   ansible.builtin.service:
     name: "matrix-mautrix-wsproxy-syncproxy.service"
     state: restarted
-  when: "matrix_mautrix_wsproxy_syncproxy_requires_restart|bool"
+  when: "matrix_mautrix_wsproxy_syncproxy_migration_requires_restart|bool"

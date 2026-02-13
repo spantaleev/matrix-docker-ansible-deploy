@@ -11,7 +11,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_googlechat_requires_restart: false
+    matrix_mautrix_googlechat_migration_requires_restart: false
 
 - when: "matrix_mautrix_googlechat_database_engine == 'postgres'"
   block:
@@ -35,7 +35,7 @@
               systemd_services_to_stop: ['matrix-mautrix-googlechat.service']
 
         - ansible.builtin.set_fact:
-            matrix_mautrix_googlechat_requires_restart: true
+            matrix_mautrix_googlechat_migration_requires_restart: true
 
 - name: Ensure Mautrix googlechat image is pulled
   community.docker.docker_image:
@@ -151,4 +151,4 @@
     name: "matrix-mautrix-googlechat.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mautrix_googlechat_requires_restart | bool"
+  when: "matrix_mautrix_googlechat_migration_requires_restart | bool"

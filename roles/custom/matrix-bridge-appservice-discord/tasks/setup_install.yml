@@ -14,7 +14,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_appservice_discord_requires_restart: false
+    matrix_appservice_discord_migration_requires_restart: false
 
 - when: "matrix_appservice_discord_database_engine == 'postgres'"
   block:
@@ -38,7 +38,7 @@
               systemd_services_to_stop: ['matrix-appservice-discord.service']
 
         - ansible.builtin.set_fact:
-            matrix_appservice_discord_requires_restart: true
+            matrix_appservice_discord_migration_requires_restart: true
 
 - name: Ensure Appservice Discord image is pulled
   community.docker.docker_image:
@@ -136,4 +136,4 @@
     name: "matrix-appservice-discord.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_appservice_discord_requires_restart | bool"
+  when: "matrix_appservice_discord_migration_requires_restart | bool"
