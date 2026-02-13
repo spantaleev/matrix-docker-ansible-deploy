@@ -248,3 +248,13 @@ matrix_synapse_admin_config_asManagedUsers_custom: []  # noqa var-naming
 # Example for mautrix-telegram: ["^@telegram_[a-zA-Z0-9]+:example\\.com$"]
 # WARNING: you want to use matrix_synapse_admin_config_asManagedUsers_custom instead of this variable.
 matrix_synapse_admin_config_asManagedUsers: "{{ matrix_synapse_admin_config_asManagedUsers_auto + matrix_synapse_admin_config_asManagedUsers_custom }}"  # noqa var-naming
+
+# matrix_synapse_admin_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_synapse_admin_restart_necessary: false

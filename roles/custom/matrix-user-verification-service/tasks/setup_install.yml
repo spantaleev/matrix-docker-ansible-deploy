@@ -24,10 +24,10 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_user_verification_service_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_user_verification_service_docker_image_force_pull }}"
-  register: result
+  register: matrix_user_verification_service_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_user_verification_service_container_image_pull_result is not failed
   when: "not matrix_user_verification_service_container_image_self_build | bool"
 
 - name: Ensure Matrix User Verification Service repository is present when self-building
@@ -60,6 +60,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
     mode: 0644
+  register: matrix_user_verification_service_config_result
 
 - name: Ensure matrix-user-verification-service container network is created
   community.general.docker_network:
@@ -73,3 +74,13 @@
     src: "{{ role_path }}/templates/systemd/matrix-user-verification-service.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_user_verification_service_systemd_service_name }}"
     mode: 0644
+  register: matrix_user_verification_service_systemd_service_result
+
+- name: Determine whether Matrix User Verification Service needs a restart
+  ansible.builtin.set_fact:
+    matrix_user_verification_service_restart_necessary: >-
+      {{
+        matrix_user_verification_service_config_result.changed | default(false)
+        or matrix_user_verification_service_systemd_service_result.changed | default(false)
+        or matrix_user_verification_service_container_image_pull_result.changed | default(false)
+      }}

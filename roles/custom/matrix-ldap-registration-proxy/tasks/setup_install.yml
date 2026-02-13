@@ -48,6 +48,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_ldap_registration_proxy_config_result
 
 - name: Ensure matrix-ldap-registration-proxy support files installed
   ansible.builtin.template:
@@ -58,6 +59,7 @@
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_ldap_registration_proxy_support_files_result
 
 - name: Ensure matrix-ldap-registration-proxy container network is created
   community.general.docker_network:
@@ -71,3 +73,13 @@
     src: "{{ role_path }}/templates/systemd/matrix-ldap-registration-proxy.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ldap-registration-proxy.service"
     mode: 0644
+  register: matrix_ldap_registration_proxy_systemd_service_result
+
+- name: Determine whether matrix-ldap-registration-proxy needs a restart
+  ansible.builtin.set_fact:
+    matrix_ldap_registration_proxy_restart_necessary: >-
+      {{
+        matrix_ldap_registration_proxy_config_result.changed | default(false)
+        or matrix_ldap_registration_proxy_support_files_result.changed | default(false)
+        or matrix_ldap_registration_proxy_systemd_service_result.changed | default(false)
+      }}

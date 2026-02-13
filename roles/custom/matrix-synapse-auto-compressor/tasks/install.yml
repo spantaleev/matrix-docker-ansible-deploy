@@ -27,6 +27,7 @@
     mode: 0640
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_synapse_auto_compressor_config_env_result
 
 - name: Ensure synapse-auto-compressor workaround script is installed
   ansible.builtin.template:
@@ -35,6 +36,7 @@
     mode: 0750
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_synapse_auto_compressor_config_script_result
 
 - name: Ensure synapse-auto-compressor image is pulled
   community.docker.docker_image:
@@ -43,10 +45,10 @@
     force_source: "{{ matrix_synapse_auto_compressor_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_auto_compressor_container_image_force_pull }}"
   when: "not matrix_synapse_auto_compressor_container_image_self_build | bool"
-  register: result
+  register: matrix_synapse_auto_compressor_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_synapse_auto_compressor_container_image_pull_result is not failed
 
 
 - when: "matrix_synapse_auto_compressor_container_image_self_build | bool"
@@ -97,3 +99,14 @@
   with_items:
     - service
     - timer
+  register: matrix_synapse_auto_compressor_systemd_service_result
+
+- name: Determine whether synapse-auto-compressor needs a restart
+  ansible.builtin.set_fact:
+    matrix_synapse_auto_compressor_restart_necessary: >-
+      {{
+        matrix_synapse_auto_compressor_config_env_result.changed | default(false)
+        or matrix_synapse_auto_compressor_config_script_result.changed | default(false)
+        or matrix_synapse_auto_compressor_systemd_service_result.changed | default(false)
+        or matrix_synapse_auto_compressor_container_image_pull_result.changed | default(false)
+      }}

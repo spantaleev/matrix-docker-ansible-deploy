@@ -290,7 +290,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-alertmanager-receiver.service',
       'priority': 2200,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_alertmanager_receiver_restart_necessary | bool),
       'groups': ['matrix', 'alertmanager-receiver'],
     }] if matrix_alertmanager_receiver_enabled else [])
     +
@@ -374,7 +374,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-appservice-draupnir-for-all.service',
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_appservice_draupnir_for_all_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'draupnir-for-all', 'appservice-draupnir-for-all'],
     }] if matrix_appservice_draupnir_for_all_enabled else [])
     +
@@ -521,14 +521,14 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-mautrix-wsproxy.service',
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_mautrix_wsproxy_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'mautrix-wsproxy'],
     }] if matrix_mautrix_wsproxy_enabled else [])
     +
     ([{
       'name': 'matrix-mautrix-wsproxy-syncproxy.service',
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_mautrix_wsproxy_syncproxy_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'mautrix-wsproxy-syncproxy'],
     }] if matrix_mautrix_wsproxy_enabled else [])
     +
@@ -570,14 +570,14 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-cactus-comments.service',
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_cactus_comments_restart_necessary | bool),
       'groups': ['matrix', 'cactus-comments'],
     }] if matrix_cactus_comments_enabled else [])
     +
     ([{
       'name': 'matrix-cactus-comments-client.service',
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_cactus_comments_client_restart_necessary | bool),
       'groups': ['matrix', 'cactus-comments-client'],
     }] if matrix_cactus_comments_client_enabled else [])
     +
@@ -626,7 +626,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-corporal.service',
       'priority': 1500,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_corporal_restart_necessary | bool),
       'groups': ['matrix', 'corporal'],
     }] if matrix_corporal_enabled else [])
     +
@@ -640,14 +640,14 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-matrixto.service',
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_matrixto_restart_necessary | bool),
       'groups': ['matrix', 'matrixto'],
     }] if matrix_matrixto_enabled else [])
     +
     ([{
       'name': 'matrix-rageshake.service',
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_rageshake_restart_necessary | bool),
       'groups': ['matrix', 'rageshake'],
     }] if matrix_rageshake_enabled else [])
     +
@@ -710,7 +710,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-ldap-registration-proxy.service',
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_ldap_registration_proxy_restart_necessary | bool),
       'groups': ['matrix', 'ldap-registration-proxy'],
     }] if matrix_ldap_registration_proxy_enabled else [])
     +
@@ -773,7 +773,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-prometheus-nginxlog-exporter.service',
       'priority': 3900,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_prometheus_nginxlog_exporter_restart_necessary | bool),
       'groups': ['matrix', 'monitoring', 'prometheus-exporters', 'prometheus-nginxlog-exporter'],
     }] if matrix_prometheus_nginxlog_exporter_enabled else [])
     +
@@ -787,14 +787,14 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-pantalaimon.service',
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_pantalaimon_restart_necessary | bool),
       'groups': ['matrix', 'pantalaimon'],
     }] if matrix_pantalaimon_enabled else [])
     +
     ([{
       'name': 'matrix-element-admin.service',
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_element_admin_restart_necessary | bool),
       'groups': ['matrix', 'element-admin'],
     }] if matrix_element_admin_enabled else [])
     +
@@ -808,7 +808,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-livekit-jwt-service.service',
       'priority': 3500,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_livekit_jwt_service_restart_necessary | bool),
       'groups': ['matrix', 'livekit-jwt-service'],
     }] if matrix_livekit_jwt_service_enabled else [])
     +
@@ -822,14 +822,14 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-registration.service',
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_registration_restart_necessary | bool),
       'groups': ['matrix', 'registration', 'matrix-registration'],
     }] if matrix_registration_enabled else [])
     +
     ([{
       'name': 'matrix-sygnal.service',
       'priority': 800,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_sygnal_restart_necessary | bool),
       'groups': ['matrix', 'sygnal'],
     }] if matrix_sygnal_enabled else [])
     +
@@ -850,42 +850,42 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-synapse-auto-compressor.timer',
       'priority': 5000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_synapse_auto_compressor_restart_necessary | bool),
       'groups': ['matrix', 'synapse-auto-compressor'],
     }] if matrix_synapse_auto_compressor_enabled else [])
     +
     ([{
       'name': 'matrix-synapse-admin.service',
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_synapse_admin_restart_necessary | bool),
       'groups': ['matrix', 'synapse-admin'],
     }] if matrix_synapse_admin_enabled else [])
     +
     ([{
       'name': (matrix_synapse_usage_exporter_identifier + '.service'),
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_synapse_usage_exporter_restart_necessary | bool),
       'groups': ['matrix', 'synapse-usage-exporter'],
     }] if matrix_synapse_usage_exporter_enabled else [])
     +
     ([{
       'name': 'matrix-synapse-reverse-proxy-companion.service',
       'priority': 1500,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_synapse_reverse_proxy_companion_restart_necessary | bool),
       'groups': ['matrix', 'homeservers', 'synapse', 'synapse-reverse-proxy-companion', 'reverse-proxies'],
     }] if matrix_synapse_reverse_proxy_companion_enabled else [])
     +
     ([{
       'name': 'matrix-user-verification-service.service',
       'priority': 800,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_user_verification_service_restart_necessary | bool),
       'groups': ['matrix', 'matrix-user-verification-service'],
     }] if matrix_user_verification_service_enabled else [])
     +
     ([{
       'name': (matrix_static_files_identifier + '.service'),
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_static_files_restart_necessary | bool),
       'groups': ['matrix', 'matrix-static-files'],
     }] if matrix_static_files_enabled else [])
     +

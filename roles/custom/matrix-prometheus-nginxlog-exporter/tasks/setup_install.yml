@@ -12,10 +12,10 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_prometheus_nginxlog_exporter_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_prometheus_nginxlog_exporter_docker_image_force_pull }}"
-  register: result
+  register: matrix_prometheus_nginxlog_exporter_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_prometheus_nginxlog_exporter_container_image_pull_result is not failed
 
 - name: Ensure prometheus-nginxlog-exporter paths exists
   ansible.builtin.file:
@@ -35,6 +35,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_prometheus_nginxlog_exporter_config_result
 
 - name: Ensure prometheus-nginxlog-exporter support files installed
   ansible.builtin.template:
@@ -45,6 +46,7 @@
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_prometheus_nginxlog_exporter_support_files_result
 
 - name: Ensure prometheus-nginxlog-exporter container network is created
   community.general.docker_network:
@@ -58,3 +60,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-prometheus-nginxlog-exporter.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-prometheus-nginxlog-exporter.service"
     mode: 0644
+  register: matrix_prometheus_nginxlog_exporter_systemd_service_result
+
+- name: Determine whether matrix-prometheus-nginxlog-exporter needs a restart
+  ansible.builtin.set_fact:
+    matrix_prometheus_nginxlog_exporter_restart_necessary: >-
+      {{
+        matrix_prometheus_nginxlog_exporter_config_result.changed | default(false)
+        or matrix_prometheus_nginxlog_exporter_support_files_result.changed | default(false)
+        or matrix_prometheus_nginxlog_exporter_systemd_service_result.changed | default(false)
+        or matrix_prometheus_nginxlog_exporter_container_image_pull_result.changed | default(false)
+      }}

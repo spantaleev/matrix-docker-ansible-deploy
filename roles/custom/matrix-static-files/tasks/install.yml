@@ -42,6 +42,7 @@
 
     - src: "{{ role_path }}/templates/labels.j2"
       dest: "{{ matrix_static_files_base_path }}/labels"
+  register: matrix_static_files_config_result
 
 - name: Ensure matrix-static-files files are installed
   ansible.builtin.copy:
@@ -69,6 +70,7 @@
     - content: "{{ matrix_static_files_file_index_html_template }}"
       dest: "{{ matrix_static_files_public_path }}/index.html"
       when: "{{ matrix_static_files_file_index_html_enabled }}"
+  register: matrix_static_files_files_result
 
 - name: Ensure /.well-known/matrix/server file deleted if not enabled
   ansible.builtin.file:
@@ -88,10 +90,10 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_static_files_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_static_files_container_image_force_pull }}"
-  register: result
+  register: matrix_static_files_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_static_files_container_image_pull_result is not failed
 
 - name: Ensure matrix-static-files container network is created
   community.general.docker_network:
@@ -105,3 +107,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-static-files.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_static_files_identifier }}.service"
     mode: 0644
+  register: matrix_static_files_systemd_service_result
+
+- name: Determine whether matrix-static-files needs a restart
+  ansible.builtin.set_fact:
+    matrix_static_files_restart_necessary: >-
+      {{
+        matrix_static_files_config_result.changed | default(false)
+        or matrix_static_files_files_result.changed | default(false)
+        or matrix_static_files_systemd_service_result.changed | default(false)
+        or matrix_static_files_container_image_pull_result.changed | default(false)
+      }}

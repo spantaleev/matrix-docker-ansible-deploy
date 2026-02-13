@@ -167,3 +167,13 @@ matrix_registration_configuration_extension: "{{ matrix_registration_configurati
 # Holds the final matrix-registration configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_registration_configuration_yaml`.
 matrix_registration_configuration: "{{ matrix_registration_configuration_yaml | from_yaml | combine(matrix_registration_configuration_extension, recursive=True) }}"
+
+# matrix_registration_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_registration_restart_necessary: false

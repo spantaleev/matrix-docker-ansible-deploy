@@ -180,3 +180,13 @@ matrix_corporal_configuration: "{{ matrix_corporal_configuration_default | combi
 
 matrix_corporal_self_check_matrix_client_api_url_endpoint_public: "{{ matrix_corporal_matrix_homeserver_scheme }}://{{ matrix_corporal_matrix_homeserver_api_domain_name }}/_matrix/client/corporal"
 matrix_corporal_self_check_corporal_api_url_endpoint_public: "{{ matrix_corporal_matrix_homeserver_scheme }}://{{ matrix_corporal_matrix_homeserver_api_domain_name }}/_matrix/corporal/policy"
+
+# matrix_corporal_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_corporal_restart_necessary: false

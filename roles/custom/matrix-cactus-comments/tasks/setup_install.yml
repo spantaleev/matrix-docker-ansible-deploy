@@ -26,6 +26,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
     mode: 0640
+  register: matrix_cactus_comments_config_env_result
 
 - name: Ensure matrix-cactus-comments appservice file created
   ansible.builtin.template:
@@ -34,6 +35,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
     mode: 0640
+  register: matrix_cactus_comments_config_appservice_result
 
 - name: Ensure matrix-cactus-comments image is pulled
   community.docker.docker_image:
@@ -42,10 +44,10 @@
     force_source: "{{ matrix_cactus_comments_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_cactus_comments_docker_image_force_pull }}"
   when: "not matrix_cactus_comments_container_image_self_build | bool"
-  register: result
+  register: matrix_cactus_comments_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_cactus_comments_container_image_pull_result is not failed
 
 - name: Ensure matrix-cactus-comments repository is present on self-build
   ansible.builtin.git:
@@ -75,3 +77,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-cactus-comments.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-cactus-comments.service"
     mode: 0644
+  register: matrix_cactus_comments_systemd_service_result
+
+- name: Determine whether matrix-cactus-comments needs a restart
+  ansible.builtin.set_fact:
+    matrix_cactus_comments_restart_necessary: >-
+      {{
+        matrix_cactus_comments_config_env_result.changed | default(false)
+        or matrix_cactus_comments_config_appservice_result.changed | default(false)
+        or matrix_cactus_comments_systemd_service_result.changed | default(false)
+        or matrix_cactus_comments_container_image_pull_result.changed | default(false)
+      }}

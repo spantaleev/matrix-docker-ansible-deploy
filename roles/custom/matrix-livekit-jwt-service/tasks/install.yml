@@ -26,6 +26,7 @@
   with_items:
     - env
     - labels
+  register: matrix_livekit_jwt_service_support_files_result
 
 - name: Ensure LiveKit JWT Service container image is pulled
   community.docker.docker_image:
@@ -34,10 +35,10 @@
     force_source: "{{ matrix_livekit_jwt_service_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_livekit_jwt_service_container_image_force_pull }}"
   when: "not matrix_livekit_jwt_service_container_image_self_build | bool"
-  register: result
+  register: matrix_livekit_jwt_service_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_livekit_jwt_service_container_image_pull_result is not failed
 
 - when: "matrix_livekit_jwt_service_container_image_self_build | bool"
   block:
@@ -74,3 +75,13 @@
     src: "{{ role_path }}/templates/systemd/matrix-livekit-jwt-service.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-livekit-jwt-service.service"
     mode: 0644
+  register: matrix_livekit_jwt_service_systemd_service_result
+
+- name: Determine whether LiveKit JWT Service needs a restart
+  ansible.builtin.set_fact:
+    matrix_livekit_jwt_service_restart_necessary: >-
+      {{
+        matrix_livekit_jwt_service_support_files_result.changed | default(false)
+        or matrix_livekit_jwt_service_systemd_service_result.changed | default(false)
+        or matrix_livekit_jwt_service_container_image_pull_result.changed | default(false)
+      }}

@@ -404,3 +404,13 @@ matrix_static_files_self_check_hostname_identity: ''
 # As per the spec (https://matrix.org/docs/spec/client_server/r0.6.0#well-known-uri), it shouldn't be,
 # so we default to not following redirects as well.
 matrix_static_files_self_check_well_known_matrix_client_follow_redirects: none
+
+# matrix_static_files_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_static_files_restart_necessary: false

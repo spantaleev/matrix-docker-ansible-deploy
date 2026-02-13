@@ -28,6 +28,7 @@
     mode: 0640
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_sygnal_config_result
 
 - name: Ensure Sygnal labels installed
   ansible.builtin.template:
@@ -36,6 +37,7 @@
     mode: 0640
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_sygnal_support_files_result
 
 - name: Ensure Sygnal image is pulled
   community.docker.docker_image:
@@ -43,10 +45,10 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_sygnal_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_sygnal_docker_image_force_pull }}"
-  register: result
+  register: matrix_sygnal_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_sygnal_container_image_pull_result is not failed
 
 - name: Ensure Sygnal container network is created
   community.general.docker_network:
@@ -60,3 +62,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-sygnal.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sygnal.service"
     mode: 0644
+  register: matrix_sygnal_systemd_service_result
+
+- name: Determine whether Sygnal needs a restart
+  ansible.builtin.set_fact:
+    matrix_sygnal_restart_necessary: >-
+      {{
+        matrix_sygnal_config_result.changed | default(false)
+        or matrix_sygnal_support_files_result.changed | default(false)
+        or matrix_sygnal_systemd_service_result.changed | default(false)
+        or matrix_sygnal_container_image_pull_result.changed | default(false)
+      }}

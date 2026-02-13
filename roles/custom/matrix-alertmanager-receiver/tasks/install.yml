@@ -28,6 +28,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_alertmanager_receiver_config_result
 
 - name: Ensure matrix-alertmanager-receiver support files installed
   ansible.builtin.template:
@@ -38,6 +39,7 @@
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_alertmanager_receiver_support_files_result
 
 - name: Ensure matrix-alertmanager-receiver container image is pulled
   community.docker.docker_image:
@@ -46,10 +48,10 @@
     force_source: "{{ matrix_alertmanager_receiver_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_alertmanager_receiver_container_image_force_pull }}"
   when: "not matrix_alertmanager_receiver_container_image_self_build | bool"
-  register: result
+  register: matrix_alertmanager_receiver_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_alertmanager_receiver_container_image_pull_result is not failed
 
 - when: matrix_alertmanager_receiver_container_image_self_build | bool
   block:
@@ -84,3 +86,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-alertmanager-receiver.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-alertmanager-receiver.service"
     mode: 0644
+  register: matrix_alertmanager_receiver_systemd_service_result
+
+- name: Determine whether matrix-alertmanager-receiver needs a restart
+  ansible.builtin.set_fact:
+    matrix_alertmanager_receiver_restart_necessary: >-
+      {{
+        matrix_alertmanager_receiver_config_result.changed | default(false)
+        or matrix_alertmanager_receiver_support_files_result.changed | default(false)
+        or matrix_alertmanager_receiver_systemd_service_result.changed | default(false)
+        or matrix_alertmanager_receiver_container_image_pull_result.changed | default(false)
+      }}

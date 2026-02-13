@@ -30,6 +30,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
     mode: 0640
+  register: matrix_rageshake_config_result
 
 - name: Ensure rageshake labels installed
   ansible.builtin.template:
@@ -38,6 +39,7 @@
     mode: 0640
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_rageshake_support_files_result
 
 - name: Ensure rageshake image is pulled
   community.docker.docker_image:
@@ -46,10 +48,10 @@
     force_source: "{{ matrix_rageshake_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_rageshake_container_image_force_pull }}"
   when: "not matrix_rageshake_container_image_self_build | bool"
-  register: result
+  register: matrix_rageshake_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_rageshake_container_image_pull_result is not failed
 
 - name: Ensure rageshake repository is present on self-build
   ansible.builtin.git:
@@ -84,3 +86,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-rageshake.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-rageshake.service"
     mode: 0644
+  register: matrix_rageshake_systemd_service_result
+
+- name: Determine whether Rageshake needs a restart
+  ansible.builtin.set_fact:
+    matrix_rageshake_restart_necessary: >-
+      {{
+        matrix_rageshake_config_result.changed | default(false)
+        or matrix_rageshake_support_files_result.changed | default(false)
+        or matrix_rageshake_systemd_service_result.changed | default(false)
+        or matrix_rageshake_container_image_pull_result.changed | default(false)
+      }}
