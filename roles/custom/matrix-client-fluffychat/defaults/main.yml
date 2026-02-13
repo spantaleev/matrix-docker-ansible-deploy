@@ -13,15 +13,16 @@ matrix_client_fluffychat_container_image_self_build_repo: "https://github.com/et
 matrix_client_fluffychat_container_image_self_build_version: "{{ 'main' if matrix_client_fluffychat_version == 'latest' else matrix_client_fluffychat_version }}"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/fluffychat-web
-matrix_client_fluffychat_version: v2.4.0
+matrix_client_fluffychat_version: v2.4.1
 matrix_client_fluffychat_docker_image: "{{ matrix_client_fluffychat_docker_image_registry_prefix }}etkecc/fluffychat-web:{{ matrix_client_fluffychat_version }}"
 matrix_client_fluffychat_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_fluffychat_container_image_self_build else matrix_client_fluffychat_docker_image_registry_prefix_upstream }}"
 matrix_client_fluffychat_docker_image_registry_prefix_upstream: "{{ matrix_client_fluffychat_docker_image_registry_prefix_upstream_default }}"
 matrix_client_fluffychat_docker_image_registry_prefix_upstream_default: ghcr.io/
 matrix_client_fluffychat_docker_image_force_pull: "{{ matrix_client_fluffychat_docker_image.endswith(':latest') }}"
 
-matrix_client_fluffychat_data_path: "{{ matrix_base_data_path }}/client-fluffychat"
-matrix_client_fluffychat_container_src_files_path: "{{ matrix_client_fluffychat_data_path }}/docker-src"
+matrix_client_fluffychat_base_path: "{{ matrix_base_data_path }}/client-fluffychat"
+matrix_client_fluffychat_config_path: "{{ matrix_client_fluffychat_base_path }}/config"
+matrix_client_fluffychat_container_src_files_path: "{{ matrix_client_fluffychat_base_path }}/docker-src"
 
 # The base container network
 matrix_client_fluffychat_container_network: ''
@@ -148,3 +149,6 @@ matrix_client_fluffychat_path_prefix: /
 
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_client_fluffychat_self_check_validate_certificates: true
+
+# Controls the default homeserver domain (not URL) used in the FluffyChat Web configuration.
+matrix_client_fluffychat_config_defaultHomeserver: ~

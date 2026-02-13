@@ -24,7 +24,8 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% if matrix_client_fluffychat_container_http_host_bind_port %}
 			-p {{ matrix_client_fluffychat_container_http_host_bind_port }}:{{ matrix_client_fluffychat_container_http_port }} \
 			{% endif %}
-			--label-file={{ matrix_client_fluffychat_data_path }}/labels \
+			--label-file={{ matrix_client_fluffychat_base_path }}/labels \
+			--mount type=bind,src={{ matrix_client_fluffychat_config_path }}/config.json,dst=/var/public/config.json,ro \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
 			{% for arg in matrix_client_fluffychat_container_extra_arguments %}
 			{{ arg }} \
