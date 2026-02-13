@@ -43,3 +43,13 @@ For example, these two commands are different:
 The just recipe runs `ensure-matrix-users-created` and `start` tags after `install-all`, while the latter runs only `install-all` tag. The correct shortcut of the latter is `just run-tags install-all`.
 
 Such kind of difference sometimes matters. For example, when you install a Matrix server into which you will import old data (see [here](installing.md#installing-a-server-into-which-youll-import-old-data)), you are not supposed to run `just install-all` or `just setup-all`, because these commands start services immediately after installing components, which may prevent you from importing the data.
+
+## Conditional service restart
+
+When using `just install-all` or `just install-service`, only services whose configuration or container image actually changed during the playbook run will be restarted. Unchanged services are left running (or get started if they were stopped). This reduces unnecessary downtime.
+
+When using `just setup-all`, all services are unconditionally restarted regardless of whether changes were detected. This is appropriate for `setup-all`'s thorough "full setup" semantics.
+
+`just start-all` and `just start-group` always restart all targeted services, since no installation tasks run during these commands.
+
+This behavior is controlled by the `devture_systemd_service_manager_conditional_restart_enabled` variable (default: `true`). To force unconditional restarts during installation, pass: `just install-all --extra-vars='devture_systemd_service_manager_conditional_restart_enabled=false'`
