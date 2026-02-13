@@ -66,10 +66,10 @@
     force_source: "{{ matrix_mautrix_whatsapp_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_whatsapp_docker_image_force_pull }}"
   when: not matrix_mautrix_whatsapp_container_image_self_build
-  register: result
+  register: matrix_mautrix_whatsapp_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_mautrix_whatsapp_container_image_pull_result is not failed
 
 - name: Ensure Mautrix Whatsapp repository is present on self-build
   ansible.builtin.git:
@@ -134,6 +134,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_whatsapp_config_result
 
 - name: Ensure mautrix-whatsapp registration.yaml installed
   ansible.builtin.copy:
@@ -142,6 +143,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_whatsapp_registration_result
 
 - name: Ensure mautrix-whatsapp support files installed
   ansible.builtin.template:
@@ -152,6 +154,7 @@
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_mautrix_whatsapp_support_files_result
 
 - name: Ensure matrix-mautrix-whatsapp container network is created
   community.general.docker_network:
@@ -165,6 +168,19 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-whatsapp.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-whatsapp.service"
     mode: 0644
+  register: matrix_mautrix_whatsapp_systemd_service_result
+
+- name: Determine whether matrix-mautrix-whatsapp needs a restart
+  ansible.builtin.set_fact:
+    matrix_mautrix_whatsapp_restart_necessary: >-
+      {{
+        matrix_mautrix_whatsapp_migration_requires_restart | default(false)
+        or matrix_mautrix_whatsapp_config_result.changed | default(false)
+        or matrix_mautrix_whatsapp_registration_result.changed | default(false)
+        or matrix_mautrix_whatsapp_support_files_result.changed | default(false)
+        or matrix_mautrix_whatsapp_systemd_service_result.changed | default(false)
+        or matrix_mautrix_whatsapp_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-mautrix-whatsapp.service restarted, if necessary
   ansible.builtin.service:

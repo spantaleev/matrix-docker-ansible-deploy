@@ -14,10 +14,10 @@
     force_source: "{{ matrix_steam_bridge_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_steam_bridge_docker_image_force_pull }}"
   when: matrix_steam_bridge_enabled | bool and not matrix_steam_bridge_container_image_self_build
-  register: result
+  register: matrix_steam_bridge_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_steam_bridge_container_image_pull_result is not failed
 
 - name: Ensure Steam bridge paths exist
   ansible.builtin.file:
@@ -62,6 +62,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_steam_bridge_config_result
 
 - name: Ensure matrix-steam-bridge registration.yaml installed
   ansible.builtin.copy:
@@ -70,6 +71,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_steam_bridge_registration_result
 
 - name: Ensure matrix-steam-bridge support files installed
   ansible.builtin.template:
@@ -80,6 +82,7 @@
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_steam_bridge_support_files_result
 
 - name: Ensure matrix-steam-bridge container network is created
   community.general.docker_network:
@@ -93,6 +96,19 @@
     src: "{{ role_path }}/templates/systemd/matrix-steam-bridge.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-steam-bridge.service"
     mode: 0644
+  register: matrix_steam_bridge_systemd_service_result
+
+- name: Determine whether matrix-steam-bridge needs a restart
+  ansible.builtin.set_fact:
+    matrix_steam_bridge_restart_necessary: >-
+      {{
+        matrix_steam_bridge_migration_requires_restart | default(false)
+        or matrix_steam_bridge_config_result.changed | default(false)
+        or matrix_steam_bridge_registration_result.changed | default(false)
+        or matrix_steam_bridge_support_files_result.changed | default(false)
+        or matrix_steam_bridge_systemd_service_result.changed | default(false)
+        or matrix_steam_bridge_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-steam-bridge.service restarted, if necessary
   ansible.builtin.service:

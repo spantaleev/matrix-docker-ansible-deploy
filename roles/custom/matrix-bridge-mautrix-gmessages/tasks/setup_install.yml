@@ -56,10 +56,10 @@
     force_source: "{{ matrix_mautrix_gmessages_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_gmessages_docker_image_force_pull }}"
   when: not matrix_mautrix_gmessages_container_image_self_build
-  register: result
+  register: matrix_mautrix_gmessages_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_mautrix_gmessages_container_image_pull_result is not failed
 
 - name: Ensure Mautrix gmessages repository is present on self-build
   ansible.builtin.git:
@@ -124,6 +124,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_gmessages_config_result
 
 - name: Ensure mautrix-gmessages registration.yaml installed
   ansible.builtin.copy:
@@ -132,12 +133,14 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_gmessages_registration_result
 
 - name: Ensure matrix-mautrix-gmessages.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-gmessages.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-gmessages.service"
     mode: 0644
+  register: matrix_mautrix_gmessages_systemd_service_result
 
 - name: Ensure mautrix-gmessages support files installed
   ansible.builtin.template:
@@ -148,6 +151,7 @@
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_mautrix_gmessages_support_files_result
 
 - name: Ensure matrix-mautrix-gmessages container network is created
   community.general.docker_network:
@@ -155,6 +159,18 @@
     name: "{{ matrix_mautrix_gmessages_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Determine whether matrix-mautrix-gmessages needs a restart
+  ansible.builtin.set_fact:
+    matrix_mautrix_gmessages_restart_necessary: >-
+      {{
+        matrix_mautrix_gmessages_migration_requires_restart | default(false)
+        or matrix_mautrix_gmessages_config_result.changed | default(false)
+        or matrix_mautrix_gmessages_registration_result.changed | default(false)
+        or matrix_mautrix_gmessages_support_files_result.changed | default(false)
+        or matrix_mautrix_gmessages_systemd_service_result.changed | default(false)
+        or matrix_mautrix_gmessages_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-mautrix-gmessages.service restarted, if necessary
   ansible.builtin.service:

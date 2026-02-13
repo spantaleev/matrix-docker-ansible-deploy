@@ -30,10 +30,10 @@
     force_source: "{{ matrix_client_element_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_element_docker_image_force_pull }}"
   when: "not matrix_client_element_container_image_self_build | bool"
-  register: result
+  register: matrix_client_element_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_client_element_container_image_pull_result is not failed
 
 - name: Ensure Element Web repository is present on self-build
   ansible.builtin.git:
@@ -77,6 +77,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_client_element_config_result
 
 - name: Ensure Element location sharing map style installed
   when: matrix_client_element_location_sharing_enabled | bool
@@ -86,6 +87,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_client_element_config_map_style_result
 
 - name: Ensure Element Web config files installed
   ansible.builtin.template:
@@ -100,6 +102,7 @@
     - {src: "{{ matrix_client_element_page_template_welcome_path }}", name: "welcome.html"}
     - {src: "{{ matrix_client_element_embedded_pages_home_path }}", name: "home.html"}
   when: "item.src is not none"
+  register: matrix_client_element_support_files_result
 
 - name: Ensure Element Web nginx.conf file is removed
   ansible.builtin.file:
@@ -126,3 +129,15 @@
     src: "{{ role_path }}/templates/systemd/matrix-client-element.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-element.service"
     mode: 0644
+  register: matrix_client_element_systemd_service_result
+
+- name: Determine whether Element Web needs a restart
+  ansible.builtin.set_fact:
+    matrix_client_element_restart_necessary: >-
+      {{
+        matrix_client_element_config_result.changed | default(false)
+        or matrix_client_element_config_map_style_result.changed | default(false)
+        or matrix_client_element_support_files_result.changed | default(false)
+        or matrix_client_element_systemd_service_result.changed | default(false)
+        or matrix_client_element_container_image_pull_result.changed | default(false)
+      }}

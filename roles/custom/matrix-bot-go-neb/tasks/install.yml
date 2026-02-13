@@ -30,6 +30,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_bot_go_neb_config_result
 
 - name: Ensure go-neb support files installed
   ansible.builtin.template:
@@ -41,6 +42,7 @@
   with_items:
     - env
     - labels
+  register: matrix_bot_go_neb_support_files_result
 
 - name: Ensure go-neb container image is pulled
   community.docker.docker_image:
@@ -48,10 +50,10 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_bot_go_neb_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_go_neb_container_image_force_pull }}"
-  register: result
+  register: matrix_bot_go_neb_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_bot_go_neb_container_image_pull_result is not failed
 
 - name: Ensure go-neb container network is created
   community.general.docker_network:
@@ -65,3 +67,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-bot-go-neb.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-go-neb.service"
     mode: 0644
+  register: matrix_bot_go_neb_systemd_service_result
+
+- name: Determine whether go-neb needs a restart
+  ansible.builtin.set_fact:
+    matrix_bot_go_neb_restart_necessary: >-
+      {{
+        matrix_bot_go_neb_config_result.changed | default(false)
+        or matrix_bot_go_neb_support_files_result.changed | default(false)
+        or matrix_bot_go_neb_systemd_service_result.changed | default(false)
+        or matrix_bot_go_neb_container_image_pull_result.changed | default(false)
+      }}

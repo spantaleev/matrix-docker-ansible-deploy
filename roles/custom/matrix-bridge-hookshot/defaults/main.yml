@@ -380,3 +380,13 @@ matrix_hookshot_registration_extension: "{{ matrix_hookshot_registration_extensi
 # Holds the final registration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_hookshot_registration_yaml`.
 matrix_hookshot_registration: "{{ matrix_hookshot_registration_yaml | from_yaml | combine(matrix_hookshot_registration_extension, recursive=True) }}"
+
+# matrix_hookshot_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_hookshot_restart_necessary: false

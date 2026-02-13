@@ -26,6 +26,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_bot_baibot_config_result
 
 - name: Ensure baibot environment variables file created
   ansible.builtin.template:
@@ -34,6 +35,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
     mode: 0640
+  register: matrix_bot_baibot_env_result
 
 - name: Ensure baibot container image is pulled
   community.docker.docker_image:
@@ -42,10 +44,10 @@
     force_source: "{{ matrix_bot_baibot_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_baibot_container_image_force_pull }}"
   when: "not matrix_bot_baibot_container_image_self_build | bool"
-  register: result
+  register: matrix_bot_baibot_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_bot_baibot_container_image_pull_result is not failed
 
 - when: "matrix_bot_baibot_container_image_self_build | bool"
   block:
@@ -82,3 +84,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-bot-baibot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-baibot.service"
     mode: 0644
+  register: matrix_bot_baibot_systemd_service_result
+
+- name: Determine whether baibot needs a restart
+  ansible.builtin.set_fact:
+    matrix_bot_baibot_restart_necessary: >-
+      {{
+        matrix_bot_baibot_config_result.changed | default(false)
+        or matrix_bot_baibot_env_result.changed | default(false)
+        or matrix_bot_baibot_systemd_service_result.changed | default(false)
+        or matrix_bot_baibot_container_image_pull_result.changed | default(false)
+      }}

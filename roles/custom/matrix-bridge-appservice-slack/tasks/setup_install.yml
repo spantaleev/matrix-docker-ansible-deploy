@@ -50,10 +50,10 @@
     force_source: "{{ matrix_appservice_slack_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_slack_docker_image_force_pull }}"
   when: "not matrix_appservice_slack_container_image_self_build | bool"
-  register: result
+  register: matrix_appservice_slack_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_appservice_slack_container_image_pull_result is not failed
 
 - name: Ensure matrix-appservice-slack repository is present when self-building
   ansible.builtin.git:
@@ -85,6 +85,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_appservice_slack_config_result
 
 - name: Ensure appservice-slack registration.yaml installed
   ansible.builtin.copy:
@@ -93,6 +94,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_appservice_slack_registration_result
 
 - name: Ensure matrix-appservice-slack container network is created
   community.general.docker_network:
@@ -110,12 +112,26 @@
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_appservice_slack_support_files_result
 
 - name: Ensure matrix-appservice-slack.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-slack.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-slack.service"
     mode: 0644
+  register: matrix_appservice_slack_systemd_service_result
+
+- name: Determine whether matrix-appservice-slack needs a restart
+  ansible.builtin.set_fact:
+    matrix_appservice_slack_restart_necessary: >-
+      {{
+        matrix_appservice_slack_migration_requires_restart | default(false)
+        or matrix_appservice_slack_config_result.changed | default(false)
+        or matrix_appservice_slack_registration_result.changed | default(false)
+        or matrix_appservice_slack_support_files_result.changed | default(false)
+        or matrix_appservice_slack_systemd_service_result.changed | default(false)
+        or matrix_appservice_slack_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-appservice-slack.service restarted, if necessary
   ansible.builtin.service:

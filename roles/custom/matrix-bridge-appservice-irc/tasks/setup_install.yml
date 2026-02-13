@@ -86,10 +86,10 @@
     force_source: "{{ matrix_appservice_irc_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_docker_image_force_pull }}"
   when: "matrix_appservice_irc_enabled | bool and not matrix_appservice_irc_container_image_self_build | bool"
-  register: result
+  register: matrix_appservice_irc_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_appservice_irc_container_image_pull_result is not failed
 
 - name: Ensure matrix-appservice-irc repository is present when self-building
   ansible.builtin.git:
@@ -121,6 +121,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_appservice_irc_config_result
 
 - name: Ensure Matrix Appservice IRC labels file installed
   ansible.builtin.template:
@@ -129,6 +130,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_appservice_irc_labels_result
 
 - name: Generate Appservice IRC passkey if it doesn't exist
   ansible.builtin.shell:
@@ -244,6 +246,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_appservice_irc_registration_result
 
 - name: Ensure matrix-appservice-irc container network is created
   community.general.docker_network:
@@ -258,6 +261,18 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-irc.service"
     mode: 0644
   register: matrix_appservice_irc_systemd_service_result
+
+- name: Determine whether matrix-appservice-irc needs a restart
+  ansible.builtin.set_fact:
+    matrix_appservice_irc_restart_necessary: >-
+      {{
+        matrix_appservice_irc_migration_requires_restart | default(false)
+        or matrix_appservice_irc_config_result.changed | default(false)
+        or matrix_appservice_irc_labels_result.changed | default(false)
+        or matrix_appservice_irc_registration_result.changed | default(false)
+        or matrix_appservice_irc_systemd_service_result.changed | default(false)
+        or matrix_appservice_irc_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-appservice-irc.service restarted, if necessary
   ansible.builtin.service:

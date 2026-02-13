@@ -76,6 +76,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
     mode: 0640
+  register: matrix_postmoogle_env_result
 
 - name: Ensure postmoogle image is pulled
   community.docker.docker_image:
@@ -84,10 +85,10 @@
     force_source: "{{ matrix_postmoogle_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_postmoogle_docker_image_force_pull }}"
   when: "not matrix_postmoogle_container_image_self_build | bool"
-  register: result
+  register: matrix_postmoogle_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_postmoogle_container_image_pull_result is not failed
 
 - name: Ensure postmoogle repository is present on self-build
   ansible.builtin.git:
@@ -125,3 +126,13 @@
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postmoogle.service"
     mode: 0644
   register: matrix_postmoogle_systemd_service_result
+
+- name: Determine whether matrix-postmoogle needs a restart
+  ansible.builtin.set_fact:
+    matrix_postmoogle_restart_necessary: >-
+      {{
+        matrix_postmoogle_migration_requires_restart | default(false)
+        or matrix_postmoogle_env_result.changed | default(false)
+        or matrix_postmoogle_systemd_service_result.changed | default(false)
+        or matrix_postmoogle_container_image_pull_result.changed | default(false)
+      }}

@@ -81,10 +81,10 @@
     force_source: "{{ matrix_mx_puppet_steam_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mx_puppet_steam_docker_image_force_pull }}"
   when: matrix_mx_puppet_steam_enabled | bool and not matrix_mx_puppet_steam_container_image_self_build
-  register: result
+  register: matrix_mx_puppet_steam_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_mx_puppet_steam_container_image_pull_result is not failed
 
 - name: Ensure MX Puppet Steam repository is present on self build
   ansible.builtin.git:
@@ -116,6 +116,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_mx_puppet_steam_config_result
 
 - name: Ensure mx-puppet-steam steam-registration.yaml installed
   ansible.builtin.copy:
@@ -124,6 +125,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_mx_puppet_steam_registration_result
 
 - name: Ensure mx-puppet-steam container network is created
   community.general.docker_network:
@@ -137,6 +139,18 @@
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-steam.service.j2"
     dest: "/etc/systemd/system/matrix-mx-puppet-steam.service"
     mode: 0644
+  register: matrix_mx_puppet_steam_systemd_service_result
+
+- name: Determine whether matrix-mx-puppet-steam needs a restart
+  ansible.builtin.set_fact:
+    matrix_mx_puppet_steam_restart_necessary: >-
+      {{
+        matrix_mx_puppet_steam_migration_requires_restart | default(false)
+        or matrix_mx_puppet_steam_config_result.changed | default(false)
+        or matrix_mx_puppet_steam_registration_result.changed | default(false)
+        or matrix_mx_puppet_steam_systemd_service_result.changed | default(false)
+        or matrix_mx_puppet_steam_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-mx-puppet-steam.service restarted, if necessary
   ansible.builtin.service:

@@ -196,3 +196,13 @@ matrix_appservice_slack_registration_yaml: |
   protocols: null
 
 matrix_appservice_slack_registration: "{{ matrix_appservice_slack_registration_yaml | from_yaml }}"
+
+# matrix_appservice_slack_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_appservice_slack_restart_necessary: false

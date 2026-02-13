@@ -35,10 +35,10 @@
     force_source: "{{ matrix_hookshot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_hookshot_docker_image_force_pull }}"
   when: not matrix_hookshot_container_image_self_build
-  register: result
+  register: matrix_hookshot_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_hookshot_container_image_pull_result is not failed
 
 - name: Ensure hookshot repository is present on self-build
   ansible.builtin.git:
@@ -83,6 +83,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_hookshot_config_result
 
 - name: Validate hookshot config.yml
   ansible.builtin.command:
@@ -109,6 +110,7 @@
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_hookshot_registration_result
 
 - name: Ensure hookshot github private key file installed if github is enabled
   ansible.builtin.copy:
@@ -118,6 +120,7 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   when: matrix_hookshot_github_enabled | bool and matrix_hookshot_github_private_key|length > 0
+  register: matrix_hookshot_github_key_result
 
 - name: Ensure matrix-hookshot container network is created
   community.general.docker_network:
@@ -135,9 +138,23 @@
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_hookshot_support_files_result
 
 - name: Ensure matrix-hookshot.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-hookshot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-hookshot.service"
     mode: 0644
+  register: matrix_hookshot_systemd_service_result
+
+- name: Determine whether matrix-hookshot needs a restart
+  ansible.builtin.set_fact:
+    matrix_hookshot_restart_necessary: >-
+      {{
+        matrix_hookshot_config_result.changed | default(false)
+        or matrix_hookshot_registration_result.changed | default(false)
+        or matrix_hookshot_github_key_result.changed | default(false)
+        or matrix_hookshot_support_files_result.changed | default(false)
+        or matrix_hookshot_systemd_service_result.changed | default(false)
+        or matrix_hookshot_container_image_pull_result.changed | default(false)
+      }}
