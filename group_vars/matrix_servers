@@ -297,7 +297,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-authentication-service.service',
       'priority': 2200,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_authentication_service_restart_necessary | bool),
       'groups': ['matrix', 'matrix-authentication-service'],
     }] if matrix_authentication_service_enabled else [])
     +
@@ -584,7 +584,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (cinny_identifier + '.service'),
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (cinny_restart_necessary | bool),
       'groups': ['matrix', 'clients', 'cinny', 'client-cinny'],
     }] if cinny_enabled else [])
     +
@@ -724,7 +724,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (exim_relay_identifier ~ '.service'),
       'priority': 800,
-      'restart_necessary': true,
+      'restart_necessary': (exim_relay_restart_necessary | bool),
       'groups': ['matrix', 'mailer', 'exim-relay'],
     }] if exim_relay_enabled else [])
     +
@@ -738,7 +738,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (postgres_identifier + '.service'),
       'priority': 500,
-      'restart_necessary': true,
+      'restart_necessary': (postgres_restart_necessary | bool),
       'groups': ['matrix', 'postgres'],
     }] if postgres_enabled else [])
     +
@@ -815,7 +815,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (livekit_server_identifier + '.service'),
       'priority': 3000,
-      'restart_necessary': true,
+      'restart_necessary': (livekit_server_restart_necessary | bool),
       'groups': ['matrix', 'livekit-server'],
     }] if livekit_server_enabled else [])
     +
@@ -892,7 +892,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (container_socket_proxy_identifier + '.service'),
       'priority': 200,
-      'restart_necessary': true,
+      'restart_necessary': (container_socket_proxy_restart_necessary | bool),
       'groups': ['matrix', 'reverse-proxies', 'container-socket-proxy'],
     }] if container_socket_proxy_enabled else [])
     +
@@ -906,7 +906,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (traefik_certs_dumper_identifier + '.service'),
       'priority': 300,
-      'restart_necessary': true,
+      'restart_necessary': (traefik_certs_dumper_restart_necessary | bool),
       'groups': ['matrix', 'traefik-certs-dumper'],
     }] if traefik_certs_dumper_enabled else [])
   }}
