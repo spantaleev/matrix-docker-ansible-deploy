@@ -102,8 +102,6 @@ Extend and modify how users are authenticated on your homeserver.
 
 - [Setting up Synapse Admin](configuring-playbook-synapse-admin.md)
 
-- [Setting up matrix-registration](configuring-playbook-matrix-registration.md)
-
 - [Setting up the REST authentication password provider module](configuring-playbook-rest-auth.md) (advanced)
 
 - [Setting up the Shared Secret Auth password provider module](configuring-playbook-shared-secret-auth.md) (advanced)
@@ -276,6 +274,8 @@ Various services that don't fit any other categories.
 - [Setting up ma1sd Identity Server](configuring-playbook-ma1sd.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook.)
 
 - [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bot-baibot.md))
+
+- [Setting up matrix-registration](configuring-playbook-matrix-registration.md) (removed; this component has been unmaintained)
 
 - [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-messenger](configuring-playbook-bridge-mautrix-meta-messenger.md))
 

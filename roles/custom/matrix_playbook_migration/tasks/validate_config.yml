@@ -777,6 +777,18 @@
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-registration variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-registration service was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_registration_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-matrix-registration.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_registration_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_registration_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report the Sliding Sync proxy variables
   ansible.builtin.fail:
     msg: |-
