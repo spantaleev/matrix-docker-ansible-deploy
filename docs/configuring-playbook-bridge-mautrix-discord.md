@@ -15,8 +15,6 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
 **Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md) bridge supported by the playbook.
-- For using as a Bot we recommend the [Appservice Discord](configuring-playbook-bridge-appservice-discord.md), because it supports plumbing.
-- For personal use with a discord account we recommend the `mautrix-discord` bridge (the one being discussed here), because it is the most fully-featured and stable of the 3 Discord bridges supported by the playbook.
 
 The playbook can install and configure [mautrix-discord](https://github.com/mautrix/discord) for you.
 
@@ -24,9 +22,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/discord/index.h
 
 ## Prerequisites
 
-There are 2 ways to login to discord using this bridge, either by [scanning a QR code](#method-1-login-using-qr-code-recommended) using the Discord mobile app **or** by using a [Discord token](#method-2-login-using-discord-token-not-recommended).
-
-If this is a dealbreaker for you, consider using [matrix-appservice-discord](configuring-playbook-bridge-appservice-discord.md). This comes with its own complexity and limitations, however, so we recommend that you proceed with this one if possible.
+There are 3 ways to login to discord using this bridge, either by [scanning a QR code](https://docs.mau.fi/bridges/go/discord/authentication.html#qr-login) using the Discord mobile app, by using a [Discord token](https://docs.mau.fi/bridges/go/discord/authentication.html#token-login), **or** by using a [Discord bot token](https://docs.mau.fi/bridges/go/discord/authentication.html#bot-token-login).
 
 ### Enable Appservice Double Puppet or Shared Secret Auth (optional)
 
@@ -80,6 +76,14 @@ After bridging, spaces will be created automatically, and rooms will be created 
 
 If you want to manually bridge channels, invite the bot to the room you want to bridge, and run `!discord bridge CHANNEL_ID_HERE` to bridge the room. Make sure to replace `CHANNEL_ID_HERE` with the channel's ID.
 
+### Enable relay
+
+The bridge supports using Discord's webhook feature to relay messages from Matrix users who haven't logged into the bridge.
+
+In a room that has already been bridged, run `!discord set-relay --create`. The bridge will then create a webhook in the bridged discord channel and begin relaying messages. If the discord user does not have access to manage webhooks, run `!discord set-relay --url <url>` with the url of an already created webhook. (See Discords [Intro to webhooks](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks))
+
+More information on relaying is available on the [official documentation](https://docs.mau.fi/bridges/go/discord/relay.html).
+
 ## Troubleshooting
 
 As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-discord`.
@@ -92,3 +96,6 @@ The default logging level for this component is `warn`. If you want to increase 
 # Valid values: fatal, error, warn, info, debug, trace
 matrix_mautrix_discord_logging_level: 'debug'
 ```
+
+### Command requires room admin rights when user is creator
+[MSC4289](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4289-privilege-creators.md), introduced in [room version 12](https://spec.matrix.org/unstable/rooms/v12/), gives creators an infinitley high powerlevel. At the time of implementation, mautrix-discord and similar applications may not identify creators as or above admins. Either a seperate admin user will need to manage the bridge or the room version should be less than version 12.
