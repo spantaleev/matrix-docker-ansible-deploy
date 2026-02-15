@@ -568,6 +568,20 @@
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_ma1sd_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_ma1sd_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-appservice-slack variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-appservice-slack was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_appservice_slack_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-appservice-slack.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_appservice_slack_.+', wantlist=True) | join(', ') }}
+
+      Bridging to Slack can also happen via mautrix-slack, supported by the playbook. See `docs/configuring-playbook-bridge-mautrix-slack.md` for more information.
+  when: "lookup('ansible.builtin.varnames', '^matrix_appservice_slack_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report matrix-appservice-webhooks variables
   ansible.builtin.fail:
     msg: |-
