@@ -694,13 +694,13 @@ If upstream synapse-admin picks up the pace and improves, the etke.cc fork may d
 If you'd like to switch back to the original synapse-admin software, you can do so by adding the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}awesometechnologies/synapse-admin:{{ matrix_synapse_admin_version }}"
-matrix_synapse_admin_docker_image_registry_prefix_upstream: docker.io/
+synapse_admin_docker_image: "{{ synapse_admin_docker_image_registry_prefix }}awesometechnologies/synapse-admin:{{ synapse_admin_version }}"
+synapse_admin_docker_image_registry_prefix_upstream: docker.io/
 
-matrix_synapse_admin_version: 0.10.3
+synapse_admin_version: 0.10.3
 
 # If you need self-building (if running on arm32), uncomment this.
-# matrix_synapse_admin_container_image_self_build_repo: "https://github.com/Awesome-Technologies/synapse-admin.git"
+# synapse_admin_container_image_self_build_repo: "https://github.com/Awesome-Technologies/synapse-admin.git"
 ```
 
 
@@ -840,7 +840,7 @@ If you'd like **to go back to the old unrestricted behavior**, use the following
 
 ```yaml
 # Use this configuration to allow synapse-admin to manage any homeserver instance.
-matrix_synapse_admin_config_restrictBaseUrl: []
+synapse_admin_config_restrictBaseUrl: []
 ```
 
 

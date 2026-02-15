@@ -14,91 +14,91 @@
 # Project source code URL: https://github.com/Awesome-Technologies/synapse-admin
 # Fork source code URL: https://github.com/etkecc/synapse-admin
 
-matrix_synapse_admin_enabled: true
+synapse_admin_enabled: true
 
 # A path on host where all related files will be saved
-matrix_synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
-matrix_synapse_admin_config_path: "{{ matrix_synapse_admin_base_path }}/config"
-matrix_synapse_admin_docker_src_files_path: "{{ matrix_synapse_admin_base_path }}/docker-src"
+synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
+synapse_admin_config_path: "{{ synapse_admin_base_path }}/config"
+synapse_admin_docker_src_files_path: "{{ synapse_admin_base_path }}/docker-src"
 
-matrix_synapse_admin_container_uid: ''
-matrix_synapse_admin_container_gid: ''
+synapse_admin_container_uid: ''
+synapse_admin_container_gid: ''
 
-matrix_synapse_admin_container_image_self_build: false
-matrix_synapse_admin_container_image_self_build_repo: "https://github.com/etkecc/synapse-admin.git"
+synapse_admin_container_image_self_build: false
+synapse_admin_container_image_self_build_repo: "https://github.com/etkecc/synapse-admin.git"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/synapse-admin
-matrix_synapse_admin_version: v0.11.1-etke53
-matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
-matrix_synapse_admin_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_synapse_admin_docker_image_registry_prefix_upstream }}"
-matrix_synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_synapse_admin_docker_image_registry_prefix_upstream_default }}"
-matrix_synapse_admin_docker_image_registry_prefix_upstream_default: "ghcr.io/"
-matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
+synapse_admin_version: v0.11.1-etke53
+synapse_admin_docker_image: "{{ synapse_admin_docker_image_registry_prefix }}etkecc/synapse-admin:{{ synapse_admin_version }}"
+synapse_admin_docker_image_registry_prefix: "{{ 'localhost/' if synapse_admin_container_image_self_build else synapse_admin_docker_image_registry_prefix_upstream }}"
+synapse_admin_docker_image_registry_prefix_upstream: "{{ synapse_admin_docker_image_registry_prefix_upstream_default }}"
+synapse_admin_docker_image_registry_prefix_upstream_default: "ghcr.io/"
+synapse_admin_docker_image_force_pull: "{{ synapse_admin_docker_image.endswith(':latest') }}"
 
 # The base container network
-matrix_synapse_admin_container_network: synapse-admin
+synapse_admin_container_network: synapse-admin
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to a reverse proxy, which runs in a different container network.
-matrix_synapse_admin_container_additional_networks: []
+synapse_admin_container_additional_networks: []
 
 # Controls whether the synapse-admin container exposes its HTTP port (tcp/8080 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8766"), or empty string to not expose.
-matrix_synapse_admin_container_http_host_bind_port: ''
+synapse_admin_container_http_host_bind_port: ''
 
 # A list of extra arguments to pass to the container
-matrix_synapse_admin_container_extra_arguments: []
+synapse_admin_container_extra_arguments: []
 
-# matrix_synapse_admin_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# synapse_admin_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
 #
-# To inject your own other container labels, see `matrix_synapse_admin_container_labels_additional_labels`.
-matrix_synapse_admin_container_labels_traefik_enabled: true
-matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_synapse_admin_container_network }}"
-matrix_synapse_admin_container_labels_traefik_hostname: "{{ matrix_synapse_admin_hostname }}"
+# To inject your own other container labels, see `synapse_admin_container_labels_additional_labels`.
+synapse_admin_container_labels_traefik_enabled: true
+synapse_admin_container_labels_traefik_docker_network: "{{ synapse_admin_container_network }}"
+synapse_admin_container_labels_traefik_hostname: "{{ synapse_admin_hostname }}"
 # The path prefix must either be `/` or not end with a slash (e.g. `/synapse-admin`).
-matrix_synapse_admin_container_labels_traefik_path_prefix: "{{ matrix_synapse_admin_path_prefix }}"
-matrix_synapse_admin_container_labels_traefik_rule: "Host(`{{ matrix_synapse_admin_container_labels_traefik_hostname }}`){% if matrix_synapse_admin_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_synapse_admin_container_labels_traefik_path_prefix }}`){% endif %}"
-matrix_synapse_admin_container_labels_traefik_priority: 0
-matrix_synapse_admin_container_labels_traefik_entrypoints: web-secure
-matrix_synapse_admin_container_labels_traefik_tls: "{{ matrix_synapse_admin_container_labels_traefik_entrypoints != 'web' }}"
-matrix_synapse_admin_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+synapse_admin_container_labels_traefik_path_prefix: "{{ synapse_admin_path_prefix }}"
+synapse_admin_container_labels_traefik_rule: "Host(`{{ synapse_admin_container_labels_traefik_hostname }}`){% if synapse_admin_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ synapse_admin_container_labels_traefik_path_prefix }}`){% endif %}"
+synapse_admin_container_labels_traefik_priority: 0
+synapse_admin_container_labels_traefik_entrypoints: web-secure
+synapse_admin_container_labels_traefik_tls: "{{ synapse_admin_container_labels_traefik_entrypoints != 'web' }}"
+synapse_admin_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 # This setting is to define a list ip addresses to allow access to synapse-admin.
 # Each IP address should be in CIDR format, e.g. xxx.xxx.xxx.xxx/xx.
 # For more information, see: https://doc.traefik.io/traefik/middlewares/http/ipallowlist/
 # If the list is empty, all IP addresses are allowed.
-matrix_synapse_admin_container_labels_traefik_ipallowlist_sourcerange: []
+synapse_admin_container_labels_traefik_ipallowlist_sourcerange: []
 
 # Controls which additional headers to attach to all HTTP responses.
-# To add your own headers, use `matrix_synapse_admin_container_labels_traefik_additional_response_headers_custom`
-matrix_synapse_admin_container_labels_traefik_additional_response_headers: "{{ matrix_synapse_admin_container_labels_traefik_additional_response_headers_auto | combine(matrix_synapse_admin_container_labels_traefik_additional_response_headers_custom) }}"
-matrix_synapse_admin_container_labels_traefik_additional_response_headers_auto: |
+# To add your own headers, use `synapse_admin_container_labels_traefik_additional_response_headers_custom`
+synapse_admin_container_labels_traefik_additional_response_headers: "{{ synapse_admin_container_labels_traefik_additional_response_headers_auto | combine(synapse_admin_container_labels_traefik_additional_response_headers_custom) }}"
+synapse_admin_container_labels_traefik_additional_response_headers_auto: |
   {{
     {}
-    | combine ({'X-XSS-Protection': matrix_synapse_admin_http_header_xss_protection} if matrix_synapse_admin_http_header_xss_protection else {})
-    | combine ({'X-Content-Type-Options': matrix_synapse_admin_http_header_content_type_options} if matrix_synapse_admin_http_header_content_type_options else {})
-    | combine ({'Content-Security-Policy': matrix_synapse_admin_http_header_content_security_policy} if matrix_synapse_admin_http_header_content_security_policy else {})
-    | combine ({'Permission-Policy': matrix_synapse_admin_http_header_content_permission_policy} if matrix_synapse_admin_http_header_content_permission_policy else {})
-    | combine ({'Strict-Transport-Security': matrix_synapse_admin_http_header_strict_transport_security} if matrix_synapse_admin_http_header_strict_transport_security and matrix_synapse_admin_container_labels_traefik_tls else {})
+    | combine ({'X-XSS-Protection': synapse_admin_http_header_xss_protection} if synapse_admin_http_header_xss_protection else {})
+    | combine ({'X-Content-Type-Options': synapse_admin_http_header_content_type_options} if synapse_admin_http_header_content_type_options else {})
+    | combine ({'Content-Security-Policy': synapse_admin_http_header_content_security_policy} if synapse_admin_http_header_content_security_policy else {})
+    | combine ({'Permission-Policy': synapse_admin_http_header_content_permission_policy} if synapse_admin_http_header_content_permission_policy else {})
+    | combine ({'Strict-Transport-Security': synapse_admin_http_header_strict_transport_security} if synapse_admin_http_header_strict_transport_security and synapse_admin_container_labels_traefik_tls else {})
   }}
-matrix_synapse_admin_container_labels_traefik_additional_response_headers_custom: {}
+synapse_admin_container_labels_traefik_additional_response_headers_custom: {}
 
-# matrix_synapse_admin_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# synapse_admin_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
 #
 # Example:
-# matrix_synapse_admin_container_labels_additional_labels: |
+# synapse_admin_container_labels_additional_labels: |
 #   my.label=1
 #   another.label="here"
-matrix_synapse_admin_container_labels_additional_labels: ''
+synapse_admin_container_labels_additional_labels: ''
 
 # List of systemd services that synapse-admin.service depends on
-matrix_synapse_admin_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+synapse_admin_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
 
 # List of systemd services that synapse-admin.service wants
-matrix_synapse_admin_systemd_wanted_services_list: []
+synapse_admin_systemd_wanted_services_list: []
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
@@ -106,23 +106,23 @@ matrix_synapse_admin_systemd_wanted_services_list: []
 # Learn more about it is here:
 # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
 # - https://portswigger.net/web-security/cross-site-scripting/reflected
-matrix_synapse_admin_http_header_xss_protection: "1; mode=block"
+synapse_admin_http_header_xss_protection: "1; mode=block"
 
 # Specifies the value of the `X-Content-Type-Options` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
-matrix_synapse_admin_http_header_content_type_options: nosniff
+synapse_admin_http_header_content_type_options: nosniff
 
 # Specifies the value of the `Content-Security-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
-matrix_synapse_admin_http_header_content_security_policy: frame-ancestors 'self'
+synapse_admin_http_header_content_security_policy: frame-ancestors 'self'
 
 # Specifies the value of the `Permission-Policy` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permission-Policy
-matrix_synapse_admin_http_header_content_permission_policy: "{{ 'interest-cohort=()' if matrix_synapse_admin_floc_optout_enabled else '' }}"
+synapse_admin_http_header_content_permission_policy: "{{ 'interest-cohort=()' if synapse_admin_floc_optout_enabled else '' }}"
 
 # Specifies the value of the `Strict-Transport-Security` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-matrix_synapse_admin_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if matrix_synapse_admin_hsts_preload_enabled else '' }}"
+synapse_admin_http_header_strict_transport_security: "max-age=31536000; includeSubDomains{{ '; preload' if synapse_admin_hsts_preload_enabled else '' }}"
 
 # Controls whether to send a "Permissions-Policy interest-cohort=();" header along with all responses
 #
@@ -132,8 +132,8 @@ matrix_synapse_admin_http_header_strict_transport_security: "max-age=31536000; i
 # - https://amifloced.org/
 #
 # Of course, a better solution is to just stop using browsers (like Chrome), which participate in such tracking practices.
-# See: `matrix_synapse_admin_content_permission_policy`
-matrix_synapse_admin_floc_optout_enabled: true
+# See: `synapse_admin_content_permission_policy`
+synapse_admin_floc_optout_enabled: true
 
 # Controls if HSTS preloading is enabled
 #
@@ -144,69 +144,69 @@ matrix_synapse_admin_floc_optout_enabled: true
 # - https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
 # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
 # - https://hstspreload.org/#opt-in
-# See: `matrix_synapse_admin_http_header_strict_transport_security`
-matrix_synapse_admin_hsts_preload_enabled: false
+# See: `synapse_admin_http_header_strict_transport_security`
+synapse_admin_hsts_preload_enabled: false
 
 # The hostname at which Synapse Admin is served.
-matrix_synapse_admin_hostname: "{{ matrix_server_fqn_matrix }}"
+synapse_admin_hostname: "{{ matrix_server_fqn_matrix }}"
 
 # The path at which Synapse Admin is exposed.
 # This value must either be `/` or not end with a slash (e.g. `/synapse-admin`).
-matrix_synapse_admin_path_prefix: /synapse-admin
+synapse_admin_path_prefix: /synapse-admin
 
 # Default synapse-admin configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
-# For a more advanced customization, you can extend the default (see `matrix_synapse_admin_configuration_extension_json`)
+# For a more advanced customization, you can extend the default (see `synapse_admin_configuration_extension_json`)
 # or completely replace this variable with your own template.
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_synapse_admin_configuration_default:
-  restrictBaseUrl: "{{ matrix_synapse_admin_config_restrictBaseUrl }}"
-  externalAuthProvider: "{{ matrix_synapse_admin_config_externalAuthProvider }}"
-  corsCredentials: "{{ matrix_synapse_admin_config_corsCredentials }}"
-  asManagedUsers: "{{ matrix_synapse_admin_config_asManagedUsers }}"
-  menu: "{{ matrix_synapse_admin_config_menu }}"
+synapse_admin_configuration_default:
+  restrictBaseUrl: "{{ synapse_admin_config_restrictBaseUrl }}"
+  externalAuthProvider: "{{ synapse_admin_config_externalAuthProvider }}"
+  corsCredentials: "{{ synapse_admin_config_corsCredentials }}"
+  asManagedUsers: "{{ synapse_admin_config_asManagedUsers }}"
+  menu: "{{ synapse_admin_config_menu }}"
 
-# Your custom JSON configuration for synapse-admin should go to `matrix_synapse_admin_configuration_extension_json`.
-# This configuration extends the default starting configuration (`matrix_synapse_admin_configuration_default`).
+# Your custom JSON configuration for synapse-admin should go to `synapse_admin_configuration_extension_json`.
+# This configuration extends the default starting configuration (`synapse_admin_configuration_default`).
 #
 # You can override individual variables from the default configuration, or introduce new ones.
 #
 # If you need something more special, you can take full control by
-# completely redefining `matrix_synapse_admin_configuration_default`.
+# completely redefining `synapse_admin_configuration_default`.
 #
 # Example configuration extension follows:
 #
-# matrix_synapse_admin_configuration_extension_json: |
+# synapse_admin_configuration_extension_json: |
 #  {
 #  "some_setting": true,
 #  "another_setting": false
 #  }
-matrix_synapse_admin_configuration_extension_json: '{}'
+synapse_admin_configuration_extension_json: '{}'
 
-# This is similar to `matrix_synapse_admin_configuration_extension_json`, but intended for use by playbook or group vars
-matrix_synapse_admin_configuration_extension_json_auto: '{}'
+# This is similar to `synapse_admin_configuration_extension_json`, but intended for use by playbook or group vars
+synapse_admin_configuration_extension_json_auto: '{}'
 
-matrix_synapse_admin_configuration_extension: "{{ matrix_synapse_admin_configuration_extension_json_auto | from_json | combine(matrix_synapse_admin_configuration_extension_json | from_json if matrix_synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
+synapse_admin_configuration_extension: "{{ synapse_admin_configuration_extension_json_auto | from_json | combine(synapse_admin_configuration_extension_json | from_json if synapse_admin_configuration_extension_json | from_json is mapping else {}, recursive=True) }}"
 
 # Holds the final synapse-admin configuration (a combination of the default and its extension).
-# You most likely don't need to touch this variable. Instead, see `matrix_synapse_admin_configuration_default`.
-matrix_synapse_admin_configuration: "{{ matrix_synapse_admin_configuration_default | combine(matrix_synapse_admin_configuration_extension, recursive=True) }}"
+# You most likely don't need to touch this variable. Instead, see `synapse_admin_configuration_default`.
+synapse_admin_configuration: "{{ synapse_admin_configuration_default | combine(synapse_admin_configuration_extension, recursive=True) }}"
 
 # Controls the restrictBaseUrl configuration setting, which, if defined,
 # restricts the homeserver(s), so that the user can no longer define a homeserver manually during login.
-matrix_synapse_admin_config_restrictBaseUrl: "{{ matrix_homeserver_url }}"  # noqa var-naming
+synapse_admin_config_restrictBaseUrl: "{{ matrix_homeserver_url }}"  # noqa var-naming
 
 # Controls the externalAuthProvider configuration setting, which, if defined,
 # enables a special compatibility mode that works better for external auth providers like LDAP, MAS, etc.
-matrix_synapse_admin_config_externalAuthProvider: false  # noqa var-naming
+synapse_admin_config_externalAuthProvider: false  # noqa var-naming
 
 # Controls the corsCredentials configuration setting, which, if defined,
 # allows including credentials (cookies, authorization headers, or TLS client certificates) in requests
 # ref: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#including_credentials
-matrix_synapse_admin_config_corsCredentials: "same-origin"  # noqa var-naming
+synapse_admin_config_corsCredentials: "same-origin"  # noqa var-naming
 
 # Controls the menu configuration setting, which, if defined, adds new menu items to the Synapse Admin UI.
 # The format is a list of objects, where each object has the following keys:
@@ -227,29 +227,29 @@ matrix_synapse_admin_config_corsCredentials: "same-origin"  # noqa var-naming
 #     "url": "https://github.com/etkecc/synapse-admin/issues"
 #   }
 # ]
-matrix_synapse_admin_config_menu: []
+synapse_admin_config_menu: []
 
 # Controls the asManagedUsers configuration setting (managed by playbook), which, if defined,
 # restricts modifications of the specified users (e.g., bridge-managed).
 # You should use JS regex syntax to match the user IDs.
 # Example for mautrix-telegram: ["^@telegram_[a-zA-Z0-9]+:example\\.com$"]
-# WARNING: you want to use matrix_synapse_admin_config_asManagedUsers_custom instead of this variable.
-matrix_synapse_admin_config_asManagedUsers_auto: []  # noqa var-naming
+# WARNING: you want to use synapse_admin_config_asManagedUsers_custom instead of this variable.
+synapse_admin_config_asManagedUsers_auto: []  # noqa var-naming
 
 # Controls the asManagedUsers configuration setting (managed per host), which, if defined,
 # restricts modifications of the specified users (e.g., bridge-managed).
 # You should use JS regex syntax to match the user IDs.
 # Example for mautrix-telegram: ["^@telegram_[a-zA-Z0-9]+:example\\.com$"]
-matrix_synapse_admin_config_asManagedUsers_custom: []  # noqa var-naming
+synapse_admin_config_asManagedUsers_custom: []  # noqa var-naming
 
 # Controls the asManagedUsers configuration setting, which, if defined,
 # restricts modifications of the specified users (e.g., bridge-managed).
 # You should use JS regex syntax to match the user IDs.
 # Example for mautrix-telegram: ["^@telegram_[a-zA-Z0-9]+:example\\.com$"]
-# WARNING: you want to use matrix_synapse_admin_config_asManagedUsers_custom instead of this variable.
-matrix_synapse_admin_config_asManagedUsers: "{{ matrix_synapse_admin_config_asManagedUsers_auto + matrix_synapse_admin_config_asManagedUsers_custom }}"  # noqa var-naming
+# WARNING: you want to use synapse_admin_config_asManagedUsers_custom instead of this variable.
+synapse_admin_config_asManagedUsers: "{{ synapse_admin_config_asManagedUsers_auto + synapse_admin_config_asManagedUsers_custom }}"  # noqa var-naming
 
-# matrix_synapse_admin_restart_necessary controls whether the service
+# synapse_admin_restart_necessary controls whether the service
 # will be restarted (when true) or merely started (when false) by the
 # systemd service manager role (when conditional restart is enabled).
 #
@@ -257,4 +257,4 @@ matrix_synapse_admin_config_asManagedUsers: "{{ matrix_synapse_admin_config_asMa
 # any configuration files, the systemd service file, or the container image changed.
 # The default of `false` means "no restart needed" — appropriate when the role's
 # installation tasks haven't run (e.g., due to --tags skipping them).
-matrix_synapse_admin_restart_necessary: false
+synapse_admin_restart_necessary: false

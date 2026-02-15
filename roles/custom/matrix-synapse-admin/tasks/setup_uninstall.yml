@@ -7,9 +7,9 @@
 - name: Check existence of synapse-admin service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/synapse-admin.service"
-  register: matrix_synapse_admin_service_stat
+  register: synapse_admin_service_stat
 
-- when: matrix_synapse_admin_service_stat.stat.exists | bool
+- when: synapse_admin_service_stat.stat.exists | bool
   block:
     - name: Ensure synapse-admin is stopped
       ansible.builtin.service:
@@ -25,5 +25,5 @@
 
     - name: Ensure synapse-admin directory doesn't exist
       ansible.builtin.file:
-        path: "{{ matrix_synapse_admin_base_path }}"
+        path: "{{ synapse_admin_base_path }}"
         state: absent

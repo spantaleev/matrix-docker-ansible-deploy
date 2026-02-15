@@ -5,54 +5,54 @@ SPDX-FileCopyrightText: 2025 MDAD project contributors
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
-{% if matrix_synapse_admin_container_labels_traefik_enabled %}
+{% if synapse_admin_container_labels_traefik_enabled %}
 traefik.enable=true
 
-{% if matrix_synapse_admin_container_labels_traefik_docker_network %}
-traefik.docker.network={{ matrix_synapse_admin_container_labels_traefik_docker_network }}
+{% if synapse_admin_container_labels_traefik_docker_network %}
+traefik.docker.network={{ synapse_admin_container_labels_traefik_docker_network }}
 {% endif %}
 
 traefik.http.services.synapse-admin.loadbalancer.server.port=8080
 
 {% set middlewares = [] %}
 
-{% if matrix_synapse_admin_container_labels_traefik_ipallowlist_sourcerange | length > 0 %}
-traefik.http.middlewares.synapse-admin-ipallowlist.ipallowlist.sourcerange={{ matrix_synapse_admin_container_labels_traefik_ipallowlist_sourcerange | join(',') }}
+{% if synapse_admin_container_labels_traefik_ipallowlist_sourcerange | length > 0 %}
+traefik.http.middlewares.synapse-admin-ipallowlist.ipallowlist.sourcerange={{ synapse_admin_container_labels_traefik_ipallowlist_sourcerange | join(',') }}
 {% set middlewares = middlewares + ['synapse-admin-ipallowlist'] %}
 {% endif %}
 
-{% if matrix_synapse_admin_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.synapse-admin-slashless-redirect.redirectregex.regex=({{ matrix_synapse_admin_container_labels_traefik_path_prefix | quote }})$
+{% if synapse_admin_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.synapse-admin-slashless-redirect.redirectregex.regex=({{ synapse_admin_container_labels_traefik_path_prefix | quote }})$
 traefik.http.middlewares.synapse-admin-slashless-redirect.redirectregex.replacement=${1}/
 {% set middlewares = middlewares + ['synapse-admin-slashless-redirect'] %}
 {% endif %}
 
-{% if matrix_synapse_admin_container_labels_traefik_path_prefix != '/' %}
-traefik.http.middlewares.synapse-admin-strip-prefix.stripprefix.prefixes={{ matrix_synapse_admin_container_labels_traefik_path_prefix }}
+{% if synapse_admin_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.synapse-admin-strip-prefix.stripprefix.prefixes={{ synapse_admin_container_labels_traefik_path_prefix }}
 {% set middlewares = middlewares + ['synapse-admin-strip-prefix'] %}
 {% endif %}
 
-{% if matrix_synapse_admin_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
-{% for name, value in matrix_synapse_admin_container_labels_traefik_additional_response_headers.items() %}
+{% if synapse_admin_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in synapse_admin_container_labels_traefik_additional_response_headers.items() %}
 traefik.http.middlewares.synapse-admin-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
 {% endfor %}
 {% set middlewares = middlewares + ['synapse-admin-add-headers'] %}
 {% endif %}
 
-traefik.http.routers.synapse-admin.rule={{ matrix_synapse_admin_container_labels_traefik_rule }}
-{% if matrix_synapse_admin_container_labels_traefik_priority | int > 0 %}
-traefik.http.routers.synapse-admin.priority={{ matrix_synapse_admin_container_labels_traefik_priority }}
+traefik.http.routers.synapse-admin.rule={{ synapse_admin_container_labels_traefik_rule }}
+{% if synapse_admin_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.synapse-admin.priority={{ synapse_admin_container_labels_traefik_priority }}
 {% endif %}
 {% if middlewares | length > 0 %}
 traefik.http.routers.synapse-admin.middlewares={{ middlewares | join(',') }}
 {% endif %}
 traefik.http.routers.synapse-admin.service=synapse-admin
-traefik.http.routers.synapse-admin.entrypoints={{ matrix_synapse_admin_container_labels_traefik_entrypoints }}
-traefik.http.routers.synapse-admin.tls={{ matrix_synapse_admin_container_labels_traefik_tls | to_json }}
-{% if matrix_synapse_admin_container_labels_traefik_tls %}
-traefik.http.routers.synapse-admin.tls.certResolver={{ matrix_synapse_admin_container_labels_traefik_tls_certResolver }}
+traefik.http.routers.synapse-admin.entrypoints={{ synapse_admin_container_labels_traefik_entrypoints }}
+traefik.http.routers.synapse-admin.tls={{ synapse_admin_container_labels_traefik_tls | to_json }}
+{% if synapse_admin_container_labels_traefik_tls %}
+traefik.http.routers.synapse-admin.tls.certResolver={{ synapse_admin_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
 {% endif %}
 
-{{ matrix_synapse_admin_container_labels_additional_labels }}
+{{ synapse_admin_container_labels_additional_labels }}

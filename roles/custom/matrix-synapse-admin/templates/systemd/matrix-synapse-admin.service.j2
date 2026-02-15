@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=synapse-admin
-{% for service in matrix_synapse_admin_systemd_required_services_list %}
+{% for service in synapse_admin_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_synapse_admin_systemd_wanted_services_list %}
+{% for service in synapse_admin_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -22,19 +22,19 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--log-driver=none \
 			--cap-drop=ALL \
 			--read-only \
-			--user={{ matrix_synapse_admin_container_uid }}:{{ matrix_synapse_admin_container_gid }} \
-			--network={{ matrix_synapse_admin_container_network }} \
-			{% if matrix_synapse_admin_container_http_host_bind_port %}
-			-p {{ matrix_synapse_admin_container_http_host_bind_port }}:8080 \
+			--user={{ synapse_admin_container_uid }}:{{ synapse_admin_container_gid }} \
+			--network={{ synapse_admin_container_network }} \
+			{% if synapse_admin_container_http_host_bind_port %}
+			-p {{ synapse_admin_container_http_host_bind_port }}:8080 \
 			{% endif %}
-			--label-file={{ matrix_synapse_admin_base_path }}/labels \
-			--mount type=bind,src={{ matrix_synapse_admin_config_path }}/config.json,dst=/var/public/config.json,ro \
-			{% for arg in matrix_synapse_admin_container_extra_arguments %}
+			--label-file={{ synapse_admin_base_path }}/labels \
+			--mount type=bind,src={{ synapse_admin_config_path }}/config.json,dst=/var/public/config.json,ro \
+			{% for arg in synapse_admin_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_synapse_admin_docker_image }}
+			{{ synapse_admin_docker_image }}
 
-{% for network in matrix_synapse_admin_container_additional_networks %}
+{% for network in synapse_admin_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} synapse-admin
 {% endfor %}
 

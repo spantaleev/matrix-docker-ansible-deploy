@@ -11,15 +11,15 @@
     - install-all
     - install-synapse-admin
   block:
-    - when: matrix_synapse_admin_enabled | bool
+    - when: synapse_admin_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-    - when: matrix_synapse_admin_enabled | bool
+    - when: synapse_admin_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
 - tags:
     - setup-all
     - setup-synapse-admin
   block:
-    - when: not matrix_synapse_admin_enabled | bool
+    - when: not synapse_admin_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

@@ -656,6 +656,19 @@
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-synapse-admin variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-synapse-admin role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-synapse-admin).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_synapse_admin_`-prefixed variables (`matrix_synapse_admin_*` -> `synapse_admin_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_synapse_admin_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_synapse_admin_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report mautrix-facebook variables
   ansible.builtin.fail:
     msg: |-
