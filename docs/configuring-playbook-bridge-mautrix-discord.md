@@ -98,4 +98,4 @@ matrix_mautrix_discord_logging_level: 'debug'
 ```
 
 ### Command requires room admin rights when user is creator
-[MSC4289](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4289-privilege-creators.md), introduced in [room version 12](https://spec.matrix.org/unstable/rooms/v12/), gives creators an infinitley high powerlevel. At the time of implementation, mautrix-discord and similar applications may not identify creators as or above admins. Either a seperate admin user will need to manage the bridge or the room version should be less than version 12.
+[MSC4289](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4289-privilege-creators.md), introduced in [room version 12](https://spec.matrix.org/unstable/rooms/v12/), gives creators an infinitley high powerlevel. At the time of implementation, mautrix-discord and similar applications may not identify creators as or above admins. Either a separate admin user will need to manage the bridge or the room version should be less than version 12.
