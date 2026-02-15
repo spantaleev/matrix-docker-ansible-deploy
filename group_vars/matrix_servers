@@ -4998,16 +4998,23 @@ matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port
 synapse_admin_enabled: false
 
 synapse_admin_identifier: matrix-synapse-admin
-
-synapse_admin_container_image_registry_prefix: "{{ 'localhost/' if synapse_admin_container_image_self_build else synapse_admin_container_image_registry_prefix_upstream }}"
-synapse_admin_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else synapse_admin_container_image_registry_prefix_upstream_default }}"
+synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
 
 synapse_admin_uid: "{{ matrix_user_uid }}"
 synapse_admin_gid: "{{ matrix_user_gid }}"
 
-synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+synapse_admin_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+synapse_admin_hostname: "{{ matrix_server_fqn_matrix }}"
+
+synapse_admin_path_prefix: /synapse-admin
+
+synapse_admin_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else synapse_admin_container_image_registry_prefix_upstream_default }}"
 
 synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+synapse_admin_container_image_self_build_name: "localhost/etkecc/synapse-admin:{{ synapse_admin_container_image_self_build_repo_version }}"
+
+synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 synapse_admin_container_network: "{{ matrix_addons_container_network }}"
 synapse_admin_container_network_deletion_enabled: false
@@ -5021,6 +5028,7 @@ synapse_admin_container_labels_traefik_tls_certResolver: "{{ traefik_certResolve
 
 synapse_admin_config_externalAuthProvider: "{{ matrix_authentication_service_enabled | default(false) or matrix_synapse_ext_password_provider_ldap_enabled | default(false) }}"
 
+# Restrict the service to only work with the homeserver managed by the playbook
 synapse_admin_config_restrictBaseUrl: "{{ matrix_homeserver_url }}"  # noqa var-naming
 
 synapse_admin_config_asManagedUsers_auto: |
@@ -5175,12 +5183,6 @@ synapse_admin_config_asManagedUsers_auto: |
       '^@steam_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_steam_bridge_enabled else [])
   }}
-
-synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
-
-synapse_admin_hostname: "{{ matrix_server_fqn_matrix }}"
-
-synapse_admin_path_prefix: /synapse-admin
 
 ######################################################################
 #
