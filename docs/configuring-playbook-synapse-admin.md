@@ -65,7 +65,7 @@ There are some additional things you may wish to configure about the component.
 
 Take a look at:
 
-- `roles/custom/matrix-synapse-admin/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_synapse_admin_configuration_extension_json` variable
+- `roles/galaxy/synapse_admin/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_synapse_admin_configuration_extension_json` variable
 
 ## Installing
 
