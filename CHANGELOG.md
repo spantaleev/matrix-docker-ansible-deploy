@@ -1,3 +1,13 @@
+# 2026-02-16
+
+## (BC Break) Synapse Admin role has been relocated and variable names need adjustments
+
+The role for [Synapse Admin](https://github.com/etkecc/synapse-admin) has been relocated to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
+
+Along with the relocation, the `matrix_synapse_admin_` prefix on its variable names has been renamed to `synapse_admin_`, so you need to adjust your `vars.yml` configuration.
+
+As always, the playbook would let you know about this and point out any variables you may have missed.
+
 # 2026-02-13
 
 ## Conditional service restart for `install-*` commands
