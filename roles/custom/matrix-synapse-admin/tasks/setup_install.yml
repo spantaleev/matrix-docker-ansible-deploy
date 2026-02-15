@@ -11,7 +11,7 @@
 
 ---
 
-- name: Ensure matrix-synapse-admin paths exists
+- name: Ensure synapse-admin paths exists
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -24,7 +24,7 @@
     - {path: "{{ matrix_synapse_admin_docker_src_files_path }}", when: "{{ matrix_synapse_admin_container_image_self_build }}"}
   when: "item.when | bool"
 
-- name: Ensure matrix-synapse-admin labels file is created
+- name: Ensure synapse-admin labels file is created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/labels.j2"
     dest: "{{ matrix_synapse_admin_base_path }}/labels"
@@ -33,7 +33,7 @@
     mode: 0640
   register: matrix_synapse_admin_support_files_result
 
-- name: Ensure matrix-synapse-admin configuration installed
+- name: Ensure synapse-admin configuration installed
   ansible.builtin.copy:
     content: "{{ matrix_synapse_admin_configuration | to_nice_json }}"
     dest: "{{ matrix_synapse_admin_config_path }}/config.json"
@@ -42,7 +42,7 @@
     group: "{{ matrix_group_name }}"
   register: matrix_synapse_admin_config_result
 
-- name: Ensure matrix-synapse-admin image is pulled
+- name: Ensure synapse-admin image is pulled
   community.docker.docker_image:
     name: "{{ matrix_synapse_admin_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -54,7 +54,7 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: matrix_synapse_admin_container_image_pull_result is not failed
 
-- name: Ensure matrix-synapse-admin repository is present when self-building
+- name: Ensure synapse-admin repository is present when self-building
   ansible.builtin.git:
     repo: "{{ matrix_synapse_admin_container_image_self_build_repo }}"
     dest: "{{ matrix_synapse_admin_docker_src_files_path }}"
@@ -65,7 +65,7 @@
   register: matrix_synapse_admin_git_pull_results
   when: matrix_synapse_admin_container_image_self_build | bool
 
-- name: Ensure matrix-synapse-admin Docker image is built
+- name: Ensure synapse-admin Docker image is built
   community.docker.docker_image:
     name: "{{ matrix_synapse_admin_docker_image }}"
     source: build
@@ -77,17 +77,17 @@
       pull: true
   when: matrix_synapse_admin_container_image_self_build | bool
 
-- name: Ensure matrix-synapse-admin container network is created
+- name: Ensure synapse-admin container network is created
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_synapse_admin_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
-- name: Ensure matrix-synapse-admin.service installed
+- name: Ensure synapse-admin.service installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrix-synapse-admin.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-admin.service"
+    src: "{{ role_path }}/templates/systemd/synapse-admin.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/synapse-admin.service"
     mode: 0644
   register: matrix_synapse_admin_systemd_service_result
 

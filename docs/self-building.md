@@ -26,7 +26,7 @@ Note that **not all components support self-building yet**.
 
 Possibly outdated list of roles where self-building the Docker image is currently possible:
 - `matrix-synapse`
-- `matrix-synapse-admin`
+- `synapse-admin`
 - `matrix-client-element`
 - `hydrogen`
 - `cinny`
