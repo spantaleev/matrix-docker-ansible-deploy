@@ -1,24 +1,26 @@
 <!--
-SPDX-FileCopyrightText: 2020 - 2024 MDAD project contributors
-SPDX-FileCopyrightText: 2020 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2020-2024 MDAD project contributors
+SPDX-FileCopyrightText: 2020-2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2021 Aaron Raimist
 SPDX-FileCopyrightText: 2023 Christian González
-SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-FileCopyrightText: 2024 Nikita Chernyi
 SPDX-FileCopyrightText: 2024 Uğur İLTER
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 # Setting up Synapse Admin (optional)
 
-The playbook can install and configure [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin) (a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin), community room: [#synapse-admin:etke.cc](https://matrix.to/#/#synapse-admin:etke.cc)) for you.
+The playbook can install and configure Synapse Admin for you.
 
-synapse-admin is a web UI tool you can use to **administrate users, rooms, media, etc. on your Matrix server**. It's designed to work with the Synapse homeserver implementation and WON'T work with Dendrite because [Dendrite Admin API](https://element-hq.github.io/dendrite/administration/adminapi) differs from [Synapse Admin API](https://element-hq.github.io/synapse/latest/usage/administration/admin_api/).
+Synapse Admin is a web UI tool you can use to **administrate users, rooms, media, etc. on your Matrix homeserver**. This playbook is configured to install [etkecc/synapse-admin](https://github.com/etkecc/synapse-admin), which is a [feature-rich](https://github.com/etkecc/synapse-admin#fork-differences) fork of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin).
 
-💡 **Note**: the latest version of synapse-admin is hosted by [etke.cc](https://etke.cc/) at [admin.etke.cc](https://admin.etke.cc/). If you only need this service occasionally and trust giving your admin credentials to a 3rd party Single Page Application, you can consider using it from there and avoiding the (small) overhead of self-hosting.
-
-💡 **Note**: The playbook also supports an alternative management UI in the shape of [Element Admin](./configuring-playbook-element-admin.md). However, it's currently less feature-rich than Synapse Admin and has a dependency on [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md).
+>[!NOTE]
+>
+> - Synapse Admin does not work with other homeserver implementations than Synapse due to API's incompatibility.
+> - The latest version of Synapse Admin is hosted by [etke.cc](https://etke.cc/) at [admin.etke.cc](https://admin.etke.cc/). If you only need this service occasionally and trust giving your admin credentials to a 3rd party Single Page Application, you can consider using it from there and avoiding the (small) overhead of self-hosting.
+> - This playbook also supports an alternative management UI in the shape of [Element Admin](./configuring-playbook-element-admin.md). Please note that it's currently less feature-rich than Synapse Admin and requires [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md).
 
 ## Adjusting DNS records (optional)
 
@@ -87,3 +89,5 @@ To use Synapse Admin, you need to have [registered at least one administrator ac
 ## Troubleshooting
 
 As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse-admin`.
+
+If you have questions, you can join this community room and feel free to ask: [#synapse-admin:etke.cc](https://matrix.to/#/#synapse-admin:etke.cc)
