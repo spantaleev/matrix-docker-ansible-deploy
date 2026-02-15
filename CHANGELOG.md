@@ -694,8 +694,8 @@ If upstream synapse-admin picks up the pace and improves, the etke.cc fork may d
 If you'd like to switch back to the original synapse-admin software, you can do so by adding the following configuration to your `vars.yml` file:
 
 ```yaml
-synapse_admin_docker_image: "{{ synapse_admin_docker_image_registry_prefix }}awesometechnologies/synapse-admin:{{ synapse_admin_version }}"
-synapse_admin_docker_image_registry_prefix_upstream: docker.io/
+synapse_admin_container_image: "{{ synapse_admin_container_image_registry_prefix }}awesometechnologies/synapse-admin:{{ synapse_admin_version }}"
+synapse_admin_container_image_registry_prefix_upstream: docker.io/
 
 synapse_admin_version: 0.10.3
 
