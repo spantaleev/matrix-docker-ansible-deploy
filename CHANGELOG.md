@@ -1,3 +1,13 @@
+# 2026-02-16
+
+## matrix-appservice-slack has been removed from the playbook
+
+[matrix-appservice-slack](./docs/configuring-playbook-bridge-appservice-slack.md) has been removed from the playbook, as it has been discontinued because the public Matrix.org Slack bridge has been decommissioned on January 14th, 2026.
+
+The playbook will let you know if you're using any `matrix_appservice_slack_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-bridge-appservice-slack.md#uninstalling-the-component-manually).
+
+**Note**: Bridging to [Slack](https://slack.com) can also happen via the [mautrix-slack](./docs/configuring-playbook-bridge-mautrix-slack.md) bridge supported by the playbook.
+
 # 2026-02-13
 
 ## Conditional service restart for `install-*` commands
