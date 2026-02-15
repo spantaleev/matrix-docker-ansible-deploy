@@ -88,6 +88,6 @@ To use Synapse Admin, you need to have [registered at least one administrator ac
 
 ## Troubleshooting
 
-As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu synapse-admin`.
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse-admin`.
 
 If you have questions, you can join this community room and feel free to ask: [#synapse-admin:etke.cc](https://matrix.to/#/#synapse-admin:etke.cc)

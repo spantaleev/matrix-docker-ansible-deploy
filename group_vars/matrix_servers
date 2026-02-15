@@ -855,7 +855,7 @@ devture_systemd_service_manager_services_list_auto: |
     }] if matrix_synapse_auto_compressor_enabled else [])
     +
     ([{
-      'name': 'synapse-admin.service',
+      'name': (synapse_admin_identifier + '.service'),
       'priority': 4000,
       'restart_necessary': (synapse_admin_restart_necessary | bool),
       'groups': ['matrix', 'synapse-admin'],
@@ -4996,6 +4996,8 @@ matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port
 ######################################################################
 
 synapse_admin_enabled: false
+
+synapse_admin_identifier: matrix-synapse-admin
 
 synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else synapse_admin_docker_image_registry_prefix_upstream_default }}"
 
