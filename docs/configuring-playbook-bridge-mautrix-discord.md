@@ -1,11 +1,11 @@
 <!--
-SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2018 Hugues Morisset
-SPDX-FileCopyrightText: 2021 - 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2018-2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2021, 2022 MDAD project contributors
 SPDX-FileCopyrightText: 2022 Abílio Costa
 SPDX-FileCopyrightText: 2022 Dennis Ciba
 SPDX-FileCopyrightText: 2022 Marko Weltzer
-SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -23,6 +23,8 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/discord/index.h
 ## Prerequisites
 
 There are 3 ways to login to discord using this bridge, either by [scanning a QR code](https://docs.mau.fi/bridges/go/discord/authentication.html#qr-login) using the Discord mobile app, by using a [Discord token](https://docs.mau.fi/bridges/go/discord/authentication.html#token-login), **or** by using a [Discord bot token](https://docs.mau.fi/bridges/go/discord/authentication.html#bot-token-login).
+
+⚠️ QR code login is considered a self-bot and is forbidden by Discord. It can result in an account termination. See the [Discord policy](https://support.discord.com/hc/en-us/articles/115002192352-Automated-User-Accounts-Self-Bots).
 
 ### Enable Appservice Double Puppet or Shared Secret Auth (optional)
 
@@ -98,4 +100,5 @@ matrix_mautrix_discord_logging_level: 'debug'
 ```
 
 ### Command requires room admin rights when user is creator
+
 [MSC4289](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4289-privilege-creators.md), introduced in [room version 12](https://spec.matrix.org/unstable/rooms/v12/), gives creators an infinitley high powerlevel. At the time of implementation, mautrix-discord and similar applications may not identify creators as or above admins. Either a separate admin user will need to manage the bridge or the room version should be less than version 12.
