@@ -144,10 +144,6 @@ synapse_admin_floc_optout_enabled: true
 # See: `synapse_admin_http_header_strict_transport_security`
 synapse_admin_hsts_preload_enabled: false
 
-# The path at which Synapse Admin is exposed.
-# This value must either be `/` or not end with a slash (e.g. `/synapse-admin`).
-synapse_admin_path_prefix: /synapse-admin
-
 # Default synapse-admin configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
@@ -188,10 +184,6 @@ synapse_admin_configuration_extension: "{{ synapse_admin_configuration_extension
 # Holds the final synapse-admin configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `synapse_admin_configuration_default`.
 synapse_admin_configuration: "{{ synapse_admin_configuration_default | combine(synapse_admin_configuration_extension, recursive=True) }}"
-
-# Controls the restrictBaseUrl configuration setting, which, if defined,
-# restricts the homeserver(s), so that the user can no longer define a homeserver manually during login.
-synapse_admin_config_restrictBaseUrl: "{{ matrix_homeserver_url }}"  # noqa var-naming
 
 # Controls the externalAuthProvider configuration setting, which, if defined,
 # enables a special compatibility mode that works better for external auth providers like LDAP, MAS, etc.
