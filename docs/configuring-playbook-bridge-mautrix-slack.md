@@ -11,10 +11,6 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
-**Note**: bridging to [Slack](https://slack.com/) can also happen via the [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) bridge supported by the playbook.
-- For using as a Bot we recommend the [Appservice Slack](configuring-playbook-bridge-appservice-slack.md), because it supports plumbing. Note that it is not available for new installation unless you have already created a classic Slack application, because the creation of classic Slack applications, which this bridge makes use of, has been discontinued.
-- For personal use with a slack account we recommend the `mautrix-slack` bridge (the one being discussed here), because it is the most fully-featured and stable of the 3 Slack bridges supported by the playbook.
-
 The playbook can install and configure [mautrix-slack](https://github.com/mautrix/slack) for you.
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/slack/index.html) to learn what it does and why it might be useful to you.
@@ -25,7 +21,7 @@ See the [features and roadmap](https://github.com/mautrix/slack/blob/main/ROADMA
 
 For using this bridge, you would need to authenticate by **providing your username and password** (legacy) or by using a **token login**. See more information in the [docs](https://docs.mau.fi/bridges/go/slack/authentication.html).
 
-Note that neither of these methods are officially supported by Slack. [matrix-appservice-slack](configuring-playbook-bridge-appservice-slack.md) uses a Slack bot account which is the only officially supported method for bridging a Slack channel.
+Note that neither of these methods are officially supported by Slack.
 
 ### Enable Appservice Double Puppet (optional)
 
