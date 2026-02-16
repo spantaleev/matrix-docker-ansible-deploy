@@ -106,7 +106,7 @@ There are some additional things you may wish to configure about Prometheus and 
 Take a look at:
 
 - [Prometheus role](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus)'s [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-prometheus/blob/main/defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `prometheus_configuration_extension_yaml` variable
-- `roles/custom/matrix-prometheus-nginxlog-exporter/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/prometheus_nginxlog_exporter/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Adjusting the playbook configuration — Grafana
 
