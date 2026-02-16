@@ -855,11 +855,11 @@ devture_systemd_service_manager_services_list_auto: |
     }] if matrix_synapse_auto_compressor_enabled else [])
     +
     ([{
-      'name': 'matrix-synapse-admin.service',
+      'name': (synapse_admin_identifier + '.service'),
       'priority': 4000,
-      'restart_necessary': (matrix_synapse_admin_restart_necessary | bool),
+      'restart_necessary': (synapse_admin_restart_necessary | bool),
       'groups': ['matrix', 'synapse-admin'],
-    }] if matrix_synapse_admin_enabled else [])
+    }] if synapse_admin_enabled else [])
     +
     ([{
       'name': (matrix_synapse_usage_exporter_identifier + '.service'),
@@ -4754,7 +4754,7 @@ matrix_synapse_container_labels_matrix_labels_enabled: "{{ not matrix_synapse_wo
 matrix_synapse_container_labels_public_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_public_client_root_redirection_url != '' }}"
 matrix_synapse_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
 
-matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled or matrix_element_admin_enabled }}"
+matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: "{{ synapse_admin_enabled or matrix_element_admin_enabled }}"
 matrix_synapse_container_labels_internal_client_synapse_admin_api_enabled: "{{ (matrix_bot_draupnir_enabled and matrix_bot_draupnir_admin_api_enabled) }}"
 matrix_synapse_container_labels_internal_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
@@ -4991,33 +4991,47 @@ matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port
 
 ######################################################################
 #
-# matrix-synapse-admin
+# synapse_admin
 #
 ######################################################################
 
-matrix_synapse_admin_enabled: false
+synapse_admin_enabled: false
 
-matrix_synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_admin_docker_image_registry_prefix_upstream_default }}"
+synapse_admin_identifier: matrix-synapse-admin
+synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
 
-matrix_synapse_admin_container_uid: "{{ matrix_user_uid }}"
-matrix_synapse_admin_container_gid: "{{ matrix_user_gid }}"
+synapse_admin_uid: "{{ matrix_user_uid }}"
+synapse_admin_gid: "{{ matrix_user_gid }}"
 
-matrix_synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+synapse_admin_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
-matrix_synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+synapse_admin_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_synapse_admin_container_network: "{{ matrix_addons_container_network }}"
+synapse_admin_path_prefix: /synapse-admin
 
-matrix_synapse_admin_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+synapse_admin_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else synapse_admin_container_image_registry_prefix_upstream_default }}"
 
-matrix_synapse_admin_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_synapse_admin_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_synapse_admin_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+synapse_admin_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+synapse_admin_container_image_self_build_name: "localhost/etkecc/synapse-admin:{{ synapse_admin_container_image_self_build_repo_version }}"
 
-matrix_synapse_admin_config_externalAuthProvider: "{{ matrix_authentication_service_enabled | default(false) or matrix_synapse_ext_password_provider_ldap_enabled | default(false) }}"
+synapse_admin_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_synapse_admin_config_asManagedUsers_auto: |
+synapse_admin_container_network: "{{ matrix_addons_container_network }}"
+synapse_admin_container_network_deletion_enabled: false
+
+synapse_admin_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [] }}"
+
+synapse_admin_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+synapse_admin_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+synapse_admin_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+synapse_admin_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+synapse_admin_config_externalAuthProvider: "{{ matrix_authentication_service_enabled | default(false) or matrix_synapse_ext_password_provider_ldap_enabled | default(false) }}"
+
+# Restrict the service to only work with the homeserver managed by the playbook
+synapse_admin_config_restrictBaseUrl: "{{ matrix_homeserver_url }}"  # noqa var-naming
+
+synapse_admin_config_asManagedUsers_auto: |
   {{
     ([
       '^@'+(matrix_alertmanager_receiver_config_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
@@ -5172,7 +5186,7 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
 
 ######################################################################
 #
-# /matrix-synapse-admin
+# /synapse_admin
 #
 ######################################################################
 
@@ -5633,7 +5647,7 @@ matrix_dendrite_container_labels_traefik_docker_network: "{{ matrix_playbook_rev
 matrix_dendrite_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_dendrite_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_synapse_admin_enabled }}"
+matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: "{{ synapse_admin_enabled }}"
 
 matrix_dendrite_container_labels_public_client_root_redirection_enabled: "{{ matrix_dendrite_container_labels_public_client_root_redirection_url != '' }}"
 matrix_dendrite_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
@@ -5945,7 +5959,7 @@ matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: "{{
 
 # We set this regardless of whether synapse-admin is enabled, because people may wish to use a hosted (externally) synapse-admin installation and still have it auto-configured.
 # See: https://github.com/etkecc/synapse-admin/pull/126
-matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: "{{ matrix_synapse_admin_configuration if matrix_homeserver_implementation == 'synapse' else {} }}"
+matrix_static_files_file_matrix_client_property_cc_etke_synapse_admin_auto: "{{ synapse_admin_configuration if matrix_homeserver_implementation == 'synapse' else {} }}"
 
 matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_livekit_jwt_service_enabled }}"
 matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: |-

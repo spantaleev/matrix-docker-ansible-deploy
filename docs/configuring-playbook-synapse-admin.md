@@ -33,7 +33,7 @@ If you wish to adjust it, see the section [below](#adjusting-the-synapse-admin-u
 To enable Synapse Admin, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_synapse_admin_enabled: true
+synapse_admin_enabled: true
 ```
 
 **Note**: Synapse Admin requires Synapse's [Admin APIs](https://element-hq.github.io/synapse/latest/usage/administration/admin_api/index.html) to function. Access to them is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, for additional security, we normally leave them unexposed, following [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints). Because Synapse Admin needs these APIs to function, when installing Synapse Admin, the playbook **automatically** exposes the Synapse Admin API publicly for you. Depending on the homeserver implementation you're using (Synapse, Dendrite), this is equivalent to:
@@ -41,18 +41,18 @@ matrix_synapse_admin_enabled: true
 - for [Synapse](./configuring-playbook-synapse.md) (our default homeserver implementation): `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true`
 - for [Dendrite](./configuring-playbook-dendrite.md): `matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: true`
 
-By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/etkecc/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) — the one managed by the playbook. To adjust these restrictions, tweak the `matrix_synapse_admin_config_restrictBaseUrl` variable.
+By default, synapse-admin installation will be [restricted to only work with one homeserver](https://github.com/etkecc/synapse-admin/blob/e21e44362c879ac41f47c580b04210842b6ff3d7/README.md#restricting-available-homeserver) — the one managed by the playbook. To adjust these restrictions, tweak the `synapse_admin_config_restrictBaseUrl` variable.
 
 ### Adjusting the Synapse Admin URL (optional)
 
-By tweaking the `matrix_synapse_admin_hostname` and `matrix_synapse_admin_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+By tweaking the `synapse_admin_hostname` and `synapse_admin_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix
-matrix_synapse_admin_hostname: admin.example.com
-matrix_synapse_admin_path_prefix: /
+synapse_admin_hostname: admin.example.com
+synapse_admin_path_prefix: /
 ```
 
 If you've changed the default hostname, you may need to create a CNAME record for the Synapse Admin domain (`admin.example.com`), which targets `matrix.example.com`.
@@ -65,7 +65,7 @@ There are some additional things you may wish to configure about the component.
 
 Take a look at:
 
-- `roles/custom/matrix-synapse-admin/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_synapse_admin_configuration_extension_json` variable
+- `roles/galaxy/synapse_admin/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `synapse_admin_configuration_extension_json` variable
 
 ## Installing
 
