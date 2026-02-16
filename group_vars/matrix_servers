@@ -104,8 +104,6 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_appservice_kakaotalk_config_path + '/registration.yaml,dst=/matrix-appservice-kakaotalk-registration.yaml,ro'] if matrix_appservice_kakaotalk_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_appservice_slack_config_path + '/slack-registration.yaml,dst=/matrix-appservice-slack-registration.yaml,ro'] if matrix_appservice_slack_enabled else [])
-    +
     (['--mount type=bind,src=' + matrix_beeper_linkedin_config_path + '/registration.yaml,dst=/matrix-beeper-linkedin-registration.yaml,ro'] if matrix_beeper_linkedin_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_wechat_config_path + '/registration.yaml,dst=/matrix-wechat-registration.yaml,ro'] if matrix_wechat_enabled else [])
@@ -162,8 +160,6 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-appservice-irc-registration.yaml'] if matrix_appservice_irc_enabled else [])
     +
     (['/matrix-appservice-kakaotalk-registration.yaml'] if matrix_appservice_kakaotalk_enabled else [])
-    +
-    (['/matrix-appservice-slack-registration.yaml'] if matrix_appservice_slack_enabled else [])
     +
     (['/matrix-beeper-linkedin-registration.yaml'] if matrix_beeper_linkedin_enabled else [])
     +
@@ -398,13 +394,6 @@ devture_systemd_service_manager_services_list_auto: |
       'restart_necessary': true,
       'groups': ['matrix', 'bridges', 'appservice-kakaotalk', 'appservice-kakaotalk-node'],
     }] if matrix_appservice_kakaotalk_enabled else [])
-    +
-    ([{
-      'name': 'matrix-appservice-slack.service',
-      'priority': 2000,
-      'restart_necessary': (matrix_appservice_slack_restart_necessary | bool),
-      'groups': ['matrix', 'bridges', 'appservice-slack'],
-    }] if matrix_appservice_slack_enabled else [])
     +
     ([{
       'name': 'matrix-beeper-linkedin.service',
@@ -1211,66 +1200,6 @@ matrix_appservice_discord_database_password: "{{ (matrix_homeserver_generic_secr
 #
 ######################################################################
 
-######################################################################
-#
-# matrix-appservice-slack
-#
-######################################################################
-
-# We don't enable bridges by default.
-matrix_appservice_slack_enabled: false
-
-matrix_appservice_slack_hostname: "{{ matrix_server_fqn_matrix }}"
-
-matrix_appservice_slack_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_slack_database_hostname == postgres_connection_hostname) else [])
-  }}
-
-matrix_appservice_slack_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_slack_docker_image_registry_prefix_upstream_default }}"
-
-matrix_appservice_slack_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
-
-matrix_appservice_slack_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ matrix_appservice_slack_slack_port) if matrix_playbook_service_host_bind_interface_prefix else '' }}"
-
-matrix_appservice_slack_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_appservice_slack_container_additional_networks_auto: |-
-  {{
-    (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([postgres_container_network] if (postgres_enabled and matrix_appservice_slack_database_hostname == postgres_connection_hostname and matrix_appservice_slack_container_network != postgres_container_network) else [])
-      +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_appservice_slack_container_labels_traefik_enabled) else [])
-    ) | unique
-  }}
-
-matrix_appservice_slack_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_appservice_slack_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_appservice_slack_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_appservice_slack_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
-matrix_appservice_slack_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':slack.as.token') | hash('sha512') | to_uuid }}"
-
-matrix_appservice_slack_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_appservice_slack_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':slack.hs.token') | hash('sha512') | to_uuid }}"
-
-matrix_appservice_slack_id_token: "{{ (matrix_homeserver_generic_secret_key + ':slack.id.token') | hash('sha512') | to_uuid }}"
-
-# Postgres is the default, except if not using internal Postgres server
-matrix_appservice_slack_database_engine: "{{ 'postgres' if postgres_enabled else 'nedb' }}"
-matrix_appservice_slack_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_appservice_slack_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.slack.db') | hash('sha512') | to_uuid }}"
-matrix_appservice_slack_database_container_network: "{{ postgres_container_network if postgres_enabled else '' }}"
-
-######################################################################
-#
-# /matrix-bridge-appservice-slack
-#
-######################################################################
 
 ######################################################################
 #
@@ -4150,12 +4079,6 @@ postgres_managed_databases_auto: |
     }] if (matrix_appservice_draupnir_for_all_enabled and matrix_appservice_draupnir_for_all_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_appservice_slack_database_name,
-      'username': matrix_appservice_slack_database_username,
-      'password': matrix_appservice_slack_database_password,
-    }] if (matrix_appservice_slack_enabled and matrix_appservice_slack_database_engine == 'postgres' and matrix_appservice_slack_database_hostname == postgres_connection_hostname) else [])
-    +
-    ([{
       'name': matrix_appservice_irc_database_name,
       'username': matrix_appservice_irc_database_username,
       'password': matrix_appservice_irc_database_password,
@@ -5062,11 +4985,6 @@ matrix_synapse_admin_config_asManagedUsers_auto: |
     ([
       '^@_discord_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_appservice_discord_enabled else [])
-    +
-    ([
-      '^@'+(matrix_appservice_slack_bot_name | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
-      '^@'+(matrix_appservice_slack_user_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_appservice_slack_enabled else [])
     +
     ([
       '^@'+(matrix_beeper_linkedin_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
