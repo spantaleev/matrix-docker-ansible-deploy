@@ -181,8 +181,8 @@ Name | Description
 `prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`.
 `prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) (locally, on the container network).
 `prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) metrics on `https://matrix.example.com/metrics/postgres-exporter`.
-`prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) (locally, on the container network).
-`prometheus_nginxlog_exporter_metrics_proxying_enabled`|Set this to `true` to expose the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) metrics on `https://matrix.example.com/metrics/nginxlog`.
+`prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [prometheus-nginxlog-exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) (locally, on the container network).
+`prometheus_nginxlog_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [prometheus-nginxlog-exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) metrics on `https://matrix.example.com/metrics/nginxlog`.
 
 ### Expose metrics of other services/roles
 
