@@ -16,7 +16,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -113,7 +113,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_mx_puppet_steam_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mx_puppet_steam_config_path }}/config.yaml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   register: matrix_mx_puppet_steam_config_result
@@ -122,7 +122,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_mx_puppet_steam_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mx_puppet_steam_config_path }}/registration.yaml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   register: matrix_mx_puppet_steam_registration_result
@@ -138,7 +138,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-steam.service.j2"
     dest: "/etc/systemd/system/matrix-mx-puppet-steam.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_mx_puppet_steam_systemd_service_result
 
 - name: Determine whether matrix-mx-puppet-steam needs a restart

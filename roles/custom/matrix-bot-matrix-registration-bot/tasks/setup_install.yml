@@ -12,7 +12,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -27,7 +27,7 @@
     dest: "{{ matrix_bot_matrix_registration_bot_config_path }}/config.yaml"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-    mode: 0640
+    mode: '0640'
   register: matrix_bot_matrix_registration_bot_config_result
 
 - name: Ensure matrix-registration-bot image is pulled
@@ -76,7 +76,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-matrix-registration-bot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-matrix-registration-bot.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_bot_matrix_registration_bot_systemd_service_result
 
 - name: Determine whether matrix-registration-bot needs a restart

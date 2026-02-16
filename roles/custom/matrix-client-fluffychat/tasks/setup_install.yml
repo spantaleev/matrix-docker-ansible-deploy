@@ -8,7 +8,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -54,7 +54,7 @@
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -74,7 +74,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-client-fluffychat.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-fluffychat.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_client_fluffychat_systemd_service_result
 
 - name: Determine whether FluffyChat Web needs a restart

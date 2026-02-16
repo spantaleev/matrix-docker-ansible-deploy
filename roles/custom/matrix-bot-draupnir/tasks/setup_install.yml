@@ -15,7 +15,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -31,7 +31,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-    mode: 0644
+    mode: '0644'
   with_items:
     - src: "{{ role_path }}/templates/labels.j2"
       dest: "{{ matrix_bot_draupnir_base_path }}/labels"
@@ -75,7 +75,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_bot_draupnir_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_bot_draupnir_config_path }}/production.yaml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   register: matrix_bot_draupnir_config_result
@@ -91,7 +91,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-draupnir.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-draupnir.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_bot_draupnir_systemd_service_result
 
 - name: Determine whether Draupnir needs a restart

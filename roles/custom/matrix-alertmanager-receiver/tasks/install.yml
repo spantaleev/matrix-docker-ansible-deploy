@@ -9,7 +9,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -25,7 +25,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_alertmanager_receiver_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_alertmanager_receiver_config_path }}/config.yml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   register: matrix_alertmanager_receiver_config_result
@@ -34,7 +34,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_alertmanager_receiver_base_path }}/{{ item }}"
-    mode: 0640
+    mode: '0640'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -85,7 +85,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-alertmanager-receiver.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-alertmanager-receiver.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_alertmanager_receiver_systemd_service_result
 
 - name: Determine whether matrix-alertmanager-receiver needs a restart
