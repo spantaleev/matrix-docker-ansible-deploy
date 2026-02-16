@@ -1,3 +1,13 @@
+# 2026-02-17
+
+## (BC Break) prometheus-nginxlog-exporter role has been relocated and variable names need adjustments
+
+The role for prometheus-nginxlog-exporter has been relocated to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
+
+Along with the relocation, the `matrix_prometheus_nginxlog_exporter_` prefix on its variable names has been renamed to `prometheus_nginxlog_exporter_`, so you need to adjust your `vars.yml` configuration.
+
+As always, the playbook would let you know about this and point out any variables you may have missed.
+
 # 2026-02-16
 
 ## matrix-appservice-slack has been removed from the playbook
