@@ -9,7 +9,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -23,7 +23,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-    mode: 0644
+    mode: '0644'
   with_items:
     - src: "{{ role_path }}/templates/env.j2"
       dest: "{{ matrix_cactus_comments_client_base_path }}/env"
@@ -88,7 +88,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-cactus-comments-client.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-cactus-comments-client.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_cactus_comments_client_systemd_service_result
 
 - name: Determine whether matrix-cactus-comments-client needs a restart

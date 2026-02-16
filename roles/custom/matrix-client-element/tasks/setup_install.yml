@@ -15,7 +15,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -74,7 +74,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_client_element_configuration | to_nice_json }}"
     dest: "{{ matrix_client_element_data_path }}/config.json"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   register: matrix_client_element_config_result
@@ -84,7 +84,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_client_element_location_sharing_map_style | to_nice_json }}"
     dest: "{{ matrix_client_element_data_path }}/map_style.json"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   register: matrix_client_element_config_map_style_result
@@ -93,7 +93,7 @@
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ matrix_client_element_data_path }}/{{ item.name }}"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -128,7 +128,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-client-element.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-element.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_client_element_systemd_service_result
 
 - name: Determine whether Element Web needs a restart
