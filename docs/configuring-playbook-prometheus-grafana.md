@@ -248,7 +248,7 @@ As with all other services, you can find the logs in [systemd-journald](https://
 - `journalctl -fu matrix-prometheus` for Prometheus
 - `journalctl -fu matrix-prometheus-node-exporter` for Node Exporter
 - `journalctl -fu matrix-prometheus-postgres-exporter` for PostgreSQL Server Exporter
-- `journalctl -fu prometheus-nginxlog-exporter` for prometheus-nginxlog-exporter
+- `journalctl -fu matrix-prometheus-nginxlog-exporter` for prometheus-nginxlog-exporter
 - `journalctl -fu matrix-grafana` for Grafana
 
 ## More information

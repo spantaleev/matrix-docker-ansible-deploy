@@ -760,7 +760,7 @@ devture_systemd_service_manager_services_list_auto: |
     }] if prometheus_postgres_exporter_enabled else [])
     +
     ([{
-      'name': 'prometheus-nginxlog-exporter.service',
+      'name': (prometheus_nginxlog_exporter_identifier + '.service'),
       'priority': 3900,
       'restart_necessary': (prometheus_nginxlog_exporter_restart_necessary | bool),
       'groups': ['matrix', 'monitoring', 'prometheus-exporters', 'prometheus-nginxlog-exporter'],
@@ -5218,7 +5218,7 @@ prometheus_postgres_exporter_systemd_required_services_list_auto: |
 
 prometheus_nginxlog_exporter_enabled: false
 
-prometheus_nginxlog_exporter_identifier: prometheus-nginxlog-exporter
+prometheus_nginxlog_exporter_identifier: matrix-prometheus-nginxlog-exporter
 
 prometheus_nginxlog_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
