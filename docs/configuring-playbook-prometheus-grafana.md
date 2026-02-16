@@ -95,8 +95,8 @@ If you enable Grafana, a dedicated `NGINX PROXY` Grafana dashboard will be creat
 At the moment of writing only images for `amd64` and `arm64` architectures are available. The playbook currently does not support [self-building](./self-building.md) a container image on other architectures. You can however use a custom-build image by setting:
 
 ```yaml
-prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
-prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
+prometheus_nginxlog_exporter_container_image_arch_check_enabled: false
+prometheus_nginxlog_exporter_container_image: path/to/docker/image:tag
 ```
 
 ### Extending the configuration

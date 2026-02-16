@@ -8,10 +8,10 @@
 
 - name: Ensure prometheus-nginxlog-exporter image is pulled
   community.docker.docker_image:
-    name: "{{ prometheus_nginxlog_exporter_docker_image }}"
+    name: "{{ prometheus_nginxlog_exporter_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ prometheus_nginxlog_exporter_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else prometheus_nginxlog_exporter_docker_image_force_pull }}"
+    force_source: "{{ prometheus_nginxlog_exporter_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else prometheus_nginxlog_exporter_container_image_force_pull }}"
   register: prometheus_nginxlog_exporter_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
