@@ -39,7 +39,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -121,7 +121,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_gmessages_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_gmessages_config_path }}/config.yaml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   register: matrix_mautrix_gmessages_config_result
@@ -130,7 +130,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_gmessages_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_gmessages_config_path }}/registration.yaml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   register: matrix_mautrix_gmessages_registration_result
@@ -139,14 +139,14 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-gmessages.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-gmessages.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_mautrix_gmessages_systemd_service_result
 
 - name: Ensure mautrix-gmessages support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_mautrix_gmessages_base_path }}/{{ item }}"
-    mode: 0640
+    mode: '0640'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:

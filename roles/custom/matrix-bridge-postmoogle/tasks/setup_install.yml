@@ -60,7 +60,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -75,7 +75,7 @@
     dest: "{{ matrix_postmoogle_config_path }}/env"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-    mode: 0640
+    mode: '0640'
   register: matrix_postmoogle_env_result
 
 - name: Ensure postmoogle image is pulled
@@ -124,7 +124,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-postmoogle.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postmoogle.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_postmoogle_systemd_service_result
 
 - name: Determine whether matrix-postmoogle needs a restart

@@ -9,7 +9,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -94,7 +94,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_wechat_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_wechat_config_path }}/config.yaml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
 
@@ -102,7 +102,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_wechat_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_wechat_config_path }}/registration.yaml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
 
@@ -110,7 +110,7 @@
   ansible.builtin.copy:
     content: "{{ matrix_wechat_agent_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_wechat_config_path }}/agent-config.yaml"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
 
@@ -125,12 +125,12 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-wechat.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-wechat.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_wechat_systemd_service_result
 
 - name: Ensure matrix-wechat-agent.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-wechat-agent.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-wechat-agent.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_wechat_agent_systemd_service_result

@@ -9,7 +9,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
+    mode: '0750'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -32,7 +32,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-    mode: 0644
+    mode: '0644'
   with_items:
     - src: "{{ role_path }}/templates/config.toml.j2"
       dest: "{{ matrix_static_files_config_path }}/config.toml"
@@ -48,7 +48,7 @@
   ansible.builtin.copy:
     content: "{{ item.content }}"
     dest: "{{ item.dest }}"
-    mode: 0644
+    mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   when: item.when | bool
@@ -106,7 +106,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-static-files.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_static_files_identifier }}.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_static_files_systemd_service_result
 
 - name: Determine whether matrix-static-files needs a restart

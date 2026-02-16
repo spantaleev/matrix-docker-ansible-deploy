@@ -13,7 +13,7 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0755
+    mode: '0755'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -79,7 +79,7 @@
         dest: "{{ matrix_bot_maubot_customized_docker_src_files_path }}/Dockerfile"
         owner: "{{ matrix_user_name }}"
         group: "{{ matrix_group_name }}"
-        mode: 0640
+        mode: '0640'
       register: matrix_bot_maubot_container_image_customizations_dockerfile_result
 
     - name: Ensure customized Docker image for maubot is built
@@ -96,7 +96,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_bot_maubot_base_path }}/{{ item }}"
-    mode: 0640
+    mode: '0640'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
@@ -114,7 +114,7 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-maubot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-maubot.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_bot_maubot_systemd_service_result
 
 - name: Determine whether maubot needs a restart
