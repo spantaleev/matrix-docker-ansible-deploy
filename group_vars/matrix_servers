@@ -5221,11 +5221,15 @@ prometheus_nginxlog_exporter_enabled: false
 prometheus_nginxlog_exporter_identifier: matrix-prometheus-nginxlog-exporter
 prometheus_nginxlog_exporter_base_path: "{{ matrix_base_data_path }}/prometheus-nginxlog-exporter"
 
+prometheus_nginxlog_exporter_uid: "{{ matrix_user_uid }}"
+prometheus_nginxlog_exporter_gid: "{{ matrix_user_gid }}"
+
 prometheus_nginxlog_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
 prometheus_nginxlog_exporter_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else prometheus_nginxlog_exporter_container_image_registry_prefix_upstream_default }}"
 
 prometheus_nginxlog_exporter_container_network: "{{ matrix_monitoring_container_network }}"
+prometheus_nginxlog_exporter_container_network_deletion_enabled: false
 
 prometheus_nginxlog_exporter_container_additional_networks_auto: |-
   {{
@@ -5244,6 +5248,8 @@ prometheus_nginxlog_exporter_config_namespaces_source_tags_auto: |
   {{
     ([matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_tag] if matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled else [])
   }}
+
+prometheus_nginxlog_exporter_architecture: "{{ matrix_architecture }}"
 
 ######################################################################
 #
