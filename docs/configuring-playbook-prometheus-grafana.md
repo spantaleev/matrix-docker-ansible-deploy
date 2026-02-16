@@ -83,7 +83,7 @@ See the project's [documentation](https://github.com/martin-helmich/prometheus-n
 To enable it, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_prometheus_nginxlog_exporter_enabled: true
+prometheus_nginxlog_exporter_enabled: true
 ```
 
 If you enable Grafana, a dedicated `NGINX PROXY` Grafana dashboard will be created.
@@ -95,8 +95,8 @@ If you enable Grafana, a dedicated `NGINX PROXY` Grafana dashboard will be creat
 At the moment of writing only images for `amd64` and `arm64` architectures are available. The playbook currently does not support [self-building](./self-building.md) a container image on other architectures. You can however use a custom-build image by setting:
 
 ```yaml
-matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
-matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
+prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false
+prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag
 ```
 
 ### Extending the configuration
@@ -181,8 +181,8 @@ Name | Description
 `prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`.
 `prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) (locally, on the container network).
 `prometheus_postgres_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) metrics on `https://matrix.example.com/metrics/postgres-exporter`.
-`matrix_prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) (locally, on the container network).
-`matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled`|Set this to `true` to expose the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) metrics on `https://matrix.example.com/metrics/nginxlog`.
+`prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) (locally, on the container network).
+`prometheus_nginxlog_exporter_metrics_proxying_enabled`|Set this to `true` to expose the [nginx Log exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) metrics on `https://matrix.example.com/metrics/nginxlog`.
 
 ### Expose metrics of other services/roles
 
@@ -248,7 +248,7 @@ As with all other services, you can find the logs in [systemd-journald](https://
 - `journalctl -fu matrix-prometheus` for Prometheus
 - `journalctl -fu matrix-prometheus-node-exporter` for Node Exporter
 - `journalctl -fu matrix-prometheus-postgres-exporter` for PostgreSQL Server Exporter
-- `journalctl -fu matrix-prometheus-nginxlog-exporter` for prometheus-nginxlog-exporter
+- `journalctl -fu prometheus-nginxlog-exporter` for prometheus-nginxlog-exporter
 - `journalctl -fu matrix-grafana` for Grafana
 
 ## More information

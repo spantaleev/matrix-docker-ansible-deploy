@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
 listen:
-  port: {{ matrix_prometheus_nginxlog_exporter_container_metrics_port }}
+  port: {{ prometheus_nginxlog_exporter_container_metrics_port }}
   address: "0.0.0.0"
   metrics_endpoint: "/metrics"
 
@@ -20,10 +20,10 @@ namespaces:
     # print_log: true
     source:
       syslog:
-        listen_address: "udp://0.0.0.0:{{ matrix_prometheus_nginxlog_exporter_container_syslog_port }}"
+        listen_address: "udp://0.0.0.0:{{ prometheus_nginxlog_exporter_container_syslog_port }}"
         # format options: "rfc3164" ,"rfc5424", "rfc6587", "auto"
         format: auto
-        tags: {{ matrix_prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags | to_json }}
+        tags: {{ prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags | to_json }}
     relabel_configs:
       - target_label: request_uri
         from: request

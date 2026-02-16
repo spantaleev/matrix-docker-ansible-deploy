@@ -760,11 +760,11 @@ devture_systemd_service_manager_services_list_auto: |
     }] if prometheus_postgres_exporter_enabled else [])
     +
     ([{
-      'name': 'matrix-prometheus-nginxlog-exporter.service',
+      'name': 'prometheus-nginxlog-exporter.service',
       'priority': 3900,
-      'restart_necessary': (matrix_prometheus_nginxlog_exporter_restart_necessary | bool),
+      'restart_necessary': (prometheus_nginxlog_exporter_restart_necessary | bool),
       'groups': ['matrix', 'monitoring', 'prometheus-exporters', 'prometheus-nginxlog-exporter'],
-    }] if matrix_prometheus_nginxlog_exporter_enabled else [])
+    }] if prometheus_nginxlog_exporter_enabled else [])
     +
     ([{
       'name': (valkey_identifier + '.service'),
@@ -4854,7 +4854,7 @@ matrix_synapse_reverse_proxy_companion_container_additional_networks_auto: |
     (
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_synapse_reverse_proxy_companion_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
       +
-      ([matrix_prometheus_nginxlog_exporter_container_network] if (matrix_prometheus_nginxlog_exporter_enabled and matrix_prometheus_nginxlog_exporter_container_network != matrix_synapse_reverse_proxy_companion_container_network) else [])
+      ([prometheus_nginxlog_exporter_container_network] if (prometheus_nginxlog_exporter_enabled and prometheus_nginxlog_exporter_container_network != matrix_synapse_reverse_proxy_companion_container_network) else [])
       +
       ([] if matrix_homeserver_container_network in ['', matrix_synapse_reverse_proxy_companion_container_network] else [matrix_homeserver_container_network])
     ) | unique
@@ -4903,8 +4903,8 @@ matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_wor
 matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations: "{{matrix_synapse_workers_media_repository_endpoints|default([]) }}"
 matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_worker_client_server_endpoints|default([]) }}"
 
-matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
-matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port: "{{ (matrix_prometheus_nginxlog_exporter_identifier | string +':'+ matrix_prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
+matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled: "{{ prometheus_nginxlog_exporter_enabled }}"
+matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port: "{{ (prometheus_nginxlog_exporter_identifier | string +':'+ prometheus_nginxlog_exporter_container_syslog_port | string) | default('') }}"
 
 ######################################################################
 #
@@ -5212,41 +5212,41 @@ prometheus_postgres_exporter_systemd_required_services_list_auto: |
 
 ######################################################################
 #
-# matrix-prometheus-nginxlog-exporter
+# prometheus_nginxlog_exporter
 #
 ######################################################################
 
-matrix_prometheus_nginxlog_exporter_enabled: false
+prometheus_nginxlog_exporter_enabled: false
 
-matrix_prometheus_nginxlog_exporter_identifier: matrix-prometheus-nginxlog-exporter
+prometheus_nginxlog_exporter_identifier: prometheus-nginxlog-exporter
 
-matrix_prometheus_nginxlog_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
+prometheus_nginxlog_exporter_hostname: "{{ matrix_server_fqn_matrix }}"
 
-matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream_default }}"
+prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream_default }}"
 
-matrix_prometheus_nginxlog_exporter_container_network: "{{ matrix_monitoring_container_network }}"
+prometheus_nginxlog_exporter_container_network: "{{ matrix_monitoring_container_network }}"
 
-matrix_prometheus_nginxlog_exporter_container_additional_networks_auto: |-
+prometheus_nginxlog_exporter_container_additional_networks_auto: |-
   {{
-    ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_prometheus_nginxlog_exporter_container_labels_traefik_enabled) else [])
+    ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and prometheus_nginxlog_exporter_container_labels_traefik_enabled) else [])
   }}
 
-matrix_prometheus_nginxlog_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
-matrix_prometheus_nginxlog_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_prometheus_nginxlog_exporter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_prometheus_nginxlog_exporter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+prometheus_nginxlog_exporter_container_labels_traefik_enabled: "{{ matrix_metrics_exposure_enabled }}"
+prometheus_nginxlog_exporter_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+prometheus_nginxlog_exporter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+prometheus_nginxlog_exporter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+prometheus_nginxlog_exporter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags_auto: |
+prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags_auto: |
   {{
     ([matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_tag] if matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled else [])
   }}
 
 ######################################################################
 #
-# /matrix-prometheus-nginxlog-exporter
+# /prometheus_nginxlog_exporter
 #
 ######################################################################
 
@@ -5273,6 +5273,8 @@ prometheus_container_network: "{{ matrix_monitoring_container_network }}"
 prometheus_container_additional_networks_auto: |
   {{
     (
+      ([prometheus_nginxlog_exporter_container_network] if matrix_prometheus_services_connect_scraper_nginxlog_enabled and prometheus_nginxlog_exporter_container_network != prometheus_container_network else [])
+      +
       ([prometheus_node_exporter_container_network] if prometheus_self_node_scraper_enabled and prometheus_node_exporter_container_network != prometheus_container_network else [])
       +
       ([matrix_synapse_container_network] if matrix_prometheus_services_connect_scraper_synapse_enabled and matrix_synapse_container_network != prometheus_container_network else [])
@@ -5280,8 +5282,6 @@ prometheus_container_additional_networks_auto: |
       ([prometheus_postgres_exporter_container_network] if matrix_prometheus_services_connect_scraper_postgres_enabled and prometheus_postgres_exporter_container_network != prometheus_container_network else [])
       +
       ([matrix_hookshot_container_network] if matrix_prometheus_services_connect_scraper_hookshot_enabled and matrix_hookshot_container_network != prometheus_container_network else [])
-      +
-      ([matrix_prometheus_nginxlog_exporter_container_network] if matrix_prometheus_services_connect_scraper_nginxlog_enabled and matrix_prometheus_nginxlog_exporter_container_network != prometheus_container_network else [])
       +
       ([matrix_media_repo_container_network] if matrix_prometheus_services_connect_scraper_media_repo_enabled and matrix_media_repo_container_network != prometheus_container_network else [])
       +
@@ -5344,8 +5344,8 @@ matrix_prometheus_services_connect_scraper_postgres_static_configs_target: "{{ p
 matrix_prometheus_services_connect_scraper_hookshot_enabled: "{{ matrix_hookshot_enabled and matrix_hookshot_metrics_enabled }}"
 matrix_prometheus_services_connect_scraper_hookshot_static_configs_target: "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_metrics_port | string }}"
 
-matrix_prometheus_services_connect_scraper_nginxlog_enabled: "{{ matrix_prometheus_nginxlog_exporter_enabled }}"
-matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: "{{ matrix_prometheus_nginxlog_exporter_identifier }}:{{ matrix_prometheus_nginxlog_exporter_container_metrics_port | string }}"
+matrix_prometheus_services_connect_scraper_nginxlog_enabled: "{{ prometheus_nginxlog_exporter_enabled }}"
+matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: "{{ prometheus_nginxlog_exporter_identifier }}:{{ prometheus_nginxlog_exporter_container_metrics_port | string }}"
 
 matrix_prometheus_services_connect_scraper_media_repo_enabled: "{{ matrix_media_repo_enabled and matrix_media_repo_metrics_enabled }}"
 matrix_prometheus_services_connect_scraper_media_repo_static_configs_target: "{{ matrix_media_repo_identifier }}:{{ matrix_media_repo_metrics_port }}"
@@ -5418,7 +5418,7 @@ grafana_dashboard_download_urls: |
     +
     (prometheus_postgres_exporter_dashboard_urls if prometheus_postgres_exporter_enabled else [])
     +
-    (matrix_prometheus_nginxlog_exporter_dashboard_urls if matrix_prometheus_nginxlog_exporter_enabled else [])
+    (prometheus_nginxlog_exporter_dashboard_urls if prometheus_nginxlog_exporter_enabled else [])
     +
     (matrix_media_repo_dashboard_urls if matrix_media_repo_metrics_enabled else [])
     +
@@ -5430,7 +5430,7 @@ grafana_provisioning_dashboard_template_files: |
     ([{
         'path': 'roles/galaxy/prometheus_nginxlog_exporter/templates/grafana/nginx-proxy.json',
         'name': 'nginx-proxy.json',
-    }] if matrix_prometheus_nginxlog_exporter_enabled else [])
+    }] if prometheus_nginxlog_exporter_enabled else [])
   }}
 
 grafana_default_home_dashboard_path: |-

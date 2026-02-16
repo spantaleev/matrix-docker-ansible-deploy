@@ -13,8 +13,8 @@
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
-    - {'old': 'matrix_prometheus_nginxlog_exporter_container_hostname', 'new': 'matrix_prometheus_nginxlog_exporter_identifier'}
-    - {'old': 'matrix_prometheus_nginxlog_exporter_docker_image_name_prefix', 'new': 'matrix_prometheus_nginxlog_exporter_docker_image_registry_prefix'}
+    - {'old': 'prometheus_nginxlog_exporter_container_hostname', 'new': 'prometheus_nginxlog_exporter_identifier'}
+    - {'old': 'prometheus_nginxlog_exporter_docker_image_name_prefix', 'new': 'prometheus_nginxlog_exporter_docker_image_registry_prefix'}
 
 - name: Fail if docker image not available for arch
   ansible.builtin.fail:
@@ -24,14 +24,14 @@
       We currently do not support building an image using this playbook.
 
       You can use a custom-build image by setting
-          'matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false'
-          'matrix_prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag'
+          'prometheus_nginxlog_exporter_docker_image_arch_check_enabled: false'
+          'prometheus_nginxlog_exporter_docker_image: path/to/docker/image:tag'
 
       or disable 'prometheus-nginxlog-exporter' by setting
-          'matrix_prometheus_nginxlog_exporter: false'
+          'prometheus_nginxlog_exporter: false'
 
       in vars.yml
-  when: matrix_prometheus_nginxlog_exporter_docker_image_arch_check_enabled and matrix_architecture not in matrix_prometheus_nginxlog_exporter_docker_image_arch
+  when: prometheus_nginxlog_exporter_docker_image_arch_check_enabled and matrix_architecture not in prometheus_nginxlog_exporter_docker_image_arch
 
 - name: Fail if required prometheus-nginxlog-exporter settings not defined
   ansible.builtin.fail:
@@ -39,6 +39,6 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
-    - {'name': 'matrix_prometheus_nginxlog_exporter_metrics_proxying_hostname', when: "{{ matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled }}"}
-    - {'name': 'matrix_prometheus_nginxlog_exporter_metrics_proxying_path_prefix', when: "{{ matrix_prometheus_nginxlog_exporter_metrics_proxying_enabled }}"}
-    - {'name': 'matrix_prometheus_nginxlog_exporter_container_network', when: true}
+    - {'name': 'prometheus_nginxlog_exporter_metrics_proxying_hostname', when: "{{ prometheus_nginxlog_exporter_metrics_proxying_enabled }}"}
+    - {'name': 'prometheus_nginxlog_exporter_metrics_proxying_path_prefix', when: "{{ prometheus_nginxlog_exporter_metrics_proxying_enabled }}"}
+    - {'name': 'prometheus_nginxlog_exporter_container_network', when: true}
