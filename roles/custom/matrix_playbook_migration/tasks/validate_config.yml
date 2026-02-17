@@ -791,6 +791,18 @@
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report SchildiChat Web variables
+  ansible.builtin.fail:
+    msg: |-
+      The SchildiChat Web service was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_client_schildichat_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-client-schildichat-web.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_client_schildichat_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_client_schildichat_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report the Sliding Sync proxy variables
   ansible.builtin.fail:
     msg: |-
