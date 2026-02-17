@@ -831,3 +831,15 @@
 
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_sliding_sync_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_sliding_sync_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report the synapse-auto-invite-accept variables
+  ansible.builtin.fail:
+    msg: |-
+      synapse-auto-invite-accept was completely removed from the playbook in February 2026, as the same functionality is available since Synapse v1.109.0.
+
+      Please remove all `matrix_synapse_ext_synapse_auto_accept_invite_*` variables from your configuration file (vars.yml).
+
+      To enable the native feature, see `docs/configuring-playbook-synapse-auto-accept-invite.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_synapse_ext_synapse_auto_accept_invite_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_synapse_ext_synapse_auto_accept_invite_.+', wantlist=True) | length > 0"
