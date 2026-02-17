@@ -8,6 +8,14 @@ Along with the relocation, the `matrix_prometheus_nginxlog_exporter_` prefix on 
 
 As always, the playbook would let you know about this and point out any variables you may have missed.
 
+## synapse-auto-invite-accept has been removed from the playbook
+
+[synapse-auto-invite-accept](./docs/configuring-playbook-synapse-auto-accept-invite.md) has been removed from the playbook, as the same functionality [has been integrated](https://github.com/element-hq/synapse/pull/17147) to Synapse since [v1.109.0](https://github.com/element-hq/synapse/releases/tag/v1.109.0).
+
+See [this section](./docs/configuring-playbook-synapse-auto-accept-invite.md#native-alternative) for details about how to enable the function on Synapse.
+
+If you're using any `matrix_synapse_ext_synapse_auto_accept_invite_*` variables, the playbook will let you know which one you'll need to remove from `vars.yml`.
+
 # 2026-02-16
 
 ## matrix-appservice-slack has been removed from the playbook
