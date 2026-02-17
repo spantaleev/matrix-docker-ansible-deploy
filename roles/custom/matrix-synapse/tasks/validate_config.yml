@@ -151,18 +151,6 @@
       with_items:
         - matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname
 
-
-- name: Fail when auto-accept-invite enabled as a native feature and a module at the same time
-  ansible.builtin.fail:
-    msg: >-
-      Your configuration enables the auto-accept invites feature both as a native Synapse feature (`matrix_synapse_auto_accept_invites_enabled`) and a 3rd party module (`matrix_synapse_ext_synapse_auto_accept_invite_enabled`).
-      This is unnecessary, since they both do the same and the native feature is built on top of the 3rd party module anyway.
-      Enabling both at the same time will lead to issues.
-      We recommend leaving `matrix_synapse_auto_accept_invites_enabled` in your configuration and removing `matrix_synapse_ext_synapse_auto_accept_invite_enabled`.
-  when:
-    - matrix_synapse_auto_accept_invites_enabled
-    - matrix_synapse_ext_synapse_auto_accept_invite_enabled
-
 - name: Fail if known Synapse password provider modules are enabled when auth is delegated to Matrix Authentication Service
   ansible.builtin.fail:
     msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it does not make sense to enable password provider modules, because it is not Synapse that is handling authentication. Please disable {{ item }} before enabling Matrix Authentication Service integration for Synapse. Synapse will refuse to start otherwise."
