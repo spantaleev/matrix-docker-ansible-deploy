@@ -233,8 +233,6 @@ Various services that don't fit any other categories.
 
 - [Setting up Matrix RTC](configuring-playbook-matrix-rtc.md) (optional)
 
-- [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md)
-
 - [Setting up synapse-auto-compressor](configuring-playbook-synapse-auto-compressor.md) for compressing the database on Synapse homeservers
 
 - [Setting up Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced)
@@ -290,3 +288,5 @@ Various services that don't fit any other categories.
 - [Setting up MX Puppet Slack bridging](configuring-playbook-bridge-mx-puppet-slack.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Slack bridging](configuring-playbook-bridge-mautrix-slack.md))
 
 - [Setting up MX Puppet Twitter bridging](configuring-playbook-bridge-mx-puppet-twitter.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook. Consider [setting up Mautrix Twitter bridging](configuring-playbook-bridge-mautrix-twitter.md))
+
+- [Setting up Synapse Auto Invite Accept](configuring-playbook-synapse-auto-accept-invite.md) (removed; since Synapse [v1.109.0](https://github.com/element-hq/synapse/releases/tag/v1.109.0) the same feature is available natively.)
