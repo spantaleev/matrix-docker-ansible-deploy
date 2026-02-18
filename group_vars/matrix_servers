@@ -622,7 +622,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (coturn_identifier + '.service'),
       'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900),
-      'restart_necessary': true,
+      'restart_necessary': (coturn_restart_necessary | bool),
       'groups': ['matrix', 'coturn'],
     }] if coturn_enabled else [])
     +
@@ -643,7 +643,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (coturn_identifier + '-reload.timer'),
       'priority': 5000,
-      'restart_necessary': true,
+      'restart_necessary': (coturn_restart_necessary | bool),
       'groups': ['matrix', 'coturn'],
     }] if (coturn_enabled and coturn_tls_enabled) else [])
     +
