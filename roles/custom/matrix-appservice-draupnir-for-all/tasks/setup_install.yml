@@ -22,15 +22,15 @@
     - {path: "{{ matrix_appservice_draupnir_for_all_base_path }}", when: true}
     - {path: "{{ matrix_appservice_draupnir_for_all_config_path }}", when: true}
     - {path: "{{ matrix_appservice_draupnir_for_all_data_path }}", when: true}
-    - {path: "{{ matrix_appservice_draupnir_for_all_docker_src_files_path }}", when: "{{ matrix_appservice_draupnir_for_all_container_image_self_build }}"}
+    - {path: "{{ matrix_appservice_draupnir_for_all_container_src_files_path }}", when: "{{ matrix_appservice_draupnir_for_all_container_image_self_build }}"}
   when: "item.when | bool"
 
 - name: Ensure Draupnir Docker image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_appservice_draupnir_for_all_docker_image }}"
+    name: "{{ matrix_appservice_draupnir_for_all_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_draupnir_for_all_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_draupnir_for_all_docker_image_force_pull }}"
+    force_source: "{{ matrix_appservice_draupnir_for_all_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_draupnir_for_all_container_image_force_pull }}"
   when: "not matrix_appservice_draupnir_for_all_container_image_self_build | bool"
   register: matrix_appservice_draupnir_for_all_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -40,8 +40,8 @@
 - name: Ensure Draupnir repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_appservice_draupnir_for_all_container_image_self_build_repo }}"
-    dest: "{{ matrix_appservice_draupnir_for_all_docker_src_files_path }}"
-    version: "{{ matrix_appservice_draupnir_for_all_docker_image.split(':')[1] }}"
+    dest: "{{ matrix_appservice_draupnir_for_all_container_src_files_path }}"
+    version: "{{ matrix_appservice_draupnir_for_all_container_image.split(':')[1] }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
@@ -50,12 +50,12 @@
 
 - name: Ensure Draupnir Docker image is built
   community.docker.docker_image:
-    name: "{{ matrix_appservice_draupnir_for_all_docker_image }}"
+    name: "{{ matrix_appservice_draupnir_for_all_container_image }}"
     source: build
     force_source: "{{ matrix_appservice_draupnir_for_all_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_appservice_draupnir_for_all_docker_src_files_path }}"
+      path: "{{ matrix_appservice_draupnir_for_all_container_src_files_path }}"
       pull: true
   when: "matrix_appservice_draupnir_for_all_container_image_self_build | bool"
 
