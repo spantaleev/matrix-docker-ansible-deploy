@@ -19,7 +19,7 @@ matrix_synapse_admin_enabled: true
 # A path on host where all related files will be saved
 matrix_synapse_admin_base_path: "{{ matrix_base_data_path }}/synapse-admin"
 matrix_synapse_admin_config_path: "{{ matrix_synapse_admin_base_path }}/config"
-matrix_synapse_admin_docker_src_files_path: "{{ matrix_synapse_admin_base_path }}/docker-src"
+matrix_synapse_admin_container_src_files_path: "{{ matrix_synapse_admin_base_path }}/docker-src"
 
 matrix_synapse_admin_container_uid: ''
 matrix_synapse_admin_container_gid: ''
@@ -29,11 +29,11 @@ matrix_synapse_admin_container_image_self_build_repo: "https://github.com/etkecc
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/synapse-admin
 matrix_synapse_admin_version: v0.11.1-etke53
-matrix_synapse_admin_docker_image: "{{ matrix_synapse_admin_docker_image_registry_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
-matrix_synapse_admin_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_synapse_admin_docker_image_registry_prefix_upstream }}"
-matrix_synapse_admin_docker_image_registry_prefix_upstream: "{{ matrix_synapse_admin_docker_image_registry_prefix_upstream_default }}"
-matrix_synapse_admin_docker_image_registry_prefix_upstream_default: "ghcr.io/"
-matrix_synapse_admin_docker_image_force_pull: "{{ matrix_synapse_admin_docker_image.endswith(':latest') }}"
+matrix_synapse_admin_container_image: "{{ matrix_synapse_admin_container_image_registry_prefix }}etkecc/synapse-admin:{{ matrix_synapse_admin_version }}"
+matrix_synapse_admin_container_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_admin_container_image_self_build else matrix_synapse_admin_container_image_registry_prefix_upstream }}"
+matrix_synapse_admin_container_image_registry_prefix_upstream: "{{ matrix_synapse_admin_container_image_registry_prefix_upstream_default }}"
+matrix_synapse_admin_container_image_registry_prefix_upstream_default: "ghcr.io/"
+matrix_synapse_admin_container_image_force_pull: "{{ matrix_synapse_admin_container_image.endswith(':latest') }}"
 
 # The base container network
 matrix_synapse_admin_container_network: matrix-synapse-admin

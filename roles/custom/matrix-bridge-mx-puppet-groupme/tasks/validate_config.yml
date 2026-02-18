@@ -5,6 +5,20 @@
 
 ---
 
+- name: (Deprecation) Catch and report renamed mx-puppet-groupme variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
+  with_items:
+    - {'old': 'matrix_mx_puppet_groupme_docker_image_name_prefix', 'new': 'matrix_mx_puppet_groupme_container_image_registry_prefix'}
+    - {'old': 'matrix_mx_puppet_groupme_docker_image', 'new': 'matrix_mx_puppet_groupme_container_image'}
+    - {'old': 'matrix_mx_puppet_groupme_docker_image_force_pull', 'new': 'matrix_mx_puppet_groupme_container_image_force_pull'}
+    - {'old': 'matrix_mx_puppet_groupme_docker_image_registry_prefix', 'new': 'matrix_mx_puppet_groupme_container_image_registry_prefix'}
+    - {'old': 'matrix_mx_puppet_groupme_docker_image_registry_prefix_upstream', 'new': 'matrix_mx_puppet_groupme_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_mx_puppet_groupme_docker_image_registry_prefix_upstream_default', 'new': 'matrix_mx_puppet_groupme_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_mx_puppet_groupme_docker_src_files_path', 'new': 'matrix_mx_puppet_groupme_container_src_files_path'}
+
 - name: Fail if required mx-puppet-groupme settings not defined
   ansible.builtin.fail:
     msg: >-
@@ -16,11 +30,3 @@
     - {'name': 'matrix_mx_puppet_groupme_homeserver_token', when: true}
     - {'name': 'matrix_mx_puppet_groupme_database_hostname', when: "{{ matrix_mx_puppet_groupme_database_engine == 'postgres' }}"}
     - {'name': 'matrix_mx_puppet_groupme_container_network', when: true}
-
-- name: (Deprecation) Catch and report renamed mx-puppet-groupme variables
-  ansible.builtin.fail:
-    msg: >-
-      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
-  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
-  with_items:
-    - {'old': 'matrix_mx_puppet_groupme_docker_image_name_prefix', 'new': 'matrix_mx_puppet_groupme_docker_image_registry_prefix'}

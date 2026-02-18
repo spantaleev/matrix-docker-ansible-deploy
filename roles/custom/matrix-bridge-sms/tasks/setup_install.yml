@@ -12,7 +12,7 @@
 
 - name: Ensure matrix-sms-bridge image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_sms_bridge_docker_image }}"
+    name: "{{ matrix_sms_bridge_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
   register: matrix_sms_bridge_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"

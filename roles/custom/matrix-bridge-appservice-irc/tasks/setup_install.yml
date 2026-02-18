@@ -29,7 +29,7 @@
     - {path: "{{ matrix_appservice_irc_base_path }}", when: true}
     - {path: "{{ matrix_appservice_irc_config_path }}", when: true}
     - {path: "{{ matrix_appservice_irc_data_path }}", when: true}
-    - {path: "{{ matrix_appservice_irc_docker_src_files_path }}", when: "{{ matrix_appservice_irc_container_image_self_build }}"}
+    - {path: "{{ matrix_appservice_irc_container_src_files_path }}", when: "{{ matrix_appservice_irc_container_image_self_build }}"}
   when: item.when | bool
 
 - name: Check if an old passkey file already exists
@@ -81,10 +81,10 @@
 
 - name: Ensure Appservice IRC image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_appservice_irc_docker_image }}"
+    name: "{{ matrix_appservice_irc_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_irc_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_docker_image_force_pull }}"
+    force_source: "{{ matrix_appservice_irc_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_container_image_force_pull }}"
   when: "matrix_appservice_irc_enabled | bool and not matrix_appservice_irc_container_image_self_build | bool"
   register: matrix_appservice_irc_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -93,9 +93,9 @@
 
 - name: Ensure matrix-appservice-irc repository is present when self-building
   ansible.builtin.git:
-    repo: "{{ matrix_appservice_irc_docker_repo }}"
-    version: "{{ matrix_appservice_irc_docker_repo_version }}"
-    dest: "{{ matrix_appservice_irc_docker_src_files_path }}"
+    repo: "{{ matrix_appservice_irc_container_repo }}"
+    version: "{{ matrix_appservice_irc_container_repo_version }}"
+    dest: "{{ matrix_appservice_irc_container_src_files_path }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
@@ -104,13 +104,13 @@
 
 - name: Ensure matrix-appservice-irc Docker image is built
   community.docker.docker_image:
-    name: "{{ matrix_appservice_irc_docker_image }}"
+    name: "{{ matrix_appservice_irc_container_image }}"
     source: build
     force_source: "{{ matrix_appservice_irc_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_appservice_irc_docker_src_files_path }}"
+      path: "{{ matrix_appservice_irc_container_src_files_path }}"
       pull: true
   when: "matrix_appservice_irc_enabled | bool and matrix_appservice_irc_container_image_self_build | bool and matrix_appservice_irc_git_pull_results.changed"
 
@@ -149,7 +149,7 @@
     - name: Generate IRC appservice signing key for authenticated media
       community.docker.docker_container:
         name: "create-auth-media-jwk-key"
-        image: "{{ matrix_appservice_irc_docker_image }}"
+        image: "{{ matrix_appservice_irc_container_image }}"
         cleanup: true
         network_mode: none
         entrypoint: "/usr/local/bin/node"
@@ -210,7 +210,7 @@
     --mount type=bind,src={{ matrix_appservice_irc_config_path }},dst=/config
     --mount type=bind,src={{ matrix_appservice_irc_data_path }},dst=/data
     --entrypoint=/bin/bash
-    {{ matrix_appservice_irc_docker_image }}
+    {{ matrix_appservice_irc_container_image }}
     -c
     'node app.js
     -r

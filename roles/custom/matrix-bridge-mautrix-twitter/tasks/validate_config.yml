@@ -7,20 +7,6 @@
 
 ---
 
-- name: Fail if required mautrix-twitter settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
-  with_items:
-    - {'name': 'matrix_mautrix_twitter_appservice_token', when: true}
-    - {'name': 'matrix_mautrix_twitter_homeserver_address', when: true}
-    - {'name': 'matrix_mautrix_twitter_homeserver_token', when: true}
-    - {'name': 'matrix_mautrix_twitter_database_hostname', when: "{{ matrix_mautrix_twitter_database_engine == 'postgres' }}"}
-    - {'name': 'matrix_mautrix_twitter_container_network', when: true}
-    - {'name': 'matrix_mautrix_twitter_metrics_proxying_hostname', when: "{{ matrix_mautrix_twitter_metrics_proxying_enabled }}"}
-    - {'name': 'matrix_mautrix_twitter_metrics_proxying_path_prefix', when: "{{ matrix_mautrix_twitter_metrics_proxying_enabled }}"}
-
 - name: (Deprecation) Catch and report renamed mautrix-twitter variables
   ansible.builtin.fail:
     msg: >-
@@ -35,4 +21,24 @@
     - {'old': 'matrix_mautrix_twitter_bridge_login_shared_secret_map_custom', 'new': 'matrix_mautrix_twitter_double_puppet_secrets_custom'}
     - {'old': 'matrix_mautrix_twitter_federate_rooms', 'new': 'matrix_mautrix_twitter_matrix_federate_rooms'}
     - {'old': 'matrix_mautrix_twitter_command_prefix', 'new': 'matrix_mautrix_twitter_bridge_command_prefix'}
-    - {'old': 'matrix_mautrix_twitter_docker_image_name_prefix', 'new': 'matrix_mautrix_twitter_docker_image_registry_prefix'}
+    - {'old': 'matrix_mautrix_twitter_docker_image_name_prefix', 'new': 'matrix_mautrix_twitter_container_image_registry_prefix'}
+    - {'old': 'matrix_mautrix_twitter_docker_image', 'new': 'matrix_mautrix_twitter_container_image'}
+    - {'old': 'matrix_mautrix_twitter_docker_image_force_pull', 'new': 'matrix_mautrix_twitter_container_image_force_pull'}
+    - {'old': 'matrix_mautrix_twitter_docker_image_registry_prefix', 'new': 'matrix_mautrix_twitter_container_image_registry_prefix'}
+    - {'old': 'matrix_mautrix_twitter_docker_image_registry_prefix_upstream', 'new': 'matrix_mautrix_twitter_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_mautrix_twitter_docker_image_registry_prefix_upstream_default', 'new': 'matrix_mautrix_twitter_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_mautrix_twitter_docker_src_files_path', 'new': 'matrix_mautrix_twitter_container_src_files_path'}
+
+- name: Fail if required mautrix-twitter settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_mautrix_twitter_appservice_token', when: true}
+    - {'name': 'matrix_mautrix_twitter_homeserver_address', when: true}
+    - {'name': 'matrix_mautrix_twitter_homeserver_token', when: true}
+    - {'name': 'matrix_mautrix_twitter_database_hostname', when: "{{ matrix_mautrix_twitter_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_mautrix_twitter_container_network', when: true}
+    - {'name': 'matrix_mautrix_twitter_metrics_proxying_hostname', when: "{{ matrix_mautrix_twitter_metrics_proxying_enabled }}"}
+    - {'name': 'matrix_mautrix_twitter_metrics_proxying_path_prefix', when: "{{ matrix_mautrix_twitter_metrics_proxying_enabled }}"}

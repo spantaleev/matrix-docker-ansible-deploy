@@ -12,10 +12,10 @@
 
 - name: Ensure Heisenbridge image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_heisenbridge_docker_image }}"
+    name: "{{ matrix_heisenbridge_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_heisenbridge_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_heisenbridge_docker_image_force_pull }}"
+    force_source: "{{ matrix_heisenbridge_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_heisenbridge_container_image_force_pull }}"
   register: matrix_heisenbridge_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"

@@ -8,17 +8,6 @@
 
 ---
 
-- name: Fail if required mautrix-whatsapp settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
-  with_items:
-    - {'name': 'matrix_mautrix_whatsapp_appservice_token', when: true}
-    - {'name': 'matrix_mautrix_whatsapp_homeserver_address', when: true}
-    - {'name': 'matrix_mautrix_whatsapp_homeserver_token', when: true}
-    - {'name': 'matrix_mautrix_whatsapp_database_hostname', when: "{{ matrix_mautrix_whatsapp_database_engine == 'postgres' }}"}
-
 - name: (Deprecation) Catch and report renamed mautrix-whatsapp variables
   ansible.builtin.fail:
     msg: >-
@@ -32,4 +21,21 @@
     - {'old': 'matrix_mautrix_whatsapp_bridge_double_puppet_server_map', 'new': '<removed>'}
     - {'old': 'matrix_mautrix_whatsapp_bridge_allow_user_invite', 'new': '<removed>'}
     - {'old': 'matrix_mautrix_whatsapp_bridge_mute_bridging', 'new': '<removed>'}
-    - {'old': 'matrix_mautrix_whatsapp_docker_image_name_prefix', 'new': 'matrix_mautrix_whatsapp_docker_image_registry_prefix'}
+    - {'old': 'matrix_mautrix_whatsapp_docker_image_name_prefix', 'new': 'matrix_mautrix_whatsapp_container_image_registry_prefix'}
+    - {'old': 'matrix_mautrix_whatsapp_docker_image', 'new': 'matrix_mautrix_whatsapp_container_image'}
+    - {'old': 'matrix_mautrix_whatsapp_docker_image_force_pull', 'new': 'matrix_mautrix_whatsapp_container_image_force_pull'}
+    - {'old': 'matrix_mautrix_whatsapp_docker_image_registry_prefix', 'new': 'matrix_mautrix_whatsapp_container_image_registry_prefix'}
+    - {'old': 'matrix_mautrix_whatsapp_docker_image_registry_prefix_upstream', 'new': 'matrix_mautrix_whatsapp_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_mautrix_whatsapp_docker_image_registry_prefix_upstream_default', 'new': 'matrix_mautrix_whatsapp_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_mautrix_whatsapp_docker_src_files_path', 'new': 'matrix_mautrix_whatsapp_container_src_files_path'}
+
+- name: Fail if required mautrix-whatsapp settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_mautrix_whatsapp_appservice_token', when: true}
+    - {'name': 'matrix_mautrix_whatsapp_homeserver_address', when: true}
+    - {'name': 'matrix_mautrix_whatsapp_homeserver_token', when: true}
+    - {'name': 'matrix_mautrix_whatsapp_database_hostname', when: "{{ matrix_mautrix_whatsapp_database_engine == 'postgres' }}"}

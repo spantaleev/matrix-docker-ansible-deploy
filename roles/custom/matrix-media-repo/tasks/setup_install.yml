@@ -21,7 +21,7 @@
       when: true
     - path: "{{ matrix_media_repo_data_path }}"
       when: true
-    - path: "{{ matrix_media_repo_docker_src_files_path }}"
+    - path: "{{ matrix_media_repo_container_src_files_path }}"
       when: "{{ matrix_media_repo_container_image_self_build }}"
   when: "item.when | bool"
 
@@ -46,10 +46,10 @@
 
 - name: Ensure media-repo Docker image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_media_repo_docker_image }}"
+    name: "{{ matrix_media_repo_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_media_repo_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_media_repo_docker_image_force_pull }}"
+    force_source: "{{ matrix_media_repo_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_media_repo_container_image_force_pull }}"
   when: "not matrix_media_repo_container_image_self_build | bool"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -61,16 +61,16 @@
     - name: Ensure media-repo repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_media_repo_container_image_self_build_repo }}"
-        dest: "{{ matrix_media_repo_docker_src_files_path }}"
-        version: "{{ matrix_media_repo_docker_image.split(':')[1] }}"
+        dest: "{{ matrix_media_repo_container_src_files_path }}"
+        version: "{{ matrix_media_repo_container_image.split(':')[1] }}"
         force: "yes"
       become: true
       become_user: "{{ matrix_user_name }}"
       register: matrix_media_repo_git_pull_results
 
     - name: Check if media-repo Docker image exists
-      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_media_repo_docker_image }}'"
-      register: matrix_media_repo_docker_image_check_result
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_media_repo_container_image }}'"
+      register: matrix_media_repo_container_image_check_result
       changed_when: false
 
     # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
@@ -78,11 +78,11 @@
     # See: https://github.com/ansible-collections/community.general/issues/514
     - name: Ensure media-repo Docker image is built
       ansible.builtin.command:
-        cmd: "{{ devture_systemd_docker_base_host_command_docker }} build -t {{ matrix_media_repo_docker_image }} {{ matrix_media_repo_docker_src_files_path }}"
+        cmd: "{{ devture_systemd_docker_base_host_command_docker }} build -t {{ matrix_media_repo_container_image }} {{ matrix_media_repo_container_src_files_path }}"
       environment:
         DOCKER_BUILDKIT: 1
       changed_when: true
-      when: "matrix_media_repo_git_pull_results.changed | bool or matrix_media_repo_docker_image_check_result.stdout == ''"
+      when: "matrix_media_repo_git_pull_results.changed | bool or matrix_media_repo_container_image_check_result.stdout == ''"
 
 - name: Check existence of media-repo signing key
   ansible.builtin.stat:
@@ -102,7 +102,7 @@
           --mount type=bind,src={{ matrix_media_repo_config_path }},dst=/config
           --workdir='/config'
           --entrypoint='generate_signing_key'
-          {{ matrix_media_repo_docker_image }}
+          {{ matrix_media_repo_container_image }}
           -output {{ matrix_media_repo_identifier }}.signing.key.TEMP
         creates: "{{ matrix_media_repo_config_path }}/{{ matrix_media_repo_identifier }}.signing.key.TEMP"
 
@@ -118,7 +118,7 @@
           --mount type=bind,src={{ matrix_media_repo_homeserver_signing_key | dirname }},dst=/homeserver-signing-key-dir
           --workdir='/config'
           --entrypoint='combine_signing_keys'
-          {{ matrix_media_repo_docker_image }}
+          {{ matrix_media_repo_container_image }}
           -format {{ matrix_homeserver_implementation }} -output /homeserver-signing-key-dir/{{ matrix_media_repo_homeserver_signing_key | basename }}.merged /homeserver-signing-key-dir/{{ matrix_media_repo_homeserver_signing_key | basename }} {{ matrix_media_repo_identifier }}.signing.key.TEMP
         creates: "{{ matrix_media_repo_homeserver_signing_key }}.merged"
 

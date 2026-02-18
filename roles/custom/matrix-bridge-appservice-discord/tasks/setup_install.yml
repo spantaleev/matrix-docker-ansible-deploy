@@ -42,10 +42,10 @@
 
 - name: Ensure Appservice Discord image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_appservice_discord_docker_image }}"
+    name: "{{ matrix_appservice_discord_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_discord_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_discord_docker_image_force_pull }}"
+    force_source: "{{ matrix_appservice_discord_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_discord_container_image_force_pull }}"
   register: matrix_appservice_discord_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -115,7 +115,7 @@
     --cap-drop=ALL
     --mount type=bind,src={{ matrix_appservice_discord_config_path }},dst=/cfg
     -w /cfg
-    {{ matrix_appservice_discord_docker_image }}
+    {{ matrix_appservice_discord_container_image }}
     /bin/sh -c "node /build/tools/addbot.js > /cfg/invite_link"
   changed_when: false
 

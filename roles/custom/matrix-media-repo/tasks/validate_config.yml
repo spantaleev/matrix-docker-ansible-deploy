@@ -6,18 +6,6 @@
 
 ---
 
-- name: Fail if required matrix-media-repo settings not defined
-  ansible.builtin.fail:
-    msg: >
-      You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
-  with_items:
-    - {'name': 'matrix_media_repo_database_hostname', when: true}
-    - {'name': 'matrix_media_repo_container_labels_traefik_internal_media_entrypoints', when: "{{ matrix_media_repo_container_labels_traefik_internal_media_enabled }}"}
-    - {'name': 'matrix_media_repo_container_labels_traefik_internal_matrix_client_media_entrypoints', when: "{{ matrix_media_repo_container_labels_traefik_internal_matrix_client_media_enabled }}"}
-    - {'name': 'matrix_media_repo_datastore_file_id', when: "{{ (matrix_media_repo_datastore_file_for_kinds | length) > 0 }}"}
-    - {'name': 'matrix_media_repo_datastore_s3_id', when: "{{ (matrix_media_repo_datastore_s3_for_kinds | length) > 0 }}"}
-
 - name: (Deprecation) Catch and report renamed matrix-media-repo settings
   ansible.builtin.fail:
     msg: >-
@@ -42,4 +30,24 @@
     - {'old': 'matrix_media_repo_container_labels_traefik_admin_path_prefix', 'new': 'matrix_media_repo_container_labels_traefik_admin_path_regexp'}
     - {'old': 'matrix_media_repo_container_labels_traefik_logout_federation_path_prefix', 'new': 'matrix_media_repo_container_labels_traefik_logout_federation_path_regexp'}
     - {'old': 'matrix_media_repo_container_labels_traefik_admin_federation_path_prefix', 'new': 'matrix_media_repo_container_labels_traefik_admin_federation_path_regexp'}
-    - {'old': 'matrix_media_repo_docker_image_name_prefix', 'new': 'matrix_media_repo_docker_image_registry_prefix'}
+    - {'old': 'matrix_media_repo_docker_image_name_prefix', 'new': 'matrix_media_repo_container_image_registry_prefix'}
+    - {'old': 'matrix_media_repo_docker_image', 'new': 'matrix_media_repo_container_image'}
+    - {'old': 'matrix_media_repo_docker_image_force_pull', 'new': 'matrix_media_repo_container_image_force_pull'}
+    - {'old': 'matrix_media_repo_docker_image_path', 'new': 'matrix_media_repo_container_image_path'}
+    - {'old': 'matrix_media_repo_docker_image_registry_prefix', 'new': 'matrix_media_repo_container_image_registry_prefix'}
+    - {'old': 'matrix_media_repo_docker_image_registry_prefix_upstream', 'new': 'matrix_media_repo_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_media_repo_docker_image_registry_prefix_upstream_default', 'new': 'matrix_media_repo_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_media_repo_docker_image_tag', 'new': 'matrix_media_repo_container_image_tag'}
+    - {'old': 'matrix_media_repo_docker_src_files_path', 'new': 'matrix_media_repo_container_src_files_path'}
+
+- name: Fail if required matrix-media-repo settings not defined
+  ansible.builtin.fail:
+    msg: >
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_media_repo_database_hostname', when: true}
+    - {'name': 'matrix_media_repo_container_labels_traefik_internal_media_entrypoints', when: "{{ matrix_media_repo_container_labels_traefik_internal_media_enabled }}"}
+    - {'name': 'matrix_media_repo_container_labels_traefik_internal_matrix_client_media_entrypoints', when: "{{ matrix_media_repo_container_labels_traefik_internal_matrix_client_media_enabled }}"}
+    - {'name': 'matrix_media_repo_datastore_file_id', when: "{{ (matrix_media_repo_datastore_file_for_kinds | length) > 0 }}"}
+    - {'name': 'matrix_media_repo_datastore_s3_id', when: "{{ (matrix_media_repo_datastore_s3_for_kinds | length) > 0 }}"}

@@ -29,10 +29,10 @@
 
 - name: Ensure pantalaimon container image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_pantalaimon_docker_image }}"
+    name: "{{ matrix_pantalaimon_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_pantalaimon_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_pantalaimon_docker_image_force_pull }}"
+    force_source: "{{ matrix_pantalaimon_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_pantalaimon_container_image_force_pull }}"
   when: "not matrix_pantalaimon_container_image_self_build | bool"
   register: matrix_pantalaimon_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -52,7 +52,7 @@
 
 - name: Ensure pantalaimon container image is built
   community.docker.docker_image:
-    name: "{{ matrix_pantalaimon_docker_image }}"
+    name: "{{ matrix_pantalaimon_container_image }}"
     source: build
     force_source: "{{ matrix_pantalaimon_git_pull_results.changed }}"
     build:

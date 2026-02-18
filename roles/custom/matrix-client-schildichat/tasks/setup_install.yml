@@ -22,10 +22,10 @@
 
 - name: Ensure SchildiChat Web container image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_client_schildichat_docker_image }}"
+    name: "{{ matrix_client_schildichat_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_client_schildichat_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_schildichat_docker_image_force_pull }}"
+    force_source: "{{ matrix_client_schildichat_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_schildichat_container_image_force_pull }}"
   when: "not matrix_client_schildichat_container_image_self_build | bool"
   register: matrix_client_schildichat_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -62,7 +62,7 @@
       ansible.builtin.command:
         cmd: |-
           {{ devture_systemd_docker_base_host_command_docker }} buildx build
-          --tag={{ matrix_client_schildichat_docker_image }}
+          --tag={{ matrix_client_schildichat_container_image }}
           --file={{ matrix_client_schildichat_container_src_files_path }}/Dockerfile
           {{ matrix_client_schildichat_container_src_files_path }}
       changed_when: true

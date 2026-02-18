@@ -4,17 +4,22 @@
 
 ---
 
-- name: Fail if required Pantalaimon variables are undefined
-  ansible.builtin.fail:
-    msg: "The `{{ item }}` variable must be defined and have a non-null value."
-  with_items:
-    - "matrix_pantalaimon_homeserver_url"
-  when: "lookup('vars', item, default='') == '' or lookup('vars', item, default='') is none"
-
 - name: (Deprecation) Catch and report renamed Pantalaimon variables
   ansible.builtin.fail:
     msg: >-
       The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
-    - {'old': 'matrix_pantalaimon_docker_image_name_prefix', 'new': 'matrix_pantalaimon_docker_image_registry_prefix'}
+    - {'old': 'matrix_pantalaimon_docker_image_name_prefix', 'new': 'matrix_pantalaimon_container_image_registry_prefix'}
+    - {'old': 'matrix_pantalaimon_docker_image', 'new': 'matrix_pantalaimon_container_image'}
+    - {'old': 'matrix_pantalaimon_docker_image_force_pull', 'new': 'matrix_pantalaimon_container_image_force_pull'}
+    - {'old': 'matrix_pantalaimon_docker_image_registry_prefix', 'new': 'matrix_pantalaimon_container_image_registry_prefix'}
+    - {'old': 'matrix_pantalaimon_docker_image_registry_prefix_upstream', 'new': 'matrix_pantalaimon_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_pantalaimon_docker_image_registry_prefix_upstream_default', 'new': 'matrix_pantalaimon_container_image_registry_prefix_upstream_default'}
+
+- name: Fail if required Pantalaimon variables are undefined
+  ansible.builtin.fail:
+    msg: "The `{{ item }}` variable must be defined and have a non-null value."
+  with_items:
+    - "matrix_pantalaimon_homeserver_url"
+  when: "lookup('vars', item, default='') == '' or lookup('vars', item, default='') is none"

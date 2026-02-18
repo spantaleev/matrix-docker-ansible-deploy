@@ -58,7 +58,7 @@
       {% endif %}
       --mount type=bind,src={{ matrix_appservice_irc_data_path }},dst=/data
       --entrypoint=/bin/sh
-      {{ matrix_appservice_irc_docker_image }}
+      {{ matrix_appservice_irc_container_image }}
       -c
       '/usr/local/bin/node /app/lib/scripts/migrate-db-to-pgres.js --dbdir /data --privateKey /data/passkey.pem --connectionString {{ matrix_appservice_irc_database_connection_string }}'
   register: matrix_appservice_irc_import_nedb_to_postgres_result
