@@ -620,13 +620,6 @@ devture_systemd_service_manager_services_list_auto: |
     }] if matrix_corporal_enabled else [])
     +
     ([{
-      'name': (coturn_identifier + '.service'),
-      'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900),
-      'restart_necessary': (coturn_restart_necessary | bool),
-      'groups': ['matrix', 'coturn'],
-    }] if coturn_enabled else [])
-    +
-    ([{
       'name': 'matrix-matrixto.service',
       'priority': 4000,
       'restart_necessary': (matrix_matrixto_restart_necessary | bool),
@@ -639,6 +632,13 @@ devture_systemd_service_manager_services_list_auto: |
       'restart_necessary': (matrix_rageshake_restart_necessary | bool),
       'groups': ['matrix', 'rageshake'],
     }] if matrix_rageshake_enabled else [])
+    +
+    ([{
+      'name': (coturn_identifier + '.service'),
+      'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900),
+      'restart_necessary': (coturn_restart_necessary | bool),
+      'groups': ['matrix', 'coturn'],
+    }] if coturn_enabled else [])
     +
     ([{
       'name': (coturn_identifier + '-reload.timer'),
