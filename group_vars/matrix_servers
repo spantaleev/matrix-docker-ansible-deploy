@@ -1279,9 +1279,9 @@ matrix_appservice_kakaotalk_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_kakaotalk_database_hostname == postgres_connection_hostname) else [])
   }}
 
-matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_kakaotalk_node_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_kakaotalk_node_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_kakaotalk_node_container_image_registry_prefix_upstream_default }}"
 
-matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_kakaotalk_docker_image_registry_prefix_upstream_default }}"
+matrix_appservice_kakaotalk_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_kakaotalk_container_image_registry_prefix_upstream_default }}"
 
 matrix_appservice_kakaotalk_container_network: "{{ matrix_addons_container_network }}"
 
@@ -1916,9 +1916,9 @@ matrix_mautrix_telegram_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_telegram_database_hostname == postgres_connection_hostname) else [])
   }}
 
-matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix_upstream_default }}"
 
-matrix_mautrix_telegram_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_telegram_docker_image_registry_prefix_upstream_default }}"
+matrix_mautrix_telegram_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_telegram_container_image_registry_prefix_upstream_default }}"
 
 # Images are multi-arch (amd64 and arm64, but not arm32).
 matrix_mautrix_telegram_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
@@ -4629,11 +4629,11 @@ matrix_synapse_gid: "{{ matrix_user_gid }}"
 
 matrix_synapse_federation_enabled: "{{ matrix_homeserver_federation_enabled }}"
 
-matrix_synapse_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_docker_image_registry_prefix_upstream_default }}"
+matrix_synapse_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_container_image_registry_prefix_upstream_default }}"
 
 matrix_s3_goofys_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_s3_goofys_docker_image_registry_prefix_upstream_default }}"
 
-matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream_default }}"
+matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix_upstream_default }}"
 
 matrix_synapse_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
@@ -5336,7 +5336,7 @@ prometheus_config_scrape_configs_auto: |
 
 matrix_prometheus_services_connect_synapse_enabled: "{{ prometheus_enabled and matrix_synapse_enabled }}"
 
-matrix_prometheus_services_connect_synapse_rules_download_synapse_tag: "{{ matrix_synapse_docker_image_tag }}"
+matrix_prometheus_services_connect_synapse_rules_download_synapse_tag: "{{ matrix_synapse_container_image_tag }}"
 matrix_prometheus_services_connect_synapse_rules_download_dir_path: "{{ prometheus_config_path }}"
 matrix_prometheus_services_connect_synapse_rules_download_owner: "{{ prometheus_uid }}"
 matrix_prometheus_services_connect_synapse_rules_download_group: "{{ prometheus_gid }}"

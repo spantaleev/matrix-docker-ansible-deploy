@@ -7,7 +7,7 @@ matrix_synapse_enabled: true
 # Specifies which Github organization and repository name Synapse lives at.
 #
 # This influences:
-# - the Github Container Image registry that container images are pulled from (see `matrix_synapse_docker_image_name`)
+# - the Github Container Image registry that container images are pulled from (see `matrix_synapse_container_image_name`)
 # - the git repository to code is pulled from when self-building is used (see `matrix_synapse_container_image_self_build_repo`)
 # - potentially other roles which need to reference the Synapse git repository
 #
@@ -33,8 +33,8 @@ matrix_synapse_container_image_self_build_repo: "https://github.com/{{ matrix_sy
 # See:
 # - `roles/custom/matrix-synapse/templates/synapse/customizations/Dockerfile.j2`
 # - `matrix_synapse_container_image_customizations_dockerfile_body_custom`
-# - `matrix_synapse_docker_image_customized`
-# - `matrix_synapse_docker_image_final`
+# - `matrix_synapse_container_image_customized`
+# - `matrix_synapse_container_image_final`
 matrix_synapse_container_image_customizations_enabled: |-
   {{
     matrix_synapse_container_image_customizations_s3_storage_provider_installation_enabled
@@ -71,7 +71,7 @@ matrix_synapse_container_image_customizations_templates_git_repository_keyscan_e
 matrix_synapse_container_image_customizations_templates_git_repository_keyscan_hostname: ''
 
 # matrix_synapse_container_image_customizations_dockerfile_body contains your custom Dockerfile steps
-# for building your customized Synapse image based on the original (upstream) image (`matrix_synapse_docker_image`).
+# for building your customized Synapse image based on the original (upstream) image (`matrix_synapse_container_image`).
 # A `FROM …` clause is included automatically so you don't have to.
 #
 # For this to take effect, you need to enable customizations (`matrix_synapse_container_image_customizations_enabled: true`).
@@ -83,35 +83,35 @@ matrix_synapse_container_image_customizations_templates_git_repository_keyscan_h
 #  RUN echo 'You do NOT need to include a FROM clause yourself.'
 matrix_synapse_container_image_customizations_dockerfile_body_custom: ''
 
-matrix_synapse_docker_image: "{{ matrix_synapse_docker_image_registry_prefix }}{{ matrix_synapse_docker_image_name }}:{{ matrix_synapse_docker_image_tag }}"
-matrix_synapse_docker_image_name: "{{ matrix_synapse_github_org_and_repo }}"
-matrix_synapse_docker_image_tag: "{{ matrix_synapse_version }}"
-matrix_synapse_docker_image_force_pull: "{{ matrix_synapse_docker_image.endswith(':latest') }}"
-matrix_synapse_docker_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_synapse_docker_image_registry_prefix_upstream }}"
-matrix_synapse_docker_image_registry_prefix_upstream: "{{ matrix_synapse_docker_image_registry_prefix_upstream_default }}"
-matrix_synapse_docker_image_registry_prefix_upstream_default: "ghcr.io/"
+matrix_synapse_container_image: "{{ matrix_synapse_container_image_registry_prefix }}{{ matrix_synapse_container_image_name }}:{{ matrix_synapse_container_image_tag }}"
+matrix_synapse_container_image_name: "{{ matrix_synapse_github_org_and_repo }}"
+matrix_synapse_container_image_tag: "{{ matrix_synapse_version }}"
+matrix_synapse_container_image_force_pull: "{{ matrix_synapse_container_image.endswith(':latest') }}"
+matrix_synapse_container_image_registry_prefix: "{{ 'localhost/' if matrix_synapse_container_image_self_build else matrix_synapse_container_image_registry_prefix_upstream }}"
+matrix_synapse_container_image_registry_prefix_upstream: "{{ matrix_synapse_container_image_registry_prefix_upstream_default }}"
+matrix_synapse_container_image_registry_prefix_upstream_default: "ghcr.io/"
 
-# matrix_synapse_docker_image_customized is the name of the locally built Synapse image
+# matrix_synapse_container_image_customized is the name of the locally built Synapse image
 # which adds various customizations on top of the original (upstream) Synapse image.
-# This image will be based on the upstream `matrix_synapse_docker_image` image, only if `matrix_synapse_container_image_customizations_enabled: true`.
-matrix_synapse_docker_image_customized: "localhost/matrixdotorg/synapse:{{ matrix_synapse_docker_image_tag }}-customized"
+# This image will be based on the upstream `matrix_synapse_container_image` image, only if `matrix_synapse_container_image_customizations_enabled: true`.
+matrix_synapse_container_image_customized: "localhost/matrixdotorg/synapse:{{ matrix_synapse_container_image_tag }}-customized"
 
-# Controls whether the customized image (`matrix_synapse_docker_image_customized`) is to be force-built without layer caching enabled.
+# Controls whether the customized image (`matrix_synapse_container_image_customized`) is to be force-built without layer caching enabled.
 # This is useful if you've enabled customizations (e.g. `matrix_synapse_container_image_customizations_templates_enabled`),
 # which clone some branch of some repository, and you'd like for each Ansible run to pull new revisions from that branch.
-matrix_synapse_docker_image_customized_build_nocache: false
+matrix_synapse_container_image_customized_build_nocache: false
 
-# Controls whether the customized image (`matrix_synapse_docker_image_customized`) is to be built, even if it already exists.
-# Related to: matrix_synapse_docker_image_customized_build_nocache
-matrix_synapse_docker_image_customized_force_source: "{{ matrix_synapse_docker_image_customized_build_nocache }}"
+# Controls whether the customized image (`matrix_synapse_container_image_customized`) is to be built, even if it already exists.
+# Related to: matrix_synapse_container_image_customized_build_nocache
+matrix_synapse_container_image_customized_force_source: "{{ matrix_synapse_container_image_customized_build_nocache }}"
 
-# matrix_synapse_docker_image_final holds the name of the Synapse image to run depending on whether or not customizations are enabled.
-matrix_synapse_docker_image_final: "{{ matrix_synapse_docker_image_customized if matrix_synapse_container_image_customizations_enabled else matrix_synapse_docker_image }} "
+# matrix_synapse_container_image_final holds the name of the Synapse image to run depending on whether or not customizations are enabled.
+matrix_synapse_container_image_final: "{{ matrix_synapse_container_image_customized if matrix_synapse_container_image_customizations_enabled else matrix_synapse_container_image }} "
 
 matrix_synapse_base_path: "{{ matrix_base_data_path }}/synapse"
 
-matrix_synapse_docker_src_files_path: "{{ matrix_synapse_base_path }}/docker-src"
-matrix_synapse_customized_docker_src_files_path: "{{ matrix_synapse_base_path }}/customized-docker-src"
+matrix_synapse_container_src_files_path: "{{ matrix_synapse_base_path }}/docker-src"
+matrix_synapse_customized_container_src_files_path: "{{ matrix_synapse_base_path }}/customized-docker-src"
 matrix_synapse_config_dir_path: "{{ matrix_synapse_base_path }}/config"
 matrix_synapse_storage_path: "{{ matrix_synapse_base_path }}/storage"
 matrix_synapse_media_store_path: "{{ matrix_synapse_storage_path }}/media-store"
@@ -1649,13 +1649,13 @@ matrix_synapse_forgotten_room_retention_period: 28d
 matrix_synapse_user_ips_max_age: 28d
 
 
-matrix_synapse_rust_synapse_compress_state_docker_image: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix }}mb-saces/rust-synapse-tools:{{ matrix_synapse_rust_synapse_compress_state_docker_image_version }}"
+matrix_synapse_rust_synapse_compress_state_container_image: "{{ matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix }}mb-saces/rust-synapse-tools:{{ matrix_synapse_rust_synapse_compress_state_container_image_version }}"
 # renovate: datasource=docker depName=registry.gitlab.com/mb-saces/rust-synapse-tools
-matrix_synapse_rust_synapse_compress_state_docker_image_version: v0.0.3
-matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream }}"
-matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream: "{{ matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream_default }}"
-matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream_default: "registry.gitlab.com/"
-matrix_synapse_rust_synapse_compress_state_docker_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':stable') or matrix_synapse_rust_synapse_compress_state_docker_image.endswith(':latest') }}"
+matrix_synapse_rust_synapse_compress_state_container_image_version: v0.0.3
+matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix: "{{ matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix_upstream }}"
+matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix_upstream: "{{ matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix_upstream_default }}"
+matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix_upstream_default: "registry.gitlab.com/"
+matrix_synapse_rust_synapse_compress_state_container_image_force_pull: "{{ matrix_synapse_rust_synapse_compress_state_container_image.endswith(':stable') or matrix_synapse_rust_synapse_compress_state_container_image.endswith(':latest') }}"
 
 matrix_synapse_rust_synapse_compress_state_base_path: "{{ matrix_base_data_path }}/rust-synapse-compress-state"
 matrix_synapse_rust_synapse_compress_state_synapse_compress_state_in_container_path: "/usr/local/bin/synapse_compress_state"

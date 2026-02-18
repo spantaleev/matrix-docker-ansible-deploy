@@ -6,6 +6,92 @@
 
 ---
 
+- name: (Deprecation) Catch and report renamed settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
+  with_items:
+    - {'old': 'matrix_synapse_email_riot_base_url', 'new': '<superseded by client_base_url>'}
+    - {'old': 'matrix_synapse_container_expose_api_port', 'new': '<superseded by matrix_synapse_container_federation_api_plain_host_bind_port>'}
+    - {'old': 'matrix_synapse_no_tls', 'new': '<removed>'}
+    - {'old': 'matrix_enable_room_list_search', 'new': 'matrix_synapse_enable_room_list_search'}
+    - {'old': 'matrix_alias_creation_rules', 'new': 'matrix_synapse_alias_creation_rules'}
+    - {'old': 'matrix_room_list_publication_rules', 'new': 'matrix_synapse_room_list_publication_rules'}
+    - {'old': 'matrix_synapse_rc_messages_per_second', 'new': '<per_second subkey of matrix_synapse_rc_message>'}
+    - {'old': 'matrix_synapse_rc_message_burst_count', 'new': '<burst_count subkey of matrix_synapse_rc_message>'}
+    - {'old': 'matrix_synapse_federation_rc_window_size', 'new': '<window_size subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_federation_rc_sleep_limit', 'new': '<sleep_limit subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_federation_rc_sleep_delay', 'new': '<sleep_delay subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_federation_rc_reject_limit', 'new': '<reject_limit subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_federation_rc_concurrent', 'new': '<concurrent subkey of matrix_synapse_rc_federation>'}
+    - {'old': 'matrix_synapse_container_expose_client_api_port', 'new': '<superseded by matrix_synapse_container_client_api_host_bind_port>'}
+    - {'old': 'matrix_synapse_container_expose_federation_api_port', 'new': '<superseded by matrix_synapse_container_federation_api_plain_host_bind_port>'}
+    - {'old': 'matrix_synapse_container_expose_metrics_port', 'new': '<superseded by matrix_synapse_container_metrics_api_host_bind_port>'}
+    - {'old': 'matrix_synapse_cache_factor', 'new': 'matrix_synapse_caches_global_factor'}
+    - {'old': 'matrix_synapse_trusted_third_party_id_servers', 'new': '<deprecated in Synapse v0.99.4 and removed in Synapse v1.19.0>'}
+    - {'old': 'matrix_synapse_use_presence', 'new': 'matrix_synapse_presence_enabled'}
+    - {'old': 'matrix_synapse_version_arm64', 'new': '<superseded by matrix_synapse_version - see https://github.com/matrix-org/synapse/pull/11810>'}
+    - {'old': 'matrix_synapse_enable_group_creation', 'new': '<removed in Synapse v1.61.0 - use the new Spaces feature instead>'}
+    - {'old': 'matrix_synapse_account_threepid_delegates_email', 'new': '<removed in Synapse v1.66.0 - make sure to configure email settings for Synapse - see https://matrix-org.github.io/synapse/v1.66/upgrade.html#delegation-of-email-validation-no-longer-supported>'}
+    - {'old': 'matrix_synapse_workers_frontend_proxy_workers_count', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
+    - {'old': 'matrix_synapse_workers_frontend_proxy_workers_port_range_start', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
+    - {'old': 'matrix_synapse_workers_frontend_proxy_workers_metrics_range_start', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
+    - {'old': 'matrix_synapse_ext_s3_storage_provider_path', 'new': 'matrix_synapse_ext_s3_storage_provider_base_path'}
+    - {'old': 'matrix_synapse_send_federation', 'new': '<unnecessary - Synapse relies on federation_sender_instances now>'}
+    - {'old': 'matrix_synapse_start_pushers', 'new': '<unnecessary - Synapse relies on pusher_instances now>'}
+    - {'old': 'matrix_synapse_spam_checker', 'new': '<superseded by matrix_synapse_modules>'}
+    - {'old': 'matrix_synapse_caches_autotuning_max_cache_memory_usage', 'new': 'matrix_synapse_cache_autotuning_max_cache_memory_usage'}
+    - {'old': 'matrix_synapse_caches_autotuning_target_cache_memory_usage', 'new': 'matrix_synapse_cache_autotuning_target_cache_memory_usage'}
+    - {'old': 'matrix_synapse_caches_autotuning_min_cache_ttl', 'new': 'matrix_synapse_cache_autotuning_min_cache_ttl'}
+    - {'old': 'matrix_synapse_memtotal_kb', 'new': '<superseded by matrix_synapse_cache_size_calculations_memtotal_bytes>'}
+    - {'old': 'matrix_synapse_docker_image_name_prefix', 'new': 'matrix_synapse_container_image_registry_prefix'}
+    - {'old': 'matrix_s3_goofys_docker_image_name_prefix', 'new': 'matrix_s3_goofys_docker_image_registry_prefix'}
+    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix', 'new': 'matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix'}
+    - {'old': 'matrix_synapse_docker_image', 'new': 'matrix_synapse_container_image'}
+    - {'old': 'matrix_synapse_docker_image_name', 'new': 'matrix_synapse_container_image_name'}
+    - {'old': 'matrix_synapse_docker_image_tag', 'new': 'matrix_synapse_container_image_tag'}
+    - {'old': 'matrix_synapse_docker_image_force_pull', 'new': 'matrix_synapse_container_image_force_pull'}
+    - {'old': 'matrix_synapse_docker_image_registry_prefix', 'new': 'matrix_synapse_container_image_registry_prefix'}
+    - {'old': 'matrix_synapse_docker_image_registry_prefix_upstream', 'new': 'matrix_synapse_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_synapse_docker_image_registry_prefix_upstream_default', 'new': 'matrix_synapse_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_synapse_docker_src_files_path', 'new': 'matrix_synapse_container_src_files_path'}
+    - {'old': 'matrix_synapse_docker_image_customized', 'new': 'matrix_synapse_container_image_customized'}
+    - {'old': 'matrix_synapse_docker_image_customized_build_nocache', 'new': 'matrix_synapse_container_image_customized_build_nocache'}
+    - {'old': 'matrix_synapse_docker_image_customized_force_source', 'new': 'matrix_synapse_container_image_customized_force_source'}
+    - {'old': 'matrix_synapse_docker_image_final', 'new': 'matrix_synapse_container_image_final'}
+    - {'old': 'matrix_synapse_customized_docker_src_files_path', 'new': 'matrix_synapse_customized_container_src_files_path'}
+    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image', 'new': 'matrix_synapse_rust_synapse_compress_state_container_image'}
+    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image_version', 'new': 'matrix_synapse_rust_synapse_compress_state_container_image_version'}
+    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image_force_pull', 'new': 'matrix_synapse_rust_synapse_compress_state_container_image_force_pull'}
+    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix', 'new': 'matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix'}
+    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream', 'new': 'matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix_upstream_default', 'new': 'matrix_synapse_rust_synapse_compress_state_container_image_registry_prefix_upstream_default'}
+
+    - {'old': 'matrix_synapse_experimental_features_msc3202_device_masquerading_enabled', 'new': '<removed - this feature is enabled by default now'}
+
+    - {'old': 'matrix_synapse_experimental_features_msc3861_enabled', 'new': 'matrix_synapse_matrix_authentication_service_enabled'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_issuer', 'new': '<superseded by matrix_synapse_matrix_authentication_service_endpoint>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_client_id', 'new': '<removed>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_client_auth_method', 'new': '<removed>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_client_secret', 'new': '<removed>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_admin_token', 'new': '<removed>'}
+    - {'old': 'matrix_synapse_experimental_features_msc3861_account_management_url', 'new': '<removed>'}
+
+    - {'old': 'matrix_synapse_experimental_features_msc4133_enabled', 'new': '<removed - this feature is enabled by default now>'}
+
+    - {'old': 'matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled', 'new': '<removed; see https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4637>'}
+
+- name: (Deprecation) Catch and report renamed settings in matrix_synapse_configuration_extension_yaml
+  ansible.builtin.fail:
+    msg: >-
+      Your matrix_synapse_configuration_extension_yaml configuration contains a variable, which now has a different name.
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+  when: "item.old in matrix_synapse_configuration_extension"
+  with_items:
+    - {'old': 'federation_ip_range_blacklist', 'new': 'ip_range_blacklist'}
+
 - name: Fail if required Synapse settings not defined
   ansible.builtin.fail:
     msg: >-
@@ -64,73 +150,6 @@
     msg: >-
       Generic workers should not be mixed with the new specialized worker types (room workers, sync workers, client readers, and federation readers)
   when: matrix_synapse_workers_generic_workers_count | int > 0 and ((matrix_synapse_workers_room_workers_count | int + matrix_synapse_workers_sync_workers_count | int + matrix_synapse_workers_client_reader_workers_count | int + matrix_synapse_workers_federation_reader_workers_count | int) > 0)
-
-- name: (Deprecation) Catch and report renamed settings
-  ansible.builtin.fail:
-    msg: >-
-      Your configuration contains a variable, which now has a different name.
-      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
-  with_items:
-    - {'old': 'matrix_synapse_email_riot_base_url', 'new': '<superseded by client_base_url>'}
-    - {'old': 'matrix_synapse_container_expose_api_port', 'new': '<superseded by matrix_synapse_container_federation_api_plain_host_bind_port>'}
-    - {'old': 'matrix_synapse_no_tls', 'new': '<removed>'}
-    - {'old': 'matrix_enable_room_list_search', 'new': 'matrix_synapse_enable_room_list_search'}
-    - {'old': 'matrix_alias_creation_rules', 'new': 'matrix_synapse_alias_creation_rules'}
-    - {'old': 'matrix_room_list_publication_rules', 'new': 'matrix_synapse_room_list_publication_rules'}
-    - {'old': 'matrix_synapse_rc_messages_per_second', 'new': '<per_second subkey of matrix_synapse_rc_message>'}
-    - {'old': 'matrix_synapse_rc_message_burst_count', 'new': '<burst_count subkey of matrix_synapse_rc_message>'}
-    - {'old': 'matrix_synapse_federation_rc_window_size', 'new': '<window_size subkey of matrix_synapse_rc_federation>'}
-    - {'old': 'matrix_synapse_federation_rc_sleep_limit', 'new': '<sleep_limit subkey of matrix_synapse_rc_federation>'}
-    - {'old': 'matrix_synapse_federation_rc_sleep_delay', 'new': '<sleep_delay subkey of matrix_synapse_rc_federation>'}
-    - {'old': 'matrix_synapse_federation_rc_reject_limit', 'new': '<reject_limit subkey of matrix_synapse_rc_federation>'}
-    - {'old': 'matrix_synapse_federation_rc_concurrent', 'new': '<concurrent subkey of matrix_synapse_rc_federation>'}
-    - {'old': 'matrix_synapse_container_expose_client_api_port', 'new': '<superseded by matrix_synapse_container_client_api_host_bind_port>'}
-    - {'old': 'matrix_synapse_container_expose_federation_api_port', 'new': '<superseded by matrix_synapse_container_federation_api_plain_host_bind_port>'}
-    - {'old': 'matrix_synapse_container_expose_metrics_port', 'new': '<superseded by matrix_synapse_container_metrics_api_host_bind_port>'}
-    - {'old': 'matrix_synapse_cache_factor', 'new': 'matrix_synapse_caches_global_factor'}
-    - {'old': 'matrix_synapse_trusted_third_party_id_servers', 'new': '<deprecated in Synapse v0.99.4 and removed in Synapse v1.19.0>'}
-    - {'old': 'matrix_synapse_use_presence', 'new': 'matrix_synapse_presence_enabled'}
-    - {'old': 'matrix_synapse_version_arm64', 'new': '<superseded by matrix_synapse_version - see https://github.com/matrix-org/synapse/pull/11810>'}
-    - {'old': 'matrix_synapse_enable_group_creation', 'new': '<removed in Synapse v1.61.0 - use the new Spaces feature instead>'}
-    - {'old': 'matrix_synapse_account_threepid_delegates_email', 'new': '<removed in Synapse v1.66.0 - make sure to configure email settings for Synapse - see https://matrix-org.github.io/synapse/v1.66/upgrade.html#delegation-of-email-validation-no-longer-supported>'}
-    - {'old': 'matrix_synapse_workers_frontend_proxy_workers_count', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
-    - {'old': 'matrix_synapse_workers_frontend_proxy_workers_port_range_start', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
-    - {'old': 'matrix_synapse_workers_frontend_proxy_workers_metrics_range_start', 'new': '<removed in favor of generic workers - see https://github.com/matrix-org/synapse/pull/13645>'}
-    - {'old': 'matrix_synapse_ext_s3_storage_provider_path', 'new': 'matrix_synapse_ext_s3_storage_provider_base_path'}
-    - {'old': 'matrix_synapse_send_federation', 'new': '<unnecessary - Synapse relies on federation_sender_instances now>'}
-    - {'old': 'matrix_synapse_start_pushers', 'new': '<unnecessary - Synapse relies on pusher_instances now>'}
-    - {'old': 'matrix_synapse_spam_checker', 'new': '<superseded by matrix_synapse_modules>'}
-    - {'old': 'matrix_synapse_caches_autotuning_max_cache_memory_usage', 'new': 'matrix_synapse_cache_autotuning_max_cache_memory_usage'}
-    - {'old': 'matrix_synapse_caches_autotuning_target_cache_memory_usage', 'new': 'matrix_synapse_cache_autotuning_target_cache_memory_usage'}
-    - {'old': 'matrix_synapse_caches_autotuning_min_cache_ttl', 'new': 'matrix_synapse_cache_autotuning_min_cache_ttl'}
-    - {'old': 'matrix_synapse_memtotal_kb', 'new': '<superseded by matrix_synapse_cache_size_calculations_memtotal_bytes>'}
-    - {'old': 'matrix_synapse_docker_image_name_prefix', 'new': 'matrix_synapse_docker_image_registry_prefix'}
-    - {'old': 'matrix_s3_goofys_docker_image_name_prefix', 'new': 'matrix_s3_goofys_docker_image_registry_prefix'}
-    - {'old': 'matrix_synapse_rust_synapse_compress_state_docker_image_name_prefix', 'new': 'matrix_synapse_rust_synapse_compress_state_docker_image_registry_prefix'}
-
-    - {'old': 'matrix_synapse_experimental_features_msc3202_device_masquerading_enabled', 'new': '<removed - this feature is enabled by default now'}
-
-    - {'old': 'matrix_synapse_experimental_features_msc3861_enabled', 'new': 'matrix_synapse_matrix_authentication_service_enabled'}
-    - {'old': 'matrix_synapse_experimental_features_msc3861_issuer', 'new': '<superseded by matrix_synapse_matrix_authentication_service_endpoint>'}
-    - {'old': 'matrix_synapse_experimental_features_msc3861_client_id', 'new': '<removed>'}
-    - {'old': 'matrix_synapse_experimental_features_msc3861_client_auth_method', 'new': '<removed>'}
-    - {'old': 'matrix_synapse_experimental_features_msc3861_client_secret', 'new': '<removed>'}
-    - {'old': 'matrix_synapse_experimental_features_msc3861_admin_token', 'new': '<removed>'}
-    - {'old': 'matrix_synapse_experimental_features_msc3861_account_management_url', 'new': '<removed>'}
-
-    - {'old': 'matrix_synapse_experimental_features_msc4133_enabled', 'new': '<removed - this feature is enabled by default now>'}
-
-    - {'old': 'matrix_synapse_container_image_customizations_s3_storage_provider_installation_old_boto_workaround_enabled', 'new': '<removed; see https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4637>'}
-
-- name: (Deprecation) Catch and report renamed settings in matrix_synapse_configuration_extension_yaml
-  ansible.builtin.fail:
-    msg: >-
-      Your matrix_synapse_configuration_extension_yaml configuration contains a variable, which now has a different name.
-      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in matrix_synapse_configuration_extension"
-  with_items:
-    - {'old': 'federation_ip_range_blacklist', 'new': 'ip_range_blacklist'}
 
 - when: matrix_synapse_container_image_customizations_templates_enabled | bool
   block:

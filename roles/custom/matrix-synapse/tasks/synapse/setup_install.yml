@@ -38,16 +38,16 @@
     - name: Ensure Synapse repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_synapse_container_image_self_build_repo }}"
-        dest: "{{ matrix_synapse_docker_src_files_path }}"
-        version: "{{ matrix_synapse_docker_image.split(':')[1] }}"
+        dest: "{{ matrix_synapse_container_src_files_path }}"
+        version: "{{ matrix_synapse_container_image.split(':')[1] }}"
         force: "yes"
       become: true
       become_user: "{{ matrix_synapse_username }}"
       register: matrix_synapse_git_pull_results
 
     - name: Check if Synapse Docker image exists
-      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_docker_image }}'"
-      register: matrix_synapse_docker_image_check_result
+      ansible.builtin.command: "{{ devture_systemd_docker_base_host_command_docker }} images --quiet --filter 'reference={{ matrix_synapse_container_image }}'"
+      register: matrix_synapse_container_image_check_result
       changed_when: false
 
     # Invoking the `docker build` command here, instead of calling the `docker_image` Ansible module,
@@ -55,23 +55,23 @@
     # See: https://github.com/ansible-collections/community.general/issues/514
     - name: Ensure Synapse Docker image is built
       ansible.builtin.shell:
-        chdir: "{{ matrix_synapse_docker_src_files_path }}"
+        chdir: "{{ matrix_synapse_container_src_files_path }}"
         cmd: |
           {{ devture_systemd_docker_base_host_command_docker }} build \
-          -t "{{ matrix_synapse_docker_image }}" \
+          -t "{{ matrix_synapse_container_image }}" \
           -f docker/Dockerfile \
           .
       environment:
         DOCKER_BUILDKIT: 1
       changed_when: true
-      when: "matrix_synapse_git_pull_results.changed | bool or matrix_synapse_docker_image_check_result.stdout == ''"
+      when: "matrix_synapse_git_pull_results.changed | bool or matrix_synapse_container_image_check_result.stdout == ''"
 
 - name: Ensure Synapse Docker image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_synapse_docker_image }}"
+    name: "{{ matrix_synapse_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_synapse_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_docker_image_force_pull }}"
+    force_source: "{{ matrix_synapse_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_synapse_container_image_force_pull }}"
   when: "not matrix_synapse_container_image_self_build"
   register: result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -83,7 +83,7 @@
     - name: Ensure customizations Dockerfile is created
       ansible.builtin.template:
         src: "{{ role_path }}/templates/synapse/customizations/Dockerfile.j2"
-        dest: "{{ matrix_synapse_customized_docker_src_files_path }}/Dockerfile"
+        dest: "{{ matrix_synapse_customized_container_src_files_path }}/Dockerfile"
         owner: "{{ matrix_synapse_uid }}"
         group: "{{ matrix_synapse_gid }}"
         mode: '0640'
@@ -91,13 +91,13 @@
 
     - name: Ensure customized Docker image for Synapse is built
       community.docker.docker_image:
-        name: "{{ matrix_synapse_docker_image_customized }}"
+        name: "{{ matrix_synapse_container_image_customized }}"
         source: build
-        force_source: "{{ matrix_synapse_container_image_customizations_dockerfile_result.changed or matrix_synapse_docker_image_customized_force_source }}"
+        force_source: "{{ matrix_synapse_container_image_customizations_dockerfile_result.changed or matrix_synapse_container_image_customized_force_source }}"
         build:
           dockerfile: Dockerfile
-          path: "{{ matrix_synapse_customized_docker_src_files_path }}"
-          nocache: "{{ matrix_synapse_docker_image_customized_build_nocache }}"
+          path: "{{ matrix_synapse_customized_container_src_files_path }}"
+          nocache: "{{ matrix_synapse_container_image_customized_build_nocache }}"
 
 # We do this so that the signing key would get generated.
 #
@@ -118,7 +118,7 @@
       -e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
       -e SYNAPSE_SERVER_NAME={{ matrix_server_fqn_matrix }}
       -e SYNAPSE_REPORT_STATS=no
-      {{ matrix_synapse_docker_image }}
+      {{ matrix_synapse_container_image }}
       generate
     creates: "{{ matrix_synapse_config_dir_path }}/{{ matrix_server_fqn_matrix }}.signing.key"
 
