@@ -741,7 +741,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (prometheus_identifier + '.service'),
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (prometheus_restart_necessary | bool),
       'groups': ['matrix', 'monitoring', 'prometheus'],
     }] if prometheus_enabled else [])
     +
