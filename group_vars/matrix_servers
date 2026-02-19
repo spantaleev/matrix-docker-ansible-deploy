@@ -734,7 +734,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (postgres_backup_identifier + '.service'),
       'priority': 5000,
-      'restart_necessary': true,
+      'restart_necessary': (postgres_backup_restart_necessary | bool),
       'groups': ['matrix', 'backup', 'postgres-backup'],
     }] if postgres_backup_enabled else [])
     +
