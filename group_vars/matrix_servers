@@ -246,15 +246,14 @@ matrix_addons_homeserver_systemd_services_list: |
 #   - so that addon services (starting later) can communicte with the homeserver via Traefik's internal entrypoint
 #     (see `matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled`)
 # - core services (the homeserver) get a level of ~1000
-# - services that the homeserver depends on (database, Redis, ntfy, coturn, etc.) get a lower level — between 500 and 1000
-# - coturn gets a higher priority level (= starts later) if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
-#  - starting services one by one means that the service manager role waits for each service to fully start before proceeding to the next one
+# - services that the homeserver depends on (database, Redis, ntfy, etc.) get a lower level — between 500 and 1000
+# - coturn gets a higher priority level (= starts later) in all cases, to intentionally delay it in relation to the homeserver, because:
+#  - when starting services one by one, the service manager waits for each service to fully start before proceeding to the next one
 #  - if coturn has a lower priority than the homeserver, it would be started before it
-#  - since coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.example.com` certificate
+#  - if coturn is started before the homeserver, there'd be no container label (usually on the homeserver) telling Traefik to get a `matrix.example.com` certificate
 #  - thus, coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
 #  - only later, when the homeserver actually starts, would that certificate be fetched and dumped
-#  - this is not a problem with `all-at-once` (default) or `priority-batched` (services start concurrently),
-#    or with `clean-stop-start` (everything stops first, then starts in priority order — coturn at 900 is fine)
+#  - this is a problem for `one-by-one`, `clean-stop-start` (which behaves like one-by-one initially) and possibly other modes, except `all-at-once`
 # - reverse-proxying services get level 3000
 # - Matrix utility services (bridges, bots) get a level of 2000/2200, so that:
 #   - they can start before the reverse-proxy
@@ -607,7 +606,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{
       'name': ('matrix-' + matrix_homeserver_implementation + '.service'),
-      'priority': 1000,
+      'priority': matrix_homeserver_systemd_service_manager_priority,
       'restart_necessary': true,
       'groups': ['matrix', 'homeservers', matrix_homeserver_implementation],
     }] if matrix_homeserver_enabled else [])
@@ -635,7 +634,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{
       'name': (coturn_identifier + '.service'),
-      'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900),
+      'priority': (matrix_homeserver_systemd_service_manager_priority + 500),
       'restart_necessary': (coturn_restart_necessary | bool),
       'groups': ['matrix', 'coturn'],
     }] if coturn_enabled else [])
