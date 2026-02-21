@@ -4,6 +4,8 @@
 
 For deployments that use the playbook-managed Traefik reverse-proxy, LiveKit TURN over TCP is now SSL-terminated at Traefik and passed as plain TCP to LiveKit (`turn.external_tls = true`) by default.
 
+To disable this behavior, set `livekit_server_config_turn_external_tls: false` and the playbook will revert to the old behavior - using traefik-certs-dumper to extract SSL certificates out of Traefik and pass them to LiveKit for explicit SSL termination there.
+
 If you are using `other-traefik-container` or [another reverse-proxy](./configuring-playbook-own-webserver.md), this change does **not** switch behavior automatically. That mode remains using certificate files in the container (Traefik certificates dumper flow) unless you explicitly set the TURN-Traefik mode variables to opt in.
 
 # 2026-02-17

@@ -39,6 +39,14 @@ When `matrix_playbook_reverse_proxy_type` is `playbook-managed-traefik` (which i
 - `livekit_server_config_turn_external_tls` is automatically enabled for this setup.
 - Because Traefik handles TLS, LiveKit no longer needs certificate-file paths for TURN in this mode.
 
+To opt out and keep TURN TLS termination in LiveKit itself, set:
+
+```yml
+livekit_server_config_turn_external_tls: false
+```
+
+In this playbook, certificate paths are managed automatically via `group_vars/matrix_servers` when certificate dumping is enabled.
+
 If your setup uses `other-traefik-container` or [another reverse-proxy](./configuring-playbook-own-webserver.md), behavior is unchanged by default and still relies on certificates being available inside the container as before.
 
 Deployments using `other-traefik-container` can opt into the same Traefik-terminated mode there, by setting:
@@ -53,6 +61,9 @@ and configuring their own Traefik TCP entrypoint dedicated to LiveKit TURN traff
 
 ## Limitations
 
-For some reason, LiveKit Server's TURN ports (`3479/udp` and `5350/tcp`) are not reachable over IPv6 regardless of whether you've [enabled IPv6](./configuring-ipv6.md) for your server.
+LiveKit Server's TURN listener behavior depends on where TLS is terminated:
 
-It seems like LiveKit Server intentionally only listens on `udp4` and `tcp4` as seen [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L128) and [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L92).
+- Direct LiveKit TURN listeners (`livekit_server_config_turn_external_tls: false`) still use IPv4-only sockets for `3479/udp` and `5350/tcp`, so IPv6 connectivity to these endpoints is not possible.
+- With [TURN TLS handling](#turn-tls-handling) (`livekit_server_config_turn_external_tls: true`), the playbook's dedicated `matrix-livekit-turn` TCP entrypoint can still listen on both IPv4 and IPv6. Traefik then forwards TURN/TCP to LiveKit.
+
+It appears that LiveKit Server intentionally only listens on `udp4` and `tcp4` in direct mode, as seen [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L128) and [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L92).
