@@ -1,6 +1,6 @@
 # 2026-02-21
 
-## LiveKit TURN TLS can now be fronted by playbook-managed Traefik
+## LiveKit TURN TLS is now automatically fronted by playbook-managed Traefik
 
 For deployments that use the playbook-managed Traefik reverse-proxy, LiveKit TURN over TCP is now SSL-terminated at Traefik and passed as plain TCP to LiveKit (`turn.external_tls = true`) by default.
 
