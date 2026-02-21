@@ -80,6 +80,29 @@ A separate Ansible role (`matrix-synapse-reverse-proxy-companion`) and component
 
 In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/element-hq/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
 
+### Limit joining heavy rooms on constrained hosts
+
+If your server is underpowered, joining heavy rooms can cause Synapse to consume a lot of resources and be unavailable for long (while it catches up).
+
+To avoid this, Synapse can be configured to reject joins for remote rooms that are too complex before users enter them.
+
+Complexity is computed as `current_state_events / 500` (Synapse state event count for current room state). When the resulting value is higher than `matrix_synapse_limit_remote_rooms_complexity` and `matrix_synapse_limit_remote_rooms_enabled` is `true`, Synapse blocks joining the room.
+
+We recommend using this as a guardrail on low-resource servers:
+
+```yaml
+matrix_synapse_limit_remote_rooms_enabled: true
+
+# Tweak as necessary
+matrix_synapse_limit_remote_rooms_complexity: 1.0
+
+# Uncomment and tweak if necessary
+# matrix_synapse_limit_remote_rooms_complexity_error: "Your homeserver is unable to join rooms this large or complex. Please speak to your server administrator, or upgrade your instance to join this room."
+
+# If you'd like your admins to be exempt from this limit, uncomment the line below
+# matrix_synapse_limit_remote_rooms_admins_can_join: true
+```
+
 ### Synapse + OpenID Connect for Single-Sign-On
 
 💡 An alternative to setting up OIDC in Synapse is to use [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS). Newer clients (like Element X) only support SSO-based authentication via MAS and not via the legacy Synapse OIDC setup described below. That said, MAS is still a new experimental service which comes with its own downsides. Consult its documentation to learn if it will be a good fit for your deployment.
