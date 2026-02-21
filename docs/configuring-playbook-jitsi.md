@@ -18,6 +18,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 The playbook can install and configure the [Jitsi](https://jitsi.org/) video-conferencing platform for you.
 
+Because Jitsi still requires a TURN server, enabling Jitsi
+automatically enables coturn (`coturn_enabled: true`) unless you explicitly disable it.
+
 Jitsi is an open source video-conferencing platform. It can not only be integrated with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS) as a widget, but also be used as standalone web app.
 
 💡 If you're into experimental technology, you may also be interested in trying out [Element Call](configuring-playbook-element-call.md) - a native Matrix video conferencing application.

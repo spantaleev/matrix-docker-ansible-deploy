@@ -311,10 +311,6 @@ You can disable some not-so-important services to save on memory.
 # Disabling this will prevent email-notifications and other such things from working.
 exim_relay_enabled: false
 
-# You can also disable this to save more RAM,
-# at the expense of audio/video calls being unreliable.
-coturn_enabled: false
-
 # This makes Synapse not keep track of who is online/offline.
 #
 # Keeping track of this and announcing such online-status in federated rooms with
