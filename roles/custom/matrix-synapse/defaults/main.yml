@@ -570,6 +570,21 @@ matrix_synapse_report_stats_endpoint: "https://matrix.org/report-usage-stats/pus
 # disabling this will decrease server load significantly.
 matrix_synapse_presence_enabled: true
 
+# Controls whether remote room complexity checks are enabled when joining rooms.
+# When enabled, Synapse checks a room's complexity before joining a remote room.
+# Complexity is measured as `current_state_events / 500` and can prevent
+# users from joining very large/active rooms on constrained servers.
+matrix_synapse_limit_remote_rooms_enabled: false
+
+# Maximum complexity allowed before join is blocked.
+matrix_synapse_limit_remote_rooms_complexity: 1.0
+
+# Error message returned when a user attempts to join a too-complex room.
+matrix_synapse_limit_remote_rooms_complexity_error: "Your homeserver is unable to join rooms this large or complex. Please speak to your server administrator, or upgrade your instance to join this room."
+
+# Allow server admins to join rooms even when they exceed the complexity limit.
+matrix_synapse_limit_remote_rooms_admins_can_join: false
+
 # Controls whether accessing the server's public rooms directory can be done without authentication.
 # For private servers, you most likely wish to require authentication,
 # unless you know what list of rooms you're publishing to the world and explicitly want to do it.

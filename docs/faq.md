@@ -323,11 +323,9 @@ matrix_synapse_presence_enabled: false
 You can also consider implementing a restriction on room complexity, in order to prevent users from joining very heavy rooms:
 
 ```yaml
-matrix_synapse_configuration_extension_yaml: |
-  limit_remote_rooms:
-    enabled: true
-    complexity: 1.0 # this limits joining complex (~large) rooms, can be
-					# increased, but larger values can require more RAM
+matrix_synapse_limit_remote_rooms_enabled: true
+matrix_synapse_limit_remote_rooms_complexity: 1.0 # this limits joining complex (~large) rooms
+# can be increased, but larger values can require more RAM
 ```
 
 If you've installed [Jitsi](configuring-playbook-jitsi.md) (not installed by default), there are additional optimizations listed on its documentation page that you can perform.
