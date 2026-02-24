@@ -1,0 +1,15 @@
+---
+# Standalone playbook for LiveKit Server setup.
+# Use instead of setup.yml to avoid loading all unrelated galaxy roles.
+#
+# Usage:
+#   ansible-playbook -i inventory/hosts livekit.yml --tags=setup-livekit-server,start-group-services
+#
+- name: "Set up LiveKit Server"
+  hosts: "{{ target if target is defined else 'matrix_servers' }}"
+  become: true
+
+  roles:
+    - role: galaxy/systemd_docker_base
+
+    - role: custom/livekit_server
