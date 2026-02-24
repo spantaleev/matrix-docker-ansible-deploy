@@ -1,0 +1,128 @@
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2024 wjbeckett
+# SPDX-FileCopyrightText: 2024, 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Ensure LiveKit Server paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "0750"
+    owner: "{{ livekit_server_uid }}"
+    group: "{{ livekit_server_gid }}"
+  with_items:
+    - { path: "{{ livekit_server_base_path }}", when: true }
+    - { path: "{{ livekit_server_config_path }}", when: true }
+    - { path: "{{ livekit_server_container_image_self_build_src_files_path }}", when: "{{ livekit_server_container_image_self_build }}" }
+  when: "item.when | bool"
+
+- name: Ensure LiveKit Server support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ livekit_server_base_path }}/{{ item }}"
+    mode: "0640"
+    owner: "{{ livekit_server_uid }}"
+    group: "{{ livekit_server_gid }}"
+  with_items:
+    - env
+    - labels
+  register: livekit_server_support_files_result
+
+- name: Ensure LiveKit Server configuration installed
+  ansible.builtin.copy:
+    content: "{{ livekit_server_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ livekit_server_config_path }}/config.yaml"
+    mode: "0640"
+    owner: "{{ livekit_server_uid }}"
+    group: "{{ livekit_server_gid }}"
+  register: livekit_server_config_result
+
+- name: Run if self-building of LiveKit Server container image is not enabled
+  when: "not livekit_server_container_image_self_build | bool"
+  block:
+    - name: Ensure LiveKit Server container image is pulled via community.docker.docker_image
+      when: devture_systemd_docker_base_container_image_pull_method == 'ansible-module'
+      community.docker.docker_image:
+        name: "{{ livekit_server_container_image }}"
+        source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+        force_source: "{{ livekit_server_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else livekit_server_container_image_force_pull }}"
+      register: livekit_server_container_image_pull_result
+      retries: "{{ devture_playbook_help_container_retries_count }}"
+      delay: "{{ devture_playbook_help_container_retries_delay }}"
+      until: livekit_server_container_image_pull_result is not failed
+
+    - name: Ensure LiveKit Server container image is pulled via ansible.builtin.command
+      when: devture_systemd_docker_base_container_image_pull_method == 'command'
+      ansible.builtin.command:
+        cmd: "{{ devture_systemd_docker_base_host_command_docker }} pull {{ livekit_server_container_image }}"
+      register: livekit_server_container_image_pull_result
+      retries: "{{ devture_playbook_help_container_retries_count }}"
+      delay: "{{ devture_playbook_help_container_retries_delay }}"
+      until: livekit_server_container_image_pull_result is not failed
+      changed_when: "'Downloaded newer image' in livekit_server_container_image_pull_result.stdout"
+
+- name: Run if self-building of LiveKit Server container image is enabled
+  when: "livekit_server_container_image_self_build | bool"
+  block:
+    - name: Ensure LiveKit Server repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ livekit_server_container_image_self_build_repo }}"
+        version: "{{ livekit_server_container_image_self_build_repo_version }}"
+        dest: "{{ livekit_server_container_image_self_build_src_files_path }}"
+        force: "yes"
+      become: true
+      become_user: "{{ livekit_server_uid }}"
+      register: livekit_server_git_pull_results
+
+    - name: Ensure LiveKit Server container image is built
+      community.docker.docker_image:
+        name: "{{ livekit_server_container_image_self_build_name }}"
+        source: build
+        force_source: "{{ livekit_server_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else livekit_server_git_pull_results.changed }}"
+        build:
+          dockerfile: Dockerfile
+          path: "{{ livekit_server_container_image_self_build_src_files_path }}"
+          pull: true
+          args:
+
+- name: Ensure LiveKit Server container network is created via community.docker.docker_network
+  when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module' and livekit_server_container_network != 'host'
+  community.docker.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ livekit_server_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Ensure LiveKit Server container network is created via ansible.builtin.command
+  when: devture_systemd_docker_base_container_network_creation_method == 'command' and livekit_server_container_network != 'host'
+  ansible.builtin.command:
+    cmd: >-
+      {{ devture_systemd_docker_base_host_command_docker }} network create
+      {% if devture_systemd_docker_base_ipv6_enabled %}--ipv6{% endif %}
+      {{ devture_systemd_docker_base_container_networks_driver_options_string }}
+      {{ livekit_server_container_network }}
+  register: network_creation_result
+  changed_when: network_creation_result.rc == 0
+  failed_when: network_creation_result.rc != 0 and 'already exists' not in network_creation_result.stderr
+
+- name: Ensure LiveKit Server systemd service is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/livekit-server.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ livekit_server_identifier }}.service"
+    mode: "0644"
+  register: livekit_server_systemd_service_result
+
+- name: Determine whether LiveKit Server needs a restart
+  ansible.builtin.set_fact:
+    livekit_server_restart_necessary: >-
+      {{
+        livekit_server_support_files_result.changed | default(false)
+        or livekit_server_config_result.changed | default(false)
+        or livekit_server_systemd_service_result.changed | default(false)
+        or livekit_server_container_image_pull_result.changed | default(false)
+      }}

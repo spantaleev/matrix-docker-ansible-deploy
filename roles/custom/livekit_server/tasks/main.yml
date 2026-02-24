@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2022 MDAD project contributors
+# SPDX-FileCopyrightText: 2024 wjbeckett
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Perform LiveKit Server installation tasks
+  when: livekit_server_enabled | bool
+  tags:
+    - setup-all
+    - setup-livekit-server
+    - install-all
+    - install-livekit-server
+  block:
+    - name: Validate LiveKit Server configuration
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+    - name: Install LiveKit Server
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
+
+- name: Perform LiveKit Server uninstallation tasks
+  when: not livekit_server_enabled | bool
+  tags:
+    - setup-all
+    - setup-livekit-server
+  block:
+    - name: Uninstall LiveKit Server
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

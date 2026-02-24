@@ -1,0 +1,66 @@
+#jinja2: lstrip_blocks: True
+
+port: {{ livekit_server_config_port | int | to_json }}
+
+bind_addresses: {{ livekit_server_config_bind_addresses | to_json }}
+
+room:
+  auto_create: {{ livekit_server_config_room_auto_create | to_json }}
+
+rtc:
+  tcp_port: {{ livekit_server_config_rtc_tcp_port | int | to_json }}
+
+  {% if livekit_server_config_rtc_udp_port %}
+  udp_port: {{ livekit_server_config_rtc_udp_port | int | to_json }}
+  {% endif %}
+
+  {% if livekit_server_config_rtc_port_range_start %}
+  port_range_start: {{ livekit_server_config_rtc_port_range_start | int | to_json }}
+  {% endif %}
+
+  {% if livekit_server_config_rtc_port_range_end %}
+  port_range_end: {{ livekit_server_config_rtc_port_range_end | int | to_json }}
+  {% endif %}
+
+  use_external_ip: {{ livekit_server_config_rtc_use_external_ip | to_json }}
+
+  {% if livekit_server_config_rtc_node_ip %}
+  node_ip: {{ livekit_server_config_rtc_node_ip | to_json }}
+  {% endif %}
+
+turn:
+  enabled: {{ livekit_server_config_turn_enabled | to_json }}
+{% if livekit_server_config_turn_enabled %}
+  domain: {{ livekit_server_config_turn_domain | to_json }}
+  cert_file: {{ livekit_server_config_turn_cert_file | to_json }}
+  key_file: {{ livekit_server_config_turn_key_file | to_json }}
+  tls_port: {{ livekit_server_config_turn_tls_port | int | to_json }}
+  udp_port: {{ livekit_server_config_turn_udp_port | int | to_json }}
+  external_tls: {{ livekit_server_config_turn_external_tls | to_json }}
+{% endif %}
+
+{% if livekit_server_config_prometheus_enabled %}
+prometheus:
+  port: {{ livekit_server_config_prometheus_port | int | to_json }}
+  username: {{ livekit_server_config_prometheus_username | to_json }}
+  password: {{ livekit_server_config_prometheus_password | to_json }}
+{% endif %}
+
+keys: {{ livekit_server_config_keys | to_json }}
+
+limit:
+  num_tracks: {{ livekit_server_config_limit_num_tracks | to_json }}
+  bytes_per_sec: {{ livekit_server_config_limit_bytes_per_sec | to_json }}
+  subscription_limit_video: {{ livekit_server_config_limit_subscription_limit_video | to_json }}
+  subscription_limit_audio: {{ livekit_server_config_limit_subscription_limit_audio | to_json }}
+  max_metadata_size: {{ livekit_server_config_limit_max_metadata_size | to_json }}
+  max_attributes_size: {{ livekit_server_config_limit_max_attributes_size | to_json }}
+  max_room_name_length: {{ livekit_server_config_limit_max_room_name_length | to_json }}
+  max_participant_identity_length: {{ livekit_server_config_limit_max_participant_identity_length | to_json }}
+  max_participant_name_length: {{ livekit_server_config_limit_max_participant_name_length | to_json }}
+
+logging:
+  level: {{ livekit_server_config_logging_level | to_json }}
+  pion_level: {{ livekit_server_config_logging_pion_level | to_json }}
+  json: {{ livekit_server_config_logging_json | to_json }}
+  sample: {{ livekit_server_config_logging_sample | to_json }}

@@ -1,0 +1,83 @@
+{#
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 wjbeckett
+SPDX-FileCopyrightText: 2026 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+[Unit]
+Description=LiveKit Server
+{% for service in livekit_server_systemd_required_services_list %}
+After={{ service }}
+Requires={{ service }}
+{% endfor %}
+{% for service in livekit_server_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ livekit_server_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ livekit_server_identifier }} 2>/dev/null || true'
+
+{% if livekit_server_host_sysctl_minimum_net_core_rmem_max %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_sh }} -c 'current_rmem=$(sysctl -n net.core.rmem_max); if [ "$current_rmem" -lt {{ livekit_server_host_sysctl_minimum_net_core_rmem_max }} ]; then sysctl -w net.core.rmem_max={{ livekit_server_host_sysctl_minimum_net_core_rmem_max }}; fi'
+{% endif %}
+{% if livekit_server_host_sysctl_minimum_net_core_wmem_max %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_sh }} -c 'current_wmem=$(sysctl -n net.core.wmem_max); if [ "$current_wmem" -lt {{ livekit_server_host_sysctl_minimum_net_core_wmem_max }} ]; then sysctl -w net.core.wmem_max={{ livekit_server_host_sysctl_minimum_net_core_wmem_max }}; fi'
+{% endif %}
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+      --rm \
+      --name={{ livekit_server_identifier }} \
+      --log-driver=none \
+      --user={{ livekit_server_uid }}:{{ livekit_server_gid }} \
+      --cap-drop=ALL \
+      --network={{ livekit_server_container_network }} \
+      {% if livekit_server_container_rtc_listen_interface is not in [none, 'none'] %}
+      -p {{ livekit_server_container_rtc_listen_interface }}{{ ':' if livekit_server_container_rtc_listen_interface else '' }}{{ livekit_server_config_rtc_tcp_port }}:{{ livekit_server_config_rtc_tcp_port }} \
+      {% endif %}
+      {% if livekit_server_container_rtc_listen_interface is not in [none, 'none'] and livekit_server_config_rtc_port_range_start and livekit_server_config_rtc_port_range_end %}
+      -p {{ livekit_server_container_rtc_listen_interface }}{{ ':' if livekit_server_container_rtc_listen_interface else '' }}{{ livekit_server_config_rtc_port_range_start }}-{{ livekit_server_config_rtc_port_range_end }}:{{ livekit_server_config_rtc_port_range_start }}-{{ livekit_server_config_rtc_port_range_end }}/udp \
+      {% endif %}
+      {% if livekit_server_container_rtc_listen_interface is not in [none, 'none'] and livekit_server_config_rtc_udp_port %}
+      -p {{ livekit_server_container_rtc_listen_interface }}{{ ':' if livekit_server_container_rtc_listen_interface else '' }}{{ livekit_server_config_rtc_udp_port }}:{{ livekit_server_config_rtc_udp_port }}/udp \
+      {% endif %}
+      {% if livekit_server_container_turn_listen_interface is not in [none, 'none'] and livekit_server_config_turn_enabled %}
+      -p {{ livekit_server_container_turn_listen_interface }}{{ ':' if livekit_server_container_turn_listen_interface else '' }}{{ livekit_server_config_turn_tls_port }}:{{ livekit_server_config_turn_tls_port }} \
+      {% endif %}
+      {% if livekit_server_container_turn_listen_interface is not in [none, 'none'] and livekit_server_config_turn_enabled %}
+      -p {{ livekit_server_container_turn_listen_interface }}{{ ':' if livekit_server_container_turn_listen_interface else '' }}{{ livekit_server_config_turn_udp_port }}:{{ livekit_server_config_turn_udp_port }}/udp \
+      {% endif %}
+      {% if livekit_server_container_metrics_listen_interface is not in [none, 'none'] and livekit_server_config_prometheus_enabled %}
+      -p {{ livekit_server_container_metrics_listen_interface }}{{ ':' if livekit_server_container_metrics_listen_interface else '' }}{{ livekit_server_config_prometheus_port }}:{{ livekit_server_config_prometheus_port }} \
+      {% endif %}
+      {% if livekit_server_container_http_host_bind_port %}
+      -p {{ livekit_server_container_http_host_bind_port }}:{{ livekit_server_config_port }} \
+      {% endif %}
+      --env-file={{ livekit_server_base_path }}/env \
+      --label-file={{ livekit_server_base_path }}/labels \
+      --mount type=bind,src={{ livekit_server_config_path }}/config.yaml,dst=/livekit-config.yaml,ro \
+      {% for volume in livekit_server_container_additional_volumes %}
+      --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
+      {% endfor %}
+      {{ livekit_server_container_image_self_build_name if livekit_server_container_image_self_build else livekit_server_container_image }} \
+      --config /livekit-config.yaml
+
+{% for network in livekit_server_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ livekit_server_identifier }}
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ livekit_server_identifier }}
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ livekit_server_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ livekit_server_identifier }} 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier={{ livekit_server_identifier }}
+
+[Install]
+WantedBy=multi-user.target
