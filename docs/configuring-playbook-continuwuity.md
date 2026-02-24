@@ -58,9 +58,14 @@ matrix_continuwuity_environment_variables_extension: |
 
 Unlike other homeserver implementations (like Synapse and Dendrite), continuwuity does not support creating users via the command line or via the playbook.
 
-If you followed the instructions above (see [Adjusting the playbook configuration](#adjusting-the-playbook-configuration)), you should have registration enabled and protected by a registration token.
+On first startup, Continuwuity creates a special one-time-use registration token and logs it to the server's console. To access this, you will need to SSH into the server and run the following command:
 
-This should allow you to create the first user account via any client (like [Element Web](./configuring-playbook-client-element-web.md)) which supports creating users.
+```sh
+# Adjust the duration if necessary or remove the whole --since argument
+journalctl -u matrix-continuwuity.service --since="10 minutes ago"
+```
+
+Find the token, highlight it, and copy it (ctrl+shift+C). This token should allow you to create the first user account via any client (like [Element Web](./configuring-playbook-client-element-web.md)) which supports creating users.
 
 The **first user account that you create will be marked as an admin** and **will be automatically invited to an admin room**.
 
