@@ -60,8 +60,9 @@ Unlike other homeserver implementations (like Synapse and Dendrite), continuwuit
 
 On first startup, Continuwuity creates a special one-time-use registration token and logs it to the server's console. To access this, you will need to SSH into the server and run the following command:
 
-```
-sudo systemctl status matrix-continuwuity.service
+```sh
+# Adjust the duration if necessary or remove the whole --since argument
+journalctl -u matrix-continuwuity.service --since="10 minutes ago"
 ```
 
 Find the token, highlight it, and copy it (ctrl+shift+C). This token should allow you to create the first user account via any client (like [Element Web](./configuring-playbook-client-element-web.md)) which supports creating users.
