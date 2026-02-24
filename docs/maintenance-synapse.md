@@ -83,6 +83,8 @@ You should then be able to browse the adminer database administration GUI at htt
 
 Synapse's presence feature which tracks which users are online and which are offline can use a lot of processing power. You can disable presence by adding `matrix_synapse_presence_enabled: false` to your `vars.yml` file.
 
+On smaller servers, consider limiting joins to very complex rooms with [the room complexity guard](configuring-playbook-synapse.md#limit-joining-heavy-rooms-on-constrained-hosts).
+
 If you have enough compute resources (CPU & RAM), you can make Synapse better use of them by [enabling load-balancing with workers](configuring-playbook-synapse.md#load-balancing-with-workers).
 
 [Tuning your PostgreSQL database](maintenance-postgres.md#tuning-postgresql) could also improve Synapse performance. The playbook tunes the integrated Postgres database automatically, but based on your needs you may wish to adjust tuning variables manually. If you're using an [external Postgres database](configuring-playbook-external-postgres.md), you will also need to tune Postgres manually.

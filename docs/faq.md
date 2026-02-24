@@ -305,18 +305,23 @@ See [Serving the base domain](configuring-playbook-base-domain-serving.md).
 
 ### How do I optimize this setup for a low-power server?
 
+For a low-power server, it's best to use an alternative homeserver implementation (other than [Synapse](configuring-playbook-synapse.md)).
+
 You can disable some not-so-important services to save on memory.
 
 ```yaml
 # Disabling this will prevent email-notifications and other such things from working.
 exim_relay_enabled: false
+```
 
-# You can also disable this to save more RAM,
-# at the expense of audio/video calls being unreliable.
-coturn_enabled: false
+If you've installed [Jitsi](configuring-playbook-jitsi.md) (not installed by default), there are additional optimizations listed on its documentation page that you can perform.
 
-# This makes Synapse not keep track of who is online/offline.
-#
+
+#### Synapse-specific optimizations
+
+If you're using [Synapse](configuring-playbook-synapse.md), you can also consider the following optimizations:
+
+```yaml
 # Keeping track of this and announcing such online-status in federated rooms with
 # hundreds of servers inside is insanely heavy (https://github.com/matrix-org/synapse/issues/3971).
 #
@@ -324,17 +329,13 @@ coturn_enabled: false
 matrix_synapse_presence_enabled: false
 ```
 
-You can also consider implementing a restriction on room complexity, in order to prevent users from joining very heavy rooms:
+You can also consider [implementing a restriction on room complexity](configuring-playbook-synapse.md#limit-joining-heavy-rooms-on-constrained-hosts), in order to prevent users from joining very heavy rooms:
 
 ```yaml
-matrix_synapse_configuration_extension_yaml: |
-  limit_remote_rooms:
-    enabled: true
-    complexity: 1.0 # this limits joining complex (~large) rooms, can be
-					# increased, but larger values can require more RAM
+# See: docs/configuring-playbook-synapse.md#limit-joining-heavy-rooms-on-constrained-hosts
+matrix_synapse_limit_remote_rooms_enabled: true
+matrix_synapse_limit_remote_rooms_complexity: 1.0
 ```
-
-If you've installed [Jitsi](configuring-playbook-jitsi.md) (not installed by default), there are additional optimizations listed on its documentation page that you can perform.
 
 ### I already have Docker on my server. Can you stop installing Docker via the playbook?
 

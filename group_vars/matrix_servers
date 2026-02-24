@@ -246,15 +246,14 @@ matrix_addons_homeserver_systemd_services_list: |
 #   - so that addon services (starting later) can communicte with the homeserver via Traefik's internal entrypoint
 #     (see `matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled`)
 # - core services (the homeserver) get a level of ~1000
-# - services that the homeserver depends on (database, Redis, ntfy, coturn, etc.) get a lower level — between 500 and 1000
-# - coturn gets a higher priority level (= starts later) if `devture_systemd_service_manager_service_restart_mode == 'one-by-one'` to intentionally delay it, because:
-#  - starting services one by one means that the service manager role waits for each service to fully start before proceeding to the next one
+# - services that the homeserver depends on (database, Redis, ntfy, etc.) get a lower level — between 500 and 1000
+# - coturn gets a higher priority level (= starts later) in all cases, to intentionally delay it in relation to the homeserver, because:
+#  - when starting services one by one, the service manager waits for each service to fully start before proceeding to the next one
 #  - if coturn has a lower priority than the homeserver, it would be started before it
-#  - since coturn is started before the homeserver, there's no container label telling Traefik to get a `matrix.example.com` certificate
+#  - if coturn is started before the homeserver, there'd be no container label (usually on the homeserver) telling Traefik to get a `matrix.example.com` certificate
 #  - thus, coturn would spin and wait for a certificate until it fails. We'd get a playbook failure due to it, but service manager will proceed to start all other services anyway.
 #  - only later, when the homeserver actually starts, would that certificate be fetched and dumped
-#  - this is not a problem with `all-at-once` (default) or `priority-batched` (services start concurrently),
-#    or with `clean-stop-start` (everything stops first, then starts in priority order — coturn at 900 is fine)
+#  - this is a problem for `one-by-one`, `clean-stop-start` (which behaves like one-by-one initially) and possibly other modes, except `all-at-once`
 # - reverse-proxying services get level 3000
 # - Matrix utility services (bridges, bots) get a level of 2000/2200, so that:
 #   - they can start before the reverse-proxy
@@ -607,14 +606,14 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{
       'name': ('matrix-' + matrix_homeserver_implementation + '.service'),
-      'priority': 1000,
+      'priority': matrix_homeserver_systemd_service_manager_priority,
       'restart_necessary': true,
       'groups': ['matrix', 'homeservers', matrix_homeserver_implementation],
     }] if matrix_homeserver_enabled else [])
     +
     ([{
       'name': 'matrix-corporal.service',
-      'priority': 1500,
+      'priority': (matrix_homeserver_systemd_service_manager_priority + 500),
       'restart_necessary': (matrix_corporal_restart_necessary | bool),
       'groups': ['matrix', 'corporal'],
     }] if matrix_corporal_enabled else [])
@@ -635,7 +634,7 @@ devture_systemd_service_manager_services_list_auto: |
     +
     ([{
       'name': (coturn_identifier + '.service'),
-      'priority': (1500 if devture_systemd_service_manager_service_restart_mode == 'one-by-one' else 900),
+      'priority': (matrix_homeserver_systemd_service_manager_priority + 500),
       'restart_necessary': (coturn_restart_necessary | bool),
       'groups': ['matrix', 'coturn'],
     }] if coturn_enabled else [])
@@ -3498,7 +3497,9 @@ matrix_rageshake_container_labels_traefik_tls_certResolver: "{{ traefik_certReso
 #
 ######################################################################
 
-coturn_enabled: true
+# Coturn is enabled by default only when Jitsi is enabled because Jitsi still
+# depends on legacy TURN integration for compatibility.
+coturn_enabled: "{{ jitsi_enabled | bool }}"
 
 coturn_identifier: matrix-coturn
 
@@ -3513,11 +3514,6 @@ coturn_container_image_registry_prefix: "{{ 'localhost/' if coturn_container_ima
 coturn_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else coturn_container_image_registry_prefix_upstream_default }}"
 
 coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
-
-# We make the assumption that `ansible_host` points to an external IP address, which may not always be the case.
-# Users are free to set `coturn_turn_external_ip_address` to an empty string
-# to allow auto-detection (via an echoip service) to happen at runtime.
-coturn_turn_external_ip_address: "{{ ansible_host }}"
 
 # By default, we use the official public instance.
 coturn_turn_external_ip_address_auto_detection_echoip_service_url: https://ifconfig.co/json
@@ -5945,6 +5941,8 @@ traefik_additional_entrypoints_auto: |
     ([matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition] if matrix_playbook_public_matrix_federation_api_traefik_entrypoint_enabled else [])
     +
     ([matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition] if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else [])
+    +
+    ([matrix_playbook_livekit_turn_traefik_entrypoint_definition] if matrix_playbook_livekit_turn_traefik_entrypoint_enabled else [])
   }}
 
 traefik_config_providers_docker_endpoint: "{{ container_socket_proxy_endpoint if container_socket_proxy_enabled else 'unix:///var/run/docker.sock' }}"
@@ -6104,6 +6102,11 @@ livekit_server_container_image_registry_prefix_upstream: "{{ matrix_container_gl
 livekit_server_container_network: "{{ matrix_addons_container_network }}"
 livekit_server_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (livekit_server_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
 
+# We expose LiveKit TURN/TLS via Traefik on a dedicated TCP entrypoint.
+matrix_playbook_livekit_turn_traefik_entrypoint_enabled: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' and livekit_server_config_turn_enabled and livekit_server_config_turn_external_tls and livekit_server_container_labels_traefik_enabled }}"
+matrix_playbook_livekit_turn_traefik_entrypoint_port: "{{ livekit_server_config_turn_tls_port }}"
+matrix_playbook_livekit_turn_traefik_entrypoint_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ (matrix_playbook_livekit_turn_traefik_entrypoint_port | string)) if matrix_playbook_service_host_bind_interface_prefix else (matrix_playbook_livekit_turn_traefik_entrypoint_port | string) }}"
+
 livekit_server_container_additional_volumes_auto: |
   {{
     (
@@ -6118,7 +6121,7 @@ livekit_server_container_additional_volumes_auto: |
          'dst': livekit_server_config_turn_key_file,
          'options': 'ro',
        },
-      ] if (matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and livekit_server_config_turn_enabled and (livekit_server_config_turn_cert_file and livekit_server_config_turn_key_file)) else []
+      ] if (matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and livekit_server_config_turn_enabled and not (livekit_server_config_turn_external_tls | bool) and (livekit_server_config_turn_cert_file and livekit_server_config_turn_key_file)) else []
     )
   }}
 
@@ -6126,6 +6129,9 @@ livekit_server_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_pro
 livekit_server_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 livekit_server_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 livekit_server_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+livekit_server_container_labels_turn_traefik_enabled: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_enabled }}"
+livekit_server_container_labels_turn_traefik_entrypoints: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_name }}"
+livekit_server_container_labels_turn_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 livekit_server_container_labels_public_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
 livekit_server_container_labels_public_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
@@ -6164,15 +6170,19 @@ livekit_server_config_turn_tls_port: 5350
 # Note that TURN is not enabled by default. See `livekit_server_config_turn_enabled`.
 livekit_server_config_turn_udp_port: 3479
 
-# LiveKit's TURN implementation requires SSL certificates.
-# We only enable it if we can provide them automatically via Traefik + Traefik Certs Dumper.
-livekit_server_config_turn_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled }}"
+# In this mode, Traefik terminates TURN/TLS and forwards plaintext TCP to LiveKit's `turn.tls_port`.
+# We only enable it automatically when Traefik is managed by this playbook.
+livekit_server_config_turn_external_tls: "{{ matrix_playbook_reverse_proxy_type == 'playbook-managed-traefik' and matrix_playbook_ssl_enabled }}"
+# TURN stays enabled for either mode:
+# - external TLS termination by playbook-managed Traefik
+# - in-container TLS using certificates from Traefik Certs Dumper
+livekit_server_config_turn_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and (livekit_server_config_turn_external_tls or traefik_certs_dumper_enabled) }}"
 
 livekit_server_config_turn_cert_file: |-
   {{
     {
-      'playbook-managed-traefik': ('/certificate.crt' if traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': ('/certificate.crt' if traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': ('/certificate.crt' if traefik_certs_dumper_enabled and not (livekit_server_config_turn_external_tls | bool) else ''),
+      'other-traefik-container': ('/certificate.crt' if traefik_certs_dumper_enabled and not (livekit_server_config_turn_external_tls | bool) else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
@@ -6180,15 +6190,15 @@ livekit_server_config_turn_cert_file: |-
 livekit_server_config_turn_key_file: |-
   {{
     {
-      'playbook-managed-traefik': ('/privatekey.key' if traefik_certs_dumper_enabled else ''),
-      'other-traefik-container': ('/privatekey.key' if traefik_certs_dumper_enabled else ''),
+      'playbook-managed-traefik': ('/privatekey.key' if traefik_certs_dumper_enabled and not (livekit_server_config_turn_external_tls | bool) else ''),
+      'other-traefik-container': ('/privatekey.key' if traefik_certs_dumper_enabled and not (livekit_server_config_turn_external_tls | bool) else ''),
       'none': '',
     }[matrix_playbook_reverse_proxy_type]
   }}
 
 livekit_server_systemd_required_services_list_auto: |
   {{
-    ([traefik_certs_dumper_identifier + '-wait-for-domain@' + livekit_server_config_turn_domain + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and livekit_server_config_turn_enabled else [])
+    ([traefik_certs_dumper_identifier + '-wait-for-domain@' + livekit_server_config_turn_domain + '.service'] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and livekit_server_config_turn_enabled and not (livekit_server_config_turn_external_tls | bool) else [])
   }}
 
 ########################################################################

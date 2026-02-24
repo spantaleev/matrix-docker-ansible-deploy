@@ -1,3 +1,35 @@
+# 2026-02-21
+
+## (BC Break) coturn is no longer auto-enabled by default
+
+By default, the [coturn](./docs/configuring-playbook-turn.md) TURN server component is no longer enabled for every deployment.
+
+This reduces resources and attach surface for deployments which:
+
+- either don't need calls at all
+- or use the modern [Matrix RTC](docs/configuring-playbook-matrix-rtc.md)/[Element Call](docs/configuring-playbook-element-call.md) stack.
+
+Coturn is still auto-enabled when [Jitsi](./docs/configuring-playbook-jitsi.md) is enabled (`jitsi_enabled: true`), because Jitsi still depends on TURN for legacy Matrix integration.
+
+Additionally, Coturn (when enabled) now defaults to using automatic IP detection of your server's external IP address, instead of assuming your Ansible inventory (`ansible_host`) points to a public address and using it for configuring `coturn_turn_external_ip_address`.
+
+To restore the old behavior (needed for legacy call setups), add the following configuration to your `vars.yml`:
+
+```yml
+coturn_enabled: true
+
+# If you'd like explicit control over the external IP address (like before), keep this too.
+coturn_turn_external_ip_address: "{{ ansible_host }}"
+```
+
+## LiveKit TURN TLS is now automatically fronted by playbook-managed Traefik
+
+For deployments that use the playbook-managed Traefik reverse-proxy, LiveKit TURN over TCP is now SSL-terminated at Traefik and passed as plain TCP to LiveKit (`turn.external_tls = true`) by default.
+
+To disable this behavior, set `livekit_server_config_turn_external_tls: false` and the playbook will revert to the old behavior - using traefik-certs-dumper to extract SSL certificates out of Traefik and pass them to LiveKit for explicit SSL termination there.
+
+If you are using `other-traefik-container` or [another reverse-proxy](./configuring-playbook-own-webserver.md), this change does **not** switch behavior automatically. That mode remains using certificate files in the container (Traefik certificates dumper flow) unless you explicitly set the TURN-Traefik mode variables to opt in.
+
 # 2026-02-17
 
 ## (BC Break) prometheus-nginxlog-exporter role has been relocated and variable names need adjustments

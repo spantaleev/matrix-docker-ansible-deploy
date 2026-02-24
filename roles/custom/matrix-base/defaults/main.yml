@@ -92,6 +92,10 @@ matrix_homeserver_enabled: true
 # Note that the homeserver implementation of a server will not be able to be changed without data loss.
 matrix_homeserver_implementation: synapse
 
+# The priority that the homeserver starts with (lower = starts earlier).
+# Related to the systemd_service_manager role and `devture_systemd_service_manager_services_list*` variables.
+matrix_homeserver_systemd_service_manager_priority: 1000
+
 # This contains a secret, which is used for generating various other secrets later on.
 matrix_homeserver_generic_secret_key: ''
 
@@ -392,6 +396,22 @@ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition:
   port: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port }}"
   host_bind_port: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_host_bind_port }}"
   config: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config }}"
+
+# Controls whether to enable an additional Traefik entrypoint for LiveKit TURN/TLS (TCP) traffic.
+matrix_playbook_livekit_turn_traefik_entrypoint_enabled: false
+matrix_playbook_livekit_turn_traefik_entrypoint_name: matrix-livekit-turn
+matrix_playbook_livekit_turn_traefik_entrypoint_port: 5350
+matrix_playbook_livekit_turn_traefik_entrypoint_host_bind_port: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_port }}"
+matrix_playbook_livekit_turn_traefik_entrypoint_config: "{{ (matrix_playbook_livekit_turn_traefik_entrypoint_config_default | combine(matrix_playbook_livekit_turn_traefik_entrypoint_config_auto)) | combine(matrix_playbook_livekit_turn_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_livekit_turn_traefik_entrypoint_config_default: {}
+matrix_playbook_livekit_turn_traefik_entrypoint_config_auto: {}
+matrix_playbook_livekit_turn_traefik_entrypoint_config_custom: {}
+
+matrix_playbook_livekit_turn_traefik_entrypoint_definition:
+  name: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_name }}"
+  port: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_port }}"
+  host_bind_port: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_host_bind_port }}"
+  config: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_config }}"
 
 # Variables to Control which parts of our roles run.
 run_postgres_import: true

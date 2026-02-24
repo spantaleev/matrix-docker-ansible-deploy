@@ -13,33 +13,47 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Configuring a TURN server (optional, advanced)
 
-By default, this playbook installs and configures the [coturn](https://github.com/coturn/coturn) as a TURN server, through which clients can make audio/video calls even from [NAT](https://en.wikipedia.org/wiki/Network_address_translation)-ed networks. It also configures the Synapse chat server by default, so that it points to the coturn TURN server installed by the playbook. If that's okay, you can skip this document.
+By default, the [coturn](https://github.com/coturn/coturn) TURN server component is enabled automatically only when [Jitsi](configuring-playbook-jitsi.md) is enabled. If you're not using Jitsi, coturn is not enabled by default.
 
-If you'd like to stop the playbook installing the server, see the section [below](#disabling-coturn) to check the configuration for disabling it.
+If you explicitly need coturn while not using Jitsi, enable it with:
+
+```yaml
+coturn_enabled: true
+```
+
+and configure its IP-related settings in the section below.
+
+If you'd like coturn to stay disabled even when Jitsi is enabled, or if you prefer to use an external TURN provider, see [disabling coturn](#disabling-coturn) section below.
+
+When Coturn is not enabled, homeservers (like Synapse) would not point to TURN servers and *legacy* audio/video call functionality may fail. If you're using [Matrix RTC](configuring-playbook-rtc.md) (for [Element Call](configuring-playbook-element-call.md)), you likely don't have a need to enable coturn.
+
+## Adjusting firewall rules
+
+To ensure Coturn functions correctly, the following firewall rules and port forwarding settings are required when coturn is enabled:
+
+- `3478/tcp`: STUN/TURN over TCP
+- `3478/udp`: STUN/TURN over UDP
+- `5349/tcp`: TURN over TCP
+- `5349/udp`: TURN over UDP
+- `49152-49172/udp`: TURN/UDP relay range
+
+💡 Docker configures the server's internal firewall for you. In most cases, you don't need to do anything special on the host itself.
 
 ## Adjusting the playbook configuration
 
 ### Define public IP manually (optional)
 
-In the `hosts` file we explicitly ask for your server's external IP address when defining `ansible_host`, because the same value is used for configuring coturn.
-
-If you'd rather use a local IP for `ansible_host`, add the following configuration to your `vars.yml` file. Make sure to replace `YOUR_PUBLIC_IP` with the pubic IP used by the server.
+If you enable coturn (either via Jitsi or manually), we recommend that you configure the public IP addresses of your server in the `vars.yml` file:
 
 ```yaml
-coturn_turn_external_ip_address: "YOUR_PUBLIC_IP"
+# You can define multiple IP addresses if your server has multiple external IP addresses
+coturn_turn_external_ip_addresses: ["YOUR_PUBLIC_IP"]
 ```
 
-If you'd like to rely on external IP address auto-detection (not recommended unless you need it), set an empty value to the variable. The playbook will automatically contact an [echoip](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable.
+If you'd like to rely on external IP address auto-detection (not recommended unless you need it), avoid configuring this variable. The playbook will automatically contact an [echoip](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable.
 
 >[!NOTE]
 > You can self-host the echoip service by using the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting/mash-playbook) Ansible playbook. See [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/echoip.md) for the instruction to install it with the playbook. If you are wondering how to use it for your Matrix server, refer to [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/setting-up-services-on-mdad-server.md) for the overview.
-
-If your server has multiple external IP addresses, the coturn role offers a different variable for specifying them:
-
-```yaml
-# Note: coturn_turn_external_ip_addresses is different than coturn_turn_external_ip_address
-coturn_turn_external_ip_addresses: ['1.2.3.4', '4.5.6.7']
-```
 
 ### Change the authentication mechanism (optional)
 
@@ -119,13 +133,13 @@ Take a look at:
 
 ## Disabling coturn
 
-If, for some reason, you'd like for the playbook to not install coturn (or to uninstall it if it was previously installed), add the following configuration to your `vars.yml` file:
+Coturn is only enabled by default when [Jitsi](configuring-playbook-jitsi.md) is enabled. In most instances, you don't need to explicitly disable it.
+
+To force the playbook to not install Coturn (even when Jitsi is enabled), add the following configuration to your `vars.yml` file:
 
 ```yaml
 coturn_enabled: false
 ```
-
-In that case, Synapse would not point to any coturn servers and audio/video call functionality may fail.
 
 ## Installing
 

@@ -452,30 +452,11 @@ admin_contact: {{ matrix_synapse_admin_contact | to_json }}
 #server_context: context
 
 # Resource-constrained homeserver settings
-#
-# When this is enabled, the room "complexity" will be checked before a user
-# joins a new remote room. If it is above the complexity limit, the server will
-# disallow joining, or will instantly leave.
-#
-# Room complexity is an arbitrary measure based on factors such as the number of
-# users in the room.
-#
 limit_remote_rooms:
-  # Uncomment to enable room complexity checking.
-  #
-  #enabled: true
-
-  # the limit above which rooms cannot be joined. The default is 1.0.
-  #
-  #complexity: 0.5
-
-  # override the error which is returned when the room is too complex.
-  #
-  #complexity_error: "This room is too complex."
-
-  # allow server admins to join complex rooms. Default is false.
-  #
-  #admins_can_join: true
+  enabled: {{ matrix_synapse_limit_remote_rooms_enabled | to_json }}
+  complexity: {{ matrix_synapse_limit_remote_rooms_complexity | to_json }}
+  complexity_error: {{ matrix_synapse_limit_remote_rooms_complexity_error | to_json }}
+  admins_can_join: {{ matrix_synapse_limit_remote_rooms_admins_can_join | to_json }}
 
 # Whether to require a user to be in the room to add an alias to it.
 # Defaults to 'true'.
