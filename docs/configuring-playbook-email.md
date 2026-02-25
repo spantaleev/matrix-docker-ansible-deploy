@@ -17,6 +17,20 @@ The [Ansible role for exim-relay](https://github.com/mother-of-all-self-hosting/
 - 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md) online
 - 📁 `roles/galaxy/exim_relay/docs/configuring-exim-relay.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 
+## Why use exim-relay?
+
+You might wonder whether you need exim-relay or whether you can configure SMTP directly in each service (like [Synapse](configuring-playbook-synapse.md), [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md), etc.).
+
+**Here are the benefits of using exim-relay**:
+
+1. **Final delivery capability**: If you don't have an SMTP server, exim-relay can deliver emails directly. This makes it a complete solution for sending email from your Matrix services.
+
+2. **Centralized configuration**: Even if you have an existing SMTP server, configuring it separately in each Matrix component ([Synapse](configuring-playbook-synapse.md), [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md), bridges, bots, etc.) creates additional work and maintenance burden. With exim-relay, you configure your upstream SMTP server once in the exim-relay settings, and then simply point all other services to exim-relay. They automatically start using your upstream SMTP server without needing individual SMTP configuration.
+
+3. **Local spooling and reliability**: If your upstream SMTP server becomes temporarily unavailable (but exim-relay itself is still running), exim-relay will store messages locally and automatically retry delivery later. This prevents email loss during temporary outages and improves the overall reliability of your email delivery.
+
+**In summary**, exim-relay provides significant benefits with minimal overhead, serving as a reliable intermediary that simplifies configuration and improves resilience.
+
 ## Firewall settings
 
 No matter whether you send email directly (the default) or you relay email through another host, you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).
