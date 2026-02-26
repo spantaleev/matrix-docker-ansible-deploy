@@ -48,6 +48,16 @@
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
 
 - tags:
+    - setup-all
+    - setup-synapse-reverse-proxy-companion
+    - setup-synapse
+    - install-all
+    - install-synapse-reverse-proxy-companion
+    - install-synapse
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/reverse_proxy_companion/main.yml"
+
+- tags:
     - import-synapse-media-store
   block:
     - when: matrix_synapse_enabled | bool

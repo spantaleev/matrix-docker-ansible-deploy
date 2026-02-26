@@ -76,7 +76,7 @@ The only thing you **cannot** do is mix [generic workers](#generic-workers) and 
 
 When Synapse workers are enabled, the integrated [Postgres database is tuned](maintenance-postgres.md#tuning-postgresql), so that the maximum number of Postgres connections are increased from `200` to `500`. If you need to decrease or increase the number of maximum Postgres connections further, use the `postgres_max_connections` variable.
 
-A separate Ansible role (`matrix-synapse-reverse-proxy-companion`) and component handles load-balancing for workers. This role/component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly.
+The `matrix-synapse` role also manages the `matrix-synapse-reverse-proxy-companion` component for load-balancing with workers. This component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly.
 
 In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/element-hq/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
 

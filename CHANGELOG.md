@@ -1,3 +1,15 @@
+# 2026-02-26
+
+## Internal refactor: merged the Synapse reverse-proxy companion role into `matrix-synapse`
+
+The standalone `matrix-synapse-reverse-proxy-companion` role has been merged into the [matrix-synapse](roles/custom/matrix-synapse/) role.
+
+This is not a user-facing change and does not change variable names (`matrix_synapse_reverse_proxy_companion_*` remain the same). The split looked clean on paper, but in practice both parts are tightly coupled through worker routing, tags (`setup-synapse`/`install-synapse`), and lifecycle ordering, so keeping them separate added coordination overhead with little practical benefit.
+
+Compatibility note: existing companion-specific tags (`setup-synapse-reverse-proxy-companion` and `install-synapse-reverse-proxy-companion`) are still available.
+
+With this change, Synapse and its reverse-proxy companion are managed in one role (`matrix-synapse`) while still keeping companion logic in dedicated task/template subdirectories for maintainability.
+
 # 2026-02-21
 
 ## (BC Break) coturn is no longer auto-enabled by default
