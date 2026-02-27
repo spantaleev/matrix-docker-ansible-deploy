@@ -897,6 +897,13 @@ devture_systemd_service_manager_services_list_auto: |
       'restart_necessary': (traefik_certs_dumper_restart_necessary | bool),
       'groups': ['matrix', 'traefik-certs-dumper'],
     }] if traefik_certs_dumper_enabled else [])
+    +
+    ([{
+      'name': 'matrix-meshtastic-relay.service',
+      'priority': 800, 
+      'groups': ['matrix', 'bridges', 'meshtastic']
+    }] if matrix_meshtastic_relay_enabled else [])
+
   }}
 
 ########################################################################
@@ -3943,6 +3950,27 @@ matrix_media_repo_redis_shards: |
 #
 ######################################################################
 
+
+########################################################################
+#                                                                      #
+# matrix-meshtastic-relay                                              #
+#                                                                      #
+########################################################################
+
+# This plugin is disabled; but we put some defaults 
+
+matrix_meshtastic_relay_identifier: "matrix-meshtastic-relay"
+matrix_meshtastic_relay_base_path: "{{ matrix_base_data_path }}/matrix-meshtastic-relay"
+
+matrix_meshtastic_relay_matrix_host: "{{ matrix_domain }}"
+matrix_meshtastic_relay_uid: "{{ matrix_user_uid }}"
+matrix_meshtastic_relay_gid: "{{ matrix_user_gid }}"
+
+########################################################################
+#                                                                      #
+# /matrix-meshtastic-relay                                             #
+#                                                                      #
+########################################################################
 
 ########################################################################
 #                                                                      #
