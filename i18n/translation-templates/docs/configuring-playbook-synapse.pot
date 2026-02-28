@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 10:32+0000\n"
+"POT-Creation-Date: 2026-02-28 23:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,7 +149,7 @@ msgid "When Synapse workers are enabled, the integrated [Postgres database is tu
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:79
-msgid "A separate Ansible role (`matrix-synapse-reverse-proxy-companion`) and component handles load-balancing for workers. This role/component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly."
+msgid "The `matrix-synapse` role also manages the `matrix-synapse-reverse-proxy-companion` component for load-balancing with workers. This component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:81
@@ -157,141 +157,161 @@ msgid "In case any problems occur, make sure to have a look at the [list of syna
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:83
-msgid "Synapse + OpenID Connect for Single-Sign-On"
+msgid "Limit joining heavy rooms on constrained hosts"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:85
-msgid "💡 An alternative to setting up OIDC in Synapse is to use [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS). Newer clients (like Element X) only support SSO-based authentication via MAS and not via the legacy Synapse OIDC setup described below. That said, MAS is still a new experimental service which comes with its own downsides. Consult its documentation to learn if it will be a good fit for your deployment."
+msgid "If your server is underpowered, joining heavy rooms can cause Synapse to consume a lot of resources and be unavailable for long (while it catches up)."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:87
-msgid "If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional configuration."
+msgid "To avoid this, Synapse can be configured to reject joins for remote rooms that are too complex before users enter them."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:89
-msgid "This example configuration is for [keycloak](https://www.keycloak.org/), an opensource Identity Provider maintained by Red Hat."
+msgid "Complexity is computed as `current_state_events / 500` (Synapse state event count for current room state). When the resulting value is higher than `matrix_synapse_limit_remote_rooms_complexity` and `matrix_synapse_limit_remote_rooms_enabled` is `true`, Synapse blocks joining the room."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:91
-msgid "For more detailed documentation on available options and how to setup keycloak, see the [Synapse documentation on OpenID Connect with keycloak](https://github.com/element-hq/synapse/blob/develop/docs/openid.md#keycloak)."
+msgid "We recommend using this as a guardrail on low-resource servers:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:93
-msgid "In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;"
+#: ../../../docs/configuring-playbook-synapse.md:106
+msgid "Synapse + OpenID Connect for Single-Sign-On"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:108
+msgid "💡 An alternative to setting up OIDC in Synapse is to use [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) (MAS). Newer clients (like Element X) only support SSO-based authentication via MAS and not via the legacy Synapse OIDC setup described below. That said, MAS is still a new experimental service which comes with its own downsides. Consult its documentation to learn if it will be a good fit for your deployment."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:110
+msgid "If you'd like to use OpenID Connect authentication with Synapse, you'll need some additional configuration."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:112
+msgid "This example configuration is for [keycloak](https://www.keycloak.org/), an opensource Identity Provider maintained by Red Hat."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:114
-msgid "Customizing templates"
+msgid "For more detailed documentation on available options and how to setup keycloak, see the [Synapse documentation on OpenID Connect with keycloak](https://github.com/element-hq/synapse/blob/develop/docs/openid.md#keycloak)."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-synapse.md:116
+msgid "In case you encounter errors regarding the parsing of the variables, you can try to add `{% raw %}` and `{% endraw %}` blocks around them. For example ;"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:137
+msgid "Customizing templates"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synapse.md:139
 msgid "[Templates](https://github.com/element-hq/synapse/blob/develop/docs/templates.md) are used by Synapse for showing **certain web pages** handled by the server, as well as for **email notifications**."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:118
+#: ../../../docs/configuring-playbook-synapse.md:141
 msgid "This playbook allows you to customize the default templates (see the [`synapse/res/templates` directory](https://github.com/element-hq/synapse/tree/develop/synapse/res/templates))."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:120
+#: ../../../docs/configuring-playbook-synapse.md:143
 msgid "If template customization is enabled, the playbook will build a custom container image based on the official one."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:122
+#: ../../../docs/configuring-playbook-synapse.md:145
 msgid "Your custom templates need to live in a public or private git repository. This repository will be cloned during Synapse image customization (during the playbook run)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:124
+#: ../../../docs/configuring-playbook-synapse.md:147
 msgid "To enable template customizations, add the following configuration to your `vars.yml` file (adapt to your needs):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:150
+#: ../../../docs/configuring-playbook-synapse.md:173
 msgid "As mentioned in Synapse's Templates documentation, Synapse will fall back to its own templates if a template is not found in that directory. Due to this, it's recommended to only store and maintain template files in your repository if you need to make custom changes. Other files (which you don't need to change), should not be duplicated, so that you don't need to worry about getting out-of-sync with the original Synapse templates."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:152
+#: ../../../docs/configuring-playbook-synapse.md:175
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:154
+#: ../../../docs/configuring-playbook-synapse.md:177
 msgid "There are some additional things you may wish to configure about the server."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:156
+#: ../../../docs/configuring-playbook-synapse.md:179
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:158
+#: ../../../docs/configuring-playbook-synapse.md:181
 msgid "`roles/custom/matrix-synapse/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:159
+#: ../../../docs/configuring-playbook-synapse.md:182
 msgid "`roles/custom/matrix-synapse/templates/synapse/homeserver.yaml.j2` for the server's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_synapse_configuration_extension_yaml` variable"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:161
+#: ../../../docs/configuring-playbook-synapse.md:184
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:163
+#: ../../../docs/configuring-playbook-synapse.md:186
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:170
+#: ../../../docs/configuring-playbook-synapse.md:193
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:172
+#: ../../../docs/configuring-playbook-synapse.md:195
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note these shortcuts run the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:174
+#: ../../../docs/configuring-playbook-synapse.md:197
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:176
+#: ../../../docs/configuring-playbook-synapse.md:199
 msgid "Synapse Admin"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:178
+#: ../../../docs/configuring-playbook-synapse.md:201
 msgid "With [Synapse Admin](configuring-playbook-synapse-admin.md), certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:180
+#: ../../../docs/configuring-playbook-synapse.md:203
 msgid "The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:182
+#: ../../../docs/configuring-playbook-synapse.md:205
 msgid "Monitoring Synapse Metrics with Prometheus and Grafana"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:184
+#: ../../../docs/configuring-playbook-synapse.md:207
 msgid "This playbook allows you to enable Synapse metrics, which can provide insight into the performance and activity of Synapse."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:186
+#: ../../../docs/configuring-playbook-synapse.md:209
 msgid "To enable Synapse runtime metrics, see: [Enabling metrics and graphs (Prometheus, Grafana) for your Matrix server](configuring-playbook-prometheus-grafana.md) and [its subsection](configuring-playbook-prometheus-grafana.md#expose-metrics-of-other-services-roles)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:188
+#: ../../../docs/configuring-playbook-synapse.md:211
 msgid "To enable Synapse usage metrics, see: [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:190
+#: ../../../docs/configuring-playbook-synapse.md:213
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:192
+#: ../../../docs/configuring-playbook-synapse.md:215
 msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-synapse`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:194
+#: ../../../docs/configuring-playbook-synapse.md:217
 msgid "Increase logging verbosity"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:196
+#: ../../../docs/configuring-playbook-synapse.md:219
 msgid "Because Synapse is originally very chatty when it comes to logging, we intentionally reduce its [logging level](https://docs.python.org/3/library/logging.html#logging-levels) from `INFO` to `WARNING`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-synapse.md:198
+#: ../../../docs/configuring-playbook-synapse.md:221
 msgid "If you'd like to debug an issue or [report a Synapse bug](https://github.com/element-hq/synapse/issues/new/choose) to the developers, it'd be better if you temporarily increase the logging verbosity to `INFO`. To do so, add the following configuration to your `vars.yml` file and re-run the playbook:"
 msgstr ""

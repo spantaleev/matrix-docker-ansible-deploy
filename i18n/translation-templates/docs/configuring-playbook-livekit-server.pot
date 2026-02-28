@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 10:32+0000\n"
+"POT-Creation-Date: 2026-02-28 23:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,13 +73,61 @@ msgid "💡 The suggestions above are inspired by the upstream [Ports and Firewa
 msgstr ""
 
 #: ../../../docs/configuring-playbook-livekit-server.md:34
-msgid "Limitations"
+msgid "TURN TLS handling"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-livekit-server.md:36
-msgid "For some reason, LiveKit Server's TURN ports (`3479/udp` and `5350/tcp`) are not reachable over IPv6 regardless of whether you've [enabled IPv6](./configuring-ipv6.md) for your server."
+msgid "When `matrix_playbook_reverse_proxy_type` is `playbook-managed-traefik` (which is the default for this playbook), TURN over TCP is terminated by Traefik and forwarded to LiveKit with `turn.external_tls = true`. In this playbook default, this mode is enabled automatically when SSL is enabled and TURN is enabled."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-livekit-server.md:38
-msgid "It seems like LiveKit Server intentionally only listens on `udp4` and `tcp4` as seen [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L128) and [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L92)."
+msgid "The playbook installs a dedicated Traefik TCP entrypoint for TURN (`matrix-livekit-turn`) by default and binds it to `tcp/5350`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:39
+msgid "`livekit_server_config_turn_external_tls` is automatically enabled for this setup."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:40
+msgid "Because Traefik handles TLS, LiveKit no longer needs certificate-file paths for TURN in this mode."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:42
+msgid "To opt out and keep TURN TLS termination in LiveKit itself, set:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:48
+msgid "In this playbook, certificate paths are managed automatically via `group_vars/matrix_servers` when certificate dumping is enabled."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:50
+msgid "If your setup uses `other-traefik-container` or [another reverse-proxy](./configuring-playbook-own-webserver.md), behavior is unchanged by default and still relies on certificates being available inside the container as before."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:52
+msgid "Deployments using `other-traefik-container` can opt into the same Traefik-terminated mode there, by setting:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:60
+msgid "and configuring their own Traefik TCP entrypoint dedicated to LiveKit TURN traffic."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:62
+msgid "Limitations"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:64
+msgid "LiveKit Server's TURN listener behavior depends on where TLS is terminated:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:66
+msgid "Direct LiveKit TURN listeners (`livekit_server_config_turn_external_tls: false`) still use IPv4-only sockets for `3479/udp` and `5350/tcp`, so IPv6 connectivity to these endpoints is not possible."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:67
+msgid "With [TURN TLS handling](#turn-tls-handling) (`livekit_server_config_turn_external_tls: true`), the playbook's dedicated `matrix-livekit-turn` TCP entrypoint can still listen on both IPv4 and IPv6. Traefik then forwards TURN/TCP to LiveKit."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:69
+msgid "It appears that LiveKit Server intentionally only listens on `udp4` and `tcp4` in direct mode, as seen [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L128) and [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L92)."
 msgstr ""
