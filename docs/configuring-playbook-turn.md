@@ -25,7 +25,7 @@ and configure its IP-related settings in the section below.
 
 If you'd like coturn to stay disabled even when Jitsi is enabled, or if you prefer to use an external TURN provider, see [disabling coturn](#disabling-coturn) section below.
 
-When Coturn is not enabled, homeservers (like Synapse) would not point to TURN servers and *legacy* audio/video call functionality may fail. If you're using [Matrix RTC](configuring-playbook-rtc.md) (for [Element Call](configuring-playbook-element-call.md)), you likely don't have a need to enable coturn.
+When Coturn is not enabled, homeservers (like Synapse) would not point to TURN servers and *legacy* audio/video call functionality may fail. If you're using [Matrix RTC](configuring-playbook-matrix-rtc.md) (for [Element Call](configuring-playbook-element-call.md)), you likely don't have a need to enable coturn.
 
 ## Adjusting firewall rules
 
