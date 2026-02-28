@@ -1,3 +1,18 @@
+# 2026-03-01
+
+## (Potential BC Break) Synapse S3 media prefix is now applied consistently
+
+The `matrix_synapse_ext_synapse_s3_storage_provider_config_prefix` variable is now wired consistently for both:
+
+- the Synapse `s3_storage_provider` module configuration
+- the `matrix-synapse-s3-storage-provider-migrate` migration script (`s3_media_upload --prefix`)
+
+Previously, this variable could be set, but was not effectively applied by either of these paths.
+
+**Affects**: users of [synapse-s3-storage-provider](docs/configuring-playbook-synapse-s3-storage-provider.md) who have configured a non-empty `matrix_synapse_ext_synapse_s3_storage_provider_config_prefix` value.
+
+If your bucket data was uploaded without the prefix before this fix, enabling proper prefix usage can make existing objects appear missing until data is migrated/copied to the prefixed key namespace.
+
 # 2026-02-26
 
 ## Internal refactor: merged the Synapse reverse-proxy companion role into `matrix-synapse`
