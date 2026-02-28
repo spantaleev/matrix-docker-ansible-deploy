@@ -24,3 +24,8 @@ container_id=$(\
 {% endfor %}
 
 {{ devture_systemd_docker_base_host_command_docker }} start --attach $container_id
+
+for prune_dir in "{{ matrix_synapse_storage_path }}/{{ matrix_synapse_media_store_directory_name }}/remote_content" "{{ matrix_synapse_storage_path }}/{{ matrix_synapse_media_store_directory_name }}/remote_thumbnail"; do
+	[ -d "$prune_dir" ] || continue
+	find "$prune_dir" -depth -mindepth 1 -type d -empty -print -delete
+done
