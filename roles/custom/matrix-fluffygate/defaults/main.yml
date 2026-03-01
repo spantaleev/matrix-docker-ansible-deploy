@@ -1,0 +1,137 @@
+---
+
+# Fluffygate is a reference Push Gateway for Matrix.
+# To make use of it for delivering push notificatins, you'll need to develop/build your own Matrix app.
+# Project source code URL: https://github.com/matrix-org/fluffygate
+matrix_fluffygate_enabled: true
+matrix_fluffygate_identifier: 'matrix-fluffygate'
+
+# App information
+matrix_fluffygate_app_name: "Fluffygate"
+matrix_fluffygate_app_website: "https://example.com"
+matrix_fluffygate_debug_logs: false
+
+# Notification settings
+matrix_fluffygate_notification_title: "{count} new messages"
+matrix_fluffygate_notification_body: "{body}"
+
+# Android notification options
+matrix_fluffygate_android_notification_options:
+  priority: high
+  notification:
+    sound: "default"
+    icon: "notifications_icon"
+    tag: "default_notification"
+
+# APNS notification options
+matrix_fluffygate_apns_notification_options:
+  headers:
+    apns-priority: "10"
+  payload:
+    aps:
+      sound: "default"
+      badge: "{count}"
+      mutable-content: 1
+
+matrix_fluffygate_firebase_key: ''  # JSON key file contents
+matrix_fluffygate_firebase_project: ''  # Firebase project ID
+
+# The hostname at which Fluffygate is served.
+matrix_fluffygate_hostname: ''
+
+# The path at which Fluffygate is exposed.
+# This value must either be `/` or not end with a slash (e.g. `/fluffygate`).
+matrix_fluffygate_path_prefix: /
+
+# renovate: datasource=docker depName=matrixdotorg/fluffygate
+matrix_fluffygate_version: 1.0.3
+
+matrix_fluffygate_base_path: "{{ matrix_base_data_path }}/fluffygate"
+matrix_fluffygate_config_path: "{{ matrix_fluffygate_base_path }}/config"
+matrix_fluffygate_data_path: "{{ matrix_fluffygate_base_path }}/data"
+
+# List of systemd services that matrix-fluffygate.service depends on.
+matrix_fluffygate_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+
+# List of systemd services that matrix-fluffygate.service wants
+matrix_fluffygate_systemd_wanted_services_list: []
+
+matrix_fluffygate_docker_image: "{{ matrix_fluffygate_docker_image_registry_prefix }}djangoflow/fluffygate:{{ matrix_fluffygate_docker_image_tag }}"
+matrix_fluffygate_docker_image_tag: "{{ matrix_fluffygate_version }}"
+matrix_fluffygate_docker_image_registry_prefix: "{{ matrix_container_global_registry_prefix }}"
+matrix_fluffygate_docker_image_force_pull: "{{ matrix_fluffygate_docker_image.endswith(':latest') }}"
+
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+matrix_fluffygate_container_network: "{{ traefik_container_network }}"
+
+# A list of additional container networks that the container would be connected to.
+# The role does not create these networks, so make sure they already exist.
+# Use this to expose this container to another reverse proxy, which runs in a different container network.
+matrix_fluffygate_container_additional_networks: []
+
+# Controls whether the matrix-fluffygate container exposes its HTTP port (tcp/6000 in the container).
+#
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:6000"), or empty string to not expose.
+matrix_fluffygate_container_http_host_bind_port: ''
+
+# matrix_fluffygate_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_fluffygate_container_labels_additional_labels`.
+matrix_fluffygate_container_labels_traefik_enabled: true
+matrix_fluffygate_container_labels_traefik_docker_network: "{{ matrix_fluffygate_container_network }}"
+matrix_fluffygate_container_labels_traefik_hostname: "{{ matrix_fluffygate_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/fluffygate`).
+matrix_fluffygate_container_labels_traefik_path_prefix: "{{ matrix_fluffygate_path_prefix }}"
+matrix_fluffygate_container_labels_traefik_rule: "Host(`{{ matrix_fluffygate_container_labels_traefik_hostname }}`){% if matrix_fluffygate_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_fluffygate_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_fluffygate_container_labels_traefik_priority: 0
+matrix_fluffygate_container_labels_traefik_entrypoints: web-secure
+matrix_fluffygate_container_labels_traefik_tls: "{{ matrix_fluffygate_container_labels_traefik_entrypoints != 'web' }}"
+matrix_fluffygate_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls which additional headers to attach to all HTTP responses.
+# To add your own headers, use `matrix_fluffygate_container_labels_traefik_additional_response_headers_custom`
+matrix_fluffygate_container_labels_traefik_additional_response_headers: "{{ matrix_fluffygate_container_labels_traefik_additional_response_headers_auto | combine(matrix_fluffygate_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_fluffygate_container_labels_traefik_additional_response_headers_auto: {}
+matrix_fluffygate_container_labels_traefik_additional_response_headers_custom: {}
+
+# matrix_fluffygate_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_fluffygate_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_fluffygate_container_labels_additional_labels: ''
+
+# A list of extra arguments to pass to the container
+matrix_fluffygate_container_extra_arguments: []
+
+matrix_fluffygate_metrics_prometheus_enabled: false
+
+# Default Fluffygate configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_fluffygate_configuration_extension_yaml`)
+# or completely replace this variable with your own template.
+matrix_fluffygate_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+
+matrix_fluffygate_configuration_extension_yaml: |
+  # Your custom YAML configuration for Fluffygate goes here.
+  # This configuration extends the default starting configuration (`matrix_fluffygate_configuration_yaml`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_fluffygate_configuration_yaml`.
+  #
+  # Example configuration extension follows:
+  # metrics:
+  #   opentracing:
+  #     enabled: true
+
+matrix_fluffygate_configuration_extension: "{{ matrix_fluffygate_configuration_extension_yaml | from_yaml if matrix_fluffygate_configuration_extension_yaml | from_yaml is mapping else {} }}"
+
+# Holds the final fluffygate configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_fluffygate_configuration_yaml`.
+matrix_fluffygate_configuration: "{{ matrix_fluffygate_configuration_yaml | from_yaml | combine(matrix_fluffygate_configuration_extension, recursive=True) }}"
