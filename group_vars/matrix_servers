@@ -4400,17 +4400,6 @@ matrix_client_element_container_additional_networks: "{{ [matrix_playbook_revers
 matrix_client_element_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_element_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
 
-matrix_client_commet_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
-
-matrix_client_commet_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_client_commet_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_client_commet_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
-
-matrix_client_commet_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_client_commet_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_client_commet_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_client_commet_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
-
 matrix_client_element_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_client_element_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
@@ -4450,6 +4439,36 @@ matrix_client_element_element_call_url: "{{ matrix_element_call_public_url if ma
 ######################################################################
 #
 # /matrix-client-element
+#
+######################################################################
+
+######################################################################
+#
+# matrix-client-commet
+#
+######################################################################
+
+matrix_client_commet_enabled: false
+
+matrix_client_commet_hostname: "commet.{{ matrix_domain }}"
+
+matrix_client_commet_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8766') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_client_commet_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_client_commet_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_client_commet_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+
+matrix_client_commet_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_client_commet_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_client_commet_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_client_commet_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_client_commet_container_labels_traefik_compression_middleware_enabled: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled }}"
+matrix_client_commet_container_labels_traefik_compression_middleware_name: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_name if matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled else '' }}"
+
+######################################################################
+#
+# /matrix-client-commet
 #
 ######################################################################
 
