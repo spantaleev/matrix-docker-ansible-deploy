@@ -1,3 +1,4 @@
+# SPDX-FileCopyrightText: 2025 Nikita Chernyi
 # SPDX-FileCopyrightText: 2026 MDAD project contributors
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -69,12 +70,17 @@
   register: matrix_client_commet_image_build_result
   when: matrix_client_commet_container_image_self_build | bool
 
-- name: Pull Commet Docker image
-  ansible.builtin.command:
-    cmd: "{{ devture_systemd_docker_base_host_command_docker }} pull {{ matrix_client_commet_container_image }}"
+- name: Ensure Commet container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_client_fluffychat_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_client_fluffychat_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_fluffychat_container_image_force_pull }}"
+  when: "not matrix_client_fluffychat_container_image_self_build | bool"
   register: matrix_client_commet_image_pull_result
-  changed_when: "'Status: Downloaded newer image' in matrix_client_commet_image_pull_result.stdout"
-  when: not matrix_client_commet_container_image_self_build | bool
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: matrix_client_commet_image_pull_result is not failed
 
 - name: Ensure Commet global_config.json is installed
   ansible.builtin.template:
