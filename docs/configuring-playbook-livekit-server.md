@@ -15,7 +15,7 @@ LiveKit Server is an open source project that provides scalable, multi-user conf
 
 The [Ansible role for LiveKit Server](https://github.com/mother-of-all-self-hosting/ansible-role-livekit-server) is developed and maintained by [the MASH (mother-of-all-self-hosting) project](https://github.com/mother-of-all-self-hosting). For details about configuring LiveKit Server, you can check them via:
 - 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-livekit-server/blob/main/docs/configuring-livekit-server.md) online
-- 📁 `roles/galaxy/livekit-server/docs/configuring-livekit-server.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
+- 📁 `roles/galaxy/livekit_server/docs/configuring-livekit-server.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 
 ## Adjusting firewall rules
 
@@ -29,7 +29,9 @@ To ensure LiveKit Server functions correctly, the following firewall rules and p
 
 - `5350/tcp`: TURN/TCP. Also see the [Limitations](#limitations) section below.
 
-💡 The suggestions above are inspired by the upstream [Ports and Firewall](https://docs.livekit.io/home/self-hosting/ports-firewall/) documentation based on how LiveKit is configured in the playbook. If you've using custom configuration for the LiveKit Server role, you may need to adjust the firewall rules accordingly.
+- `30000-30020/udp`: TURN relay range used by LiveKit's embedded TURN server.
+
+💡 The suggestions above are inspired by the upstream [Ports and Firewall](https://docs.livekit.io/home/self-hosting/ports-firewall/) documentation based on how LiveKit is configured in the playbook. If you're using custom configuration for the LiveKit Server role, you may need to adjust firewall rules accordingly.
 
 ## TURN TLS handling
 

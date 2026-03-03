@@ -37,6 +37,8 @@ To ensure Coturn functions correctly, the following firewall rules and port forw
 - `5349/udp`: TURN over UDP
 - `49152-49172/udp`: TURN/UDP relay range
 
+If LiveKit's embedded TURN is enabled at the same time (for MatrixRTC/Element Call), keep the Coturn relay range distinct from LiveKit's relay range (`livekit_server_config_turn_relay_range_start`/`livekit_server_config_turn_relay_range_end`).
+
 💡 Docker configures the server's internal firewall for you. In most cases, you don't need to do anything special on the host itself.
 
 ## Adjusting the playbook configuration
