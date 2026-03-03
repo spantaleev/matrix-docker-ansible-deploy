@@ -30,18 +30,16 @@
 
 - when: "matrix_client_commet_container_image_self_build | bool"
   block:
-    - name: Check Commet git remote configuration
-      ansible.builtin.command:
-        cmd: git -C "{{ matrix_client_commet_container_src_path }}" remote get-url origin
-      register: matrix_client_commet_git_remote_check
-      failed_when: false
-      changed_when: false
+    - name: Check Commet git repository metadata exists
+      ansible.builtin.stat:
+        path: "{{ matrix_client_commet_container_src_path }}/.git/config"
+      register: matrix_client_commet_git_config_file_stat
 
     - name: Remove Commet source directory if git remote is misconfigured
       ansible.builtin.file:
         path: "{{ matrix_client_commet_container_src_path }}"
         state: absent
-      when: matrix_client_commet_git_remote_check.rc != 0
+      when: not matrix_client_commet_git_config_file_stat.stat.exists
       become: true
 
     - name: Ensure Commet repository is present on self-build
@@ -54,15 +52,9 @@
       become_user: "{{ matrix_user_name }}"
       register: matrix_client_commet_git_pull_results
 
-    - name: Capture git hash
-      ansible.builtin.command:
-        cmd: git -C {{ matrix_client_commet_container_src_path }} rev-parse --short HEAD
-      register: matrix_client_commet_git_hash_result
-      changed_when: false
-
     - name: Set git hash fact
       ansible.builtin.set_fact:
-        matrix_client_commet_container_image_self_build_git_hash: "{{ matrix_client_commet_git_hash_result.stdout | trim }}"
+        matrix_client_commet_container_image_self_build_git_hash: "{{ matrix_client_commet_git_pull_results.after }}"
 
     - name: Ensure Commet container image is built
       ansible.builtin.command:
