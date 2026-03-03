@@ -87,6 +87,8 @@ Web clients for Matrix that you can host on your own domains.
 
 - [Setting up Cinny](configuring-playbook-client-cinny.md), if you've enabled [Cinny](https://github.com/ajbura/cinny), a web client focusing primarily on simple, elegant and secure interface
 
+- [Setting up Sable](configuring-playbook-client-sable.md), if you've enabled [Sable](https://github.com/7w1/sable), a web client focusing primarily on simple, elegant and secure interface
+
 - [Setting up SchildiChat Web](configuring-playbook-client-schildichat-web.md), if you've enabled [SchildiChat Web](https://schildi.chat/), a web client based on [Element Web](https://element.io/) with some extras and tweaks
 
 - [Setting up FluffyChat Web](configuring-playbook-client-fluffychat-web.md), if you've enabled [FluffyChat Web](https://github.com/krille-chan/fluffychat), a cute cross-platform messenger (web, iOS, Android) for Matrix written in [Flutter](https://flutter.dev/)
