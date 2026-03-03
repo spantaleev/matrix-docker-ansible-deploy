@@ -1,0 +1,26 @@
+---
+
+- tags:
+    - setup-all
+    - setup-client-commet
+    - install-all
+    - install-client-commet
+  block:
+    - when: matrix_client_commet_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-client-commet
+  block:
+    - when: not matrix_client_commet_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+
+- tags:
+    - self-check
+  block:
+    - when: matrix_client_commet_enabled | bool
+      ansible.builtin.debug:
+        msg: >-
+          Commet is running at
+          https://{{ matrix_client_commet_hostname }}{{ matrix_client_commet_path_prefix }}
