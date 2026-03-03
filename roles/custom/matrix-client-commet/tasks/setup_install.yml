@@ -32,17 +32,15 @@
   when: matrix_client_commet_container_image_self_build | bool and matrix_client_commet_git_remote_check.rc != 0
   become: true
 
-- name: Ensure Commet repository is present
+- name: Ensure Commet repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_client_commet_container_image_self_build_repo }}"
     dest: "{{ matrix_client_commet_container_src_path }}"
     version: "{{ matrix_client_commet_version }}"
-    depth: 1
-    force: true
+    force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
-  register: matrix_client_commet_git_result
-  when: matrix_client_commet_container_image_self_build | bool
+  register: matrix_client_fluffychat_git_pull_results
 
 - name: Capture git hash
   ansible.builtin.command:
