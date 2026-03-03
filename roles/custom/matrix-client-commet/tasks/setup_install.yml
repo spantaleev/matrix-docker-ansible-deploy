@@ -40,7 +40,7 @@
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
-  register: matrix_client_fluffychat_git_pull_results
+  register: matrix_client_commet_git_pull_results
 
 - name: Capture git hash
   ansible.builtin.command:
@@ -70,11 +70,11 @@
 
 - name: Ensure Commet container image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_client_fluffychat_container_image }}"
+    name: "{{ matrix_client_commet_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_client_fluffychat_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_fluffychat_container_image_force_pull }}"
-  when: "not matrix_client_fluffychat_container_image_self_build | bool"
+    force_source: "{{ matrix_client_commet_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_commet_container_image_force_pull }}"
+  when: "not matrix_client_commet_container_image_self_build | bool"
   register: matrix_client_commet_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
