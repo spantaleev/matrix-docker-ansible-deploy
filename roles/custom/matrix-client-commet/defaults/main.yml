@@ -1,0 +1,102 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Project source code URL: https://github.com/commetchat/commet
+
+matrix_client_commet_enabled: true
+
+# The git branch, tag, or SHA to build from
+matrix_client_commet_version: "main"
+
+# The hostname at which Commet is served (e.g. commet.example.com)
+matrix_client_commet_hostname: ""
+
+# The path at which Commet is exposed.
+# This value must either be `/` or not end with a slash (e.g. `/commet`).
+matrix_client_commet_path_prefix: /
+
+matrix_client_commet_base_path: "{{ matrix_base_data_path }}/client-commet"
+matrix_client_commet_container_src_path: "{{ matrix_client_commet_base_path }}/container-src"
+matrix_client_commet_config_path: "{{ matrix_client_commet_base_path }}/config"
+
+# Set to false to pull a pre-built image from a registry instead of building on the server.
+matrix_client_commet_container_image_self_build: true
+
+# Self-build settings (used when matrix_client_commet_container_image_self_build: true)
+matrix_client_commet_container_image_self_build_repo: "https://github.com/commetchat/commet.git"
+# Populated automatically after git clone in setup_install.yml
+matrix_client_commet_container_image_self_build_git_hash: ""
+matrix_client_commet_container_image_self_build_version_tag: "{{ matrix_client_commet_version }}"
+matrix_client_commet_container_image: "localhost/matrix-client-commet:{{ matrix_client_commet_version }}"
+
+# The in-container port nginx listens on
+matrix_client_commet_container_port: 8080
+
+# Optionally expose the container port on the host.
+# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:8765"), or empty string to not expose.
+matrix_client_commet_container_http_host_bind_port: ""
+
+# The base container network
+matrix_client_commet_container_network: ""
+
+# Additional container networks the container is connected to.
+# The role does not create these networks, so make sure they already exist.
+matrix_client_commet_container_additional_networks: []
+
+# Runtime configuration — mounted into the container, not baked into the image
+matrix_client_commet_default_homeserver: "matrix.org"
+
+# ---------------------------------------------------------------------------
+# Traefik labels
+# ---------------------------------------------------------------------------
+matrix_client_commet_container_labels_traefik_enabled: true
+matrix_client_commet_container_labels_traefik_docker_network: "{{ matrix_client_commet_container_network }}"
+matrix_client_commet_container_labels_traefik_hostname: "{{ matrix_client_commet_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/commet`).
+matrix_client_commet_container_labels_traefik_path_prefix: "{{ matrix_client_commet_path_prefix }}"
+matrix_client_commet_container_labels_traefik_rule: "Host(`{{ matrix_client_commet_container_labels_traefik_hostname }}`){% if matrix_client_commet_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ matrix_client_commet_container_labels_traefik_path_prefix }}`){% endif %}"
+matrix_client_commet_container_labels_traefik_priority: 0
+matrix_client_commet_container_labels_traefik_entrypoints: web-secure
+matrix_client_commet_container_labels_traefik_tls: "{{ matrix_client_commet_container_labels_traefik_entrypoints != 'web' }}"
+matrix_client_commet_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether a compression middleware will be injected into the middlewares list.
+matrix_client_commet_container_labels_traefik_compression_middleware_enabled: false
+matrix_client_commet_container_labels_traefik_compression_middleware_name: ""
+
+# Additional response headers (auto-built from security header variables below)
+matrix_client_commet_container_labels_traefik_additional_response_headers: "{{ matrix_client_commet_container_labels_traefik_additional_response_headers_auto | combine(matrix_client_commet_container_labels_traefik_additional_response_headers_custom) }}"
+matrix_client_commet_container_labels_traefik_additional_response_headers_auto: |
+  {{
+    {}
+    | combine({'X-XSS-Protection': matrix_client_commet_http_header_xss_protection} if matrix_client_commet_http_header_xss_protection else {})
+    | combine({'X-Content-Type-Options': matrix_client_commet_http_header_content_type_options} if matrix_client_commet_http_header_content_type_options else {})
+    | combine({'Content-Security-Policy': matrix_client_commet_http_header_content_security_policy} if matrix_client_commet_http_header_content_security_policy else {})
+    | combine({'Strict-Transport-Security': matrix_client_commet_http_header_strict_transport_security} if matrix_client_commet_http_header_strict_transport_security and matrix_client_commet_container_labels_traefik_tls else {})
+  }}
+matrix_client_commet_container_labels_traefik_additional_response_headers_custom: {}
+
+# Additional container labels (multiline string)
+matrix_client_commet_container_labels_additional_labels: ""
+
+# Extra arguments to pass to docker create
+matrix_client_commet_container_extra_arguments: []
+
+# ---------------------------------------------------------------------------
+# HTTP security headers
+# ---------------------------------------------------------------------------
+matrix_client_commet_http_header_xss_protection: "1; mode=block"
+matrix_client_commet_http_header_content_type_options: nosniff
+matrix_client_commet_http_header_content_security_policy: "frame-ancestors 'self'"
+matrix_client_commet_http_header_strict_transport_security: "max-age=31536000; includeSubDomains"
+
+# ---------------------------------------------------------------------------
+# Systemd
+# ---------------------------------------------------------------------------
+matrix_client_commet_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+
+# matrix_client_commet_restart_necessary is automatically set during installation
+# to signal whether the service should be restarted after setup.
+matrix_client_commet_restart_necessary: false

@@ -1,0 +1,116 @@
+# SPDX-FileCopyrightText: 2025 Nikita Chernyi
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Ensure Commet paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - "{{ matrix_client_commet_base_path }}"
+    - "{{ matrix_client_commet_config_path }}"
+
+- name: Ensure Commet container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_client_commet_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_client_commet_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_commet_container_image_force_pull }}"
+  when: "not matrix_client_commet_container_image_self_build | bool"
+  register: matrix_client_commet_image_pull_result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: matrix_client_commet_image_pull_result is not failed
+
+- when: "matrix_client_commet_container_image_self_build | bool"
+  block:
+    - name: Check Commet git repository metadata exists
+      ansible.builtin.stat:
+        path: "{{ matrix_client_commet_container_src_path }}/.git/config"
+      register: matrix_client_commet_git_config_file_stat
+
+    - name: Remove Commet source directory if git remote is misconfigured
+      ansible.builtin.file:
+        path: "{{ matrix_client_commet_container_src_path }}"
+        state: absent
+      when: not matrix_client_commet_git_config_file_stat.stat.exists
+      become: true
+
+    - name: Ensure Commet repository is present on self-build
+      ansible.builtin.git:
+        repo: "{{ matrix_client_commet_container_image_self_build_repo }}"
+        dest: "{{ matrix_client_commet_container_src_path }}"
+        version: "{{ matrix_client_commet_version }}"
+        force: "yes"
+      become: true
+      become_user: "{{ matrix_user_name }}"
+      register: matrix_client_commet_git_pull_results
+
+    - name: Set git hash fact
+      ansible.builtin.set_fact:
+        matrix_client_commet_container_image_self_build_git_hash: "{{ matrix_client_commet_git_pull_results.after }}"
+
+    - name: Ensure Commet container image is built
+      ansible.builtin.command:
+        cmd: |-
+          {{ devture_systemd_docker_base_host_command_docker }} buildx build
+          --tag={{ matrix_client_commet_container_image }}
+          --build-arg GIT_HASH={{ matrix_client_commet_container_image_self_build_git_hash }}
+          --build-arg VERSION_TAG={{ matrix_client_commet_container_image_self_build_version_tag }}
+          --build-arg BUILD_DATE={{ ansible_date_time.epoch }}
+          --file={{ matrix_client_commet_container_src_path }}/Dockerfile
+          {{ matrix_client_commet_container_src_path }}
+      changed_when: true
+      register: matrix_client_commet_image_build_result
+
+- name: Ensure Commet global_config.json is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/global_config.json.j2"
+    dest: "{{ matrix_client_commet_config_path }}/global_config.json"
+    mode: "0644"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_client_commet_config_result
+
+- name: Ensure Commet support files are installed
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ matrix_client_commet_base_path }}/{{ item.name }}"
+    mode: "0644"
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
+    - {src: "{{ role_path }}/templates/env.j2", name: "env"}
+  register: matrix_client_commet_support_files_result
+
+- name: Ensure Commet container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_client_commet_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Ensure matrix-client-commet.service is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-client-commet.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-commet.service"
+    mode: "0644"
+  register: matrix_client_commet_systemd_service_result
+
+- name: Determine whether Commet needs a restart
+  ansible.builtin.set_fact:
+    matrix_client_commet_restart_necessary: >-
+      {{
+        matrix_client_commet_config_result.changed | default(false)
+        or matrix_client_commet_support_files_result.changed | default(false)
+        or matrix_client_commet_systemd_service_result.changed | default(false)
+        or matrix_client_commet_image_build_result.changed | default(false)
+        or matrix_client_commet_image_pull_result.changed | default(false)
+      }}

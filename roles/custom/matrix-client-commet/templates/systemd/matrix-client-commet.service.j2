@@ -1,0 +1,58 @@
+{#
+SPDX-FileCopyrightText: 2026 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+#jinja2: lstrip_blocks: True
+[Unit]
+Description=Matrix Commet web client
+{% for service in matrix_client_commet_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-commet 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-commet 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-client-commet \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_client_commet_container_network }} \
+			{% if matrix_client_commet_container_http_host_bind_port %}
+			-p {{ matrix_client_commet_container_http_host_bind_port }}:{{ matrix_client_commet_container_port }} \
+			{% endif %}
+			--label-file={{ matrix_client_commet_base_path }}/labels \
+			--env-file={{ matrix_client_commet_base_path }}/env \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=10m \
+			--tmpfs=/var/cache/nginx:rw,mode=777 \
+			--tmpfs=/var/run:rw,mode=777 \
+			--mount type=bind,src={{ matrix_client_commet_config_path }}/global_config.json,dst=/usr/share/nginx/html/assets/assets/config/global_config.json,ro \
+			{% for arg in matrix_client_commet_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_client_commet_container_image }}
+
+{% for network in matrix_client_commet_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-client-commet
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-client-commet
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-commet 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-commet 2>/dev/null || true'
+
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-client-commet
+
+[Install]
+WantedBy=multi-user.target
