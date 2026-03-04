@@ -64,6 +64,7 @@ Web clients for Matrix that you can host on your own domains.
 | [Element Web](https://github.com/element-hq/element-web) | ✅ | Default Matrix web client, configured to connect to your own Synapse server | [Link](docs/configuring-playbook-client-element-web.md) |
 | [Hydrogen](https://github.com/element-hq/hydrogen-web) | ❌ | Lightweight Matrix client with legacy and mobile browser support | [Link](docs/configuring-playbook-client-hydrogen.md) |
 | [Cinny](https://github.com/ajbura/cinny) |  ❌ | Simple, elegant and secure web client | [Link](docs/configuring-playbook-client-cinny.md) |
+| [Sable](https://github.com/7w1/sable) | ❌ | Simple, elegant and secure web client | [Link](docs/configuring-playbook-client-sable.md) |
 | [SchildiChat Web](https://schildi.chat/) | ❌ | Based on Element Web, with a more traditional instant messaging experience | [Link](docs/configuring-playbook-client-schildichat-web.md) |
 | [FluffyChat Web](https://fluffychat.im/) | ❌ | The cutest messenger in Matrix | [Link](docs/configuring-playbook-client-fluffychat-web.md) |
 | [Commet](https://github.com/commetchat/commet) | ❌ | Matrix web client | [Link](docs/configuring-playbook-client-commet.md) |
@@ -75,13 +76,12 @@ Services that run on the server to make the various parts of your installation w
 | Name | Default? | Description | Documentation |
 | ---- | -------- | ----------- | ------------- |
 | [PostgreSQL](https://www.postgresql.org/)| ✅ | Database for Synapse. [Using an external PostgreSQL server](docs/configuring-playbook-external-postgres.md) is also possible. | [Link](docs/configuring-playbook-external-postgres.md) |
-| [coturn](https://github.com/coturn/coturn) | ❌ | STUN/TURN server for WebRTC audio/video calls | [Link](docs/configuring-playbook-turn.md) |
 | [Traefik](https://doc.traefik.io/traefik/) | ✅ | Web server, listening on ports 80, 443 and 8448 - standing in front of all the other services. [Using your own webserver](docs/configuring-playbook-own-webserver.md) is also possible. | [Link](docs/configuring-playbook-traefik.md) |
 | [Let's Encrypt](https://letsencrypt.org/) | ✅ | Free SSL certificate, which secures the connection to all components | [Link](docs/configuring-playbook-ssl-certificates.md) |
 | [Exim](https://www.exim.org/) | ✅ | Mail server, through which all Matrix services send outgoing email (can be configured to relay through another SMTP server) | [Link](docs/configuring-playbook-email.md) |
+| [coturn](https://github.com/coturn/coturn) | ❌ | STUN/TURN server for WebRTC audio/video calls | [Link](docs/configuring-playbook-turn.md) |
 | [ddclient](https://github.com/linuxserver/docker-ddclient) | ❌ | Dynamic DNS | [Link](docs/configuring-playbook-dynamic-dns.md) |
-| [LiveKit Server](https://github.com/livekit/livekit) | ❌ | WebRTC server for audio/video calls | [Link](docs/configuring-playbook-livekit-server.md) |
-| [Livekit JWT Service](https://github.com/livekit/livekit-jwt-service) | ❌ | JWT service for integrating [Element Call](./configuring-playbook-element-call.md) with [LiveKit Server](./configuring-playbook-livekit-server.md) | [Link](docs/configuring-playbook-livekit-jwt-service.md) |
+| Matrix RTC stack | ❌ | Supporting components ([LiveKit Server](docs/configuring-playbook-livekit-server.md) and [LiveKit JWT Service](docs/configuring-playbook-livekit-jwt-service.md)) for in-app audio/video calls for Matrix clients | [Link](docs/configuring-playbook-matrix-rtc.md) |
 
 ### Authentication
 
