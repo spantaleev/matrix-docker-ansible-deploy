@@ -5778,7 +5778,7 @@ matrix_user_creator_users_auto: |
       'username': matrix_bot_baibot_config_user_mxid_localpart,
       'initial_password': matrix_bot_baibot_config_user_password,
       'initial_type': 'bot',
-    }] if matrix_bot_baibot_enabled else [])
+    }] if matrix_bot_baibot_enabled and ((matrix_bot_baibot_config_user_password | default('', true) | string | length) > 0) else [])
     +
     ([{
       'username': matrix_bot_matrix_reminder_bot_matrix_user_id_localpart,

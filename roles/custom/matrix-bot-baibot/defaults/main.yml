@@ -17,7 +17,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v1.14.3
+matrix_bot_baibot_version: v1.15.0
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_registry_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else matrix_bot_baibot_container_image_registry_prefix_upstream }}"
 matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
@@ -59,8 +59,28 @@ matrix_bot_baibot_config_homeserver_url: ""
 # so it can start fresh.
 matrix_bot_baibot_config_user_mxid_localpart: baibot
 
+# Authentication settings (`user.*` configuration keys).
+#
+# baibot supports 2 mutually-exclusive authentication modes.
+# Set EITHER:
+# - password authentication: `matrix_bot_baibot_config_user_password`
+# OR:
+# - access-token authentication: `matrix_bot_baibot_config_user_access_token` + `matrix_bot_baibot_config_user_device_id`
+#
+# Password authentication is recommended for most playbook-managed deployments,
+# because it integrates with the `matrix-user-creator` role and can auto-create
+# the bot account (via the `ensure-matrix-users-created` playbook tag).
+# This remains true even on many MAS-enabled deployments where the bot account
+# is local and playbook-managed.
+
 # Controls the `user.password` configuration setting.
-matrix_bot_baibot_config_user_password: ''
+matrix_bot_baibot_config_user_password: null
+
+# Controls the `user.access_token` configuration setting.
+matrix_bot_baibot_config_user_access_token: null
+
+# Controls the `user.device_id` configuration setting.
+matrix_bot_baibot_config_user_device_id: null
 
 # Controls the `user.name` configuration setting.
 #

@@ -39,15 +39,34 @@ Depending on your current `vars.yml` file and desired configuration, **you may r
 
 To enable the bot, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
+Authentication can be configured in one of two mutually-exclusive ways:
+
+- **Password authentication** (`matrix_bot_baibot_config_user_password`) - recommended for most playbook-managed setups, because it integrates with automatic user creation flow used by the playbook, and auto-creates the bot account
+- **Access-token authentication** (`matrix_bot_baibot_config_user_access_token` + `matrix_bot_baibot_config_user_device_id`) - useful for specific [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md)/OIDC setups where password authentication is not available or not desired
+
+Even when [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) is enabled, password authentication is still typically the best fit for baibot if you're using a playbook-managed bot account.
+
+For upstream details, see baibot's [🔐 Authentication](https://github.com/etkecc/baibot/blob/main/docs/configuration/authentication.md) documentation.
+
 ```yaml
 matrix_bot_baibot_enabled: true
 
 # Uncomment and adjust this part if you'd like to use a username different than the default
 # matrix_bot_baibot_config_user_mxid_localpart: baibot
 
+# Authentication mode (choose exactly one):
+#
+# 1) Password authentication (recommended for most setups)
 # Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
 # If you'd like to change this password subsequently, see the details below.
 matrix_bot_baibot_config_user_password: 'PASSWORD_FOR_THE_BOT'
+
+# 2) Access-token authentication (for MAS/OIDC-enabled homeservers)
+# matrix_bot_baibot_config_user_access_token: 'YOUR_MAS_COMPATIBILITY_TOKEN_HERE'
+# matrix_bot_baibot_config_user_device_id: 'BAIBOT'
+#
+# You can generate a compatibility token for MAS with:
+# mas-cli manage issue-compatibility-token <username> [device_id]
 
 # An optional passphrase to use for backing up and recovering the bot's encryption keys.
 # You can create one with a command like `pwgen -s 64 1`.
@@ -387,13 +406,15 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 **Notes**:
 
-- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account.
+- The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account when password authentication is used.
+
+- If you're using access-token authentication, the bot account must already exist and the configured token + device ID must match that account. This mode is mainly for MAS/OIDC setups where password-based bot login is not suitable.
 
 - The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-- If you change the bot password (`matrix_bot_baibot_config_user_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_baibot_config_user_password` to let the bot know its new password.
+- If you change the bot password (`matrix_bot_baibot_config_user_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_baibot_config_user_password` to let the bot know its new password. (This note applies to password authentication mode.)
 
 ## Usage
 

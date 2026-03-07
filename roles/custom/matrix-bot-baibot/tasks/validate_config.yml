@@ -12,7 +12,6 @@
   when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_bot_baibot_config_user_mxid_localpart', when: true}
-    - {'name': 'matrix_bot_baibot_config_user_password', when: true}
     - {'name': 'matrix_bot_baibot_container_network', when: true}
     - {'name': 'matrix_bot_baibot_config_homeserver_url', when: true}
 
@@ -25,6 +24,58 @@
     - {'name': 'matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_model_id', when: "{{ matrix_bot_baibot_config_agents_static_definitions_mistral_enabled and matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_enabled }}"}
 
     - {'name': 'matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key', when: "{{ matrix_bot_baibot_config_agents_static_definitions_openai_enabled }}"}
+
+- name: Fail if baibot authentication mode is not configured
+  ansible.builtin.fail:
+    msg: >-
+      You need to configure one baibot authentication mode:
+      either `matrix_bot_baibot_config_user_password`
+      or (`matrix_bot_baibot_config_user_access_token` + `matrix_bot_baibot_config_user_device_id`).
+  when: >-
+    (
+      matrix_bot_baibot_config_user_password | default('', true) | string | length == 0
+    )
+    and
+    (
+      matrix_bot_baibot_config_user_access_token | default('', true) | string | length == 0
+      and matrix_bot_baibot_config_user_device_id | default('', true) | string | length == 0
+    )
+
+- name: Fail if baibot authentication mode is configured ambiguously
+  ansible.builtin.fail:
+    msg: >-
+      You need to configure exactly one baibot authentication mode.
+      Set either `matrix_bot_baibot_config_user_password`,
+      or (`matrix_bot_baibot_config_user_access_token` + `matrix_bot_baibot_config_user_device_id`) but not both.
+  when: >-
+    (
+      matrix_bot_baibot_config_user_password | default('', true) | string | length > 0
+    )
+    and
+    (
+      matrix_bot_baibot_config_user_access_token | default('', true) | string | length > 0
+      or matrix_bot_baibot_config_user_device_id | default('', true) | string | length > 0
+    )
+
+- name: Fail if baibot access token authentication is incomplete
+  ansible.builtin.fail:
+    msg: >-
+      Access-token authentication requires both
+      `matrix_bot_baibot_config_user_access_token` and `matrix_bot_baibot_config_user_device_id`.
+  when: >-
+    (
+      matrix_bot_baibot_config_user_password | default('', true) | string | length == 0
+    )
+    and
+    (
+      matrix_bot_baibot_config_user_access_token | default('', true) | string | length > 0
+      or matrix_bot_baibot_config_user_device_id | default('', true) | string | length > 0
+    )
+    and
+    (
+      matrix_bot_baibot_config_user_access_token | default('', true) | string | length == 0
+      or matrix_bot_baibot_config_user_device_id | default('', true) | string | length == 0
+    )
 
 - name: Fail if admin patterns list is empty
   ansible.builtin.fail:
