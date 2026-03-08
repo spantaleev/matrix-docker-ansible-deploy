@@ -2934,7 +2934,7 @@ redis:
 
   # The full path to a local Unix socket file. If this is used, host and port are ignored.
   {% if matrix_synapse_redis_path_enabled %}
-  path: {{ matrix_synapse_redis_path | to_json }}
+  path: {{ (matrix_synapse_redis_path + matrix_synapse_redis_path_socket) | to_json }}
   {% endif %}
 
   # Optional database ID to connect to. Defaults to 0.

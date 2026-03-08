@@ -1250,9 +1250,11 @@ matrix_synapse_redis_port: 6379
 # Connection option 2: Unix socket (takes precedence over TCP if `matrix_synapse_redis_path` is set)
 # disabled by default
 matrix_synapse_redis_path_enabled: false
-# the path to the redis socket inside the container, Synapse default's is "/tmp/redis.sock"
-matrix_synapse_redis_path: ""
-# the path to the redis socket on the host, e.g., "/matrix/valkey/run/valkey.sock"
+# the path to the redis socket's parent dir (/tmp, not /tmp/redis.sock file) inside the container, Synapse default's is "/tmp/redis.sock"
+matrix_synapse_redis_path: "/tmp"
+# the filename of the redis socket, inside the container, Synapse default's is "redis.sock"
+matrix_synapse_redis_path_socket: "/redis.sock"
+# the path to the redis socket on the host, e.g., "/matrix/valkey/run" (parent dir, not the socket file itself).
 matrix_synapse_redis_path_host: ""
 
 # Controls whether Synapse starts a replication listener necessary for workers.
