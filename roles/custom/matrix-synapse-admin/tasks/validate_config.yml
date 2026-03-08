@@ -6,6 +6,16 @@
 
 ---
 
+- name: Fail if matrix-synapse-admin is enabled for a non-Synapse homeserver
+  ansible.builtin.fail:
+    msg: >-
+      matrix-synapse-admin can only be used with the Synapse homeserver implementation.
+      Your configuration has `matrix_synapse_admin_enabled: true`, but `matrix_homeserver_implementation` is set to `{{ matrix_homeserver_implementation }}`.
+      Disable matrix-synapse-admin or switch to Synapse.
+  when:
+    - matrix_synapse_admin_enabled | bool
+    - matrix_homeserver_implementation != 'synapse'
+
 - name: (Deprecation) Catch and report renamed matrix-synapse-admin settings
   ansible.builtin.fail:
     msg: >-
