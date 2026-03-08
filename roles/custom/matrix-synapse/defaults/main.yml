@@ -1241,11 +1241,16 @@ matrix_synapse_instance_map: |
 
 # Redis information
 matrix_synapse_redis_enabled: false
-matrix_synapse_redis_host: ""
-matrix_synapse_redis_port: 6379
 matrix_synapse_redis_password: ""
 matrix_synapse_redis_dbid: 0
 matrix_synapse_redis_use_tls: false
+# Connection option 1: TCP
+matrix_synapse_redis_host: ""
+matrix_synapse_redis_port: 6379
+# Connection option 2: Unix socket (takes precedence over TCP if `matrix_synapse_redis_path` is set)
+matrix_synapse_redis_path_enabled: false
+matrix_synapse_redis_path: "" # the path to the redis socket inside the container, e.g. "/var/run/redis.sock"
+matrix_synapse_redis_path_host: "" # the path to the redis socket on the host, e.g. "/matrix/valkey/run/valkey.sock"
 
 # Controls whether Synapse starts a replication listener necessary for workers.
 #
