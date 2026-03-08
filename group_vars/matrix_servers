@@ -4844,9 +4844,12 @@ matrix_synapse_redis_enabled: "{{ valkey_enabled }}"
 matrix_synapse_redis_host: "{{ valkey_identifier if valkey_enabled else '' }}"
 matrix_synapse_redis_password: "{{ valkey_connection_password if valkey_enabled else '' }}"
 
-matrix_synapse_redis_path_enabled: false # temporarily, then switch to true by default once properly tested
-matrix_synapse_redis_path: "{{ '/tmp/redis.sock' if valkey_enabled else '' }}" # default value for Synapse
-matrix_synapse_redis_path_host: "{{ valkey_run_path+'/valkey.sock' if valkey_enabled else '' }}" # path on the host
+# unix socket connection, disabled by default temporarily until properly tested
+matrix_synapse_redis_path_enabled: false
+# path to the Redis socket inside the Synapse container, using Synapse's default value
+matrix_synapse_redis_path: "{{ '/tmp/redis.sock' if valkey_enabled else '' }}"
+# path to the Redis socket on the host, using Valkey
+matrix_synapse_redis_path_host: "{{ valkey_run_path+'/valkey.sock' if valkey_enabled else '' }}"
 
 matrix_synapse_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
