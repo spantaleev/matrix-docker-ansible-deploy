@@ -3981,6 +3981,10 @@ postgres_base_path: "{{ matrix_base_data_path }}/postgres"
 postgres_uid: "{{ matrix_user_uid }}"
 postgres_gid: "{{ matrix_user_gid }}"
 
+# unix socket connection, disabled by default temporarily until properly tested
+postgres_container_unix_socket_enabled: false
+postgres_cli_use_unix_socket_enabled: false
+
 postgres_allowed_versions_auto: "{{ backup_borg_supported_postgres_versions | map('int') if backup_borg_enabled | default(false) and backup_borg_postgresql_enabled | default(false) else [] }}"
 
 postgres_connection_username: matrix
@@ -4792,6 +4796,13 @@ matrix_synapse_workers_container_host_bind_address: "{{ matrix_playbook_service_
 
 matrix_synapse_database_host: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_synapse_database_password: "{{ (matrix_homeserver_generic_secret_key + ':synapse.db') | hash('sha512') | to_uuid }}"
+
+# unix socket connection, disabled by default temporarily until properly tested
+matrix_synapse_database_socket_enabled: false
+# path to the Postgres socket's parent dir inside the Synapse container
+matrix_synapse_database_socket_path: "{{ '/tmp/postgres' if postgres_enabled else '' }}"
+# path to the Postgres socket on the host, using Postgres
+matrix_synapse_database_socket_path_host: "{{ postgres_run_path if postgres_enabled else '' }}"
 
 matrix_synapse_macaroon_secret_key: "{{ (matrix_homeserver_generic_secret_key + ':synapse.mac') | hash('sha512') | to_uuid }}"
 
