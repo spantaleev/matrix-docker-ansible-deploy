@@ -5884,7 +5884,10 @@ matrix_user_verification_service_container_http_host_bind_port: "{{  '' if (jits
 # URL exposed in the docker network
 matrix_user_verification_service_container_url: "http://{{  matrix_user_verification_service_container_name }}:3000"
 
-matrix_user_verification_service_uvs_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+# Using `matrix_addons_homeserver_client_api_url` would not work here,
+# because `matrix-traefik:8008` (matrix-internal-client-api) does not expose any `/_synapse` paths.
+# UVS accesses `/_synapse/admin/v1/rooms` API to check room membership.
+matrix_user_verification_service_uvs_homeserver_url: "{{ matrix_homeserver_container_url }}"
 
 # We connect via the container network (private IPs), so we need to disable IP checks
 matrix_user_verification_service_uvs_disable_ip_blacklist: "{{ matrix_synapse_enabled }}"
