@@ -934,6 +934,8 @@ matrix_synapse_workers_presets:
     stream_writer_account_data_stream_workers_count: 0
     stream_writer_receipts_stream_workers_count: 0
     stream_writer_presence_stream_workers_count: 0
+    stream_writer_push_rules_stream_workers_count: 0
+    stream_writer_device_lists_stream_workers_count: 0
   one-of-each:
     room_workers_count: 0
     sync_workers_count: 0
@@ -952,6 +954,8 @@ matrix_synapse_workers_presets:
     stream_writer_account_data_stream_workers_count: 1
     stream_writer_receipts_stream_workers_count: 1
     stream_writer_presence_stream_workers_count: 1
+    stream_writer_push_rules_stream_workers_count: 0
+    stream_writer_device_lists_stream_workers_count: 0
   specialized-workers:
     room_workers_count: 1
     sync_workers_count: 1
@@ -970,6 +974,8 @@ matrix_synapse_workers_presets:
     stream_writer_account_data_stream_workers_count: 1
     stream_writer_receipts_stream_workers_count: 1
     stream_writer_presence_stream_workers_count: 1
+    stream_writer_push_rules_stream_workers_count: 0
+    stream_writer_device_lists_stream_workers_count: 0
 
 # Controls whether the matrix-synapse container exposes the various worker ports
 # (see `port` and `metrics_port` in `matrix_synapse_workers_enabled_list`) outside of the container.
@@ -1064,6 +1070,14 @@ matrix_synapse_workers_stream_writer_receipts_stream_workers_count: "{{ matrix_s
 # The count of these workers can only be 0 or 1.
 matrix_synapse_workers_stream_writer_presence_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_presence_stream_workers_count'] }}"
 
+# matrix_synapse_workers_stream_writer_push_rules_stream_workers_count controls how many stream writers that handle the `push_rules` stream to spawn.
+# The count of these workers can only be 0 or 1.
+matrix_synapse_workers_stream_writer_push_rules_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_push_rules_stream_workers_count'] }}"
+
+# matrix_synapse_workers_stream_writer_device_lists_stream_workers_count controls how many stream writers that handle the `device_lists` stream to spawn.
+# More than 1 worker is also supported of this type.
+matrix_synapse_workers_stream_writer_device_lists_stream_workers_count: "{{ matrix_synapse_workers_presets[matrix_synapse_workers_preset]['stream_writer_device_lists_stream_workers_count'] }}"
+
 # A list of stream writer workers to enable. This list is built automatically based on other variables.
 # You're encouraged to enable/disable stream writer workers by setting `matrix_synapse_workers_stream_writer_*_stream_workers_count` variables, instead of adjusting this list manually.
 matrix_synapse_workers_stream_writers: |
@@ -1081,6 +1095,10 @@ matrix_synapse_workers_stream_writers: |
     ([{'stream': 'receipts'}] * matrix_synapse_workers_stream_writer_receipts_stream_workers_count | int)
     +
     ([{'stream': 'presence'}] * matrix_synapse_workers_stream_writer_presence_stream_workers_count | int)
+    +
+    ([{'stream': 'push_rules'}] * matrix_synapse_workers_stream_writer_push_rules_stream_workers_count | int)
+    +
+    ([{'stream': 'device_lists'}] * matrix_synapse_workers_stream_writer_device_lists_stream_workers_count | int)
   }}
 
 matrix_synapse_workers_stream_writers_container_arguments: []
@@ -1998,9 +2016,11 @@ matrix_synapse_reverse_proxy_companion_synapse_stream_writer_to_device_stream_wo
 matrix_synapse_reverse_proxy_companion_synapse_stream_writer_account_data_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_account_data_stream_worker_client_server_endpoints }}"
 matrix_synapse_reverse_proxy_companion_synapse_stream_writer_receipts_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_receipts_stream_worker_client_server_endpoints }}"
 matrix_synapse_reverse_proxy_companion_synapse_stream_writer_presence_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_presence_stream_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_push_rules_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_push_rules_stream_worker_client_server_endpoints }}"
+matrix_synapse_reverse_proxy_companion_synapse_stream_writer_device_lists_stream_worker_client_server_locations: "{{ matrix_synapse_workers_stream_writer_device_lists_stream_worker_client_server_endpoints }}"
 matrix_synapse_reverse_proxy_companion_synapse_media_repository_locations: "{{ matrix_synapse_workers_media_repository_endpoints | default([]) }}"
 matrix_synapse_reverse_proxy_companion_synapse_user_dir_locations: "{{ matrix_synapse_workers_user_dir_worker_client_server_endpoints | default([]) }}"
-matrix_synapse_reverse_proxy_companion_client_server_main_override_locations_regex: ^/_matrix/client/(api/v1|r0|v3|unstable)/(account/3pid/|directory/list/room/|pushrules/|rooms/[^/]+/(forget|upgrade|report)|login/sso/redirect/|register)
+matrix_synapse_reverse_proxy_companion_client_server_main_override_locations_regex: ^/_matrix/client/(api/v1|r0|v3|unstable)/(account/3pid/|directory/list/room/|rooms/[^/]+/(forget|upgrade|report)|login/sso/redirect/|register)
 matrix_synapse_reverse_proxy_companion_client_server_sso_override_locations_regex: ^(/_matrix/client/(api/v1|r0|v3|unstable)/login/sso/redirect|/_synapse/client/(pick_username|(new_user_consent|oidc/callback|pick_idp|sso_register)$))
 # Related to MSC4108 (https://github.com/matrix-org/matrix-spec-proposals/pull/4108)
 matrix_synapse_reverse_proxy_companion_client_server_qr_code_login_locations_regex: ^(/_matrix/client/(unstable|v1)/org.matrix.msc4108/rendezvous|/_synapse/client/rendezvous)$
