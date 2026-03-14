@@ -39,6 +39,11 @@ matrix_synapse_workers_client_reader_client_server_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/room_keys/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/(query|changes|claim|room_keys/)
 
+  # MSC3814 dehydrated-device APIs:
+  # Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/devices.py#L256-L459
+  - ^/_matrix/client/unstable/org.matrix.msc3814.v1/dehydrated_device$
+  - ^/_matrix/client/unstable/org.matrix.msc3814.v1/dehydrated_device/[^/]*/events$
+
   # Login, registration, account, and profile APIs
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/login
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/register(/available|/m.login.registration_token/validity|)?
@@ -246,6 +251,10 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(r0|v3|unstable)/keys/changes$
   - ^/_matrix/client/(r0|v3|unstable)/keys/claim$
   - ^/_matrix/client/(r0|v3|unstable)/room_keys/
+  # MSC3814 dehydrated-device support:
+  # Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/devices.py#L256-L459
+  - ^/_matrix/client/unstable/org.matrix.msc3814.v1/dehydrated_device$
+  - ^/_matrix/client/unstable/org.matrix.msc3814.v1/dehydrated_device/[^/]*/events$
 
   # Registration/login requests
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/login$
