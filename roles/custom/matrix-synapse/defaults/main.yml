@@ -1920,6 +1920,26 @@ matrix_synapse_reverse_proxy_companion_worker_connections: 1024
 # Option to disable the access log
 matrix_synapse_reverse_proxy_companion_access_log_enabled: true
 
+# Controls the regular nginx access log format used for `/var/log/nginx/access.log`.
+# `routing_debug` is the default because it includes the chosen upstream label,
+# the resolved backend address, and timing data, which makes it much easier to
+# verify request routing in worker deployments.
+# This does not affect the separate syslog integration format used by prometheus-nginxlog-exporter.
+matrix_synapse_reverse_proxy_companion_access_log_format: routing_debug
+
+# The available values for `matrix_synapse_reverse_proxy_companion_access_log_format`.
+# You can override this map to define custom formats, but that is fragile and discouraged.
+matrix_synapse_reverse_proxy_companion_access_log_format_presets:
+  main:
+    - '$remote_addr - $remote_user [$time_local] "$request"'
+    - '$status $body_bytes_sent "$http_referer"'
+    - ' "$http_user_agent" "$http_x_forwarded_for"'
+  routing_debug:
+    - '$remote_addr - $remote_user [$time_local] "$request"'
+    - '$status $body_bytes_sent "$http_referer"'
+    - ' "$http_user_agent" "$http_x_forwarded_for"'
+    - ' "$host" "$matrix_upstream_label" "$upstream_addr" "$upstream_status" "$request_time" "$upstream_response_time"'
+
 # Controls whether to send access logs to a remote syslog-compatible server
 matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_enabled: false
 matrix_synapse_reverse_proxy_companion_access_log_syslog_integration_server_port: ''
