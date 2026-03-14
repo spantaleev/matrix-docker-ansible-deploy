@@ -31,7 +31,7 @@ matrix_synapse_workers_sync_worker_client_server_endpoints:
 
 # Client reader workers handle generic client-server endpoints that don't contain a roomid or sync
 matrix_synapse_workers_client_reader_client_server_endpoints:
-  - ^/_matrix/client/(api/v1|r0|v3|unstable)/(room_keys/|keys/(query|changes|claim|room_keys/)|login|register(/available|/m.login.registration_token/validity|)|password_policy|profile|rooms/.*/(joined_members|context/.*|members|state|hierarchy|relations/|event/|aliases|timestamp_to_event|redact|send|state/|(join|invite|leave|ban|unban|kick))|createRoom|publicRooms|account/(3pid|whoami|devices)|versions|voip/turnServer|joined_rooms|search|user/.*/filter(/|$)|directory/room/.*|capabilities)
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/(room_keys/|keys/(query|changes|claim|room_keys/)|login|register(/available|/m.login.registration_token/validity|)|password_policy|profile|rooms/.*/(joined_members|context/.*|members|state|hierarchy|relations/|event/|aliases|timestamp_to_event|redact|send|state/|(join|invite|leave|ban|unban|kick))|createRoom|publicRooms|account/(3pid|whoami)|versions|voip/turnServer|joined_rooms|search|user/.*/filter(/|$)|directory/room/.*|capabilities)
 
 # Federation reader workers handle generic federation endpoints that don't contain a roomid
 matrix_synapse_workers_federation_reader_federation_endpoints:
@@ -47,12 +47,10 @@ matrix_synapse_workers_federation_reader_federation_endpoints:
 # because `matrix_synapse_workers_generic_worker_endpoints` also contains things like `/_synapse/client/`, etc.
 # While /_synapse/client/ endpoints are somewhat client-server API-related, they're:
 # - neither part of the client-server API spec (and are thus, different)
-# - nor always OK to forward to a worker (we're supposed to obey `matrix_synapse_companion_container_labels_client_synapse_client_api_enabled`)
+# - and they now include a meaningful Synapse-specific tree (`pick_idp`, `pick_username`, OIDC/SAML callbacks, rendezvous, etc.)
+# - some of these paths are auth-sensitive or deployment-sensitive, so we intentionally keep them out of the broad worker route model unless explicitly handled elsewhere
 #
-# It's also not too many of these APIs (only `^/_synapse/client/password_reset/email/submit_token$` at the time of this writing / 2021-01-24),
-# so it's not that important whether we forward them or not.
-#
-# Basically, we aim to cover most things. Skipping `/_synapse/client` or a few other minor things doesn't matter too much.
+# Basically, we aim to cover most spec client APIs here. Skipping `/_synapse/client` is intentional and conservative.
 matrix_synapse_workers_generic_worker_client_server_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints | default([]) | map('regex_search', '.*/_matrix/client.*') | list | difference([none]) }}"
 
 # A Synapse generic worker can handle both federation and client-server API endpoints.
