@@ -134,6 +134,12 @@ matrix_synapse_workers_stream_writer_device_lists_stream_worker_client_server_en
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/device_signing/upload$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/signatures/upload$
 
+# matrix_synapse_workers_stream_writer_thread_subscriptions_stream_worker_client_server_endpoints contains the endpoints serviced by the `thread_subscriptions` stream writer.
+# Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/thread_subscriptions.py#L38-L247
+matrix_synapse_workers_stream_writer_thread_subscriptions_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/unstable/io.element.msc4306/rooms/.*/thread/.*/subscription$
+  - ^/_matrix/client/unstable/io.element.msc4308/thread_subscriptions$
+
 # matrix_synapse_workers_user_dir_worker_client_server_endpoints contains the endpoints serviced by the `type = user_dir` (`app = generic_worker`) worker.
 # See: https://matrix-org.github.io/synapse/latest/workers.html#updating-the-user-directory
 matrix_synapse_workers_user_dir_worker_client_server_endpoints:
@@ -142,11 +148,11 @@ matrix_synapse_workers_user_dir_worker_client_server_endpoints:
 # matrix_synapse_workers_known_stream_writer_stream_types contains the list of stream writer stream types that the playbook recognizes.
 # This is used for validation purposes. If adding support for a new type, besides adding it to this list,
 # don't forget to actually configure it where appropriate (see worker.yaml.j2`, the nginx proxy configuration, etc).
-matrix_synapse_workers_known_stream_writer_stream_types: ['events', 'typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists']
+matrix_synapse_workers_known_stream_writer_stream_types: ['events', 'typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions']
 
 # matrix_synapse_workers_webserving_stream_writer_types contains a list of stream writer types that serve web (client) requests.
 # Not all stream writers serve web requests. Some just perform background tasks.
-matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists']
+matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions']
 
 # matrix_synapse_workers_systemd_services_list contains a list of systemd services (one for each worker systemd service which serves web requests).
 # This list is built during runtime.
@@ -309,6 +315,10 @@ matrix_synapse_workers_generic_worker_endpoints:
   # - ^/_matrix/client/(r0|v3|unstable)/keys/upload(/|$)
   # - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/device_signing/upload$
   # - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/signatures/upload$
+  #
+  # # Thread subscriptions requests
+  # - ^/_matrix/client/unstable/io.element.msc4306/rooms/.*/thread/.*/subscription$
+  # - ^/_matrix/client/unstable/io.element.msc4308/thread_subscriptions$
   #
   # # User directory search requests
   # - ^/_matrix/client/(r0|v3|unstable)/user_directory/search$

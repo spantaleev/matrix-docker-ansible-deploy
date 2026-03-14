@@ -12,6 +12,7 @@
 {% set stream_writer_presence_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'presence') | list %}
 {% set stream_writer_push_rules_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'push_rules') | list %}
 {% set stream_writer_device_lists_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'device_lists') | list %}
+{% set stream_writer_thread_subscriptions_stream_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'stream_writer') | selectattr('stream_writer_stream', 'equalto', 'thread_subscriptions') | list %}
 {% set media_repository_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'media_repository') | list %}
 {% set user_dir_workers = matrix_synapse_reverse_proxy_companion_synapse_workers_list | selectattr('type', 'equalto', 'user_dir') | list %}
 {% set stream_writer_client_server_routes = [
@@ -56,6 +57,12 @@
 		'workers': stream_writer_device_lists_stream_workers,
 		'locations': matrix_synapse_reverse_proxy_companion_synapse_stream_writer_device_lists_stream_worker_client_server_locations,
 		'upstream': 'stream_writer_device_lists_stream_workers_upstream',
+	},
+	{
+		'doc_url': 'https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/thread_subscriptions.py#L38-L247',
+		'workers': stream_writer_thread_subscriptions_stream_workers,
+		'locations': matrix_synapse_reverse_proxy_companion_synapse_stream_writer_thread_subscriptions_stream_worker_client_server_locations,
+		'upstream': 'stream_writer_thread_subscriptions_stream_workers_upstream',
 	},
 ] %}
 
