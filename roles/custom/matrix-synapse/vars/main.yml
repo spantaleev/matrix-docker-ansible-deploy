@@ -31,7 +31,31 @@ matrix_synapse_workers_sync_worker_client_server_endpoints:
 
 # Client reader workers handle generic client-server endpoints that don't contain a roomid or sync
 matrix_synapse_workers_client_reader_client_server_endpoints:
-  - ^/_matrix/client/(api/v1|r0|v3|unstable)/(room_keys/|keys/(query|changes|claim|room_keys/)|login|register(/available|/m.login.registration_token/validity|)|password_policy|profile|rooms/.*/(joined_members|context/.*|members|state|hierarchy|relations/|event/|aliases|timestamp_to_event|redact|send|state/|(join|invite|leave|ban|unban|kick))|createRoom|publicRooms|account/(3pid|whoami|deactivate)|versions|voip/turnServer|joined_rooms|search|user/.*/filter(/|$)|directory/room/.*|capabilities)|^/_matrix/client/unstable/org.matrix.msc4143/rtc/transports$
+  # Keep these as grouped regex entries instead of a single huge alternation.
+  # This preserves the existing specialized-routing policy while making future audits
+  # and endpoint-specific edits reviewable.
+
+  # Encryption and room-key APIs
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/room_keys/
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/(query|changes|claim|room_keys/)
+
+  # Login, registration, account, and profile APIs
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/login
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/register(/available|/m.login.registration_token/validity|)?
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/password_policy
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/profile
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/account/(3pid|whoami|deactivate)
+
+  # Room-scoped client APIs handled by client readers in the specialized-worker model
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/(joined_members|context/.*|members|state|hierarchy|relations/|event/|aliases|timestamp_to_event|redact|send|state/|(join|invite|leave|ban|unban|kick))
+
+  # Generic client discovery and lookup APIs
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/(createRoom|publicRooms|versions|voip/turnServer|joined_rooms|search|directory/room/.*|capabilities)
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/user/.*/filter(/|$)
+
+  # MatrixRTC transport discovery:
+  # Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/matrixrtc.py#L30-L52
+  - ^/_matrix/client/unstable/org.matrix.msc4143/rtc/transports$
 
 # Federation reader workers handle generic federation endpoints that don't contain a roomid
 matrix_synapse_workers_federation_reader_federation_endpoints:
