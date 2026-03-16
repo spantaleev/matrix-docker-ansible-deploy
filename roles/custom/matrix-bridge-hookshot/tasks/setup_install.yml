@@ -76,6 +76,20 @@
   become_user: "{{ matrix_user_name }}"
   when: "not hookshot_passkey_file.stat.exists"
 
+# We intentionally reconcile the passkey ownership/mode after generation,
+# because some setups can end up creating host-side files as the SSH user
+# instead of `matrix` when `become_user` is effectively not honored.
+#
+# See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/5033
+- name: Ensure hookshot passkey has correct ownership and mode
+  ansible.builtin.file:
+    path: "{{ matrix_hookshot_base_path }}/passkey.pem"
+    state: file
+    mode: '0600'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_hookshot_passkey_result
+
 - name: Ensure hookshot config.yml installed if provided
   ansible.builtin.copy:
     content: "{{ matrix_hookshot_configuration | to_nice_yaml(indent=2, width=999999) }}"
@@ -154,6 +168,7 @@
         matrix_hookshot_config_result.changed | default(false)
         or matrix_hookshot_registration_result.changed | default(false)
         or matrix_hookshot_github_key_result.changed | default(false)
+        or matrix_hookshot_passkey_result.changed | default(false)
         or matrix_hookshot_support_files_result.changed | default(false)
         or matrix_hookshot_systemd_service_result.changed | default(false)
         or matrix_hookshot_container_image_pull_result.changed | default(false)
