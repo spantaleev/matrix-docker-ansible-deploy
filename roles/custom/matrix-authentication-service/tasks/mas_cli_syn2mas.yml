@@ -71,6 +71,9 @@
       --mount type=bind,src={{ matrix_authentication_service_config_path }}/config.yaml,dst=/config.yaml,ro
       --mount type=bind,src={{ matrix_authentication_service_data_keys_path }},dst=/keys,ro
       --mount type=bind,src={{ matrix_authentication_service_syn2mas_synapse_homeserver_config_path }},dst=/homeserver.yaml,ro
+      {% if matrix_authentication_service_syn2mas_synapse_database_socket_enabled %}
+      --mount type=bind,src={{ matrix_authentication_service_syn2mas_synapse_database_socket_path_host }},dst={{ matrix_authentication_service_syn2mas_synapse_database_socket_path }}
+      {% endif %}
       {{ matrix_authentication_service_container_image }}
       syn2mas
       --synapse-config=/homeserver.yaml
