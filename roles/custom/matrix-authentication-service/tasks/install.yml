@@ -33,6 +33,25 @@
       loop_control:
         loop_var: private_key_definition
 
+    # We intentionally do a single fixup pass here (instead of in `prepare_key.yml`)
+    # so that we reconcile both newly generated keys and any pre-existing keys with
+    # incorrect ownership/mode in one place.
+    #
+    # This primarily protects against setups where `become_user` is effectively not
+    # honored (for example due to inventory misconfiguration such as `ansible_become=false`),
+    # which can lead to host-side key generation creating root-owned files.
+    #
+    # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/5033
+    - name: Ensure Matrix Authentication Service private keys have correct ownership and mode
+      ansible.builtin.file:
+        path: "{{ matrix_authentication_service_data_keys_path }}/{{ item.key_file }}"
+        state: file
+        mode: '0600'
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+      with_items: "{{ matrix_authentication_service_key_management_list }}"
+      register: matrix_authentication_service_private_keys_result
+
 - name: Ensure Matrix Authentication Service configuration installed
   ansible.builtin.copy:
     content: "{{ matrix_authentication_service_configuration | to_nice_yaml(indent=2, width=999999) }}"
@@ -117,4 +136,5 @@
         or matrix_authentication_service_support_files_result.changed | default(false)
         or matrix_authentication_service_systemd_service_result.changed | default(false)
         or matrix_authentication_service_container_image_pull_result.changed | default(false)
+        or matrix_authentication_service_private_keys_result.changed | default(false)
       }}
