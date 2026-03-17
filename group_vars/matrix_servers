@@ -4808,7 +4808,7 @@ matrix_synapse_database_password: "{{ (matrix_homeserver_generic_secret_key + ':
 # unix socket connection
 matrix_synapse_database_socket_enabled: "{{ matrix_playbook_synapse_uses_managed_postgres }}"
 # path to the Postgres socket's parent dir inside the Synapse container
-matrix_synapse_database_socket_path: "{{ '/tmp/postgres' if matrix_playbook_synapse_uses_managed_postgres else '' }}"
+matrix_synapse_database_socket_path: "{{ '/run-postgres' if matrix_playbook_synapse_uses_managed_postgres else '' }}"
 # path to the Postgres socket on the host, using Postgres
 matrix_synapse_database_socket_path_host: "{{ postgres_run_path if matrix_playbook_synapse_uses_managed_postgres else '' }}"
 
@@ -4866,7 +4866,7 @@ matrix_synapse_redis_password: "{{ valkey_connection_password if matrix_playbook
 # unix socket connection
 matrix_synapse_redis_path_enabled: "{{ matrix_playbook_synapse_uses_managed_valkey }}"
 # path to the Redis socket's parent dir inside the Synapse container
-matrix_synapse_redis_path: "{{ '/tmp/valkey' if matrix_playbook_synapse_uses_managed_valkey else '' }}"
+matrix_synapse_redis_path: "{{ '/run-valkey' if matrix_playbook_synapse_uses_managed_valkey else '' }}"
 # redis socket filename
 matrix_synapse_redis_path_socket: "{{ '/valkey.sock' if matrix_playbook_synapse_uses_managed_valkey else '' }}"
 # path to the Redis socket on the host, using Valkey
