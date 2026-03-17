@@ -4806,7 +4806,7 @@ matrix_synapse_database_host: "{{ postgres_connection_hostname if matrix_playboo
 matrix_synapse_database_password: "{{ (matrix_homeserver_generic_secret_key + ':synapse.db') | hash('sha512') | to_uuid }}"
 
 # unix socket connection
-matrix_synapse_database_socket_enabled: "{{ matrix_playbook_synapse_uses_managed_postgres }}"
+matrix_synapse_database_socket_enabled: "{{ matrix_playbook_synapse_uses_managed_postgres and postgres_container_unix_socket_enabled }}"
 # path to the Postgres socket's parent dir inside the Synapse container
 matrix_synapse_database_socket_path: "{{ '/run-postgres' if matrix_playbook_synapse_uses_managed_postgres else '' }}"
 # path to the Postgres socket on the host, using Postgres
