@@ -246,6 +246,14 @@ matrix_integration_manager_ui_url: ~
 matrix_homeserver_container_extra_arguments_auto: []
 matrix_homeserver_app_service_config_files_auto: []
 
+# These playbook-level helpers describe which managed services Synapse should be wired to.
+# They are meant for orchestration concerns like container networking and systemd ordering,
+# while `matrix_synapse_*` variables stay focused on actual connection parameters.
+# These likely get overridden elsewhere.
+matrix_playbook_synapse_uses_managed_postgres: false
+matrix_playbook_synapse_uses_managed_valkey: false
+matrix_playbook_synapse_auto_compressor_uses_managed_postgres: false
+
 # Controls whether various services should expose metrics publicly.
 # If Prometheus is operating on the same machine, exposing metrics publicly is not necessary.
 matrix_metrics_exposure_enabled: false

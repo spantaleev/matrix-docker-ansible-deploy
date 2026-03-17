@@ -4007,7 +4007,7 @@ postgres_managed_databases_auto: |
       'name': matrix_synapse_database_database,
       'username': matrix_synapse_database_user,
       'password': matrix_synapse_database_password,
-    }] if (matrix_synapse_enabled and matrix_synapse_database_host == postgres_connection_hostname) else [])
+    }] if (matrix_synapse_enabled and matrix_playbook_synapse_uses_managed_postgres) else [])
     +
     ([{
       'name': matrix_dendrite_federation_api_database,
@@ -4755,9 +4755,9 @@ matrix_synapse_container_additional_networks_auto: |
     (
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_synapse_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network else [])
       +
-      ([postgres_container_network] if (postgres_enabled and postgres_container_network != matrix_synapse_container_network and matrix_synapse_database_host == postgres_connection_hostname) else [])
+      ([postgres_container_network] if (matrix_playbook_synapse_uses_managed_postgres and postgres_container_network != matrix_synapse_container_network) else [])
       +
-      ([valkey_container_network] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == valkey_identifier else [])
+      ([valkey_container_network] if matrix_playbook_synapse_uses_managed_valkey else [])
       +
       ([exim_relay_container_network] if (exim_relay_enabled and matrix_synapse_email_enabled and matrix_synapse_email_smtp_host == exim_relay_identifier and matrix_synapse_container_network != exim_relay_container_network) else [])
       +
@@ -4794,18 +4794,23 @@ matrix_synapse_container_labels_public_metrics_middleware_basic_auth_users: "{{ 
 matrix_synapse_container_labels_internal_client_api_enabled: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled }}"
 matrix_synapse_container_labels_internal_client_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
+# Playbook-level Synapse topology wiring helpers.
+matrix_playbook_synapse_uses_managed_postgres: "{{ postgres_enabled }}"
+matrix_playbook_synapse_uses_managed_valkey: "{{ matrix_synapse_redis_enabled and valkey_enabled }}"
+matrix_playbook_synapse_auto_compressor_uses_managed_postgres: "{{ matrix_playbook_synapse_uses_managed_postgres and matrix_synapse_auto_compressor_database_hostname == matrix_synapse_database_host }}"
+
 # For exposing the Synapse worker (and metrics) ports to the local host.
 matrix_synapse_workers_container_host_bind_address: "{{ matrix_playbook_service_host_bind_interface_prefix[0:-1] if (matrix_synapse_workers_enabled and matrix_playbook_service_host_bind_interface_prefix) else '' }}"
 
-matrix_synapse_database_host: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_synapse_database_host: "{{ postgres_connection_hostname if matrix_playbook_synapse_uses_managed_postgres else '' }}"
 matrix_synapse_database_password: "{{ (matrix_homeserver_generic_secret_key + ':synapse.db') | hash('sha512') | to_uuid }}"
 
 # unix socket connection, disabled by default temporarily until properly tested
 matrix_synapse_database_socket_enabled: false
 # path to the Postgres socket's parent dir inside the Synapse container
-matrix_synapse_database_socket_path: "{{ '/tmp/postgres' if postgres_enabled else '' }}"
+matrix_synapse_database_socket_path: "{{ '/tmp/postgres' if matrix_playbook_synapse_uses_managed_postgres else '' }}"
 # path to the Postgres socket on the host, using Postgres
-matrix_synapse_database_socket_path_host: "{{ postgres_run_path if postgres_enabled else '' }}"
+matrix_synapse_database_socket_path_host: "{{ postgres_run_path if matrix_playbook_synapse_uses_managed_postgres else '' }}"
 
 matrix_synapse_macaroon_secret_key: "{{ (matrix_homeserver_generic_secret_key + ':synapse.mac') | hash('sha512') | to_uuid }}"
 
@@ -4837,9 +4842,9 @@ matrix_synapse_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled
 
 matrix_synapse_systemd_required_services_list_auto: |
   {{
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and postgres_container_network != matrix_synapse_container_network and matrix_synapse_database_host == postgres_connection_hostname) else [])
+    ([postgres_identifier ~ '.service'] if (matrix_playbook_synapse_uses_managed_postgres and postgres_container_network != matrix_synapse_container_network) else [])
     +
-    ([valkey_identifier ~ '.service'] if matrix_synapse_redis_enabled and matrix_synapse_redis_host == valkey_identifier else [])
+    ([valkey_identifier ~ '.service'] if matrix_playbook_synapse_uses_managed_valkey else [])
     +
     (['matrix-goofys.service'] if matrix_s3_media_store_enabled else [])
     +
@@ -4855,17 +4860,17 @@ matrix_synapse_systemd_wanted_services_list_auto: |
 
 # Synapse workers (used for parallel load-scaling) need Redis for IPC.
 matrix_synapse_redis_enabled: "{{ valkey_enabled }}"
-matrix_synapse_redis_host: "{{ valkey_identifier if valkey_enabled else '' }}"
-matrix_synapse_redis_password: "{{ valkey_connection_password if valkey_enabled else '' }}"
+matrix_synapse_redis_host: "{{ valkey_identifier if matrix_playbook_synapse_uses_managed_valkey else '' }}"
+matrix_synapse_redis_password: "{{ valkey_connection_password if matrix_playbook_synapse_uses_managed_valkey else '' }}"
 
 # unix socket connection, disabled by default temporarily until properly tested
 matrix_synapse_redis_path_enabled: false
 # path to the Redis socket's parent dir inside the Synapse container
-matrix_synapse_redis_path: "{{ '/tmp/valkey' if valkey_enabled else '' }}"
+matrix_synapse_redis_path: "{{ '/tmp/valkey' if matrix_playbook_synapse_uses_managed_valkey else '' }}"
 # redis socket filename
-matrix_synapse_redis_path_socket: "{{ '/valkey.sock' if valkey_enabled else '' }}"
+matrix_synapse_redis_path_socket: "{{ '/valkey.sock' if matrix_playbook_synapse_uses_managed_valkey else '' }}"
 # path to the Redis socket on the host, using Valkey
-matrix_synapse_redis_path_host: "{{ valkey_run_path if valkey_enabled else '' }}"
+matrix_synapse_redis_path_host: "{{ valkey_run_path if matrix_playbook_synapse_uses_managed_valkey else '' }}"
 
 matrix_synapse_container_extra_arguments_auto: "{{ matrix_homeserver_container_extra_arguments_auto }}"
 matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_config_files_auto }}"
@@ -4961,7 +4966,7 @@ matrix_synapse_auto_compressor_container_image_registry_prefix_upstream: "{{ mat
 
 matrix_synapse_auto_compressor_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_synapse_auto_compressor_container_network: "{{ (postgres_container_network if (postgres_enabled and matrix_synapse_auto_compressor_database_hostname == matrix_synapse_database_host and matrix_synapse_database_host == postgres_connection_hostname) else 'matrix-synapse-auto-compressor') }}"
+matrix_synapse_auto_compressor_container_network: "{{ (postgres_container_network if matrix_playbook_synapse_auto_compressor_uses_managed_postgres else 'matrix-synapse-auto-compressor') }}"
 
 matrix_synapse_auto_compressor_database_username: "{{ matrix_synapse_database_user if matrix_synapse_enabled else '' }}"
 matrix_synapse_auto_compressor_database_password: "{{ matrix_synapse_database_password if matrix_synapse_enabled else '' }}"
@@ -4971,7 +4976,7 @@ matrix_synapse_auto_compressor_database_name: "{{ matrix_synapse_database_databa
 
 matrix_synapse_auto_compressor_systemd_required_services_list_auto: |
   {{
-    ([postgres_identifier ~ '.service'] if (matrix_synapse_auto_compressor_container_network == postgres_container_network) else [])
+    ([postgres_identifier ~ '.service'] if matrix_playbook_synapse_auto_compressor_uses_managed_postgres else [])
   }}
 
 ######################################################################
