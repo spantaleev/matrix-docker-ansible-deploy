@@ -1,3 +1,20 @@
+# 2026-03-17
+
+## Synapse now prefers UNIX sockets for playbook-managed Postgres and Valkey
+
+When Synapse uses the playbook-managed Postgres and Valkey services, it now connects to them via [UNIX sockets](https://en.wikipedia.org/wiki/Unix_domain_socket) by default instead of TCP.
+
+This reduces unnecessary container-network wiring and keeps local IPC off the network stack, which is a bit simpler and slightly more secure.
+
+If you use an external Postgres server or external Redis/Valkey for Synapse, this does not change your setup.
+
+If you'd like to keep the previous TCP-based behavior, add the following configuration to your `vars.yml`:
+
+```yaml
+matrix_synapse_database_socket_enabled: false
+matrix_synapse_redis_path_enabled: false
+```
+
 # 2026-03-01
 
 ## (Potential BC Break) Synapse S3 media prefix is now applied consistently
