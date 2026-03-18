@@ -1,0 +1,97 @@
+{#
+SPDX-FileCopyrightText: 2024 wjbeckett
+SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if livekit_server_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if livekit_server_container_labels_traefik_docker_network %}
+traefik.docker.network={{ livekit_server_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.{{ livekit_server_identifier }}.loadbalancer.server.port={{ livekit_server_config_port }}
+
+{% if livekit_server_config_prometheus_enabled %}
+traefik.http.services.{{ livekit_server_identifier }}-metrics.loadbalancer.server.port={{ livekit_server_config_prometheus_port }}
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if livekit_server_container_labels_traefik_path_prefix != '/' %}
+traefik.http.middlewares.{{ livekit_server_identifier }}-slashless-redirect.redirectregex.regex=^({{ livekit_server_container_labels_traefik_path_prefix | quote }})$
+traefik.http.middlewares.{{ livekit_server_identifier }}-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + [livekit_server_identifier + '-slashless-redirect'] %}
+
+traefik.http.middlewares.{{ livekit_server_identifier }}-strip-prefix.stripprefix.prefixes={{ livekit_server_container_labels_traefik_path_prefix }}
+{% set middlewares = middlewares + [livekit_server_identifier + '-strip-prefix'] %}
+{% endif %}
+
+traefik.http.routers.{{ livekit_server_identifier }}.rule={{ livekit_server_container_labels_traefik_rule }}
+
+{% if livekit_server_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.{{ livekit_server_identifier }}.priority={{ livekit_server_container_labels_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.{{ livekit_server_identifier }}.service={{ livekit_server_identifier }}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.{{ livekit_server_identifier }}.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.{{ livekit_server_identifier }}.entrypoints={{ livekit_server_container_labels_traefik_entrypoints }}
+
+traefik.http.routers.{{ livekit_server_identifier }}.tls={{ livekit_server_container_labels_traefik_tls | to_json }}
+{% if livekit_server_container_labels_traefik_tls %}
+traefik.http.routers.{{ livekit_server_identifier }}.tls.certResolver={{ livekit_server_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+{% if livekit_server_container_labels_public_metrics_enabled %}
+########################################################################
+#                                                                      #
+# Metrics                                                              #
+#                                                                      #
+########################################################################
+
+{% set metrics_middlewares = [] %}
+
+{% if livekit_server_container_labels_public_metrics_middleware_basic_auth_enabled %}
+{% set metrics_middlewares = metrics_middlewares + [livekit_server_identifier + '-metrics-basic-auth'] %}
+traefik.http.middlewares.{{ livekit_server_identifier }}-metrics-basic-auth.basicauth.users={{ livekit_server_container_labels_public_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+{% set metrics_middlewares = metrics_middlewares + [livekit_server_identifier + '-metrics-replacepath'] %}
+traefik.http.middlewares.{{ livekit_server_identifier }}-metrics-replacepath.replacepath.path={{ livekit_server_metrics_proxying_path_prefix }}
+
+traefik.http.routers.{{ livekit_server_identifier }}-metrics.rule={{ livekit_server_container_labels_public_metrics_traefik_rule }}
+
+{% if metrics_middlewares | length > 0 %}
+traefik.http.routers.{{ livekit_server_identifier }}-metrics.middlewares={{ metrics_middlewares | join(',') }}
+{% endif %}
+
+{% if livekit_server_container_labels_public_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.{{ livekit_server_identifier }}-metrics.priority={{ livekit_server_container_labels_public_metrics_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.{{ livekit_server_identifier }}-metrics.service={{ livekit_server_identifier }}-metrics
+traefik.http.routers.{{ livekit_server_identifier }}-metrics.entrypoints={{ livekit_server_container_labels_public_metrics_traefik_entrypoints }}
+
+traefik.http.routers.{{ livekit_server_identifier }}-metrics.tls={{ livekit_server_container_labels_public_metrics_traefik_tls | to_json }}
+{% if livekit_server_container_labels_public_metrics_traefik_tls %}
+traefik.http.routers.{{ livekit_server_identifier }}-metrics.tls.certResolver={{ livekit_server_container_labels_public_metrics_traefik_tls_certResolver }}
+{% endif %}
+
+########################################################################
+#                                                                      #
+# /Metrics                                                             #
+#                                                                      #
+########################################################################
+{% endif %}
+
+{% endif %}
+
+{% for arg in livekit_server_container_labels_additional_labels %}
+{{ arg }}
+{% endfor %}
