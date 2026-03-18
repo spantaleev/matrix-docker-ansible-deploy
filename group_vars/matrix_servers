@@ -1079,8 +1079,17 @@ matrix_authentication_service_enabled: false
 matrix_authentication_service_hostname: "{{ matrix_server_fqn_matrix }}"
 matrix_authentication_service_path_prefix: /auth
 
-matrix_authentication_service_config_database_host: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_playbook_matrix_authentication_service_uses_managed_postgres: "{{ postgres_enabled }}"
+
+matrix_authentication_service_config_database_host: "{{ matrix_authentication_service_config_database_socket_path if matrix_authentication_service_config_database_socket_enabled else (postgres_connection_hostname if matrix_playbook_matrix_authentication_service_uses_managed_postgres else '') }}"
 matrix_authentication_service_config_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mas.db') | hash('sha512') | to_uuid }}"
+
+# unix socket connection
+matrix_authentication_service_config_database_socket_enabled: "{{ matrix_playbook_matrix_authentication_service_uses_managed_postgres and postgres_container_unix_socket_enabled }}"
+# path to the Postgres socket's parent dir inside the MAS container
+matrix_authentication_service_config_database_socket_path: "{{ '/run-postgres' if matrix_playbook_matrix_authentication_service_uses_managed_postgres else '' }}"
+# path to the Postgres socket on the host
+matrix_authentication_service_config_database_socket_path_host: "{{ postgres_run_path if matrix_playbook_matrix_authentication_service_uses_managed_postgres else '' }}"
 
 matrix_authentication_service_config_matrix_homeserver: "{{ matrix_domain }}"
 matrix_authentication_service_config_matrix_secret: "{{ (matrix_homeserver_generic_secret_key + ':mas.hs.secret') | hash('sha512') | to_uuid }}"
@@ -1114,7 +1123,7 @@ matrix_authentication_service_container_network: "{{ matrix_homeserver_container
 matrix_authentication_service_container_additional_networks_auto: |-
   {{
     (
-      ([postgres_container_network] if postgres_enabled and matrix_authentication_service_config_database_host == postgres_connection_hostname else [])
+      ([postgres_container_network] if (matrix_playbook_matrix_authentication_service_uses_managed_postgres and not matrix_authentication_service_config_database_socket_enabled) else [])
       +
       ([exim_relay_container_network] if (exim_relay_enabled and matrix_authentication_service_config_email_transport == 'smtp' and matrix_authentication_service_config_email_hostname == exim_relay_identifier and matrix_authentication_service_container_network != exim_relay_container_network) else [])
       +
@@ -1139,7 +1148,7 @@ matrix_authentication_service_container_labels_internal_compatibility_layer_entr
 # We'll put our dependency on the homeserver as a "want", rather than a requirement.
 matrix_authentication_service_systemd_required_services_list_auto: |
   {{
-    ([postgres_identifier ~ '.service'] if postgres_enabled and matrix_authentication_service_config_database_host == postgres_connection_hostname else [])
+    ([postgres_identifier ~ '.service'] if matrix_playbook_matrix_authentication_service_uses_managed_postgres else [])
   }}
 
 # See more information about this homeserver "want" in the comment for `matrix_authentication_service_systemd_required_services_list_auto` above.
@@ -1150,7 +1159,7 @@ matrix_authentication_service_systemd_wanted_services_list_auto: |
     ([exim_relay_identifier ~ '.service'] if (exim_relay_enabled and matrix_authentication_service_config_email_transport == 'smtp' and matrix_authentication_service_config_email_hostname == exim_relay_identifier and matrix_authentication_service_container_network != exim_relay_container_network) else [])
   }}
 
-matrix_authentication_service_syn2mas_container_network: "{{ postgres_container_network if postgres_enabled and matrix_authentication_service_config_database_host == postgres_connection_hostname else matrix_authentication_service_container_network }}"
+matrix_authentication_service_syn2mas_container_network: "{{ postgres_container_network if (matrix_playbook_matrix_authentication_service_uses_managed_postgres and not matrix_authentication_service_config_database_socket_enabled) else matrix_authentication_service_container_network }}"
 
 matrix_authentication_service_syn2mas_synapse_homeserver_config_path: "{{ matrix_synapse_config_dir_path + '/homeserver.yaml' if matrix_synapse_enabled else '' }}"
 matrix_authentication_service_syn2mas_synapse_database_socket_enabled: "{{ matrix_synapse_database_socket_enabled if matrix_synapse_enabled else false }}"
@@ -4047,7 +4056,7 @@ postgres_managed_databases_auto: |
       'name': matrix_authentication_service_config_database_database,
       'username': matrix_authentication_service_config_database_username,
       'password': matrix_authentication_service_config_database_password,
-    }] if (matrix_authentication_service_enabled and matrix_authentication_service_config_database_host == postgres_connection_hostname) else [])
+    }] if (matrix_authentication_service_enabled and matrix_playbook_matrix_authentication_service_uses_managed_postgres) else [])
     +
     ([{
       'name': matrix_bot_matrix_reminder_bot_database_name,

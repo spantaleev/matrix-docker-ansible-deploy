@@ -14,7 +14,8 @@
     - {'name': 'matrix_authentication_service_hostname', when: true}
     - {'name': 'matrix_authentication_service_config_database_username', when: true}
     - {'name': 'matrix_authentication_service_config_database_password', when: true}
-    - {'name': 'matrix_authentication_service_config_database_host', when: true}
+    - {'name': 'matrix_authentication_service_config_database_host', when: "{{ not matrix_authentication_service_config_database_socket_enabled }}"}
+    - {'name': 'matrix_authentication_service_config_database_socket_path_host', when: "{{ matrix_authentication_service_config_database_socket_enabled }}"}
     - {'name': 'matrix_authentication_service_config_database_database', when: true}
     - {'name': 'matrix_authentication_service_config_secrets_encryption', when: true}
     - {'name': 'matrix_authentication_service_config_matrix_homeserver', when: true}
