@@ -178,7 +178,7 @@ Name | Description
 `matrix_metrics_exposure_http_basic_auth_enabled`|Set this to `true` to protect all `https://matrix.example.com/metrics/*` endpoints with [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) (see the other variables below for supplying the actual credentials).
 `matrix_metrics_exposure_http_basic_auth_users`|Set this to the Basic Authentication credentials (raw `htpasswd` file content) used to protect `/metrics/*`. This htpasswd-file needs to be generated with the `htpasswd` tool and can include multiple username/password pairs.
 `prometheus_node_exporter_enabled`|Set this to `true` to enable the node (general system stats) exporter (locally, on the container network).
-`prometheus_node_exporter_container_labels_traefik_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`.
+`prometheus_node_exporter_container_labels_metrics_enabled`|Set this to `true` to expose the node (general system stats) metrics on `https://matrix.example.com/metrics/node-exporter`.
 `prometheus_postgres_exporter_enabled`|Set this to `true` to enable the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) (locally, on the container network).
 `prometheus_postgres_exporter_container_labels_metrics_enabled`|Set this to `true` to expose the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) metrics on `https://matrix.example.com/metrics/postgres-exporter`.
 `prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [prometheus-nginxlog-exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) (locally, on the container network).
