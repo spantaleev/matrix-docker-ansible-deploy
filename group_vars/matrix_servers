@@ -689,28 +689,28 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (jitsi_identifier + '-web.service'),
       'priority': 4200,
-      'restart_necessary': true,
+      'restart_necessary': (jitsi_web_restart_necessary | bool),
       'groups': ['matrix', 'jitsi', 'jitsi-web'],
     }] if jitsi_enabled else [])
     +
     ([{
       'name': (jitsi_identifier + '-prosody.service'),
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (jitsi_prosody_restart_necessary | bool),
       'groups': ['matrix', 'jitsi', 'jitsi-prosody'],
     }] if jitsi_enabled else [])
     +
     ([{
       'name': (jitsi_identifier + '-jicofo.service'),
       'priority': 4100,
-      'restart_necessary': true,
+      'restart_necessary': (jitsi_jicofo_restart_necessary | bool),
       'groups': ['matrix', 'jitsi', 'jitsi-jicofo'],
     }] if jitsi_enabled else [])
     +
     ([{
       'name': (jitsi_identifier + '-jvb.service'),
       'priority': 4100,
-      'restart_necessary': true,
+      'restart_necessary': (jitsi_jvb_restart_necessary | bool),
       'groups': ['matrix', 'jitsi', 'jitsi-jvb'],
     }] if jitsi_enabled else [])
     +
