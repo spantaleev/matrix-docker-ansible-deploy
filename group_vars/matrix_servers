@@ -383,14 +383,14 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-appservice-kakaotalk.service',
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_appservice_kakaotalk_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'appservice-kakaotalk'],
     }] if matrix_appservice_kakaotalk_enabled else [])
     +
     ([{
       'name': 'matrix-appservice-kakaotalk-node.service',
       'priority': 1900,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_appservice_kakaotalk_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'appservice-kakaotalk', 'appservice-kakaotalk-node'],
     }] if matrix_appservice_kakaotalk_enabled else [])
     +
@@ -404,14 +404,14 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-wechat.service',
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_wechat_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'wechat'],
     }] if matrix_wechat_enabled else [])
     +
     ([{
       'name': 'matrix-wechat-agent.service',
       'priority': 2000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_wechat_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'wechat'],
     }] if matrix_wechat_enabled else [])
     +
@@ -621,7 +621,12 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': ('matrix-' + matrix_homeserver_implementation + '.service'),
       'priority': matrix_homeserver_systemd_service_manager_priority,
-      'restart_necessary': true,
+      'restart_necessary': (
+        (matrix_conduit_restart_necessary | bool) if matrix_homeserver_implementation == 'conduit'
+        else (matrix_continuwuity_restart_necessary | bool) if matrix_homeserver_implementation == 'continuwuity'
+        else (matrix_dendrite_restart_necessary | bool) if matrix_homeserver_implementation == 'dendrite'
+        else true
+      ),
       'groups': ['matrix', 'homeservers', matrix_homeserver_implementation],
     }] if matrix_homeserver_enabled else [])
     +
@@ -719,7 +724,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': (matrix_media_repo_identifier + '.service'),
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_media_repo_restart_necessary | bool),
       'groups': ['matrix', 'matrix-media-repo'],
     }] if matrix_media_repo_enabled else [])
     +
@@ -803,7 +808,7 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-element-call.service',
       'priority': 4000,
-      'restart_necessary': true,
+      'restart_necessary': (matrix_element_call_restart_necessary | bool),
       'groups': ['matrix', 'element-call'],
     }] if matrix_element_call_enabled else [])
     +

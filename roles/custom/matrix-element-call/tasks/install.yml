@@ -23,6 +23,7 @@
     mode: '0640'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_element_call_config_result
 
 - name: Ensure Element Call container labels file is in place
   ansible.builtin.template:
@@ -31,16 +32,17 @@
     mode: '0640'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
+  register: matrix_element_call_support_files_result
 
 - name: Ensure Element Call container image is pulled
   community.docker.docker_image:
     name: "{{ matrix_element_call_container_image }}"
     source: pull
     force_source: "{{ matrix_element_call_container_image_force_pull }}"
-  register: element_call_image_result
+  register: matrix_element_call_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: element_call_image_result is not failed
+  until: matrix_element_call_container_image_pull_result is not failed
 
 - name: Ensure Element Call container network is created
   community.general.docker_network:
@@ -54,3 +56,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-element-call.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-element-call.service"
     mode: '0644'
+  register: matrix_element_call_systemd_service_result
+
+- name: Determine whether Element Call needs a restart
+  ansible.builtin.set_fact:
+    matrix_element_call_restart_necessary: >-
+      {{
+        matrix_element_call_config_result.changed | default(false)
+        or matrix_element_call_support_files_result.changed | default(false)
+        or matrix_element_call_systemd_service_result.changed | default(false)
+        or matrix_element_call_container_image_pull_result.changed | default(false)
+      }}
