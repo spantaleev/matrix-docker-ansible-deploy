@@ -1,3 +1,35 @@
+# 2026-03-22
+
+## Migration validation system introduced
+
+Previously, when updating your setup, you had to remember to read the [CHANGELOG](CHANGELOG.md) file or risk breakage.
+
+Now, the playbook includes a migration validation system that ensures you're aware of breaking changes before they affect your deployment.
+You're now forced to acknowledge each breaking change, unless you wish to live dangerously (see below).
+
+A new `matrix_playbook_migration_validated_version` variable has been introduced.
+
+**New users** who started from the [example `vars.yml`](examples/vars.yml) file already have this variable set and do not need to do anything.
+
+**Existing users** will need to add the following to their `vars.yml` file after reviewing all changelog entries up to now:
+
+```yml
+matrix_playbook_migration_validated_version: v2026.03.22.0
+```
+Going forward, whenever a breaking change is introduced the playbook will:
+
+- bump its expected version value (`matrix_playbook_migration_expected_version`), causing a discrepancy with what you validated (`matrix_playbook_migration_validated_version`)
+
+- fail when you run it with a helpful message listing what changed and linking to the relevant changelog entries
+
+After reviewing and adapting your setup, you simply update the variable to the new version.
+
+If you'd like to live dangerously and skip these checks (not recommended), you can set this once and be done with it:
+
+```yml
+matrix_playbook_migration_validated_version: "{{ matrix_playbook_migration_expected_version }}"
+```
+
 # 2026-03-19
 
 ## Matrix Authentication Service now prefers UNIX sockets for playbook-managed Postgres
