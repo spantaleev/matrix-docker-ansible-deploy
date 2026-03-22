@@ -20,10 +20,10 @@
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
     force_source: "{{ matrix_s3_goofys_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_s3_goofys_container_image_force_pull }}"
-  register: result
+  register: matrix_goofys_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_goofys_container_image_pull_result is not failed
 
 # This will throw a Permission Denied error if already mounted
 - name: Check Matrix Goofys external storage mountpoint path
@@ -47,9 +47,20 @@
     dest: "{{ matrix_synapse_config_dir_path }}/env-goofys"
     owner: root
     mode: '0600'
+  register: matrix_goofys_env_result
 
 - name: Ensure matrix-goofys.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/goofys/systemd/matrix-goofys.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-goofys.service"
     mode: '0644'
+  register: matrix_goofys_systemd_service_result
+
+- name: Determine whether Goofys needs a restart
+  ansible.builtin.set_fact:
+    matrix_goofys_restart_necessary: >-
+      {{
+        matrix_goofys_env_result.changed | default(false)
+        or matrix_goofys_systemd_service_result.changed | default(false)
+        or matrix_goofys_container_image_pull_result.changed | default(false)
+      }}
