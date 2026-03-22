@@ -1,7 +1,6 @@
 ---
-default_install_hook_types: [pre-push]
 
-exclude: "LICENSES/"
+exclude: "^(LICENSES/|var/)"
 
 # See: https://pre-commit.com/hooks.html
 repos:
@@ -24,3 +23,10 @@ repos:
     rev: v6.2.0
     hooks:
       - id: reuse
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v26.3.0
+    hooks:
+      - id: ansible-lint
+        files: '^roles/custom/'
+        args: ['roles/custom']
+        pass_filenames: false
