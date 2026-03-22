@@ -45,6 +45,7 @@
       path: "{{ matrix_matrixto_container_image_self_build_src_files_path }}"
       pull: true
       args:
+  register: matrix_matrixto_container_image_build_result
 
 - name: Ensure Matrix.to container network is created via community.docker.docker_network
   when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
@@ -79,4 +80,5 @@
       {{
         matrix_matrixto_support_files_result.changed | default(false)
         or matrix_matrixto_systemd_service_result.changed | default(false)
+        or matrix_matrixto_container_image_build_result.changed | default(false)
       }}

@@ -40,6 +40,7 @@
       path: "{{ matrix_ldap_registration_proxy_container_src_files_path }}"
       pull: true
   when: true
+  register: matrix_ldap_registration_proxy_container_image_build_result
 
 - name: Ensure matrix_ldap_registration_proxy config installed
   ansible.builtin.template:
@@ -82,4 +83,5 @@
         matrix_ldap_registration_proxy_config_result.changed | default(false)
         or matrix_ldap_registration_proxy_support_files_result.changed | default(false)
         or matrix_ldap_registration_proxy_systemd_service_result.changed | default(false)
+        or matrix_ldap_registration_proxy_container_image_build_result.changed | default(false)
       }}
