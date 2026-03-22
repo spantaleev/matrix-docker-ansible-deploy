@@ -1,9 +1,27 @@
-# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 - 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2024 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
+
+# The version that the user has validated their setup against.
+# When empty, the user will be prompted to set this variable.
+# New users should set this to the current expected version (see below).
+# See `examples/vars.yml` and `matrix_playbook_migration_expected_version` for the recommended value.
+matrix_playbook_migration_validated_version: ''
+
+# The version that the playbook expects the user to have validated against.
+# This is bumped whenever a breaking change is introduced.
+# The value configured here needs to exist in `matrix_playbook_migration_breaking_changes` as well.
+matrix_playbook_migration_expected_version: "v2026.03.23.0"
+
+# A list of breaking changes, used to inform users what changed between their validated version and the expected version.
+matrix_playbook_migration_breaking_changes:
+  - version: "v2026.03.23.0"
+    summary: "Initial migration validation system"
+    changelog_url: "https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#2026-03-22"
+
 # Controls if (`matrix_prometheus_nginxlog_exporter` -> `prometheus_nginxlog_exporter`) validation will run.
 matrix_playbook_migration_matrix_prometheus_nginxlog_exporter_migration_validation_enabled: true
 
