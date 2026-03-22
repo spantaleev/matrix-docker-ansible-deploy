@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if migration version is not validated (first-time onboarding)
+  ansible.builtin.fail:
+    msg: >-
+      This playbook now uses a migration validation system to help you stay aware of breaking changes.
+
+      It appears that you haven't configured the `matrix_playbook_migration_validated_version` variable yet.
+
+      Please review the changelog (https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md)
+      and then add the following to your vars.yml file:
+
+      matrix_playbook_migration_validated_version: {{ matrix_playbook_migration_expected_version }}
+  when: "matrix_playbook_migration_validated_version == ''"
+
+- name: Fail if migration version is outdated
+  ansible.builtin.fail:
+    msg: |-
+      Your validated migration version ({{ matrix_playbook_migration_validated_version }}) is behind the expected version ({{ matrix_playbook_migration_expected_version }}).
+
+      The following breaking changes have been introduced since your last validation:
+
+      {% for item in matrix_playbook_migration_breaking_changes | selectattr('version', '>', matrix_playbook_migration_validated_version) | sort(attribute='version') %}
+      - {{ item.version }}: {{ item.summary }} ({{ item.changelog_url }})
+      {% endfor %}
+
+      After reviewing the above changes and adapting your setup, update your vars.yml:
+
+      matrix_playbook_migration_validated_version: "{{ matrix_playbook_migration_expected_version }}"
+  when: "matrix_playbook_migration_validated_version != '' and matrix_playbook_migration_validated_version < matrix_playbook_migration_expected_version"
