@@ -30,3 +30,11 @@ repos:
         files: '^roles/custom/'
         args: ['roles/custom']
         pass_filenames: false
+  - repo: local
+    hooks:
+      - id: check-examples-vars-migration-version
+        name: Check examples/vars.yml migration version matches expected
+        entry: bin/check-examples-vars-migration-version.sh
+        language: script
+        files: '(examples/vars\.yml|roles/custom/matrix_playbook_migration/defaults/main\.yml)'
+        pass_filenames: false
