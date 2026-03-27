@@ -39,27 +39,8 @@ matrix_rtc_enabled: true
 In addition to the HTTP/HTTPS ports (which you've already exposed as per the [prerequisites](prerequisites.md) document), you'll also need to open ports required by [LiveKit Server](configuring-playbook-livekit-server.md) as described in its own [Adjusting firewall rules](configuring-playbook-livekit-server.md#adjusting-firewall-rules) section.
 
 ### Behind a reverse proxy
-If you are behind an additional reverse proxy like nginx you also need to adjust it for livekit:
-```yaml
-    location /livekit-server/ {
-        proxy_pass http://localhost:81/livekit-server/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
+If you are behind an additional reverse proxy like nginx it needs to forward websockets for livekit.
 
-        # Long timeouts for persistent WebSocket connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
-        proxy_buffering off;
-
-        access_log /var/log/nginx/matrix.access.log;
-        error_log /var/log/nginx/matrix.error.log;
-    }
-```
 
 ## Installing
 
