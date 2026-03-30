@@ -210,7 +210,7 @@
 - name: Fail if OpenID Connect is enabled for Synapse when auth is delegated to Matrix Authentication Service
   ansible.builtin.fail:
     msg: "When Synapse is delegating authentication to Matrix Authentication Service (`matrix_synapse_matrix_authentication_service_enabled: true`), it doesn't make sense to enable OpenID Connect (`matrix_synapse_oidc_enabled: true`), because it is not Synapse that is handling authentication. Synapse will refuse to start otherwise."
-  when: matrix_synapse_matrix_authentication_service_enabled and matrix_synapse_oidc_enabled
+  when: matrix_synapse_matrix_authentication_service_enabled and matrix_synapse_oidc_enabled and not matrix_authentication_service_migration_in_progress
 
 - name: Fail if CAS config is enabled for Synapse when auth is delegated to Matrix Authentication Service
   ansible.builtin.fail:
