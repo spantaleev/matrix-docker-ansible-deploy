@@ -398,6 +398,8 @@ To perform a real migration, run the `matrix-authentication-service-mas-cli-syn2
 just run-tags matrix-authentication-service-mas-cli-syn2mas
 ```
 
+After `syn2mas` completes, Synapse will intentionally remain stopped to avoid new registrations or other authentication changes from being accepted before the migration is completed. Continue with the next steps in this guide before re-running the installation.
+
 Having performed a `syn2mas` migration once, trying to do it again will report errors (e.g. "Error: The MAS database is not empty: rows found in at least `users`. Please drop and recreate the database, then try again.").
 
 ## Verify that Matrix Authentication Service is installed correctly

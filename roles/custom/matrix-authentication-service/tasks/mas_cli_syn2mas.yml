@@ -110,11 +110,17 @@
   ansible.builtin.debug:
     var: matrix_authentication_service_mas_cli_syn2mas_command_result
 
-- name: Ensure Synapse is started (if it previously was)
+- name: Inject syn2mas post-migration note
   when: "not matrix_authentication_service_syn2mas_migrate_dry_run and matrix_authentication_service_mas_cli_syn2mas_command_result.changed"
-  ansible.builtin.service:
-    name: matrix-synapse
-    state: started
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Synapse was intentionally not restarted after `syn2mas`. Continue with the next steps in the Matrix Authentication Service migration guide before re-running the installation."
+        ]
+      }}
 
 - name: Ensure Matrix Authentication Service is started (if it previously was)
   when: "not matrix_authentication_service_syn2mas_migrate_dry_run and matrix_authentication_service_mas_ensure_stopped_result.changed"
