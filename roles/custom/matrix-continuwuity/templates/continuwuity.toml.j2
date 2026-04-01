@@ -112,7 +112,7 @@ new_user_displayname_suffix = {{ matrix_continuwuity_config_new_user_displayname
 # `https://continuwuity.org/.well-known/continuwuity/announcements` for any new
 # announcements or major updates. This is not an update check endpoint.
 #
-allow_announcements_check = {{ matrix_continuwuity_config_allow_check_for_updates | to_json }}
+allow_announcements_check = {{ matrix_continuwuity_config_allow_announcements_check | to_json }}
 
 # Set this to any float value to multiply continuwuity's in-memory LRU
 # caches with such as "auth_chain_cache_capacity".
@@ -1882,7 +1882,11 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 #
 # To disable, set this to an empty list (`[]`).
 #
-foci = [{%- for focus in matrix_continuwuity_config_rtc_foci -%}{ {% for key, value in focus.items() %}{{ key }} = {{ value | to_json }}{% if not loop.last %}, {% endif %}{% endfor %} }{% if not loop.last %}, {% endif %}{%- endfor -%}]
+foci = [
+{% for focus in matrix_continuwuity_config_rtc_foci %}
+  { {% for key, value in focus.items() %}{{ key }} = {{ value | to_json }}{% if not loop.last %}, {% endif %}{% endfor %} }{% if not loop.last %}, {% endif %}
+{% endfor %}
+]
 
 [global.ldap]
 
