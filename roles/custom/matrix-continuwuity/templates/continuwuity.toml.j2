@@ -21,8 +21,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 # Also see the `[global.well_known]` config section at the very bottom.
 #
 # Examples of delegation:
-# - https://puppygock.gay/.well-known/matrix/server
-# - https://puppygock.gay/.well-known/matrix/client
+# - https://continuwuity.org/.well-known/matrix/server
+# - https://continuwuity.org/.well-known/matrix/client
 #
 # YOU NEED TO EDIT THIS. THIS CANNOT BE CHANGED AFTER WITHOUT A DATABASE
 # WIPE.
@@ -112,7 +112,7 @@ new_user_displayname_suffix = {{ matrix_continuwuity_config_new_user_displayname
 # `https://continuwuity.org/.well-known/continuwuity/announcements` for any new
 # announcements or major updates. This is not an update check endpoint.
 #
-allow_check_for_updates = {{ matrix_continuwuity_config_allow_check_for_updates | to_json }}
+allow_announcements_check = {{ matrix_continuwuity_config_allow_announcements_check | to_json }}
 
 # Set this to any float value to multiply continuwuity's in-memory LRU
 # caches with such as "auth_chain_cache_capacity".
@@ -283,6 +283,25 @@ max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 #
 #max_fetch_prev_events = 192
 
+# How many incoming federation transactions the server is willing to be
+# processing at any given time before it becomes overloaded and starts
+# rejecting further transactions until some slots become available.
+#
+# Setting this value too low or too high may result in unstable
+# federation, and setting it too high may cause runaway resource usage.
+#
+#max_concurrent_inbound_transactions = 150
+
+# Maximum age (in seconds) for cached federation transaction responses.
+# Entries older than this will be removed during cleanup.
+#
+#transaction_id_cache_max_age_secs = 7200 (2 hours)
+
+# Maximum number of cached federation transaction responses.
+# When the cache exceeds this limit, older entries will be removed.
+#
+#transaction_id_cache_max_entries = 8192
+
 # Default/base connection timeout (seconds). This is used only by URL
 # previews and update/news endpoint checks.
 #
@@ -320,11 +339,38 @@ max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 #
 #well_known_timeout = 10
 
+# Federation client connection timeout (seconds). You should not set this
+# to high values, as dead homeservers can significantly slow down
+# federation, specifically key retrieval, which will take roughly the
+# amount of time you configure here given that a homeserver doesn't
+# respond. This will cause most clients to time out /keys/query, causing
+# E2EE and device verification to fail.
+#
+#federation_conn_timeout = 10
+
 # Federation client request timeout (seconds). You most definitely want
 # this to be high to account for extremely large room joins, slow
 # homeservers, your own resources etc.
 #
-#federation_timeout = 300
+# Joins have 6x the timeout.
+#
+#federation_timeout = 60
+
+# MSC4284 Policy server request timeout (seconds). Generally policy
+# servers should respond near instantly, however may slow down under
+# load. If a policy server doesn't respond in a short amount of time, the
+# room it is configured in may become unusable if this limit is set too
+# high. 10 seconds is a good default, however dropping this to 3-5 seconds
+# can be acceptable.
+#
+# Please be aware that policy requests are *NOT* currently re-tried, so if
+# a spam check request fails, the event will be assumed to be not spam,
+# which in some cases may result in spam being sent to or received from
+# the room that would typically be prevented.
+#
+# About policy servers: https://matrix.org/blog/2025/04/introducing-policy-servers/
+#
+#policy_server_request_timeout = 10
 
 # Federation client idle connection pool timeout (seconds).
 #
@@ -357,7 +403,15 @@ max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 #
 #appservice_idle_timeout = 300
 
-# Notification gateway pusher idle connection pool timeout.
+# Notification gateway pusher request connection timeout (seconds).
+#
+#pusher_conn_timeout = 15
+
+# Notification gateway pusher total request timeout (seconds).
+#
+#pusher_timeout = 60
+
+# Notification gateway pusher idle connection pool timeout (seconds).
 #
 #pusher_idle_timeout = 15
 
@@ -402,6 +456,11 @@ allow_registration = {{ matrix_continuwuity_config_allow_registration | to_json 
 # invites, or create/join or otherwise modify rooms.
 # They are effectively read-only.
 #
+# If you want to use this to screen people who register on your server,
+# you should add a room to `auto_join_rooms` that is public, and contains
+# information that new users can read (since they won't be able to DM
+# anyone, or send a message, and may be confused).
+#
 suspend_on_register = {{ matrix_continuwuity_config_suspend_on_register | to_json }}
 
 # Enabling this setting opens registration to anyone without restrictions.
@@ -431,9 +490,29 @@ registration_token = {{ matrix_continuwuity_config_registration_token | to_json 
 #
 #registration_token_file =
 
+# The public site key for reCaptcha. If this is provided, reCaptcha
+# becomes required during registration. If both captcha *and*
+# registration token are enabled, both will be required during
+# registration.
+#
+# IMPORTANT: "Verify the origin of reCAPTCHA solutions" **MUST** BE
+# DISABLED IF YOU WANT THE CAPTCHA TO WORK IN 3RD PARTY CLIENTS, OR
+# CLIENTS HOSTED ON DOMAINS OTHER THAN YOUR OWN!
+#
+# Registration must be enabled (`allow_registration` must be true) for
+# this to have any effect.
+#
+recaptcha_site_key = {{ matrix_continuwuity_config_recaptcha_site_key | to_json }}
+
+# The private site key for reCaptcha.
+# If this is omitted, captcha registration will not work,
+# even if `recaptcha_site_key` is set.
+#
+recaptcha_private_site_key = {{ matrix_continuwuity_config_recaptcha_private_site_key | to_json }}
+
 # Controls whether encrypted rooms and events are allowed.
 #
-#allow_encryption = true
+allow_encryption = {{ matrix_continuwuity_config_allow_encryption | to_json }}
 
 # Controls whether federation is allowed or not. It is not recommended to
 # disable this after the fact due to potential federation breakage.
@@ -451,7 +530,7 @@ allow_federation = {{ matrix_continuwuity_config_allow_federation | to_json }}
 # Always calls /forget on behalf of the user if leaving a room. This is a
 # part of MSC4267 "Automatically forgetting rooms on leave"
 #
-#forget_forced_upon_leave = false
+forget_forced_upon_leave = {{ matrix_continuwuity_config_forget_forced_upon_leave | to_json }}
 
 # Set this to true to require authentication on the normally
 # unauthenticated profile retrieval endpoints (GET)
@@ -468,12 +547,6 @@ allow_federation = {{ matrix_continuwuity_config_allow_federation | to_json }}
 # is inherently false.
 #
 #allow_public_room_directory_over_federation = false
-
-# Set this to true to allow your server's public room directory to be
-# queried without client authentication (access token) through the Client
-# APIs. Set this to false to protect against /publicRooms spiders.
-#
-#allow_public_room_directory_without_auth = false
 
 # Allow guests/unauthenticated users to access TURN credentials.
 #
@@ -516,7 +589,7 @@ allow_federation = {{ matrix_continuwuity_config_allow_federation | to_json }}
 # Allow standard users to create rooms. Appservices and admins are always
 # allowed to create rooms
 #
-#allow_room_creation = true
+allow_room_creation = {{ matrix_continuwuity_config_allow_room_creation | to_json }}
 
 # Set to false to disable users from joining or creating room versions
 # that aren't officially supported by continuwuity.
@@ -529,18 +602,32 @@ allow_federation = {{ matrix_continuwuity_config_allow_federation | to_json }}
 #allow_unstable_room_versions = true
 
 # Default room version continuwuity will create rooms with.
+# Note that this has to be a string since the room version is a string
+# rather than an integer. Forgetting the quotes will make the server fail
+# to start!
 #
-# Per spec, room version 11 is the default.
+# Per spec, room version "11" is the default.
 #
-#default_room_version = 11
+#default_room_version = "11"
 
-# This item is undocumented. Please contribute documentation for it.
+# Enable OpenTelemetry OTLP tracing export. This replaces the deprecated
+# Jaeger exporter. Traces will be sent via OTLP to a collector (such as
+# Jaeger) that supports the OpenTelemetry Protocol.
 #
-#allow_jaeger = false
+# Configure your OTLP endpoint using the OTEL_EXPORTER_OTLP_ENDPOINT
+# environment variable (defaults to http://localhost:4318).
+#
+#allow_otlp = false
 
-# This item is undocumented. Please contribute documentation for it.
+# Filter for OTLP tracing spans. This controls which spans are exported
+# to the OTLP collector.
 #
-#jaeger_filter = "info"
+#otlp_filter = "info"
+
+# Protocol to use for OTLP tracing export. Options are "http" or "grpc".
+# The HTTP protocol uses port 4318 by default, while gRPC uses port 4317.
+#
+#otlp_protocol = "http"
 
 # If the 'perf_measurements' compile-time feature is enabled, enables
 # collecting folded stack trace profile of tracing spans using
@@ -666,6 +753,21 @@ log = {{ matrix_continuwuity_config_log | to_json }}
 #
 #log_thread_ids = false
 
+# Enable journald logging on Unix platforms
+#
+# When enabled, log output will be sent to the systemd journal
+# This is only supported on Unix platforms
+#
+#log_to_journald = false
+
+# The syslog identifier to use with journald logging
+#
+# Only used when journald logging is enabled
+#
+# Defaults to the binary name
+#
+#journald_identifier =
+
 # OpenID token expiration/TTL in seconds.
 #
 # These are the OpenID tokens that are primarily used for Matrix account
@@ -747,7 +849,7 @@ turn_secret = {{ matrix_continuwuity_config_turn_secret | to_json }}
 # example: ["#continuwuity:continuwuity.org",
 # "!main-1:continuwuity.org"]
 #
-#auto_join_rooms = []
+auto_join_rooms = {{ matrix_continuwuity_config_auto_join_rooms | to_json }}
 
 # Config option to automatically deactivate the account of any user who
 # attempts to join a:
@@ -960,14 +1062,6 @@ turn_secret = {{ matrix_continuwuity_config_turn_secret | to_json }}
 #
 #rocksdb_repair = false
 
-# This item is undocumented. Please contribute documentation for it.
-#
-#rocksdb_read_only = false
-
-# This item is undocumented. Please contribute documentation for it.
-#
-#rocksdb_secondary = false
-
 # Enables idle CPU priority for compaction thread. This is not enabled by
 # default to prevent compaction from falling too far behind on busy
 # systems.
@@ -1026,27 +1120,34 @@ emergency_password = {{ matrix_continuwuity_config_emergency_password | to_json 
 
 # Allow local (your server only) presence updates/requests.
 #
-# Note that presence on continuwuity is very fast unlike Synapse's. If
-# using outgoing presence, this MUST be enabled.
+# Local presence must be enabled for outgoing presence to function.
+#
+# Note that local presence is not as heavy on the CPU as federated
+# presence, but will still become more expensive the more local users you
+# have.
 #
 #allow_local_presence = true
 
-# Allow incoming federated presence updates/requests.
+# Allow incoming federated presence updates.
 #
-# This option receives presence updates from other servers, but does not
-# send any unless `allow_outgoing_presence` is true. Note that presence on
-# continuwuity is very fast unlike Synapse's.
+# This option enables processing inbound presence updates from other
+# servers. Without it, remote users will appear as if they are always
+# offline to your local users. This does not affect typing indicators or
+# read receipts.
 #
 #allow_incoming_presence = true
 
 # Allow outgoing presence updates/requests.
 #
-# This option sends presence updates to other servers, but does not
-# receive any unless `allow_incoming_presence` is true. Note that presence
-# on continuwuity is very fast unlike Synapse's. If using outgoing
-# presence, you MUST enable `allow_local_presence` as well.
+# This option sends presence updates to other servers, and requires that
+# `allow_local_presence` is also enabled.
 #
-#allow_outgoing_presence = true
+# Note that outgoing presence is very heavy on the CPU and network, and
+# will typically cause extreme strain and slowdowns for no real benefit.
+# There are only a few clients that even implement presence, so you
+# probably don't want to enable this.
+#
+allow_outgoing_presence = {{ matrix_continuwuity_config_allow_outgoing_presence | to_json }}
 
 # How many seconds without presence updates before you become idle.
 # Defaults to 5 minutes.
@@ -1067,15 +1168,37 @@ emergency_password = {{ matrix_continuwuity_config_emergency_password | to_json 
 #
 #presence_timeout_remote_users = true
 
+# Allow local read receipts.
+#
+# Disabling this will effectively also disable outgoing federated read
+# receipts.
+#
+#allow_local_read_receipts = true
+
 # Allow receiving incoming read receipts from remote servers.
 #
 #allow_incoming_read_receipts = true
 
 # Allow sending read receipts to remote servers.
 #
+# Note that sending read receipts to remote servers in large rooms with
+# lots of other homeservers may cause additional strain on the CPU and
+# network.
+#
 #allow_outgoing_read_receipts = true
 
+# Allow local typing updates.
+#
+# Disabling this will effectively also disable outgoing federated typing
+# updates.
+#
+#allow_local_typing = true
+
 # Allow outgoing typing updates to federation.
+#
+# Note that sending typing indicators to remote servers in large rooms
+# with lots of other homeservers may cause additional strain on the CPU
+# and network.
 #
 #allow_outgoing_typing = true
 
@@ -1210,7 +1333,7 @@ emergency_password = {{ matrix_continuwuity_config_emergency_password | to_json 
 # sender user's server name, inbound federation X-Matrix origin, and
 # outbound federation handler.
 #
-# You can set this to ["*"] to block all servers by default, and then
+# You can set this to [".*"] to block all servers by default, and then
 # use `allowed_remote_server_names` to allow only specific servers.
 #
 # example: ["badserver\\.tld$", "badphrase", "19dollarfortnitecards"]
@@ -1348,6 +1471,11 @@ url_preview_domain_explicit_allowlist = {{ matrix_continuwuity_config_url_previe
 #
 #url_preview_max_spider_size = 256000
 
+# Total request timeout for URL previews (seconds). This includes
+# connection, request, and response body reading time.
+#
+#url_preview_timeout = 120
+
 # Option to decide whether you would like to run the domain allowlist
 # checks (contains and explicit) on the root domain or not. Does not apply
 # to URL contains allowlist. Defaults to false.
@@ -1360,6 +1488,15 @@ url_preview_domain_explicit_allowlist = {{ matrix_continuwuity_config_url_previe
 # subdomains under a root domain.
 #
 url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_root_domain | to_json }}
+
+# User agent that is used specifically when fetching url previews.
+#
+#url_preview_user_agent = "continuwuity/<version> (bot; +https://continuwuity.org)"
+
+# Determines whether audio and video files will be downloaded for URL
+# previews.
+#
+#url_preview_allow_audio_video = false
 
 # List of forbidden room aliases and room IDs as strings of regex
 # patterns.
@@ -1413,12 +1550,25 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 #
 #block_non_admin_invites = false
 
+# Enable or disable making requests to MSC4284 Policy Servers.
+# It is recommended you keep this enabled unless you experience frequent
+# connectivity issues, such as in a restricted networking environment.
+#
+#enable_msc4284_policy_servers = true
+
+# Enable running locally generated events through configured MSC4284
+# policy servers. You may wish to disable this if your server is
+# single-user for a slight speed benefit in some rooms, but otherwise
+# should leave it enabled.
+#
+#policy_server_check_own_events = true
+
 # Allow admins to enter commands in rooms other than "#admins" (admin
 # room) by prefixing your message with "\!admin" or "\\!admin" followed up
 # a normal continuwuity admin command. The reply will be publicly visible
 # to the room, originating from the sender.
 #
-# example: \\!admin debug ping puppygock.gay
+# example: \\!admin debug ping continuwuity.org
 #
 #admin_escape_commands = true
 
@@ -1436,7 +1586,8 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 # For example: `./continuwuity --execute "server admin-notice continuwuity
 # has started up at $(date)"`
 #
-# example: admin_execute = ["debug ping puppygock.gay", "debug echo hi"]`
+# example: admin_execute = ["debug ping continuwuity.org", "debug echo
+# hi"]`
 #
 #admin_execute = []
 
@@ -1468,6 +1619,18 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 # easy-to-access shortcut dedicated to your admin room.
 #
 #admin_room_tag = "m.server_notice"
+
+# A list of Matrix IDs that are qualified as server admins.
+#
+# Any Matrix IDs within this list are regarded as an admin
+# regardless of whether they are in the admin room or not
+#
+#admins_list = []
+
+# Defines whether those within the admin room are added to the
+# admins_list.
+#
+#admins_from_room = true
 
 # Sentry.io crash/panic reporting, performance monitoring/metrics, etc.
 # This is NOT enabled by default.
@@ -1514,7 +1677,7 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 
 # Enable the tokio-console. This option is only relevant to developers.
 #
-#	For more information, see:
+#    For more information, see:
 # https://continuwuity.org/development.html#debugging-with-tokio-console
 #
 #tokio_console = false
@@ -1620,6 +1783,11 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 #
 #config_reload_signal = true
 
+# Allow search engines and crawlers to index Continuwuity's built-in
+# webpages served under the `/_continuwuity/` prefix.
+#
+#allow_web_indexing = false
+
 [global.tls]
 
 # Path to a valid TLS certificate file.
@@ -1698,3 +1866,152 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 # is 33.55MB. Setting it to 0 disables blurhashing.
 #
 #blurhash_max_raw_size = 33554432
+
+[global.matrix_rtc]
+
+# A list of MatrixRTC foci (transports) which will be served via the
+# MSC4143 RTC transports endpoint at
+# `/_matrix/client/v1/rtc/transports`. If you're setting up livekit,
+# you'd want something like:
+# ```toml
+# [global.matrix_rtc]
+# foci = [
+#     { type = "livekit", livekit_service_url = "https://livekit.example.com" },
+# ]
+# ```
+#
+# To disable, set this to an empty list (`[]`).
+#
+foci = [
+{% for focus in matrix_continuwuity_config_rtc_foci %}
+  { {% for key, value in focus.items() %}{{ key }} = {{ value | to_json }}{% if not loop.last %}, {% endif %}{% endfor %} }{% if not loop.last %}, {% endif %}
+{% endfor %}
+]
+
+[global.ldap]
+
+# Whether to enable LDAP login.
+#
+# example: "true"
+#
+#enable = false
+
+# Whether to force LDAP authentication or authorize classical password
+# login.
+#
+# example: "true"
+#
+#ldap_only = false
+
+# URI of the LDAP server.
+#
+# example: "ldap://ldap.example.com:389"
+#
+#uri = ""
+
+# Root of the searches.
+#
+# example: "ou=users,dc=example,dc=org"
+#
+#base_dn = ""
+
+# Bind DN if anonymous search is not enabled.
+#
+# You can use the variable `{username}` that will be replaced by the
+# entered username. In such case, the password used to bind will be the
+# one provided for the login and not the one given by
+# `bind_password_file`. Beware: automatically granting admin rights will
+# not work if you use this direct bind instead of a LDAP search.
+#
+# example: "cn=ldap-reader,dc=example,dc=org" or
+# "cn={username},ou=users,dc=example,dc=org"
+#
+#bind_dn = ""
+
+# Path to a file on the system that contains the password for the
+# `bind_dn`.
+#
+# The server must be able to access the file, and it must not be empty.
+#
+#bind_password_file = ""
+
+# Search filter to limit user searches.
+#
+# You can use the variable `{username}` that will be replaced by the
+# entered username for more complex filters.
+#
+# example: "(&(objectClass=person)(memberOf=matrix))"
+#
+#filter = "(objectClass=*)"
+
+# Attribute to use to uniquely identify the user.
+#
+# example: "uid" or "cn"
+#
+#uid_attribute = "uid"
+
+# Attribute containing the display name of the user.
+#
+# example: "givenName" or "sn"
+#
+#name_attribute = "givenName"
+
+# Root of the searches for admin users.
+#
+# Defaults to `base_dn` if empty.
+#
+# example: "ou=admins,dc=example,dc=org"
+#
+#admin_base_dn = ""
+
+# The LDAP search filter to find administrative users for continuwuity.
+#
+# If left blank, administrative state must be configured manually for each
+# user.
+#
+# You can use the variable `{username}` that will be replaced by the
+# entered username for more complex filters.
+#
+# example: "(objectClass=conduwuitAdmin)" or "(uid={username})"
+#
+#admin_filter = ""
+
+#[global.antispam]
+
+#[global.antispam.meowlnir]
+
+# The base URL on which to contact Meowlnir (before /_meowlnir/antispam).
+#
+# Example: "http://127.0.0.1:29339"
+#
+#base_url =
+
+# The authentication secret defined in antispam->secret. Required for
+# continuwuity to talk to Meowlnir.
+#
+#secret =
+
+# The management room for which to send requests
+#
+#management_room =
+
+# If enabled run all federated join attempts (both federated and local)
+# through the Meowlnir anti-spam checks.
+#
+# By default, only join attempts for rooms with the `fi.mau.spam_checker`
+# restricted join rule are checked.
+#
+#check_all_joins = false
+
+#[global.antispam.draupnir]
+
+# The base URL on which to contact Draupnir (before /api/).
+#
+# Example: "http://127.0.0.1:29339"
+#
+#base_url =
+
+# The authentication secret defined in
+# web->synapseHTTPAntispam->authorization
+#
+#secret =
