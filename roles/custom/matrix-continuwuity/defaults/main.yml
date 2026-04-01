@@ -188,6 +188,29 @@ matrix_continuwuity_config_turn_password: ''
 # Controls whether the self-check feature should validate SSL certificates.
 matrix_continuwuity_self_check_validate_certificates: true
 
+# If set, registration will require Google ReCAPTCHA verification.
+matrix_continuwuity_config_recaptcha_site_key: ''
+matrix_continuwuity_config_recaptcha_private_site_key: ''
+
+# Controls whether encrypted rooms and events are allowed.
+matrix_continuwuity_config_allow_encryption: true
+
+# Controls whether standard users can create new rooms.
+# Appservices and admins are always allowed to create new rooms.
+matrix_continuwuity_config_allow_room_creation: true
+
+# List/vector of room IDs or room aliases that continuwuity will make
+# newly registered users join. The rooms specified must be rooms that you
+# have joined at least once on the server, and must be public.
+#
+# example: ["#continuwuity:continuwuity.org",
+# "!main-1:continuwuity.org"]
+#
+matrix_continuwuity_config_auto_join_rooms: []
+
+# Forces users to always forget rooms they have left (MSC4267).
+matrix_continuwuity_config_forget_forced_upon_leave: false
+
 # Controls server (de)federation settings.
 matrix_continuwuity_config_allow_federation: true
 matrix_continuwuity_config_allowed_remote_server_names: []
@@ -195,6 +218,20 @@ matrix_continuwuity_config_forbidden_remote_server_names: []
 matrix_continuwuity_config_forbidden_remote_room_directory_server_names: []
 matrix_continuwuity_config_prevent_media_downloads_from: []
 matrix_continuwuity_config_ignore_messages_from_server_names: []
+
+# Allow outgoing presence updates/requests.
+#
+# Note that outgoing presence is very heavy on the CPU and network, and
+# will typically cause extreme strain and slowdowns for no real benefit.
+# There are only a few clients that even implement presence, so you
+# probably don't want to enable this.
+matrix_continuwuity_config_allow_outgoing_presence: false
+
+# Controls MatrixRTC foci served via `/_matrix/client/v1/rtc/transports`
+# and `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` (MSC4143)
+#
+# This is set automatically if you are using the playbook MatrixRTC stack.
+matrix_continuwuity_config_rtc_foci: []
 
 # Controls the `url_preview_domain_contains_allowlist` setting.
 matrix_continuwuity_config_url_preview_domain_contains_allowlist: []
