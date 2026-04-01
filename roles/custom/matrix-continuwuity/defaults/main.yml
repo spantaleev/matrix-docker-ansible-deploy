@@ -227,8 +227,18 @@ matrix_continuwuity_config_ignore_messages_from_server_names: []
 # probably don't want to enable this.
 matrix_continuwuity_config_allow_outgoing_presence: false
 
-# Controls MatrixRTC Livekit URL served via `/_matrix/client/v1/rtc/transports`
+# Controls MatrixRTC foci served via `/_matrix/client/v1/rtc/transports`
 # and `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` (MSC4143)
+matrix_continuwuity_config_rtc_foci: "{{ matrix_continuwuity_config_rtc_foci_auto + matrix_continuwuity_config_rtc_foci_custom }}"
+matrix_continuwuity_config_rtc_foci_auto: |-
+  {{
+    (
+      [{'type': 'livekit', 'livekit_service_url': matrix_continuwuity_config_rtc_foci_livekit_url}] if matrix_continuwuity_config_rtc_foci_livekit_url != '' else []
+    )
+  }}
+matrix_continuwuity_config_rtc_foci_custom: []
+
+# Controls MatrixRTC Livekit URL auto-added to `matrix_continuwuity_config_rtc_foci`.
 #
 # This is set automatically if you are using the playbook MatrixRTC stack.
 matrix_continuwuity_config_rtc_foci_livekit_url: ''
