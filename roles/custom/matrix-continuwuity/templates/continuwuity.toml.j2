@@ -1882,7 +1882,11 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 #
 # To disable, set this to an empty list (`[]`).
 #
-foci = {{ matrix_continuwuity_config_rtc_foci | to_json }}
+{% if matrix_continuwuity_config_rtc_foci_livekit_url != '' %}
+foci = [{ type = "livekit", livekit_service_url = {{ matrix_continuwuity_config_rtc_foci_livekit_url | to_json }} }]
+{% else %}
+foci = []
+{% endif %}
 
 [global.ldap]
 
