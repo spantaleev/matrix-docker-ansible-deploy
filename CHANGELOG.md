@@ -1,3 +1,20 @@
+# 2026-04-02
+
+## (BC Break) Draupnir for all Self Service Provisioning is now disabled by default
+
+[Draupnir for all](./docs/configuring-playbook-appservice-draupnir-for-all.md) now ships with `allowSelfServiceProvisioning: false` as default upstream and in mdad.
+
+This means users can no longer provision Draupnir instances by inviting the appservice bot unless you explicitly opt in.
+
+Manual provisioning by administrators is now the recommended approach. You do not want to enable Self Service Provisioning unless you have additional custom safeguards like those used by asgard.chat in place.
+
+If you want to enable Self Service Provisioning, add the following to your `vars.yml`:
+
+```yaml
+matrix_appservice_draupnir_for_all_configuration_extension_yaml: |
+  allowSelfServiceProvisioning: true
+```
+
 # 2026-03-23
 
 ## Migration validation system introduced
