@@ -31,9 +31,12 @@ To enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashbo
 traefik_dashboard_enabled: true
 traefik_dashboard_hostname: "{{ matrix_server_fqn_matrix }}"
 traefik_dashboard_basicauth_enabled: true
-traefik_dashboard_basicauth_user: YOUR_USERNAME_HERE
-traefik_dashboard_basicauth_password: YOUR_PASSWORD_HERE
+traefik_dashboard_basicauth_htpasswd: "YOUR_USERNAME_HERE:$apr1$..."
 ```
+
+Generate the `traefik_dashboard_basicauth_htpasswd` value on your local machine with a command like `htpasswd -nb YOUR_USERNAME_HERE YOUR_PASSWORD_HERE`.
+
+The role also supports the legacy `traefik_dashboard_basicauth_user` / `traefik_dashboard_basicauth_password` convenience variables, but that path depends on the `passlib` Python library on the Ansible controller, may be affected by passlib/bcrypt compatibility issues, and generates non-deterministic hashes which can lead to unnecessary changes.
 
 > [!WARNING]
 > Enabling the dashboard on a hostname you use for something else (like `matrix_server_fqn_matrix` in the configuration above) may cause conflicts. Enabling the Traefik Dashboard makes Traefik capture all `/dashboard` and `/api` requests and forward them to itself. If any of the services hosted on the same hostname requires any of these 2 URL prefixes, you will experience problems. So far, we're not aware of any playbook services which occupy these endpoints and are likely to cause conflicts.
