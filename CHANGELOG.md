@@ -2,7 +2,9 @@
 
 ## (BC Break) Draupnir for all Self Service Provisioning is now disabled by default
 
-[Draupnir for all](./docs/configuring-playbook-appservice-draupnir-for-all.md) now ships with `allowSelfServiceProvisioning: false` as default upstream and in mdad.
+💡 If you don't use [Draupnir for all](./docs/configuring-playbook-appservice-draupnir-for-all.md), then this breaking change does not concern you..
+
+[Draupnir for all](./docs/configuring-playbook-appservice-draupnir-for-all.md) now ships with `allowSelfServiceProvisioning: false` as default upstream and in this playbook.
 
 This means users can no longer provision Draupnir instances by inviting the appservice bot unless you explicitly opt in.
 
