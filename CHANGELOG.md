@@ -12,6 +12,8 @@ Additionally, the **Docker image** changed from `ghcr.io/etkecc/synapse-admin` t
 
 The playbook will automatically detect leftover `matrix_synapse_admin_*` variables and fail with a helpful message listing what needs to be renamed.
 
+The playbook handles reverse-proxy routing for subpath deployments (e.g. `/ketesa`), including MAS-enabled setups — though OIDC auth flows on real servers still have some rough edges. Feedback is appreciated in [#ketesa:etke.cc](https://matrix.to/#/#ketesa:etke.cc).
+
 See the [Ketesa documentation](docs/configuring-playbook-ketesa.md) for details.
 
 # 2026-04-02
