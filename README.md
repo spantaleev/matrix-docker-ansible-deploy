@@ -67,6 +67,7 @@ Web clients for Matrix that you can host on your own domains.
 | [Sable](https://github.com/7w1/sable) | ❌ | Simple, elegant and secure web client | [Link](docs/configuring-playbook-client-sable.md) |
 | [SchildiChat Web](https://schildi.chat/) | ❌ | Based on Element Web, with a more traditional instant messaging experience | [Link](docs/configuring-playbook-client-schildichat-web.md) |
 | [FluffyChat Web](https://fluffychat.im/) | ❌ | The cutest messenger in Matrix | [Link](docs/configuring-playbook-client-fluffychat-web.md) |
+| [Commet](https://github.com/commetchat/commet) | ❌ | Matrix web client | [Link](docs/configuring-playbook-client-commet.md) |
 
 ### Server Components
 
