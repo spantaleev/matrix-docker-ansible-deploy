@@ -11,6 +11,34 @@
 
 ---
 
+# Migrate from the old matrix-synapse-admin role.
+# The service was renamed to matrix-ketesa. Stop and remove the old one.
+
+- name: Check if matrix-synapse-admin.service exists
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-admin.service"
+  register: matrix_ketesa_legacy_synapse_admin_service_stat
+
+- name: Stop and remove legacy matrix-synapse-admin systemd service
+  when: matrix_ketesa_legacy_synapse_admin_service_stat.stat.exists | bool
+  block:
+    - name: Ensure legacy matrix-synapse-admin service is stopped
+      ansible.builtin.service:
+        name: matrix-synapse-admin
+        state: stopped
+        enabled: false
+      failed_when: false
+
+    - name: Remove legacy matrix-synapse-admin service file
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-synapse-admin.service"
+        state: absent
+
+    - name: Remove legacy matrix-synapse-admin data directory
+      ansible.builtin.file:
+        path: "{{ matrix_base_data_path }}/synapse-admin"
+        state: absent
+
 - name: Ensure matrix-ketesa paths exists
   ansible.builtin.file:
     path: "{{ item.path }}"
