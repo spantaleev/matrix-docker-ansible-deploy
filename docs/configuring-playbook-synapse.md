@@ -196,11 +196,11 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-### Synapse Admin
+### Ketesa
 
-With [Synapse Admin](configuring-playbook-synapse-admin.md), certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace.
+[Ketesa](configuring-playbook-ketesa.md) is a fully-featured web UI for administrating your homeserver — managing users, rooms, media, sessions, and more.
 
-The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+The playbook can install and configure Ketesa for you. For details about it, see [this page](configuring-playbook-ketesa.md).
 
 ### Monitoring Synapse Metrics with Prometheus and Grafana
 

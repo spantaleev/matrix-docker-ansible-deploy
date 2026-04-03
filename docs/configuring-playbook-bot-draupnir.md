@@ -102,7 +102,7 @@ This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synap
 
 **Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
 
-The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+The APIs can also be accessed via [Ketesa](https://github.com/etkecc/ketesa), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Ketesa for you. For details about it, see [this page](configuring-playbook-ketesa.md).
 
 #### Add the configuration
 
@@ -212,7 +212,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-- If you change the bot password (`matrix_bot_draupnir_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_draupnir_password` to let the bot know its new password.
+- If you change the bot password (`matrix_bot_draupnir_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [Ketesa](configuring-playbook-ketesa.md) to change it, and then update `matrix_bot_draupnir_password` to let the bot know its new password.
 
 ## Usage
 

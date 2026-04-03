@@ -102,7 +102,7 @@ Extend and modify how users are authenticated on your homeserver.
 
 - [Setting up Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md)
 
-- [Setting up Synapse Admin](configuring-playbook-synapse-admin.md)
+- [Setting up Ketesa](configuring-playbook-ketesa.md)
 
 - [Setting up matrix-registration](configuring-playbook-matrix-registration.md)
 
