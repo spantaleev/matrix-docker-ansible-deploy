@@ -2,7 +2,7 @@
 
 ## (BC Break) Synapse Admin is now Ketesa
 
-Synapse Admin has been rebranded to **[Ketesa](https://github.com/etkecc/ketesa)** — a landmark release that introduces a new identity, a full UI redesign, mobile-first layout, and deep Matrix Authentication Service (MAS) integration.
+Synapse Admin has been rebranded to **[Ketesa](https://github.com/etkecc/ketesa)** — a landmark release that introduces a new identity, a full UI redesign, mobile-first layout, and deep Matrix Authentication Service (MAS) integration. For the full story behind the rename and a tour of what's new, see the [Ketesa v1.0.0 announcement](https://etke.cc/blog/introducing-ketesa/).
 
 Ketesa is a zero-configuration drop-in replacement for Synapse Admin: no server-side changes required, just update the role variables.
 

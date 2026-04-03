@@ -15,7 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 The playbook can install and configure [Ketesa](https://github.com/etkecc/ketesa) for you.
 
-Ketesa is a fully-featured admin interface for Matrix homeservers — manage users, rooms, media, sessions, and more from one clean, responsive web UI. It is the evolution of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin): what began as a fork has grown into its own independent project with a redesigned interface, comprehensive Synapse and MAS API coverage, and multi-language support.
+Ketesa is a fully-featured admin interface for Matrix homeservers — manage users, rooms, media, sessions, and more from one clean, responsive web UI. It is the evolution of [Awesome-Technologies/synapse-admin](https://github.com/Awesome-Technologies/synapse-admin): what began as a fork has grown into its own independent project with a redesigned interface, comprehensive Synapse and MAS API coverage, and multi-language support. See the [Ketesa v1.0.0 announcement](https://etke.cc/blog/introducing-ketesa/) for a full overview of what's new.
 
 >[!NOTE]
 >
