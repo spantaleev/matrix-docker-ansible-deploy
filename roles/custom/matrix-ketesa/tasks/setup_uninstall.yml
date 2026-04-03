@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 Nikita Chernyi
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-ketesa service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ketesa.service"
+  register: matrix_ketesa_service_stat
+
+- when: matrix_ketesa_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-ketesa is stopped
+      ansible.builtin.service:
+        name: matrix-ketesa
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-ketesa.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ketesa.service"
+        state: absent
+
+    - name: Ensure matrix-ketesa directory doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_ketesa_base_path }}"
+        state: absent

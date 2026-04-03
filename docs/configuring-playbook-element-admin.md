@@ -13,7 +13,7 @@ Element Admin is a web-based administration panel for Synapse and [Matrix Authen
 
 See the project's [documentation](https://github.com/element-hq/element-admin) to learn more.
 
-💡 **Note**: This project is still very young and doesn't have many features. For now, it's recommended to use [Synapse Admin](./configuring-playbook-synapse-admin.md) instead. Deployments that use [Matrix Authentication Service](./configuring-playbook-matrix-authentication-service.md) can use Element Admin for user-management (something that Synapse Admin can't do), while continuing to use Synapse Admin for all other purposes.
+💡 **Note**: This project is still very young and doesn't have many features. [Ketesa](./configuring-playbook-ketesa.md) is the fully-featured alternative — it covers all Synapse and MAS Admin APIs, including complete user management, session management, and MAS policy data. Element Admin remains a valid choice if you prefer its interface.
 
 ## Prerequisites
 

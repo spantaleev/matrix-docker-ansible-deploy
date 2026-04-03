@@ -843,3 +843,23 @@
 
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_synapse_ext_synapse_auto_accept_invite_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_synapse_ext_synapse_auto_accept_invite_.+', wantlist=True) | length > 0"
+
+# Note: we intentionally do NOT use a blanket `^matrix_synapse_admin_.+` pattern here.
+# The matrix-synapse role has its own `matrix_synapse_admin_contact` variable (and others like
+# `matrix_synapse_container_labels_*_synapse_admin_api_*`) that share the same prefix but relate
+# to the Synapse Admin HTTP API, not the Ketesa web UI. A blanket match would produce false positives.
+- name: (Deprecation) Catch and report matrix-synapse-admin variables renamed to matrix-ketesa
+  ansible.builtin.fail:
+    msg: |-
+      Synapse Admin has been rebranded to Ketesa. The `matrix-synapse-admin` role has been renamed to `matrix-ketesa`.
+
+      All `matrix_synapse_admin_*` variables must be renamed to `matrix_ketesa_*` in your configuration file (vars.yml).
+
+      Additionally, note that the Docker image changed from `ghcr.io/etkecc/synapse-admin` to `ghcr.io/etkecc/ketesa`.
+
+      See `docs/configuring-playbook-ketesa.md` for more information.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_synapse_admin_(enabled|base_path|config|container|hostname|path_prefix|http_|floc_|hsts_|restart_|systemd_)', wantlist=True) | join(', ') }}
+  when:
+    - matrix_playbook_migration_matrix_synapse_admin_ketesa_variable_transition_checks_enabled | bool
+    - "lookup('ansible.builtin.varnames', '^matrix_synapse_admin_(enabled|base_path|config|container|hostname|path_prefix|http_|floc_|hsts_|restart_|systemd_)', wantlist=True) | length > 0"

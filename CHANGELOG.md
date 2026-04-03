@@ -1,3 +1,19 @@
+# 2026-04-03
+
+## (BC Break) Synapse Admin is now Ketesa
+
+Synapse Admin has been rebranded to **[Ketesa](https://github.com/etkecc/ketesa)** — a landmark release that introduces a new identity, a full UI redesign, mobile-first layout, and deep Matrix Authentication Service (MAS) integration.
+
+Ketesa is a zero-configuration drop-in replacement for Synapse Admin: no server-side changes required, just update the role variables.
+
+The `matrix-synapse-admin` role has been **renamed** to `matrix-ketesa`. All `matrix_synapse_admin_*` variables must be **renamed** to `matrix_ketesa_*` in your `vars.yml`.
+
+Additionally, the **Docker image** changed from `ghcr.io/etkecc/synapse-admin` to `ghcr.io/etkecc/ketesa`. The default path prefix remains `/synapse-admin` for backward compatibility — updating to `/ketesa` is recommended but not required.
+
+The playbook will automatically detect leftover `matrix_synapse_admin_*` variables and fail with a helpful message listing what needs to be renamed.
+
+See the [Ketesa documentation](docs/configuring-playbook-ketesa.md) for details.
+
 # 2026-04-02
 
 ## (BC Break) Draupnir for all Self Service Provisioning is now disabled by default

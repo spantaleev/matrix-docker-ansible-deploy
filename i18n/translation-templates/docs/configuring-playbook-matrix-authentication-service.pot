@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 10:32+0000\n"
+"POT-Creation-Date: 2026-04-03 11:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,7 +113,7 @@ msgid "❌ **Synapse password providers will need to be disabled**. You can no l
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:54
-msgid "❌ Certain **tools like [Synapse Admin](./configuring-playbook-synapse-admin.md) do not have full compatibility with MAS yet**. Synapse Admin already supports OIDC auth, browsing users (which Synapse will internally fetch from MAS) and updating user avatars. However, editing users (passwords, etc.) now needs to happen directly against MAS using the [MAS Admin API](https://element-hq.github.io/matrix-authentication-service/api/index.html), which Synapse Admin cannot interact with yet. You may be interested in using [Element Admin](./configuring-playbook-element-admin.md) for these purposes."
+msgid "✅ **[Ketesa](./configuring-playbook-ketesa.md) has full MAS integration**. Ketesa supports OIDC auth, user management, all session types (browser, OAuth2, compatibility), linked email addresses, upstream OAuth provider links, MAS policy data, and user creation through MAS. It is the recommended tool for managing homeservers running MAS."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:56
@@ -514,105 +514,109 @@ msgid "To perform a real migration, run the `matrix-authentication-service-mas-c
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:401
-msgid "Having performed a `syn2mas` migration once, trying to do it again will report errors (e.g. \"Error: The MAS database is not empty: rows found in at least `users`. Please drop and recreate the database, then try again.\")."
+msgid "After `syn2mas` completes, Synapse will intentionally remain stopped to avoid new registrations or other authentication changes from being accepted before the migration is completed. Continue with the next steps in this guide before re-running the installation."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:403
-msgid "Verify that Matrix Authentication Service is installed correctly"
+msgid "Having performed a `syn2mas` migration once, trying to do it again will report errors (e.g. \"Error: The MAS database is not empty: rows found in at least `users`. Please drop and recreate the database, then try again.\")."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:405
-msgid "After [installation](#installing), run the `doctor` subcommand of the [`mas-cli` command-line tool](https://element-hq.github.io/matrix-authentication-service/reference/cli/index.html) to verify that MAS is installed correctly."
+msgid "Verify that Matrix Authentication Service is installed correctly"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:407
-msgid "You can do it:"
+msgid "After [installation](#installing), run the `doctor` subcommand of the [`mas-cli` command-line tool](https://element-hq.github.io/matrix-authentication-service/reference/cli/index.html) to verify that MAS is installed correctly."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:409
-msgid "either via the Ansible playbook's `matrix-authentication-service-mas-cli-doctor` tag: `just run-tags matrix-authentication-service-mas-cli-doctor`"
+msgid "You can do it:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:411
-msgid "or by running the `mas-cli` script on the server (which invokes the `mas-cli` tool inside a container): `/matrix/matrix-authentication-service/bin/mas-cli doctor`"
+msgid "either via the Ansible playbook's `matrix-authentication-service-mas-cli-doctor` tag: `just run-tags matrix-authentication-service-mas-cli-doctor`"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-matrix-authentication-service.md:413
+msgid "or by running the `mas-cli` script on the server (which invokes the `mas-cli` tool inside a container): `/matrix/matrix-authentication-service/bin/mas-cli doctor`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:415
 msgid "If successful, you should see some output that looks like this:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:425
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:427
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:427
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:429
 msgid "Management"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:429
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:431
 msgid "You can use the [`mas-cli` command-line tool](https://element-hq.github.io/matrix-authentication-service/reference/cli/index.html) (exposed via the `/matrix/matrix-authentication-service/bin/mas-cli` script) to perform administrative tasks against MAS."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:431
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:433
 msgid "This documentation page already mentions:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:433
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:435
 msgid "the `mas-cli doctor` sub-command in the [Verify that Matrix Authentication Service is installed correctly](#verify-that-matrix-authentication-service-is-installed-correctly) section, which you can run via the CLI and via the Ansible playbook's `matrix-authentication-service-mas-cli-doctor` tag"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:435
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:437
 msgid "the `mas-cli manage register-user` sub-command in the [Registering users](./registering-users.md) documentation"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:437
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:439
 msgid "There are other sub-commands available. Run `/matrix/matrix-authentication-service/bin/mas-cli` to get an overview."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:439
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:441
 msgid "User registration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:441
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:443
 msgid "After Matrix Authentication Service is [installed](#installing), users need to be managed there (unless you're managing them in an [upstream OAuth2 provider](#upstream-oauth2-configuration))."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:443
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:445
 msgid "You can register users new users as described in the [Registering users](./registering-users.md) documentation (via `mas-cli manage register-user` or the Ansible playbook's `register-user` tag)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:445
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:447
 msgid "Working around email deliverability issues"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:447
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:449
 msgid "Matrix Authentication Service only sends emails when:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:449
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:451
 msgid "it verifies email addresses for users who are self-registering with a password"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:451
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:453
 msgid "a user tries to add an email to their account"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:453
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:455
 msgid "If Matrix Authentication Service tries to send an email and it fails because [your email-sending configuration](./configuring-playbook-email.md) is not working, you may need to work around email deliverability."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:455
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:457
 msgid "If email delivery is not working, **you can retrieve the email verification code from the Matrix Authentication Service's logs** (`journalctl -fu matrix-authentication-service`)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:457
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:459
 msgid "Alternatively, you can use the [`mas-cli` management tool](#management) to manually verify email addresses for users. Example: `/matrix/matrix-authentication-service/bin/mas-cli manage verify-email some.username email@example.com`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:459
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:461
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-matrix-authentication-service.md:461
+#: ../../../docs/configuring-playbook-matrix-authentication-service.md:463
 msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-authentication-service`."
 msgstr ""
