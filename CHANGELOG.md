@@ -1,6 +1,6 @@
 # 2026-04-03
 
-## (BC Break) Synapse Admin is now Ketesa
+## (BC Break) Synapse Admin (fork by etke.cc) is now Ketesa
 
 Synapse Admin has been rebranded to **[Ketesa](https://github.com/etkecc/ketesa)** — a landmark release that introduces a new identity, a full UI redesign, mobile-first layout, and deep Matrix Authentication Service (MAS) integration. For the full story behind the rename and a tour of what's new, see the [Ketesa v1.0.0 announcement](https://etke.cc/blog/introducing-ketesa/).
 
