@@ -38,6 +38,10 @@ matrix_rtc_enabled: true
 
 In addition to the HTTP/HTTPS ports (which you've already exposed as per the [prerequisites](prerequisites.md) document), you'll also need to open ports required by [LiveKit Server](configuring-playbook-livekit-server.md) as described in its own [Adjusting firewall rules](configuring-playbook-livekit-server.md#adjusting-firewall-rules) section.
 
+### Behind a reverse proxy
+If you are behind an additional reverse proxy like nginx it needs to forward websockets for livekit.
+
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records) and [adjusting firewall rules](#adjusting-firewall-rules), run the playbook with [playbook tags](playbook-tags.md) as below:
