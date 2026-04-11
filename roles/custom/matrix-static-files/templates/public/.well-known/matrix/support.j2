@@ -1,5 +1,15 @@
+{%- set ns = namespace(contacts_out=[]) -%}
+{%- for contact in matrix_static_files_file_matrix_support_property_m_contacts -%}
+{%- if contact.pgp_key is defined -%}
+{%- set contact_items = contact | dict2items | rejectattr('key', 'equalto', 'pgp_key') | list -%}
+{%- set contact_items = contact_items + [{'key': 'dev.zirco.msc4439.pgp_key', 'value': contact.pgp_key}] -%}
+{%- set ns.contacts_out = ns.contacts_out + [contact_items | items2dict] -%}
+{%- else -%}
+{%- set ns.contacts_out = ns.contacts_out + [contact] -%}
+{%- endif -%}
+{%- endfor -%}
 {
-    "contacts": {{ matrix_static_files_file_matrix_support_property_m_contacts|to_json }}
+    "contacts": {{ ns.contacts_out|to_json }}
     {% if matrix_static_files_file_matrix_support_property_m_support_page %},
         "support_page": {{ matrix_static_files_file_matrix_support_property_m_support_page|to_json }}
     {% endif %}
