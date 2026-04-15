@@ -25,7 +25,7 @@ traefik_config_accessLog_enabled: false
 
 ### Enable Traefik Dashboard
 
-To enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.example.com/dashboard/` (note the trailing `/`), add the following configuration to your `vars.yml` file:
+To enable the Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.example.com/dashboard/` (note the trailing `/`), add the following configuration to your `vars.yml` file:
 
 ```yaml
 traefik_dashboard_enabled: true
@@ -34,7 +34,19 @@ traefik_dashboard_basicauth_enabled: true
 traefik_dashboard_basicauth_htpasswd: "YOUR_USERNAME_HERE:$apr1$..."
 ```
 
-Generate the `traefik_dashboard_basicauth_htpasswd` value on your local machine with a command like `htpasswd -nb YOUR_USERNAME_HERE YOUR_PASSWORD_HERE`.
+Choose a username and password for the dashboard, then generate the corresponding `htpasswd` entry with:
+
+```sh
+htpasswd -nb YOUR_USERNAME_HERE YOUR_PASSWORD_HERE
+```
+
+The command outputs the exact value to use for `traefik_dashboard_basicauth_htpasswd` — your username, a colon, and a hash of your chosen password:
+
+```text
+YOUR_USERNAME_HERE:$apr1$...
+```
+
+Copy the full output line into `traefik_dashboard_basicauth_htpasswd`. After deploying, log in to the dashboard using the same username and password that you chose earlier.
 
 The role also supports the legacy `traefik_dashboard_basicauth_user` / `traefik_dashboard_basicauth_password` convenience variables, but that path depends on the `passlib` Python library on the Ansible controller, may be affected by passlib/bcrypt compatibility issues, and generates non-deterministic hashes which can lead to unnecessary changes.
 
