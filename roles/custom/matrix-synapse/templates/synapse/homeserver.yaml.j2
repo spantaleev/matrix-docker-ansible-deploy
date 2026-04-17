@@ -868,6 +868,15 @@ database:
     port: {{ matrix_synapse_database_port }}
     cp_min: {{ matrix_synapse_database_cp_min | to_json }}
     cp_max: {{ matrix_synapse_database_cp_max | to_json }}
+{% if matrix_synapse_database_keepalives_idle is not none %}
+    keepalives_idle: {{ matrix_synapse_database_keepalives_idle | to_json }}
+{% endif %}
+{% if matrix_synapse_database_keepalives_interval is not none %}
+    keepalives_interval: {{ matrix_synapse_database_keepalives_interval | to_json }}
+{% endif %}
+{% if matrix_synapse_database_keepalives_count is not none %}
+    keepalives_count: {{ matrix_synapse_database_keepalives_count | to_json }}
+{% endif %}
 
 
 ## Logging ##
