@@ -115,19 +115,15 @@ matrix_bot_honoroit_database_sslmode: disable
 
 matrix_bot_honoroit_database_connection_string: 'postgres://{{ matrix_bot_honoroit_database_username }}:{{ matrix_bot_honoroit_database_password }}@{{ matrix_bot_honoroit_database_hostname }}:{{ matrix_bot_honoroit_database_port }}/{{ matrix_bot_honoroit_database_name }}?sslmode={{ matrix_bot_honoroit_database_sslmode }}'
 
-matrix_bot_honoroit_storage_database: "{{
-	{
-		'sqlite': matrix_bot_honoroit_sqlite_database_path_in_container,
-		'postgres': matrix_bot_honoroit_database_connection_string,
-	}[matrix_bot_honoroit_database_engine]
-}}"
+matrix_bot_honoroit_storage_database: "{{ {
+    'sqlite': matrix_bot_honoroit_sqlite_database_path_in_container,
+    'postgres': matrix_bot_honoroit_database_connection_string,
+}[matrix_bot_honoroit_database_engine] }}"
 
-matrix_bot_honoroit_database_dialect: "{{
-  {
+matrix_bot_honoroit_database_dialect: "{{ {
     'sqlite': 'sqlite3',
     'postgres': 'postgres',
-  }[matrix_bot_honoroit_database_engine]
-}}"
+}[matrix_bot_honoroit_database_engine] }}"
 
 
 # The bot's username. This user needs to be created manually beforehand.

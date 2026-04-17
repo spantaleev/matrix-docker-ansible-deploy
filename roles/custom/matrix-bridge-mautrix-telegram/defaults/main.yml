@@ -193,12 +193,10 @@ matrix_mautrix_telegram_database_name: 'matrix_mautrix_telegram'
 
 matrix_mautrix_telegram_database_connection_string: 'postgres://{{ matrix_mautrix_telegram_database_username }}:{{ matrix_mautrix_telegram_database_password }}@{{ matrix_mautrix_telegram_database_hostname }}:{{ matrix_mautrix_telegram_database_port }}/{{ matrix_mautrix_telegram_database_name }}'
 
-matrix_mautrix_telegram_appservice_database: "{{
-	{
-		'sqlite': ('sqlite:///' + matrix_mautrix_telegram_sqlite_database_path_in_container),
-		'postgres': matrix_mautrix_telegram_database_connection_string,
-	}[matrix_mautrix_telegram_database_engine]
-}}"
+matrix_mautrix_telegram_appservice_database: "{{ {
+    'sqlite': ('sqlite:///' + matrix_mautrix_telegram_sqlite_database_path_in_container),
+    'postgres': matrix_mautrix_telegram_database_connection_string,
+}[matrix_mautrix_telegram_database_engine] }}"
 
 matrix_mautrix_telegram_bridge_login_shared_secret_map: "{{ matrix_mautrix_telegram_bridge_login_shared_secret_map_auto | combine(matrix_mautrix_telegram_bridge_login_shared_secret_map_custom) }}"
 matrix_mautrix_telegram_bridge_login_shared_secret_map_auto: {}

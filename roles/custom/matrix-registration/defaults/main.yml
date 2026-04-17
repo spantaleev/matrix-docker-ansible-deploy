@@ -112,12 +112,10 @@ matrix_registration_database_connection_string: 'postgresql://{{ matrix_registra
 
 # For some reason, matrix-registraiton expects the `db` field to be like this: `sqlite:////data/db.sqlite3`.
 # (seems like one too many slashes, but..)
-matrix_registration_db: "{{
-	{
-		'sqlite': ('sqlite:///' + matrix_registration_sqlite_database_path_in_container),
-		'postgres': matrix_registration_database_connection_string,
-	}[matrix_registration_database_engine]
-}}"
+matrix_registration_db: "{{ {
+    'sqlite': ('sqlite:///' + matrix_registration_sqlite_database_path_in_container),
+    'postgres': matrix_registration_database_connection_string,
+}[matrix_registration_database_engine] }}"
 
 matrix_registration_base_url: "{{ matrix_registration_path_prefix }}"
 

@@ -164,11 +164,9 @@ matrix_steam_bridge_database_sslmode: disable
 
 matrix_steam_bridge_database_connection_string: 'postgres://{{ matrix_steam_bridge_database_username }}:{{ matrix_steam_bridge_database_password }}@{{ matrix_steam_bridge_database_hostname }}:{{ matrix_steam_bridge_database_port }}/{{ matrix_steam_bridge_database_name }}?sslmode={{ matrix_steam_bridge_database_sslmode }}'
 
-matrix_steam_bridge_database_uri: "{{
-	{
-		'postgres': matrix_steam_bridge_database_connection_string,
-	}[matrix_steam_bridge_database_engine]
-}}"
+matrix_steam_bridge_database_uri: "{{ {
+    'postgres': matrix_steam_bridge_database_connection_string,
+}[matrix_steam_bridge_database_engine] }}"
 
 matrix_steam_bridge_double_puppet_secrets: "{{ matrix_steam_bridge_double_puppet_secrets_auto | combine(matrix_steam_bridge_double_puppet_secrets_custom) }}"
 matrix_steam_bridge_double_puppet_secrets_auto: {}

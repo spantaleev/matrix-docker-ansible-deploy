@@ -5,17 +5,17 @@
 
   roles:
     # Most of the roles below are not distributed with the playbook, but downloaded separately using `ansible-galaxy` via the `just roles` command (see `justfile`).
-    - role: galaxy/playbook_help
+    - role: playbook_help
       tags:
         - setup-all
         - install-all
 
-    - role: galaxy/systemd_docker_base
+    - role: systemd_docker_base
 
     - role: custom/matrix_playbook_migration
 
     - when: matrix_playbook_docker_installation_enabled | bool
-      role: galaxy/docker
+      role: docker
       vars:
         docker_install_compose: false
         docker_install_compose_plugin: false
@@ -26,7 +26,7 @@
         - install-all
 
     - when: devture_docker_sdk_for_python_installation_enabled | bool
-      role: galaxy/docker_sdk_for_python
+      role: docker_sdk_for_python
       tags:
         - setup-docker
         - setup-all
@@ -34,7 +34,7 @@
         - install-all
 
     - when: devture_timesync_installation_enabled | bool
-      role: galaxy/timesync
+      role: timesync
       tags:
         - setup-timesync
         - setup-all
@@ -42,12 +42,12 @@
         - install-all
 
     - custom/matrix-base
-    - galaxy/ddclient
-    - galaxy/exim_relay
+    - ddclient
+    - exim_relay
 
-    - role: galaxy/postgres
+    - role: postgres
 
-    - galaxy/valkey
+    - valkey
 
     - role: custom/matrix-authentication-service
     - custom/matrix-corporal
@@ -98,60 +98,60 @@
     - custom/matrix-continuwuity
     - custom/matrix-ketesa
     - custom/matrix-synapse-usage-exporter
-    - galaxy/prometheus_nginxlog_exporter
-    - galaxy/prometheus_node_exporter
-    - galaxy/prometheus_postgres_exporter
-    - galaxy/prometheus
-    - galaxy/grafana
+    - prometheus_nginxlog_exporter
+    - prometheus_node_exporter
+    - prometheus_postgres_exporter
+    - prometheus
+    - grafana
     - custom/matrix-prometheus-services-connect
     - custom/matrix-registration
     - custom/matrix-client-element
     - custom/matrix-client-commet
-    - galaxy/hydrogen
-    - galaxy/cinny
-    - galaxy/sable
+    - hydrogen
+    - cinny
+    - sable
     - custom/matrix-client-schildichat
     - custom/matrix-client-fluffychat
-    - galaxy/jitsi
+    - jitsi
     - custom/matrix-user-verification-service
     - custom/matrix-ldap-registration-proxy
-    - galaxy/etherpad
+    - etherpad
     - custom/matrix-sygnal
-    - galaxy/ntfy
+    - ntfy
     - custom/matrix-static-files
-    - galaxy/coturn
+    - coturn
     - custom/matrix-media-repo
     - custom/matrix-pantalaimon
 
     - custom/matrix-element-admin
     - custom/matrix-element-call
-    - galaxy/livekit_server
+    - livekit_server
     - custom/matrix-livekit-jwt-service
 
-    - role: galaxy/postgres_backup
+    - role: postgres_backup
 
-    - role: galaxy/backup_borg
+    - role: backup_borg
 
     - custom/matrix-user-creator
     - custom/matrix-common-after
 
-    - role: galaxy/container_socket_proxy
+    - role: container_socket_proxy
 
-    - role: galaxy/traefik
+    - role: traefik
 
-    - role: galaxy/traefik_certs_dumper
+    - role: traefik_certs_dumper
 
-    - role: galaxy/auxiliary
+    - role: auxiliary
 
     - when: devture_systemd_service_manager_enabled | bool
-      role: galaxy/systemd_service_manager
+      role: systemd_service_manager
 
     # This is pretty much last, because we want it to better serve as a "last known good configuration".
     # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2217#issuecomment-1301487601
     - when: devture_playbook_state_preserver_enabled | bool
-      role: galaxy/playbook_state_preserver
+      role: playbook_state_preserver
       tags:
         - setup-all
         - install-all
 
-    - role: galaxy/playbook_runtime_messages
+    - role: playbook_runtime_messages

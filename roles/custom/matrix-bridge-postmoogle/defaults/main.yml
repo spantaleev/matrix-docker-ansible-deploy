@@ -68,19 +68,15 @@ matrix_postmoogle_database_sslmode: disable
 
 matrix_postmoogle_database_connection_string: 'postgres://{{ matrix_postmoogle_database_username }}:{{ matrix_postmoogle_database_password }}@{{ matrix_postmoogle_database_hostname }}:{{ matrix_postmoogle_database_port }}/{{ matrix_postmoogle_database_name }}?sslmode={{ matrix_postmoogle_database_sslmode }}'
 
-matrix_postmoogle_storage_database: "{{
-	{
-		'sqlite': matrix_postmoogle_sqlite_database_path_in_container,
-		'postgres': matrix_postmoogle_database_connection_string,
-	}[matrix_postmoogle_database_engine]
-}}"
+matrix_postmoogle_storage_database: "{{ {
+    'sqlite': matrix_postmoogle_sqlite_database_path_in_container,
+    'postgres': matrix_postmoogle_database_connection_string,
+}[matrix_postmoogle_database_engine] }}"
 
-matrix_postmoogle_database_dialect: "{{
-  {
+matrix_postmoogle_database_dialect: "{{ {
     'sqlite': 'sqlite3',
     'postgres': 'postgres',
-  }[matrix_postmoogle_database_engine]
-}}"
+}[matrix_postmoogle_database_engine] }}"
 
 
 # The bot's username. This user needs to be created manually beforehand.
