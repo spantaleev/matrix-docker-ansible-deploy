@@ -1813,7 +1813,7 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 #
 # example: "https://matrix.example.com"
 #
-#client =
+client = {{ matrix_continuwuity_config_well_known_client | to_json }}
 
 # The server base domain of the URL with a specific port that the server
 # well-known file will serve. This should contain a port at the end, and
@@ -2015,3 +2015,51 @@ foci = [
 # web->synapseHTTPAntispam->authorization
 #
 #secret =
+
+{% if matrix_continuwuity_config_smtp_enabled %}
+[global.smtp]
+
+# A `smtp://`` URI which will be used to connect to a mail server.
+# Uncommenting the [global.smtp] group and setting this option enables
+# features which depend on the ability to send email,
+# such as self-service password resets.
+#
+# For most modern mail servers, format the URI like this:
+# 	`smtps://username:password@hostname:port`
+# Note that you will need to URL-encode the username and password. If your
+# username _is_ your email address, you will need to replace the `@` with
+# `%40`.
+#
+# For a guide on the accepted URI syntax, consult Lettre's documentation:
+# https://docs.rs/lettre/latest/lettre/transport/smtp/struct.AsyncSmtpTransport.html#method.from_url
+#
+{% if matrix_continuwuity_config_smtp_connection_uri != '' and matrix_continuwuity_config_smtp_sender != '' %}
+connection_uri = {{ matrix_continuwuity_config_smtp_connection_uri | to_json }}
+{% else %}
+#connection_uri =
+{% endif %}
+
+# The outgoing address which will be used for sending emails.
+#
+# For a syntax guide, see https://datatracker.ietf.org/doc/html/rfc2822#section-3.4
+#
+# ...or if you don't want to read the RFC, for some reason:
+# - `Name <address@domain.org>` to specify a sender name
+# - `address@domain.org` to not use a name
+#
+{% if matrix_continuwuity_config_smtp_connection_uri != '' and matrix_continuwuity_config_smtp_sender != '' %}
+sender = {{ matrix_continuwuity_config_smtp_sender | to_json }}
+{% else %}
+#sender =
+{% endif %}
+
+# Whether to require that users provide an email address when they
+# register.
+#
+require_email_for_registration = {{ matrix_continuwuity_config_smtp_require_email_for_registration | to_json }}
+
+# Whether to require that users who register with a registration token
+# provide an email address.
+#
+require_email_for_token_registration = {{ matrix_continuwuity_config_smtp_require_email_for_token_registration | to_json }}
+{% endif %}
