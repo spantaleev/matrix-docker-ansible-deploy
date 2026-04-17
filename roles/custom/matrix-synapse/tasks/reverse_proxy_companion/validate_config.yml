@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if required matrix-synapse-reverse-proxy-companion settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_network', when: true}
+
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_labels_public_client_api_traefik_hostname', when: "{{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_api_enabled }}"}
+
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_traefik_hostname', when: "{{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_client_api_enabled }}"}
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_traefik_hostname', when: "{{ matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_admin_api_enabled }}"}
+
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_hostname', when: "{{ matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_enabled }}"}
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_traefik_entrypoints', when: "{{ matrix_synapse_reverse_proxy_companion_container_labels_public_federation_api_enabled }}"}
+
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_labels_internal_client_api_traefik_entrypoints', when: "{{ matrix_synapse_reverse_proxy_companion_container_labels_internal_client_api_enabled }}"}
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_labels_internal_client_synapse_admin_api_traefik_entrypoints', when: "{{ matrix_synapse_container_labels_internal_client_synapse_admin_api_enabled }}"}
+
+
+    - {'name': 'matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_name', when: "{{ matrix_synapse_reverse_proxy_companion_container_labels_traefik_compression_middleware_enabled }}"}

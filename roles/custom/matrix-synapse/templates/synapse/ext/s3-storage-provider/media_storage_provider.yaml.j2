@@ -12,6 +12,9 @@ store_remote: {{ matrix_synapse_ext_synapse_s3_storage_provider_store_remote | t
 store_synchronous: {{ matrix_synapse_ext_synapse_s3_storage_provider_store_synchronous | to_json }}
 config:
   bucket: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_bucket | to_json }}
+{% if matrix_synapse_ext_synapse_s3_storage_provider_config_prefix %}
+  prefix: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_prefix | to_json }}
+{% endif %}
   region_name: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_region_name | to_json }}
   endpoint_url: {{ matrix_synapse_ext_synapse_s3_storage_provider_config_endpoint_url | to_json }}
 {% if not matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile | bool %}

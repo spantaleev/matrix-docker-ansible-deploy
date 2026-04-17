@@ -1,0 +1,52 @@
+#jinja2: lstrip_blocks: True
+[Unit]
+Description=Element Admin
+{% for service in matrix_element_admin_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_element_admin_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-element-admin 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-element-admin 2>/dev/null || true'
+
+{#
+	We mount a tmpfs at /tmp, because `/docker-entrypoint.d/replace-config.sh` writes temporary files there.
+#}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-element-admin \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_element_admin_container_network }} \
+			--env-file={{ matrix_element_admin_base_path }}/env \
+			--label-file={{ matrix_element_admin_base_path }}/labels \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=1024m \
+			{% for arg in matrix_element_admin_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_element_admin_container_image }} {{ matrix_element_admin_container_process_extra_arguments | join(' ') }}
+
+{% for network in matrix_element_admin_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-element-admin
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-element-admin
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-element-admin 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-element-admin 2>/dev/null || true'
+
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-element-admin
+
+[Install]
+WantedBy=multi-user.target

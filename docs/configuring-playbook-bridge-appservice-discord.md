@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Setting up Appservice Discord bridging (optional)
 
-**Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mx-puppet-discord](configuring-playbook-bridge-mx-puppet-discord.md) and [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) bridges supported by the playbook.
+**Note**: bridging to [Discord](https://discordapp.com/) can also happen via the [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) bridge supported by the playbook.
 - For using as a Bot we are recommend the Appservice Discord bridge (the one being discussed here), because it supports plumbing.
 - For personal use we recommend the [mautrix-discord](configuring-playbook-bridge-mautrix-discord.md) bridge, because it is the most fully-featured and stable of the 3 Discord bridges supported by the playbook.
 

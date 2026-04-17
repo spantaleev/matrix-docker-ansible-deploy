@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix Mautrix Whatsapp bridge
 {% for service in matrix_mautrix_whatsapp_systemd_required_services_list %}
@@ -30,8 +30,8 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_mautrix_whatsapp_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_mautrix_whatsapp_docker_image }} \
-			/usr/bin/mautrix-whatsapp -c /config/config.yaml -r /config/registration.yaml
+			{{ matrix_mautrix_whatsapp_container_image }} \
+			/usr/bin/mautrix-whatsapp -c /config/config.yaml -r /config/registration.yaml --no-update
 
 {% for network in matrix_mautrix_whatsapp_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-mautrix-whatsapp

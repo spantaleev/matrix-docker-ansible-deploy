@@ -148,6 +148,7 @@ After completing the installation, you can:
 - or learn how to [maintain your server](faq.md#maintenance)
 - or join some Matrix rooms:
   * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
+    For tuning guidance on constrained hosts, see [Limit joining heavy rooms on constrained hosts](configuring-playbook-synapse.md#limit-joining-heavy-rooms-on-constrained-hosts).
   * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
 
@@ -158,6 +159,8 @@ While this playbook helps you to set up Matrix services and maintain them, it wi
 The upstream projects, which this playbook makes use of, occasionally if not often suffer from security vulnerabilities.
 
 Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date.
+
+Also, do not forget to update your system regularly. While this playbook may install basic services, such as Docker, it will not interfere further with system maintenance. Keeping the system itself up-to-date is out of scope for this playbook.
 
 For more information about upgrading or maintaining services with the playbook, take a look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)
 

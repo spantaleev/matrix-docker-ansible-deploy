@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2024 MDAD project contributors
-# SPDX-FileCopyrightText: 2024 - 2025 Catalan Lover <catalanlover@protonmail.com>
+# SPDX-FileCopyrightText: 2024 - 2026 Catalan Lover <catalanlover@protonmail.com>
 # SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2024 Suguru Hirahara
 #
@@ -11,22 +11,23 @@
 
 matrix_appservice_draupnir_for_all_enabled: true
 
-# renovate: datasource=docker depName=gnuxie/draupnir
-matrix_appservice_draupnir_for_all_version: "v2.2.0"
+# renovate: datasource=docker depName=depName=ghcr.io/the-draupnir-project/draupnir
+matrix_appservice_draupnir_for_all_version: "v3.0.0"
 
 matrix_appservice_draupnir_for_all_container_image_self_build: false
 matrix_appservice_draupnir_for_all_container_image_self_build_repo: "https://github.com/the-draupnir-project/Draupnir.git"
 
-matrix_appservice_draupnir_for_all_docker_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_draupnir_for_all_container_image_self_build else matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream }}"
-matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream: "{{ matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream_default }}"
-matrix_appservice_draupnir_for_all_docker_image_registry_prefix_upstream_default: "docker.io/"
-matrix_appservice_draupnir_for_all_docker_image: "{{ matrix_appservice_draupnir_for_all_docker_image_registry_prefix }}gnuxie/draupnir:{{ matrix_appservice_draupnir_for_all_version }}"
-matrix_appservice_draupnir_for_all_docker_image_force_pull: "{{ matrix_appservice_draupnir_for_all_docker_image.endswith(':latest') }}"
+matrix_appservice_draupnir_for_all_container_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_draupnir_for_all_container_image_self_build else matrix_appservice_draupnir_for_all_container_image_registry_prefix_upstream }}"
+matrix_appservice_draupnir_for_all_container_image_registry_prefix_upstream: "{{ matrix_appservice_draupnir_for_all_container_image_registry_prefix_upstream_default }}"
+matrix_appservice_draupnir_for_all_container_image_registry_prefix_upstream_default: "ghcr.io/"
+matrix_appservice_draupnir_for_all_container_image: "{{ matrix_appservice_draupnir_for_all_container_image_registry_prefix }}{{ matrix_appservice_draupnir_for_all_container_image_registry_namespace_identifier }}:{{ matrix_appservice_draupnir_for_all_version }}"
+matrix_appservice_draupnir_for_all_container_image_registry_namespace_identifier: "the-draupnir-project/draupnir"
+matrix_appservice_draupnir_for_all_container_image_force_pull: "{{ matrix_appservice_draupnir_for_all_container_image.endswith(':latest') }}"
 
 matrix_appservice_draupnir_for_all_base_path: "{{ matrix_base_data_path }}/draupnir-for-all"
 matrix_appservice_draupnir_for_all_config_path: "{{ matrix_appservice_draupnir_for_all_base_path }}/config"
 matrix_appservice_draupnir_for_all_data_path: "{{ matrix_appservice_draupnir_for_all_base_path }}/data"
-matrix_appservice_draupnir_for_all_docker_src_files_path: "{{ matrix_appservice_draupnir_for_all_base_path }}/docker-src"
+matrix_appservice_draupnir_for_all_container_src_files_path: "{{ matrix_appservice_draupnir_for_all_base_path }}/docker-src"
 
 matrix_appservice_draupnir_for_all_container_network: ""
 
@@ -50,7 +51,7 @@ matrix_appservice_draupnir_for_all_systemd_wanted_services_list: []
 # anyone in this room can use the bot - secure your room!
 # This should be a room alias - not a matrix.to URL.
 # Note: Draupnir is fairly verbose - expect a lot of messages from it.
-# This room is diffrent for Appservice Mode compared to normal mode.
+# This room is different for Appservice Mode compared to normal mode.
 # In Appservice mode it provides functions like user management.
 matrix_appservice_draupnir_for_all_config_adminRoom: ""  # noqa var-naming
 
@@ -110,3 +111,13 @@ matrix_appservice_draupnir_for_all_configuration_extension: "{{ matrix_appservic
 # Holds the final configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_appservice_draupnir_for_all_configuration_yaml`.
 matrix_appservice_draupnir_for_all_configuration: "{{ matrix_appservice_draupnir_for_all_configuration_yaml | from_yaml | combine(matrix_appservice_draupnir_for_all_configuration_extension, recursive=True) }}"
+
+# matrix_appservice_draupnir_for_all_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_appservice_draupnir_for_all_restart_necessary: false

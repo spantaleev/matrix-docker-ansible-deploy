@@ -20,9 +20,12 @@ To manually check which version of Ansible you're on, run: `ansible --version`.
 
 For the **best experience**, we recommend getting the **latest version of Ansible available**.
 
-We're not sure what's the minimum version of Ansible that can run this playbook successfully. The lowest version that we've confirmed (on 2022-11-26) to be working fine is: `ansible-core` (`2.11.7`) combined with `ansible` (`4.10.0`).
+We're not sure what's the minimum version of Ansible that can run this playbook successfully. The lowest version that we suspect (on 2025-09-03) to be working fine is: `ansible-core` (`2.15.1`).
 
 If your distro ships with an Ansible version older than this, you may run into issues. Consider [Upgrading Ansible](#upgrading-ansible) or [using Ansible via Docker](#using-ansible-via-docker).
+
+> [!WARNING]
+> One reason for the version requirement being as such is that the playbook by default installs Docker for you using [this Docker role](https://github.com/geerlingguy/ansible-role-docker) which [has a hard requirement on Ansible v2.15.1](https://github.com/geerlingguy/ansible-role-docker/commit/7f44a1d9ad8132819ea9852918bca5dab8757cd0). If you install Docker yourself another way, you can tell the playbook to skip running this role (by adding `matrix_playbook_docker_installation_enabled: false` to your `vars.yml` configuration). It may then be possible to get the playbook running on an older version of Ansible. Still, this is a complication and your mileage may vary. We recommend [upgrading Ansible](#upgrading-ansible) instead of going into uncharted territory.
 
 ## Upgrading Ansible
 
@@ -71,7 +74,7 @@ docker run \
 -w /work \
 --mount type=bind,src=`pwd`,dst=/work \
 --entrypoint=/bin/sh \
-ghcr.io/devture/ansible:11.1.0-r0-0
+ghcr.io/devture/ansible:11.6.0-r0-0
 ```
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code.
@@ -90,9 +93,9 @@ docker run \
 --rm \
 -w /work \
 --mount type=bind,src=`pwd`,dst=/work \
---mount type=bind,src$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro \
+--mount type=bind,src=$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro \
 --entrypoint=/bin/sh \
-ghcr.io/devture/ansible:11.1.0-r0-0
+ghcr.io/devture/ansible:11.6.0-r0-0
 ```
 
 The above command tries to mount an SSH key (`$HOME/.ssh/id_ed25519`) into the container (at `/root/.ssh/id_ed25519`). If your SSH key is at a different path (not in `$HOME/.ssh/id_ed25519`), adjust that part.
@@ -117,7 +120,7 @@ Then, to be asked for the password whenever running an `ansible-playbook` comman
 
 #### Resolve directory ownership issues
 
-Because you're `root` in the container running Ansible and this likely differs fom the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:
+Because you're `root` in the container running Ansible and this likely differs from the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:
 
 > fatal: unsafe repository ('/work' is owned by someone else)
 > To add an exception for this directory, call:

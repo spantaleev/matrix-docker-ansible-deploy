@@ -102,7 +102,7 @@ This can be done using Synapse's [Admin APIs](https://element-hq.github.io/synap
 
 **Note**: access to the APIs is restricted with a valid access token, so exposing them publicly should not be a real security concern. Still, doing so is not recommended for additional security. See [official Synapse reverse-proxying recommendations](https://element-hq.github.io/synapse/latest/reverse_proxy.html#synapse-administration-endpoints).
 
-The APIs can also be accessed via [Synapse Admin](https://github.com/etkecc/synapse-admin), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+The APIs can also be accessed via [Ketesa](https://github.com/etkecc/ketesa), a web UI tool you can use to administrate users, rooms, media, etc. on your Matrix server. The playbook can install and configure Ketesa for you. For details about it, see [this page](configuring-playbook-ketesa.md).
 
 #### Add the configuration
 
@@ -144,6 +144,20 @@ The bot can intercept the report API endpoint of the client-server API, which re
 ```yaml
 matrix_bot_draupnir_config_web_abuseReporting: true
 ```
+
+### Enabling synapse-http-antispam support
+
+Certain protections in Draupnir require the [synapse-http-antispam](https://github.com/maunium/synapse-http-antispam) module and a Synapse homeserver plus homeserver admin status to function. This module can be enabled in the playbook via setting `matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled` to `true` and making sure that Draupnir admin API access is enabled.
+
+```yaml
+# Enables the integration between Draupnir and synapse-http-antispam module.
+matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled: true
+
+# Enables draupnir to access Synapse admin APIs. This is required for the module functionality to take full effect.
+matrix_bot_draupnir_admin_api_enabled: true
+```
+
+These protections need to be manually activated and consulting the [enabling protections](#enabling-built-in-protections) guide can be helpful or consulting upstream documentation.
 
 <!--
 NOTE: this is unsupported by the playbook due to the admin API being inaccessible from containers currently.
@@ -198,7 +212,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-- If you change the bot password (`matrix_bot_draupnir_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_draupnir_password` to let the bot know its new password.
+- If you change the bot password (`matrix_bot_draupnir_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [Ketesa](configuring-playbook-ketesa.md) to change it, and then update `matrix_bot_draupnir_password` to let the bot know its new password.
 
 ## Usage
 
@@ -228,9 +242,12 @@ For Draupnir to do its job, you need to [give it permissions](https://the-draupn
 
 We recommend **subscribing to a public [policy list](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists)** using the [watch command](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-policy-lists#using-draupnirs-watch-command-to-subscribe-to-policy-rooms).
 
-Polcy lists are maintained in Matrix rooms. A popular policy list is maintained in the public `#community-moderation-effort-bl:neko.dev` room.
+Policy lists are maintained in Matrix rooms. Popular ones maintained in the public are:
 
-You can tell Draupnir to subscribe to it by sending the following command to the Management Room: `!draupnir watch #community-moderation-effort-bl:neko.dev`
+- `#community-moderation-effort-bl:neko.dev`
+- `#huginn-muninn-active-threats:feline.support`
+
+You can tell Draupnir to subscribe to each of these by sending the following command to the Management Room: `!draupnir watch POLICY_LIST_ADDRESS_HERE` (e.g. `!draupnir watch #community-moderation-effort-bl:neko.dev`)
 
 #### Creating your own policy lists and rules
 
@@ -245,7 +262,7 @@ The simplest and most useful entity to target is `user`. Below are a few example
 To create rules, you run commands in the Management Room (**not** in the policy list room).
 
 - (ban a single user on a given homeserver): `!draupnir ban @charles:example.com my-bans Rude to others`
-- (ban all users on a given homeserver by using a [wildcard](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#wildcards)): `!draupnir ban @*:example.org my-bans Spam server - all users are fake`
+- (ban all users on a given homeserver by using a [wildcard](https://the-draupnir-project.github.io/draupnir-documentation/moderator/managing-users#wildcards)): `!draupnir ban @*:example.org my-bans Spam server, all users are fake`
 
 As a result of running these commands, you may observe:
 
@@ -256,14 +273,14 @@ You can undo bans with the [unban command](https://the-draupnir-project.github.i
 
 ### Enabling built-in protections
 
-You can also **turn on various built-in [protections](https://the-draupnir-project.github.io/draupnir-documentation/protections)** like `JoinWaveShortCircuit` ("If X amount of users join in Y time, set the room to invite-only").
+You can also **turn on various built-in [protections](https://the-draupnir-project.github.io/draupnir-documentation/protections)** like `JoinWaveShortCircuitProtection` ("If X amount of users join in Y time, set the room to invite-only").
 
 To **see which protections are available and which are enabled**, send a `!draupnir protections` command to the Management Room.
 
-To **see the configuration options for a given protection**, send a `!draupnir protections show PROTECTION_NAME` (e.g. `!draupnir protections show JoinWaveShortCircuit`).
+To [**see the configuration options for a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/configuring-protections#displaying-the-protection-settings), send a `!draupnir protections show PROTECTION_NAME` (e.g. `!draupnir protections show JoinWaveShortCircuitProtection`).
 
-To **set a specific option for a given protection**, send a command like this: `!draupnir config set PROTECTION_NAME.OPTION VALUE` (e.g. `!draupnir config set JoinWaveShortCircuit.timescaleMinutes 30`).
+To [**set a specific option for a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/configuring-protections#changing-protection-settings), send a command like this: `!draupnir protections config set PROTECTION_NAME OPTION VALUE` (e.g. `!draupnir protections config set JoinWaveShortCircuitProtection timescaleMinutes 30`).
 
-To **enable a given protection**, send a command like this: `!draupnir enable PROTECTION_NAME` (e.g. `!draupnir enable JoinWaveShortCircuit`).
+To [**enable a given protection**](https://the-draupnir-project.github.io/draupnir-documentation/protections/block-invitations-on-server-protection#enabling-the-protection), send a command like this: `!draupnir protections enable PROTECTION_NAME` (e.g. `!draupnir protections enable JoinWaveShortCircuitProtection`).
 
-To **disable a given protection**, send a command like this: `!draupnir disable PROTECTION_NAME` (e.g. `!draupnir disable JoinWaveShortCircuit`).
+To **disable a given protection**, send a command like this: `!draupnir protections disable PROTECTION_NAME` (e.g. `!draupnir protections disable JoinWaveShortCircuitProtection`).

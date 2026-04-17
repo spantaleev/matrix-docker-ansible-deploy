@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 #!/bin/bash
 set -euo pipefail
 
@@ -8,16 +8,27 @@ container_id=$(\
 	--env-file={{ matrix_synapse_ext_s3_storage_provider_base_path }}/env \
 	--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
 	--mount type=bind,src={{ matrix_synapse_ext_s3_storage_provider_data_path }},dst=/data \
+{% if matrix_synapse_database_socket_enabled %}
+	--mount type=bind,src={{ matrix_synapse_database_socket_path_host }},dst={{ matrix_synapse_database_socket_path }} \
+{% endif %}
 	--workdir=/data \
 	--network={{ matrix_synapse_container_network }} \
 	--entrypoint=/bin/bash \
-	{{ matrix_synapse_docker_image_final }} \
-	-c 's3_media_upload update-db $UPDATE_DB_DURATION && s3_media_upload --no-progress check-deleted $MEDIA_PATH && s3_media_upload --no-progress upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT {% if matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled %}--sse-customer-algo $SSE_CUSTOMER_ALGO --sse-customer-key $SSE_CUSTOMER_KEY{% endif %}' \
+	{% for arg in matrix_synapse_ext_s3_storage_provider_container_arguments %}
+	{{ arg }} \
+	{% endfor %}
+	{{ matrix_synapse_container_image_final }} \
+	-c 's3_media_upload update-db $UPDATE_DB_DURATION && s3_media_upload --no-progress check-deleted $MEDIA_PATH && s3_media_upload --no-progress upload $MEDIA_PATH $BUCKET --delete --storage-class $STORAGE_CLASS --endpoint-url $ENDPOINT {% if matrix_synapse_ext_synapse_s3_storage_provider_config_prefix %}--prefix $PREFIX {% endif %}{% if matrix_synapse_ext_synapse_s3_storage_provider_config_sse_customer_enabled %}--sse-customer-algo $SSE_CUSTOMER_ALGO --sse-customer-key $SSE_CUSTOMER_KEY{% endif %}' \
 )
 
-{# We need to connect to the Postgres network, which should be in this list. #}
+{# Additional container networks (for example, Postgres) should be connected here when needed. #}
 {% for network in matrix_synapse_container_additional_networks %}
 {{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} $container_id
 {% endfor %}
 
 {{ devture_systemd_docker_base_host_command_docker }} start --attach $container_id
+
+for prune_dir in "{{ matrix_synapse_storage_path }}/{{ matrix_synapse_media_store_directory_name }}/remote_content" "{{ matrix_synapse_storage_path }}/{{ matrix_synapse_media_store_directory_name }}/remote_thumbnail"; do
+	[ -d "$prune_dir" ] || continue
+	find "$prune_dir" -depth -mindepth 1 -type d -empty -print -delete
+done

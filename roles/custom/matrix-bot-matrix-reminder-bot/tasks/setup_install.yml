@@ -12,7 +12,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_bot_matrix_reminder_bot_requires_restart: false
+    matrix_bot_matrix_reminder_bot_migration_requires_restart: false
 
 - when: "matrix_bot_matrix_reminder_bot_database_engine == 'postgres'"
   block:
@@ -36,54 +36,54 @@
               systemd_services_to_stop: ['matrix-bot-matrix-reminder-bot.service']
 
         - ansible.builtin.set_fact:
-            matrix_bot_matrix_reminder_bot_requires_restart: true
+            matrix_bot_matrix_reminder_bot_migration_requires_restart: true
 
 - name: Ensure matrix-reminder-bot paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_bot_matrix_reminder_bot_config_path }}", when: true}
     - {path: "{{ matrix_bot_matrix_reminder_bot_data_path }}", when: true}
     - {path: "{{ matrix_bot_matrix_reminder_bot_data_store_path }}", when: true}
-    - {path: "{{ matrix_bot_matrix_reminder_bot_docker_src_files_path }}", when: true}
+    - {path: "{{ matrix_bot_matrix_reminder_bot_container_src_files_path }}", when: true}
   when: "item.when | bool"
 
 - name: Ensure matrix-reminder-bot image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_bot_matrix_reminder_bot_docker_image }}"
+    name: "{{ matrix_bot_matrix_reminder_bot_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_bot_matrix_reminder_bot_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_matrix_reminder_bot_docker_image_force_pull }}"
+    force_source: "{{ matrix_bot_matrix_reminder_bot_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_matrix_reminder_bot_container_image_force_pull }}"
   when: "not matrix_bot_matrix_reminder_bot_container_image_self_build | bool"
-  register: result
+  register: matrix_bot_matrix_reminder_bot_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_bot_matrix_reminder_bot_container_image_pull_result is not failed
 
 - name: Ensure matrix-reminder-bot repository is present on self-build
   ansible.builtin.git:
-    repo: "{{ matrix_bot_matrix_reminder_bot_docker_repo }}"
-    version: "{{ matrix_bot_matrix_reminder_bot_docker_repo_version }}"
-    dest: "{{ matrix_bot_matrix_reminder_bot_docker_src_files_path }}"
+    repo: "{{ matrix_bot_matrix_reminder_bot_container_repo }}"
+    version: "{{ matrix_bot_matrix_reminder_bot_container_repo_version }}"
+    dest: "{{ matrix_bot_matrix_reminder_bot_container_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_bot_matrix_reminder_bot_git_pull_results
   when: "matrix_bot_matrix_reminder_bot_container_image_self_build | bool"
 
 - name: Ensure matrix-reminder-bot image is built
   community.docker.docker_image:
-    name: "{{ matrix_bot_matrix_reminder_bot_docker_image }}"
+    name: "{{ matrix_bot_matrix_reminder_bot_container_image }}"
     source: build
     force_source: "{{ matrix_bot_matrix_reminder_bot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_matrix_reminder_bot_git_pull_results.changed }}"
     build:
       dockerfile: docker/Dockerfile
-      path: "{{ matrix_bot_matrix_reminder_bot_docker_src_files_path }}"
+      path: "{{ matrix_bot_matrix_reminder_bot_container_src_files_path }}"
       pull: true
   when: "matrix_bot_matrix_reminder_bot_container_image_self_build | bool"
 
@@ -91,9 +91,10 @@
   ansible.builtin.copy:
     content: "{{ matrix_bot_matrix_reminder_bot_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_bot_matrix_reminder_bot_config_path }}/config.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_bot_matrix_reminder_bot_config_result
 
 - name: Ensure matrix-reminder-bot container network is created
   community.general.docker_network:
@@ -106,12 +107,22 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-bot-matrix-reminder-bot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-matrix-reminder-bot.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_bot_matrix_reminder_bot_systemd_service_result
+
+- name: Determine whether matrix-reminder-bot needs a restart
+  ansible.builtin.set_fact:
+    matrix_bot_matrix_reminder_bot_restart_necessary: >-
+      {{
+        matrix_bot_matrix_reminder_bot_migration_requires_restart | default(false)
+        or matrix_bot_matrix_reminder_bot_config_result.changed | default(false)
+        or matrix_bot_matrix_reminder_bot_systemd_service_result.changed | default(false)
+        or matrix_bot_matrix_reminder_bot_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-bot-matrix-reminder-bot.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-bot-matrix-reminder-bot.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_bot_matrix_reminder_bot_requires_restart | bool"
+  when: "matrix_bot_matrix_reminder_bot_migration_requires_restart | bool"

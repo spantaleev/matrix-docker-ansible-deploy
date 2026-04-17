@@ -24,7 +24,7 @@ matrix_rageshake_path_prefix: /
 # There are no stable container image tags yet.
 # See: https://github.com/matrix-org/rageshake/issues/69
 # renovate: datasource=docker depName=ghcr.io/matrix-org/rageshake
-matrix_rageshake_version: 1.16.2
+matrix_rageshake_version: 1.17.1
 
 matrix_rageshake_base_path: "{{ matrix_base_data_path }}/rageshake"
 matrix_rageshake_config_path: "{{ matrix_rageshake_base_path }}/config"
@@ -122,3 +122,13 @@ matrix_rageshake_configuration_extension: "{{ matrix_rageshake_configuration_ext
 # Holds the final Synapse configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_rageshake_configuration_yaml`.
 matrix_rageshake_configuration: "{{ matrix_rageshake_configuration_yaml | from_yaml | combine(matrix_rageshake_configuration_extension, recursive=True) }}"
+
+# matrix_rageshake_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_rageshake_restart_necessary: false

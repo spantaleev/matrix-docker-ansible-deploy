@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- tags:
+    - setup-all
+    - setup-matrix-steam-bridge
+    - install-all
+    - install-matrix-steam-bridge
+  block:
+    - when: matrix_steam_bridge_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_steam_bridge_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-matrix-steam-bridge
+  block:
+    - when: not matrix_steam_bridge_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

@@ -6,7 +6,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_meta_messenger_requires_restart: false
+    matrix_mautrix_meta_messenger_migration_requires_restart: false
 
 - when: "matrix_mautrix_meta_messenger_database_engine == 'postgres'"
   block:
@@ -30,7 +30,7 @@
               systemd_services_to_stop: "{{ [matrix_mautrix_meta_messenger_identifier + '.service'] }}"
 
         - ansible.builtin.set_fact:
-            matrix_mautrix_meta_messenger_requires_restart: true
+            matrix_mautrix_meta_messenger_migration_requires_restart: true
 
 - name: Ensure mautrix-meta-messenger container image is pulled
   community.docker.docker_image:
@@ -39,18 +39,18 @@
     force_source: "{{ matrix_mautrix_meta_messenger_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_meta_messenger_container_image_force_pull }}"
   when: not matrix_mautrix_meta_messenger_container_image_self_build
-  register: result
+  register: matrix_mautrix_meta_messenger_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_mautrix_meta_messenger_container_image_pull_result is not failed
 
 - name: Ensure mautrix-meta-messenger paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_mautrix_meta_messenger_base_path }}", when: true}
     - {path: "{{ matrix_mautrix_meta_messenger_config_path }}", when: true}
@@ -67,7 +67,7 @@
         version: "{{ matrix_mautrix_meta_messenger_container_image.split(':')[1] }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_mautrix_meta_messenger_git_pull_results
 
     - name: Ensure mautrix-meta-messenger container image is built
@@ -85,27 +85,30 @@
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_meta_messenger_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_meta_messenger_config_path }}/config.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_meta_messenger_config_result
 
 - name: Ensure mautrix-meta-messenger registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_meta_messenger_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_mautrix_meta_messenger_config_path }}/registration.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_meta_messenger_registration_result
 
 - name: Ensure mautrix-meta-messenger support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_mautrix_meta_messenger_base_path }}/{{ item }}"
-    mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_mautrix_meta_messenger_support_files_result
 
 - name: Ensure mautrix-meta-messenger container network is created
   community.general.docker_network:
@@ -118,11 +121,24 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-meta.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_mautrix_meta_messenger_identifier }}.service"
-    mode: 0644
+    mode: '0644'
+  register: matrix_mautrix_meta_messenger_systemd_service_result
+
+- name: Determine whether mautrix-meta-messenger needs a restart
+  ansible.builtin.set_fact:
+    matrix_mautrix_meta_messenger_restart_necessary: >-
+      {{
+        matrix_mautrix_meta_messenger_migration_requires_restart | default(false)
+        or matrix_mautrix_meta_messenger_config_result.changed | default(false)
+        or matrix_mautrix_meta_messenger_registration_result.changed | default(false)
+        or matrix_mautrix_meta_messenger_support_files_result.changed | default(false)
+        or matrix_mautrix_meta_messenger_systemd_service_result.changed | default(false)
+        or matrix_mautrix_meta_messenger_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure mautrix-meta-messenger.service restarted, if necessary
   ansible.builtin.service:
     name: "{{ matrix_mautrix_meta_messenger_identifier }}.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mautrix_meta_messenger_requires_restart | bool"
+  when: "matrix_mautrix_meta_messenger_migration_requires_restart | bool"

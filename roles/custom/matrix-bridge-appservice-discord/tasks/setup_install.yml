@@ -14,7 +14,7 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_appservice_discord_requires_restart: false
+    matrix_appservice_discord_migration_requires_restart: false
 
 - when: "matrix_appservice_discord_database_engine == 'postgres'"
   block:
@@ -38,26 +38,26 @@
               systemd_services_to_stop: ['matrix-appservice-discord.service']
 
         - ansible.builtin.set_fact:
-            matrix_appservice_discord_requires_restart: true
+            matrix_appservice_discord_migration_requires_restart: true
 
 - name: Ensure Appservice Discord image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_appservice_discord_docker_image }}"
+    name: "{{ matrix_appservice_discord_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_discord_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_discord_docker_image_force_pull }}"
-  register: result
+    force_source: "{{ matrix_appservice_discord_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_discord_container_image_force_pull }}"
+  register: matrix_appservice_discord_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_appservice_discord_container_image_pull_result is not failed
 
 - name: Ensure AppService Discord paths exist
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - "{{ matrix_appservice_discord_base_path }}"
     - "{{ matrix_appservice_discord_config_path }}"
@@ -92,17 +92,19 @@
   ansible.builtin.copy:
     content: "{{ matrix_appservice_discord_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_discord_config_path }}/config.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_appservice_discord_config_result
 
 - name: Ensure AppService Discord registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_discord_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_discord_config_path }}/registration.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_appservice_discord_registration_result
 
 # If `matrix_appservice_discord_client_id` hasn't changed, the same invite link would be generated.
 # We intentionally suppress Ansible changes.
@@ -113,7 +115,7 @@
     --cap-drop=ALL
     --mount type=bind,src={{ matrix_appservice_discord_config_path }},dst=/cfg
     -w /cfg
-    {{ matrix_appservice_discord_docker_image }}
+    {{ matrix_appservice_discord_container_image }}
     /bin/sh -c "node /build/tools/addbot.js > /cfg/invite_link"
   changed_when: false
 
@@ -128,12 +130,23 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-discord.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-discord.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_appservice_discord_systemd_service_result
+
+- name: Determine whether matrix-appservice-discord needs a restart
+  ansible.builtin.set_fact:
+    matrix_appservice_discord_restart_necessary: >-
+      {{
+        matrix_appservice_discord_migration_requires_restart | default(false)
+        or matrix_appservice_discord_config_result.changed | default(false)
+        or matrix_appservice_discord_registration_result.changed | default(false)
+        or matrix_appservice_discord_systemd_service_result.changed | default(false)
+        or matrix_appservice_discord_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-appservice-discord.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-appservice-discord.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_appservice_discord_requires_restart | bool"
+  when: "matrix_appservice_discord_migration_requires_restart | bool"

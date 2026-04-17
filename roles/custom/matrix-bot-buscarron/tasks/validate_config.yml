@@ -10,19 +10,27 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_bot_buscarron_noencryption', 'new': '<removed>'}
     - {'old': 'matrix_bot_buscarron_spam_hosts', 'new': '<superseded by matrix_bot_buscarron_spamlist>'}
     - {'old': 'matrix_bot_buscarron_spam_emails', 'new': '<superseded by matrix_bot_buscarron_spamlist>'}
     - {'old': 'matrix_bot_buscarron_spam_localparts', 'new': '<superseded by matrix_bot_buscarron_spamlist>'}
     - {'old': 'matrix_bot_buscarron_container_image_name_prefix', 'new': 'matrix_bot_buscarron_container_image_registry_prefix'}
+    - {'old': 'matrix_bot_buscarron_docker_image', 'new': 'matrix_bot_buscarron_container_image'}
+    - {'old': 'matrix_bot_buscarron_docker_image_force_pull', 'new': 'matrix_bot_buscarron_container_image_force_pull'}
+    - {'old': 'matrix_bot_buscarron_docker_image_registry_prefix', 'new': 'matrix_bot_buscarron_container_image_registry_prefix'}
+    - {'old': 'matrix_bot_buscarron_docker_image_registry_prefix_upstream', 'new': 'matrix_bot_buscarron_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_bot_buscarron_docker_image_registry_prefix_upstream_default', 'new': 'matrix_bot_buscarron_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_bot_buscarron_docker_repo', 'new': 'matrix_bot_buscarron_container_repo'}
+    - {'old': 'matrix_bot_buscarron_docker_repo_version', 'new': 'matrix_bot_buscarron_container_repo_version'}
+    - {'old': 'matrix_bot_buscarron_docker_src_files_path', 'new': 'matrix_bot_buscarron_container_src_files_path'}
 
 - name: Fail if required Buscarron settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_bot_buscarron_password', when: true}
     - {'name': 'matrix_bot_buscarron_hostname', when: true}

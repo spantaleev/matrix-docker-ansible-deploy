@@ -23,19 +23,19 @@ matrix_media_repo_identifier: matrix-media-repo
 matrix_media_repo_container_image_self_build: false
 matrix_media_repo_container_image_self_build_repo: "https://github.com/turt2live/matrix-media-repo.git"
 
-matrix_media_repo_docker_image_path: "t2bot/matrix-media-repo"
-matrix_media_repo_docker_image: "{{ matrix_media_repo_docker_image_registry_prefix }}{{ matrix_media_repo_docker_image_path }}:{{ matrix_media_repo_docker_image_tag }}"
-matrix_media_repo_docker_image_registry_prefix: "{{ 'localhost/' if matrix_media_repo_container_image_self_build else matrix_media_repo_docker_image_registry_prefix_upstream }}"
-matrix_media_repo_docker_image_registry_prefix_upstream: "{{ matrix_media_repo_docker_image_registry_prefix_upstream_default }}"
-matrix_media_repo_docker_image_registry_prefix_upstream_default: "ghcr.io/"
+matrix_media_repo_container_image_path: "t2bot/matrix-media-repo"
+matrix_media_repo_container_image: "{{ matrix_media_repo_container_image_registry_prefix }}{{ matrix_media_repo_container_image_path }}:{{ matrix_media_repo_container_image_tag }}"
+matrix_media_repo_container_image_registry_prefix: "{{ 'localhost/' if matrix_media_repo_container_image_self_build else matrix_media_repo_container_image_registry_prefix_upstream }}"
+matrix_media_repo_container_image_registry_prefix_upstream: "{{ matrix_media_repo_container_image_registry_prefix_upstream_default }}"
+matrix_media_repo_container_image_registry_prefix_upstream_default: "ghcr.io/"
 # renovate: datasource=docker depName=ghcr.io/t2bot/matrix-media-repo
-matrix_media_repo_docker_image_tag: "v1.3.8"
-matrix_media_repo_docker_image_force_pull: "{{ matrix_media_repo_docker_image.endswith(':latest') }}"
+matrix_media_repo_container_image_tag: "v1.3.8"
+matrix_media_repo_container_image_force_pull: "{{ matrix_media_repo_container_image.endswith(':latest') }}"
 
 matrix_media_repo_base_path: "{{ matrix_base_data_path }}/{{ matrix_media_repo_identifier }}"
 matrix_media_repo_config_path: "{{ matrix_media_repo_base_path }}/config"
 matrix_media_repo_data_path: "{{ matrix_media_repo_base_path }}/data"
-matrix_media_repo_docker_src_files_path: "{{ matrix_media_repo_base_path }}/docker-src"
+matrix_media_repo_container_src_files_path: "{{ matrix_media_repo_base_path }}/docker-src"
 
 # List of systemd services that matrix-media-repo.service depends on
 matrix_media_repo_systemd_required_services_list: "{{ matrix_media_repo_systemd_required_services_list_default + matrix_media_repo_systemd_required_services_list_auto + matrix_media_repo_systemd_required_services_list_custom }}"
@@ -414,8 +414,9 @@ matrix_media_repo_shared_secret_auth_token: "PutSomeRandomSecureValueHere"
 # thumbnails and other misc data is also stored in these places. The media repo, when looking
 # for a datastore to use, will always use the smallest datastore first.
 
-# ID for the file datastore (cannot change). Alphanumeric recommended.
-matrix_media_repo_datastore_file_id: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 'filestore.db', rounds=655555) | to_uuid }}"
+# ID for the file datastore. Any unique alphanumeric string (e.g. generated via `pwgen -s 64 1`).
+# This value CANNOT be changed after media has been stored — matrix-media-repo ties media to this ID.
+matrix_media_repo_datastore_file_id: ""
 
 # Datastores can be split into many areas when handling uploads. Media is still de-duplicated
 # across all datastores (local content which duplicates remote content will re-use the remote
@@ -434,8 +435,9 @@ matrix_media_repo_datastore_file_for_kinds: ["thumbnails", "remote_media", "loca
 # Path to datastore, relative to matrix-media-repo directory root
 matrix_media_repo_datastore_opts_path: "/data/media"
 
-# ID for the s3 datastore (cannot change). Alphanumeric recommended.
-matrix_media_repo_datastore_s3_id: "{{ '%s' | format(matrix_homeserver_generic_secret_key) | password_hash('sha512', 's3store.db', rounds=655555) | to_uuid }}"
+# ID for the S3 datastore. Any unique alphanumeric string (e.g. generated via `pwgen -s 64 1`).
+# This value CANNOT be changed after media has been stored — matrix-media-repo ties media to this ID.
+matrix_media_repo_datastore_s3_id: ""
 
 # Datastores can be split into many areas when handling uploads. Media is still de-duplicated
 # across all datastores (local content which duplicates remote content will re-use the remote
@@ -895,13 +897,7 @@ matrix_media_repo_redis_database_number: 0
 
 # The Redis shards that should be used by the media repo in the ring. The names of the
 # shards are for your reference and have no bearing on the connection, but must be unique.
-matrix_media_repo_redis_shards:
-  - name: "server1"
-    addr: ":7000"
-  - name: "server2"
-    addr: ":7001"
-  - name: "server3"
-    addr: ":7002"
+matrix_media_repo_redis_shards: []
 
 # Optional sentry (https://sentry.io/) configuration for the media repo
 
@@ -943,3 +939,13 @@ matrix_media_repo_pgo_submit_key: "INSERT_VALUE_HERE"
 
 # Specifies whether the homeserver supports federation
 matrix_media_repo_homeserver_federation_enabled: true
+
+# matrix_media_repo_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_media_repo_restart_necessary: false

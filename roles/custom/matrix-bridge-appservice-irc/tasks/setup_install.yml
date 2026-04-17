@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
-# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 - 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 - 2026 Thom Wiggers
 # SPDX-FileCopyrightText: 2019 Dan Arnfield
 # SPDX-FileCopyrightText: 2020 Chris van Dijk
 # SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
@@ -21,14 +22,14 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_appservice_irc_base_path }}", when: true}
     - {path: "{{ matrix_appservice_irc_config_path }}", when: true}
     - {path: "{{ matrix_appservice_irc_data_path }}", when: true}
-    - {path: "{{ matrix_appservice_irc_docker_src_files_path }}", when: "{{ matrix_appservice_irc_container_image_self_build }}"}
+    - {path: "{{ matrix_appservice_irc_container_src_files_path }}", when: "{{ matrix_appservice_irc_container_image_self_build }}"}
   when: item.when | bool
 
 - name: Check if an old passkey file already exists
@@ -62,7 +63,7 @@
       failed_when: false
 
 - ansible.builtin.set_fact:
-    matrix_appservice_irc_requires_restart: false
+    matrix_appservice_irc_migration_requires_restart: false
 
 - when: "matrix_appservice_irc_database_engine == 'postgres'"
   block:
@@ -76,40 +77,40 @@
         - ansible.builtin.include_tasks: "{{ role_path }}/tasks/migrate_nedb_to_postgres.yml"
 
         - ansible.builtin.set_fact:
-            matrix_appservice_irc_requires_restart: true
+            matrix_appservice_irc_migration_requires_restart: true
 
 - name: Ensure Appservice IRC image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_appservice_irc_docker_image }}"
+    name: "{{ matrix_appservice_irc_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_irc_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_docker_image_force_pull }}"
+    force_source: "{{ matrix_appservice_irc_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_container_image_force_pull }}"
   when: "matrix_appservice_irc_enabled | bool and not matrix_appservice_irc_container_image_self_build | bool"
-  register: result
+  register: matrix_appservice_irc_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_appservice_irc_container_image_pull_result is not failed
 
 - name: Ensure matrix-appservice-irc repository is present when self-building
   ansible.builtin.git:
-    repo: "{{ matrix_appservice_irc_docker_repo }}"
-    version: "{{ matrix_appservice_irc_docker_repo_version }}"
-    dest: "{{ matrix_appservice_irc_docker_src_files_path }}"
+    repo: "{{ matrix_appservice_irc_container_repo }}"
+    version: "{{ matrix_appservice_irc_container_repo_version }}"
+    dest: "{{ matrix_appservice_irc_container_src_files_path }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_appservice_irc_git_pull_results
   when: "matrix_appservice_irc_enabled | bool and matrix_appservice_irc_container_image_self_build | bool"
 
 - name: Ensure matrix-appservice-irc Docker image is built
   community.docker.docker_image:
-    name: "{{ matrix_appservice_irc_docker_image }}"
+    name: "{{ matrix_appservice_irc_container_image }}"
     source: build
     force_source: "{{ matrix_appservice_irc_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_irc_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_appservice_irc_docker_src_files_path }}"
+      path: "{{ matrix_appservice_irc_container_src_files_path }}"
       pull: true
   when: "matrix_appservice_irc_enabled | bool and matrix_appservice_irc_container_image_self_build | bool and matrix_appservice_irc_git_pull_results.changed"
 
@@ -117,25 +118,70 @@
   ansible.builtin.copy:
     content: "{{ matrix_appservice_irc_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_irc_config_path }}/config.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_appservice_irc_config_result
+
+- name: Ensure Matrix Appservice IRC labels file installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_appservice_irc_base_path }}/labels"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_appservice_irc_labels_result
 
 - name: Generate Appservice IRC passkey if it doesn't exist
   ansible.builtin.shell:
     cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_appservice_irc_data_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
     creates: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
+
+- name: Check if an authenticated media signing key exists
+  ansible.builtin.stat:
+    path: "{{ matrix_appservice_irc_data_path }}/auth-media.jwk"
+  register: matrix_appservice_irc_stat_auth_media_key
+
+- when: not matrix_appservice_irc_stat_auth_media_key.stat.exists
+  block:
+    - name: Generate IRC appservice signing key for authenticated media
+      community.docker.docker_container:
+        name: "create-auth-media-jwk-key"
+        image: "{{ matrix_appservice_irc_container_image }}"
+        cleanup: true
+        network_mode: none
+        entrypoint: "/usr/local/bin/node"
+        command: >
+          -e "const webcrypto = require('node:crypto');
+          async function main() {
+              const key = await webcrypto.subtle.generateKey({
+                  name: 'HMAC',
+                  hash: 'SHA-512',
+              }, true, ['sign', 'verify']);
+              console.log(JSON.stringify(await webcrypto.subtle.exportKey('jwk', key), undefined, 4));
+          }
+          main().then(() => process.exit(0)).catch(err => { throw err });"
+        detach: false
+      register: matrix_appservice_irc_jwk_result
+
+    - name: Write auth media signing key to file
+      ansible.builtin.copy:
+        content: "{{ matrix_appservice_irc_jwk_result.container.Output }}"
+        dest: "{{ matrix_appservice_irc_data_path }}/auth-media.jwk"
+        mode: "0644"
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
 
 # In the past, we used to generate the passkey.pem file with root, so permissions may not be okay.
 # Fix it.
 - name: (Migration) Ensure Appservice IRC passkey permissions are okay
   ansible.builtin.file:
     path: "{{ matrix_appservice_irc_data_path }}/passkey.pem"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
 
 # Ideally, we'd like to generate the final registration.yaml file by ourselves.
 #
@@ -164,7 +210,7 @@
     --mount type=bind,src={{ matrix_appservice_irc_config_path }},dst=/config
     --mount type=bind,src={{ matrix_appservice_irc_data_path }},dst=/data
     --entrypoint=/bin/bash
-    {{ matrix_appservice_irc_docker_image }}
+    {{ matrix_appservice_irc_container_image }}
     -c
     'node app.js
     -r
@@ -197,9 +243,10 @@
   ansible.builtin.copy:
     content: "{{ matrix_appservice_irc_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_irc_config_path }}/registration.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_appservice_irc_registration_result
 
 - name: Ensure matrix-appservice-irc container network is created
   community.general.docker_network:
@@ -212,12 +259,24 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-irc.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-irc.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_appservice_irc_systemd_service_result
+
+- name: Determine whether matrix-appservice-irc needs a restart
+  ansible.builtin.set_fact:
+    matrix_appservice_irc_restart_necessary: >-
+      {{
+        matrix_appservice_irc_migration_requires_restart | default(false)
+        or matrix_appservice_irc_config_result.changed | default(false)
+        or matrix_appservice_irc_labels_result.changed | default(false)
+        or matrix_appservice_irc_registration_result.changed | default(false)
+        or matrix_appservice_irc_systemd_service_result.changed | default(false)
+        or matrix_appservice_irc_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure matrix-appservice-irc.service restarted, if necessary
   ansible.builtin.service:
     name: "matrix-appservice-irc.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_appservice_irc_requires_restart | bool"
+  when: "matrix_appservice_irc_migration_requires_restart | bool"

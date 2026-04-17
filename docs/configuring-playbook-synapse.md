@@ -53,7 +53,7 @@ You may also consider [tweaking the number of workers of each type](#controlling
 
 ##### Specialized workers
 
-The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requestor's IP adddress, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** — the access token (username) of the requestor and/or on the resource (room, etc.) being requested.
+The playbook now supports a smarter **specialized load-balancing** inspired by [Tom Foster](https://github.com/tcpipuk)'s [Synapse homeserver guide](https://tcpipuk.github.io/synapse/index.html). Instead of routing requests to one or more [generic workers](#generic-workers) based only on the requester's IP address, specialized load-balancing routes to **4 different types of specialized workers** based on **smarter criteria** — the access token (username) of the requester and/or on the resource (room, etc.) being requested.
 
 The playbook supports these **4 types** of specialized workers:
 
@@ -76,9 +76,32 @@ The only thing you **cannot** do is mix [generic workers](#generic-workers) and 
 
 When Synapse workers are enabled, the integrated [Postgres database is tuned](maintenance-postgres.md#tuning-postgresql), so that the maximum number of Postgres connections are increased from `200` to `500`. If you need to decrease or increase the number of maximum Postgres connections further, use the `postgres_max_connections` variable.
 
-A separate Ansible role (`matrix-synapse-reverse-proxy-companion`) and component handles load-balancing for workers. This role/component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly.
+The `matrix-synapse` role also manages the `matrix-synapse-reverse-proxy-companion` component for load-balancing with workers. This component is automatically enabled when you enable workers. Make sure to use the `setup-all` tag (not `install-all`!) during the playbook's [installation](./installing.md) process, especially if you're disabling workers, so that components may be installed/uninstalled correctly.
 
 In case any problems occur, make sure to have a look at the [list of synapse issues about workers](https://github.com/element-hq/synapse/issues?q=workers+in%3Atitle) and your `journalctl --unit 'matrix-*'`.
+
+### Limit joining heavy rooms on constrained hosts
+
+If your server is underpowered, joining heavy rooms can cause Synapse to consume a lot of resources and be unavailable for long (while it catches up).
+
+To avoid this, Synapse can be configured to reject joins for remote rooms that are too complex before users enter them.
+
+Complexity is computed as `current_state_events / 500` (Synapse state event count for current room state). When the resulting value is higher than `matrix_synapse_limit_remote_rooms_complexity` and `matrix_synapse_limit_remote_rooms_enabled` is `true`, Synapse blocks joining the room.
+
+We recommend using this as a guardrail on low-resource servers:
+
+```yaml
+matrix_synapse_limit_remote_rooms_enabled: true
+
+# Tweak as necessary
+matrix_synapse_limit_remote_rooms_complexity: 1.0
+
+# Uncomment and tweak if necessary
+# matrix_synapse_limit_remote_rooms_complexity_error: "Your homeserver is unable to join rooms this large or complex. Please speak to your server administrator, or upgrade your instance to join this room."
+
+# If you'd like your admins to be exempt from this limit, uncomment the line below
+# matrix_synapse_limit_remote_rooms_admins_can_join: true
+```
 
 ### Synapse + OpenID Connect for Single-Sign-On
 
@@ -173,11 +196,11 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-### Synapse Admin
+### Ketesa
 
-With [Synapse Admin](configuring-playbook-synapse-admin.md), certain Synapse administration tasks (managing users and rooms, etc.) can be performed via a web user-interace.
+[Ketesa](configuring-playbook-ketesa.md) is a fully-featured web UI for administrating your homeserver — managing users, rooms, media, sessions, and more.
 
-The playbook can install and configure Synapse Admin for you. For details about it, see [this page](configuring-playbook-synapse-admin.md).
+The playbook can install and configure Ketesa for you. For details about it, see [this page](configuring-playbook-ketesa.md).
 
 ### Monitoring Synapse Metrics with Prometheus and Grafana
 

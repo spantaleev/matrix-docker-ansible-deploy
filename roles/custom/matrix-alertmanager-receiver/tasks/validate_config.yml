@@ -7,7 +7,7 @@
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_alertmanager_receiver_hostname', when: true}
     - {'name': 'matrix_alertmanager_receiver_path_prefix', when: true}
@@ -21,6 +21,9 @@
   ansible.builtin.fail:
     msg: >-
       The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_alertmanager_receiver_container_image_name_prefix', 'new': 'matrix_alertmanager_receiver_container_image_registry_prefix'}
+    - {'old': 'matrix_alertmanager_receiver_config_templating_computed_values', 'new': '<superseded by logic in the firing or resolved template; see https://github.com/metio/matrix-alertmanager-receiver/pull/94'}
+    - {'old': 'matrix_alertmanager_receiver_config_templating_computed_values_auto', 'new': '<superseded by logic in the firing or resolved template; see https://github.com/metio/matrix-alertmanager-receiver/pull/94'}
+    - {'old': 'matrix_alertmanager_receiver_config_templating_computed_values_custom', 'new': '<superseded by logic in the firing or resolved template; see https://github.com/metio/matrix-alertmanager-receiver/pull/94'}

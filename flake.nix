@@ -19,6 +19,7 @@
           devShells.default = mkShell {
             buildInputs = [
               just
+              mise
               ansible
             ];
             shellHook = ''

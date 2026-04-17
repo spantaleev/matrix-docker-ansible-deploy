@@ -48,6 +48,12 @@ matrix_bridges_encryption_enabled: false
 # Global var to make encryption default/optional across all bridges with encryption support
 matrix_bridges_encryption_default: "{{ matrix_bridges_encryption_enabled }}"
 
+# Global var for enabling msc4190 (On supported bridges)
+matrix_bridges_msc4190_enabled: "{{ matrix_authentication_service_enabled and matrix_bridges_encryption_enabled }}"
+
+# Global var for enabling bridge self-signing ( On supported bridges)
+matrix_bridges_self_sign_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+
 # Global var to enable/disable relay mode across all bridges with relay mode support
 matrix_bridges_relay_enabled: false
 
@@ -78,13 +84,17 @@ matrix_monitoring_container_network: matrix-monitoring
 matrix_homeserver_enabled: true
 
 # This will contain the homeserver implementation that is in use.
-# Valid values: synapse, dendrite, conduit, conduwuit
+# Valid values: synapse, dendrite, conduit, continuwuity
 #
 # By default, we use Synapse, because it's the only full-featured Matrix server at the moment.
 #
 # This value automatically influences other variables (`matrix_synapse_enabled`, `matrix_dendrite_enabled`, etc.).
 # Note that the homeserver implementation of a server will not be able to be changed without data loss.
 matrix_homeserver_implementation: synapse
+
+# The priority that the homeserver starts with (lower = starts earlier).
+# Related to the systemd_service_manager role and `devture_systemd_service_manager_services_list*` variables.
+matrix_homeserver_systemd_service_manager_priority: 1000
 
 # This contains a secret, which is used for generating various other secrets later on.
 matrix_homeserver_generic_secret_key: ''
@@ -100,11 +110,14 @@ matrix_server_fqn_matrix_federation: '{{ matrix_server_fqn_matrix }}'
 # This and the Matrix FQN (see above) are expected to be on the same server.
 matrix_server_fqn_element: "element.{{ matrix_domain }}"
 
-# This is where you access the Hydrogen web client from (if enabled via matrix_client_hydrogen_enabled; disabled by default).
+# This is where you access the Hydrogen web client from (if enabled via hydrogen_enabled; disabled by default).
 matrix_server_fqn_hydrogen: "hydrogen.{{ matrix_domain }}"
 
-# This is where you access the Cinny web client from (if enabled via matrix_client_cinny_enabled; disabled by default).
+# This is where you access the Cinny web client from (if enabled via cinny_enabled; disabled by default).
 matrix_server_fqn_cinny: "cinny.{{ matrix_domain }}"
+
+# This is where you access the Sable web client from (if enabled via sable_enabled; disabled by default).
+matrix_server_fqn_sable: "sable.{{ matrix_domain }}"
 
 # This is where you access the SchildiChat Web from (if enabled via matrix_client_schildichat_enabled; disabled by default).
 matrix_server_fqn_schildichat: "schildichat.{{ matrix_domain }}"
@@ -114,9 +127,6 @@ matrix_server_fqn_fluffychat: "fluffychat.{{ matrix_domain }}"
 
 # This is where you access the Buscarron bot from (if enabled via matrix_bot_buscarron_enabled; disabled by default).
 matrix_server_fqn_buscarron: "buscarron.{{ matrix_domain }}"
-
-# This is where you access the Dimension.
-matrix_server_fqn_dimension: "dimension.{{ matrix_domain }}"
 
 # This is where you access the Etherpad (if enabled via etherpad_enabled; disabled by default).
 matrix_server_fqn_etherpad: "etherpad.{{ matrix_domain }}"
@@ -142,6 +152,9 @@ matrix_server_fqn_ntfy: "ntfy.{{ matrix_domain }}"
 # This is where you access rageshake.
 matrix_server_fqn_rageshake: "rageshake.{{ matrix_domain }}"
 
+# This is where you access Matrix.to.
+matrix_server_fqn_matrixto: "mt.{{ matrix_domain }}"
+
 matrix_federation_public_port: 8448
 
 # The name of the Traefik entrypoint for handling Matrix Federation
@@ -158,7 +171,7 @@ matrix_federation_traefik_entrypoint_tls: true
 # Recognized values by us are 'amd64', 'arm32' and 'arm64'.
 # Not all architectures support all services, so your experience (on non-amd64) may vary.
 # See docs/alternative-architectures.md
-matrix_architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else ('arm64' if ansible_architecture == 'aarch64' else ('arm32' if ansible_architecture.startswith('armv') else '')) }}"
+matrix_architecture: "{{ 'amd64' if ansible_facts.architecture == 'x86_64' else ('arm64' if ansible_facts.architecture == 'aarch64' else ('arm32' if ansible_facts.architecture.startswith('armv') else '')) }}"
 
 # The architecture for Debian packages.
 # See: https://wiki.debian.org/SupportedArchitectures
@@ -172,11 +185,15 @@ matrix_debian_arch: "{{ 'armhf' if matrix_architecture == 'arm32' else matrix_ar
 # Example value: "registry.example.com/" (note the trailing `/`).
 matrix_container_global_registry_prefix_override: ""
 
-matrix_user_username: "matrix"
-matrix_user_groupname: "matrix"
+matrix_user_name: "matrix"
+matrix_user_system: true
+matrix_user_shell: /sbin/nologin
 
-# By default, the playbook creates the user (`matrix_user_username`)
-# and group (`matrix_user_groupname`) with a random ID.
+matrix_group_name: "matrix"
+matrix_group_system: true
+
+# By default, the playbook creates the user (`matrix_user_name`)
+# and group (`matrix_group_name`) with a random ID.
 # To use a specific user/group ID, override these variables.
 matrix_user_uid: ~
 matrix_user_gid: ~
@@ -210,7 +227,7 @@ matrix_homeserver_container_url: "http://{{ matrix_homeserver_container_client_a
 
 # Specifies where the homeserver's Client-Server API is on the container network (matrix_homeserver_container_network).
 # Where this is depends on whether there's a reverse-proxy in front of the homeserver, which homeserver it is, etc.
-# This likely gets overriden elsewhere.
+# This likely gets overridden elsewhere.
 matrix_homeserver_container_client_api_endpoint: ""
 
 # Specifies where the homeserver's Federation API is on the container network (matrix_homeserver_container_network).
@@ -218,14 +235,8 @@ matrix_homeserver_container_federation_url: "http://{{ matrix_homeserver_contain
 
 # Specifies where the homeserver's Federation API is on the container network (matrix_homeserver_container_network).
 # Where this is depends on whether there's a reverse-proxy in front of the homeserver, which homeserver it is, etc.
-# This likely gets overriden elsewhere.
+# This likely gets overridden elsewhere.
 matrix_homeserver_container_federation_api_endpoint: ""
-
-# Specifies the public url of the Sync v3 (sliding-sync) API.
-# This will be used to set the `org.matrix.msc3575.proxy` property in `/.well-known/matrix/client`.
-# Once the API is stabilized, this will no longer be required.
-# See MSC3575: https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/sync-v3/proposals/3575-sync.md
-matrix_homeserver_sliding_sync_url: ""
 
 matrix_identity_server_url: ~
 
@@ -234,6 +245,21 @@ matrix_integration_manager_ui_url: ~
 
 matrix_homeserver_container_extra_arguments_auto: []
 matrix_homeserver_app_service_config_files_auto: []
+
+# These playbook-level helpers describe which managed services Synapse should be wired to.
+# They are meant for orchestration concerns like container networking and systemd ordering,
+# while `matrix_synapse_*` variables stay focused on actual connection parameters.
+# These likely get overridden elsewhere.
+matrix_playbook_synapse_uses_managed_postgres: false
+matrix_playbook_synapse_uses_managed_valkey: false
+matrix_playbook_synapse_auto_compressor_uses_managed_postgres: false
+
+# This playbook-level helper describes whether Matrix Authentication Service should be wired
+# to the playbook-managed Postgres instance.
+# It is meant for orchestration concerns like container networking, systemd ordering, and database creation,
+# while `matrix_authentication_service_*` variables stay focused on actual connection parameters.
+# This likely gets overridden elsewhere.
+matrix_playbook_matrix_authentication_service_uses_managed_postgres: false
 
 # Controls whether various services should expose metrics publicly.
 # If Prometheus is operating on the same machine, exposing metrics publicly is not necessary.
@@ -260,7 +286,7 @@ matrix_metrics_exposure_http_basic_auth_users: ''
 #     - nevertheless, the playbook expects that you would install Traefik yourself via other means
 #     - you should make sure your Traefik configuration is compatible with what the playbook would have configured (web, web-secure, matrix-federation entrypoints, etc.)
 #     - you need to set `matrix_playbook_reverse_proxyable_services_additional_network` to the name of your Traefik network
-#     - Traefik certs dumper will be enabled by default (`traefik_certs_dumper_enabled`). You need to point it to your Traefik's SSL certificates (`traefik_certs_dumper_ssl_dir_path`)
+#     - Traefik certs dumper will be enabled by default (`traefik_certs_dumper_enabled`). You need to point it to your Traefik's SSL certificates (`traefik_certs_dumper_ssl_path`)
 #
 # - `none`
 #     - no reverse-proxy will be installed
@@ -361,7 +387,7 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_definition:
 # This entrypoint provides local addons (e.g. bridges, bots, etc.) with the ability to easily & quickly communicate with the homeserver and/or related software.
 # Such services can reach the homeserver over the public internet (e.g. https://matrix.example.com), but this is slow due to networking and SSL-termination.
 # Talking directly to the homeserver (e.g. `http://matrix-synapse:8008`) is another option, but does not allow other homeserver-related software
-# (e.g. identity servers like ma1sd, media repository servers like matrix-media-repo, firewalls like matrix-corporal)
+# (e.g. media repository servers like matrix-media-repo, firewalls like matrix-corporal)
 # to register itself for certain homeserver routes.
 #
 # For example: when matrix-media-repo is enabled, it wishes to handle `/_matrix/media` both publicly and internally.
@@ -378,7 +404,8 @@ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled: "{{ matri
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name: matrix-internal-matrix-client-api
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port: 8008
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_host_bind_port: ''
-matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_auto | combine(matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config: "{{ (matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_default | combine(matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_auto)) | combine(matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_default: {}
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_auto: {}
 matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config_custom: {}
 
@@ -387,6 +414,22 @@ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_definition:
   port: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port }}"
   host_bind_port: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_host_bind_port }}"
   config: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_config }}"
+
+# Controls whether to enable an additional Traefik entrypoint for LiveKit TURN/TLS (TCP) traffic.
+matrix_playbook_livekit_turn_traefik_entrypoint_enabled: false
+matrix_playbook_livekit_turn_traefik_entrypoint_name: matrix-livekit-turn
+matrix_playbook_livekit_turn_traefik_entrypoint_port: 5350
+matrix_playbook_livekit_turn_traefik_entrypoint_host_bind_port: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_port }}"
+matrix_playbook_livekit_turn_traefik_entrypoint_config: "{{ (matrix_playbook_livekit_turn_traefik_entrypoint_config_default | combine(matrix_playbook_livekit_turn_traefik_entrypoint_config_auto)) | combine(matrix_playbook_livekit_turn_traefik_entrypoint_config_custom, recursive=True) }}"
+matrix_playbook_livekit_turn_traefik_entrypoint_config_default: {}
+matrix_playbook_livekit_turn_traefik_entrypoint_config_auto: {}
+matrix_playbook_livekit_turn_traefik_entrypoint_config_custom: {}
+
+matrix_playbook_livekit_turn_traefik_entrypoint_definition:
+  name: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_name }}"
+  port: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_port }}"
+  host_bind_port: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_host_bind_port }}"
+  config: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_config }}"
 
 # Variables to Control which parts of our roles run.
 run_postgres_import: true

@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=Synapse worker ({{ matrix_synapse_worker_container_name }})
 AssertPathExists={{ matrix_synapse_config_dir_path }}/{{ matrix_synapse_worker_config_file_name }}
@@ -67,6 +67,12 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			--mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
 			{% endfor %}
+			{% if matrix_synapse_redis_path_enabled %}
+			--mount type=bind,src={{ matrix_synapse_redis_path_host }},dst={{ matrix_synapse_redis_path }} \
+			{% endif %}
+			{% if matrix_synapse_database_socket_enabled %}
+			--mount type=bind,src={{ matrix_synapse_database_socket_path_host }},dst={{ matrix_synapse_database_socket_path }} \
+			{% endif %}
 			--label-file={{ matrix_synapse_base_path }}/{{ matrix_synapse_worker_labels_file_name }} \
 			{% for arg in matrix_synapse_container_arguments %}
 			{{ arg }} \
@@ -74,7 +80,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_synapse_container_worker_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_synapse_docker_image_final }} \
+			{{ matrix_synapse_container_image_final }} \
 			run -m synapse.app.{{ matrix_synapse_worker_details.app }} -c /data/homeserver.yaml -c /data/{{ matrix_synapse_worker_config_file_name }}
 
 {% for network in matrix_synapse_container_additional_networks %}

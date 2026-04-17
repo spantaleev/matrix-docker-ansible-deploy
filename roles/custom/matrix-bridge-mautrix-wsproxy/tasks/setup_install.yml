@@ -16,18 +16,18 @@
   when: "matrix_synapse_role_executed|default(False)"
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_wsproxy_requires_restart: false
+    matrix_mautrix_wsproxy_migration_requires_restart: false
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_wsproxy_syncproxy_requires_restart: false
+    matrix_mautrix_wsproxy_syncproxy_migration_requires_restart: false
 
 - name: Ensure Mautrix wsproxy paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - path: "{{ matrix_mautrix_wsproxy_base_path }}"
       when: true
@@ -37,34 +37,37 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_mautrix_wsproxy_base_path }}/{{ item }}"
-    mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - syncproxy-env
     - wsproxy-labels
+  register: matrix_mautrix_wsproxy_support_files_result
 
 - name: Ensure Mautrix wsproxy image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_mautrix_wsproxy_docker_image }}"
+    name: "{{ matrix_mautrix_wsproxy_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_mautrix_wsproxy_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_wsproxy_docker_image_force_pull }}"
+    force_source: "{{ matrix_mautrix_wsproxy_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_wsproxy_container_image_force_pull }}"
+  register: matrix_mautrix_wsproxy_container_image_pull_result
 
 - name: Ensure Mautrix syncproxy image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_mautrix_wsproxy_syncproxy_docker_image }}"
+    name: "{{ matrix_mautrix_wsproxy_syncproxy_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_mautrix_wsproxy_syncproxy_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_wsproxy_syncproxy_docker_image_force_pull }}"
+    force_source: "{{ matrix_mautrix_wsproxy_syncproxy_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_wsproxy_syncproxy_container_image_force_pull }}"
+  register: matrix_mautrix_wsproxy_syncproxy_container_image_pull_result
 
 - name: Ensure Mautrix wsproxy paths exists
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - "{{ matrix_mautrix_wsproxy_base_path }}"
     - "{{ matrix_mautrix_wsproxy_config_path }}"
@@ -78,25 +81,28 @@
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_wsproxy_configuration | to_nice_yaml }}"
     dest: "{{ matrix_mautrix_wsproxy_config_path }}/config.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_wsproxy_config_result
 
 - name: Ensure mautrix-androidsms registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_androidsms_registration | to_nice_yaml }}"
     dest: "{{ matrix_mautrix_wsproxy_config_path }}/androidsms-registration.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_wsproxy_registration_androidsms_result
 
 - name: Ensure mautrix-imessage registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_mautrix_imessage_registration | to_nice_yaml }}"
     dest: "{{ matrix_mautrix_wsproxy_config_path }}/imessage-registration.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_mautrix_wsproxy_registration_imessage_result
 
 - name: Ensure mautrix-wsproxy container network is created
   community.general.docker_network:
@@ -109,8 +115,21 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-wsproxy.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-wsproxy.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_mautrix_wsproxy_systemd_service_result
+
+- name: Determine whether Mautrix wsproxy needs a restart
+  ansible.builtin.set_fact:
+    matrix_mautrix_wsproxy_restart_necessary: >-
+      {{
+        matrix_mautrix_wsproxy_migration_requires_restart | default(false)
+        or matrix_mautrix_wsproxy_support_files_result.changed | default(false)
+        or matrix_mautrix_wsproxy_config_result.changed | default(false)
+        or matrix_mautrix_wsproxy_registration_androidsms_result.changed | default(false)
+        or matrix_mautrix_wsproxy_registration_imessage_result.changed | default(false)
+        or matrix_mautrix_wsproxy_systemd_service_result.changed | default(false)
+        or matrix_mautrix_wsproxy_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure systemd reloaded after matrix-mautrix-wsproxy.service installation
   ansible.builtin.service:
@@ -121,14 +140,23 @@
   ansible.builtin.service:
     name: "matrix-mautrix-wsproxy.service"
     state: restarted
-  when: "matrix_mautrix_wsproxy_requires_restart|bool"
+  when: "matrix_mautrix_wsproxy_migration_requires_restart|bool"
 
 - name: Ensure matrix-mautrix-wsproxy-syncproxy.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-wsproxy-syncproxy.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-wsproxy-syncproxy.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_mautrix_wsproxy_syncproxy_systemd_service_result
+
+- name: Determine whether Mautrix wsproxy syncproxy needs a restart
+  ansible.builtin.set_fact:
+    matrix_mautrix_wsproxy_syncproxy_restart_necessary: >-
+      {{
+        matrix_mautrix_wsproxy_syncproxy_migration_requires_restart | default(false)
+        or matrix_mautrix_wsproxy_syncproxy_systemd_service_result.changed | default(false)
+        or matrix_mautrix_wsproxy_syncproxy_container_image_pull_result.changed | default(false)
+      }}
 
 - name: Ensure systemd reloaded after matrix-mautrix-wsproxy-syncproxy.service installation
   ansible.builtin.service:
@@ -139,4 +167,4 @@
   ansible.builtin.service:
     name: "matrix-mautrix-wsproxy-syncproxy.service"
     state: restarted
-  when: "matrix_mautrix_wsproxy_syncproxy_requires_restart|bool"
+  when: "matrix_mautrix_wsproxy_syncproxy_migration_requires_restart|bool"

@@ -11,7 +11,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_hookshot_feeds_interval', 'new': 'matrix_hookshot_feeds_pollIntervalSeconds'}
     - {'old': 'matrix_hookshot_generic_urlprefix', 'new': 'matrix_hookshot_generic_urlPrefix'}
@@ -38,13 +38,26 @@
     - {'old': 'matrix_hookshot_queue_host', 'new': 'matrix_hookshot_cache_redis_host'}
     - {'old': 'matrix_hookshot_queue_port', 'new': 'matrix_hookshot_cache_redis_port'}
     - {'old': 'matrix_hookshot_experimental_encryption_enabled', 'new': 'matrix_hookshot_encryption_enabled'}
-    - {'old': 'matrix_hookshot_docker_image_name_prefix', 'new': 'matrix_hookshot_docker_image_registry_prefix'}
+    - {'old': 'matrix_hookshot_docker_image_name_prefix', 'new': 'matrix_hookshot_container_image_registry_prefix'}
+    - {'old': 'matrix_hookshot_provisioning_enabled', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_port', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_secret', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_internal', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_hostname', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_provisioning_endpoint', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_container_labels_provisioning_enabled', 'new': '<removed - see https://github.com/matrix-org/matrix-hookshot/pull/931 and the `matrix_hookshot_widgets_*` variables>'}
+    - {'old': 'matrix_hookshot_docker_image', 'new': 'matrix_hookshot_container_image'}
+    - {'old': 'matrix_hookshot_docker_image_force_pull', 'new': 'matrix_hookshot_container_image_force_pull'}
+    - {'old': 'matrix_hookshot_docker_image_registry_prefix', 'new': 'matrix_hookshot_container_image_registry_prefix'}
+    - {'old': 'matrix_hookshot_docker_image_registry_prefix_upstream', 'new': 'matrix_hookshot_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_hookshot_docker_image_registry_prefix_upstream_default', 'new': 'matrix_hookshot_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_hookshot_docker_src_files_path', 'new': 'matrix_hookshot_container_src_files_path'}
 
 - name: Fail if required Hookshot settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
-  when: "vars[item] == ''"
+  when: "lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_hookshot_appservice_token"
     - "matrix_hookshot_homeserver_address"
@@ -55,7 +68,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable GitHub.
-  when: "matrix_hookshot_github_enabled and vars[item] == ''"
+  when: "matrix_hookshot_github_enabled and lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_hookshot_github_auth_id"
     - "matrix_hookshot_github_webhook_secret"
@@ -64,7 +77,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable GitHub OAuth.
-  when: "matrix_hookshot_github_oauth_enabled and vars[item] == ''"
+  when: "matrix_hookshot_github_oauth_enabled and lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_hookshot_github_oauth_client_id"
     - "matrix_hookshot_github_oauth_client_secret"
@@ -73,7 +86,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable Jira.
-  when: "matrix_hookshot_jira_enabled and vars[item] == ''"
+  when: "matrix_hookshot_jira_enabled and lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_hookshot_jira_webhook_secret"
 
@@ -81,7 +94,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) to enable Jira OAuth.
-  when: "matrix_hookshot_jira_oauth_enabled and vars[item] == ''"
+  when: "matrix_hookshot_jira_oauth_enabled and lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_hookshot_jira_oauth_client_id"
     - "matrix_hookshot_jira_oauth_client_secret"
@@ -91,14 +104,6 @@
     msg: >-
       You need to define at least one Figma instance in `matrix_hookshot_figma_instances` to enable Figma.
   when: "matrix_hookshot_figma_enabled and matrix_hookshot_figma_instances | length == 0"
-
-- name: Fail if required provisioning settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item }}`) to enable provisioning.
-  when: "matrix_hookshot_provisioning_enabled and vars[item] == ''"
-  with_items:
-    - "matrix_hookshot_provisioning_secret"
 
 - name: Fail if no Redis queue enabled when Hookshot encryption is enabled
   ansible.builtin.fail:
@@ -117,4 +122,4 @@
   with_items:
     - matrix_hookshot_proxy_metrics
     - matrix_hookshot_metrics_endpoint
-  when: "item in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item + '$'), wantlist=True) | length > 0"

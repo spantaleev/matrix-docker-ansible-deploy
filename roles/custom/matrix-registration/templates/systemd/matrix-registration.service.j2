@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=matrix-registration
 {% for service in matrix_registration_systemd_required_services_list %}
@@ -32,7 +32,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_registration_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_registration_docker_image }} \
+			{{ matrix_registration_container_image }} \
 			serve
 
 {% for network in matrix_registration_container_additional_networks %}

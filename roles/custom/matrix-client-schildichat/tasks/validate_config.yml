@@ -11,16 +11,21 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_client_schildichat_welcome_user_id', 'new': '<removed>'}
     - {'old': 'matrix_client_schildichat_container_image_name_prefix', 'new': 'matrix_client_schildichat_container_image_registry_prefix'}
+    - {'old': 'matrix_client_schildichat_docker_image', 'new': 'matrix_client_schildichat_container_image'}
+    - {'old': 'matrix_client_schildichat_docker_image_force_pull', 'new': 'matrix_client_schildichat_container_image_force_pull'}
+    - {'old': 'matrix_client_schildichat_docker_image_registry_prefix', 'new': 'matrix_client_schildichat_container_image_registry_prefix'}
+    - {'old': 'matrix_client_schildichat_docker_image_registry_prefix_upstream', 'new': 'matrix_client_schildichat_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_client_schildichat_docker_image_registry_prefix_upstream_default', 'new': 'matrix_client_schildichat_container_image_registry_prefix_upstream_default'}
 
 - name: Fail if required SchildiChat Web settings not defined
   ansible.builtin.fail:
     msg: >
       You need to define a required configuration setting (`{{ item }}`) for using SchildiChat Web.
-  when: "vars[item] == ''"
+  when: "lookup('vars', item, default='') == ''"
   with_items:
     - matrix_client_schildichat_default_hs_url
     - matrix_client_schildichat_container_network
@@ -39,7 +44,7 @@
       ansible.builtin.fail:
         msg: >-
           You need to define a required configuration setting (`{{ item }}`).
-      when: "vars[item] == ''"
+      when: "lookup('vars', item, default='') == ''"
       with_items:
         - matrix_client_schildichat_container_labels_traefik_hostname
         - matrix_client_schildichat_container_labels_traefik_path_prefix

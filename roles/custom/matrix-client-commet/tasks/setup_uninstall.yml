@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-client-commet.service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-commet.service"
+  register: matrix_client_commet_service_stat
+
+- when: matrix_client_commet_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-client-commet is stopped
+      ansible.builtin.service:
+        name: matrix-client-commet
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-client-commet.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-commet.service"
+        state: absent
+
+    - name: Ensure Commet path doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_client_commet_base_path }}"
+        state: absent

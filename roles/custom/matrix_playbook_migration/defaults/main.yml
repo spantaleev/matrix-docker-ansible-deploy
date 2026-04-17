@@ -1,9 +1,35 @@
-# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023 - 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2024 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
+
+# The version that the user has validated their setup against.
+# When empty, the user will be prompted to set this variable.
+# New users should set this to the current expected version (see below).
+# See `examples/vars.yml` and `matrix_playbook_migration_expected_version` for the recommended value.
+matrix_playbook_migration_validated_version: ''
+
+# The version that the playbook expects the user to have validated against.
+# This is bumped whenever a breaking change is introduced.
+# The value configured here needs to exist in `matrix_playbook_migration_breaking_changes` as well.
+matrix_playbook_migration_expected_version: "v2026.04.03.0"
+
+# A list of breaking changes, used to inform users what changed between their validated version and the expected version.
+matrix_playbook_migration_breaking_changes:
+  - version: "v2026.04.03.0"
+    summary: "(BC Break) Synapse Admin is now Ketesa — role renamed and all variables changed from matrix_synapse_admin_* to matrix_ketesa_*"
+    changelog_url: "https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#2026-04-03"
+  - version: "v2026.04.02.0"
+    summary: "(BC Break) Draupnir-for-all self-service provisioning is now disabled by default"
+    changelog_url: "https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#2026-04-02"
+  - version: "v2026.03.23.0"
+    summary: "Initial migration validation system"
+    changelog_url: "https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md#2026-03-22"
+
+# Controls if (`matrix_prometheus_nginxlog_exporter` -> `prometheus_nginxlog_exporter`) validation will run.
+matrix_playbook_migration_matrix_prometheus_nginxlog_exporter_migration_validation_enabled: true
 
 # Controls if (`matrix_prometheus_node_exporter` -> `prometheus_node_exporter`) validation will run.
 matrix_playbook_migration_matrix_prometheus_node_exporter_migration_validation_enabled: true
@@ -55,7 +81,7 @@ matrix_playbook_migration_matrix_postmoogle_migration_validation_enabled: true
 # - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2999
 # - https://github.com/geerlingguy/ansible-role-docker/pull/410
 matrix_playbook_migration_debian_signedby_migration_enabled: true
-matrix_playbook_migration_debian_signedby_migration_repository_path: "/etc/apt/sources.list.d/download_docker_com_linux_{{ ansible_distribution | lower }}.list"
+matrix_playbook_migration_debian_signedby_migration_repository_path: "/etc/apt/sources.list.d/download_docker_com_linux_{{ ansible_facts['distribution'] | lower }}.list"
 
 # Controls if the old apt repository for Docker (`signed-by=/etc/apt/trusted.gpg.d/docker.asc`) will be removed,
 # so that the Docker role (7.2.0+) can install a new non-conflicting one (`signed-by=/etc/apt/keyrings/docker.asc`).
@@ -66,6 +92,8 @@ matrix_playbook_migration_debian_signedby_migration_repository_path: "/etc/apt/s
 # Related to: https://github.com/geerlingguy/ansible-role-docker/pull/436
 matrix_playbook_migration_docker_trusted_gpg_d_migration_enabled: true
 matrix_playbook_migration_docker_trusted_gpg_d_migration_repository_path: "/etc/apt/sources.list.d/docker.list"
+
+matrix_playbook_migration_matrix_synapse_admin_ketesa_variable_transition_checks_enabled: true
 
 # Controls if variable transition checks (related to the matrix-nginx-proxy elimination) will run.
 # If you'd like to keep some `matrix_nginx_proxy` and other variables around and not be warned about them, disable this.
@@ -81,7 +109,7 @@ matrix_playbook_migration_matrix_nginx_proxy_leftover_variable_validation_checks
 matrix_playbook_migration_matrix_ssl_leftover_variable_checks_enabled: true
 
 # Controls whether this role will delete old files left over from `matrix-nginx-proxy`.
-# Regardless of this value, if discovered, a `matrix-nginx-proxy.service` systemd serivce will be stopped and removed.
+# Regardless of this value, if discovered, a `matrix-nginx-proxy.service` systemd service will be stopped and removed.
 matrix_playbook_migration_matrix_nginx_proxy_uninstallation_enabled: true
 
 # Controls whether this role will try to detect and clean up the /matrix/ssl files.

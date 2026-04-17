@@ -8,74 +8,74 @@
 
 - name: Ensure matrix-appservice-kakaotalk image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_appservice_kakaotalk_docker_image }}"
+    name: "{{ matrix_appservice_kakaotalk_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_kakaotalk_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_docker_image_force_pull }}"
+    force_source: "{{ matrix_appservice_kakaotalk_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_container_image_force_pull }}"
   when: not matrix_appservice_kakaotalk_container_image_self_build
-  register: result
+  register: matrix_appservice_kakaotalk_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_appservice_kakaotalk_container_image_pull_result is not failed
 
 - name: Ensure matrix-appservice-kakaotalk-node image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_appservice_kakaotalk_node_docker_image }}"
+    name: "{{ matrix_appservice_kakaotalk_node_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_kakaotalk_node_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_node_docker_image_force_pull }}"
+    force_source: "{{ matrix_appservice_kakaotalk_node_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_node_container_image_force_pull }}"
   when: not matrix_appservice_kakaotalk_container_image_self_build
-  register: result
+  register: matrix_appservice_kakaotalk_node_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_appservice_kakaotalk_node_container_image_pull_result is not failed
 
 - name: Ensure matrix-appservice-kakaotalk paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_appservice_kakaotalk_base_path }}", when: true}
     - {path: "{{ matrix_appservice_kakaotalk_config_path }}", when: true}
     - {path: "{{ matrix_appservice_kakaotalk_data_path }}", when: true}
-    - {path: "{{ matrix_appservice_kakaotalk_docker_src_files_path }}", when: "{{ matrix_appservice_kakaotalk_container_image_self_build }}"}
+    - {path: "{{ matrix_appservice_kakaotalk_container_src_files_path }}", when: "{{ matrix_appservice_kakaotalk_container_image_self_build }}"}
   when: item.when | bool
 
 - name: Ensure matrix-appservice-kakaotalk repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_appservice_kakaotalk_container_image_self_build_repo }}"
-    dest: "{{ matrix_appservice_kakaotalk_docker_src_files_path }}"
+    dest: "{{ matrix_appservice_kakaotalk_container_src_files_path }}"
     version: "{{ matrix_appservice_kakaotalk_container_image_self_build_repo_version }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_appservice_kakaotalk_git_pull_results
   when: "matrix_appservice_kakaotalk_container_image_self_build | bool"
 
 - name: Ensure matrix-appservice-kakaotalk-node Docker image is built
   community.docker.docker_image:
-    name: "{{ matrix_appservice_kakaotalk_node_docker_image }}"
+    name: "{{ matrix_appservice_kakaotalk_node_container_image }}"
     source: build
     force_source: "{{ matrix_appservice_kakaotalk_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_appservice_kakaotalk_docker_src_files_path }}/node"
+      path: "{{ matrix_appservice_kakaotalk_container_src_files_path }}/node"
       pull: true
   when: "matrix_appservice_kakaotalk_container_image_self_build | bool"
 
 - name: Ensure matrix-appservice-kakaotalk Docker image is built
   community.docker.docker_image:
-    name: "{{ matrix_appservice_kakaotalk_docker_image }}"
+    name: "{{ matrix_appservice_kakaotalk_container_image }}"
     source: build
     force_source: "{{ matrix_appservice_kakaotalk_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_appservice_kakaotalk_docker_src_files_path }}"
+      path: "{{ matrix_appservice_kakaotalk_container_src_files_path }}"
       pull: true
   when: "matrix_appservice_kakaotalk_container_image_self_build | bool"
 
@@ -83,25 +83,28 @@
   ansible.builtin.copy:
     content: "{{ matrix_appservice_kakaotalk_node_configuration | to_nice_json }}"
     dest: "{{ matrix_appservice_kakaotalk_config_path }}/node-config.json"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_appservice_kakaotalk_node_config_result
 
 - name: Ensure matrix-appservice-kakaotalk config.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_kakaotalk_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_kakaotalk_config_path }}/config.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_appservice_kakaotalk_config_result
 
 - name: Ensure matrix-appservice-kakaotalk registration.yaml installed
   ansible.builtin.copy:
     content: "{{ matrix_appservice_kakaotalk_registration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_appservice_kakaotalk_config_path }}/registration.yaml"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_appservice_kakaotalk_registration_result
 
 - name: Ensure matrix-appservice-kakaotalk container network is created
   community.general.docker_network:
@@ -114,11 +117,25 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-kakaotalk-node.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-kakaotalk-node.service"
-    mode: 0644
+    mode: '0644'
   register: matrix_appservice_kakaotalk_node_systemd_service_result
 
 - name: Ensure matrix-appservice-kakaotalk.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-appservice-kakaotalk.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-kakaotalk.service"
-    mode: 0644
+    mode: '0644'
+  register: matrix_appservice_kakaotalk_systemd_service_result
+
+- name: Determine whether matrix-appservice-kakaotalk needs a restart
+  ansible.builtin.set_fact:
+    matrix_appservice_kakaotalk_restart_necessary: >-
+      {{
+        matrix_appservice_kakaotalk_node_config_result.changed | default(false)
+        or matrix_appservice_kakaotalk_config_result.changed | default(false)
+        or matrix_appservice_kakaotalk_registration_result.changed | default(false)
+        or matrix_appservice_kakaotalk_node_systemd_service_result.changed | default(false)
+        or matrix_appservice_kakaotalk_systemd_service_result.changed | default(false)
+        or matrix_appservice_kakaotalk_container_image_pull_result.changed | default(false)
+        or matrix_appservice_kakaotalk_node_container_image_pull_result.changed | default(false)
+      }}

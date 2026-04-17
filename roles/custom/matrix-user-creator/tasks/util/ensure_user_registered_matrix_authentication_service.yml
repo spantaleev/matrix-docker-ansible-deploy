@@ -4,9 +4,9 @@
 
 ---
 
-- name: Ensure Matrix Authentication Service user registered - {{ user.username | quote }}
-  ansible.builtin.command:
-    cmd: |-
+- name: Build Matrix Authentication Service user registration command - {{ user.username | quote }}
+  ansible.builtin.set_fact:
+    matrix_authentication_service_register_user_command: |-
       {{ devture_systemd_docker_base_host_command_docker }} exec matrix-authentication-service
       mas-cli manage register-user
       -p {{ user.initial_password | quote }}
@@ -18,6 +18,31 @@
         --no-admin
       {% endif %}
       {{ user.username | quote }}
+
+- name: Ensure Matrix Authentication Service user registered - {{ user.username | quote }}
+  ansible.builtin.command:
+    cmd: "{{ matrix_authentication_service_register_user_command }}"
   register: matrix_authentication_service_register_user_result
   changed_when: "matrix_authentication_service_register_user_result.rc == 0 and 'Error: User already exists' not in matrix_authentication_service_register_user_result.stderr"
-  failed_when: "matrix_authentication_service_register_user_result.rc != 0 and 'Error: User already exists' not in matrix_authentication_service_register_user_result.stderr"
+  failed_when: >-
+    matrix_authentication_service_register_user_result.rc != 0
+    and 'Error: User already exists' not in matrix_authentication_service_register_user_result.stderr
+    and 'password authentication failed' not in matrix_authentication_service_register_user_result.stderr
+
+- when: "'password authentication failed' in matrix_authentication_service_register_user_result.stderr | default('')"
+  block:
+    - name: Restart Matrix Authentication Service due to database authentication failure (likely a password change)
+      ansible.builtin.service:
+        name: "matrix-authentication-service.service"
+        state: restarted
+
+    - name: Wait for Matrix Authentication Service to start after restart
+      ansible.builtin.pause:
+        seconds: "{{ matrix_user_creator_homeserver_start_wait_time_seconds }}"
+
+    - name: Retry Matrix Authentication Service user registration - {{ user.username | quote }}
+      ansible.builtin.command:
+        cmd: "{{ matrix_authentication_service_register_user_command }}"
+      register: matrix_authentication_service_register_user_result
+      changed_when: "matrix_authentication_service_register_user_result.rc == 0 and 'Error: User already exists' not in matrix_authentication_service_register_user_result.stderr"
+      failed_when: "matrix_authentication_service_register_user_result.rc != 0 and 'Error: User already exists' not in matrix_authentication_service_register_user_result.stderr"

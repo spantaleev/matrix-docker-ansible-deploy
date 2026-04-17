@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix Authentication Service
 {% for service in matrix_authentication_service_systemd_required_services_list %}
@@ -28,6 +28,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--label-file={{ matrix_authentication_service_config_path }}/labels \
 			--mount type=bind,src={{ matrix_authentication_service_config_path }}/config.yaml,dst=/config.yaml,ro \
 			--mount type=bind,src={{ matrix_authentication_service_data_keys_path }},dst=/keys,ro \
+			{% if matrix_authentication_service_config_database_socket_enabled %}
+			--mount type=bind,src={{ matrix_authentication_service_config_database_socket_path_host }},dst={{ matrix_authentication_service_config_database_socket_path }} \
+			{% endif %}
 			{% for arg in matrix_authentication_service_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

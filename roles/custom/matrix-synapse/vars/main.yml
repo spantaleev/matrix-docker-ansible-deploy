@@ -26,10 +26,41 @@ matrix_synapse_workers_room_worker_federation_endpoints:
 # Sync workers handle /sync and the (now deprecated) related endpoints
 matrix_synapse_workers_sync_worker_client_server_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/(sync|events|initialSync|rooms/[^/]+/initialSync)$
+  # Native Sliding Sync (MSC3575) - supported on generic workers since Synapse 1.114
+  - ^/_matrix/client/unstable/org.matrix.simplified_msc3575/sync$
 
 # Client reader workers handle generic client-server endpoints that don't contain a roomid or sync
 matrix_synapse_workers_client_reader_client_server_endpoints:
-  - ^/_matrix/client/(api/v1|r0|v3|unstable)/(room_keys/|keys/(query|changes|claim|upload/|room_keys/)|login|register(/available|/m.login.registration_token/validity|)|password_policy|profile|rooms/.*/(joined_members|context/.*|members|state|hierarchy|relations/|event/|aliases|timestamp_to_event|redact|send|state/|(join|invite|leave|ban|unban|kick))|createRoom|publicRooms|account/(3pid|whoami|devices)|versions|voip/turnServer|joined_rooms|search|user/.*/filter(/|$)|directory/room/.*|capabilities)
+  # Keep these as grouped regex entries instead of a single huge alternation.
+  # This preserves the existing specialized-routing policy while making future audits
+  # and endpoint-specific edits reviewable.
+
+  # Encryption and room-key APIs
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/room_keys/
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/(query|changes|claim|room_keys/)
+
+  # MSC3814 dehydrated-device APIs:
+  # Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/devices.py#L256-L459
+  - ^/_matrix/client/unstable/org.matrix.msc3814.v1/dehydrated_device$
+  - ^/_matrix/client/unstable/org.matrix.msc3814.v1/dehydrated_device/[^/]*/events$
+
+  # Login, registration, account, and profile APIs
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/login
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/register(/available|/m.login.registration_token/validity|)?
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/password_policy
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/profile
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/account/(3pid|whoami|deactivate)
+
+  # Room-scoped client APIs handled by client readers in the specialized-worker model
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/(joined_members|context/.*|members|state|hierarchy|relations/|event/|aliases|timestamp_to_event|redact|send|state/|(join|invite|leave|ban|unban|kick))
+
+  # Generic client discovery and lookup APIs
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/(createRoom|publicRooms|versions|voip/turnServer|joined_rooms|search|directory/room/.*|capabilities)
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/user/.*/filter(/|$)
+
+  # MatrixRTC transport discovery:
+  # Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/matrixrtc.py#L30-L52
+  - ^/_matrix/client/unstable/org.matrix.msc4143/rtc/transports$
 
 # Federation reader workers handle generic federation endpoints that don't contain a roomid
 matrix_synapse_workers_federation_reader_federation_endpoints:
@@ -45,12 +76,10 @@ matrix_synapse_workers_federation_reader_federation_endpoints:
 # because `matrix_synapse_workers_generic_worker_endpoints` also contains things like `/_synapse/client/`, etc.
 # While /_synapse/client/ endpoints are somewhat client-server API-related, they're:
 # - neither part of the client-server API spec (and are thus, different)
-# - nor always OK to forward to a worker (we're supposed to obey `matrix_synapse_companion_container_labels_client_synapse_client_api_enabled`)
+# - and they now include a meaningful Synapse-specific tree (`pick_idp`, `pick_username`, OIDC/SAML callbacks, rendezvous, etc.)
+# - some of these paths are auth-sensitive or deployment-sensitive, so we intentionally keep them out of the broad worker route model unless explicitly handled elsewhere
 #
-# It's also not too many of these APIs (only `^/_synapse/client/password_reset/email/submit_token$` at the time of this writing / 2021-01-24),
-# so it's not that important whether we forward them or not.
-#
-# Basically, we aim to cover most things. Skipping `/_synapse/client` or a few other minor things doesn't matter too much.
+# Basically, we aim to cover most spec client APIs here. Skipping `/_synapse/client` is intentional and conservative.
 matrix_synapse_workers_generic_worker_client_server_endpoints: "{{ matrix_synapse_workers_generic_worker_endpoints | default([]) | map('regex_search', '.*/_matrix/client.*') | list | difference([none]) }}"
 
 # A Synapse generic worker can handle both federation and client-server API endpoints.
@@ -91,6 +120,26 @@ matrix_synapse_workers_stream_writer_receipts_stream_worker_client_server_endpoi
 matrix_synapse_workers_stream_writer_presence_stream_worker_client_server_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/presence/
 
+# matrix_synapse_workers_stream_writer_push_rules_stream_worker_client_server_endpoints contains the endpoints serviced by the `push_rules` stream writer.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#the-push_rules-stream
+matrix_synapse_workers_stream_writer_push_rules_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/pushrules/
+
+# matrix_synapse_workers_stream_writer_device_lists_stream_worker_client_server_endpoints contains the endpoints serviced by the `device_lists` stream writer.
+# See: https://matrix-org.github.io/synapse/latest/workers.html#the-device_lists-stream
+matrix_synapse_workers_stream_writer_device_lists_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/(r0|v3)/delete_devices$
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/devices(/|$)
+  - ^/_matrix/client/(r0|v3|unstable)/keys/upload(/|$)
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/device_signing/upload$
+  - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/signatures/upload$
+
+# matrix_synapse_workers_stream_writer_thread_subscriptions_stream_worker_client_server_endpoints contains the endpoints serviced by the `thread_subscriptions` stream writer.
+# Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/thread_subscriptions.py#L38-L247
+matrix_synapse_workers_stream_writer_thread_subscriptions_stream_worker_client_server_endpoints:
+  - ^/_matrix/client/unstable/io.element.msc4306/rooms/.*/thread/.*/subscription$
+  - ^/_matrix/client/unstable/io.element.msc4308/thread_subscriptions$
+
 # matrix_synapse_workers_user_dir_worker_client_server_endpoints contains the endpoints serviced by the `type = user_dir` (`app = generic_worker`) worker.
 # See: https://matrix-org.github.io/synapse/latest/workers.html#updating-the-user-directory
 matrix_synapse_workers_user_dir_worker_client_server_endpoints:
@@ -99,11 +148,11 @@ matrix_synapse_workers_user_dir_worker_client_server_endpoints:
 # matrix_synapse_workers_known_stream_writer_stream_types contains the list of stream writer stream types that the playbook recognizes.
 # This is used for validation purposes. If adding support for a new type, besides adding it to this list,
 # don't forget to actually configure it where appropriate (see worker.yaml.j2`, the nginx proxy configuration, etc).
-matrix_synapse_workers_known_stream_writer_stream_types: ['events', 'typing', 'to_device', 'account_data', 'receipts', 'presence']
+matrix_synapse_workers_known_stream_writer_stream_types: ['events', 'typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions']
 
 # matrix_synapse_workers_webserving_stream_writer_types contains a list of stream writer types that serve web (client) requests.
 # Not all stream writers serve web requests. Some just perform background tasks.
-matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', 'account_data', 'receipts', 'presence']
+matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions']
 
 # matrix_synapse_workers_systemd_services_list contains a list of systemd services (one for each worker systemd service which serves web requests).
 # This list is built during runtime.
@@ -149,6 +198,8 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3)/events$
   - ^/_matrix/client/(api/v1|r0|v3)/initialSync$
   - ^/_matrix/client/(api/v1|r0|v3)/rooms/[^/]+/initialSync$
+  # Native Sliding Sync (MSC3575) - supported since Synapse 1.114
+  - ^/_matrix/client/unstable/org.matrix.simplified_msc3575/sync$
 
   # Federation requests
   - ^/_matrix/federation/v1/event/
@@ -184,9 +235,11 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(v1|unstable)/rooms/.*/relations/
   - ^/_matrix/client/v1/rooms/.*/threads$
   - ^/_matrix/client/unstable/im.nheko.summary/rooms/.*/summary$
+  - ^/_matrix/client/unstable/im.nheko.summary/summary/.*$
+  - ^/_matrix/client/unstable/org.matrix.msc4143/rtc/transports$
   - ^/_matrix/client/(r0|v3|unstable)/account/3pid$
   - ^/_matrix/client/(r0|v3|unstable)/account/whoami$
-  - ^/_matrix/client/(r0|v3|unstable)/devices$
+  - ^/_matrix/client/(r0|v3|unstable)/account/deactivate$
   - ^/_matrix/client/versions$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/voip/turnServer$
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/event/
@@ -200,12 +253,14 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(r0|v3|unstable)/notifications$
 
   # Encryption requests
-  # Note that ^/_matrix/client/(r0|v3|unstable)/keys/upload/ requires `worker_main_http_uri`
   - ^/_matrix/client/(r0|v3|unstable)/keys/query$
   - ^/_matrix/client/(r0|v3|unstable)/keys/changes$
   - ^/_matrix/client/(r0|v3|unstable)/keys/claim$
   - ^/_matrix/client/(r0|v3|unstable)/room_keys/
-  - ^/_matrix/client/(r0|v3|unstable)/keys/upload/
+  # MSC3814 dehydrated-device support:
+  # Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/devices.py#L256-L459
+  - ^/_matrix/client/unstable/org.matrix.msc3814.v1/dehydrated_device$
+  - ^/_matrix/client/unstable/org.matrix.msc3814.v1/dehydrated_device/[^/]*/events$
 
   # Registration/login requests
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/login$
@@ -223,13 +278,22 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/knock/
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/profile/
 
+  # Unstable MSC4140 support
+  - ^/_matrix/client/unstable/org.matrix.msc4140/delayed_events(/.*/restart)?$
+
+  # Admin API requests
+  - ^/_synapse/admin/v2/users/[^/]+$
+
   # Start of intentionally-ignored-endpoints
   #
-  # We ignore these below, because they're better sent to dedicated workers (various stream writers).
-  # If a stream writer is enabled, the endpoint should be routed to the stream writer, not to a generic worker.
-  # If a stream writer of a given type is not enabled, then a generic worker may process it.
-  # Because it's difficult to handle these individually based on which stream writer is enabled and which isn't,
-  # we just disable them here.
+  # We ignore these below, because they are now supposed to be owned by explicit
+  # early stream-backed routing in the reverse proxy.
+  #
+  # The intended behavior is:
+  # - if a stream writer is enabled, route to that stream writer
+  # - otherwise, route to Synapse `main`
+  #
+  # Broad generic-worker routing must not decide fallback behavior for these.
   #
   # # Account data requests
   # - ^/_matrix/client/(r0|v3|unstable)/.*/tags
@@ -241,6 +305,20 @@ matrix_synapse_workers_generic_worker_endpoints:
   #
   # # Presence requests
   # - ^/_matrix/client/(api/v1|r0|v3|unstable)/presence/
+  #
+  # # Push rules requests
+  # - ^/_matrix/client/(api/v1|r0|v3|unstable)/pushrules/
+  #
+  # # Device lists requests
+  # - ^/_matrix/client/(r0|v3)/delete_devices$
+  # - ^/_matrix/client/(api/v1|r0|v3|unstable)/devices(/|$)
+  # - ^/_matrix/client/(r0|v3|unstable)/keys/upload(/|$)
+  # - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/device_signing/upload$
+  # - ^/_matrix/client/(api/v1|r0|v3|unstable)/keys/signatures/upload$
+  #
+  # # Thread subscriptions requests
+  # - ^/_matrix/client/unstable/io.element.msc4306/rooms/.*/thread/.*/subscription$
+  # - ^/_matrix/client/unstable/io.element.msc4308/thread_subscriptions$
   #
   # # User directory search requests
   # - ^/_matrix/client/(r0|v3|unstable)/user_directory/search$

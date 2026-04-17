@@ -26,22 +26,18 @@ Note that **not all components support self-building yet**.
 
 Possibly outdated list of roles where self-building the Docker image is currently possible:
 - `matrix-synapse`
-- `matrix-synapse-admin`
+- `matrix-ketesa`
 - `matrix-client-element`
-- `matrix-client-hydrogen`
-- `matrix-client-cinny`
+- `hydrogen`
+- `cinny`
+- `sable`
 - `matrix-registration`
-- `matrix-coturn`
+- `coturn`
 - `matrix-corporal`
-- `matrix-dimension`
-- `matrix-ma1sd`
 - `exim-relay`
 - `matrix-bridge-hookshot`
 - `matrix-bridge-appservice-irc`
-- `matrix-bridge-appservice-slack`
-- `matrix-bridge-appservice-webhooks`
 - `matrix-bridge-beeper-linkedin`
-- `matrix-bridge-mautrix-facebook`
 - `matrix-bridge-mautrix-googlechat`
 - `matrix-bridge-mautrix-telegram`
 - `matrix-bridge-mautrix-signal`

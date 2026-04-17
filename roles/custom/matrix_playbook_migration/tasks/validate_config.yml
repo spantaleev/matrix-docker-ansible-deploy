@@ -1,6 +1,6 @@
-# SPDX-FileCopyrightText: 2022 - 2025 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2024 - 2025 MDAD project contributors
-# SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2022-2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024, 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -11,7 +11,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_vars_yml_snapshotting_enabled', 'new': 'devture_playbook_state_preserver_vars_preservation_enabled'}
     - {'old': 'matrix_vars_yml_snapshotting_src', 'new': 'devture_playbook_state_preserver_vars_preservation_src'}
@@ -40,8 +40,8 @@
     - {'old': 'matrix_systemd_services_list', 'new': 'devture_systemd_service_manager_services_list_additional'}
     - {'old': 'matrix_common_after_systemd_service_start_wait_for_timeout_seconds', 'new': 'devture_systemd_service_manager_up_verification_delay_seconds'}
     - {'old': 'matrix_systemd_services_autostart_enabled', 'new': 'devture_systemd_service_manager_services_autostart_enabled'}
-    - {'old': 'matrix_prometheus_node_exporter_metrics_proxying_enabled', 'new': '<prometheus_node_exporter_container_labels_traefik_enabled or matrix_metrics_exposure_enabled>'}
-    - {'old': 'matrix_prometheus_postgres_exporter_metrics_proxying_enabled', 'new': '<prometheus_postgres_exporter_container_labels_traefik_enabled or matrix_metrics_exposure_enabled>'}
+    - {'old': 'matrix_prometheus_node_exporter_metrics_proxying_enabled', 'new': '<prometheus_node_exporter_container_labels_metrics_enabled or matrix_metrics_exposure_enabled>'}
+    - {'old': 'matrix_prometheus_postgres_exporter_metrics_proxying_enabled', 'new': '<prometheus_postgres_exporter_container_labels_metrics_enabled or matrix_metrics_exposure_enabled>'}
     - {'old': 'matrix_playbook_traefik_certs_dumper_role_enabled', 'new': 'traefik_certs_dumper_enabled'}
     - {'old': 'matrix_playbook_traefik_role_enabled', 'new': 'traefik_enabled'}
 
@@ -73,6 +73,38 @@
     - {'old': 'matrix_playbook_reverse_proxy_traefik_middleware_compession_enabled', 'new': 'matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled'}
     - {'old': 'matrix_playbook_reverse_proxy_traefik_middleware_compession_name', 'new': 'matrix_playbook_reverse_proxy_traefik_middleware_compression_name'}
 
+    - {'old': 'matrix_synapse_account_threepid_delegates_msisdn_mas1sd_url', 'new': '<removed>'}
+
+    - {'old': 'cinny_docker_image', 'new': 'cinny_container_image'}
+    - {'old': 'cinny_docker_image_registry_prefix', 'new': 'cinny_container_image_registry_prefix'}
+    - {'old': 'cinny_docker_image_registry_prefix_upstream', 'new': 'cinny_container_image_registry_prefix_upstream'}
+    - {'old': 'cinny_docker_image_registry_prefix_upstream_default', 'new': 'cinny_container_image_registry_prefix_upstream_default'}
+
+    - {'old': 'coturn_docker_image', 'new': 'coturn_container_image'}
+    - {'old': 'coturn_docker_image_registry_prefix', 'new': 'coturn_container_image_registry_prefix'}
+    - {'old': 'coturn_docker_image_registry_prefix_upstream', 'new': 'coturn_container_image_registry_prefix_upstream'}
+    - {'old': 'coturn_docker_image_registry_prefix_upstream_default', 'new': 'coturn_container_image_registry_prefix_upstream_default'}
+
+    - {'old': 'ddclient_docker_image', 'new': 'ddclient_container_image'}
+    - {'old': 'ddclient_docker_image_registry_prefix', 'new': 'ddclient_container_image_registry_prefix'}
+    - {'old': 'ddclient_docker_image_registry_prefix_upstream', 'new': 'ddclient_container_image_registry_prefix_upstream'}
+    - {'old': 'ddclient_docker_image_registry_prefix_upstream_default', 'new': 'ddclient_container_image_registry_prefix_upstream_default'}
+
+    - {'old': 'hydrogen_docker_image', 'new': 'hydrogen_container_image'}
+    - {'old': 'hydrogen_docker_image_registry_prefix', 'new': 'hydrogen_container_image_registry_prefix'}
+    - {'old': 'hydrogen_docker_image_registry_prefix_upstream', 'new': 'hydrogen_container_image_registry_prefix_upstream'}
+    - {'old': 'hydrogen_docker_image_registry_prefix_upstream_default', 'new': 'hydrogen_container_image_registry_prefix_upstream_default'}
+
+    - {'old': 'prometheus_nginxlog_exporter_docker_image', 'new': 'prometheus_nginxlog_exporter_container_image'}
+    - {'old': 'prometheus_nginxlog_exporter_docker_image_registry_prefix', 'new': 'prometheus_nginxlog_exporter_container_image_registry_prefix'}
+    - {'old': 'prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream', 'new': 'prometheus_nginxlog_exporter_container_image_registry_prefix_upstream'}
+    - {'old': 'prometheus_nginxlog_exporter_docker_image_registry_prefix_upstream_default', 'new': 'prometheus_nginxlog_exporter_container_image_registry_prefix_upstream_default'}
+    - {'old': 'prometheus_nginxlog_exporter_docker_image_arch_check_enabled', 'new': 'prometheus_nginxlog_exporter_container_image_arch_check_enabled'}
+    - {'old': 'prometheus_nginxlog_exporter_metrics_proxying_enabled', 'new': 'prometheus_nginxlog_exporter_container_labels_metrics_enabled'}
+    - {'old': 'prometheus_nginxlog_exporter_metrics_proxying_hostname', 'new': 'prometheus_nginxlog_exporter_container_labels_metrics_hostname'}
+    - {'old': 'prometheus_nginxlog_exporter_metrics_proxying_path_prefix', 'new': 'prometheus_nginxlog_exporter_container_labels_metrics_path_prefix'}
+    - {'old': 'prometheus_nginxlog_exporter_config_namespaces_matrix_source_tags_custom', 'new': 'prometheus_nginxlog_exporter_config_namespaces_source_tags_custom'}
+
 - name: (Deprecation) Catch and report matrix_postgres variables
   ansible.builtin.fail:
     msg: |-
@@ -86,8 +118,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'matrix_postgres_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_postgres_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_postgres_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report matrix_mailer_ variables
   ansible.builtin.fail:
@@ -99,14 +131,33 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_mailer_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'matrix_mailer_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_mailer_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mailer_.+', wantlist=True) | length > 0"
+
+- when: matrix_playbook_migration_matrix_prometheus_nginxlog_exporter_migration_validation_enabled | bool
+  block:
+    - ansible.builtin.set_fact:
+        matrix_playbook_migration_matrix_prometheus_nginxlog_exporter_migration_vars: |-
+          {{ lookup('ansible.builtin.varnames', '^matrix_prometheus_nginxlog_exporter_.+', wantlist=True) }}
+
+    - name: (Deprecation) Catch and report matrix_prometheus_nginxlog_exporter variables
+      ansible.builtin.fail:
+        msg: >-
+          The matrix-prometheus-nginxlog-exporter role that used to be part of this playbook has been replaced by https://github.com/mother-of-all-self-hosting/ansible-role-prometheus-nginxlog-exporter.
+          The new role is compatible with the old one, but uses different names for its variables.
+
+          Please rename all variables (`matrix_prometheus_nginxlog_exporter_` -> `prometheus_nginxlog_exporter_`) on your configuration file (vars.yml).
+
+          After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+          The following variables in your configuration need to be renamed: {{ matrix_playbook_migration_matrix_prometheus_nginxlog_exporter_migration_vars | join(', ') }}
+      when: "matrix_playbook_migration_matrix_prometheus_nginxlog_exporter_migration_vars | length > 0"
 
 - when: matrix_playbook_migration_matrix_prometheus_node_exporter_migration_validation_enabled | bool
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_prometheus_node_exporter_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_prometheus_node_exporter_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_prometheus_node_exporter variables
       ansible.builtin.fail:
@@ -118,14 +169,14 @@
 
           After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-          The following variables in your configuration need to be renamed: {{ matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars.keys() | join(', ') }}
+          The following variables in your configuration need to be renamed: {{ matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars | join(', ') }}
       when: "matrix_playbook_migration_matrix_prometheus_node_exporter_migration_vars | length > 0"
 
 - when: matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_validation_enabled | bool
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_matrix_prometheus_postgres_exporter_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_prometheus_postgres_exporter_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_prometheus_postgres_exporter_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_prometheus_postgres_exporter variables
       ansible.builtin.fail:
@@ -144,7 +195,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_backup_borg_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_backup_borg_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_backup_borg_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_backup_borg variables
       ansible.builtin.fail:
@@ -163,7 +214,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_grafana_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_grafana_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_grafana_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_grafana variables
       ansible.builtin.fail:
@@ -182,7 +233,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_ntfy_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_ntfy_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_ntfy_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_ntfy variables
       ansible.builtin.fail:
@@ -201,7 +252,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_redis_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_redis_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_redis_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_redis variables
       ansible.builtin.fail:
@@ -220,7 +271,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_redis_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'redis_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^redis_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_redis variables
       ansible.builtin.fail:
@@ -238,7 +289,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_keydb_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'keydb_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^keydb_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_redis variables
       ansible.builtin.fail:
@@ -256,7 +307,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_etherpad_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_etherpad_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_etherpad_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_etherpad variables
       ansible.builtin.fail:
@@ -275,7 +326,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_aux_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_aux_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_aux_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_aux variables
       ansible.builtin.fail:
@@ -294,7 +345,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_jitsi_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_jitsi_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_jitsi_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_jitsi variables
       ansible.builtin.fail:
@@ -313,7 +364,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_postmoogle_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_bot_postmoogle_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_bot_postmoogle_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_bot_postmoogle variables
       ansible.builtin.fail:
@@ -332,7 +383,7 @@
         msg: >-
           Your configuration contains a variable, which now has a different name.
           Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-      when: "item.old in vars"
+      when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
       with_items:
         - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_enabled', 'new': 'matrix_metrics_exposure_enabled'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_metrics_basic_auth_enabled', 'new': 'matrix_metrics_exposure_http_basic_auth_enabled'}
@@ -367,17 +418,17 @@
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_client_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_client_api_enabled'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled', 'new': '<replaced by matrix_synapse_container_labels_public_client_synapse_oidc_api_enabled, but if you use matrix_synapse_oidc_enabled then it would be toggled automatically; see the new recommended OIDC example configuration in docs/configuring-playbook-synapse.md>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_admin_api_enabled', 'new': 'matrix_synapse_container_labels_public_client_synapse_admin_api_enabled'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_traefik_enabled and matrix_ma1sd_container_labels_matrix_identity_enabled>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_enabled', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_addr_with_container', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_identity_api_addr_sans_container', 'new': '<removed>'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_traefik_enabled and matrix_ma1sd_container_labels_matrix_client_user_directory_search_enabled>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_enabled', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_with_container', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_addr_sans_container', 'new': '<removed>'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_matrix_client_user_directory_search_path_regexp>'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled', 'new': 'matrix_ma1sd_container_labels_matrix_client_3pid_registration_enabled'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_user_directory_search_v3_to_r0_redirect_enabled', 'new': '<removed>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_enabled', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_with_container', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_addr_sans_container', 'new': '<removed>'}
-        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled', 'new': '<superseded by matrix_ma1sd_container_labels_matrix_client_3pid_registration_path_regexp>'}
+        - {'old': 'matrix_nginx_proxy_proxy_matrix_3pid_registration_v3_to_r0_redirect_enabled', 'new': '<removed>'}
         - {'old': 'matrix_nginx_proxy_proxy_conduit_enabled', 'new': 'matrix_conduit_container_labels_traefik_enabled'}
         - {'old': 'matrix_nginx_proxy_proxy_conduit_block_federation_api_on_client_port', 'new': '<not supported anymore - the /_matrix/federation endpoints are now also being served on the Client-Server API port>'}
         - {'old': 'matrix_nginx_proxy_proxy_conduit_federation_api_enabled', 'new': 'matrix_conduit_container_labels_public_federation_api_enabled'}
@@ -419,7 +470,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_nginx_proxy_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_nginx_proxy_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_nginx_proxy_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report leftover matrix_nginx_proxy variables
       ansible.builtin.fail:
@@ -435,7 +486,7 @@
   block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_ssl_migration_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_ssl_.*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_ssl_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_ssl variables
       ansible.builtin.fail:
@@ -450,7 +501,7 @@
 - block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_matrix_synapse_container_labels_public_client_synapse_oidc_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_synapse_container_labels_public_client_synapse_oidc_*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_synapse_container_labels_public_client_synapse_oidc_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_ssl variables
       ansible.builtin.fail:
@@ -461,7 +512,7 @@
 - block:
     - ansible.builtin.set_fact:
         matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars: |-
-          {{ vars | dict2items | selectattr('key', 'match', 'matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_*') | list | items2dict }}
+          {{ lookup('ansible.builtin.varnames', '^matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report matrix_ssl variables
       ansible.builtin.fail:
@@ -479,8 +530,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_postgres_backup_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_postgres_backup_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_postgres_backup_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_postgres_backup_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report devture_postgres variables
   ansible.builtin.fail:
@@ -492,8 +543,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_postgres_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_postgres_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_postgres_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_postgres_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report traefik_certs_dumper variables
   ansible.builtin.fail:
@@ -505,8 +556,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_traefik_certs_dumper_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_traefik_certs_dumper_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_traefik_certs_dumper_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_traefik_certs_dumper_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report devture_traefik variables
   ansible.builtin.fail:
@@ -518,8 +569,8 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_traefik_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_traefik_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_traefik_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report devture_container_socket_proxy variables
   ansible.builtin.fail:
@@ -531,8 +582,134 @@
 
       After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-      The following variables in your configuration need to be renamed: {{ vars | dict2items | selectattr('key', 'match', 'devture_container_socket_proxy_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'devture_container_socket_proxy_.*') | list | items2dict"
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^devture_container_socket_proxy_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report ma1sd variables
+  ansible.builtin.fail:
+    msg: |-
+      ma1sd was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_ma1sd_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-ma1sd.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_ma1sd_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_ma1sd_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-appservice-slack variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-appservice-slack was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_appservice_slack_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-appservice-slack.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_appservice_slack_.+', wantlist=True) | join(', ') }}
+
+      You might probably wish to have a look at mautrix-slack, another bridge to Slack. Refer to `docs/configuring-playbook-bridge-mautrix-slack.md` for more information.
+  when: "lookup('ansible.builtin.varnames', '^matrix_appservice_slack_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-appservice-webhooks variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-appservice-webhooks was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_appservice_webhooks_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-appservice-webhooks.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_appservice_webhooks_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_appservice_webhooks_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-chatgpt-bot variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-chatgpt-bot was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_bot_chatgpt_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bot manually. See `docs/configuring-playbook-bot-chatgpt.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_bot_chatgpt_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_bot_chatgpt_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-client-cinny variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-client-cinny role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-cinny).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_client_cinny_`-prefixed variables (`matrix_client_cinny_*` -> `cinny_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_client_cinny_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-client-hydrogen variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-client-hydrogen role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-hydrogen).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_client_hydrogen_`-prefixed variables (`matrix_client_hydrogen_*` -> `hydrogen_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_client_hydrogen_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_client_hydrogen_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-coturn variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-coturn role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-coturn).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_coturn_`-prefixed variables (`matrix_coturn_*` -> `coturn_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_coturn_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_coturn_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-conduwuit variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-conduwuit was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_conduwuit*` variables from your configuration file (vars.yml).
+
+      You may wish to migrate to Continuwuity, a drop-in replacement for conduwuit. See `docs/configuring-playbook-continuwuity.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_conduwuit.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_conduwuit.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report matrix-dynamic-dns variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-dynamic-dns role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-ddclient).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_dynamic_dns_`-prefixed variables (`matrix_dynamic_dns_*` -> `ddclient_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report mautrix-facebook variables
+  ansible.builtin.fail:
+    msg: |-
+      mautrix-facebook was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mautrix_facebook_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mautrix-facebook.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mautrix_facebook_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mautrix_facebook_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report mautrix-hangouts variables
   ansible.builtin.fail:
@@ -544,8 +721,80 @@
 
       You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mautrix-hangouts.md` for more information.
 
-      The following variables in your configuration need to be removed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_mautrix_hangouts_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'matrix_mautrix_hangouts_.*') | list | items2dict"
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mautrix_hangouts_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mautrix_hangouts_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report mautrix-instagram variables
+  ansible.builtin.fail:
+    msg: |-
+      mautrix-instagram was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mautrix_instagram_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mautrix-instagram.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mautrix_instagram_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mautrix_instagram_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report mx-puppet-discord variables
+  ansible.builtin.fail:
+    msg: |-
+      The MX Puppet Discord bridge was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mx_puppet_discord_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mx-puppet-discord.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mx_puppet_discord_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_discord_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report mx-puppet-instagram variables
+  ansible.builtin.fail:
+    msg: |-
+      The MX Puppet Instagram bridge was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mx_puppet_instagram_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mx-puppet-instagram.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mx_puppet_instagram_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_instagram_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report mx-puppet-slack variables
+  ansible.builtin.fail:
+    msg: |-
+      The MX Puppet Slack bridge was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mx_puppet_slack_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mx-puppet-slack.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mx_puppet_slack_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_slack_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report mx-puppet-twitter variables
+  ansible.builtin.fail:
+    msg: |-
+      The MX Puppet Twitter bridge was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_mx_puppet_twitter_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-mx-puppet-twitter.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_mx_puppet_twitter_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_mx_puppet_twitter_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report the Dimension integration manager variables
+  ansible.builtin.fail:
+    msg: |-
+      The Dimension integration manager was completely removed from the playbook in February 2026.
+
+      Please remove all `matrix_dimension_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-dimension.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_dimension_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_dimension_.+', wantlist=True) | length > 0"
 
 - name: (Deprecation) Catch and report Email2Matrix variables
   ansible.builtin.fail:
@@ -556,5 +805,61 @@
 
       You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-email2matrix.md` for more information.
 
-      The following variables in your configuration need to be removed: {{ vars | dict2items | selectattr('key', 'match', 'matrix_email2matrix_.*') | map(attribute='key') | join(', ') }}
-  when: "vars | dict2items | selectattr('key', 'match', 'matrix_email2matrix_.*') | list | items2dict"
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_email2matrix_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_email2matrix_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report go-skype-bridge variables
+  ansible.builtin.fail:
+    msg: |-
+      The go-skype-bridge was completely removed from the playbook in November 2025, as Skype has been discontinued since May 2025.
+
+      Please remove all `matrix_go_skype_bridge_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the bridge manually. See `docs/configuring-playbook-bridge-go-skype-bridge.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_go_skype_bridge_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report the Sliding Sync proxy variables
+  ansible.builtin.fail:
+    msg: |-
+      The Sliding Sync proxy was completely removed from the playbook in November 2025.
+
+      Please remove all `matrix_sliding_sync_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the proxy manually. See `docs/configuring-playbook-sliding-sync-proxy.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_sliding_sync_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_sliding_sync_.+', wantlist=True) | length > 0"
+
+- name: (Deprecation) Catch and report the synapse-auto-invite-accept variables
+  ansible.builtin.fail:
+    msg: |-
+      synapse-auto-invite-accept was completely removed from the playbook in February 2026, as the same functionality is available since Synapse v1.109.0.
+
+      Please remove all `matrix_synapse_ext_synapse_auto_accept_invite_*` variables from your configuration file (vars.yml).
+
+      To enable the native feature, see `docs/configuring-playbook-synapse-auto-accept-invite.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_synapse_ext_synapse_auto_accept_invite_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_synapse_ext_synapse_auto_accept_invite_.+', wantlist=True) | length > 0"
+
+# Note: we intentionally do NOT use a blanket `^matrix_synapse_admin_.+` pattern here.
+# The matrix-synapse role has its own `matrix_synapse_admin_contact` variable (and others like
+# `matrix_synapse_container_labels_*_synapse_admin_api_*`) that share the same prefix but relate
+# to the Synapse Admin HTTP API, not the Ketesa web UI. A blanket match would produce false positives.
+- name: (Deprecation) Catch and report matrix-synapse-admin variables renamed to matrix-ketesa
+  ansible.builtin.fail:
+    msg: |-
+      Synapse Admin has been rebranded to Ketesa. The `matrix-synapse-admin` role has been renamed to `matrix-ketesa`.
+
+      All `matrix_synapse_admin_*` variables must be renamed to `matrix_ketesa_*` in your configuration file (vars.yml).
+
+      Additionally, note that the Docker image changed from `ghcr.io/etkecc/synapse-admin` to `ghcr.io/etkecc/ketesa`.
+
+      See `docs/configuring-playbook-ketesa.md` for more information.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_synapse_admin_(enabled|base_path|config|container|hostname|path_prefix|http_|floc_|hsts_|restart_|systemd_)', wantlist=True) | join(', ') }}
+  when:
+    - matrix_playbook_migration_matrix_synapse_admin_ketesa_variable_transition_checks_enabled | bool
+    - "lookup('ansible.builtin.varnames', '^matrix_synapse_admin_(enabled|base_path|config|container|hostname|path_prefix|http_|floc_|hsts_|restart_|systemd_)', wantlist=True) | length > 0"

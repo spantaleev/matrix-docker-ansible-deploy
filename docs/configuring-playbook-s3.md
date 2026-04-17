@@ -22,13 +22,11 @@ Finally, [set up S3 storage for Synapse](#setting-up) (with [Goofys](configuring
 
 ## Choosing an Object Storage provider
 
-You can create [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object storage like [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html), [Storj](https://storj.io), [Wasabi](https://wasabi.com), [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces), etc.
+You can create [Amazon S3](https://aws.amazon.com/s3/) or another S3-compatible object storage like [Backblaze B2](https://www.backblaze.com/b2/cloud-storage.html), [Wasabi](https://wasabi.com), [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces), [Storj](https://storj.io), etc.
 
-Amazon S3, Backblaze B2, and Storj are pay-as-you with no minimum charges for storing too little data.
+Amazon S3 and Backblaze B2 are pay-as-you with no minimum charges for storing too little data. Note that Backblaze egress is free, but for only certain users for up to 3x the amount of data stored. Beyond that you will pay $0.01/GB of egress.
 
-All these providers have different prices, with Storj appearing to be the cheapest (as of 2024-10, storage fee is $0.004 per GB/month, and egress fee is $0.007 per GB; check actual pricing [here](https://storj.dev/dcs/pricing)). Backblaze egress is free, but for only certain users for up to 3x the amount of data stored. Beyond that you will pay $0.01/GB of egress.
-
-Wasabi has a minimum charge of 1TB if you're storing less than 1TB, which becomes expensive if you need to store less data than that. Likewise, Digital Ocean Spaces has also a minimum charge of 250GB ($5/month as of 2022-10).
+Wasabi has a minimum charge of 1TB if you're storing less than 1TB, which becomes expensive if you need to store less data than that. Likewise, Digital Ocean Spaces has also a minimum charge of 250GB ($5/month as of 2022-10). Though Storj does not set minimum amount of data to be stored, it also charges $5 minimum monthly usage fee since July 1, 2025, if your monthly usage (storage, bandwidth, and segments) totals less than $5.
 
 Here are some of the important aspects of choosing the right provider:
 

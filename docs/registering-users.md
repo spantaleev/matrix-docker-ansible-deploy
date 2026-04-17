@@ -95,10 +95,7 @@ This `register-user` script actually invokes the `mas-cli manage register-user` 
 
 ## Managing users via a Web UI
 
-To manage users more easily (via a web user-interace), you can install [Synapse Admin](configuring-playbook-synapse-admin.md).
-
-> [!WARNING]
-> If you're using [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md), note that user management via synapse-admin is not fully working yet. See the [Expectations](configuring-playbook-matrix-authentication-service.md#expectations) section for more information.
+To manage users and your homeserver more easily (via a web interface), you can install [Ketesa](configuring-playbook-ketesa.md) — a fully-featured admin UI covering users, rooms, media, sessions, and MAS management.
 
 ## Letting certain users register on your private server
 
@@ -161,6 +158,6 @@ You can then proceed to run the query above.
 
 ### Adding/Removing Administrator privileges to an existing user in Matrix Authentication Service
 
-Promoting/demoting a user in Matrix Authentication Service cannot currently (2024-10-19) be done via the [`mas-cli` Management tool](./configuring-playbook-matrix-authentication-service.md#management).
+Promoting/demoting a user in Matrix Authentication Service can be done using the [`mas-cli`](./configuring-playbook-matrix-authentication-service.md#management) management tool's [`manage promote-admin`](https://element-hq.github.io/matrix-authentication-service/reference/cli/manage.html#manage-promote-admin) and [`manage demote-admin`](https://element-hq.github.io/matrix-authentication-service/reference/cli/manage.html#manage-demote-admin) commands. For example: `/matrix/matrix-authentication-service/bin/mas-cli manage promote-admin some.username`.
 
-You can do it via the [MAS Admin API](https://element-hq.github.io/matrix-authentication-service/api/index.html)'s `POST /api/admin/v1/users/{id}/set-admin` endpoint.
+You can also do it via the [MAS Admin API](https://element-hq.github.io/matrix-authentication-service/api/index.html)'s `POST /api/admin/v1/users/{id}/set-admin` endpoint.

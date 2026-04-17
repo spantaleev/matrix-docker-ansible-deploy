@@ -12,9 +12,9 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_client_schildichat_data_path }}", when: true}
     - {path: "{{ matrix_client_schildichat_container_src_files_path }}", when: "{{ matrix_client_schildichat_container_image_self_build }}"}
@@ -22,15 +22,15 @@
 
 - name: Ensure SchildiChat Web container image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_client_schildichat_docker_image }}"
+    name: "{{ matrix_client_schildichat_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_client_schildichat_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_schildichat_docker_image_force_pull }}"
+    force_source: "{{ matrix_client_schildichat_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_schildichat_container_image_force_pull }}"
   when: "not matrix_client_schildichat_container_image_self_build | bool"
-  register: result
+  register: matrix_client_schildichat_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_client_schildichat_container_image_pull_result is not failed
 
 - when: "matrix_client_schildichat_container_image_self_build | bool"
   block:
@@ -41,7 +41,7 @@
         version: "{{ matrix_client_schildichat_container_image_self_build_version }}"
         force: "yes"
       become: true
-      become_user: "{{ matrix_user_username }}"
+      become_user: "{{ matrix_user_name }}"
       register: matrix_client_schildichat_git_pull_results
 
     # See:
@@ -62,7 +62,7 @@
       ansible.builtin.command:
         cmd: |-
           {{ devture_systemd_docker_base_host_command_docker }} buildx build
-          --tag={{ matrix_client_schildichat_docker_image }}
+          --tag={{ matrix_client_schildichat_container_image }}
           --file={{ matrix_client_schildichat_container_src_files_path }}/Dockerfile
           {{ matrix_client_schildichat_container_src_files_path }}
       changed_when: true
@@ -71,31 +71,34 @@
   ansible.builtin.copy:
     content: "{{ matrix_client_schildichat_configuration | to_nice_json }}"
     dest: "{{ matrix_client_schildichat_data_path }}/config.json"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_client_schildichat_config_result
 
 - name: Ensure SchildiChat location sharing map style installed
   when: matrix_client_schildichat_location_sharing_enabled | bool
   ansible.builtin.copy:
     content: "{{ matrix_client_schildichat_location_sharing_map_style | to_nice_json }}"
     dest: "{{ matrix_client_schildichat_data_path }}/map_style.json"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_client_schildichat_config_map_style_result
 
 - name: Ensure SchildiChat Web config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ matrix_client_schildichat_data_path }}/{{ item.name }}"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
     - {src: "{{ matrix_client_schildichat_page_template_welcome_path }}", name: "welcome.html"}
     - {src: "{{ matrix_client_schildichat_embedded_pages_home_path }}", name: "home.html"}
   when: "item.src is not none"
+  register: matrix_client_schildichat_support_files_result
 
 - name: Ensure SchildiChat Web config files removed
   ansible.builtin.file:
@@ -116,4 +119,16 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-client-schildichat.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-schildichat.service"
-    mode: 0644
+    mode: '0644'
+  register: matrix_client_schildichat_systemd_service_result
+
+- name: Determine whether SchildiChat Web needs a restart
+  ansible.builtin.set_fact:
+    matrix_client_schildichat_restart_necessary: >-
+      {{
+        matrix_client_schildichat_config_result.changed | default(false)
+        or matrix_client_schildichat_config_map_style_result.changed | default(false)
+        or matrix_client_schildichat_support_files_result.changed | default(false)
+        or matrix_client_schildichat_systemd_service_result.changed | default(false)
+        or matrix_client_schildichat_container_image_pull_result.changed | default(false)
+      }}

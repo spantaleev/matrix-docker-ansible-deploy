@@ -15,11 +15,21 @@ homeserver:
 
 user:
   mxid_localpart: {{ matrix_bot_baibot_config_user_mxid_localpart | to_json }}
+
+  # Authentication: set EITHER password OR access_token + device_id.
   password: {{ matrix_bot_baibot_config_user_password | to_json }}
+  access_token: {{ matrix_bot_baibot_config_user_access_token | to_json }}
+  device_id: {{ matrix_bot_baibot_config_user_device_id | to_json }}
 
   # The name the bot uses as a display name and when it refers to itself.
   # Leave empty to use the default (baibot).
   name: {{ matrix_bot_baibot_config_user_name | to_json }}
+
+  # An optional path to an image file to be used as a custom avatar image.
+  # - null or empty string: use the default avatar
+  # - "keep": don't touch the avatar, keep whatever is already set
+  # - any other value: path to a custom avatar image file
+  avatar: {{ matrix_bot_baibot_config_user_avatar | to_json }}
 
   encryption:
     # An optional passphrase to use for backing up and recovering the bot's encryption keys.

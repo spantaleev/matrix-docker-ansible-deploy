@@ -10,4 +10,4 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 🪦 The playbook used to be able to install and configure [mx-puppet-skype](https://github.com/Sorunome/mx-puppet-skype), but no longer includes this component, because it has been broken and unmaintained for a long time.
 
-Bridging to [Skype](https://www.skype.com/) can also happen via the [go-skype-bridge](configuring-playbook-bridge-go-skype-bridge.md) bridge supported by the playbook.
+The playbook used to be able to install and configure [go-skype-bridge](configuring-playbook-bridge-go-skype-bridge.md) as alternative to this bridge, but no longer includes this component, because Skype has been discontinued since May 2025.

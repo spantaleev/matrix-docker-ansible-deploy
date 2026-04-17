@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-steam-bridge service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-steam-bridge.service"
+  register: matrix_steam_bridge_service_stat
+
+- when: matrix_steam_bridge_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-steam-bridge is stopped
+      ansible.builtin.service:
+        name: matrix-steam-bridge
+        state: stopped
+        daemon_reload: true
+
+    - name: Ensure matrix-steam-bridge.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-steam-bridge.service"
+        state: absent

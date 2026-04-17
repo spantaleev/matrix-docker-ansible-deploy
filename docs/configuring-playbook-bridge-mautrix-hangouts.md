@@ -23,5 +23,5 @@ systemctl disable --now matrix-mautrix-hangouts.service
 
 rm -rf /matrix/mautrix-hangouts
 
-/matrix/postgres/bin/cli-non-interactive 'DROP DATABASE matrix_mautrix_hangouts;'
+/matrix/postgres/bin/cli-non-interactive -c 'DROP DATABASE matrix_mautrix_hangouts;'
 ```

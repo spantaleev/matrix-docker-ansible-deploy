@@ -1,0 +1,63 @@
+{#
+SPDX-FileCopyrightText: 2025 Jade Ellis
+SPDX-FileCopyrightText: 2025 - 2026 Thom Wiggers
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_appservice_irc_container_labels_traefik_enabled and matrix_appservice_irc_container_labels_media_proxy_enabled %}
+traefik.enable=true
+
+{% if matrix_appservice_irc_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_appservice_irc_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-appservice-irc-media-proxy.loadbalancer.server.port={{ matrix_appservice_irc_ircService_mediaProxy_bindPort }}
+
+############################################################
+#                                                          #
+# IRC Bridge Media Proxy                                   #
+#                                                          #
+############################################################
+
+{% set middlewares = [] %}
+
+traefik.http.routers.matrix-appservice-irc-media-proxy.rule={{ matrix_appservice_irc_container_labels_media_proxy_traefik_rule }}
+
+{% if matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-appservice-irc-media-proxy-slashless-redirect.redirectregex.regex=({{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix | quote }})$
+traefik.http.middlewares.matrix-appservice-irc-media-proxy-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-appservice-irc-media-proxy-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix != '/' %}
+traefik.http.middlewares.matrix-appservice-irc-media-proxy-strip-prefix.stripprefix.prefixes={{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}
+{% set middlewares = middlewares + ['matrix-appservice-irc-media-proxy-strip-prefix'] %}
+{% endif %}
+
+
+{% if matrix_appservice_irc_container_labels_media_proxy_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-appservice-irc-media-proxy.priority={{ matrix_appservice_irc_container_labels_media_proxy_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-appservice-irc-media-proxy.service=matrix-appservice-irc-media-proxy
+traefik.http.routers.matrix-appservice-irc-media-proxy.entrypoints={{ matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints }}
+
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-appservice-irc-media-proxy.middlewares={{ middlewares | join(',') }}
+{% endif %}
+
+traefik.http.routers.matrix-appservice-irc-media-proxy.tls={{ matrix_appservice_irc_container_labels_media_proxy_traefik_tls | to_json }}
+{% if matrix_appservice_irc_container_labels_media_proxy_traefik_tls %}
+traefik.http.routers.matrix-appservice-irc-media-proxy.tls.certResolver={{ matrix_appservice_irc_container_labels_media_proxy_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /IRC Bridge Media Proxy                                  #
+#                                                          #
+############################################################
+{% endif %}
+
+{{ matrix_appservice_irc_container_labels_additional_labels }}

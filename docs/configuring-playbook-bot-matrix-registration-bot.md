@@ -37,6 +37,10 @@ matrix_synapse_enable_registration: true
 
 # Restrict registration to users with a token
 matrix_synapse_registration_requires_token: true
+
+# Set an optional command prefix for the bot. This can be any arbitrary string, including whitespace.
+# Example: "!regbot "
+matrix_bot_matrix_registration_bot_bot_prefix: ""
 ```
 
 The bot account will be created automatically.
@@ -67,7 +71,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-- If you change the bot password (`matrix_bot_matrix_registration_bot_bot_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [synapse-admin](configuring-playbook-synapse-admin.md) to change it, and then update `matrix_bot_matrix_registration_bot_bot_password` to let the bot know its new password.
+- If you change the bot password (`matrix_bot_matrix_registration_bot_bot_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [Ketesa](configuring-playbook-ketesa.md) to change it, and then update `matrix_bot_matrix_registration_bot_bot_password` to let the bot know its new password.
 
 ## Usage
 
@@ -77,7 +81,7 @@ Send `help` to the bot to see the available commands.
 
 You can also refer to the upstream [Usage documentation](https://github.com/moan0s/matrix-registration-bot#supported-commands).
 
-If you have any questions, or if you need help setting it up, read the [troublshooting guide](https://github.com/moan0s/matrix-registration-bot/blob/main/docs/troubleshooting.md) or join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
+If you have any questions, or if you need help setting it up, read the [troubleshooting guide](https://github.com/moan0s/matrix-registration-bot/blob/main/docs/troubleshooting.md) or join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
 
 To clean the cache (session & encryption data) after you changed the bot's username, changed the login method from access_token to password etc… you can use:
 

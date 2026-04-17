@@ -22,25 +22,36 @@ matrix_mautrix_twitter_container_image_self_build_repo: "https://github.com/maut
 matrix_mautrix_twitter_container_image_self_build_repo_version: "{{ 'master' if matrix_mautrix_twitter_version == 'latest' else matrix_mautrix_twitter_version }}"
 
 # renovate: datasource=docker depName=dock.mau.dev/mautrix/twitter
-matrix_mautrix_twitter_version: v0.3.0
+matrix_mautrix_twitter_version: v0.2603.0
 # See: https://mau.dev/tulir/mautrix-twitter/container_registry
-matrix_mautrix_twitter_docker_image: "{{ matrix_mautrix_twitter_docker_image_registry_prefix }}mautrix/twitter:{{ matrix_mautrix_twitter_version }}"
-matrix_mautrix_twitter_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_twitter_container_image_self_build else matrix_mautrix_twitter_docker_image_registry_prefix_upstream }}"
-matrix_mautrix_twitter_docker_image_registry_prefix_upstream: "{{ matrix_mautrix_twitter_docker_image_registry_prefix_upstream_default }}"
-matrix_mautrix_twitter_docker_image_registry_prefix_upstream_default: "dock.mau.dev/"
-matrix_mautrix_twitter_docker_image_force_pull: "{{ matrix_mautrix_twitter_docker_image.endswith(':latest') }}"
+matrix_mautrix_twitter_container_image: "{{ matrix_mautrix_twitter_container_image_registry_prefix }}mautrix/twitter:{{ matrix_mautrix_twitter_version }}"
+matrix_mautrix_twitter_container_image_registry_prefix: "{{ 'localhost/' if matrix_mautrix_twitter_container_image_self_build else matrix_mautrix_twitter_container_image_registry_prefix_upstream }}"
+matrix_mautrix_twitter_container_image_registry_prefix_upstream: "{{ matrix_mautrix_twitter_container_image_registry_prefix_upstream_default }}"
+matrix_mautrix_twitter_container_image_registry_prefix_upstream_default: "dock.mau.dev/"
+matrix_mautrix_twitter_container_image_force_pull: "{{ matrix_mautrix_twitter_container_image.endswith(':latest') }}"
 
 matrix_mautrix_twitter_base_path: "{{ matrix_base_data_path }}/mautrix-twitter"
 matrix_mautrix_twitter_config_path: "{{ matrix_mautrix_twitter_base_path }}/config"
 matrix_mautrix_twitter_data_path: "{{ matrix_mautrix_twitter_base_path }}/data"
-matrix_mautrix_twitter_docker_src_files_path: "{{ matrix_mautrix_twitter_base_path }}/docker-src"
+matrix_mautrix_twitter_container_src_files_path: "{{ matrix_mautrix_twitter_base_path }}/docker-src"
 
 matrix_mautrix_twitter_homeserver_address: ""
+# Whether asynchronous uploads via MSC2246 should be enabled for media.
+# Requires a homeserver that supports MSC2246 (https://github.com/matrix-org/matrix-spec-proposals/pull/2246).
+matrix_mautrix_twitter_homeserver_async_media: false
 matrix_mautrix_twitter_homeserver_domain: '{{ matrix_domain }}'
 matrix_mautrix_twitter_appservice_address: 'http://matrix-mautrix-twitter:29327'
 
+matrix_mautrix_twitter_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
+matrix_mautrix_twitter_self_sign_enabled: "{{ matrix_bridges_self_sign_enabled }}"
+
 # A public address that external services can use to reach this appservice.
 matrix_mautrix_twitter_appservice_public_address: ''
+
+# Displayname template for Twitter users.
+# {{ .DisplayName }} is replaced with the display name of the Twitter user.
+# {{ .Username }} is replaced with the username of the Twitter user.
+matrix_mautrix_twitter_network_displayname_template: "{% raw %}{{ .DisplayName }} (Twitter){% endraw %}"
 
 matrix_mautrix_twitter_bridge_command_prefix: "!tw"
 
@@ -196,6 +207,7 @@ matrix_mautrix_twitter_registration_yaml: |
   rate_limited: false
   de.sorunome.msc2409.push_ephemeral: true
   receive_ephemeral: true
+  io.element.msc4190: {{ matrix_mautrix_twitter_msc4190_enabled | to_json }}
 
 matrix_mautrix_twitter_registration: "{{ matrix_mautrix_twitter_registration_yaml | from_yaml }}"
 
@@ -207,3 +219,13 @@ matrix_mautrix_twitter_bridge_encryption_appservice: false
 matrix_mautrix_twitter_bridge_encryption_key_sharing_allow: "{{ matrix_mautrix_twitter_bridge_encryption_allow }}"
 # This pickle key value is compatible with the old mautrix-twitter bridge (before bridgev2).
 matrix_mautrix_twitter_bridge_encryption_pickle_key: mautrix.bridge.e2ee
+
+# matrix_mautrix_twitter_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_mautrix_twitter_restart_necessary: false

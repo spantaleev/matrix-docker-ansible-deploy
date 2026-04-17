@@ -1,14 +1,13 @@
 #jinja2: lstrip_blocks: True
+#
+# Based on https://github.com/matrix-org/matrix-appservice-irc/blob/8daebec7779a2480180cbc4c293838de649aab36/config.sample.yaml
+#
+# Configuration specific to AS registration. Unless other marked, all fields
+# are *REQUIRED*.
+# Unless otherwise specified, these keys CANNOT be hot-reloaded.
 homeserver:
-  # The URL to the home server for client-server API calls, also used to form the
-  # media URLs as displayed in bridged IRC channels:
-  url: {{ matrix_appservice_irc_homeserver_url }}
-  #
-  # The URL of the homeserver hosting media files. This is only used to transform
-  # mxc URIs to http URIs when bridging m.room.[file|image] events. Optional. By
-  # default, this is the homeserver URL, specified above.
-  #
-  media_url: {{ matrix_appservice_irc_homeserver_media_url }}
+  # The URL to the home server for client-server API calls
+  url: "{{ matrix_appservice_irc_homeserver_url }}"
 
   # Drop Matrix messages which are older than this number of seconds, according to
   # the event's origin_server_ts.
@@ -20,18 +19,29 @@ homeserver:
   # clock times and hence produce different origin_server_ts values, which may be old
   # enough to cause *all* events from the homeserver to be dropped.
   # Default: 0 (don't ever drop)
+  # This key CAN be hot-reloaded.
   # dropMatrixMessagesAfterSecs: 300 # 5 minutes
 
   # The 'domain' part for user IDs on this home server. Usually (but not always)
   # is the "domain name" part of the HS URL.
-  domain: {{ matrix_appservice_irc_homeserver_domain }}
+  domain: "{{ matrix_appservice_irc_homeserver_domain }}"
 
   # Should presence be enabled for Matrix clients on this bridge. If disabled on the
   # homeserver then it should also be disabled here to avoid excess traffic.
   # Default: true
   enablePresence: {{ matrix_appservice_irc_homeserver_enablePresence|to_json }}
 
+  # Which port should the appservice bind to. Can be overridden by the one provided in the
+  # command line! Optional.
+  # bindPort: 8090
+
+  # Use this option to force the appservice to listen on another hostname for transactions.
+  # This is NOT your synapse hostname. E.g. use 127.0.0.1 to only listen locally. Optional.
+  # bindHostname: 0.0.0.0
+
+# Configuration specific to the IRC service
 ircService:
+
   # WARNING: The bridge needs to send plaintext passwords to the IRC server, it cannot
   # send a password hash. As a result, passwords (NOT hashes) are stored encrypted in
   # the database.
@@ -50,11 +60,18 @@ ircService:
     # Cache this many Matrix events in memory to be used for m.relates_to messages (usually replies).
     eventCacheSize: 4096
 
+  # All server keys can be hot-reloaded, however existing IRC connections
+  # will not have changes applied to them.
   servers: {{ matrix_appservice_irc_ircService_servers|to_json }}
 
+  # present relevant UI to the user. MSC2346
+  bridgeInfoState:
+    enabled: false
+    initial: false
   # Configuration for an ident server. If you are running a public bridge it is
   # advised you setup an ident server so IRC mods can ban specific Matrix users
   # rather than the application service itself.
+  # This key CANNOT be hot-reloaded
   ident:
     # True to listen for Ident requests and respond with the
     # Matrix user's user_id (converted to ASCII, respecting RFC 1413).
@@ -70,6 +87,10 @@ ircService:
     # The address to listen on for incoming ident requests.
     # Default: 0.0.0.0
     address: "::"
+
+  # Encoding fallback - which text encoding to try if text is not UTF-8. Default: not set.
+  # List of supported encodings: https://www.npmjs.com/package/iconv#supported-encodings
+  # encodingFallback: "ISO-8859-15"
 
   # Configuration for logging. Optional. Default: console debug level logging
   # only.
@@ -87,33 +108,42 @@ ircService:
     # to rotations.
     maxFiles: 5
 
-  # Optional. Enable Prometheus metrics. If this is enabled, you MUST install `prom-client`:
-  #   $ npm install prom-client@6.3.0
   # Metrics will then be available via GET /metrics on the bridge listening port (-p).
+  # This key CANNOT be hot-reloaded
   metrics:
     # Whether to actually enable the metric endpoint. Default: false
     enabled: true
+    # Which port to listen on (omit to listen on the bindPort)
+    #port: 7001
+    # Which hostname to listen on (omit to listen on 127.0.0.1), requires port to be set
+    host: 127.0.0.1
+    # When determining activeness of remote and matrix users, cut off at this number of hours.
+    userActivityThresholdHours: 72 # 3 days
     # When collecting remote user active times, which "buckets" should be used. Defaults are given below.
     # The bucket name is formed of a duration and a period. (h=hours,d=days,w=weeks).
     remoteUserAgeBuckets:
       - "1h"
       - "1d"
       - "1w"
-
   # Configuration for the provisioning API.
-  #
-  # GET /_matrix/provision/link
-  # GET /_matrix/provision/unlink
-  # GET /_matrix/provision/listlinks
-  #
+  # This key CANNOT be hot-reloaded
   provisioning:
     # True to enable the provisioning HTTP endpoint. Default: false.
     enabled: false
-    # The number of seconds to wait before giving up on getting a response from
-    # an IRC channel operator. If the channel operator does not respond within the
-    # allotted time period, the provisioning request will fail.
-    # Default: 300 seconds (5 mins)
-    requestTimeoutSeconds: 300
+    # Whether to enable hosting the setup widget page. Default: false.
+    widget: false
+
+  # Config for the media proxy, required to serve publicly accessible URLs to authenticated Matrix media
+  mediaProxy:
+    # To generate a .jwk file:
+    # $ node src/generate-signing-key.js > signingkey.jwk
+    signingKeyPath: "/data/auth-media.jwk"
+    # How long should the generated URLs be valid for
+    ttlSeconds: 604800
+    # The port for the media proxy to listen on
+    bindPort: {{ matrix_appservice_irc_ircService_mediaProxy_bindPort | to_json }}
+    # The publicly accessible URL to the media proxy
+    publicUrl: {{ matrix_appservice_irc_ircService_mediaProxy_publicUrl | to_json }}
 
 # Options here are generally only applicable to large-scale bridges and may have
 # consequences greater than other options in this configuration file.
@@ -122,13 +152,18 @@ advanced:
   # however for large bridges it is important to rate limit the bridge to avoid
   # accidentally overloading the homeserver. Defaults to 1000, which should be
   # enough for the vast majority of use cases.
+  # This key CAN be hot-reloaded
   maxHttpSockets: 1000
+  # Max size of an appservice transaction payload, in bytes. Defaults to 10Mb
+  # This key CANNOT be hot-reloaded.
+  maxTxnSize: 10000000
 
 # Use an external database to store bridge state.
+# This key CANNOT be hot-reloaded.
 database:
   # database engine (must be 'postgres' or 'nedb'). Default: nedb
   engine: {{ matrix_appservice_irc_database_engine|to_json }}
   # Either a PostgreSQL connection string, or a path to the NeDB storage directory.
   # For postgres, it must start with postgres://
   # For NeDB, it must start with nedb://. The path is relative to the project directory.
-  connectionString: {{ matrix_appservice_irc_database_connectionString|to_json }}
+  connectionString: {{ matrix_appservice_irc_database_connectionString | to_json }}

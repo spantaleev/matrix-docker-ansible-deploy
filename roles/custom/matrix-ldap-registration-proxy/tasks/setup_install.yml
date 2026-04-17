@@ -12,52 +12,55 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_ldap_registration_proxy_config_path }}", when: true}
-    - {path: "{{ matrix_ldap_registration_proxy_docker_src_files_path }}", when: true}
+    - {path: "{{ matrix_ldap_registration_proxy_container_src_files_path }}", when: true}
   when: "item.when | bool"
 
 - name: Ensure matrix_ldap_registration_proxy repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_ldap_registration_proxy_container_image_self_build_repo }}"
-    dest: "{{ matrix_ldap_registration_proxy_docker_src_files_path }}"
+    dest: "{{ matrix_ldap_registration_proxy_container_src_files_path }}"
     version: "{{ matrix_ldap_registration_proxy_container_image_self_build_branch }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_ldap_registration_proxy_git_pull_results
 
 - name: Ensure matrix_ldap_registration_proxy Docker image is built
   community.docker.docker_image:
-    name: "{{ matrix_ldap_registration_proxy_docker_image }}"
+    name: "{{ matrix_ldap_registration_proxy_container_image }}"
     source: build
     force_source: "{{ matrix_ldap_registration_proxy_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
-      path: "{{ matrix_ldap_registration_proxy_docker_src_files_path }}"
+      path: "{{ matrix_ldap_registration_proxy_container_src_files_path }}"
       pull: true
   when: true
+  register: matrix_ldap_registration_proxy_container_image_build_result
 
 - name: Ensure matrix_ldap_registration_proxy config installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/ldap-registration-proxy.env.j2"
     dest: "{{ matrix_ldap_registration_proxy_config_path }}/ldap-registration-proxy.env"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_ldap_registration_proxy_config_result
 
 - name: Ensure matrix-ldap-registration-proxy support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
     dest: "{{ matrix_ldap_registration_proxy_base_path }}/{{ item }}"
-    mode: 0640
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - labels
+  register: matrix_ldap_registration_proxy_support_files_result
 
 - name: Ensure matrix-ldap-registration-proxy container network is created
   community.general.docker_network:
@@ -70,4 +73,15 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-ldap-registration-proxy.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-ldap-registration-proxy.service"
-    mode: 0644
+    mode: '0644'
+  register: matrix_ldap_registration_proxy_systemd_service_result
+
+- name: Determine whether matrix-ldap-registration-proxy needs a restart
+  ansible.builtin.set_fact:
+    matrix_ldap_registration_proxy_restart_necessary: >-
+      {{
+        matrix_ldap_registration_proxy_config_result.changed | default(false)
+        or matrix_ldap_registration_proxy_support_files_result.changed | default(false)
+        or matrix_ldap_registration_proxy_systemd_service_result.changed | default(false)
+        or matrix_ldap_registration_proxy_container_image_build_result.changed | default(false)
+      }}

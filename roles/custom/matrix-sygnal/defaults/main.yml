@@ -34,12 +34,12 @@ matrix_sygnal_systemd_required_services_list: "{{ [devture_systemd_docker_base_d
 # List of systemd services that matrix-sygnal.service wants
 matrix_sygnal_systemd_wanted_services_list: []
 
-matrix_sygnal_docker_image: "{{ matrix_sygnal_docker_image_registry_prefix }}matrixdotorg/sygnal:{{ matrix_sygnal_docker_image_tag }}"
-matrix_sygnal_docker_image_tag: "{{ matrix_sygnal_version }}"
-matrix_sygnal_docker_image_registry_prefix: "{{ matrix_sygnal_docker_image_registry_prefix_upstream }}"
-matrix_sygnal_docker_image_registry_prefix_upstream: "{{ matrix_sygnal_docker_image_registry_prefix_upstream_default }}"
-matrix_sygnal_docker_image_registry_prefix_upstream_default: "docker.io/"
-matrix_sygnal_docker_image_force_pull: "{{ matrix_sygnal_docker_image.endswith(':latest') }}"
+matrix_sygnal_container_image: "{{ matrix_sygnal_container_image_registry_prefix }}matrixdotorg/sygnal:{{ matrix_sygnal_container_image_tag }}"
+matrix_sygnal_container_image_tag: "{{ matrix_sygnal_version }}"
+matrix_sygnal_container_image_registry_prefix: "{{ matrix_sygnal_container_image_registry_prefix_upstream }}"
+matrix_sygnal_container_image_registry_prefix_upstream: "{{ matrix_sygnal_container_image_registry_prefix_upstream_default }}"
+matrix_sygnal_container_image_registry_prefix_upstream_default: "docker.io/"
+matrix_sygnal_container_image_force_pull: "{{ matrix_sygnal_container_image.endswith(':latest') }}"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 matrix_sygnal_container_network: "{{ matrix_sygnal_identifier }}"
@@ -135,3 +135,13 @@ matrix_sygnal_configuration_extension: "{{ matrix_sygnal_configuration_extension
 # Holds the final sygnal configuration (a combination of the default and its extension).
 # You most likely don't need to touch this variable. Instead, see `matrix_sygnal_configuration_yaml`.
 matrix_sygnal_configuration: "{{ matrix_sygnal_configuration_yaml | from_yaml | combine(matrix_sygnal_configuration_extension, recursive=True) }}"
+
+# matrix_sygnal_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_sygnal_restart_necessary: false

@@ -1,0 +1,40 @@
+---
+
+exclude: "^(LICENSES/|var/)"
+
+# See: https://pre-commit.com/hooks.html
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-shebang-scripts-are-executable
+      - id: check-toml
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
+    hooks:
+      - id: codespell
+        args: ["--skip=*.po,*.pot,i18n/"]
+  - repo: https://github.com/fsfe/reuse-tool  # https://reuse.software/dev/#pre-commit-hook
+    rev: v6.2.0
+    hooks:
+      - id: reuse
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v26.4.0
+    hooks:
+      - id: ansible-lint
+        files: '^roles/custom/'
+        args: ['roles/custom']
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: check-examples-vars-migration-version
+        name: Check examples/vars.yml migration version matches expected
+        entry: bin/check-examples-vars-migration-version.sh
+        language: script
+        files: '(examples/vars\.yml|roles/custom/matrix_playbook_migration/defaults/main\.yml)'
+        pass_filenames: false

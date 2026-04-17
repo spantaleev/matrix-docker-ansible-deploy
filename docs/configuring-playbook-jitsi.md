@@ -18,6 +18,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 The playbook can install and configure the [Jitsi](https://jitsi.org/) video-conferencing platform for you.
 
+Because Jitsi still requires a TURN server, enabling Jitsi
+automatically enables coturn (`coturn_enabled: true`) unless you explicitly disable it.
+
 Jitsi is an open source video-conferencing platform. It can not only be integrated with Element clients ([Element Web](configuring-playbook-client-element-web.md)/Desktop, Android and iOS) as a widget, but also be used as standalone web app.
 
 💡 If you're into experimental technology, you may also be interested in trying out [Element Call](configuring-playbook-element-call.md) - a native Matrix video conferencing application.
@@ -70,7 +73,7 @@ By default the Jitsi Meet instance **does not require for anyone to log in, and 
 
 If you would like to control who is allowed to start meetings on your instance, you'd need to enable Jitsi's authentication and optionally guests mode.
 
-See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md#configure-jitsi-authentication-and-guests-mode-optional) on the role's documentation for details about how to configure the authentication and guests mode. The recommended authentication method is `internal` as it also works in federated rooms. If you want to enable authentication with Matrix OpenID making use of [Matrix User Verification Service (UVS)](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-user-verification-service.md), see [here](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md#authenticate-using-matrix-openid-auth-type-matrix) for details about how to set it up.
+See [this section](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md#configure-jitsi-authentication-and-guests-mode-optional) on the role's documentation for details about how to configure the authentication and guests mode. The recommended authentication method is `internal` as it also works in federated rooms. If you want to enable authentication with Matrix OpenID making use of [Matrix User Verification Service (UVS)](configuring-playbook-user-verification-service.md), see [here](https://github.com/mother-of-all-self-hosting/ansible-role-jitsi/blob/main/docs/configuring-jitsi.md#authenticate-using-matrix-openid-auth-type-matrix) for details about how to set it up.
 
 ### Enable Gravatar (optional)
 

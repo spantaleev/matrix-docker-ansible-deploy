@@ -12,7 +12,7 @@
     msg: >-
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
-  when: "item.old in vars"
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_dendrite_enable_registration_captcha', 'new': 'matrix_dendrite_client_api_enable_registration_captcha'}
     - {'old': 'matrix_dendrite_recaptcha_public_key', 'new': 'matrix_dendrite_client_api_recaptcha_public_key'}
@@ -34,13 +34,21 @@
     - {'old': 'matrix_dendrite_pushserver_database', 'new': 'matrix_dendrite_push_server_database'}
     - {'old': 'matrix_dendrite_relayapi_database', 'new': 'matrix_dendrite_relay_api_database'}
     - {'old': 'matrix_dendrite_keyserver_database', 'new': 'matrix_dendrite_key_server_database'}
-    - {'old': 'matrix_dendrite_container_image_name_prefix', 'new': 'matrix_dendrite_docker_image_registry_prefix'}
+    - {'old': 'matrix_dendrite_container_image_name_prefix', 'new': 'matrix_dendrite_container_image_registry_prefix'}
+    - {'old': 'matrix_dendrite_docker_image', 'new': 'matrix_dendrite_container_image'}
+    - {'old': 'matrix_dendrite_docker_image_force_pull', 'new': 'matrix_dendrite_container_image_force_pull'}
+    - {'old': 'matrix_dendrite_docker_image_path', 'new': 'matrix_dendrite_container_image_path'}
+    - {'old': 'matrix_dendrite_docker_image_registry_prefix', 'new': 'matrix_dendrite_container_image_registry_prefix'}
+    - {'old': 'matrix_dendrite_docker_image_registry_prefix_upstream', 'new': 'matrix_dendrite_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_dendrite_docker_image_registry_prefix_upstream_default', 'new': 'matrix_dendrite_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_dendrite_docker_image_tag', 'new': 'matrix_dendrite_container_image_tag'}
+    - {'old': 'matrix_dendrite_docker_src_files_path', 'new': 'matrix_dendrite_container_src_files_path'}
 
 - name: Fail if required Dendrite settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).
-  when: "item.when | bool and vars[item.name] == ''"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
     - {'name': 'matrix_dendrite_hostname', when: true}
     - {'name': 'matrix_dendrite_client_api_registration_shared_secret', when: true}

@@ -9,7 +9,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using s3-storage-provider.
-  when: "vars[item] == ''"
+  when: "lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_bucket"
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_region_name"
@@ -19,7 +19,7 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`) for using s3-storage-provider.
-  when: "not matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile | bool and vars[item] == ''"
+  when: "not matrix_synapse_ext_synapse_s3_storage_provider_config_ec2_instance_profile | bool and lookup('vars', item, default='') == ''"
   with_items:
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_access_key_id"
     - "matrix_synapse_ext_synapse_s3_storage_provider_config_secret_access_key"

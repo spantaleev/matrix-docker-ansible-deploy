@@ -26,19 +26,19 @@ matrix_client_element_container_image_self_build_repo: "https://github.com/eleme
 # Controls whether to patch webpack.config.js when self-building, so that building can pass on low-memory systems (< 4 GB RAM):
 # - https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/1357
 # - https://github.com/element-hq/element-web/issues/19544
-matrix_client_element_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_memtotal_mb < 4096 }}"
+matrix_client_element_container_image_self_build_low_memory_system_patch_enabled: "{{ ansible_facts['memtotal_mb'] < 4096 }}"
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/element-web
-matrix_client_element_version: v1.11.96
+matrix_client_element_version: v1.12.15
 
-matrix_client_element_docker_image: "{{ matrix_client_element_docker_image_registry_prefix }}element-hq/element-web:{{ matrix_client_element_version }}"
-matrix_client_element_docker_image_registry_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else matrix_client_element_docker_image_registry_prefix_upstream }}"
-matrix_client_element_docker_image_registry_prefix_upstream: "{{ matrix_client_element_docker_image_registry_prefix_upstream_default }}"
-matrix_client_element_docker_image_registry_prefix_upstream_default: ghcr.io/
-matrix_client_element_docker_image_force_pull: "{{ matrix_client_element_docker_image.endswith(':latest') }}"
+matrix_client_element_container_image: "{{ matrix_client_element_container_image_registry_prefix }}element-hq/element-web:{{ matrix_client_element_version }}"
+matrix_client_element_container_image_registry_prefix: "{{ 'localhost/' if matrix_client_element_container_image_self_build else matrix_client_element_container_image_registry_prefix_upstream }}"
+matrix_client_element_container_image_registry_prefix_upstream: "{{ matrix_client_element_container_image_registry_prefix_upstream_default }}"
+matrix_client_element_container_image_registry_prefix_upstream_default: ghcr.io/
+matrix_client_element_container_image_force_pull: "{{ matrix_client_element_container_image.endswith(':latest') }}"
 
 matrix_client_element_data_path: "{{ matrix_base_data_path }}/client-element"
-matrix_client_element_docker_src_files_path: "{{ matrix_client_element_data_path }}/docker-src"
+matrix_client_element_container_src_files_path: "{{ matrix_client_element_data_path }}/docker-src"
 
 # The base container network
 matrix_client_element_container_network: ''
@@ -87,7 +87,6 @@ matrix_client_element_container_labels_traefik_additional_response_headers_auto:
   {{
     {}
     | combine ({'X-XSS-Protection': matrix_client_element_http_header_xss_protection} if matrix_client_element_http_header_xss_protection else {})
-    | combine ({'X-Frame-Options': matrix_client_element_http_header_frame_options} if matrix_client_element_http_header_frame_options else {})
     | combine ({'X-Content-Type-Options': matrix_client_element_http_header_content_type_options} if matrix_client_element_http_header_content_type_options else {})
     | combine ({'Content-Security-Policy': matrix_client_element_http_header_content_security_policy} if matrix_client_element_http_header_content_security_policy else {})
     | combine ({'Permission-Policy': matrix_client_element_http_header_content_permission_policy} if matrix_client_element_http_header_content_permission_policy else {})
@@ -113,10 +112,7 @@ matrix_client_element_systemd_required_services_list: "{{ [devture_systemd_docke
 # Controls the healthcheck command for the container.
 #
 # Leave empty to use the default (upstream) command.
-#
-# The default command is a patch until https://github.com/element-hq/element-web/pull/29471
-# lands in a release.
-matrix_client_element_container_healthcheck_cmd: "wget -q --spider http://localhost:$ELEMENT_WEB_PORT/config.json"
+matrix_client_element_container_healthcheck_cmd: ""
 
 # Specifies the value of the `X-XSS-Protection` header
 # Stops pages from loading when they detect reflected cross-site scripting (XSS) attacks.
@@ -125,10 +121,6 @@ matrix_client_element_container_healthcheck_cmd: "wget -q --spider http://localh
 # - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
 # - https://portswigger.net/web-security/cross-site-scripting/reflected
 matrix_client_element_http_header_xss_protection: "1; mode=block"
-
-# Specifies the value of the `X-Frame-Options` header which controls whether framing can happen.
-# See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-matrix_client_element_http_header_frame_options: SAMEORIGIN
 
 # Specifies the value of the `X-Content-Type-Options` header.
 # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
@@ -189,6 +181,7 @@ matrix_client_element_integrations_rest_url: "https://scalar.vector.im/api"
 matrix_client_element_integrations_widgets_urls: ["https://scalar.vector.im/api"]
 matrix_client_element_integrations_jitsi_widget_url: "https://scalar.vector.im/api/widgets/jitsi.html"
 matrix_client_element_permalink_prefix: "https://matrix.to"  # noqa var-naming
+matrix_client_element_mobile_guide_app_variant: "element"
 matrix_client_element_bug_report_endpoint_url: "https://element.io/bugreports/submit"
 matrix_client_element_show_lab_settings: true  # noqa var-naming
 # Element public room directory server(s)
@@ -323,7 +316,7 @@ matrix_client_element_setting_defaults_custom_themes: []  # noqa var-naming
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_client_element_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+matrix_client_element_configuration_default: "{{ lookup('template', 'templates/config.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Element Web should go to `matrix_client_element_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_element_configuration_default`).
@@ -361,7 +354,7 @@ matrix_client_element_location_sharing_enabled: false
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_client_element_location_sharing_map_style_default: "{{ lookup('template', 'templates/map_style.json.j2') }}"
+matrix_client_element_location_sharing_map_style_default: "{{ lookup('template', 'templates/map_style.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Element location sharing map style should go to `matrix_client_element_location_sharing_map_style_extension_json`.
 # This configuration extends the default starting configuration (`matrix_client_element_location_sharing_map_style_default`).
@@ -430,3 +423,13 @@ matrix_client_element_environment_variable_element_web_port: "{{ matrix_client_e
 # matrix_client_element_environment_variables_extension: |
 #   ELEMENT_WEB_PORT=8080
 matrix_client_element_environment_variables_extension: ''
+
+# matrix_client_element_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_client_element_restart_necessary: false

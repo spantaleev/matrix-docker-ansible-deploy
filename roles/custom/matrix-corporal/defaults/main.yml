@@ -16,7 +16,7 @@
 matrix_corporal_enabled: true
 
 # renovate: datasource=docker depName=ghcr.io/devture/matrix-corporal
-matrix_corporal_version: 3.1.4
+matrix_corporal_version: 3.1.7
 
 matrix_corporal_container_image_self_build: false
 matrix_corporal_container_image_self_build_repo: "https://github.com/devture/matrix-corporal.git"
@@ -92,12 +92,12 @@ matrix_corporal_systemd_required_services_list_default: "{{ [devture_systemd_doc
 matrix_corporal_systemd_required_services_list_auto: []
 matrix_corporal_systemd_required_services_list_custom: []
 
-matrix_corporal_docker_image: "{{ matrix_corporal_docker_image_registry_prefix }}devture/matrix-corporal:{{ matrix_corporal_docker_image_tag }}"
-matrix_corporal_docker_image_registry_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else matrix_corporal_docker_image_registry_prefix_upstream }}"
-matrix_corporal_docker_image_registry_prefix_upstream: "{{ matrix_corporal_docker_image_registry_prefix_upstream_default }}"
-matrix_corporal_docker_image_registry_prefix_upstream_default: ghcr.io/
-matrix_corporal_docker_image_tag: "{{ matrix_corporal_version }}"  # for backward-compatibility
-matrix_corporal_docker_image_force_pull: "{{ matrix_corporal_docker_image.endswith(':latest') }}"
+matrix_corporal_container_image: "{{ matrix_corporal_container_image_registry_prefix }}devture/matrix-corporal:{{ matrix_corporal_container_image_tag }}"
+matrix_corporal_container_image_registry_prefix: "{{ 'localhost/' if matrix_corporal_container_image_self_build else matrix_corporal_container_image_registry_prefix_upstream }}"
+matrix_corporal_container_image_registry_prefix_upstream: "{{ matrix_corporal_container_image_registry_prefix_upstream_default }}"
+matrix_corporal_container_image_registry_prefix_upstream_default: ghcr.io/
+matrix_corporal_container_image_tag: "{{ matrix_corporal_version }}"  # for backward-compatibility
+matrix_corporal_container_image_force_pull: "{{ matrix_corporal_container_image.endswith(':latest') }}"
 
 matrix_corporal_base_path: "{{ matrix_base_data_path }}/corporal"
 matrix_corporal_container_src_files_path: "{{ matrix_corporal_base_path }}/container-src"
@@ -152,7 +152,7 @@ matrix_corporal_debug: false
 #
 # The side-effect of this lookup is that Ansible would even parse the JSON for us, returning a dict.
 # This is unlike what it does when looking up YAML template files (no automatic parsing there).
-matrix_corporal_configuration_default: "{{ lookup('template', 'templates/config.json.j2') }}"
+matrix_corporal_configuration_default: "{{ lookup('template', 'templates/config.json.j2', convert_data=False) | from_json }}"
 
 # Your custom JSON configuration for Corporal should go to `matrix_corporal_configuration_extension_json`.
 # This configuration extends the default starting configuration (`matrix_corporal_configuration_default`).
@@ -180,3 +180,13 @@ matrix_corporal_configuration: "{{ matrix_corporal_configuration_default | combi
 
 matrix_corporal_self_check_matrix_client_api_url_endpoint_public: "{{ matrix_corporal_matrix_homeserver_scheme }}://{{ matrix_corporal_matrix_homeserver_api_domain_name }}/_matrix/client/corporal"
 matrix_corporal_self_check_corporal_api_url_endpoint_public: "{{ matrix_corporal_matrix_homeserver_scheme }}://{{ matrix_corporal_matrix_homeserver_api_domain_name }}/_matrix/corporal/policy"
+
+# matrix_corporal_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_corporal_restart_necessary: false

@@ -17,6 +17,16 @@ The [Ansible role for exim-relay](https://github.com/mother-of-all-self-hosting/
 - 🌐 [the role's documentation at the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md) online
 - 📁 `roles/galaxy/exim_relay/docs/configuring-exim-relay.md` locally, if you have [fetched the Ansible roles](installing.md#update-ansible-roles)
 
+## Why use exim-relay?
+
+**Benefits of using exim-relay** instead of configuring SMTP directly in each service:
+
+1. **Final delivery capability**: Can deliver emails directly if you don't have an SMTP server
+
+2. **Centralized configuration**: Configure your upstream SMTP server once in exim-relay, then point all services ([Synapse](configuring-playbook-synapse.md), [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md), etc.) there—no need to configure SMTP in each component
+
+3. **Local spooling**: Stores messages locally and retries delivery if your upstream SMTP server is temporarily unavailable
+
 ## Firewall settings
 
 No matter whether you send email directly (the default) or you relay email through another host, you'll probably need to allow outgoing traffic for TCP ports 25/587 (depending on configuration).

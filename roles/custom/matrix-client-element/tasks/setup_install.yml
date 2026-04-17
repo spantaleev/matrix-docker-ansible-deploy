@@ -15,34 +15,34 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    mode: 0750
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {path: "{{ matrix_client_element_data_path }}", when: true}
-    - {path: "{{ matrix_client_element_docker_src_files_path }}", when: "{{ matrix_client_element_container_image_self_build }}"}
+    - {path: "{{ matrix_client_element_container_src_files_path }}", when: "{{ matrix_client_element_container_image_self_build }}"}
   when: "item.when | bool"
 
 - name: Ensure Element Web Docker image is pulled
   community.docker.docker_image:
-    name: "{{ matrix_client_element_docker_image }}"
+    name: "{{ matrix_client_element_container_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_client_element_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_element_docker_image_force_pull }}"
+    force_source: "{{ matrix_client_element_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_client_element_container_image_force_pull }}"
   when: "not matrix_client_element_container_image_self_build | bool"
-  register: result
+  register: matrix_client_element_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: result is not failed
+  until: matrix_client_element_container_image_pull_result is not failed
 
 - name: Ensure Element Web repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_client_element_container_image_self_build_repo }}"
-    dest: "{{ matrix_client_element_docker_src_files_path }}"
-    version: "{{ matrix_client_element_docker_image.split(':')[1] }}"
+    dest: "{{ matrix_client_element_container_src_files_path }}"
+    version: "{{ matrix_client_element_container_image.split(':')[1] }}"
     force: "yes"
   become: true
-  become_user: "{{ matrix_user_username }}"
+  become_user: "{{ matrix_user_name }}"
   register: matrix_client_element_git_pull_results
   when: "matrix_client_element_container_image_self_build | bool"
 
@@ -51,7 +51,7 @@
 # - https://github.com/element-hq/element-web/issues/19544
 - name: Patch webpack.config.js to support building on low-memory (<4G RAM) devices
   ansible.builtin.lineinfile:
-    path: "{{ matrix_client_element_docker_src_files_path }}/webpack.config.js"
+    path: "{{ matrix_client_element_container_src_files_path }}/webpack.config.js"
     regexp: '(\s+)splitChunks: \{'
     line: '\1splitChunks: { maxSize: 100000,'
     backrefs: true
@@ -64,9 +64,9 @@
   ansible.builtin.command:
     cmd: |-
       {{ devture_systemd_docker_base_host_command_docker }} buildx build
-      --tag={{ matrix_client_element_docker_image }}
-      --file={{ matrix_client_element_docker_src_files_path }}/Dockerfile
-      {{ matrix_client_element_docker_src_files_path }}
+      --tag={{ matrix_client_element_container_image }}
+      --file={{ matrix_client_element_container_src_files_path }}/Dockerfile
+      {{ matrix_client_element_container_src_files_path }}
   changed_when: true
   when: matrix_client_element_container_image_self_build | bool
 
@@ -74,32 +74,35 @@
   ansible.builtin.copy:
     content: "{{ matrix_client_element_configuration | to_nice_json }}"
     dest: "{{ matrix_client_element_data_path }}/config.json"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_client_element_config_result
 
 - name: Ensure Element location sharing map style installed
   when: matrix_client_element_location_sharing_enabled | bool
   ansible.builtin.copy:
     content: "{{ matrix_client_element_location_sharing_map_style | to_nice_json }}"
     dest: "{{ matrix_client_element_data_path }}/map_style.json"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_client_element_config_map_style_result
 
 - name: Ensure Element Web config files installed
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ matrix_client_element_data_path }}/{{ item.name }}"
-    mode: 0644
-    owner: "{{ matrix_user_username }}"
-    group: "{{ matrix_user_groupname }}"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
   with_items:
     - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
     - {src: "{{ role_path }}/templates/env.j2", name: "env"}
     - {src: "{{ matrix_client_element_page_template_welcome_path }}", name: "welcome.html"}
     - {src: "{{ matrix_client_element_embedded_pages_home_path }}", name: "home.html"}
   when: "item.src is not none"
+  register: matrix_client_element_support_files_result
 
 - name: Ensure Element Web nginx.conf file is removed
   ansible.builtin.file:
@@ -125,4 +128,16 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-client-element.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-element.service"
-    mode: 0644
+    mode: '0644'
+  register: matrix_client_element_systemd_service_result
+
+- name: Determine whether Element Web needs a restart
+  ansible.builtin.set_fact:
+    matrix_client_element_restart_necessary: >-
+      {{
+        matrix_client_element_config_result.changed | default(false)
+        or matrix_client_element_config_map_style_result.changed | default(false)
+        or matrix_client_element_support_files_result.changed | default(false)
+        or matrix_client_element_systemd_service_result.changed | default(false)
+        or matrix_client_element_container_image_pull_result.changed | default(false)
+      }}

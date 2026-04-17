@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 worker_app: synapse.app.{{ matrix_synapse_worker_details.app }}
 worker_name: {{ matrix_synapse_worker_details.name }}
 
@@ -46,7 +46,7 @@ worker_listeners:
 {% if http_resources|length > 0 %}
   - type: http
     bind_addresses: ['::']
-    x_forwarded: true
+    x_forwarded: {{ matrix_synapse_worker_listeners_http_main_x_forwarded | to_json }}
     port: {{ matrix_synapse_worker_details.port }}
     resources:
       - names: {{ http_resources|to_json }}

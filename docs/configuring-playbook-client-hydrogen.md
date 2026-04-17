@@ -24,22 +24,22 @@ When setting, replace `example.com` with your own.
 To enable Hydrogen, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_client_hydrogen_enabled: true
+hydrogen_enabled: true
 ```
 
 ### Adjusting the Hydrogen URL (optional)
 
-By tweaking the `matrix_client_hydrogen_hostname` and `matrix_client_hydrogen_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+By tweaking the `hydrogen_hostname` and `hydrogen_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Switch to the domain used for Matrix services (`matrix.example.com`),
 # so we won't need to add additional DNS records for Hydrogen.
-matrix_client_hydrogen_hostname: "{{ matrix_server_fqn_matrix }}"
+hydrogen_hostname: "{{ matrix_server_fqn_matrix }}"
 
 # Expose under the /hydrogen subpath
-matrix_client_hydrogen_path_prefix: /hydrogen
+hydrogen_path_prefix: /hydrogen
 ```
 
 After changing the domain, **you may need to adjust your DNS** records to point the Hydrogen domain to the Matrix server.
@@ -52,8 +52,8 @@ There are some additional things you may wish to configure about the client.
 
 Take a look at:
 
-- `roles/custom/matrix-client-hydrogen/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-client-hydrogen/templates/config.json.j2` for the client's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_client_hydrogen_configuration_extension_json` variable
+- `roles/galaxy/hydrogen/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/hydrogen/templates/config.json.j2` for the client's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `hydrogen_configuration_extension_json` variable
 
 ## Installing
 

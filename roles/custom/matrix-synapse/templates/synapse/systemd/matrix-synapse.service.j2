@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 [Unit]
 Description=Synapse server
 {% for service in matrix_synapse_systemd_required_services_list %}
@@ -33,6 +33,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size={{ matrix_synapse_tmp_directory_size_mb }}m \
 			--network={{ matrix_synapse_container_network }} \
+			--health-interval={{ matrix_synapse_container_health_interval }} \
 			{% if matrix_synapse_container_client_api_host_bind_port %}
 			-p {{ matrix_synapse_container_client_api_host_bind_port }}:{{ matrix_synapse_container_client_api_port }} \
 			{% endif %}
@@ -50,6 +51,12 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endif %}
 			--mount type=bind,src={{ matrix_synapse_config_dir_path }},dst=/data,ro \
 			--mount type=bind,src={{ matrix_synapse_storage_path }},dst=/matrix-media-store-parent,bind-propagation=slave \
+			{% if matrix_synapse_redis_path_enabled %}
+			--mount type=bind,src={{ matrix_synapse_redis_path_host }},dst={{ matrix_synapse_redis_path }} \
+			{% endif %}
+			{% if matrix_synapse_database_socket_enabled %}
+			--mount type=bind,src={{ matrix_synapse_database_socket_path_host }},dst={{ matrix_synapse_database_socket_path }} \
+			{% endif %}
 			--label-file={{ matrix_synapse_base_path }}/labels \
 			{% for volume in matrix_synapse_container_additional_volumes %}
 			--mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
@@ -60,7 +67,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_synapse_container_master_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_synapse_docker_image_final }} \
+			{{ matrix_synapse_container_image_final }} \
 			run -m synapse.app.homeserver -c /data/homeserver.yaml
 
 {% for network in matrix_synapse_container_additional_networks %}
@@ -69,8 +76,12 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network conne
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-synapse
 
-{% if matrix_synapse_systemd_service_post_start_delay_seconds > 0 %}
-ExecStartPost=-{{ matrix_host_command_sleep }} {{ matrix_synapse_systemd_service_post_start_delay_seconds }}
+{% if matrix_synapse_systemd_healthcheck_enabled %}
+ExecStartPost={{ matrix_synapse_systemd_healthcheck_command }}
+{% endif %}
+
+{% if matrix_synapse_systemd_service_post_start_delay_seconds | int > 0 %}
+ExecStartPost=-{{ matrix_host_command_sleep }} {{ matrix_synapse_systemd_service_post_start_delay_seconds }}
 {% endif %}
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-synapse 2>/dev/null || true'

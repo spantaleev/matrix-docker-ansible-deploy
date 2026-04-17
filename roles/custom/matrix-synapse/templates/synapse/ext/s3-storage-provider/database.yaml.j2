@@ -7,5 +7,5 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 user: {{ matrix_synapse_database_user | to_json }}
 password: {{ matrix_synapse_database_password | to_json }}
 database: {{ matrix_synapse_database_database | to_json }}
-host: {{ matrix_synapse_database_host | to_json }}
+host: {{ (matrix_synapse_database_socket_path if matrix_synapse_database_socket_enabled else matrix_synapse_database_host) | to_json }}
 port: {{ matrix_synapse_database_port | to_json }}

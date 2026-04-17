@@ -26,7 +26,7 @@ The up-to-date list can be accessed on [traefik's documentation](https://doc.tra
 
 **Note**: the changes below instruct you how to do this for a basic Synapse installation. You will need to adapt the variable name and the content of the labels:
 
-- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [conduwuit](./configuring-playbook-conduwuit.md) or [Dendrite](./configuring-playbook-dendrite.md))
+- if you're using another homeserver implementation (e.g. [Conduit](./configuring-playbook-conduit.md), [continuwuity](./configuring-playbook-continuwuity.md) or [Dendrite](./configuring-playbook-dendrite.md))
 - if you're using [Synapse with workers enabled](./configuring-playbook-synapse.md#load-balancing-with-workers) (`matrix_synapse_workers_enabled: true`). In that case, it's actually the `matrix-synapse-reverse-proxy-companion` service which has Traefik labels attached
 
 Also, all instructions below are from an older version of the playbook and may not work anymore.
@@ -42,7 +42,7 @@ This is because with SRV federation, some servers / tools (one of which being th
 
 ### Tell Traefik which certificate to serve for the federation endpoint
 
-Now that the federation endpoint is not bound to a domain anymore we need to explicitely tell Traefik to use a wildcard certificate in addition to one containing the base name.
+Now that the federation endpoint is not bound to a domain anymore we need to explicitly tell Traefik to use a wildcard certificate in addition to one containing the base name.
 
 This is because the Matrix specification expects the federation endpoint to be served using a certificate compatible with the base domain, however, the other resources on the endpoint still need a valid certificate to work.
 
@@ -79,7 +79,7 @@ traefik_configuration_extension_yaml: |
             - "8.8.8.8:53"
         storage: {{ traefik_config_certificatesResolvers_acme_storage | to_json }}
 
-# 2. Configure the environment variables needed by Rraefik to automate the ACME DNS Challenge (example for Cloudflare)
+# 2. Configure the environment variables needed by Traefik to automate the ACME DNS Challenge (example for Cloudflare)
 traefik_environment_variables: |
   CF_API_EMAIL=redacted
   CF_ZONE_API_TOKEN=redacted
@@ -104,24 +104,24 @@ This should not happen again afterwards as Traefik will renew certificates well 
 
 ```yaml
 # Only depend on docker.service, this removes the dependency on the certificate exporter, might imply the need to manually restart coturn on the first installation once the certificates are obtained, afterwards, the reload service should handle things
-matrix_coturn_systemd_required_services_list: ['docker.service']
+coturn_systemd_required_services_list: ['docker.service']
 
 # This changes the path of the loaded certificate, while maintaining the original functionality, we're now loading the wildcard certificate.
-matrix_coturn_container_additional_volumes: |
+coturn_container_additional_volumes: |
   {{
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and coturn_tls_enabled else []
     )
   }}
 ```
@@ -165,24 +165,24 @@ traefik_environment_variables: |
   LEGO_DISABLE_CNAME_SUPPORT=true
 
 # Only depend on docker.service, this removes the dependency on the certificate exporter, might imply the need to manually restart coturn on the first installation once the certificates are obtained, afterwards, the reload service should handle things
-matrix_coturn_systemd_required_services_list: ['docker.service']
+coturn_systemd_required_services_list: ['docker.service']
 
 # This changes the path of the loaded certificate, while maintaining the original functionality, we're now loading the wildcard certificate.
-matrix_coturn_container_additional_volumes: |
+coturn_container_additional_volumes: |
   {{
     (
       [
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/certificate.crt'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/certificate.crt'),
          'dst': '/certificate.crt',
          'options': 'ro',
        },
        {
-         'src': (traefik_certs_dumper_dumped_certificates_dir_path +  '/*.' + matrix_domain + '/privatekey.key'),
+         'src': (traefik_certs_dumper_dumped_certificates_path +  '/*.' + matrix_domain + '/privatekey.key'),
          'dst': '/privatekey.key',
          'options': 'ro',
        },
-      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and matrix_coturn_tls_enabled else []
+      ] if matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] and traefik_certs_dumper_enabled and coturn_tls_enabled else []
     )
   }}
 ```

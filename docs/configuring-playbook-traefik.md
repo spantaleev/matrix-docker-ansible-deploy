@@ -25,15 +25,30 @@ traefik_config_accessLog_enabled: false
 
 ### Enable Traefik Dashboard
 
-To enable a Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.example.com/dashboard/` (note the trailing `/`), add the following configuration to your `vars.yml` file:
+To enable the Traefik [Dashboard](https://doc.traefik.io/traefik/operations/dashboard/) UI at `https://matrix.example.com/dashboard/` (note the trailing `/`), add the following configuration to your `vars.yml` file:
 
 ```yaml
 traefik_dashboard_enabled: true
 traefik_dashboard_hostname: "{{ matrix_server_fqn_matrix }}"
 traefik_dashboard_basicauth_enabled: true
-traefik_dashboard_basicauth_user: YOUR_USERNAME_HERE
-traefik_dashboard_basicauth_password: YOUR_PASSWORD_HERE
+traefik_dashboard_basicauth_htpasswd: "YOUR_USERNAME_HERE:$apr1$..."
 ```
+
+Choose a username and password for the dashboard, then generate the corresponding `htpasswd` entry with:
+
+```sh
+htpasswd -nb YOUR_USERNAME_HERE YOUR_PASSWORD_HERE
+```
+
+The command outputs the exact value to use for `traefik_dashboard_basicauth_htpasswd` — your username, a colon, and a hash of your chosen password:
+
+```text
+YOUR_USERNAME_HERE:$apr1$...
+```
+
+Copy the full output line into `traefik_dashboard_basicauth_htpasswd`. After deploying, log in to the dashboard using the same username and password that you chose earlier.
+
+The role also supports the legacy `traefik_dashboard_basicauth_user` / `traefik_dashboard_basicauth_password` convenience variables, but that path depends on the `passlib` Python library on the Ansible controller, may be affected by passlib/bcrypt compatibility issues, and generates non-deterministic hashes which can lead to unnecessary changes.
 
 > [!WARNING]
 > Enabling the dashboard on a hostname you use for something else (like `matrix_server_fqn_matrix` in the configuration above) may cause conflicts. Enabling the Traefik Dashboard makes Traefik capture all `/dashboard` and `/api` requests and forward them to itself. If any of the services hosted on the same hostname requires any of these 2 URL prefixes, you will experience problems. So far, we're not aware of any playbook services which occupy these endpoints and are likely to cause conflicts.

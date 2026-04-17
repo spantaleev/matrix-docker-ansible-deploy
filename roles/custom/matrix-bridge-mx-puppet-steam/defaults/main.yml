@@ -26,16 +26,16 @@ matrix_mx_puppet_steam_container_http_host_bind_port: ''
 
 # renovate: datasource=docker depName=icewind1991/mx-puppet-steam
 matrix_mx_puppet_steam_version: latest
-matrix_mx_puppet_steam_docker_image: "{{ matrix_mx_puppet_steam_docker_image_registry_prefix }}icewind1991/mx-puppet-steam:{{ matrix_mx_puppet_steam_version }}"
-matrix_mx_puppet_steam_docker_image_registry_prefix: "{{ 'localhost/' if matrix_mx_puppet_steam_container_image_self_build else matrix_mx_puppet_steam_docker_image_registry_prefix_upstream }}"
-matrix_mx_puppet_steam_docker_image_registry_prefix_upstream: "{{ matrix_mx_puppet_steam_docker_image_registry_prefix_upstream_default }}"
-matrix_mx_puppet_steam_docker_image_registry_prefix_upstream_default: "docker.io/"
-matrix_mx_puppet_steam_docker_image_force_pull: "{{ matrix_mx_puppet_steam_docker_image.endswith(':latest') }}"
+matrix_mx_puppet_steam_container_image: "{{ matrix_mx_puppet_steam_container_image_registry_prefix }}icewind1991/mx-puppet-steam:{{ matrix_mx_puppet_steam_version }}"
+matrix_mx_puppet_steam_container_image_registry_prefix: "{{ 'localhost/' if matrix_mx_puppet_steam_container_image_self_build else matrix_mx_puppet_steam_container_image_registry_prefix_upstream }}"
+matrix_mx_puppet_steam_container_image_registry_prefix_upstream: "{{ matrix_mx_puppet_steam_container_image_registry_prefix_upstream_default }}"
+matrix_mx_puppet_steam_container_image_registry_prefix_upstream_default: "docker.io/"
+matrix_mx_puppet_steam_container_image_force_pull: "{{ matrix_mx_puppet_steam_container_image.endswith(':latest') }}"
 
 matrix_mx_puppet_steam_base_path: "{{ matrix_base_data_path }}/mx-puppet-steam"
 matrix_mx_puppet_steam_config_path: "{{ matrix_mx_puppet_steam_base_path }}/config"
 matrix_mx_puppet_steam_data_path: "{{ matrix_mx_puppet_steam_base_path }}/data"
-matrix_mx_puppet_steam_docker_src_files_path: "{{ matrix_mx_puppet_steam_base_path }}/docker-src"
+matrix_mx_puppet_steam_container_src_files_path: "{{ matrix_mx_puppet_steam_base_path }}/docker-src"
 
 matrix_mx_puppet_steam_appservice_port: "8432"
 
@@ -134,5 +134,16 @@ matrix_mx_puppet_steam_registration_yaml: |
   sender_localpart: _steampuppet_bot
   url: {{ matrix_mx_puppet_steam_appservice_address }}
   de.sorunome.msc2409.push_ephemeral: true
+  receive_ephemeral: true
 
 matrix_mx_puppet_steam_registration: "{{ matrix_mx_puppet_steam_registration_yaml | from_yaml }}"
+
+# matrix_mx_puppet_steam_restart_necessary controls whether the service
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# any configuration files, the systemd service file, or the container image changed.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_mx_puppet_steam_restart_necessary: false

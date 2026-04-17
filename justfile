@@ -4,9 +4,14 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
+# mise (dev tool version manager)
+mise_data_dir := env("MISE_DATA_DIR", justfile_directory() / "var/mise")
+mise_trusted_config_paths := justfile_directory() / "mise.toml"
+prek_home := env("PREK_HOME", justfile_directory() / "var/prek")
+
 # Shows help
 default:
-    @{{ just_executable() }} --list --justfile {{ justfile() }}
+    @{{ just_executable() }} --list --justfile "{{ justfile() }}"
 
 # Pulls external Ansible roles
 roles:
@@ -39,19 +44,48 @@ update-playbook-only:
     @git pull -q
     @-git stash pop -q
 
-# Runs ansible-lint against all roles in the playbook
-lint:
-    ansible-lint
+# Invokes mise with the project-local data directory
+mise *args: _ensure_mise_data_directory
+    #!/bin/sh
+    export MISE_DATA_DIR="{{ mise_data_dir }}"
+    export MISE_TRUSTED_CONFIG_PATHS="{{ mise_trusted_config_paths }}"
+    export MISE_YES=1
+    export PREK_HOME="{{ prek_home }}"
+    mise {{ args }}
+
+# Runs prek (pre-commit hooks manager) with the given arguments
+prek *args: _ensure_mise_tools_installed
+    @{{ just_executable() }} --justfile "{{ justfile() }}" mise exec -- prek {{ args }}
+
+# Runs pre-commit hooks on staged files
+prek-run-on-staged *args: _ensure_mise_tools_installed
+    @{{ just_executable() }} --justfile "{{ justfile() }}" prek run {{ args }}
+
+# Runs pre-commit hooks on all files
+prek-run-on-all *args: _ensure_mise_tools_installed
+    @{{ just_executable() }} --justfile "{{ justfile() }}" prek run --all-files {{ args }}
+
+# Installs the git pre-commit hook
+prek-install-git-pre-commit-hook: _ensure_mise_tools_installed
+    #!/usr/bin/env sh
+    set -eu
+    {{ just_executable() }} --justfile "{{ justfile() }}" mise exec -- prek install
+    hook="{{ justfile_directory() }}/.git/hooks/pre-commit"
+    # The installed git hook runs later under Git, outside this just/mise environment.
+    # Injecting PREK_HOME keeps prek's cache under var/prek instead of a global home dir,
+    # which is more predictable and works better in sandboxed tools like Codex/OpenCode.
+    if [ -f "$hook" ] && ! grep -q '^export PREK_HOME=' "$hook"; then
+        sed -i '2iexport PREK_HOME="{{ prek_home }}"' "$hook"
+    fi
 
 # Runs the playbook with --tags=install-all,ensure-matrix-users-created,start and optional arguments
 install-all *extra_args: (run-tags "install-all,ensure-matrix-users-created,start" extra_args)
 
 # Runs installation tasks for a single service
 install-service service *extra_args:
-    {{ just_executable() }} --justfile {{ justfile() }} run \
+    {{ just_executable() }} --justfile "{{ justfile() }}" run \
     --tags=install-{{ service }},start-group \
-    --extra-vars=group={{ service }} \
-    --extra-vars=devture_systemd_service_manager_service_restart_mode=one-by-one {{ extra_args }}
+    --extra-vars=group={{ service }} {{ extra_args }}
 
 # Runs the playbook with --tags=setup-all,ensure-matrix-users-created,start and optional arguments
 setup-all *extra_args: (run-tags "setup-all,ensure-matrix-users-created,start" extra_args)
@@ -62,7 +96,7 @@ run +extra_args:
 
 # Runs the playbook with the given list of comma-separated tags and optional arguments
 run-tags tags *extra_args:
-    {{ just_executable() }} --justfile {{ justfile() }} run --tags={{ tags }} {{ extra_args }}
+    {{ just_executable() }} --justfile "{{ justfile() }}" run --tags={{ tags }} {{ extra_args }}
 
 # Runs the playbook in user-registration mode
 register-user username password admin_yes_or_no *extra_args:
@@ -73,15 +107,24 @@ start-all *extra_args: (run-tags "start-all" extra_args)
 
 # Starts a specific service group
 start-group group *extra_args:
-    @{{ just_executable() }} --justfile {{ justfile() }} run-tags start-group --extra-vars="group={{ group }}" {{ extra_args }}
+    @{{ just_executable() }} --justfile "{{ justfile() }}" run-tags start-group --extra-vars="group={{ group }}" {{ extra_args }}
 
 # Stops all services
 stop-all *extra_args: (run-tags "stop-all" extra_args)
 
 # Stops a specific service group
 stop-group group *extra_args:
-    @{{ just_executable() }} --justfile {{ justfile() }} run-tags stop-group --extra-vars="group={{ group }}" {{ extra_args }}
+    @{{ just_executable() }} --justfile "{{ justfile() }}" run-tags stop-group --extra-vars="group={{ group }}" {{ extra_args }}
 
 # Rebuilds the mautrix-meta-instagram Ansible role using the mautrix-meta-messenger role as a source
 rebuild-mautrix-meta-instagram:
-    /bin/bash {{ justfile_directory() }}/bin/rebuild-mautrix-meta-instagram.sh {{ justfile_directory() }}/roles/custom
+    /bin/bash "{{ justfile_directory() }}/bin/rebuild-mautrix-meta-instagram.sh" "{{ justfile_directory() }}/roles/custom"
+
+# Internal - ensures var/mise and var/prek directories exist
+_ensure_mise_data_directory:
+    @mkdir -p "{{ mise_data_dir }}"
+    @mkdir -p "{{ prek_home }}"
+
+# Internal - ensures mise tools are installed
+_ensure_mise_tools_installed: _ensure_mise_data_directory
+    @{{ just_executable() }} --justfile "{{ justfile() }}" mise install --quiet

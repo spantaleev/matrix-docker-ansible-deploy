@@ -1,4 +1,4 @@
-#jinja2: lstrip_blocks: "True"
+#jinja2: lstrip_blocks: True
 # Configuration file for Synapse.
 #
 # This is a YAML file: see [1] for a quick introduction. Note in particular
@@ -298,33 +298,33 @@ listeners:
     tls: true
     bind_addresses: ['::']
     type: http
-    x_forwarded: false
+    x_forwarded: {{ matrix_synapse_container_federation_api_tls_x_forwarded | to_json }}
 
     resources:
       - names: {{ matrix_synapse_federation_listener_resource_names|to_json }}
         compress: false
 {% endif %}
 
-  # Unsecure HTTP listener (Client API): for when Matrix traffic passes through a reverse proxy
+  # Insecure HTTP listener (Client API): for when Matrix traffic passes through a reverse proxy
   # that unwraps TLS.
   - port: {{ matrix_synapse_container_client_api_port|to_json }}
     tls: false
     bind_addresses: ['::']
     type: http
-    x_forwarded: true
+    x_forwarded: {{ matrix_synapse_container_client_api_x_forwarded | to_json }}
 
     resources:
       - names: {{ matrix_synapse_http_listener_resource_names|to_json }}
         compress: false
 
 {% if matrix_synapse_federation_port_enabled %}
-  # Unsecure HTTP listener (Federation API): for when Matrix traffic passes through a reverse proxy
+  # Insecure HTTP listener (Federation API): for when Matrix traffic passes through a reverse proxy
   # that unwraps TLS.
   - port: {{ matrix_synapse_container_federation_api_plain_port|to_json }}
     tls: false
     bind_addresses: ['::']
     type: http
-    x_forwarded: true
+    x_forwarded: {{ matrix_synapse_container_federation_api_plain_x_forwarded | to_json }}
 
     resources:
       - names: {{ matrix_synapse_federation_listener_resource_names|to_json }}
@@ -391,7 +391,7 @@ manhole_settings:
 
 # How to reach the server admin, used in ResourceLimitError
 #
-#admin_contact: 'mailto:admin@example.com'
+admin_contact: {{ matrix_synapse_admin_contact | to_json }}
 
 # Global blocking
 #
@@ -452,30 +452,11 @@ manhole_settings:
 #server_context: context
 
 # Resource-constrained homeserver settings
-#
-# When this is enabled, the room "complexity" will be checked before a user
-# joins a new remote room. If it is above the complexity limit, the server will
-# disallow joining, or will instantly leave.
-#
-# Room complexity is an arbitrary measure based on factors such as the number of
-# users in the room.
-#
 limit_remote_rooms:
-  # Uncomment to enable room complexity checking.
-  #
-  #enabled: true
-
-  # the limit above which rooms cannot be joined. The default is 1.0.
-  #
-  #complexity: 0.5
-
-  # override the error which is returned when the room is too complex.
-  #
-  #complexity_error: "This room is too complex."
-
-  # allow server admins to join complex rooms. Default is false.
-  #
-  #admins_can_join: true
+  enabled: {{ matrix_synapse_limit_remote_rooms_enabled | to_json }}
+  complexity: {{ matrix_synapse_limit_remote_rooms_complexity | to_json }}
+  complexity_error: {{ matrix_synapse_limit_remote_rooms_complexity_error | to_json }}
+  admins_can_join: {{ matrix_synapse_limit_remote_rooms_admins_can_join | to_json }}
 
 # Whether to require a user to be in the room to add an alias to it.
 # Defaults to 'true'.
@@ -883,7 +864,7 @@ database:
     user: {{ matrix_synapse_database_user | string|to_json }}
     password: {{ matrix_synapse_database_password | string|to_json }}
     database: "{{ matrix_synapse_database_database }}"
-    host: "{{ matrix_synapse_database_host }}"
+    host: "{{ matrix_synapse_database_socket_path if matrix_synapse_database_socket_enabled else matrix_synapse_database_host }}"
     port: {{ matrix_synapse_database_port }}
     cp_min: {{ matrix_synapse_database_cp_min | to_json }}
     cp_max: {{ matrix_synapse_database_cp_max | to_json }}
@@ -1035,11 +1016,15 @@ federation_rr_transactions_per_room_per_second: {{ matrix_synapse_federation_rr_
 #enable_media_repo: false
 enable_media_repo: {{ matrix_synapse_enable_media_repo | to_json }}
 
+# Enable the local on-disk media storage provider.
+# When disabled, media is stored only in configured media_storage_providers and temporary files are used for processing (no local caching).
+# Warning: If this option is set to false and no media_storage_providers are configured, all media requests will return 404 errors as there will be no storage backend available.
+enable_local_media_storage: {{ matrix_synapse_enable_local_media_storage | to_json }}
+
 # Enable authenticated media.
 # enable_authenticated_media blocks access to new media from the legacy endpoints
 # and freezes the unauthenticated media repo by blocking all downloads that are not using
 # the new authenticated endpoints. If this option is turned off all media reverts to being considered "old"
-
 enable_authenticated_media: {{ matrix_synapse_enable_authenticated_media | to_json }}
 
 # Directory where uploaded images and attachments are stored.
@@ -1178,6 +1163,9 @@ url_preview_ip_range_whitelist: {{ matrix_synapse_url_preview_ip_range_whitelist
 #
 #  # blacklist any URL with a literal IPv4 address
 #  - netloc: '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+{% if matrix_synapse_url_preview_url_blacklist | length > 0 %}
+url_preview_url_blacklist: {{ matrix_synapse_url_preview_url_blacklist | to_json }}
+{% endif %}
 
 # The largest allowed URL preview spidering size in bytes
 #
@@ -1709,7 +1697,7 @@ old_signing_keys:
 # Additional security can be provided by configuring a `verify key`, which
 # will make synapse check that the response is signed by that key.
 #
-# This setting supercedes an older setting named `perspectives`. The old format
+# This setting supersedes an older setting named `perspectives`. The old format
 # is still supported for backwards-compatibility, but it is deprecated.
 #
 # 'trusted_key_servers' defaults to matrix.org, but using it will generate a
@@ -2136,7 +2124,7 @@ cas_config:
   # Uncomment the following to enable authorization against a CAS server.
   # Defaults to false.
   #
-  #enabled: true
+  enabled: {{ matrix_synapse_cas_config_enabled | to_json }}
 
   # The URL of the CAS authorization endpoint.
   #
@@ -2393,13 +2381,13 @@ email:
   # has missed. Disabled by default.
   #
   #enable_notifs: false
-  enable_notifs: true
+  enable_notifs: {{ matrix_synapse_email_enable_notifs|to_json }}
 
   # Uncomment the following to disable automatic subscription to email
   # notifications for new users. Enabled by default.
   #
   #notif_for_new_users: false
-  notif_for_new_users: True
+  notif_for_new_users: {{ matrix_synapse_email_notif_for_new_users|to_json }}
 
   # Custom URL for client links within the email notifications. By default
   # links will be based on "https://matrix.to".
@@ -2550,6 +2538,11 @@ password_providers:
       bind_password: {{ matrix_synapse_ext_password_provider_ldap_bind_password | string|to_json }}
 {% endif %}
       filter: {{ matrix_synapse_ext_password_provider_ldap_filter | string|to_json }}
+      tls_options:
+        validate: {{ matrix_synapse_ext_password_provider_ldap_tls_options_validate | to_json }}
+{% if matrix_synapse_ext_password_provider_ldap_tls_options_ca_certs_file %}
+        ca_certs_file: {{ matrix_synapse_ext_password_provider_ldap_tls_options_ca_certs_file | string | to_json }}
+{% endif %}
 {% endif %}
 {% endif %}
 
@@ -2644,6 +2637,9 @@ user_directory:
     #
     prefer_local_users: {{ matrix_synapse_user_directory_prefer_local_users | to_json }}
 
+    # If set to true, the search will only return local users. Defaults to false.
+    exclude_remote_users: {{ matrix_synapse_user_directory_exclude_remote_users | to_json }}
+
 
 # User Consent configuration
 #
@@ -2726,6 +2722,22 @@ stats:
 #  system_mxid_display_name: "Server Notices"
 #  system_mxid_avatar_url: "mxc://example.com/oumMVlgDnLYFaPVkExemNVVZ"
 #  room_name: "Server Notices"
+{% if matrix_synapse_server_notices_enabled %}
+server_notices:
+  system_mxid_localpart: {{ matrix_synapse_server_notices_system_mxid_localpart | string | to_json }}
+  system_mxid_display_name: {{ matrix_synapse_server_notices_system_mxid_display_name | string | to_json }}
+{% if matrix_synapse_server_notices_system_mxid_avatar_url %}
+  system_mxid_avatar_url: {{ matrix_synapse_server_notices_system_mxid_avatar_url | string | to_json }}
+{% endif %}
+  room_name: {{ matrix_synapse_server_notices_room_name | string | to_json }}
+{% if matrix_synapse_server_notices_room_avatar_url %}
+  room_avatar_url: {{ matrix_synapse_server_notices_room_avatar_url | string | to_json }}
+{% endif %}
+{% if matrix_synapse_server_notices_room_topic %}
+  room_topic: {{ matrix_synapse_server_notices_room_topic | string | to_json }}
+{% endif %}
+  auto_join: {{ matrix_synapse_server_notices_auto_join | to_json }}
+{% endif %}
 
 
 
@@ -2927,6 +2939,11 @@ redis:
   host: {{ matrix_synapse_redis_host | to_json }}
   port: {{ matrix_synapse_redis_port | to_json }}
 
+  # The full path to a local Unix socket file. If this is used, host and port are ignored.
+  {% if matrix_synapse_redis_path_enabled %}
+  path: {{ (matrix_synapse_redis_path + matrix_synapse_redis_path_socket) | to_json }}
+  {% endif %}
+
   # Optional database ID to connect to. Defaults to 0.
   dbid: {{ matrix_synapse_redis_dbid | to_json }}
 
@@ -2969,12 +2986,17 @@ background_updates:
     #
     #default_batch_size: 50
 
+
+{% if matrix_synapse_matrix_authentication_service_enabled and not matrix_authentication_service_migration_in_progress %}
+matrix_authentication_service:
+  enabled: true
+  endpoint: {{ matrix_synapse_matrix_authentication_service_endpoint | to_json }}
+  secret: {{ matrix_synapse_matrix_authentication_service_secret | to_json }}
+{% endif %}
+
 experimental_features:
   {% if matrix_synapse_experimental_features_msc2409_to_device_messages_enabled %}
   msc2409_to_device_messages_enabled: true
-  {% endif %}
-  {% if matrix_synapse_experimental_features_msc3202_device_masquerading_enabled %}
-  msc3202_device_masquerading: true
   {% endif %}
   {% if matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled %}
   msc3202_transaction_extensions: true
@@ -2982,28 +3004,23 @@ experimental_features:
   {% if matrix_synapse_experimental_features_msc3266_enabled %}
   msc3266_enabled: true
   {% endif %}
-  {% if matrix_synapse_experimental_features_msc3861_enabled %}
-  msc3861:
-    enabled: true
-    issuer: {{ matrix_synapse_experimental_features_msc3861_issuer | to_json }}
-    introspection_endpoint: {{ matrix_synapse_experimental_features_msc3861_introspection_endpoint | to_json }}
-    client_id: {{ matrix_synapse_experimental_features_msc3861_client_id | to_json }}
-    client_auth_method: {{ matrix_synapse_experimental_features_msc3861_client_auth_method | to_json }}
-    client_secret: {{ matrix_synapse_experimental_features_msc3861_client_secret | to_json }}
-    admin_token: {{ matrix_synapse_experimental_features_msc3861_admin_token | to_json }}
-    account_management_url: {{ matrix_synapse_experimental_features_msc3861_account_management_url | to_json }}
-  {% endif %}
   {% if matrix_synapse_experimental_features_msc4108_enabled %}
   msc4108_enabled: true
-  {% endif %}
-  {% if matrix_synapse_experimental_features_msc4133_enabled %}
-  msc4133_enabled: true
   {% endif %}
   {% if matrix_synapse_experimental_features_msc4140_enabled %}
   msc4140_enabled: true
   {% endif %}
+  {% if matrix_synapse_experimental_features_msc4143_enabled %}
+  msc4143_enabled: true
+  {% endif %}
   {% if matrix_synapse_experimental_features_msc4222_enabled %}
   msc4222_enabled: true
+  {% endif %}
+  {% if matrix_synapse_experimental_features_msc4306_enabled %}
+  msc4306_enabled: true
+  {% endif %}
+  {% if matrix_synapse_experimental_features_msc4354_enabled %}
+  msc4354_enabled: true
   {% endif %}
 
 {% if matrix_synapse_experimental_features_msc4140_enabled %}
