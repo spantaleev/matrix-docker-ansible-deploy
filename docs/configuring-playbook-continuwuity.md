@@ -46,6 +46,13 @@ Take a look at:
 
 There are various Ansible variables that control settings in the `continuwuity.toml` file.
 
+💡 By default, the playbook wires Continuwuity into a few playbook-wide settings:
+
+- if `exim_relay_enabled: true` (the default), Continuwuity SMTP is automatically enabled and pointed at the [local Exim relay](configuring-playbook-email.md) service
+- `matrix_continuwuity_config_well_known_client` is automatically set to the public homeserver URL in the usual SSL-enabled setup, which helps email verification and password-reset links work in delegated-domain setups
+
+You can override any of these defaults in your `vars.yml` file if you want Continuwuity to use a different SMTP server or a different well-known client URL.
+
 If a specific setting you'd like to change does not have a dedicated Ansible variable, you can either submit a PR to us to add it, or you can [override the setting using an environment variable](https://continuwuity.org/configuration#environment-variables) using `matrix_continuwuity_environment_variables_extension`. For example:
 
 ```yaml

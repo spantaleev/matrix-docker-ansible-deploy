@@ -23,7 +23,7 @@ The [Ansible role for exim-relay](https://github.com/mother-of-all-self-hosting/
 
 1. **Final delivery capability**: Can deliver emails directly if you don't have an SMTP server
 
-2. **Centralized configuration**: Configure your upstream SMTP server once in exim-relay, then point all services ([Synapse](configuring-playbook-synapse.md), [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md), etc.) there—no need to configure SMTP in each component
+2. **Centralized configuration**: Configure your upstream SMTP server once in exim-relay, then point all services ([Synapse](configuring-playbook-synapse.md), [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md), [Continuwuity](configuring-playbook-continuwuity.md), etc.) there, with no need to configure SMTP in each component
 
 3. **Local spooling**: Stores messages locally and retries delivery if your upstream SMTP server is temporarily unavailable
 
