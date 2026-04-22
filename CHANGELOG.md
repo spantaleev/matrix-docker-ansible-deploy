@@ -1,3 +1,11 @@
+# 2026-XX-XX
+
+## SchildiChat Web has been removed from the playbook
+
+[SchildiChat Web](./docs/configuring-playbook-client-schildichat-web.md) has been removed from the playbook, as it has been discontinued.
+
+The playbook will let you know if you're using any `matrix_client_schildichat_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-client-schildichat-web.md#uninstalling-the-component-manually).
+
 # 2026-05-19
 
 ## matrix-registration has been removed from the playbook
