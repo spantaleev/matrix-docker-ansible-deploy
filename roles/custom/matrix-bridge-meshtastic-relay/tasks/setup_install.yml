@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: 2025 - 2026 luschmar
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Ensure matrix-meshtastic-relay image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_meshtastic_relay_container_image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+    force_source: "{{ matrix_meshtastic_relay_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_meshtastic_relay_container_image_force_pull }}"
+  register: matrix_meshtastic_relay_container_image_pull_result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: matrix_meshtastic_relay_container_image_pull_result is not failed
+
+- name: Ensure matrix-meshtastic-relay paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - "{{ matrix_meshtastic_relay_base_path }}"
+    - "{{ matrix_meshtastic_relay_config_path }}"
+    - "{{ matrix_meshtastic_relay_data_path }}"
+    - "{{ matrix_meshtastic_relay_logs_path }}"
+
+- name: Ensure matrix-meshtastic-relay config.yaml is installed
+  ansible.builtin.copy:
+    content: "{{ matrix_meshtastic_relay_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_meshtastic_relay_config_path }}/config.yaml"
+    mode: '0600'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_meshtastic_relay_config_result
+
+- name: Ensure matrix-meshtastic-relay container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_meshtastic_relay_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+  when: "matrix_meshtastic_relay_connection_type != 'ble'"
+
+- name: Ensure matrix-meshtastic-relay.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-meshtastic-relay.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-meshtastic-relay.service"
+    mode: '0644'
+  register: matrix_meshtastic_relay_systemd_service_result
+
+- name: Determine whether matrix-meshtastic-relay needs a restart
+  ansible.builtin.set_fact:
+    matrix_meshtastic_relay_restart_necessary: >-
+      {{
+        matrix_meshtastic_relay_config_result.changed | default(false)
+        or matrix_meshtastic_relay_systemd_service_result.changed | default(false)
+        or matrix_meshtastic_relay_container_image_pull_result.changed | default(false)
+      }}

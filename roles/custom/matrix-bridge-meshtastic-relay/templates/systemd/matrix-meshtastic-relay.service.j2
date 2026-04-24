@@ -1,0 +1,59 @@
+#jinja2: lstrip_blocks: True
+[Unit]
+Description=Matrix <-> Meshtastic bridge
+{% for service in matrix_meshtastic_relay_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_meshtastic_relay_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-meshtastic-relay
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm matrix-meshtastic-relay
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-meshtastic-relay \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=50m \
+			--tmpfs=/.cache:rw,noexec,nosuid,size=50m \
+			--mount type=bind,src={{ matrix_meshtastic_relay_config_path }}/config.yaml,dst=/app/config.yaml,ro \
+			--mount type=bind,src={{ matrix_meshtastic_relay_data_path }},dst=/app/data \
+			--mount type=bind,src={{ matrix_meshtastic_relay_logs_path }},dst=/app/logs \
+			{% if matrix_meshtastic_relay_connection_type == 'ble' %}
+			--network=host \
+			--security-opt apparmor=unconfined \
+			--mount type=bind,src=/var/run/dbus,dst=/var/run/dbus,ro \
+			{% else %}
+			--network={{ matrix_meshtastic_relay_container_network }} \
+			{% endif %}
+			{% if matrix_meshtastic_relay_connection_type == 'serial' %}
+			--device={{ matrix_meshtastic_relay_serial_port }} \
+			{% endif %}
+			{% for arg in matrix_meshtastic_relay_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_meshtastic_relay_container_image }}
+
+{% for network in matrix_meshtastic_relay_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-meshtastic-relay
+{% endfor %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-meshtastic-relay
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-meshtastic-relay
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm matrix-meshtastic-relay
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-meshtastic-relay
+
+[Install]
+WantedBy=multi-user.target

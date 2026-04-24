@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2025 - 2026 luschmar
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- tags:
+    - setup-all
+    - setup-meshtastic-relay
+    - install-all
+    - install-meshtastic-relay
+  block:
+    - when: matrix_meshtastic_relay_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_meshtastic_relay_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-meshtastic-relay
+  block:
+    - when: not matrix_meshtastic_relay_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
