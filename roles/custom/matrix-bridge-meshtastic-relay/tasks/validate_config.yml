@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2025 - 2026 luschmar
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if required matrix-meshtastic-relay settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_meshtastic_relay_matrix_host', when: true}
+    - {'name': 'matrix_meshtastic_relay_matrix_bot_password', when: true}
+    - {'name': 'matrix_meshtastic_relay_connection_type', when: true}
+
+- name: Fail if matrix_meshtastic_relay_connection_type is invalid
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_meshtastic_relay_connection_type` must be one of: `tcp`, `serial`, `ble`.
+      Got: `{{ matrix_meshtastic_relay_connection_type }}`.
+  when: "matrix_meshtastic_relay_connection_type not in ['tcp', 'serial', 'ble']"

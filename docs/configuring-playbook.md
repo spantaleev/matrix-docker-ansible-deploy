@@ -182,6 +182,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Heisenbridge bouncer-style IRC bridging](configuring-playbook-bridge-heisenbridge.md)
 
+- [Setting up a Matrix <-> Meshtastic bridge](configuring-playbook-bridge-meshtastic-relay.md)
+
 - [Setting up WeChat bridging](configuring-playbook-bridge-wechat.md)
 
 ### Bots

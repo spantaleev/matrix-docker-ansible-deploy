@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2025 - 2026 luschmar
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-meshtastic-relay service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-meshtastic-relay.service"
+  register: matrix_meshtastic_relay_service_stat
+
+- when: matrix_meshtastic_relay_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-meshtastic-relay is stopped
+      ansible.builtin.service:
+        name: matrix-meshtastic-relay
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-meshtastic-relay.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-meshtastic-relay.service"
+        state: absent

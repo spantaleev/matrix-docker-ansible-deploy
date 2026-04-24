@@ -1,5 +1,11 @@
 # 2026-04-24
 
+## Support for bridging to Meshtastic via meshtastic-matrix-relay
+
+Thanks to [luschmar](https://github.com/luschmar), the playbook now supports bridging to [Meshtastic](https://meshtastic.org/) mesh networks via [meshtastic-matrix-relay](https://github.com/jeremiah-k/meshtastic-matrix-relay) (mmrelay).
+
+To learn more, see our [Setting up a Matrix <-> Meshtastic bridge](./docs/configuring-playbook-bridge-meshtastic-relay.md) documentation page.
+
 ## (BC Break) mautrix-telegram has been rewritten in Go (bridgev2)
 
 The [mautrix-telegram](./docs/configuring-playbook-bridge-mautrix-telegram.md) bridge has been [rewritten in Go](https://mau.fi/blog/2026-04-mautrix-release/) on top of the [bridgev2](https://docs.mau.fi/bridges/go/) architecture. See the [upstream v26.04 release notes](https://github.com/mautrix/telegram/releases/tag/v0.2604.0) for what changed in the bridge itself (shared-portal behavior, management-room state, new features, etc.).
