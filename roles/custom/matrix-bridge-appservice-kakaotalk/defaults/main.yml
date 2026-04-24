@@ -121,12 +121,10 @@ matrix_appservice_kakaotalk_database_name: 'matrix_appservice_kakaotalk'
 
 matrix_appservice_kakaotalk_database_connection_string: 'postgres://{{ matrix_appservice_kakaotalk_database_username }}:{{ matrix_appservice_kakaotalk_database_password }}@{{ matrix_appservice_kakaotalk_database_hostname }}:{{ matrix_appservice_kakaotalk_database_port }}/{{ matrix_appservice_kakaotalk_database_name }}'
 
-matrix_appservice_kakaotalk_appservice_database: "{{
-	{
-		'sqlite': ('sqlite:///' + matrix_appservice_kakaotalk_sqlite_database_path_in_container),
-		'postgres': matrix_appservice_kakaotalk_database_connection_string,
-	}[matrix_appservice_kakaotalk_database_engine]
-}}"
+matrix_appservice_kakaotalk_appservice_database: "{{ {
+    'sqlite': ('sqlite:///' + matrix_appservice_kakaotalk_sqlite_database_path_in_container),
+    'postgres': matrix_appservice_kakaotalk_database_connection_string,
+}[matrix_appservice_kakaotalk_database_engine] }}"
 
 
 # Can be set to enable automatic double-puppeting via Shared Secret Auth (https://github.com/devture/matrix-synapse-shared-secret-auth).

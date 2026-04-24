@@ -147,19 +147,15 @@ matrix_mautrix_telegram_database_sslmode: disable
 
 matrix_mautrix_telegram_database_connection_string: 'postgresql://{{ matrix_mautrix_telegram_database_username }}:{{ matrix_mautrix_telegram_database_password }}@{{ matrix_mautrix_telegram_database_hostname }}:{{ matrix_mautrix_telegram_database_port }}/{{ matrix_mautrix_telegram_database_name }}?sslmode={{ matrix_mautrix_telegram_database_sslmode }}'
 
-matrix_mautrix_telegram_appservice_database_type: "{{
-	{
-		'sqlite': 'sqlite3-fk-wal',
-		'postgres':'postgres',
-	}[matrix_mautrix_telegram_database_engine]
-}}"
+matrix_mautrix_telegram_appservice_database_type: "{{ {
+    'sqlite': 'sqlite3-fk-wal',
+    'postgres': 'postgres',
+}[matrix_mautrix_telegram_database_engine] }}"
 
-matrix_mautrix_telegram_appservice_database_uri: "{{
-	{
-		'sqlite': matrix_mautrix_telegram_sqlite_database_path_in_container,
-		'postgres': matrix_mautrix_telegram_database_connection_string,
-	}[matrix_mautrix_telegram_database_engine]
-}}"
+matrix_mautrix_telegram_appservice_database_uri: "{{ {
+    'sqlite': matrix_mautrix_telegram_sqlite_database_path_in_container,
+    'postgres': matrix_mautrix_telegram_database_connection_string,
+}[matrix_mautrix_telegram_database_engine] }}"
 
 matrix_mautrix_telegram_double_puppet_secrets: "{{ matrix_mautrix_telegram_double_puppet_secrets_auto | combine(matrix_mautrix_telegram_double_puppet_secrets_custom) }}"
 matrix_mautrix_telegram_double_puppet_secrets_auto: {}

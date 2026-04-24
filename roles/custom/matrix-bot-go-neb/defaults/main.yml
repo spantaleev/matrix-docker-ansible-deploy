@@ -159,11 +159,9 @@ matrix_bot_go_neb_database_engine: 'sqlite3'
 matrix_bot_go_neb_sqlite_database_path_local: "{{ matrix_bot_go_neb_data_path }}/bot.db"
 matrix_bot_go_neb_sqlite_database_path_in_container: "/data/bot.db"
 
-matrix_bot_go_neb_storage_database: "{{
-	{
-		'sqlite3': (matrix_bot_go_neb_sqlite_database_path_in_container + '?_busy_timeout=5000'),
-	}[matrix_bot_go_neb_database_engine]
-}}"
+matrix_bot_go_neb_storage_database: "{{ {
+    'sqlite3': (matrix_bot_go_neb_sqlite_database_path_in_container + '?_busy_timeout=5000'),
+}[matrix_bot_go_neb_database_engine] }}"
 
 # The bot's username(s). These users need to be created manually beforehand.
 # The access tokens that the bot uses to authenticate.
