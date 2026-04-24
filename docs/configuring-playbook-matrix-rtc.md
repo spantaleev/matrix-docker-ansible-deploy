@@ -38,6 +38,12 @@ matrix_rtc_enabled: true
 
 In addition to the HTTP/HTTPS ports (which you've already exposed as per the [prerequisites](prerequisites.md) document), you'll also need to open ports required by [LiveKit Server](configuring-playbook-livekit-server.md) as described in its own [Adjusting firewall rules](configuring-playbook-livekit-server.md#adjusting-firewall-rules) section.
 
+## Fronting the integrated reverse-proxy with another reverse-proxy
+
+If you're [fronting the integrated reverse-proxy webserver with another reverse-proxy](configuring-playbook-own-webserver.md#fronting-the-integrated-reverse-proxy-webserver-with-another-reverse-proxy) (e.g. nginx), it needs to forward WebSocket traffic for [LiveKit Server](configuring-playbook-livekit-server.md) at the `/livekit-server/` path. Without that, Matrix RTC calls will not work.
+
+See [`examples/reverse-proxies/nginx/matrix.conf`](../examples/reverse-proxies/nginx/matrix.conf) for an nginx example.
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records) and [adjusting firewall rules](#adjusting-firewall-rules), run the playbook with [playbook tags](playbook-tags.md) as below:
