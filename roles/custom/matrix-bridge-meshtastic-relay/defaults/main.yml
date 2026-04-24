@@ -10,7 +10,7 @@
 matrix_meshtastic_relay_enabled: true
 
 # renovate: datasource=docker depName=jeremiah-k/mmrelay packageName=ghcr.io/jeremiah-k/mmrelay
-matrix_meshtastic_relay_version: 1.2.8
+matrix_meshtastic_relay_version: 1.3.5
 matrix_meshtastic_relay_container_image: "{{ matrix_meshtastic_relay_container_image_registry_prefix }}jeremiah-k/mmrelay:{{ matrix_meshtastic_relay_version }}"
 matrix_meshtastic_relay_container_image_registry_prefix: "{{ matrix_meshtastic_relay_container_image_registry_prefix_upstream }}"
 matrix_meshtastic_relay_container_image_registry_prefix_upstream: "{{ matrix_meshtastic_relay_container_image_registry_prefix_upstream_default }}"
@@ -18,9 +18,15 @@ matrix_meshtastic_relay_container_image_registry_prefix_upstream_default: "ghcr.
 matrix_meshtastic_relay_container_image_force_pull: "{{ matrix_meshtastic_relay_container_image.endswith(':latest') }}"
 
 matrix_meshtastic_relay_base_path: "{{ matrix_base_data_path }}/meshtastic-relay"
+
+# Holds the Ansible-managed `config.yaml`. Mounted read-only at `/config` in the
+# container; mmrelay is pointed at `/config/config.yaml` via the `--config` CLI flag.
 matrix_meshtastic_relay_config_path: "{{ matrix_meshtastic_relay_base_path }}/config"
+
+# Runtime data directory. Mounted read-write at `/data` (MMRELAY_HOME) in the container.
+# mmrelay auto-creates `database/`, `logs/`, `matrix/` (credentials + E2EE store)
+# and `plugins/` subdirectories underneath as needed.
 matrix_meshtastic_relay_data_path: "{{ matrix_meshtastic_relay_base_path }}/data"
-matrix_meshtastic_relay_logs_path: "{{ matrix_meshtastic_relay_base_path }}/logs"
 
 matrix_meshtastic_relay_container_network: ""
 
@@ -51,8 +57,8 @@ matrix_meshtastic_relay_matrix_bot_user_id: "@meshtasticbot:{{ matrix_meshtastic
 
 # Password for the bot's Matrix account.
 # On first startup, mmrelay uses this to log in and persist credentials (including E2EE
-# material) under `{{ matrix_meshtastic_relay_data_path }}`. After that, the password
-# can (and should) be cleared from configuration.
+# material) under `{{ matrix_meshtastic_relay_data_path }}/matrix/` on the host. After
+# that, the password can (and should) be cleared from configuration.
 matrix_meshtastic_relay_matrix_bot_password: ""
 
 # Controls whether End-to-End Encryption is enabled.
@@ -109,14 +115,12 @@ matrix_meshtastic_relay_configuration_default:
     bot_user_id: "{{ matrix_meshtastic_relay_matrix_bot_user_id }}"
     e2ee:
       enabled: "{{ matrix_meshtastic_relay_e2ee_enabled }}"
-      store_path: /app/data/store
   matrix_rooms: "{{ matrix_meshtastic_relay_matrix_rooms_list }}"
   meshtastic: "{{ matrix_meshtastic_relay_meshtastic_configuration }}"
   logging:
     level: info
     log_to_file: false
   database:
-    path: /app/data/meshtastic.sqlite
     enable_wal: true
     busy_timeout_ms: 5000
     pragmas:

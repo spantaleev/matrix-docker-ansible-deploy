@@ -25,9 +25,8 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=50m \
 			--tmpfs=/.cache:rw,noexec,nosuid,size=50m \
-			--mount type=bind,src={{ matrix_meshtastic_relay_config_path }}/config.yaml,dst=/app/config.yaml,ro \
-			--mount type=bind,src={{ matrix_meshtastic_relay_data_path }},dst=/app/data \
-			--mount type=bind,src={{ matrix_meshtastic_relay_logs_path }},dst=/app/logs \
+			--mount type=bind,src={{ matrix_meshtastic_relay_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_meshtastic_relay_data_path }},dst=/data \
 			{% if matrix_meshtastic_relay_connection_type == 'ble' %}
 			--network=host \
 			--security-opt apparmor=unconfined \
@@ -41,7 +40,8 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% for arg in matrix_meshtastic_relay_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_meshtastic_relay_container_image }}
+			{{ matrix_meshtastic_relay_container_image }} \
+			mmrelay --config /config/config.yaml
 
 {% for network in matrix_meshtastic_relay_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-meshtastic-relay
