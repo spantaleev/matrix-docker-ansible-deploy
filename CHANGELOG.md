@@ -1,3 +1,20 @@
+# 2026-04-24
+
+## (BC Break) mautrix-telegram has been rewritten in Go (bridgev2)
+
+The [mautrix-telegram](./docs/configuring-playbook-bridge-mautrix-telegram.md) bridge has been [rewritten in Go](https://mau.fi/blog/2026-04-mautrix-release/) on top of the [bridgev2](https://docs.mau.fi/bridges/go/) architecture. See the [upstream v26.04 release notes](https://github.com/mautrix/telegram/releases/tag/v0.2604.0) for what changed in the bridge itself (shared-portal behavior, management-room state, new features, etc.).
+
+**Most users won't have to do anything.** If you use the playbook's integrated Postgres (the default) and haven't customized telegram-bridge variables beyond `matrix_mautrix_telegram_api_id` and `matrix_mautrix_telegram_api_hash`, just re-run the playbook; the bridge will migrate itself on first start. Taking a backup beforehand is still a good idea.
+
+⚠️ **SQLite users: do not upgrade yet.** Upstream v0.2604.0 has a [known bug in the legacy SQLite migration](https://github.com/mautrix/telegram/releases/tag/v0.2604.0) that can corrupt your data. The playbook detects this case and will refuse to proceed. Either switch to Postgres first (set `matrix_mautrix_telegram_database_engine: postgres`; the playbook handles the pgloader migration), or wait for the next upstream release.
+
+Playbook-specific things to know. The playbook will fail loudly if you're affected:
+
+- Many `matrix_mautrix_telegram_*` variables have been **removed** (web-login endpoint, lottieconverter, username/alias/displayname templates, filter-mode, bot-token relaybot, Shared-Secret-Auth map). The deprecation check will tell you exactly what to rename or drop when you run the playbook.
+- **Old-style relaybot users** (`matrix_mautrix_telegram_bot_token`): switch to the common [mautrix bridge relay mode](./docs/configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional) via `matrix_mautrix_telegram_bridge_relay_enabled: true`.
+- **Shared-Secret-Auth double-puppeting users**: switch to [Appservice Double Puppet](./docs/configuring-playbook-appservice-double-puppet.md); the playbook wires it up automatically.
+- **Custom `matrix_mautrix_telegram_bridge_permissions`**: map `relaybot` to `relay`, `puppeting` to `user`, `full` to `user`. Validated at playbook time.
+
 # 2026-04-03
 
 ## (BC Break) Synapse Admin (fork by etke.cc) is now Ketesa

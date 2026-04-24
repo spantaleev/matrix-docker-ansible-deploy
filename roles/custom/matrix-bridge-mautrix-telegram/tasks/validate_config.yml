@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2019 - 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2019 - 2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2022 MDAD project contributors
 # SPDX-FileCopyrightText: 2025 Suguru Hirahara
 #
@@ -13,34 +13,72 @@
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
-    - {'old': 'matrix_mautrix_telegram_container_exposed_port_number', 'new': '<superseded by matrix_mautrix_telegram_container_http_host_bind_port>'}
+    - {'old': 'matrix_mautrix_telegram_container_exposed_port_number', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
     - {'old': 'matrix_mautrix_telegram_container_self_build', 'new': 'matrix_mautrix_telegram_container_image_self_build'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_self_build', 'new': 'matrix_mautrix_telegram_container_image_self_build'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_self_build_mask_arch', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_self_build_mask_arch'}
     - {'old': 'matrix_mautrix_telegram_login_shared_secret', 'new': '<removed>'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_name_prefix', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix'}
     - {'old': 'matrix_mautrix_telegram_docker_image_name_prefix', 'new': 'matrix_mautrix_telegram_container_image_registry_prefix'}
-    - {'old': 'matrix_telegram_lottieconverter_container_image_self_build', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_self_build'}
-    - {'old': 'matrix_telegram_lottieconverter_container_image_self_build_mask_arch', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_self_build_mask_arch'}
-    - {'old': 'matrix_telegram_lottieconverter_docker_repo', 'new': 'matrix_mautrix_telegram_lottieconverter_container_repo'}
-    - {'old': 'matrix_telegram_lottieconverter_docker_repo_version', 'new': 'matrix_mautrix_telegram_lottieconverter_container_repo_version'}
-    - {'old': 'matrix_telegram_lottieconverter_docker_src_files_path', 'new': 'matrix_mautrix_telegram_lottieconverter_container_src_files_path'}
-    - {'old': 'matrix_telegram_lottieconverter_docker_image', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image'}
-    - {'old': 'matrix_mautrix_telegram_docker_repo', 'new': 'matrix_mautrix_telegram_container_repo'}
-    - {'old': 'matrix_mautrix_telegram_docker_repo_version', 'new': 'matrix_mautrix_telegram_container_repo_version'}
+    - {'old': 'matrix_mautrix_telegram_docker_repo', 'new': 'matrix_mautrix_telegram_container_image_self_build_repo'}
+    - {'old': 'matrix_mautrix_telegram_docker_repo_version', 'new': 'matrix_mautrix_telegram_container_image_self_build_branch'}
     - {'old': 'matrix_mautrix_telegram_docker_src_files_path', 'new': 'matrix_mautrix_telegram_container_src_files_path'}
     - {'old': 'matrix_mautrix_telegram_docker_image', 'new': 'matrix_mautrix_telegram_container_image'}
     - {'old': 'matrix_mautrix_telegram_docker_image_force_pull', 'new': 'matrix_mautrix_telegram_container_image_force_pull'}
     - {'old': 'matrix_mautrix_telegram_docker_image_registry_prefix', 'new': 'matrix_mautrix_telegram_container_image_registry_prefix'}
     - {'old': 'matrix_mautrix_telegram_docker_image_registry_prefix_upstream', 'new': 'matrix_mautrix_telegram_container_image_registry_prefix_upstream'}
     - {'old': 'matrix_mautrix_telegram_docker_image_registry_prefix_upstream_default', 'new': 'matrix_mautrix_telegram_container_image_registry_prefix_upstream_default'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix_upstream', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix_upstream'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix_upstream_default', 'new': 'matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix_upstream_default'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_repo', 'new': 'matrix_mautrix_telegram_lottieconverter_container_repo'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_repo_version', 'new': 'matrix_mautrix_telegram_lottieconverter_container_repo_version'}
-    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_src_files_path', 'new': 'matrix_mautrix_telegram_lottieconverter_container_src_files_path'}
+    - {'old': 'matrix_mautrix_telegram_container_repo', 'new': 'matrix_mautrix_telegram_container_image_self_build_repo'}
+    - {'old': 'matrix_mautrix_telegram_container_repo_version', 'new': 'matrix_mautrix_telegram_container_image_self_build_branch'}
+    # Variables removed in the bridgev2 (Go) rewrite — mautrix-telegram no longer has a Python runtime,
+    # a separate lottieconverter container or a web-based login endpoint.
+    - {'old': 'matrix_mautrix_telegram_scheme', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_hostname', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_path_prefix', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_public_endpoint', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_appservice_public_enabled', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_appservice_public_external', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_labels_public_endpoint_enabled', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_labels_public_endpoint_hostname', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_labels_public_endpoint_path_prefix', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_labels_public_endpoint_traefik_rule', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_labels_public_endpoint_traefik_priority', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_labels_public_endpoint_traefik_entrypoints', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_labels_public_endpoint_traefik_tls', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_labels_public_endpoint_traefik_tls_certResolver', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_container_http_host_bind_port', 'new': '<removed (the bridge no longer has a public web-based login endpoint)>'}
+    - {'old': 'matrix_mautrix_telegram_filter_mode', 'new': '<removed (not available in the bridgev2 rewrite of mautrix-telegram)>'}
+    - {'old': 'matrix_mautrix_telegram_bot_token', 'new': '<removed; the old-style relaybot is gone — use the common bridge relay mode (matrix_mautrix_telegram_bridge_relay_enabled) instead>'}
+    - {'old': 'matrix_mautrix_telegram_bridge_login_shared_secret_map', 'new': '<superseded by matrix_mautrix_telegram_double_puppet_secrets>'}
+    - {'old': 'matrix_mautrix_telegram_bridge_login_shared_secret_map_auto', 'new': '<superseded by matrix_mautrix_telegram_double_puppet_secrets_auto>'}
+    - {'old': 'matrix_mautrix_telegram_bridge_login_shared_secret_map_custom', 'new': '<superseded by matrix_mautrix_telegram_double_puppet_secrets_custom>'}
+    - {'old': 'matrix_mautrix_telegram_username_template', 'new': '<removed (no longer configurable via a single variable; use matrix_mautrix_telegram_configuration_extension_yaml if needed)>'}
+    - {'old': 'matrix_mautrix_telegram_alias_template', 'new': '<removed (room aliases are no longer created by the bridgev2 rewrite of mautrix-telegram)>'}
+    - {'old': 'matrix_mautrix_telegram_displayname_template', 'new': '<superseded by matrix_mautrix_telegram_network_displayname_template (note: the syntax has changed to Go templates)>'}
+    - {'old': 'matrix_mautrix_telegram_appservice_database', 'new': '<superseded by matrix_mautrix_telegram_appservice_database_uri>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_image_self_build', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_image_self_build_mask_arch', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_repo', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_repo_version', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_src_files_path', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_image', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix_upstream', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_image_registry_prefix_upstream_default', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    # Historical lottieconverter aliases from before the _docker_ → _container_ rename:
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_container_self_build', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_name_prefix', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix_upstream', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_image_registry_prefix_upstream_default', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_repo', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_repo_version', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_mautrix_telegram_lottieconverter_docker_src_files_path', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    # Even older aliases (no `_mautrix` infix):
+    - {'old': 'matrix_telegram_lottieconverter_container_image_self_build', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_telegram_lottieconverter_container_image_self_build_mask_arch', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_telegram_lottieconverter_docker_repo', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_telegram_lottieconverter_docker_repo_version', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_telegram_lottieconverter_docker_src_files_path', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_telegram_lottieconverter_docker_image', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
 
 - name: Fail if required mautrix-telegram settings not defined
   ansible.builtin.fail:
@@ -48,11 +86,8 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
-    - {'name': 'matrix_mautrix_telegram_hostname', when: true}
-    - {'name': 'matrix_mautrix_telegram_path_prefix', when: true}
     - {'name': 'matrix_mautrix_telegram_api_id', when: true}
     - {'name': 'matrix_mautrix_telegram_api_hash', when: true}
-    - {'name': 'matrix_mautrix_telegram_public_endpoint', when: true}
     - {'name': 'matrix_mautrix_telegram_appservice_token', when: true}
     - {'name': 'matrix_mautrix_telegram_homeserver_address', when: true}
     - {'name': 'matrix_mautrix_telegram_homeserver_token', when: true}
@@ -60,3 +95,47 @@
     - {'name': 'matrix_mautrix_telegram_database_hostname', when: "{{ matrix_mautrix_telegram_database_engine == 'postgres' }}"}
     - {'name': 'matrix_mautrix_telegram_metrics_proxying_hostname', when: "{{ matrix_mautrix_telegram_metrics_proxying_enabled }}"}
     - {'name': 'matrix_mautrix_telegram_metrics_proxying_path_prefix', when: "{{ matrix_mautrix_telegram_metrics_proxying_enabled }}"}
+
+# Temporary workaround for an upstream SQLite legacy-migration bug in mautrix-telegram v0.2604.0.
+# See the separate task file for details; the whole file (and this include) can be deleted once
+# upstream ships a release that fixes the bug.
+- name: Guard against the upstream mautrix-telegram v0.2604.0 SQLite legacy-migration bug
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config_sqlite_legacy_migration_bug.yml"
+  when:
+    - "matrix_mautrix_telegram_database_engine == 'sqlite'"
+    - "not (matrix_mautrix_telegram_bridgev2_sqlite_upgrade_confirmed | default(false) | bool)"
+
+# Bridgev2 permission values are: block, relay, commands, user, admin.
+# The old Python bridge had different levels (relaybot, user, puppeting, full, admin).
+# `user` and `admin` still exist in both but with different semantics (the new `user` is
+# equivalent to the old `full`/`puppeting`). `relaybot`, `puppeting` and `full` don't exist
+# in bridgev2 and will cause the bridge to reject its config at startup.
+#
+# We check the fully-merged configuration (not just `matrix_mautrix_telegram_bridge_permissions`)
+# because users commonly override permissions via `matrix_mautrix_telegram_configuration_extension_yaml`,
+# and those overrides would otherwise slip through validation.
+- name: Fail if bridge permissions still reference legacy Python-bridge permission levels
+  ansible.builtin.fail:
+    msg: |-
+      Your final mautrix-telegram configuration contains a `bridge.permissions` entry with
+      value `{{ item.value }}` (for `{{ item.key }}`). This was a permission level in the legacy
+      (Python) mautrix-telegram bridge but is not valid in the bridgev2 rewrite shipped in v0.2604.0
+      — the bridge would reject this at startup.
+
+      Valid values are: `relay`, `commands`, `user`, `admin` (plus `block`).
+
+      Rough mapping from the old levels:
+
+        relaybot  -> relay
+        user      -> user (semantics changed: this now grants full puppeting, like the old `full`)
+        puppeting -> user
+        full      -> user
+        admin     -> admin
+
+      See https://docs.mau.fi/bridges/general/permissions.html and the bridge's example config
+      for details. Update either `matrix_mautrix_telegram_bridge_permissions` or the `bridge.permissions`
+      section inside `matrix_mautrix_telegram_configuration_extension_yaml` — whichever you use.
+  when: "item.value in ['relaybot', 'puppeting', 'full']"
+  loop: "{{ (matrix_mautrix_telegram_configuration.bridge.permissions | default({})) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"

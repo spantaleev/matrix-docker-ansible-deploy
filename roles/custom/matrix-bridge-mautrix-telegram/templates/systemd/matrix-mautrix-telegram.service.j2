@@ -23,17 +23,15 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_mautrix_telegram_container_network }} \
-			{% if matrix_mautrix_telegram_appservice_public_enabled and matrix_mautrix_telegram_container_http_host_bind_port %}
-			-p {{ matrix_mautrix_telegram_container_http_host_bind_port }}:8080 \
-			{% endif %}
 			--mount type=bind,src={{ matrix_mautrix_telegram_config_path }},dst=/config \
 			--mount type=bind,src={{ matrix_mautrix_telegram_data_path }},dst=/data \
 			--label-file={{ matrix_mautrix_telegram_base_path }}/labels \
+			--workdir=/data \
 			{% for arg in matrix_mautrix_telegram_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_mautrix_telegram_container_image }} \
-			python3 -m mautrix_telegram -c /config/config.yaml --no-update
+			/usr/bin/mautrix-telegram -c /config/config.yaml -r /config/registration.yaml --no-update
 
 {% for network in matrix_mautrix_telegram_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-mautrix-telegram

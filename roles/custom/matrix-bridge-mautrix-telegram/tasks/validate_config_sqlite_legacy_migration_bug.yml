@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# ###########################################################################
+# TEMPORARY — delete this file (and its include in `validate_config.yml`)
+# once upstream mautrix-telegram ships a release that fixes the SQLite
+# legacy-migration bug introduced in v0.2604.0.
+#
+# Upstream warning:
+#   "Migration of SQLite databases has a known bug. If you're upgrading a
+#    legacy bridge that uses SQLite, use the main branch or wait for the
+#    next release"
+#   — https://github.com/mautrix/telegram/releases/tag/v0.2604.0
+#
+# We specifically want to block upgrades of the *legacy* Python-bridge
+# SQLite databases; fresh bridgev2 SQLite databases (or already-migrated
+# ones) must still be allowed.
+#
+# The cheapest reliable signature of a legacy Python-bridge DB is the
+# presence of the `telethon_sessions` table (the Python bridge's
+# Telethon-session store, which upstream's legacymigrate.sql renames to
+# `telethon_sessions_old` as part of the bridgev2 migration).
+#
+# Users can bypass this via `matrix_mautrix_telegram_bridgev2_sqlite_upgrade_confirmed: true`.
+# ###########################################################################
+
+- name: Check for an existing mautrix-telegram SQLite database (legacy location)
+  ansible.builtin.stat:
+    path: "{{ matrix_mautrix_telegram_base_path }}/mautrix-telegram.db"
+  register: matrix_mautrix_telegram_sqlite_legacy_path_stat
+
+- name: Check for an existing mautrix-telegram SQLite database (data path)
+  ansible.builtin.stat:
+    path: "{{ matrix_mautrix_telegram_sqlite_database_path_local }}"
+  register: matrix_mautrix_telegram_sqlite_data_path_stat
+
+- name: Inspect SQLite database for the legacy Python-bridge schema signature
+  ansible.builtin.command:
+    argv:
+      - python3
+      - -c
+      - |
+        import sqlite3, sys
+        try:
+            conn = sqlite3.connect("file:" + sys.argv[1] + "?mode=ro", uri=True)
+            cur = conn.execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type='table' AND name='telethon_sessions'"
+            )
+            sys.exit(1 if cur.fetchone() else 0)
+        except Exception:
+            sys.exit(0)
+      - "{{ matrix_mautrix_telegram_sqlite_legacy_path_stat.stat.path if matrix_mautrix_telegram_sqlite_legacy_path_stat.stat.exists else matrix_mautrix_telegram_sqlite_data_path_stat.stat.path }}"
+  register: matrix_mautrix_telegram_sqlite_legacy_check
+  changed_when: false
+  failed_when: false
+  when: >-
+    matrix_mautrix_telegram_sqlite_legacy_path_stat.stat.exists
+    or matrix_mautrix_telegram_sqlite_data_path_stat.stat.exists
+
+- name: Fail if upgrading a legacy SQLite install (upstream has a known migration bug)
+  ansible.builtin.fail:
+    msg: |-
+      A legacy Python mautrix-telegram SQLite database was detected at
+      `{{ matrix_mautrix_telegram_sqlite_legacy_path_stat.stat.path if matrix_mautrix_telegram_sqlite_legacy_path_stat.stat.exists else matrix_mautrix_telegram_sqlite_data_path_stat.stat.path }}`
+      (it contains the `telethon_sessions` table from the Python bridge).
+
+      Upstream mautrix-telegram v0.2604.0 has a **known bug** in the legacy SQLite
+      database migration (see the warning on the release page:
+      https://github.com/mautrix/telegram/releases/tag/v0.2604.0).
+      Running this upgrade against a legacy SQLite database is very likely to corrupt your data.
+
+      Recommended options:
+
+      1. Switch to Postgres before upgrading. If you're using the playbook-managed Postgres
+         service (`postgres_enabled: true`), just set:
+
+             matrix_mautrix_telegram_database_engine: postgres
+
+         and re-run the playbook. The playbook will migrate your SQLite data into Postgres
+         first (via pgloader), and upstream's bridgev2 migration path is known to work on
+         Postgres.
+
+      2. Wait for the next upstream mautrix-telegram release, which is expected to fix the
+         SQLite migration bug.
+
+      If you're sure you want to proceed anyway (for example because you have a separate
+      backup), you can bypass this check by setting:
+
+          matrix_mautrix_telegram_bridgev2_sqlite_upgrade_confirmed: true
+
+      in your vars.yml. Only use the override if you know what you're doing.
+  when: >-
+    (matrix_mautrix_telegram_sqlite_legacy_path_stat.stat.exists
+      or matrix_mautrix_telegram_sqlite_data_path_stat.stat.exists)
+    and (matrix_mautrix_telegram_sqlite_legacy_check.rc | default(0)) == 1

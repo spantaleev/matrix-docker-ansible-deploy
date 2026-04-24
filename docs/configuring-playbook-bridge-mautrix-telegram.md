@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2018 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 - 2026 Slavi Pantaleev
 SPDX-FileCopyrightText: 2018 Hugues Morisset
 SPDX-FileCopyrightText: 2019 - 2022 MDAD project contributors
 SPDX-FileCopyrightText: 2021 Panagiotis Georgiadis
@@ -17,7 +17,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 The playbook can install and configure [mautrix-telegram](https://github.com/mautrix/telegram) for you.
 
-See the project's [documentation](https://docs.mau.fi/bridges/python/telegram/index.html) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://docs.mau.fi/bridges/go/telegram/index.html) to learn what it does and why it might be useful to you.
 
 ## Prerequisites
 
@@ -25,17 +25,11 @@ See the project's [documentation](https://docs.mau.fi/bridges/python/telegram/in
 
 To use the bridge, you'd need to obtain an API key from [https://my.telegram.org/apps](https://my.telegram.org/apps).
 
-### Enable Appservice Double Puppet or Shared Secret Auth (optional)
+### Enable Appservice Double Puppet (optional)
 
-If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) or [Shared Secret Auth](configuring-playbook-shared-secret-auth.md) service for this playbook.
+If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) service for this playbook.
 
 See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-puppeting-optional) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about setting up Double Puppeting.
-
-**Notes**:
-
-- Double puppeting with the Shared Secret Auth works at the time of writing, but is deprecated and will stop working in the future.
-
-- If you decided to enable Double Puppeting manually, send `login-matrix` to the bot in order to receive an instruction about how to send an access token to it.
 
 ## Adjusting the playbook configuration
 
@@ -49,37 +43,16 @@ matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 
 ### Relaying
 
-### Enable relay-bot (optional)
-
-If you want to use the relay-bot feature ([relay bot documentation](https://docs.mau.fi/bridges/python/telegram/relay-bot.html)), which allows anonymous user to chat with telegram users, add the following configuration to your `vars.yml` file:
-
-```yaml
-matrix_mautrix_telegram_bot_token: YOUR_TELEGRAM_BOT_TOKEN
-matrix_mautrix_telegram_configuration_extension_yaml: |
-  bridge:
-    permissions:
-      '*': relaybot
-```
+This bridge supports the common [mautrix bridge relay mode](configuring-playbook-bridge-mautrix-bridges.md#enable-relay-mode-optional). Once enabled, any authenticated user can be turned into a relaybot for a chat by sending `!tg set-relay` in that chat.
 
 ### Configure a user as an administrator of the bridge (optional)
 
 You might also want to give permissions to a user to administrate the bot. See [this section](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional) on the common guide for details about it.
 
-More details about permissions in this example: https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml#L410
-
-### Use the bridge for direct chats only (optional)
-
-If you want to exclude all groups from syncing and use the Telegram-Bridge only for direct chats, add the following configuration to your `vars.yml` file:
-
-```yaml
-matrix_mautrix_telegram_filter_mode: whitelist
-```
-
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
 
-<!-- NOTE: common relay mode is not supported for this bridge -->
 See [this section](configuring-playbook-bridge-mautrix-bridges.md#extending-the-configuration) on the [common guide for configuring mautrix bridges](configuring-playbook-bridge-mautrix-bridges.md) for details about variables that you can customize and the bridge's default configuration, including [bridge permissions](configuring-playbook-bridge-mautrix-bridges.md#configure-bridge-permissions-optional), [encryption support](configuring-playbook-bridge-mautrix-bridges.md#enable-encryption-optional), [bot's username](configuring-playbook-bridge-mautrix-bridges.md#set-the-bots-username-optional), etc.
 
 ## Installing
@@ -99,9 +72,9 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 To use the bridge, you need to start a chat with `@telegrambot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/python/telegram/authentication.html).
+You can then follow instructions on the bridge's [official documentation on Authentication](https://docs.mau.fi/bridges/go/telegram/authentication.html).
 
-After logging in, the bridge will create portal rooms for all of your Telegram groups and invite you to them. Note that the bridge won't automatically create rooms for private chats.
+After logging in, the bridge will create portal rooms for all of your Telegram groups and invite you to them.
 
 ## Troubleshooting
 
@@ -109,8 +82,9 @@ As with all other services, you can find the logs in [systemd-journald](https://
 
 ### Increase logging verbosity
 
-The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
+The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
-matrix_mautrix_telegram_logging_level: DEBUG
+# Valid values: fatal, error, warn, info, debug, trace
+matrix_mautrix_telegram_logging_level: debug
 ```

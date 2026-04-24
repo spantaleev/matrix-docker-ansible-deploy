@@ -1,246 +1,29 @@
 #jinja2: lstrip_blocks: True
-# Homeserver details
-homeserver:
-    # The address that this appservice can use to connect to the homeserver.
-    address: {{ matrix_mautrix_telegram_homeserver_address }}
-    # The domain of the homeserver (for MXIDs, etc).
-    domain: {{ matrix_mautrix_telegram_homeserver_domain }}
-    # Whether or not to verify the SSL certificate of the homeserver.
-    # Only applies if address starts with https://
-    verify_ssl: true
-    # What software is the homeserver running?
-    # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
-    software: standard
-    # Number of retries for all HTTP requests if the homeserver isn't reachable.
-    http_retry_count: 4
-    # The URL to push real-time bridge status to.
-    # If set, the bridge will make POST requests to this URL whenever a user's Telegram connection state changes.
-    # The bridge will use the appservice as_token to authorize requests.
-    status_endpoint: null
-    # Endpoint for reporting per-message status.
-    message_send_checkpoint_endpoint: null
-    # Whether asynchronous uploads via MSC2246 should be enabled for media.
-    # Requires a media repo that supports MSC2246.
-    async_media: {{ matrix_mautrix_telegram_homeserver_async_media | to_json }}
+# Network-specific config options
+network:
+    # Get your own API keys at https://my.telegram.org/apps
+    api_id: {{ matrix_mautrix_telegram_api_id | to_json }}
+    api_hash: {{ matrix_mautrix_telegram_api_hash | to_json }}
 
-# Application service host/registration related details
-# Changing these values requires regeneration of the registration.
-appservice:
-    # The address that the homeserver can use to connect to this appservice.
-    address: {{ matrix_mautrix_telegram_appservice_address|to_json }}
+    # Device info shown in the Telegram device list.
+    device_info:
+        device_model: mautrix-telegram
+        system_version:
+        app_version: auto
+        lang_code: en
+        system_lang_code: en
 
-    # The hostname and port where this appservice should listen.
-    hostname: 0.0.0.0
-    port: 8080
-    # The maximum body size of appservice API requests (from the homeserver) in mebibytes
-    # Usually 1 is enough, but on high-traffic bridges you might need to increase this to avoid 413s
-    max_body_size: 1
-
-    # The full URI to the database. SQLite and Postgres are supported.
-    # Format examples:
-    #   SQLite:   sqlite:filename.db
-    #   Postgres: postgres://username:password@hostname/dbname
-    database: {{ matrix_mautrix_telegram_appservice_database|to_json }}
-    # Additional arguments for asyncpg.create_pool() or sqlite3.connect()
-    # https://magicstack.github.io/asyncpg/current/api/index.html#asyncpg.pool.create_pool
-    # https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
-    # For sqlite, min_size is used as the connection thread pool size and max_size is ignored.
-    # Additionally, SQLite supports init_commands as an array of SQL queries to run on connect (e.g. to set PRAGMAs).
-    database_opts:
-        min_size: 1
-        max_size: 10
-
-    # Public part of web server for out-of-Matrix interaction with the bridge.
-    # Used for things like login if the user wants to make sure the 2FA password isn't stored in
-    # the HS database.
-    public:
-        # Whether or not the public-facing endpoints should be enabled.
-        enabled: {{ matrix_mautrix_telegram_appservice_public_enabled|to_json }}
-        # The prefix to use in the public-facing endpoints.
-        prefix: {{ matrix_mautrix_telegram_public_endpoint|to_json }}
-        # The base URL where the public-facing endpoints are available. The prefix is not added
-        # implicitly.
-        external: {{ matrix_mautrix_telegram_appservice_public_external|to_json }}
-
-    # Provisioning API part of the web server for automated portal creation and fetching information.
-    # Used by things like Dimension (https://dimension.t2bot.io/).
-    provisioning:
-        # Whether or not the provisioning API should be enabled.
-        enabled: false
-        # The prefix to use in the provisioning API endpoints.
-        prefix: /_matrix/provision/v1
-        # The shared secret to authorize users of the API.
-        # Set to "generate" to generate and save a new token.
-        shared_secret: {{ matrix_mautrix_telegram_provisioning_shared_secret | to_json }}
-
-    # The unique ID of this appservice.
-    id: telegram
-    # Username of the appservice bot.
-    bot_username: {{ matrix_mautrix_telegram_appservice_bot_username|to_json }}
-    # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
-    # to leave display name/avatar as-is.
-    bot_displayname: Telegram bridge bot
-    bot_avatar: mxc://maunium.net/tJCRmUyJDsgRNgqhOgoiHWbX
-
-    # Whether or not to receive ephemeral events via appservice transactions.
-    # Requires MSC2409 support (i.e. Synapse 1.22+).
-    # You should disable bridge -> sync_with_custom_puppets when this is enabled.
-    ephemeral_events: true
-
-    # Authentication tokens for AS <-> HS communication.
-    as_token: {{ matrix_mautrix_telegram_appservice_token|to_json }}
-    hs_token: {{ matrix_mautrix_telegram_homeserver_token|to_json }}
-
-# Prometheus telemetry config. Requires prometheus-client to be installed.
-metrics:
-    enabled: {{ matrix_mautrix_telegram_metrics_enabled | to_json }}
-    listen_port: 8000
-
-# Manhole config.
-manhole:
-    # Whether or not opening the manhole is allowed.
-    enabled: false
-    # The path for the unix socket.
-    path: /var/tmp/mautrix-telegram.manhole
-    # The list of UIDs who can be added to the whitelist.
-    # If empty, any UIDs can be specified in the open-manhole command.
-    whitelist:
-    - 0
-
-# Bridge config
-bridge:
-    # Localpart template of MXIDs for Telegram users.
-    # {userid} is replaced with the user ID of the Telegram user.
-    # Default: telegram_{userid}
-    username_template: {{ matrix_mautrix_telegram_username_template|to_json }}
-    # Localpart template of room aliases for Telegram portal rooms.
-    # {groupname} is replaced with the name part of the public channel/group invite link ( https://t.me/{} )
-    # Default: telegram_{groupname}
-    alias_template: {{ matrix_mautrix_telegram_alias_template|to_json }}
-    # Displayname template for Telegram users.
-    # {displayname} is replaced with the display name of the Telegram user.
-    # Default: {displayname} (Telegram)
-    displayname_template: {{ matrix_mautrix_telegram_displayname_template|to_json }}
-
-    # Set the preferred order of user IDs which to use in the Matrix puppet display name.
-    # In the (hopefully unlikely) scenario that none of the given keys are found, the numeric user
-    # ID is used.
-    #
-    # If the bridge is working properly, a phone number or an username should always be known, but
-    # the other one can very well be empty.
-    #
-    # Valid keys:
-    #   "full name"          (First and/or last name)
-    #   "full name reversed" (Last and/or first name)
-    #   "first name"
-    #   "last name"
-    #   "username"
-    #   "phone number"
-    displayname_preference:
-    - full name
-    - username
-    - phone number
-    # Maximum length of displayname
-    displayname_max_length: 100
-    # Remove avatars from Telegram ghost users when removed on Telegram. This is disabled by default
-    # as there's no way to determine whether an avatar is removed or just hidden from some users. If
-    # you're on a single-user instance, this should be safe to enable.
-    allow_avatar_remove: false
-    # Should contact names and profile pictures be allowed?
-    # This is only safe to enable on single-user instances.
-    allow_contact_info: false
-
-    # Maximum number of members to sync per portal when starting up. Other members will be
-    # synced when they send messages. The maximum is 10000, after which the Telegram server
-    # will not send any more members.
-    # -1 means no limit (which means it's limited to 10000 by the server)
-    max_initial_member_sync: 100
-    # Maximum number of participants in chats to bridge. Only applies when the portal is being created.
-    # If there are more members when trying to create a room, the room creation will be cancelled.
-    # -1 means no limit (which means all chats can be bridged)
-    max_member_count: -1
-    # Whether or not to sync the member list in channels.
-    # If no channel admins have logged into the bridge, the bridge won't be able to sync the member
-    # list regardless of this setting.
-    sync_channel_members: false
-    # Whether or not to skip deleted members when syncing members.
-    skip_deleted_members: true
-    # Whether or not to automatically synchronize contacts and chats of Matrix users logged into
-    # their Telegram account at startup.
-    startup_sync: false
-    # Number of most recently active dialogs to check when syncing chats.
-    # Set to 0 to remove limit.
-    sync_update_limit: 0
-    # Number of most recently active dialogs to create portals for when syncing chats.
-    # Set to 0 to remove limit.
-    sync_create_limit: 15
-    # Should all chats be scheduled to be created later?
-    # This is best used in combination with MSC2716 infinite backfill.
-    sync_deferred_create_all: false
-    # Whether or not to sync and create portals for direct chats at startup.
-    sync_direct_chats: false
-    # The maximum number of simultaneous Telegram deletions to handle.
-    # A large number of simultaneous redactions could put strain on your homeserver.
-    max_telegram_delete: 10
-    # Whether or not to automatically sync the Matrix room state (mostly unpuppeted displaynames)
-    # at startup and when creating a bridge.
-    sync_matrix_state: true
-    # Allow logging in within Matrix. If false, users can only log in using login-qr or the
-    # out-of-Matrix login website (see appservice.public config section)
-    allow_matrix_login: true
-    # Whether or not to make portals of publicly joinable channels/supergroups publicly joinable on Matrix.
-    public_portals: false
-    # Whether or not to use /sync to get presence, read receipts and typing notifications
-    # when double puppeting is enabled
-    sync_with_custom_puppets: false
-    # Whether or not to update the m.direct account data event when double puppeting is enabled.
-    # Note that updating the m.direct event is not atomic (except with mautrix-asmux)
-    # and is therefore prone to race conditions.
-    sync_direct_chat_list: false
-    # Servers to always allow double puppeting from
-    double_puppet_server_map:
-        "{{ matrix_mautrix_telegram_homeserver_domain  }}": {{ matrix_mautrix_telegram_homeserver_address  }}
-    # Allow using double puppeting from any server with a valid client .well-known file.
-    double_puppet_allow_discovery: false
-    # Shared secrets for https://github.com/devture/matrix-synapse-shared-secret-auth
-    #
-    # If set, custom puppets will be enabled automatically for local users
-    # instead of users having to find an access token and run `login-matrix`
-    # manually.
-    # If using this for other servers than the bridge's server,
-    # you must also set the URL in the double_puppet_server_map.
-    login_shared_secret_map: {{ matrix_mautrix_telegram_bridge_login_shared_secret_map|to_json  }}
-    # Set to false to disable link previews in messages sent to Telegram.
-    telegram_link_preview: true
-    # Whether or not the !tg join command should do a HTTP request
-    # to resolve redirects in invite links.
-    invite_link_resolve: false
-    # Send captions in the same message as images. This will send data compatible with both MSC2530 and MSC3552.
-    # This is currently not supported in most clients.
-    caption_in_message: false
-    # Maximum size of image in megabytes before sending to Telegram as a document.
-    image_as_file_size: 10
-    # Maximum number of pixels in an image before sending to Telegram as a document. Defaults to 4096x4096 = 16777216.
-    image_as_file_pixels: 16777216
-    # Enable experimental parallel file transfer, which makes uploads/downloads much faster by
-    # streaming from/to Matrix and using many connections for Telegram.
-    # Note that generating HQ thumbnails for videos is not possible with streamed transfers.
-    # This option uses internal Telethon implementation details and may break with minor updates.
-    parallel_file_transfer: false
-    # Whether or not created rooms should have federation enabled.
-    # If false, created portal rooms will never be federated.
-    federate_rooms: {{ matrix_mautrix_telegram_federate_rooms|to_json }}
-    # Should the bridge send all unicode reactions as custom emoji reactions to Telegram?
-    # By default, the bridge only uses custom emojis for unicode emojis that aren't allowed in reactions.
-    always_custom_emoji_reaction: false
     # Settings for converting animated stickers.
     animated_sticker:
         # Format to which animated stickers should be converted.
-        # disable - No conversion, send as-is (gzipped lottie)
-        # png - converts to non-animated png (fastest),
-        # gif - converts to animated gif
-        # webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support
-        # webp - converts to animated webp, requires ffmpeg executable with webp codec/container support
+        #
+        # disable - no conversion, send as-is (gzipped lottie)
+        # png -     converts to non-animated png (fastest),
+        # gif -     converts to animated gif
+        # webm -    converts to webm video, requires ffmpeg executable with vp9 codec
+        #           and webm container support
+        # webp -    converts to animated webp, requires ffmpeg executable with webp
+        #           codec/container support
         target: gif
         # Should video stickers be converted to the specified format as well?
         convert_from_webm: false
@@ -249,414 +32,498 @@ bridge:
             width: 256
             height: 256
             fps: 25 # only for webm, webp and gif (2, 5, 10, 20 or 25 recommended)
-    # Settings for converting animated emoji.
-    # Same as animated_sticker, but webm is not supported as the target
-    # (because inline images can only contain images, not videos).
-    animated_emoji:
-        target: webp
-        args:
-            width: 64
-            height: 64
-            fps: 25
-    # End-to-bridge encryption support options.
-    #
-    # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
-    encryption:
-        # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: {{ matrix_mautrix_telegram_bridge_encryption_allow|to_json }}
-        # Default to encryption, force-enable encryption in all portals the bridge creates
-        # This will cause the bridge bot to be in private chats for the encryption to work properly.
-        default: {{ matrix_mautrix_telegram_bridge_encryption_default|to_json }}
-        # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
-        appservice: false
-        # Whether to use MSC4190 instead of appservice login to create the bridge bot device.
-        # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
-        # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
-        # Changing this option requires updating the appservice registration file.
-        msc4190:  {{ matrix_mautrix_telegram_msc4190_enabled | to_json }}
-        # Require encryption, drop any unencrypted messages.
-        require: false
-        # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
-        # You must use a client that supports requesting keys from other users to use this feature.
-        allow_key_sharing: {{ matrix_mautrix_telegram_bridge_encryption_key_sharing_allow|to_json }}
-        # Options for deleting megolm sessions from the bridge.
-        delete_keys:
-            # Beeper-specific: delete outbound sessions when hungryserv confirms
-            # that the user has uploaded the key to key backup.
-            delete_outbound_on_ack: false
-            # Don't store outbound sessions in the inbound table.
-            dont_store_outbound: false
-            # Ratchet megolm sessions forward after decrypting messages.
-            ratchet_on_decrypt: false
-            # Delete fully used keys (index >= max_messages) after decrypting messages.
-            delete_fully_used_on_decrypt: false
-            # Delete previous megolm sessions from same device when receiving a new one.
-            delete_prev_on_new_session: false
-            # Delete megolm sessions received from a device when the device is deleted.
-            delete_on_device_delete: false
-            # Periodically delete megolm sessions when 2x max_age has passed since receiving the session.
-            periodically_delete_expired: false
-            # Delete inbound megolm sessions that don't have the received_at field used for
-            # automatic ratcheting and expired session deletion. This is meant as a migration
-            # to delete old keys prior to the bridge update.
-            delete_outdated_inbound: false
-        # What level of device verification should be required from users?
+
+    # Settings for syncing the member list for portals.
+    member_list:
+        # Maximum number of members to sync per portal when starting up. Other
+        # members will be synced when they send messages. The maximum is 10000,
+        # after which the Telegram server will not send any more members.
         #
-        # Valid levels:
-        #   unverified - Send keys to all device in the room.
-        #   cross-signed-untrusted - Require valid cross-signing, but trust all cross-signing keys.
-        #   cross-signed-tofu - Require valid cross-signing, trust cross-signing keys on first use (and reject changes).
-        #   cross-signed-verified - Require valid cross-signing, plus a valid user signature from the bridge bot.
-        #                           Note that creating user signatures from the bridge bot is not currently possible.
-        #   verified - Require manual per-device verification
-        #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
-        verification_levels:
-            # Minimum level for which the bridge should send keys to when bridging messages from Telegram to Matrix.
-            receive: unverified
-            # Minimum level that the bridge should accept for incoming Matrix messages.
-            send: unverified
-            # Minimum level that the bridge should require for accepting key requests.
-            share: cross-signed-tofu
-        # Options for Megolm room key rotation. These options allow you to
-        # configure the m.room.encryption event content. See:
-        # https://spec.matrix.org/v1.3/client-server-api/#mroomencryption for
-        # more information about that event.
-        rotation:
-            # Enable custom Megolm room key rotation settings. Note that these
-            # settings will only apply to rooms created after this option is
-            # set.
-            enable_custom: false
-            # The maximum number of milliseconds a session should be used
-            # before changing it. The Matrix spec recommends 604800000 (a week)
-            # as the default.
-            milliseconds: 604800000
-            # The maximum number of messages that should be sent with a given a
-            # session before changing it. The Matrix spec recommends 100 as the
-            # default.
-            messages: 100
-
-            # Disable rotating keys when a user's devices change?
-            # You should not enable this option unless you understand all the implications.
-            disable_device_change_key_rotation: false
-
-    # Whether to explicitly set the avatar and room name for private chat portal rooms.
-    # If set to `default`, this will be enabled in encrypted rooms and disabled in unencrypted rooms.
-    # If set to `always`, all DM rooms will have explicit names and avatars set.
-    # If set to `never`, DM rooms will never have names and avatars set.
-    private_chat_portal_meta: default
-    # Disable generating reply fallbacks? Some extremely bad clients still rely on them,
-    # but they're being phased out and will be completely removed in the future.
-    disable_reply_fallbacks: false
-    # Should cross-chat replies from Telegram be bridged? Most servers and clients don't support this.
-    cross_room_replies: false
-    # Whether or not the bridge should send a read receipt from the bridge bot when a message has
-    # been sent to Telegram.
-    delivery_receipts: false
-    # Whether or not delivery errors should be reported as messages in the Matrix room.
-    delivery_error_reports: false
-    # Should errors in incoming message handling send a message to the Matrix room?
-    incoming_bridge_error_reports: false
-    # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
-    message_status_events: false
-    # Set this to true to tell the bridge to re-send m.bridge events to all rooms on the next run.
-    # This field will automatically be changed back to false after it,
-    # except if the config file is not writable.
-    resend_bridge_info: false
-    # When using double puppeting, should muted chats be muted in Matrix?
-    mute_bridging: false
-    # When using double puppeting, should pinned chats be moved to a specific tag in Matrix?
-    # The favorites tag is `m.favourite`.
-    pinned_tag: null
-    # Same as above for archived chats, the low priority tag is `m.lowpriority`.
-    archive_tag: null
-    # Whether or not mute status and tags should only be bridged when the portal room is created.
-    tag_only_on_create: true
-    # Should leaving the room on Matrix make the user leave on Telegram?
-    bridge_matrix_leave: true
-    # Should the user be kicked out of all portals when logging out of the bridge?
-    kick_on_logout: true
-    # Should the "* user joined Telegram" notice always be marked as read automatically?
-    always_read_joined_telegram_notice: true
-    # Should the bridge auto-create a group chat on Telegram when a ghost is invited to a room?
-    # Requires the user to have sufficient power level and double puppeting enabled.
-    create_group_on_invite: true
-    # Settings for backfilling messages from Telegram.
-    backfill:
-        # Allow backfilling at all?
-        enable: true
-        # Whether or not to enable backfilling in normal groups.
-        # Normal groups have numerous technical problems in Telegram, and backfilling normal groups
-        # will likely cause problems if there are multiple Matrix users in the group.
-        normal_groups: false
-
-        # If a backfilled chat is older than this number of hours, mark it as read even if it's unread on Telegram.
-        # Set to -1 to let any chat be unread.
-        unread_hours_threshold: 720
-
-        # Forward backfilling limits.
+        # -1 means no limit (which means it's limited to 10000 by the server)
+        max_initial_sync: 100
+        # Whether or not to sync the member list in broadcast channels. If
+        # disabled, members will still be synced when they send messages.
         #
-        # Using a negative initial limit is not recommended, as it would try to backfill everything in a single batch.
-        forward_limits:
-            # Number of messages to backfill immediately after creating a portal.
-            initial:
-                user: 50
-                normal_group: 100
-                supergroup: 10
-                channel: 10
-            # Number of messages to backfill when syncing chats.
-            sync:
-                user: 100
-                normal_group: 100
-                supergroup: 100
-                channel: 100
-        # Timeout for forward backfills in seconds. If you have a high limit, you'll have to increase this too.
-        forward_timeout: 900
+        # If no channel admins have logged into the bridge, the bridge won't be
+        # able to sync the member list regardless of this setting.
+        sync_broadcast_channels: false
+        # Whether or not to skip deleted members when syncing members.
+        skip_deleted: true
 
-        # Settings for incremental backfill of history. These only apply to Beeper, as upstream abandoned MSC2716.
-        incremental:
-            # Maximum number of messages to backfill per batch.
-            messages_per_batch: 100
-            # The number of seconds to wait after backfilling the batch of messages.
-            post_batch_delay: 20
-            # The maximum number of batches to backfill per portal, split by the chat type.
-            # If set to -1, all messages in the chat will eventually be backfilled.
-            max_batches:
-                # Direct chats
-                user: -1
-                # Normal groups. Note that the normal_groups option above must be enabled
-                # for these to be backfilled.
-                normal_group: -1
-                # Supergroups
-                supergroup: 10
-                # Broadcast channels
-                channel: -1
+    # Settings for pings to the Telegram server.
+    ping:
+        # The interval (in seconds) between pings.
+        interval_seconds: 30
+        # The timeout (in seconds) for a single ping.
+        timeout_seconds: 10
 
-    # Overrides for base power levels.
-    initial_power_level_overrides:
-        user: {}
-        group: {}
+    # Proxy settings
+    proxy:
+        # Allowed types: disabled, socks5, mtproxy
+        type: disabled
+        # Proxy IP address/domain name and port.
+        address: "127.0.0.1:1080"
+        # Proxy authentication (optional). Put MTProxy secret in password field.
+        username:
+        password:
 
-    # Whether to bridge Telegram bot messages as m.notices or m.texts.
-    bot_messages_as_notices: true
-    bridge_notices:
-        # Whether or not Matrix bot messages (type m.notice) should be bridged.
-        default: false
-        # List of user IDs for whom the previous flag is flipped.
-        # e.g. if bridge_notices.default is false, notices from other users will not be bridged, but
-        #      notices from users listed here will be bridged.
-        exceptions: []
+    sync:
+        # Number of most recently active dialogs to check when syncing chats.
+        # Set to -1 to remove limit.
+        update_limit: 100
+        # Number of most recently active dialogs to create portals for when syncing chats.
+        # Set to -1 to remove limit.
+        create_limit: 15
+        # Number of chats to sync immediately on login before the data export is accepted.
+        # The create_limit above still applies. This is ignored if takeout.dialog_sync is false.
+        login_sync_limit: 15
+        # Whether or not to sync and create portals for direct chats at startup.
+        direct_chats: true
 
-    # An array of possible values for the $distinguisher variable in message formats.
-    # Each user gets one of the values here, based on a hash of their user ID.
-    # If the array is empty, the $distinguisher variable will also be empty.
-    relay_user_distinguishers: ["🟦", "🟣", "🟩", "⭕️", "🔶", "⬛️", "🔵", "🟢"]
-    # The formats to use when sending messages to Telegram via the relay bot.
-    # Text msgtypes (m.text, m.notice and m.emote) support HTML, media msgtypes don't.
+    takeout:
+        # Should the bridge use the data export mode for syncing the full chat list?
+        # If true, login_sync_limit of chats is synced immediately on login,
+        # then the rest are synced after the takeout is accepted.
+        dialog_sync: false
+        # Should the bridge use the data export mode for forward backfilling messages?
+        # This should be set to true if the forward backfill limits are set to high values,
+        # but is probably not necessary otherwise.
+        forward_backfill: false
+        # Should the bridge use the data export mode for backward backfilling messages?
+        # This only affects the backfill queue, which is only available on Beeper.
+        backward_backfill: false
+
+    # Maximum number of participants in chats to bridge. Only applies when the
+    # portal is being created. If there are more members when trying to create a
+    # room, the room creation will be cancelled.
     #
-    # Available variables:
-    #   $sender_displayname - The display name of the sender (e.g. Example User)
-    #   $sender_username    - The username (Matrix ID localpart) of the sender (e.g. alice)
-    #   $sender_mxid        - The Matrix ID of the sender (e.g. @alice:example.com)
-    #   $distinguisher      - A random string from the options in the relay_user_distinguishers array.
-    #   $message            - The message content
-    message_formats:
-        m.text: "$distinguisher <b>$sender_displayname</b>: $message"
-        m.notice: "$distinguisher <b>$sender_displayname</b>: $message"
-        m.emote: "* $distinguisher <b>$sender_displayname</b> $message"
-        m.file: "$distinguisher <b>$sender_displayname</b> sent a file: $message"
-        m.image: "$distinguisher <b>$sender_displayname</b> sent an image: $message"
-        m.audio: "$distinguisher <b>$sender_displayname</b> sent an audio file: $message"
-        m.video: "$distinguisher <b>$sender_displayname</b> sent a video: $message"
-        m.location: "$distinguisher <b>$sender_displayname</b> sent a location: $message"
-    # Telegram doesn't have built-in emotes, this field specifies how m.emote's from authenticated
-    # users are sent to telegram. All fields in message_formats are supported. Additionally, the
-    # Telegram user info is available in the following variables:
-    #    $displayname - Telegram displayname
-    #    $username    - Telegram username (may not exist)
-    #    $mention     - Telegram @username or displayname mention (depending on which exists)
-    emote_format: "* $mention $formatted_body"
+    # -1 means no limit (which means all chats can be bridged)
+    max_member_count: -1
+    # Should personal avatars (that are only visible to specific users) be allowed?
+    contact_avatars: false
+    # Should contact names be updated from any source even if a name is already set?
+    # Note that contact names will still be used if there's no other name available.
+    contact_names: false
+    # Should the bridge send all unicode reactions as custom emoji reactions to
+    # Telegram? By default, the bridge only uses custom emojis for unicode emojis
+    # that aren't allowed in reactions.
+    always_custom_emoji_reaction: false
+    # The avatar to use for the Telegram Saved Messages chat
+    saved_message_avatar: mxc://maunium.net/XhhfHoPejeneOngMyBbtyWDk
+    # Create a new room and tombstone the old one when upgrading rooms
+    always_tombstone_on_supergroup_migration: false
+    # Maximum number of pixels in an image before sending to Telegram as a
+    # document. Defaults to 4096x4096 = 16777216.
+    image_as_file_pixels: 16777216
+    # Should view-once messages be disabled entirely?
+    disable_view_once: false
+    # Displayname template for Telegram users.
+    displayname_template: {{ matrix_mautrix_telegram_network_displayname_template | to_json }}
 
-    # The formats to use when sending state events to Telegram via the relay bot.
-    #
-    # Variables from `message_formats` that have the `sender_` prefix are available without the prefix.
-    # In name_change events, `$prev_displayname` is the previous displayname.
-    #
-    # Set format to an empty string to disable the messages for that event.
-    state_event_formats:
-        join: "$distinguisher <b>$displayname</b> joined the room."
-        leave: "$distinguisher <b>$displayname</b> left the room."
-        name_change: "$distinguisher <b>$prev_displayname</b> changed their name to $distinguisher <b>$displayname</b>"
-
-    # Filter rooms that can/can't be bridged. Can also be managed using the `filter` and
-    # `filter-mode` management commands.
-    #
-    # An empty blacklist will essentially disable the filter.
-    filter:
-        # Filter mode to use. Either "blacklist" or "whitelist".
-        # If the mode is "blacklist", the listed chats will never be bridged.
-        # If the mode is "whitelist", only the listed chats can be bridged.
-        mode: {{ matrix_mautrix_telegram_filter_mode | to_json }}
-        # The list of group/channel IDs to filter.
-        list: []
-        # How to handle direct chats:
-        # If users is "null", direct chats will follow the previous settings.
-        # If users is "true", direct chats will always be bridged.
-        # If users is "false", direct chats will never be bridged.
-        users: true
-
+# Config options that affect the central bridge module.
+bridge:
     # The prefix for commands. Only required in non-management rooms.
     command_prefix: {{ matrix_mautrix_telegram_command_prefix | to_json }}
+    # Should the bridge create a space for each login containing the rooms that account is in?
+    personal_filtering_spaces: {{ matrix_mautrix_telegram_bridge_personal_filtering_spaces | to_json }}
+    # Whether the bridge should set names and avatars explicitly for DM portals.
+    # This is only necessary when using clients that don't support MSC4171.
+    private_chat_portal_meta: true
+    # Should events be handled asynchronously within portal rooms?
+    # If true, events may end up being out of order, but slow events won't block other ones.
+    # This is not yet safe to use.
+    async_events: false
+    # Should every user have their own portals rather than sharing them?
+    # By default, users who are in the same group on the remote network will be
+    # in the same Matrix room bridged to that group. If this is set to true,
+    # every user will get their own Matrix room instead.
+    split_portals: false
+    # Should the bridge resend `m.bridge` events to all portals on startup?
+    resend_bridge_info: false
 
-    # Messages sent upon joining a management room.
-    # Markdown is supported. The defaults are listed below.
-    management_room_text:
-        # Sent when joining a room.
-        welcome: "Hello, I'm a Telegram bridge bot."
-        # Sent when joining a management room and the user is already logged in.
-        welcome_connected: "Use `help` for help."
-        # Sent when joining a management room and the user is not logged in.
-        welcome_unconnected: "Use `help` for help or `login` to log in."
-        # Optional extra text sent when joining a management room.
-        additional_help: ""
+    # Should leaving Matrix rooms be bridged as leaving groups on the remote network?
+    bridge_matrix_leave: false
+    # Should room tags only be synced when creating the portal? Tags mean things like favorite/pin and archive/low priority.
+    # Tags currently can't be synced back to the remote network, so a continuous sync means tagging from Matrix will be undone.
+    tag_only_on_create: true
+    # Should room mute status only be synced when creating the portal?
+    # Like tags, mutes can't currently be synced back to the remote network.
+    mute_only_on_create: true
 
-    # Send each message separately (for readability in some clients)
-    management_room_multiple_messages: false
+    # What should be done to portal rooms when a user logs out or is logged out?
+    # Permitted values:
+    #   nothing - Do nothing, let the user stay in the portals
+    #   kick - Remove the user from the portal rooms, but don't delete them
+    #   unbridge - Remove all ghosts in the room and disassociate it from the remote chat
+    #   delete - Remove all ghosts and users from the room (i.e. delete it)
+    cleanup_on_logout:
+        # Should cleanup on logout be enabled at all?
+        enabled: false
+        # Settings for manual logouts (explicitly initiated by the Matrix user)
+        manual:
+            # Action for private portals which will never be shared with other Matrix users.
+            private: nothing
+            # Action for portals with a relay user configured.
+            relayed: nothing
+            # Action for portals which may be shared, but don't currently have any other Matrix users.
+            shared_no_users: nothing
+            # Action for portals which have other logged-in Matrix users.
+            shared_has_users: nothing
+        # Settings for credentials being invalidated (initiated by the remote network, possibly through user action).
+        # Keys have the same meanings as in the manual section.
+        bad_credentials:
+            private: nothing
+            relayed: nothing
+            shared_no_users: nothing
+            shared_has_users: nothing
+
+    # Settings for relay mode
+    relay:
+        # Whether relay mode should be allowed. If allowed, the set-relay command can be used to turn any
+        # authenticated user into a relaybot for that chat.
+        enabled: {{ matrix_mautrix_telegram_bridge_relay_enabled | to_json }}
+        # Should only admins be allowed to set themselves as relay users?
+        # If true, non-admins can only set users listed in default_relays as relays in a room.
+        admin_only: {{ matrix_mautrix_telegram_bridge_relay_admin_only | to_json }}
+        # List of user login IDs which anyone can set as a relay, as long as the relay user is in the room.
+        default_relays: {{ matrix_mautrix_telegram_bridge_relay_default_relays | to_json }}
+        # The formats to use when sending messages via the relaybot.
+        # Available variables:
+        #   .Sender.UserID - The Matrix user ID of the sender.
+        #   .Sender.Displayname - The display name of the sender (if set).
+        #   .Sender.RequiresDisambiguation - Whether the sender's name may be confused with the name of another user in the room.
+        #   .Sender.DisambiguatedName - The disambiguated name of the sender. This will be the displayname if set,
+        #                               plus the user ID in parentheses if the displayname is not unique.
+        #                               If the displayname is not set, this is just the user ID.
+        #   .Message - The `formatted_body` field of the message.
+        #   .Caption - The `formatted_body` field of the message, if it's a caption. Otherwise an empty string.
+        #   .FileName - The name of the file being sent.
+        message_formats:
+            m.text: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b>: {{ .Message }}{% endraw %}"
+            m.notice: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b>: {{ .Message }}{% endraw %}"
+            m.emote: "{% raw %}* <b>{{ .Sender.DisambiguatedName }}</b> {{ .Message }}{% endraw %}"
+            m.file: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a file{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.image: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent an image{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.audio: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent an audio file{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.video: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a video{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.location: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a location{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
 
     # Permissions for using the bridge.
     # Permitted values:
-    #   relaybot - Only use the bridge via the relaybot, no access to commands.
-    #       user - Relaybot level + access to commands to create bridges.
-    #  puppeting - User level + logging in with a Telegram account.
-    #       full - Full access to use the bridge, i.e. previous levels + Matrix login.
-    #      admin - Full access to use the bridge and some extra administration commands.
+    #    relay - Talk through the relaybot (if enabled), no access otherwise
+    # commands - Access to use commands in the bridge, but not login.
+    #     user - Access to use the bridge with puppeting.
+    #    admin - Full access, user level with some additional administration tools.
     # Permitted keys:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions: {{ matrix_mautrix_telegram_bridge_permissions | to_json }}
+    permissions: {{ matrix_mautrix_telegram_bridge_permissions|to_json }}
 
-    # Options related to the message relay Telegram bot.
-    relaybot:
-        private_chat:
-            # List of users to invite to the portal when someone starts a private chat with the bot.
-            # If empty, private chats with the bot won't create a portal.
-            invite: []
-            # Whether or not to bridge state change messages in relaybot private chats.
-            state_changes: true
-            # When private_chat_invite is empty, this message is sent to users /starting the
-            # relaybot. Telegram's "markdown" is supported.
-            message: This is a Matrix bridge relaybot and does not support direct chats
-        # List of users to invite to all group chat portals created by the bridge.
-        group_chat_invite: []
-        # Whether or not the relaybot should not bridge events in unbridged group chats.
-        # If false, portals will be created when the relaybot receives messages, just like normal
-        # users. This behavior is usually not desirable, as it interferes with manually bridging
-        # the chat to another room.
-        ignore_unbridged_group_chat: true
-        # Whether or not to allow creating portals from Telegram.
-        authless_portals: true
-        # Whether or not to allow Telegram group admins to use the bot commands.
-        whitelist_group_admins: true
-        # Whether or not to ignore incoming events sent by the relay bot.
-        ignore_own_incoming_events: true
-        # List of usernames/user IDs who are also allowed to use the bot commands.
-        whitelist: []
+# Config for the bridge's database.
+database:
+    # The database type. "sqlite3-fk-wal" and "postgres" are supported.
+    type: {{ matrix_mautrix_telegram_appservice_database_type | to_json }}
+    # The database URI.
+    #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
+    #           https://github.com/mattn/go-sqlite3#connection-string
+    #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
+    #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
+    uri: {{ matrix_mautrix_telegram_appservice_database_uri | to_json }}
+    # Maximum number of connections.
+    max_open_conns: 20
+    max_idle_conns: 2
+    # Maximum connection idle time and lifetime before they're closed. Disabled if null.
+    # Parsed with https://pkg.go.dev/time#ParseDuration
+    max_conn_idle_time: null
+    max_conn_lifetime: null
 
-# Telegram config
-telegram:
-    # Get your own API keys at https://my.telegram.org/apps
-    api_id: {{ matrix_mautrix_telegram_api_id|to_json }}
-    api_hash: {{ matrix_mautrix_telegram_api_hash|to_json }}
-    # (Optional) Create your own bot at https://t.me/BotFather
-    bot_token: {{ matrix_mautrix_telegram_bot_token|to_json }}
+# Homeserver details.
+homeserver:
+    # The address that this appservice can use to connect to the homeserver.
+    # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
+    # but https also works if they run on different machines.
+    address: {{ matrix_mautrix_telegram_homeserver_address | to_json }}
+    # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
+    domain: {{ matrix_mautrix_telegram_homeserver_domain | to_json }}
 
-    # Should the bridge request missed updates from Telegram when restarting?
-    catch_up: true
-    # Should incoming updates be handled sequentially to make sure order is preserved on Matrix?
-    sequential_updates: true
-    exit_on_update_error: false
+    # What software is the homeserver running?
+    # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
+    software: standard
+    # The URL to push real-time bridge status to.
+    # If set, the bridge will make POST requests to this URL whenever a user's remote network connection state changes.
+    # The bridge will use the appservice as_token to authorize requests.
+    status_endpoint:
+    # Endpoint for reporting per-message status.
+    # If set, the bridge will make POST requests to this URL when processing a message from Matrix.
+    # It will make one request when receiving the message (step BRIDGE), one after decrypting if applicable
+    # (step DECRYPTED) and one after sending to the remote network (step REMOTE). Errors will also be reported.
+    # The bridge will use the appservice as_token to authorize requests.
+    message_send_checkpoint_endpoint:
+    # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
+    async_media: {{ matrix_mautrix_telegram_homeserver_async_media | to_json }}
 
-    # Telethon connection options.
-    connection:
-        # The timeout in seconds to be used when connecting.
-        timeout: 120
-        # How many times the reconnection should retry, either on the initial connection or when
-        # Telegram disconnects us. May be set to a negative or null value for infinite retries, but
-        # this is not recommended, since the program can get stuck in an infinite loop.
-        retries: 5
-        # The delay in seconds to sleep between automatic reconnections.
-        retry_delay: 1
-        # The threshold below which the library should automatically sleep on flood wait errors
-        # (inclusive). For instance, if a FloodWaitError for 17s occurs and flood_sleep_threshold
-        # is 20s, the library will sleep automatically. If the error was for 21s, it would raise
-        # the error instead. Values larger than a day (86400) will be changed to a day.
-        flood_sleep_threshold: 60
-        # How many times a request should be retried. Request are retried when Telegram is having
-        # internal issues, when there is a FloodWaitError less than flood_sleep_threshold, or when
-        # there's a migrate error. May take a negative or null value for infinite retries, but this
-        # is not recommended, since some requests can always trigger a call fail (such as searching
-        # for messages).
-        request_retries: 5
-        # Use IPv6 for Telethon connection
-        use_ipv6: false
+    # Should the bridge use a websocket for connecting to the homeserver?
+    # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
+    # mautrix-asmux (deprecated), and hungryserv (proprietary).
+    websocket: false
+    # How often should the websocket be pinged? Pinging will be disabled if this is zero.
+    ping_interval_seconds: 0
 
-    # Device info sent to Telegram.
-    device_info:
-        # "auto" = OS name+version.
-        device_model: auto
-        # "auto" = Telethon version.
-        system_version: auto
-        # "auto" = mautrix-telegram version.
-        app_version: auto
-        lang_code: en
-        system_lang_code: en
+# Application service host/registration related details.
+# Changing these values requires regeneration of the registration (except when noted otherwise)
+appservice:
+    # The address that the homeserver can use to connect to this appservice.
+    # Like the homeserver address, a local non-https address is recommended when the bridge is on the same machine.
+    # If the bridge is elsewhere, you must secure the connection yourself (e.g. with https or wireguard)
+    # If you want to use https, you need to use a reverse proxy. The bridge does not have TLS support built in.
+    address: {{ matrix_mautrix_telegram_appservice_address | to_json }}
+    # A public address that external services can use to reach this appservice.
+    # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
+    # This value doesn't affect the registration file.
+    public_address: ""
 
-    # Custom server to connect to.
-    server:
-        # Set to true to use these server settings. If false, will automatically
-        # use production server assigned by Telegram. Set to false in production.
+    # The hostname and port where this appservice should listen.
+    # For Docker, you generally have to change the hostname to 0.0.0.0.
+    hostname: 0.0.0.0
+    port: 8080
+
+    # The unique ID of this appservice.
+    id: telegram
+    # Appservice bot details.
+    bot:
+        # Username of the appservice bot.
+        username: {{ matrix_mautrix_telegram_appservice_bot_username | to_json }}
+        # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
+        # to leave display name/avatar as-is.
+        displayname: Telegram bridge bot
+        avatar: mxc://maunium.net/tJCRmUyJDsgRNgqhOgoiHWbX
+
+    # Whether to receive ephemeral events via appservice transactions.
+    ephemeral_events: true
+    # Should incoming events be handled asynchronously?
+    # This may be necessary for large public instances with lots of messages going through.
+    # However, messages will not be guaranteed to be bridged in the same order they were sent in.
+    # This value doesn't affect the registration file.
+    async_transactions: false
+
+    # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
+    as_token: {{ matrix_mautrix_telegram_appservice_token | to_json }}
+    hs_token: {{ matrix_mautrix_telegram_homeserver_token | to_json }}
+
+    # Localpart template of MXIDs for remote users.
+    # {% raw %}{{.}}{% endraw %} is replaced with the internal ID of the user.
+    username_template: "{% raw %}telegram_{{.}}{% endraw %}"
+
+# Config options that affect the Matrix connector of the bridge.
+matrix:
+    # Whether the bridge should send the message status as a custom com.beeper.message_send_status event.
+    message_status_events: false
+    # Whether the bridge should send a read receipt after successfully bridging a message.
+    delivery_receipts: false
+    # Whether the bridge should send error notices via m.notice events when a message fails to bridge.
+    message_error_notices: true
+    # Whether the bridge should update the m.direct account data event when double puppeting is enabled.
+    sync_direct_chat_list: true
+    # Whether created rooms should have federation enabled. If false, created portal rooms
+    # will never be federated. Changing this option requires recreating rooms.
+    federate_rooms: {{ matrix_mautrix_telegram_federate_rooms|to_json }}
+    # The threshold as bytes after which the bridge should roundtrip uploads via the disk
+    # rather than keeping the whole file in memory.
+    upload_file_threshold: 5242880
+
+# Segment-compatible analytics endpoint for tracking some events, like provisioning API login and encryption errors.
+analytics:
+    # API key to send with tracking requests. Tracking is disabled if this is null.
+    token: null
+    # Address to send tracking requests to.
+    url: https://api.segment.io/v1/track
+    # Optional user ID for tracking events. If null, defaults to using Matrix user ID.
+    user_id: null
+
+# Settings for provisioning API
+provisioning:
+    # Prefix for the provisioning API paths.
+    prefix: /_matrix/provision
+    # Shared secret for authentication. If set to "generate" or null, a random secret will be generated,
+    # or if set to "disable", the provisioning API will be disabled.
+    shared_secret: {{ matrix_mautrix_telegram_provisioning_shared_secret | to_json }}
+    # Whether to allow provisioning API requests to be authed using Matrix access tokens.
+    # This follows the same rules as double puppeting to determine which server to contact to check the token,
+    # which means that by default, it only works for users on the same server as the bridge.
+    allow_matrix_auth: true
+    # Enable debug API at /debug with provisioning authentication.
+    debug_endpoints: false
+
+# Some networks require publicly accessible media download links (e.g. for user avatars when using Discord webhooks).
+# These settings control whether the bridge will provide such public media access.
+public_media:
+    # Should public media be enabled at all?
+    # The public_address field under the appservice section MUST be set when enabling public media.
+    enabled: false
+    # A key for signing public media URLs.
+    # If set to "generate", a random key will be generated.
+    signing_key: {{ matrix_mautrix_telegram_public_media_signing_key | to_json }}
+    # Number of seconds that public media URLs are valid for.
+    # If set to 0, URLs will never expire.
+    expiry: 0
+    # Length of hash to use for public media URLs. Must be between 0 and 32.
+    hash_length: 32
+
+# Settings for converting remote media to custom mxc:// URIs instead of reuploading.
+# More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html
+direct_media:
+    # Should custom mxc:// URIs be used instead of reuploading media?
+    enabled: false
+    # The server name to use for the custom mxc:// URIs.
+    # This server name will effectively be a real Matrix server, it just won't implement anything other than media.
+    # You must either set up .well-known delegation from this domain to the bridge, or proxy the domain directly to the bridge.
+    server_name: telegram-media.example.com
+    # Optionally a custom .well-known response. This defaults to `server_name:443`
+    well_known_response:
+    # Optionally specify a custom prefix for the media ID part of the MXC URI.
+    media_id_prefix:
+    # If the remote network supports media downloads over HTTP, then the bridge will use MSC3860/MSC3916
+    # media download redirects if the requester supports it. Optionally, you can force redirects
+    # and not allow proxying at all by setting this to false.
+    # This option does nothing if the remote network does not support media downloads over HTTP.
+    allow_proxy: true
+    # Matrix server signing key to make the federation tester pass, same format as synapse's .signing.key file.
+    # This key is also used to sign the mxc:// URIs to ensure only the bridge can generate them.
+    server_key: ""
+
+# Settings for backfilling messages.
+# Note that the exact way settings are applied depends on the network connector.
+# See https://docs.mau.fi/bridges/general/backfill.html for more details.
+backfill:
+    # Whether to do backfilling at all.
+    enabled: {{ matrix_mautrix_telegram_backfill_enabled | to_json }}
+    # Maximum number of messages to backfill in empty rooms.
+    max_initial_messages: 50
+    # Maximum number of missed messages to backfill after bridge restarts.
+    max_catchup_messages: 500
+    # If a backfilled chat is older than this number of hours,
+    # mark it as read even if it's unread on the remote network.
+    unread_hours_threshold: 720
+    # Settings for backfilling threads within other backfills.
+    threads:
+        # Maximum number of messages to backfill in a new thread.
+        max_initial_messages: 50
+    # Settings for the backwards backfill queue. This only applies when connecting to
+    # Beeper as standard Matrix servers don't support inserting messages into history.
+    queue:
+        # Should the backfill queue be enabled?
         enabled: false
-        # The DC ID to connect to.
-        dc: 2
-        # The IP to connect to.
-        ip: 149.154.167.40
-        # The port to connect to. 443 may not work, 80 is better and both are equally secure.
-        port: 80
+        # Number of messages to backfill in one batch.
+        batch_size: 100
+        # Delay between batches in seconds.
+        batch_delay: 20
+        # Maximum number of batches to backfill per portal.
+        # If set to -1, all available messages will be backfilled.
+        max_batches: -1
+        # Optional network-specific overrides for max batches.
+        # Interpretation of this field depends on the network connector.
+        max_batches_override: {}
 
-    # Telethon proxy configuration.
-    # You must install PySocks from pip for proxies to work.
-    proxy:
-        # Allowed types: disabled, socks4, socks5, http
-        type: disabled
-        # Proxy IP address and port.
-        address: 127.0.0.1
-        port: 1080
-        # Whether or not to perform DNS resolving remotely.
-        rdns: true
-        # Proxy authentication (optional).
-        username: ""
-        password: ""
+# Settings for enabling double puppeting
+double_puppet:
+    # Servers to always allow double puppeting from.
+    # This is only for other servers and should NOT contain the server the bridge is on.
+    servers: {}
+    # Whether to allow client API URL discovery for other servers. When using this option,
+    # users on other servers can use double puppeting even if their server URLs aren't
+    # explicitly added to the servers map above.
+    allow_discovery: false
+    # Shared secrets for automatic double puppeting.
+    # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
+    secrets: {{ matrix_mautrix_telegram_double_puppet_secrets | to_json }}
 
-# Python logging configuration.
+# End-to-bridge encryption support options.
 #
-# See section 16.7.2 of the Python documentation for more info:
-# https://docs.python.org/3.6/library/logging.config.html#configuration-dictionary-schema
+# See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
+encryption:
+    # Whether to enable encryption at all. If false, the bridge will not function in encrypted rooms.
+    allow: {{ matrix_mautrix_telegram_bridge_encryption_allow | to_json }}
+    # Whether to force-enable encryption in all bridged rooms.
+    default: {{ matrix_mautrix_telegram_bridge_encryption_default | to_json }}
+    # Whether to require all messages to be encrypted and drop any unencrypted messages.
+    require: {{ matrix_mautrix_telegram_bridge_encryption_require | to_json }}
+    # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
+    # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
+    appservice: false
+    # Whether to use MSC4190 instead of appservice login to create the bridge bot device.
+    # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
+    # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
+    # Changing this option requires updating the appservice registration file.
+    msc4190: {{ matrix_mautrix_telegram_msc4190_enabled | to_json }}
+    # Whether to enable self-signing for bridges (Only the bridge bot uses this for now)
+    # Requires msc4190 to replace keys on reset
+    self_sign: {{ matrix_mautrix_telegram_self_sign_enabled | to_json }}
+    # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
+    # You must use a client that supports requesting keys from other users to use this feature.
+    allow_key_sharing: {{ matrix_mautrix_telegram_bridge_encryption_key_sharing_allow | to_json }}
+    # Pickle key for encrypting encryption keys in the bridge database.
+    # If set to generate, a random key will be generated.
+    pickle_key: {{ matrix_mautrix_telegram_bridge_encryption_pickle_key | to_json }}
+    # Options for deleting megolm sessions from the bridge.
+    delete_keys:
+        # Beeper-specific: delete outbound sessions when hungryserv confirms
+        # that the user has uploaded the key to key backup.
+        delete_outbound_on_ack: false
+        # Don't store outbound sessions in the inbound table.
+        dont_store_outbound: false
+        # Ratchet megolm sessions forward after decrypting messages.
+        ratchet_on_decrypt: false
+        # Delete fully used keys (index >= max_messages) after decrypting messages.
+        delete_fully_used_on_decrypt: false
+        # Delete previous megolm sessions from same device when receiving a new one.
+        delete_prev_on_new_session: false
+        # Delete megolm sessions received from a device when the device is deleted.
+        delete_on_device_delete: false
+        # Periodically delete megolm sessions when 2x max_age has passed since receiving the session.
+        periodically_delete_expired: false
+        # Delete inbound megolm sessions that don't have the received_at field used for
+        # automatic ratcheting and expired session deletion. This is meant as a migration
+        # to delete old keys prior to the bridge update.
+        delete_outdated_inbound: false
+    # What level of device verification should be required from users?
+    #
+    # Valid levels:
+    #   unverified - Send keys to all device in the room.
+    #   cross-signed-untrusted - Require valid cross-signing, but trust all cross-signing keys.
+    #   cross-signed-tofu - Require valid cross-signing, trust cross-signing keys on first use (and reject changes).
+    #   cross-signed-verified - Require valid cross-signing, plus a valid user signature from the bridge bot.
+    #                           Note that creating user signatures from the bridge bot is not currently possible.
+    #   verified - Require manual per-device verification
+    #              (currently only possible by modifying the `trust` column in the `crypto_device` database table).
+    verification_levels:
+        # Minimum level for which the bridge should send keys to when bridging messages from the remote network to Matrix.
+        receive: unverified
+        # Minimum level that the bridge should accept for incoming Matrix messages.
+        send: unverified
+        # Minimum level that the bridge should require for accepting key requests.
+        share: cross-signed-tofu
+    # Options for Megolm room key rotation. These options allow you to configure the m.room.encryption event content.
+    # See https://spec.matrix.org/v1.10/client-server-api/#mroomencryption for more information about that event.
+    rotation:
+        # Enable custom Megolm room key rotation settings. Note that these
+        # settings will only apply to rooms created after this option is set.
+        enable_custom: false
+        # The maximum number of milliseconds a session should be used
+        # before changing it. The Matrix spec recommends 604800000 (a week)
+        # as the default.
+        milliseconds: 604800000
+        # The maximum number of messages that should be sent with a given a
+        # session before changing it. The Matrix spec recommends 100 as the
+        # default.
+        messages: 100
+        # Disable rotating keys when a user's devices change?
+        # You should not enable this option unless you understand all the implications.
+        disable_device_change_key_rotation: false
+
+# Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    version: 1
-    formatters:
-        precise:
-            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
-    handlers:
-        console:
-            class: logging.StreamHandler
-            formatter: precise
-    loggers:
-        mau:
-            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
-        telethon:
-            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
-        aiohttp:
-            level: {{ matrix_mautrix_telegram_logging_level|to_json }}
-    root:
-        level: {{ matrix_mautrix_telegram_logging_level|to_json }}
-        handlers: [console]
+    min_level: {{ matrix_mautrix_telegram_logging_level | to_json }}
+    writers:
+        - type: stdout
+          format: pretty-colored
