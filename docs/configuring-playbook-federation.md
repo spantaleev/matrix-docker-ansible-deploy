@@ -24,14 +24,14 @@ matrix_synapse_federation_domain_whitelist:
 
 If you wish to disable federation, you can do that with an empty list (`[]`), or better yet by completely disabling federation (see below).
 
-## Exposing the room directory over federation
+## Controlling exposure of the room directory over federation
 
-By default, your server's public rooms directory is not exposed to other servers via federation.
+By default, your server's public rooms directory is exposed to other servers via federation, so that public rooms hosted on your server can be discovered by users on other servers. This goes against the Synapse upstream default (which is `false`); see the [2023-10-23 changelog entry](../CHANGELOG.md#enabling-allow_public_rooms_over_federation-by-default-for-synapse) for the reasoning behind this choice.
 
-To expose it, add the following configuration to your `vars.yml` file:
+To prevent your public rooms directory from being exposed over federation (restoring the Synapse upstream default), add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_synapse_allow_public_rooms_over_federation: true
+matrix_synapse_allow_public_rooms_over_federation: false
 ```
 
 ## Disabling federation
