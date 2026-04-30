@@ -38,11 +38,9 @@
   register: matrix_bot_draupnir_support_files_result
 
 - name: Ensure Draupnir Docker image is pulled
-  community.docker.docker_image:
+  community.docker.docker_image_pull:
     name: "{{ matrix_bot_draupnir_container_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_bot_draupnir_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_draupnir_container_image_force_pull }}"
+    pull: always
   when: "not matrix_bot_draupnir_container_image_self_build | bool"
   register: matrix_bot_draupnir_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -61,15 +59,16 @@
   when: "matrix_bot_draupnir_container_image_self_build | bool"
 
 - name: Ensure Draupnir Docker image is built
-  community.docker.docker_image:
+  # Using docker_image_build with BuildKit for modern, efficient builds.
+  # docker_image_build automatically rebuilds when the Dockerfile or build context changes.
+  # The git_pull_results will show if the source was updated above.
+  community.docker.docker_image_build:
     name: "{{ matrix_bot_draupnir_container_image }}"
-    source: build
-    force_source: "{{ matrix_bot_draupnir_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_bot_draupnir_container_src_files_path }}"
-      pull: true
-  when: "matrix_bot_draupnir_container_image_self_build | bool"
+    dockerfile: Dockerfile
+    path: "{{ matrix_bot_draupnir_container_src_files_path }}"
+    pull: true
+  when: "matrix_bot_draupnir_container_image_self_build | bool and matrix_bot_draupnir_git_pull_results.changed"
+  register: matrix_bot_draupnir_container_image_build_result
 
 - name: Ensure matrix-bot-draupnir config installed
   ansible.builtin.copy:
@@ -113,7 +112,8 @@
         or matrix_bot_draupnir_config_result.changed | default(false)
         or matrix_bot_draupnir_systemd_service_result.changed | default(false)
         or matrix_bot_draupnir_container_image_pull_result.changed | default(false)
-        or matrix_bot_draupnir_container_image_force_pull | bool
+        or matrix_bot_draupnir_container_image_build_result.changed | default(false)
+        or matrix_bot_draupnir_force_restart | bool
       }}
 
 - name: Ensure matrix-bot-draupnir.service restarted, if necessary
