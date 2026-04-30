@@ -140,6 +140,13 @@ matrix_synapse_workers_stream_writer_thread_subscriptions_stream_worker_client_s
   - ^/_matrix/client/unstable/io.element.msc4306/rooms/.*/thread/.*/subscription$
   - ^/_matrix/client/unstable/io.element.msc4308/thread_subscriptions$
 
+# matrix_synapse_workers_stream_writer_quarantined_media_changes_stream_worker_client_server_endpoints contains the endpoints serviced by the `quarantined_media_changes` stream writer.
+# Since Synapse v1.152, deployments which route `/_synapse/admin/v1/quarantine_media/` to a worker (rather than the main process) must declare those workers as
+# `quarantined_media_changes` stream writers, otherwise quarantining media will not work.
+# See: https://github.com/element-hq/synapse/blob/develop/docs/upgrade.md#upgrading-to-v11520
+matrix_synapse_workers_stream_writer_quarantined_media_changes_stream_worker_client_server_endpoints:
+  - ^/_synapse/admin/v1/quarantine_media/.*$
+
 # matrix_synapse_workers_user_dir_worker_client_server_endpoints contains the endpoints serviced by the `type = user_dir` (`app = generic_worker`) worker.
 # See: https://matrix-org.github.io/synapse/latest/workers.html#updating-the-user-directory
 matrix_synapse_workers_user_dir_worker_client_server_endpoints:
@@ -148,11 +155,11 @@ matrix_synapse_workers_user_dir_worker_client_server_endpoints:
 # matrix_synapse_workers_known_stream_writer_stream_types contains the list of stream writer stream types that the playbook recognizes.
 # This is used for validation purposes. If adding support for a new type, besides adding it to this list,
 # don't forget to actually configure it where appropriate (see worker.yaml.j2`, the nginx proxy configuration, etc).
-matrix_synapse_workers_known_stream_writer_stream_types: ['events', 'typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions']
+matrix_synapse_workers_known_stream_writer_stream_types: ['events', 'typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions', 'quarantined_media_changes']
 
 # matrix_synapse_workers_webserving_stream_writer_types contains a list of stream writer types that serve web (client) requests.
 # Not all stream writers serve web requests. Some just perform background tasks.
-matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions']
+matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions', 'quarantined_media_changes']
 
 # matrix_synapse_workers_systemd_services_list contains a list of systemd services (one for each worker systemd service which serves web requests).
 # This list is built during runtime.
@@ -338,8 +345,10 @@ matrix_synapse_workers_media_repository_endpoints:
   - ^/_synapse/admin/v1/room/.*/media.*$
   - ^/_synapse/admin/v1/user/.*/media.*$
   - ^/_synapse/admin/v1/media/.*$
-  - ^/_synapse/admin/v1/quarantine_media/.*$
   - ^/_synapse/admin/v1/users/.*/media$
+  # `^/_synapse/admin/v1/quarantine_media/.*$` is intentionally not listed here:
+  # Synapse v1.152+ requires its worker to also be a `quarantined_media_changes` stream writer,
+  # so it's now handled by `matrix_synapse_workers_stream_writer_quarantined_media_changes_stream_worker_client_server_endpoints` instead.
 
 matrix_synapse_workers_user_dir_endpoints:
   # Handles searches in the user directory. It can handle REST endpoints matching
