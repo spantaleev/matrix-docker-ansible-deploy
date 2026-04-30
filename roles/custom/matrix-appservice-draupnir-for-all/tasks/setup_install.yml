@@ -100,6 +100,16 @@
     mode: '0644'
   register: matrix_appservice_draupnir_for_all_systemd_service_result
 
+# matrix-appservice-draupnir-for-all and matrix-bot-draupnir share the
+# same upstream container image. When both are enabled and force-pull is
+# on, the second role to run sees the image as already up-to-date (the
+# first role just pulled it), so its pull_result.changed is false and
+# conditional restart would skip it. To avoid that, we also treat
+# force-pull itself as a restart trigger for this role. The downside is
+# that both Draupnir services restart on every run when force-pull is
+# enabled (e.g. with rolling tags like `latest` or `main`), even when the
+# upstream image has not moved. That is wasteful but acceptable.
+# See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/5186
 - name: Determine whether Draupnir for All needs a restart
   ansible.builtin.set_fact:
     matrix_appservice_draupnir_for_all_restart_necessary: >-
@@ -110,6 +120,7 @@
         or matrix_appservice_draupnir_for_all_registration_config_result.changed | default(false)
         or matrix_appservice_draupnir_for_all_systemd_service_result.changed | default(false)
         or matrix_appservice_draupnir_for_all_container_image_pull_result.changed | default(false)
+        or matrix_appservice_draupnir_for_all_container_image_force_pull | bool
       }}
 
 - name: Ensure matrix-appservice-draupnir-for-all.service restarted, if necessary
