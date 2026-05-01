@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2023 - 2025 MDAD project contributors
-# SPDX-FileCopyrightText: 2023 - 2025 Catalan Lover <catalanlover@protonmail.com>
+# SPDX-FileCopyrightText: 2023 - 2026 Catalan Lover <catalanlover@protonmail.com>
 # SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -45,7 +45,8 @@
   with_items:
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ not matrix_bot_draupnir_pantalaimon_use and not matrix_bot_draupnir_login_native }}"}
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_config_experimentalRustCrypto }}"}
-    - {'name': 'matrix_bot_draupnir_config_managementRoom', when: true}
+    - {'name': 'matrix_bot_draupnir_config_managementRoom', when: "{{ not matrix_bot_draupnir_zero_touch_deploy }}"}
+    - {'name': 'matrix_bot_draupnir_config_initialManager', when: "{{ matrix_bot_draupnir_zero_touch_deploy }}"}
     - {'name': 'matrix_bot_draupnir_container_network', when: true}
     - {'name': 'matrix_bot_draupnir_config_homeserverUrl', when: true}
     - {'name': 'matrix_bot_draupnir_config_rawHomeserverUrl', when: true}
@@ -64,6 +65,8 @@
   with_items:
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_pantalaimon_use }}"}
     - {'name': 'matrix_bot_draupnir_config_accessToken', when: "{{ matrix_bot_draupnir_login_native }}"}
+    - {'name': 'matrix_bot_draupnir_config_managementRoom', when: "{{ matrix_bot_draupnir_zero_touch_deploy }}"}
+    - {'name': 'matrix_bot_draupnir_config_initialManager', when: "{{ not matrix_bot_draupnir_zero_touch_deploy }}"}
   when: "item.when | bool and not (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
 
 - name: Fail when matrix_bot_draupnir_config_experimentalRustCrypto is enabled together with matrix_bot_draupnir_pantalaimon_use

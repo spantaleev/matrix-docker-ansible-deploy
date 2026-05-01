@@ -25,10 +25,19 @@
     - {'old': 'matrix_appservice_draupnir_for_all_docker_src_files_path', 'new': 'matrix_appservice_draupnir_for_all_container_src_files_path'}
     - {'old': 'matrix_appservice_draupnir_for_all_container_image_force_pull', 'new': '<removed> (No longer needed due to new docker module doing this natively only if needed.)'}
 
-- name: Fail if required matrix-bot-draupnir variables are undefined
+- name: Fail if required matrix-appservice-draupnir-for-all variables are undefined
   ansible.builtin.fail:
-    msg: "The `{{ item }}` variable must be defined and have a non-null value."
+    msg: "The `{{ item.name }}` variable must be defined and have a non-null value."
   with_items:
-    - "matrix_appservice_draupnir_for_all_config_adminRoom"
-    - "matrix_bot_draupnir_container_network"
-  when: "lookup('vars', item, default='') == '' or lookup('vars', item, default='') is none"
+    - {'name': 'matrix_appservice_draupnir_for_all_config_adminRoom', when: "{{ not matrix_appservice_draupnir_for_all_zero_touch_deploy }}"}
+    - {'name': 'matrix_appservice_draupnir_for_all_config_initialManager', when: "{{ matrix_appservice_draupnir_for_all_zero_touch_deploy }}"}
+    - {'name': 'matrix_appservice_draupnir_for_all_container_network', when: true}
+  when: "item.when | bool and (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
+
+- name: Fail if inappropriate variables are defined
+  ansible.builtin.fail:
+    msg: "The `{{ item.name }}` variable must be undefined or have a null value."
+  with_items:
+    - {'name': 'matrix_appservice_draupnir_for_all_config_adminRoom', when: "{{ matrix_appservice_draupnir_for_all_zero_touch_deploy }}"}
+    - {'name': 'matrix_appservice_draupnir_for_all_config_initialManager', when: "{{ not matrix_appservice_draupnir_for_all_zero_touch_deploy }}"}
+  when: "item.when | bool and not (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"

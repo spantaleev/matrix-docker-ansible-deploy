@@ -115,11 +115,35 @@ matrix_bot_draupnir_password: "{{ matrix_bot_draupnir_pantalaimon_password }}"
 # This configuration option does not follow the common naming schema as its not controlling a config key directly.
 matrix_bot_draupnir_login_native: false
 
-# The room ID where people can use the bot. The bot has no access controls, so
-# anyone in this room can use the bot - secure your room!
+# This controls whether Zero Touch Deployment is enabled.
+# When enabled, the playbook validates the settings and only
+# renders the configuration values Draupnir expects.
+# This prevents invalid manual combinations from being passed through, since
+# Draupnir requires `matrix_bot_draupnir_config_managementRoom` to be unset and
+# `matrix_bot_draupnir_initialManager` to be a valid MXID.
+# Zero Touch Deployment is recommended for all new deployments.
+# Deployments that are exempt from this recommendation are assumed to be
+# advanced setups with specific needs for non-zero-touch mode.
+# Note that enabling this on an existing deployment will cause the bot to
+# recreate the management room.
+# Recreating the management room will cause all protections to reset their settings to defaults
+# and cause the re creation of secondary rooms like notification rooms. News memory will also be wiped.
+matrix_bot_draupnir_zero_touch_deploy: false
+
+# The management room used for administration when Zero Touch
+# Deployment is disabled.
+# The bot has no access controls, so anyone in this room can use it - secure
+# your room!
 # This should be a room alias or room ID - not a matrix.to URL.
 # Note: Draupnir is fairly verbose - expect a lot of messages from it.
 matrix_bot_draupnir_config_managementRoom: ""  # noqa var-naming
+
+# The MXID invited as the initial manager when Zero Touch Deployment creates the
+# management room.
+# This value is mutually exclusive with
+# `matrix_bot_draupnir_config_managementRoom`, and the bot will crash if you
+# attempt to set both at the same time.
+matrix_bot_draupnir_config_initialManager: ""  # noqa var-naming
 
 # Endpoint URL that Draupnir uses to interact with the Matrix homeserver (client-server API).
 # Set this to the Pantalaimon URL if you're using that.

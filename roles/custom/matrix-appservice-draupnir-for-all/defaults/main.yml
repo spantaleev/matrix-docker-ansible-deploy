@@ -58,13 +58,32 @@ matrix_appservice_draupnir_for_all_force_restart: "{{
   matrix_appservice_draupnir_for_all_rolling_tag | bool
 }}"
 
+# This controls whether Zero Touch Deployment is enabled.
+# When enabled, the playbook validates the related settings and only renders
+# the configuration values Draupnir expects for this mode.
+# This prevents invalid manual combinations from being passed through, since
+# Draupnir requires `matrix_appservice_draupnir_for_all_config_adminRoom` to be
+# unset and `matrix_appservice_draupnir_for_all_initialManager` to be a valid
+# user ID.
+# Zero Touch Deployment is recomended for all new deployments.
+# New deployments that are exempt from this recomendation are assumed to be advanced users. 
+# Who know what they are doing and have specific needs that require the flexibility of non-zero-touch-deployment mode. 
+# Note that enabling this on an existing deployment will cause the bot to recreate the admin room.
+# Manual policy migration has to be done in that case as to not break when access controls return to working order.
+matrix_appservice_draupnir_for_all_zero_touch_deploy: false
+
 # The room ID where people can use the bot. The bot has no access controls, so
 # anyone in this room can use the bot - secure your room!
 # This should be a room alias - not a matrix.to URL.
-# Note: Draupnir is fairly verbose - expect a lot of messages from it.
+# Appservice mode unlike bot mode is not verbose in the admin room.
 # This room is different for Appservice Mode compared to normal mode.
 # In Appservice mode it provides functions like user management.
 matrix_appservice_draupnir_for_all_config_adminRoom: ""  # noqa var-naming
+
+# This controls the mxid of who is invited to the admin room on its creation when using Zero Touch Deployment.
+# The this value is mutually exclusive with matrix_appservice_draupnir_for_all_config_adminRoom 
+# and the bot will crash if you attempt to set both at the same time.
+matrix_appservice_draupnir_for_all_config_initialManager: ""  # noqa var-naming
 
 # Controls if the room state backing store is activated.
 # Room state backing store makes restarts of the bot lightning fast as the bot does not suffer from amnesia.
