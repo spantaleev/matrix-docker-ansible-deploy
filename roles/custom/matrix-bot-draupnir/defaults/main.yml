@@ -31,11 +31,16 @@ matrix_bot_draupnir_container_src_files_path: "{{ matrix_bot_draupnir_base_path 
 # Force restart tag is used to control if the tag that is used is rolling or not.
 # When both Draupnir roles are enabled, we only force restart if they are on the same
 # version string and that version string matches the moving tag.
-matrix_bot_draupnir_force_restart_tag: "latest"
+matrix_bot_draupnir_force_rolling_tag: "latest"
 
 # Force restart the service on all runs only when both roles are enabled, both roles
 # are using the same version string, and that version is the moving tag.
-matrix_bot_draupnir_force_restart: "if {{ matrix_bot_draupnir_enabled | bool and matrix_appservice_draupnir_for_all_enabled | bool and matrix_bot_draupnir_version == matrix_appservice_draupnir_for_all_version and matrix_bot_draupnir_version == matrix_bot_draupnir_force_restart_tag }} then true else false end"
+matrix_bot_draupnir_force_restart: "{{
+  matrix_bot_draupnir_enabled | bool and
+  matrix_appservice_draupnir_for_all_enabled | bool and
+  matrix_bot_draupnir_version == matrix_appservice_draupnir_for_all_version and
+  matrix_bot_draupnir_version == matrix_bot_draupnir_rolling_tag
+}}"
 
 matrix_bot_draupnir_config_web_enabled: "{{ matrix_bot_draupnir_config_web_abuseReporting or matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled }}"  # noqa var-naming
 
