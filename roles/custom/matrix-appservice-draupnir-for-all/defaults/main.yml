@@ -46,18 +46,16 @@ matrix_appservice_draupnir_for_all_systemd_required_services_list_custom: []
 # List of systemd services that matrix-bot-draupnir.service wants
 matrix_appservice_draupnir_for_all_systemd_wanted_services_list: []
 
-# Force restart tag is used to control if the tag that is used is rolling or not.
-# When both Draupnir roles are enabled, we only force restart if they are on the same
-# version string and that version string matches the moving tag.
-matrix_appservice_draupnir_for_all_force_rolling_tag: "latest"
+# Rolling tag: true if version doesn't match semver shape (vX.Y.Z with optional prerelease/build), false otherwise.
+matrix_appservice_draupnir_for_all_rolling_tag: "{{ not (matrix_appservice_draupnir_for_all_version is match('^v[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$')) }}"
 
 # Force restart the service on all runs only when both roles are enabled, both roles
-# are using the same version string, and that version is the moving tag.
+# are using the same version string, and that version is a classified as a moving tag.
 matrix_appservice_draupnir_for_all_force_restart: "{{
   matrix_bot_draupnir_enabled | bool and
   matrix_appservice_draupnir_for_all_enabled | bool and
   matrix_bot_draupnir_version == matrix_appservice_draupnir_for_all_version and
-  matrix_appservice_draupnir_for_all_version == matrix_appservice_draupnir_for_all_force_rolling_tag
+  matrix_appservice_draupnir_for_all_rolling_tag | bool
 }}"
 
 # The room ID where people can use the bot. The bot has no access controls, so
