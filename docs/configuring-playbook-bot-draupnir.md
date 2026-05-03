@@ -82,6 +82,14 @@ matrix_bot_draupnir_login_native: true
 matrix_bot_draupnir_config_managementRoom: "MANAGEMENT_ROOM_ID_HERE"
 ```
 
+### Running Both Bot Mode and Appservice Mode
+
+When running both Bot mode and [appservice mode](./configuring-playbook-appservice-draupnir-for-all.md)(Draupnir for all) the
+playbook will force restart the bot if running a non release tag like `latest` or `main` or development builds.
+This is due to the conditional restart logic not being able to tell when a update happened correctly.
+
+Conditional restarts work perfectly for all tags when running only one of these two operating modes.
+
 ### Create and invite the bot to the management room
 
 Before proceeding to the next step, run the playbook with the following command to create the bot user.
