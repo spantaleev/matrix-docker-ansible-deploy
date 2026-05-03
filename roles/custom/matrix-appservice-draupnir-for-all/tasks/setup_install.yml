@@ -48,14 +48,16 @@
 
 - name: Ensure Draupnir Docker image is built
   # Using docker_image_build with BuildKit for modern, efficient builds.
-  # docker_image_build automatically rebuilds when the Dockerfile or build context changes.
-  # The git_pull_results will show if the source was updated above.
+  # Rebuild when the git checkout advanced to a new commit; otherwise keep the build idempotent.
+  # Technically the idempotency of rebuilds is more that if a build has already been executed for that name:tag
+  # then we wont rebuild while in idempotent mode even if git moved. Thats what the force rebuild logic is for.
   community.docker.docker_image_build:
     name: "{{ matrix_appservice_draupnir_for_all_container_image }}"
     dockerfile: Dockerfile
     path: "{{ matrix_appservice_draupnir_for_all_container_src_files_path }}"
     pull: true
-  when: "matrix_appservice_draupnir_for_all_container_image_self_build | bool and matrix_appservice_draupnir_for_all_git_pull_results.changed"
+    rebuild: "{{ 'always' if matrix_appservice_draupnir_for_all_git_pull_results.changed | bool else 'never' }}"
+  when: "matrix_appservice_draupnir_for_all_container_image_self_build | bool"
   register: matrix_appservice_draupnir_for_all_container_image_build_result
 
 - name: Ensure matrix-appservice-draupnir-for-all appservice config installed
