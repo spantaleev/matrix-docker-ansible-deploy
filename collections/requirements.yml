@@ -1,4 +1,20 @@
 ---
+# This file is not used by the playbook's standard CLI installation flow.
+# Roles are pulled via `make roles` / `just roles`, which call
+# `ansible-galaxy install -r requirements.yml -p roles/galaxy/`.
+# Collections are not installed by that command, and the playbook relies
+# on whatever `community.*` collections ship with the user's `ansible`
+# package (which has been recent enough for years).
+#
+# This file exists for AWX / Ansible Automation Platform users, which
+# auto-detect `collections/requirements.yml` during project sync and
+# install the listed collections. See:
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/commit/87a2240dc
+#
+# CLI users do not need to install anything from this file. If you are
+# using AWX and a collection version below the floor declared here is
+# present, AWX will upgrade it.
+
 collections:
   - name: community.general
   - name: community.docker
