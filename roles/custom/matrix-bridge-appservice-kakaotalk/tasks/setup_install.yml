@@ -7,11 +7,9 @@
 ---
 
 - name: Ensure matrix-appservice-kakaotalk image is pulled
-  community.docker.docker_image:
+  community.docker.docker_image_pull:
     name: "{{ matrix_appservice_kakaotalk_container_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_kakaotalk_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_container_image_force_pull }}"
+    pull: always
   when: not matrix_appservice_kakaotalk_container_image_self_build
   register: matrix_appservice_kakaotalk_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -19,11 +17,9 @@
   until: matrix_appservice_kakaotalk_container_image_pull_result is not failed
 
 - name: Ensure matrix-appservice-kakaotalk-node image is pulled
-  community.docker.docker_image:
+  community.docker.docker_image_pull:
     name: "{{ matrix_appservice_kakaotalk_node_container_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_appservice_kakaotalk_node_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_node_container_image_force_pull }}"
+    pull: always
   when: not matrix_appservice_kakaotalk_container_image_self_build
   register: matrix_appservice_kakaotalk_node_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -56,28 +52,24 @@
   when: "matrix_appservice_kakaotalk_container_image_self_build | bool"
 
 - name: Ensure matrix-appservice-kakaotalk-node Docker image is built
-  community.docker.docker_image:
+  community.docker.docker_image_build:
     name: "{{ matrix_appservice_kakaotalk_node_container_image }}"
-    source: build
-    force_source: "{{ matrix_appservice_kakaotalk_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_appservice_kakaotalk_container_src_files_path }}/node"
-      pull: true
+    dockerfile: Dockerfile
+    path: "{{ matrix_appservice_kakaotalk_container_src_files_path }}/node"
+    pull: true
+    rebuild: "{{ 'always' if matrix_appservice_kakaotalk_git_pull_results.changed | bool else 'never' }}"
   when: "matrix_appservice_kakaotalk_container_image_self_build | bool"
+  register: matrix_appservice_kakaotalk_node_container_image_build_result
 
 - name: Ensure matrix-appservice-kakaotalk Docker image is built
-  community.docker.docker_image:
+  community.docker.docker_image_build:
     name: "{{ matrix_appservice_kakaotalk_container_image }}"
-    source: build
-    force_source: "{{ matrix_appservice_kakaotalk_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_appservice_kakaotalk_git_pull_results.changed }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_appservice_kakaotalk_container_src_files_path }}"
-      pull: true
+    dockerfile: Dockerfile
+    path: "{{ matrix_appservice_kakaotalk_container_src_files_path }}"
+    pull: true
+    rebuild: "{{ 'always' if matrix_appservice_kakaotalk_git_pull_results.changed | bool else 'never' }}"
   when: "matrix_appservice_kakaotalk_container_image_self_build | bool"
+  register: matrix_appservice_kakaotalk_container_image_build_result
 
 - name: Ensure matrix-appservice-kakaotalk-node config.json installed
   ansible.builtin.copy:
@@ -138,4 +130,6 @@
         or matrix_appservice_kakaotalk_systemd_service_result.changed | default(false)
         or matrix_appservice_kakaotalk_container_image_pull_result.changed | default(false)
         or matrix_appservice_kakaotalk_node_container_image_pull_result.changed | default(false)
+        or matrix_appservice_kakaotalk_container_image_build_result.changed | default(false)
+        or matrix_appservice_kakaotalk_node_container_image_build_result.changed | default(false)
       }}
