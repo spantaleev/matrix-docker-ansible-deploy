@@ -33,11 +33,9 @@
             matrix_mautrix_meta_instagram_migration_requires_restart: true
 
 - name: Ensure mautrix-meta-instagram container image is pulled
-  community.docker.docker_image:
+  community.docker.docker_image_pull:
     name: "{{ matrix_mautrix_meta_instagram_container_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_mautrix_meta_instagram_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_meta_instagram_container_image_force_pull }}"
+    pull: always
   when: not matrix_mautrix_meta_instagram_container_image_self_build
   register: matrix_mautrix_meta_instagram_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -71,15 +69,13 @@
       register: matrix_mautrix_meta_instagram_git_pull_results
 
     - name: Ensure mautrix-meta-instagram container image is built
-      community.docker.docker_image:
+      community.docker.docker_image_build:
         name: "{{ matrix_mautrix_meta_instagram_container_image }}"
-        source: build
-        force_source: "{{ matrix_mautrix_meta_instagram_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_mautrix_meta_instagram_git_pull_results.changed }}"
-        build:
-          dockerfile: Dockerfile
-          path: "{{ matrix_mautrix_meta_instagram_container_src_files_path }}"
-          pull: true
+        dockerfile: Dockerfile
+        path: "{{ matrix_mautrix_meta_instagram_container_src_files_path }}"
+        pull: true
+        rebuild: "{{ 'always' if matrix_mautrix_meta_instagram_git_pull_results.changed | bool else 'never' }}"
+      register: matrix_mautrix_meta_instagram_container_image_build_result
 
 - name: Ensure mautrix-meta-instagram config.yaml installed
   ansible.builtin.copy:
@@ -134,6 +130,7 @@
         or matrix_mautrix_meta_instagram_support_files_result.changed | default(false)
         or matrix_mautrix_meta_instagram_systemd_service_result.changed | default(false)
         or matrix_mautrix_meta_instagram_container_image_pull_result.changed | default(false)
+        or matrix_mautrix_meta_instagram_container_image_build_result.changed | default(false)
       }}
 
 - name: Ensure mautrix-meta-instagram.service restarted, if necessary
