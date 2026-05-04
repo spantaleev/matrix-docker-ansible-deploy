@@ -22,12 +22,23 @@ matrix_bot_draupnir_container_image_registry_namespace_identifier: "the-draupnir
 matrix_bot_draupnir_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_draupnir_container_image_self_build else matrix_bot_draupnir_container_image_registry_prefix_upstream }}"
 matrix_bot_draupnir_container_image_registry_prefix_upstream: "{{ matrix_bot_draupnir_container_image_registry_prefix_upstream_default }}"
 matrix_bot_draupnir_container_image_registry_prefix_upstream_default: "ghcr.io/"
-matrix_bot_draupnir_container_image_force_pull: "{{ matrix_bot_draupnir_container_image.endswith(':latest') }}"
 
 matrix_bot_draupnir_base_path: "{{ matrix_base_data_path }}/draupnir"
 matrix_bot_draupnir_config_path: "{{ matrix_bot_draupnir_base_path }}/config"
 matrix_bot_draupnir_data_path: "{{ matrix_bot_draupnir_base_path }}/data"
 matrix_bot_draupnir_container_src_files_path: "{{ matrix_bot_draupnir_base_path }}/docker-src"
+
+# Rolling tag: true if version doesn't match semver shape (vX.Y.Z with optional prerelease/build), false otherwise.
+matrix_bot_draupnir_rolling_tag: "{{ not (matrix_bot_draupnir_version is match('^v[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$')) }}"
+
+# Force restart the service on all runs only when both roles are enabled, both roles
+# are using the same version string, and that version is a classified as a moving tag.
+matrix_bot_draupnir_force_restart: "{{
+  matrix_bot_draupnir_enabled | bool and
+  matrix_appservice_draupnir_for_all_enabled | bool and
+  matrix_bot_draupnir_version == matrix_appservice_draupnir_for_all_version and
+  matrix_bot_draupnir_rolling_tag | bool
+}}"
 
 matrix_bot_draupnir_config_web_enabled: "{{ matrix_bot_draupnir_config_web_abuseReporting or matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled }}"  # noqa var-naming
 

@@ -22,7 +22,6 @@ matrix_appservice_draupnir_for_all_container_image_registry_prefix_upstream: "{{
 matrix_appservice_draupnir_for_all_container_image_registry_prefix_upstream_default: "ghcr.io/"
 matrix_appservice_draupnir_for_all_container_image: "{{ matrix_appservice_draupnir_for_all_container_image_registry_prefix }}{{ matrix_appservice_draupnir_for_all_container_image_registry_namespace_identifier }}:{{ matrix_appservice_draupnir_for_all_version }}"
 matrix_appservice_draupnir_for_all_container_image_registry_namespace_identifier: "the-draupnir-project/draupnir"
-matrix_appservice_draupnir_for_all_container_image_force_pull: "{{ matrix_appservice_draupnir_for_all_container_image.endswith(':latest') }}"
 
 matrix_appservice_draupnir_for_all_base_path: "{{ matrix_base_data_path }}/draupnir-for-all"
 matrix_appservice_draupnir_for_all_config_path: "{{ matrix_appservice_draupnir_for_all_base_path }}/config"
@@ -46,6 +45,18 @@ matrix_appservice_draupnir_for_all_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-bot-draupnir.service wants
 matrix_appservice_draupnir_for_all_systemd_wanted_services_list: []
+
+# Rolling tag: true if version doesn't match semver shape (vX.Y.Z with optional prerelease/build), false otherwise.
+matrix_appservice_draupnir_for_all_rolling_tag: "{{ not (matrix_appservice_draupnir_for_all_version is match('^v[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$')) }}"
+
+# Force restart the service on all runs only when both roles are enabled, both roles
+# are using the same version string, and that version is a classified as a moving tag.
+matrix_appservice_draupnir_for_all_force_restart: "{{
+  matrix_bot_draupnir_enabled | bool and
+  matrix_appservice_draupnir_for_all_enabled | bool and
+  matrix_bot_draupnir_version == matrix_appservice_draupnir_for_all_version and
+  matrix_appservice_draupnir_for_all_rolling_tag | bool
+}}"
 
 # The room ID where people can use the bot. The bot has no access controls, so
 # anyone in this room can use the bot - secure your room!
