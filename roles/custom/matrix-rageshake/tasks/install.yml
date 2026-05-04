@@ -42,11 +42,9 @@
   register: matrix_rageshake_support_files_result
 
 - name: Ensure rageshake image is pulled
-  community.docker.docker_image:
+  community.docker.docker_image_pull:
     name: "{{ matrix_rageshake_container_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_rageshake_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_rageshake_container_image_force_pull }}"
+    pull: always
   when: "not matrix_rageshake_container_image_self_build | bool"
   register: matrix_rageshake_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
