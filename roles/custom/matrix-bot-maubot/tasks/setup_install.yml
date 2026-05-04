@@ -37,11 +37,9 @@
   register: matrix_bot_maubot_config_result
 
 - name: Ensure maubot image is pulled
-  community.docker.docker_image:
+  community.docker.docker_image_pull:
     name: "{{ matrix_bot_maubot_container_image }}"
-    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-    force_source: "{{ matrix_bot_maubot_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-    force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_maubot_container_image_force_pull }}"
+    pull: always
   when: "not matrix_bot_maubot_container_image_self_build|bool"
   register: matrix_bot_maubot_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
@@ -61,15 +59,13 @@
       register: matrix_bot_maubot_git_pull_results
 
     - name: Ensure maubot image is built
-      community.docker.docker_image:
+      community.docker.docker_image_build:
         name: "{{ matrix_bot_maubot_container_image }}"
-        source: build
-        force_source: "{{ matrix_bot_maubot_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else matrix_bot_maubot_git_pull_results.changed }}"
-        build:
-          dockerfile: Dockerfile
-          path: "{{ matrix_bot_maubot_container_src_files_path }}"
-          pull: true
+        dockerfile: Dockerfile
+        path: "{{ matrix_bot_maubot_container_src_files_path }}"
+        pull: true
+        rebuild: "{{ 'always' if matrix_bot_maubot_git_pull_results.changed | bool else 'never' }}"
+      register: matrix_bot_maubot_container_image_build_result
 
 - when: "matrix_bot_maubot_container_image_customizations_enabled | bool"
   block:
@@ -83,14 +79,12 @@
       register: matrix_bot_maubot_container_image_customizations_dockerfile_result
 
     - name: Ensure customized Docker image for maubot is built
-      community.docker.docker_image:
+      community.docker.docker_image_build:
         name: "{{ matrix_bot_maubot_container_image_customized }}"
-        source: build
-        force_source: "{{ matrix_bot_maubot_container_image_customizations_dockerfile_result.changed or matrix_bot_maubot_container_image_customized_force_source }}"
-        build:
-          dockerfile: Dockerfile
-          path: "{{ matrix_bot_maubot_customized_container_src_files_path }}"
-          nocache: "{{ matrix_bot_maubot_container_image_customized_build_nocache }}"
+        dockerfile: Dockerfile
+        path: "{{ matrix_bot_maubot_customized_container_src_files_path }}"
+        nocache: "{{ matrix_bot_maubot_container_image_customized_build_nocache }}"
+        rebuild: "{{ 'always' if (matrix_bot_maubot_container_image_customizations_dockerfile_result.changed or matrix_bot_maubot_container_image_customized_force_source) | bool else 'never' }}"
 
 - name: Ensure maubot support files installed
   ansible.builtin.template:
@@ -125,4 +119,5 @@
         or matrix_bot_maubot_support_files_result.changed | default(false)
         or matrix_bot_maubot_systemd_service_result.changed | default(false)
         or matrix_bot_maubot_container_image_pull_result.changed | default(false)
+        or matrix_bot_maubot_container_image_build_result.changed | default(false)
       }}
