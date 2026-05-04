@@ -21,3 +21,11 @@
       `matrix_meshtastic_relay_connection_type` must be one of: `tcp`, `serial`, `ble`.
       Got: `{{ matrix_meshtastic_relay_connection_type }}`.
   when: "matrix_meshtastic_relay_connection_type not in ['tcp', 'serial', 'ble']"
+
+- name: (Deprecation) Catch and report renamed matrix-meshtastic-relay variables
+  ansible.builtin.fail:
+    msg: >-
+      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
+  with_items:
+    - {'old': 'matrix_meshtastic_relay_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
