@@ -48,13 +48,13 @@ matrix_appservice_draupnir_for_all_enabled: true
 matrix_appservice_draupnir_for_all_config_adminRoom: "MANAGEMENT_ROOM_ALIAS_HERE"
 ```
 
-### Running Both Bot Mode and Appservice Mode
+### Running both bot mode and appservice mode
 
-When running both [Bot mode](./configuring-playbook-bot-draupnir.md) and appservice mode the playbook will force restart
-the bot if running a non release tag like `latest` or `main` or development builds.
-This is due to the conditional restart logic not being able to tell when a update happened correctly.
+When running both [bot mode](./configuring-playbook-bot-draupnir.md) and appservice mode, the playbook will force-restart
+the bot if running a non-release tag like `latest` or `main` or a development build.
+This is due to the conditional restart logic not being able to reliably tell when an update happened.
 
-Conditional restarts work perfectly for all tags when running only one of these two operating modes.
+Conditional restarts work correctly for all tags when running only one of these two operating modes.
 
 ### Extending the configuration
 
