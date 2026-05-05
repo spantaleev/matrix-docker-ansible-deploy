@@ -26,11 +26,11 @@ Draupnir for all only has limited support for external tooling like [MRU](https:
 
 ## Prerequisites
 
-### Prerequisites for Zero Touch Deployment (Recomended)
+### Prerequisites for Zero Touch Deployment (Recommended)
 
 Zero Touch Deployment of Draupnir Appservice Mode (Draupnir for all) requires as of Draupnir 3.1.0 that you supply Draupnir the following:
 
- - MXID of the the first person who gets invited to the admin room the bot creates for you.
+- MXID of the the first person who gets invited to the admin room the bot creates for you.
 
 That is all. The appservice manages everything on its own after you provide it a MXID to invite.
 

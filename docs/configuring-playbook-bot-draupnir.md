@@ -20,13 +20,13 @@ If your migrating from [Mjolnir](configuring-playbook-bot-mjolnir.md), skip to [
 
 ## Prerequisites
 
-### Prerequisites for Zero Touch Deployment (Recomended)
+### Prerequisites for Zero Touch Deployment (Recommended)
 
 Zero Touch Deployment of Draupnir bot mode requires as of Draupnir 3.1.0 that you supply Draupnir the following:
 
- - MXID of the the first person who gets invited to the management room the bot creates for you.
- - Permanent access token for authentication. Instructions for obtaining one can be found at [obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl)
- - User account for Draupnir
+- MXID of the the first person who gets invited to the management room the bot creates for you.
+- Permanent access token for authentication. Instructions for obtaining one can be found at [obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl)
+- User account for Draupnir
 
 Zero Touch Deployment is the officially preferred installation method for new deployments of Draupnir as of 3.1.0
 
@@ -77,7 +77,6 @@ matrix_bot_draupnir_config_accessToken: "CLEAN_ACCESS_TOKEN_HERE"
 ## Adjusting the playbook configuration
 
 To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `INITIAL_MANAGER_MXID_HERE` with the MXID for whoever is to be invited to the management room first.
-
 
 ```yaml
 # Enable Draupnir
@@ -176,6 +175,7 @@ curl --header "Authorization: Bearer ADMIN_ACCESS_TOKEN_HERE" -X POST https://ma
 ```
 
 **Notes**:
+
 - This does not work on outdated Windows 10 as curl is not available there.
 - Even if the APIs are not exposed to the internet, you should still be able to run the command on the homeserver locally.
 
