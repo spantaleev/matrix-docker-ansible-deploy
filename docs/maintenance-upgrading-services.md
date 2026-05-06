@@ -1,10 +1,10 @@
 <!--
-SPDX-FileCopyrightText: 2018 - 2023 Slavi Pantaleev
 SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2018-2026 Slavi Pantaleev
 SPDX-FileCopyrightText: 2024 Felix Stupp
 SPDX-FileCopyrightText: 2024 MDAD project contributors
 SPDX-FileCopyrightText: 2024 Nikita Chernyi
-SPDX-FileCopyrightText: 2024 Suguru Hirahara
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -40,9 +40,21 @@ If you don't have either `just` tool or `make` program, you can run the `ansible
 
 **Note**: for details about `just` commands, take a look at: [Running `just` commands](just.md).
 
+### Acknowledge breaking changes if any
+
+The playbook uses a migration validation system that ensures you are aware of breaking changes before they'll affect your deployment. If there is one, you are required to acknowledge each breaking change.
+
+Whenever a breaking change is introduced, the playbook will:
+
+- bump its expected version value (`matrix_playbook_migration_expected_version`), causing a discrepancy with what you validated (`matrix_playbook_migration_validated_version`)
+
+- fail when you run it with a helpful message listing what changed and linking to the relevant changelog entries
+
+After reviewing and adapting your setup, update the variable to the new version.
+
 ### Re-run the playbook setup
 
-After updating the Ansible roles, then re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:
+After updating the Ansible roles and the variable for the validation system when necessary, re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=install-all,start
