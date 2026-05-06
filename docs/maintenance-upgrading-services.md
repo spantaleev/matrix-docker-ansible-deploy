@@ -36,7 +36,7 @@ If it looks good to you, go to the `matrix-docker-ansible-deploy` directory, upd
 - either: `just update`
 - or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)
 
-If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
+If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly after updating the playbook: `git pull; rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
 **Note**: for details about `just` commands, take a look at: [Running `just` commands](just.md).
 

@@ -119,7 +119,7 @@ To update your playbook directory and all upstream Ansible roles, run:
 - either: `just update`
 - or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)
 
-If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
+If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly after updating the playbook: `git pull; rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`
 
 ### Run installation command
 
