@@ -1,0 +1,238 @@
+{#
+SPDX-FileCopyrightText: 2026 MDAD project contributors
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+### Tuwunel configuration rendered by matrix-docker-ansible-deploy.
+###
+### This file only emits options exposed as Ansible variables. All other knobs
+### keep tuwunel's upstream defaults. To override anything not surfaced here,
+### use `matrix_tuwunel_environment_variables_extension` (env vars override TOML)
+### or replace the template via `matrix_tuwunel_template_tuwunel_config`.
+###
+### Reference: https://matrix-construct.github.io/tuwunel/configuration.html
+
+[global]
+server_name = {{ matrix_tuwunel_config_server_name | to_json }}
+address = "0.0.0.0"
+port = {{ matrix_tuwunel_config_port_number }}
+database_path = "/var/lib/tuwunel"
+
+max_request_size = {{ matrix_tuwunel_config_max_request_size }}
+
+new_user_displayname_suffix = {{ matrix_tuwunel_config_new_user_displayname_suffix | to_json }}
+
+allow_registration = {{ matrix_tuwunel_config_allow_registration | to_json }}
+{% if matrix_tuwunel_config_registration_token | length > 0 %}
+registration_token = {{ matrix_tuwunel_config_registration_token | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse | bool %}
+yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = true
+{% endif %}
+
+{% if matrix_tuwunel_config_emergency_password | length > 0 %}
+emergency_password = {{ matrix_tuwunel_config_emergency_password | to_json }}
+{% endif %}
+
+allow_encryption = {{ matrix_tuwunel_config_allow_encryption | to_json }}
+allow_room_creation = {{ matrix_tuwunel_config_allow_room_creation | to_json }}
+default_room_version = {{ matrix_tuwunel_config_default_room_version | to_json }}
+{% if matrix_tuwunel_config_auto_join_rooms | length > 0 %}
+auto_join_rooms = {{ matrix_tuwunel_config_auto_join_rooms | to_json }}
+{% endif %}
+
+allow_federation = {{ matrix_tuwunel_config_allow_federation | to_json }}
+trusted_servers = {{ matrix_tuwunel_config_trusted_servers | to_json }}
+{% if matrix_tuwunel_config_allowed_remote_server_names | length > 0 %}
+allowed_remote_server_names_experimental = {{ matrix_tuwunel_config_allowed_remote_server_names | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_forbidden_remote_server_names | length > 0 %}
+forbidden_remote_server_names = {{ matrix_tuwunel_config_forbidden_remote_server_names | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_forbidden_remote_room_directory_server_names | length > 0 %}
+forbidden_remote_room_directory_server_names = {{ matrix_tuwunel_config_forbidden_remote_room_directory_server_names | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_prevent_media_downloads_from | length > 0 %}
+prevent_media_downloads_from = {{ matrix_tuwunel_config_prevent_media_downloads_from | to_json }}
+{% endif %}
+
+allow_outgoing_presence = {{ matrix_tuwunel_config_allow_outgoing_presence | to_json }}
+
+{% if matrix_tuwunel_config_url_preview_domain_contains_allowlist | length > 0 %}
+url_preview_domain_contains_allowlist = {{ matrix_tuwunel_config_url_preview_domain_contains_allowlist | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_url_preview_domain_explicit_allowlist | length > 0 %}
+url_preview_domain_explicit_allowlist = {{ matrix_tuwunel_config_url_preview_domain_explicit_allowlist | to_json }}
+{% endif %}
+url_preview_check_root_domain = {{ matrix_tuwunel_config_url_preview_check_root_domain | to_json }}
+
+create_admin_room = {{ matrix_tuwunel_config_create_admin_room | to_json }}
+federate_admin_room = {{ matrix_tuwunel_config_federate_admin_room | to_json }}
+grant_admin_to_first_user = {{ matrix_tuwunel_config_grant_admin_to_first_user | to_json }}
+
+log = {{ matrix_tuwunel_config_log | to_json }}
+
+{% if matrix_tuwunel_config_turn_uris | length > 0 %}
+turn_uris = {{ matrix_tuwunel_config_turn_uris | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_turn_secret | length > 0 %}
+turn_secret = {{ matrix_tuwunel_config_turn_secret | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_turn_username | length > 0 %}
+turn_username = {{ matrix_tuwunel_config_turn_username | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_turn_password | length > 0 %}
+turn_password = {{ matrix_tuwunel_config_turn_password | to_json }}
+{% endif %}
+
+{% if matrix_tuwunel_config_rocksdb_compression_algo | length > 0 %}
+rocksdb_compression_algo = {{ matrix_tuwunel_config_rocksdb_compression_algo | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_rocksdb_compression_level | string | length > 0 %}
+rocksdb_compression_level = {{ matrix_tuwunel_config_rocksdb_compression_level }}
+{% endif %}
+{% if matrix_tuwunel_config_rocksdb_bottommost_compression_level | string | length > 0 %}
+rocksdb_bottommost_compression_level = {{ matrix_tuwunel_config_rocksdb_bottommost_compression_level }}
+{% endif %}
+rocksdb_direct_io = {{ matrix_tuwunel_config_rocksdb_direct_io | to_json }}
+{% if matrix_tuwunel_config_rocksdb_parallelism_threads | int > 0 %}
+rocksdb_parallelism_threads = {{ matrix_tuwunel_config_rocksdb_parallelism_threads }}
+{% endif %}
+{% if matrix_tuwunel_config_rocksdb_max_log_file_size | string | length > 0 %}
+rocksdb_max_log_file_size = {{ matrix_tuwunel_config_rocksdb_max_log_file_size }}
+{% endif %}
+{% if matrix_tuwunel_config_rocksdb_log_time_to_roll | string | length > 0 %}
+rocksdb_log_time_to_roll = {{ matrix_tuwunel_config_rocksdb_log_time_to_roll }}
+{% endif %}
+{% if matrix_tuwunel_config_database_backup_path | length > 0 %}
+database_backup_path = {{ matrix_tuwunel_config_database_backup_path | to_json }}
+database_backups_to_keep = {{ matrix_tuwunel_config_database_backups_to_keep }}
+{% endif %}
+
+{% if matrix_tuwunel_config_cache_capacity_modifier | string | length > 0 %}
+cache_capacity_modifier = {{ matrix_tuwunel_config_cache_capacity_modifier }}
+{% endif %}
+{% if matrix_tuwunel_config_db_cache_capacity_mb | string | length > 0 %}
+db_cache_capacity_mb = {{ matrix_tuwunel_config_db_cache_capacity_mb }}
+{% endif %}
+{% if matrix_tuwunel_config_db_write_buffer_capacity_mb | string | length > 0 %}
+db_write_buffer_capacity_mb = {{ matrix_tuwunel_config_db_write_buffer_capacity_mb }}
+{% endif %}
+
+{% if matrix_tuwunel_config_sentry_enabled | bool %}
+sentry = true
+{% if matrix_tuwunel_config_sentry_endpoint | length > 0 %}
+sentry_endpoint = {{ matrix_tuwunel_config_sentry_endpoint | to_json }}
+{% endif %}
+sentry_send_server_name = {{ matrix_tuwunel_config_sentry_send_server_name | to_json }}
+sentry_traces_sample_rate = {{ matrix_tuwunel_config_sentry_traces_sample_rate }}
+{% endif %}
+
+{% if (matrix_tuwunel_config_tls_certs | length > 0) and (matrix_tuwunel_config_tls_key | length > 0) %}
+
+[global.tls]
+certs = {{ matrix_tuwunel_config_tls_certs | to_json }}
+key = {{ matrix_tuwunel_config_tls_key | to_json }}
+dual_protocol = {{ matrix_tuwunel_config_tls_dual_protocol | to_json }}
+{% endif %}
+
+{% set well_known_keys = [
+  matrix_tuwunel_config_well_known_client,
+  matrix_tuwunel_config_well_known_server,
+  matrix_tuwunel_config_well_known_support_page,
+  matrix_tuwunel_config_well_known_support_email,
+  matrix_tuwunel_config_well_known_support_mxid,
+  matrix_tuwunel_config_well_known_livekit_url,
+] %}
+{% if well_known_keys | select | list | length > 0 %}
+
+[global.well_known]
+{% if matrix_tuwunel_config_well_known_client | length > 0 %}
+client = {{ matrix_tuwunel_config_well_known_client | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_well_known_server | length > 0 %}
+server = {{ matrix_tuwunel_config_well_known_server | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_well_known_support_page | length > 0 %}
+support_page = {{ matrix_tuwunel_config_well_known_support_page | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_well_known_support_email | length > 0 %}
+support_email = {{ matrix_tuwunel_config_well_known_support_email | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_well_known_support_mxid | length > 0 %}
+support_mxid = {{ matrix_tuwunel_config_well_known_support_mxid | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_well_known_livekit_url | length > 0 %}
+livekit_url = {{ matrix_tuwunel_config_well_known_livekit_url | to_json }}
+{% endif %}
+{% endif %}
+
+{% if matrix_tuwunel_config_blurhashing_enabled | bool %}
+
+[global.blurhashing]
+components_x = {{ matrix_tuwunel_config_blurhashing_components_x }}
+components_y = {{ matrix_tuwunel_config_blurhashing_components_y }}
+blurhash_max_raw_size = {{ matrix_tuwunel_config_blurhashing_max_raw_size }}
+{% endif %}
+
+{% if matrix_tuwunel_config_ldap_enabled | bool %}
+
+[global.ldap]
+enable = true
+uri = {{ matrix_tuwunel_config_ldap_uri | to_json }}
+base_dn = {{ matrix_tuwunel_config_ldap_base_dn | to_json }}
+{% if matrix_tuwunel_config_ldap_bind_dn | length > 0 %}
+bind_dn = {{ matrix_tuwunel_config_ldap_bind_dn | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_ldap_bind_password_file | length > 0 %}
+bind_password_file = {{ matrix_tuwunel_config_ldap_bind_password_file | to_json }}
+{% endif %}
+filter = {{ matrix_tuwunel_config_ldap_filter | to_json }}
+uid_attribute = {{ matrix_tuwunel_config_ldap_uid_attribute | to_json }}
+name_attribute = {{ matrix_tuwunel_config_ldap_name_attribute | to_json }}
+{% if matrix_tuwunel_config_ldap_admin_base_dn | length > 0 %}
+admin_base_dn = {{ matrix_tuwunel_config_ldap_admin_base_dn | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_ldap_admin_filter | length > 0 %}
+admin_filter = {{ matrix_tuwunel_config_ldap_admin_filter | to_json }}
+{% endif %}
+{% endif %}
+
+{% if matrix_tuwunel_config_jwt_enabled | bool %}
+
+[global.jwt]
+enable = true
+{% if matrix_tuwunel_config_jwt_key | length > 0 %}
+key = {{ matrix_tuwunel_config_jwt_key | to_json }}
+{% endif %}
+format = {{ matrix_tuwunel_config_jwt_format | to_json }}
+algorithm = {{ matrix_tuwunel_config_jwt_algorithm | to_json }}
+register_user = {{ matrix_tuwunel_config_jwt_register_user | to_json }}
+{% if matrix_tuwunel_config_jwt_audience | length > 0 %}
+audience = {{ matrix_tuwunel_config_jwt_audience | to_json }}
+{% endif %}
+{% if matrix_tuwunel_config_jwt_issuer | length > 0 %}
+issuer = {{ matrix_tuwunel_config_jwt_issuer | to_json }}
+{% endif %}
+require_exp = {{ matrix_tuwunel_config_jwt_require_exp | to_json }}
+require_nbf = {{ matrix_tuwunel_config_jwt_require_nbf | to_json }}
+validate_exp = {{ matrix_tuwunel_config_jwt_validate_exp | to_json }}
+validate_nbf = {{ matrix_tuwunel_config_jwt_validate_nbf | to_json }}
+{% endif %}
+
+{% for idp in matrix_tuwunel_config_identity_providers %}
+
+[[global.identity_provider]]
+{% for key, value in idp.items() %}
+{{ key }} = {{ value | to_json }}
+{% endfor %}
+{% endfor %}
+
+{% for sp in matrix_tuwunel_config_storage_providers %}
+
+[global.storage_provider.{{ sp.id }}.{{ sp.kind }}]
+{% for key, value in sp.items() if key not in ['id', 'kind'] %}
+{{ key }} = {{ value | to_json }}
+{% endfor %}
+{% endfor %}

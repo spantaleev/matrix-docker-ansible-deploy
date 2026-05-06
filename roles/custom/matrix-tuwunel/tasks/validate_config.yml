@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if required tuwunel settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_tuwunel_hostname', when: true}
+    - {'name': 'matrix_tuwunel_container_network', when: true}
+    - {'name': 'matrix_tuwunel_container_labels_internal_client_api_traefik_entrypoints', when: "{{ matrix_tuwunel_container_labels_internal_client_api_enabled }}"}
+
+- name: Fail if registration is enabled without a token or explicit acknowledgement
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_tuwunel_config_allow_registration` is true, but neither
+      `matrix_tuwunel_config_registration_token` nor
+      `matrix_tuwunel_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`
+      is set. Set a registration token (recommended) or explicitly opt in to open registration.
+  when: >-
+    matrix_tuwunel_config_allow_registration | bool
+    and (matrix_tuwunel_config_registration_token | length == 0)
+    and not (matrix_tuwunel_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse | bool)
+
+- name: Fail if a storage provider is missing required fields
+  ansible.builtin.fail:
+    msg: >-
+      Storage provider `{{ item.id | default('?') }}` is missing required fields.
+      Each entry must define both `id` and `kind` (one of: local, s3).
+  when: "(item.id | default('') | length == 0) or (item.kind | default('') not in ['local', 's3'])"
+  with_items: "{{ matrix_tuwunel_config_storage_providers }}"
+
+- name: Fail if an identity provider is missing required fields
+  ansible.builtin.fail:
+    msg: >-
+      Identity provider entry is missing both `client_id` and `brand`.
+      At minimum one of these is required for tuwunel to identify the provider.
+  when: "(item.client_id | default('') | length == 0) and (item.brand | default('') | length == 0)"
+  with_items: "{{ matrix_tuwunel_config_identity_providers }}"

@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check Matrix Client API
+  ansible.builtin.uri:
+    url: "{{ matrix_tuwunel_client_api_url_endpoint_public }}"
+    follow_redirects: none
+    validate_certs: "{{ matrix_tuwunel_self_check_validate_certificates }}"
+  register: result_matrix_tuwunel_client_api
+  ignore_errors: true
+  check_mode: false
+  when: matrix_tuwunel_enabled | bool
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Fail if Matrix Client API not working
+  ansible.builtin.fail:
+    msg: "Failed checking Matrix Client API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_tuwunel_client_api_url_endpoint_public }}`). Is tuwunel running? Is port 443 open in your firewall? Full error: {{ result_matrix_tuwunel_client_api }}"
+  when: "matrix_tuwunel_enabled | bool and (result_matrix_tuwunel_client_api.failed or 'json' not in result_matrix_tuwunel_client_api)"
+
+- name: Report working Matrix Client API
+  ansible.builtin.debug:
+    msg: "The Matrix Client API at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_tuwunel_client_api_url_endpoint_public }}`) is working"
+  when: matrix_tuwunel_enabled | bool

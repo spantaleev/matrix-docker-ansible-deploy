@@ -1,0 +1,141 @@
+{#
+SPDX-FileCopyrightText: 2026 MDAD project contributors
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_tuwunel_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_tuwunel_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_tuwunel_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-tuwunel.loadbalancer.server.port={{ matrix_tuwunel_config_port_number }}
+
+
+{% if matrix_tuwunel_container_labels_public_client_root_enabled %}
+############################################################
+#                                                          #
+# Public Root path (/)                                     #
+#                                                          #
+############################################################
+
+{% set client_root_middlewares = [] %}
+
+{% if matrix_tuwunel_container_labels_public_client_root_redirection_enabled %}
+{% set client_root_middlewares = client_root_middlewares + ['matrix-tuwunel-client-root-redirect'] %}
+traefik.http.middlewares.matrix-tuwunel-client-root-redirect.redirectregex.regex=(.*)
+traefik.http.middlewares.matrix-tuwunel-client-root-redirect.redirectregex.replacement={{ matrix_tuwunel_container_labels_public_client_root_redirection_url }}
+{% endif %}
+
+traefik.http.routers.matrix-tuwunel-public-client-root.rule={{ matrix_tuwunel_container_labels_public_client_root_traefik_rule }}
+
+traefik.http.routers.matrix-tuwunel-public-client-root.middlewares={{ client_root_middlewares | join(',') }}
+
+{% if matrix_tuwunel_container_labels_public_client_root_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-tuwunel-public-client-root.priority={{ matrix_tuwunel_container_labels_public_client_root_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-tuwunel-public-client-root.service=matrix-tuwunel
+traefik.http.routers.matrix-tuwunel-public-client-root.entrypoints={{ matrix_tuwunel_container_labels_public_client_root_traefik_entrypoints }}
+traefik.http.routers.matrix-tuwunel-public-client-root.tls={{ matrix_tuwunel_container_labels_public_client_root_traefik_tls | to_json }}
+
+{% if matrix_tuwunel_container_labels_public_client_root_traefik_tls %}
+traefik.http.routers.matrix-tuwunel-public-client-root.tls.certResolver={{ matrix_tuwunel_container_labels_public_client_root_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public Root path (/)                                    #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% if matrix_tuwunel_container_labels_public_client_api_enabled %}
+############################################################
+#                                                          #
+# Public Client-API (/_matrix)                             #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-tuwunel-public-client-api.rule={{ matrix_tuwunel_container_labels_public_client_api_traefik_rule }}
+
+{% if matrix_tuwunel_container_labels_public_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-tuwunel-public-client-api.priority={{ matrix_tuwunel_container_labels_public_client_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-tuwunel-public-client-api.service=matrix-tuwunel
+traefik.http.routers.matrix-tuwunel-public-client-api.entrypoints={{ matrix_tuwunel_container_labels_public_client_api_traefik_entrypoints }}
+
+traefik.http.routers.matrix-tuwunel-public-client-api.tls={{ matrix_tuwunel_container_labels_public_client_api_traefik_tls | to_json }}
+{% if matrix_tuwunel_container_labels_public_client_api_traefik_tls %}
+traefik.http.routers.matrix-tuwunel-public-client-api.tls.certResolver={{ matrix_tuwunel_container_labels_public_client_api_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public Client-API (/_matrix)                            #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% if matrix_tuwunel_container_labels_internal_client_api_enabled %}
+############################################################
+#                                                          #
+# Internal Client-API (/_matrix)                           #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-tuwunel-internal-client-api.rule={{ matrix_tuwunel_container_labels_internal_client_api_traefik_rule }}
+
+{% if matrix_tuwunel_container_labels_internal_client_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-tuwunel-internal-client-api.priority={{ matrix_tuwunel_container_labels_internal_client_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-tuwunel-internal-client-api.service=matrix-tuwunel
+traefik.http.routers.matrix-tuwunel-internal-client-api.entrypoints={{ matrix_tuwunel_container_labels_internal_client_api_traefik_entrypoints }}
+
+############################################################
+#                                                          #
+# /Internal Client-API (/_matrix)                          #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% if matrix_tuwunel_container_labels_public_federation_api_enabled %}
+############################################################
+#                                                          #
+# Public Federation-API (/_matrix)                         #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-tuwunel-public-federation-api.rule={{ matrix_tuwunel_container_labels_public_federation_api_traefik_rule }}
+
+{% if matrix_tuwunel_container_labels_public_federation_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-tuwunel-public-federation-api.priority={{ matrix_tuwunel_container_labels_public_federation_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-tuwunel-public-federation-api.service=matrix-tuwunel
+traefik.http.routers.matrix-tuwunel-public-federation-api.entrypoints={{ matrix_tuwunel_container_labels_public_federation_api_traefik_entrypoints }}
+
+traefik.http.routers.matrix-tuwunel-public-federation-api.tls={{ matrix_tuwunel_container_labels_public_federation_api_traefik_tls | to_json }}
+{% if matrix_tuwunel_container_labels_public_federation_api_traefik_tls %}
+traefik.http.routers.matrix-tuwunel-public-federation-api.tls.certResolver={{ matrix_tuwunel_container_labels_public_federation_api_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public Federation-API (/_matrix)                        #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% endif %}
+
+{{ matrix_tuwunel_container_labels_additional_labels }}

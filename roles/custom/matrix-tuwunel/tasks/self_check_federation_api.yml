@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check Matrix Federation API
+  ansible.builtin.uri:
+    url: "{{ matrix_tuwunel_federation_api_url_endpoint_public }}"
+    follow_redirects: none
+    validate_certs: "{{ matrix_tuwunel_self_check_validate_certificates }}"
+  register: result_matrix_tuwunel_federation_api
+  ignore_errors: true
+  check_mode: false
+  when: matrix_tuwunel_enabled | bool
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Fail if Matrix Federation API not working
+  ansible.builtin.fail:
+    msg: "Failed checking Matrix Federation API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_tuwunel_federation_api_url_endpoint_public }}`). Is tuwunel running? Is port {{ matrix_federation_public_port }} open in your firewall? Full error: {{ result_matrix_tuwunel_federation_api }}"
+  when: "matrix_tuwunel_enabled | bool and matrix_tuwunel_config_allow_federation | bool and (result_matrix_tuwunel_federation_api.failed or 'json' not in result_matrix_tuwunel_federation_api)"
+
+- name: Fail if Matrix Federation API unexpectedly enabled
+  ansible.builtin.fail:
+    msg: "Matrix Federation API is up at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_tuwunel_federation_api_url_endpoint_public }}`) despite being disabled."
+  when: "matrix_tuwunel_enabled | bool and not matrix_tuwunel_config_allow_federation | bool and not result_matrix_tuwunel_federation_api.failed"
+
+- name: Report working Matrix Federation API
+  ansible.builtin.debug:
+    msg: "The Matrix Federation API at `{{ matrix_server_fqn_matrix }}` (checked endpoint: `{{ matrix_tuwunel_federation_api_url_endpoint_public }}`) is working"
+  when: "matrix_tuwunel_enabled | bool and matrix_tuwunel_config_allow_federation | bool"

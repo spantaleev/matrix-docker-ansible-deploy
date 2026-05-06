@@ -53,6 +53,8 @@ For a more custom setup, see the [Other configuration options](#other-configurat
 
   - [Configuring continuwuity](configuring-playbook-continuwuity.md), if you've switched to the [continuwuity](https://continuwuity.org) homeserver implementation
 
+  - [Configuring Tuwunel](configuring-playbook-tuwunel.md), if you've switched to the [Tuwunel](https://matrix-construct.github.io/tuwunel/) homeserver implementation
+
   - [Configuring Dendrite](configuring-playbook-dendrite.md), if you've switched to the [Dendrite](https://matrix-org.github.io/dendrite) homeserver implementation
 
 - Server components:

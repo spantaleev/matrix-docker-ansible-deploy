@@ -1,0 +1,83 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# Migrates from the conduwuit server implementation (`/matrix/conduwuit`) to tuwunel (`/matrix/tuwunel`).
+# Tuwunel is the official successor to conduwuit and reads conduwuit's RocksDB layout directly.
+# We back up the freshly generated tuwunel directory, copy conduwuit's data into it,
+# rename the config file, restore tuwunel's labels file, and start the new service.
+
+- name: Check existence of conduwuit directory
+  ansible.builtin.stat:
+    path: "{{ matrix_base_data_path }}/conduwuit"
+  register: matrix_removed_conduwuit_directory_stat
+
+- name: Check existence of tuwunel directory
+  ansible.builtin.stat:
+    path: "{{ matrix_base_data_path }}/tuwunel"
+  register: matrix_tuwunel_directory_stat
+
+- when: >
+        matrix_removed_conduwuit_directory_stat.stat.exists | bool and
+        matrix_tuwunel_directory_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-tuwunel.service systemd service is stopped
+      ansible.builtin.systemd:
+        name: matrix-tuwunel
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure tuwunel directory is backed up
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/tuwunel {{ matrix_base_data_path }}/tuwunel_old"
+        creates: "{{ matrix_base_data_path }}/tuwunel_old"
+        removes: "{{ matrix_base_data_path }}/tuwunel"
+
+    - name: Ensure conduwuit directory contents are copied to tuwunel
+      ansible.builtin.copy:
+        src: "{{ matrix_base_data_path }}/conduwuit/"
+        dest: "{{ matrix_base_data_path }}/tuwunel"
+        remote_src: true
+        mode: preserve
+
+    - name: Ensure conduwuit.toml file is renamed
+      ansible.builtin.command:
+        cmd: "mv {{ matrix_base_data_path }}/tuwunel/config/conduwuit.toml {{ matrix_base_data_path }}/tuwunel/config/tuwunel.toml"
+        removes: "{{ matrix_base_data_path }}/tuwunel/config/conduwuit.toml"
+
+    - name: Ensure tuwunel labels are restored
+      ansible.builtin.copy:
+        src: "{{ matrix_base_data_path }}/tuwunel_old/labels"
+        dest: "{{ matrix_base_data_path }}/tuwunel/labels"
+        remote_src: true
+        force: true
+        mode: preserve
+
+    - name: Ensure directories ownership is set
+      block:
+        - name: Set tuwunel ownership
+          ansible.builtin.file:
+            path: "{{ matrix_base_data_path }}/tuwunel"
+            state: directory
+            owner: "{{ matrix_user_name }}"
+            group: "{{ matrix_group_name }}"
+            recurse: true
+
+        - name: Set tuwunel_old ownership
+          ansible.builtin.file:
+            path: "{{ matrix_base_data_path }}/tuwunel_old"
+            state: directory
+            owner: "{{ matrix_user_name }}"
+            group: "{{ matrix_group_name }}"
+            recurse: true
+
+    - name: Ensure matrix-tuwunel.service systemd service is started
+      ansible.builtin.systemd:
+        name: matrix-tuwunel
+        state: started
+        enabled: true
+        daemon_reload: true
