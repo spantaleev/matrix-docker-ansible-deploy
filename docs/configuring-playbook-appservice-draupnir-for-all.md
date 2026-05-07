@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyRightText: 2024,2026 Catalan Lover <catalanlover@protonmail.com>
+SPDX-FileCopyrightText: 2024 - 2026 Catalan Lover <catalanlover@protonmail.com>
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-FileCopyrightText: 2024 MDAD project contributors
 
@@ -26,44 +26,42 @@ Draupnir for all only has limited support for external tooling like [MRU](https:
 
 ## Prerequisites
 
-### Prerequisites for Zero Touch Deployment (Recommended)
+### Prerequisites for Zero Touch Deployment (recommended)
 
-Zero Touch Deployment of Draupnir Appservice Mode (Draupnir for all) requires as of Draupnir 3.1.0 that you supply Draupnir the following:
+As of Draupnir 3.1.0, Zero Touch Deployment of Draupnir Appservice Mode (Draupnir for all) requires you to supply the following:
 
-- MXID of the the first person who gets invited to the admin room the bot creates for you.
+- MXID of the first person who gets invited to the admin room that the bot creates for you.
 
-That is all. The appservice manages everything on its own after you provide it a MXID to invite.
+That is all. The appservice manages everything on its own after you provide it with an MXID to invite.
 
-If proceeding with Zero Touch Deployment proceed to [Adjusting the playbook configuration](#adjusting-the-playbook-configuration)
+If proceeding with Zero Touch Deployment, skip ahead to [Adjusting the playbook configuration](#adjusting-the-playbook-configuration).
 
-### Create a admin room (Optional)
+### Create an admin room (optional)
 
-The playbook does not create a admin room for your Admin Draupnir but the appservice it self can do this. You **can create room manually** before setting up the bot.
+The playbook does not create an admin room for your Draupnir, but the appservice itself can do this for you. Alternatively, you **can create the room manually** before setting up the bot.
 
 Note that the room must be unencrypted.
 
 The admin room has to be given an alias, and your bot has to be invited to the room.
 
-This admin room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel.
+This admin room is used to control who has access to your D4A deployment. The room stores this data in the control room state, so your bot must have sufficient power level to send custom state events. This is `50` by default (moderator, as Element clients call this power level).
 
 > [!WARNING]
 > Anyone in this room can control the bot so it is important that you only invite trusted users to this room.
 
 ## Adjusting the playbook configuration
 
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `INITIAL_MANAGER_MXID_HERE`.
+When using Zero Touch Deployment, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `INITIAL_MANAGER_MXID_HERE` with the MXID of the user who should be invited to the admin room first.
 
 ```yaml
 matrix_appservice_draupnir_for_all_enabled: true
 
-matrxi_appservice_draupnir_for_all_zero_touch_deployment: true
+matrix_appservice_draupnir_for_all_zero_touch_deploy: true
 
 matrix_appservice_draupnir_for_all_config_initialManager: "INITIAL_MANAGER_MXID_HERE"
 ```
 
-If opting out of Zero Touch deployment use the following configuration block instead.
-
-Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ALIAS_HERE`.
+If opting out of Zero Touch Deployment, use the following configuration block instead. Make sure to replace `MANAGEMENT_ROOM_ALIAS_HERE` with the alias of the admin room you have created earlier.
 
 ```yaml
 matrix_appservice_draupnir_for_all_enabled: true
@@ -126,11 +124,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-If you made it through all the steps above and your main control room was joined by a user called `@draupnir-main:example.com` you have successfully installed Draupnir for All and can now start using it.
+If you made it through all the steps above and your main control room was joined by a user called `@draupnir-main:example.com`, you have successfully installed Draupnir for All and can now start using it.
 
-If using Zero Touch Deployment the flow will be reversed and the success signal is the initial manager account being invited to the admin room.
-
-The installation of Draupnir for all in Usage-wise, Draupnir for all is almost identical to Draupnir bot mode.
+If using Zero Touch Deployment, the flow is reversed and the success signal is the initial manager account being invited to the admin room.
 
 Draupnir for all installation via this playbook is very much Alpha quality. Usage-wise, Draupnir for all is almost identical to Draupnir bot mode, except that protections requiring homeserver admin access are not available, and the config file is shared between all bots so legacy protections like wordlist share a single global config.
 
@@ -138,16 +134,16 @@ Draupnir for all installation via this playbook is very much Alpha quality. Usag
 
 Draupnir for all includes several security measures like that it only allows users that are on its allow list to ask for a bot. To add a user to this list we have 2 primary options. Using the chat to tell Draupnir to do this for us or if you want to automatically do it by sending `m.policy.rule.user` events that target the subject you want to allow provisioning for with the `org.matrix.mjolnir.allow` recommendation. Using the chat is recommended.
 
-The bot requires a powerlevel of 50 in the management room to control who is allowed to use the bot. The bot does currently not say anything if this is true or false. (This is considered a bug and is documented in issue [#297](https://github.com/the-draupnir-project/Draupnir/issues/297)) This issue is mittigated in large part by Zero Touch Deployment workflows that got introduced in Draupnir 3.1.0
+The bot requires a power level of 50 in the management room to control who is allowed to use the bot. The bot does currently not say anything if this is true or false. (This is considered a bug and is documented in issue [#297](https://github.com/the-draupnir-project/Draupnir/issues/297).) This issue is largely mitigated by the Zero Touch Deployment workflows introduced in Draupnir 3.1.0.
 
 To allow users or whole homeservers you type /plain !admin allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to provision a bot. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially.
 
 ### How to provision a D4A once you are allowed to
 
-Once someone is allowed to provision a bot. Simply provision them one with `!admin provision MXID`.
-Self Service Provisioning is disabled as a security feature due to it being bugged. Force Provisioning bypasses this disabled status.
+Once someone is allowed to provision a bot, simply provision them one with `!admin provision MXID`.
 
-Please note that the reason you should always make sure there is an allow entry matching whoever is provisioned is that when
-self service gets fixed the bot of anyone who is not allowed to provision a bot will refuse to start.
+Self-service provisioning is disabled as a security measure because it is currently bugged. Force-provisioning (with `!admin provision`) bypasses this disabled status.
 
-Congratulations if you made it all the way here because you now have a fully working Draupnir for all deployment.
+Note that you should always make sure there is an allow entry matching whoever is provisioned, because once self-service is fixed, the bot of anyone who is not allowed to provision a bot will refuse to start.
+
+Congratulations if you made it all the way here, because you now have a fully working Draupnir for all deployment.

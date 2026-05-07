@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyRightText: 2023 - 2026 Catalan Lover <catalanlover@protonmail.com>
+SPDX-FileCopyrightText: 2023 - 2026 Catalan Lover <catalanlover@protonmail.com>
 SPDX-FileCopyrightText: 2023 - 2025 MDAD project contributors
 SPDX-FileCopyrightText: 2023 Kim Brose
 SPDX-FileCopyrightText: 2024 - 2025 Slavi Pantaleev
@@ -20,15 +20,15 @@ If your migrating from [Mjolnir](configuring-playbook-bot-mjolnir.md), skip to [
 
 ## Prerequisites
 
-### Prerequisites for Zero Touch Deployment (Recommended)
+### Prerequisites for Zero Touch Deployment (recommended)
 
-Zero Touch Deployment of Draupnir bot mode requires as of Draupnir 3.1.0 that you supply Draupnir the following:
+As of Draupnir 3.1.0, Zero Touch Deployment of Draupnir bot mode requires you to supply the following:
 
-- MXID of the the first person who gets invited to the management room the bot creates for you.
-- Permanent access token for authentication. Instructions for obtaining one can be found at [obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl)
-- User account for Draupnir
+- MXID of the first person who gets invited to the management room that the bot creates for you.
+- A permanent access token for authentication. Instructions for obtaining one can be found at [obtain an access token via curl](obtaining-access-tokens.md#obtain-an-access-token-via-curl).
+- A user account for Draupnir.
 
-Zero Touch Deployment is the officially preferred installation method for new deployments of Draupnir as of 3.1.0
+Zero Touch Deployment is the officially preferred installation method for new deployments of Draupnir as of 3.1.0.
 
 ### Create a management room (optional)
 
@@ -39,7 +39,7 @@ Using your own account, create a new invite only room that you will use to manag
 
 It is possible to make the management room encrypted (E2EE). If doing so, then you need to enable the native E2EE support (see [below](#native-e2ee-support)).
 
-E2EE Support for the management room is mutually exclusive with Zero Touch Deployment of Draupnir.
+E2EE support for the management room is mutually exclusive with Zero Touch Deployment of Draupnir.
 
 Once you have created the room you need to copy the room ID so you can specify it on your `inventory/host_vars/matrix.example.com/vars.yml` file. In Element Web you can check the ID by going to the room's settings and clicking "Advanced". The room ID will look something like `!qporfwt:example.com`.
 
@@ -76,7 +76,9 @@ matrix_bot_draupnir_config_accessToken: "CLEAN_ACCESS_TOKEN_HERE"
 
 ## Adjusting the playbook configuration
 
-To enable the bot, add the following configuration to your `vars.yml` file. Make sure to replace `INITIAL_MANAGER_MXID_HERE` with the MXID for whoever is to be invited to the management room first.
+### Configuration for Zero Touch Deployment (recommended)
+
+To enable the bot using Zero Touch Deployment, add the following configuration to your `vars.yml` file. Make sure to replace `INITIAL_MANAGER_MXID_HERE` with the MXID of the user who should be invited to the management room first, and `CLEAN_ACCESS_TOKEN_HERE` with the access token you obtained.
 
 ```yaml
 # Enable Draupnir
@@ -87,11 +89,12 @@ matrix_bot_draupnir_zero_touch_deploy: true
 matrix_bot_draupnir_config_initialManager: "INITIAL_MANAGER_MXID_HERE"
 
 # Access token which the bot will use for logging in.
-# Comment out `matrix_bot_draupnir_login_native` when using this option.
 matrix_bot_draupnir_config_accessToken: "CLEAN_ACCESS_TOKEN_HERE"
 ```
 
-If wanting to have the bot manage its own login at the cost of having to create a management room you can use login native and the config block below.
+### Configuration without Zero Touch Deployment
+
+If you'd prefer to have the bot manage its own login at the cost of having to create the management room manually, you can use native login with the configuration block below. Make sure to replace `MANAGEMENT_ROOM_ID_HERE` with the ID of the management room you have created earlier.
 
 ```yaml
 # Enable Draupnir
@@ -118,7 +121,7 @@ This is due to the conditional restart logic not being able to reliably tell whe
 
 Conditional restarts work correctly for all tags when running only one of these two operating modes.
 
-### Create and invite the bot to the management room (if using login native and not using Zero Touch Deployment)
+### Create and invite the bot to the management room (only when using native login without Zero Touch Deployment)
 
 Before proceeding to the next step, run the playbook with the following command to create the bot user.
 
@@ -130,9 +133,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 Then, invite the bot (`@bot.draupnir:example.com`) to its management room which you have created earlier.
 
-### Creating user account for the bot
+### Creating a user account for the bot (when using Zero Touch Deployment)
 
-Since Zero Touch Deployment is not validated with login native we will create the user account manually.
+Since Zero Touch Deployment is not validated with native login, you will need to create the user account manually.
 
 Refer to [registering users](registering-users.md) for documentation on how to configure the user account.
 
@@ -148,8 +151,7 @@ The APIs can also be accessed via [Ketesa](https://github.com/etkecc/ketesa), a 
 
 #### Add the configuration
 
-To expose the APIs publicly, add the following configuration to your `vars.yml` file:
-This is automatically done if Ketesa is enabled.
+This is automatically done if Ketesa is enabled. Otherwise, to expose the APIs publicly, add the following configuration to your `vars.yml` file:
 
 ```yaml
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true
@@ -201,9 +203,14 @@ matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled: true
 matrix_bot_draupnir_admin_api_enabled: true
 ```
 
-These protections need to be manually activated and consulting the [enabling protections](#enabling-built-in-protections) guide can be helpful or consulting upstream documentation.
+These protections need to be manually activated. Consulting the [enabling protections](#enabling-built-in-protections) guide and/or upstream documentation can be helpful.
 
-The other method polls an Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin (see [above](#register-the-bot-account)). To enable it, set `pollReports: true` on `vars.yml` file as below.
+The other method polls a Synapse Admin API endpoint, hence it is available only if using Synapse and if the Draupnir user is an admin. To enable it, set `pollReports: true` in your `vars.yml` file as below:
+
+```yaml
+matrix_bot_draupnir_configuration_extension_yaml: |
+  pollReports: true
+```
 
 ### Extending the configuration
 
