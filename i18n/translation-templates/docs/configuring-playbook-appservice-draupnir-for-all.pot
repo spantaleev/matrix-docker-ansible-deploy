@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-07 11:16+0000\n"
+"POT-Creation-Date: 2026-05-07 14:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,179 +16,215 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:8
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:9
 msgid "Setting up Draupnir for All/D4A (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:10
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:11
 msgid "The playbook can install and configure the [Draupnir](https://github.com/the-draupnir-project/Draupnir) moderation tool for you in appservice mode."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:12
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:13
 msgid "Appservice mode can be used together with the regular [Draupnir bot](configuring-playbook-bot-draupnir.md) or independently. Details about the differences between the 2 modes are described below."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:14
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:15
 msgid "Draupnir Appservice mode compared to Draupnir bot mode"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:16
-msgid "The administrative functions for managing the appservice are alpha quality and very limited. However, the experience of using an appservice-provisioned Draupnir is on par with the experience of using Draupnir from bot mode except in the case of avatar customisation as described later on in this document."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:17
+msgid "The administrative functions for managing the appservice are alpha quality and very limited. However, the experience of using an appservice-provisioned Draupnir is on par with the experience of using Draupnir from bot mode."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:18
-msgid "Draupnir for all is the way to go if you need more than 1 Draupnir instance, but you don't need access to Synapse Admin features as they are not accessible through Draupnir for All (Even though the commands do show up in help)."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:19
+msgid "Draupnir for all is the way to go if you need more than 1 Draupnir instance, but you don't need access to Synapse Admin features as they are not accessible through Draupnir for All."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:20
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:21
 msgid "Draupnir for all in the playbook is rate-limit-exempt automatically as its appservice configuration file does not specify any rate limits."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:22
-msgid "Normal Draupnir does come with the benefit of access to Synapse Admin features. You are also able to more easily customise your normal Draupnir than D4A as D4A even on the branch with the Avatar command (To be Upstreamed to Mainline Draupnir) that command is clunky as it requires the use of things like Element Web devtools. In normal Draupnir this is a quick operation where you login to Draupnir with a normal client and set Avatar and Display name normally."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:23
+msgid "Normal Draupnir does come with the benefit of access to Synapse Admin features. You are also able to more easily customise your normal Draupnir than D4A as the avatar command is clunky as it requires the use of things like Element Web devtools. In normal Draupnir this can be done while logged in to the Draupnir account with a normal client and set Avatar and Display name normally."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:24
-msgid "Draupnir for all does not support external tooling like [MRU](https://mru.rory.gay) as it can't access Draupnir's user account."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:25
+msgid "Draupnir for all only has limited support for external tooling like [MRU](https://mru.rory.gay) as it can't access Draupnir's user account."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:26
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:27
 msgid "Prerequisites"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:28
-msgid "Create a main management room"
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:29
+msgid "Prerequisites for Zero Touch Deployment (recommended)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:30
-msgid "The playbook does not create a management room for your Main Draupnir. You **need to create the room manually** before setting up the bot."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:31
+msgid "As of Draupnir 3.1.0, Zero Touch Deployment of Draupnir Appservice Mode (Draupnir for all) requires you to supply the following:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:32
-msgid "Note that the room must be unencrypted."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:33
+msgid "MXID of the first person who gets invited to the admin room that the bot creates for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:34
-msgid "The management room has to be given an alias, and your bot has to be invited to the room."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:35
+msgid "That is all. The appservice manages everything on its own after you provide it with an MXID to invite."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:36
-msgid "This management room is used to control who has access to your D4A deployment. The room stores this data inside of the control room state so your bot must have sufficient powerlevel to send custom state events. This is default 50 or moderator as Element clients call this powerlevel."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:37
+msgid "If proceeding with Zero Touch Deployment, skip ahead to [Adjusting the playbook configuration](#adjusting-the-playbook-configuration)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:38
-msgid "[!WARNING] Anyone in this room can control the bot so it is important that you only invite trusted users to this room."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:39
+msgid "Create an admin room (optional)"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:41
-msgid "Adjusting the playbook configuration"
+msgid "The playbook does not create an admin room for your Draupnir, but the appservice itself can do this for you. Alternatively, you **can create the room manually** before setting up the bot."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:43
-msgid "Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `MANAGEMENT_ROOM_ALIAS_HERE`."
+msgid "Note that the room must be unencrypted."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:51
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:45
+msgid "The admin room has to be given an alias, and your bot has to be invited to the room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:47
+msgid "This admin room is used to control who has access to your D4A deployment. The room stores this data in the control room state, so your bot must have sufficient power level to send custom state events. This is `50` by default (moderator, as Element clients call this power level)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:49
+msgid "[!WARNING] Anyone in this room can control the bot so it is important that you only invite trusted users to this room."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:52
+msgid "Adjusting the playbook configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:54
+msgid "When using Zero Touch Deployment, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `INITIAL_MANAGER_MXID_HERE` with the MXID of the user who should be invited to the admin room first."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:64
+msgid "If opting out of Zero Touch Deployment, use the following configuration block instead. Make sure to replace `MANAGEMENT_ROOM_ALIAS_HERE` with the alias of the admin room you have created earlier."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:72
 msgid "Running both bot mode and appservice mode"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:53
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:74
 msgid "When running both [bot mode](./configuring-playbook-bot-draupnir.md) and appservice mode, the playbook will force-restart the bot if running a non-release tag like `latest` or `main` or a development build. This is due to the conditional restart logic not being able to reliably tell when an update happened."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:57
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:78
 msgid "Conditional restarts work correctly for all tags when running only one of these two operating modes."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:59
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:80
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:61
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:82
 msgid "There are some additional things you may wish to configure about the component."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:63
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:84
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:65
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:86
 msgid "`roles/custom/matrix-appservice-draupnir-for-all/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_draupnir_for_all_configuration_extension_yaml` variable"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:67
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:88
 msgid "For example, to change Draupnir's `protectAllJoinedRooms` option to `true`, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:81
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:102
 msgid "You can refer to the upstream [documentation](https://github.com/the-draupnir-project/Draupnir) for more configuration documentation."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:83
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:98
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:104
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:119
 msgid "**Notes**:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:85
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:106
 msgid "The playbook ships a full copy of the example config that does transfer to provisioned Draupnirs in the production-bots.yaml.j2 file in the template directory of the role."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:87
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:108
 msgid "Config extension does not affect the appservices config as this config is not extensible in current Draupnir anyway. It instead touches the config passed to the Draupnirs that your Appservice creates. So the example above (`protectAllJoinedRooms: true`) makes all provisioned Draupnirs protect all joined rooms."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:89
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:110
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:91
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:112
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:100
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:121
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:102
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:123
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:104
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:125
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:106
-msgid "If you made it through all the steps above and your main control room was joined by a user called `@draupnir-main:example.com` you have successfully installed Draupnir for All and can now start using it."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:127
+msgid "If you made it through all the steps above and your main control room was joined by a user called `@draupnir-main:example.com`, you have successfully installed Draupnir for All and can now start using it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:108
-msgid "The installation of Draupnir for all in this playbook is very much Alpha quality. Usage-wise, Draupnir for all is almost identical to Draupnir bot mode."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:129
+msgid "If using Zero Touch Deployment, the flow is reversed and the success signal is the initial manager account being invited to the admin room."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:110
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:131
+msgid "Draupnir for all installation via this playbook is very much Alpha quality. Usage-wise, Draupnir for all is almost identical to Draupnir bot mode, except that protections requiring homeserver admin access are not available, and the config file is shared between all bots so legacy protections like wordlist share a single global config."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:133
 msgid "Granting Users the ability to use D4A"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:112
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:135
 msgid "Draupnir for all includes several security measures like that it only allows users that are on its allow list to ask for a bot. To add a user to this list we have 2 primary options. Using the chat to tell Draupnir to do this for us or if you want to automatically do it by sending `m.policy.rule.user` events that target the subject you want to allow provisioning for with the `org.matrix.mjolnir.allow` recommendation. Using the chat is recommended."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:114
-msgid "The bot requires a powerlevel of 50 in the management room to control who is allowed to use the bot. The bot does currently not say anything if this is true or false. (This is considered a bug and is documented in issue [#297](https://github.com/the-draupnir-project/Draupnir/issues/297))"
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:137
+msgid "The bot requires a power level of 50 in the management room to control who is allowed to use the bot. The bot does currently not say anything if this is true or false. (This is considered a bug and is documented in issue [#297](https://github.com/the-draupnir-project/Draupnir/issues/297).) This issue is largely mitigated by the Zero Touch Deployment workflows introduced in Draupnir 3.1.0."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:116
-msgid "To allow users or whole homeservers you type /plain !admin allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to register. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:139
+msgid "To allow users or whole homeservers you type /plain !admin allow `target` and target can be either a MXID or a wildcard like `@*:example.com` to allow all users on example.com to provision a bot. We use /plain to force the client to not attempt to mess with this command as it can break Wildcard commands especially."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:118
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:141
 msgid "How to provision a D4A once you are allowed to"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:120
-msgid "To provision a D4A, you need to start a chat with `@draupnir-main:example.com`. The bot will reject this invite and you will shortly get invited to the Draupnir control room for your newly provisioned Draupnir. From here its just a normal Draupnir experience."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:143
+msgid "Once someone is allowed to provision a bot, simply provision them one with `!admin provision MXID`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:122
-msgid "Congratulations if you made it all the way here because you now have a fully working Draupnir for all deployment."
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:145
+msgid "Self-service provisioning is disabled as a security measure because it is currently bugged. Force-provisioning (with `!admin provision`) bypasses this disabled status."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:147
+msgid "Note that you should always make sure there is an allow entry matching whoever is provisioned, because once self-service is fixed, the bot of anyone who is not allowed to provision a bot will refuse to start."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-appservice-draupnir-for-all.md:149
+msgid "Congratulations if you made it all the way here, because you now have a fully working Draupnir for all deployment."
 msgstr ""
