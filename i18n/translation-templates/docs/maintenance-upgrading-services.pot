@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 10:32+0000\n"
+"POT-Creation-Date: 2026-05-07 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,7 +73,7 @@ msgid "or: a combination of `git pull` and `just roles` (or `make roles` if you 
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:39
-msgid "If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`"
+msgid "If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly after updating the playbook: `git pull; rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`"
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:41
@@ -81,45 +81,69 @@ msgid "**Note**: for details about `just` commands, take a look at: [Running `ju
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:43
-msgid "Re-run the playbook setup"
+msgid "Acknowledge breaking changes if any"
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:45
-msgid "After updating the Ansible roles, then re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:"
+msgid "The playbook uses a migration validation system that ensures you are aware of breaking changes before they'll affect your deployment. If there is one, you are required to acknowledge each breaking change."
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:47
+msgid "Whenever a breaking change is introduced, the playbook will:"
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:49
+msgid "bump its expected version value (`matrix_playbook_migration_expected_version`), causing a discrepancy with what you validated (`matrix_playbook_migration_validated_version`)"
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:51
-msgid "If you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with the `setup-all` tag as below:"
+msgid "fail when you run it with a helpful message listing what changed and linking to the relevant changelog entries"
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:53
+msgid "After reviewing and adapting your setup, update the variable to the new version."
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:55
+msgid "Re-run the playbook setup"
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:57
-msgid "**Notes**:"
-msgstr ""
-
-#: ../../../docs/maintenance-upgrading-services.md:59
-msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account, if any."
-msgstr ""
-
-#: ../../../docs/maintenance-upgrading-services.md:61
-msgid "Our estimation is that running `--tags=install-all,start` is approximately from **2 to 5 times faster** than running `setup-all,ensure-matrix-users-created,start`. See [this entry](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) on `CHANGELOG.md` for more information."
+msgid "After updating the Ansible roles and the variable for the validation system when necessary, re-run the [playbook setup](installing.md#maintaining-your-setup-in-the-future) and restart all services:"
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:63
-msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`. Note these shortcuts run the `ensure-matrix-users-created` tag too."
-msgstr ""
-
-#: ../../../docs/maintenance-upgrading-services.md:65
-msgid "See [this page on the playbook tags](playbook-tags.md) for more information about those tags."
-msgstr ""
-
-#: ../../../docs/maintenance-upgrading-services.md:67
-msgid "PostgreSQL major version upgrade"
+msgid "If you remove components from `vars.yml`, or if we switch some component from being installed by default to not being installed by default anymore, you'd need to run the setup command with the `setup-all` tag as below:"
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:69
-msgid "Major version upgrades to the internal PostgreSQL database are not done automatically. Upgrades must be performed manually."
+msgid "**Notes**:"
 msgstr ""
 
 #: ../../../docs/maintenance-upgrading-services.md:71
+msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account, if any."
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:73
+msgid "Our estimation is that running `--tags=install-all,start` is approximately from **2 to 5 times faster** than running `setup-all,ensure-matrix-users-created,start`. See [this entry](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) on `CHANGELOG.md` for more information."
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:75
+msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`. Note these shortcuts run the `ensure-matrix-users-created` tag too."
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:77
+msgid "See [this page on the playbook tags](playbook-tags.md) for more information about those tags."
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:79
+msgid "PostgreSQL major version upgrade"
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:81
+msgid "Major version upgrades to the internal PostgreSQL database are not done automatically. Upgrades must be performed manually."
+msgstr ""
+
+#: ../../../docs/maintenance-upgrading-services.md:83
 msgid "For details about upgrading it, refer to the [upgrading PostgreSQL guide](maintenance-postgres.md#upgrading-postgresql)."
 msgstr ""
