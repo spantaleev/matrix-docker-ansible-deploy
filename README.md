@@ -4,7 +4,7 @@
 
 ## 🎯 Purpose
 
-This [Ansible](https://www.ansible.com/) playbook is meant to help you run your own [Matrix](http://matrix.org/) homeserver, along with the [various services](#supported-services) related to that.
+This [Ansible](https://www.ansible.com/) playbook is meant to help you run your own [Matrix](http://matrix.org/) homeserver, along with the [various services](#-supported-services) related to that.
 
 That is, it lets you join the Matrix network using your own user ID like `@alice:example.com`, all hosted on your own server (see [prerequisites](docs/prerequisites.md)).
 
