@@ -41,6 +41,8 @@ If you **don't** use SSH keys for authentication, but rather a regular password,
 
 If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands.
 
+If you use a password manager like `pass` or `gopass`, you can also add `ansible_become_password: "{{ lookup('community.general.passwordstore', 'path/to/password' }}"` to the hosts file. See the [documentation](https://docs.ansible.com/ansible/latest/collections/community/general/passwordstore_lookup.html) for more configuration options.
+
 There 2 ways to start the installation process — depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
 
 **Note**: if you are migrating from an old server to a new one, take a look at [this guide](maintenance-migrating.md) instead. This is an easier and more straightforward way than installing a server and importing old data into it.
