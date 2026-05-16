@@ -1,13 +1,13 @@
 <!--
-SPDX-FileCopyrightText: 2018 - 2023 Slavi Pantaleev
-SPDX-FileCopyrightText: 2018 - 2024 MDAD project contributors
 SPDX-FileCopyrightText: 2018 Aaron Raimist
+SPDX-FileCopyrightText: 2018-2023 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018-2024 MDAD project contributors
 SPDX-FileCopyrightText: 2019 Edgars Voroboks
 SPDX-FileCopyrightText: 2019 Michael Haak
 SPDX-FileCopyrightText: 2020 Kevin Lanni
-SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-FileCopyrightText: 2024 Mitja Jež
 SPDX-FileCopyrightText: 2024 Nikita Chernyi
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -149,6 +149,12 @@ After completing the installation, you can:
     For tuning guidance on constrained hosts, see [Limit joining heavy rooms on constrained hosts](configuring-playbook-synapse.md#limit-joining-heavy-rooms-on-constrained-hosts).
   * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
+
+### Installing native Matrix clients on your computer
+
+As the playbook's aim is to help you to install and manage Matrix services on your server, if you are looking for dedicated native Matrix clients which run on your computer, you need to install ones by yourself. There is a convenient list which introduces known Matrix clients on this page: <https://matrix.org/ecosystem/clients/>
+
+If you feel overwhelmed by the variety and the number of the available clients, you might want to install [**Komai**](https://github.com/etkecc/komai), a desktop-first Matrix chat application maintained by the team behind the playbook. It is stable, and just works without quirks!
 
 ### ⚠️ Keep the playbook and services up-to-date
 
