@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-15 09:10+0000\n"
+"POT-Creation-Date: 2026-05-18 07:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -117,21 +117,33 @@ msgid "and configuring their own Traefik TCP entrypoint dedicated to LiveKit TUR
 msgstr ""
 
 #: ../../../docs/configuring-playbook-livekit-server.md:64
-msgid "Limitations"
+msgid "TURN access controls"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-livekit-server.md:66
-msgid "LiveKit Server's TURN listener behavior depends on where TLS is terminated:"
+msgid "LiveKit's embedded TURN server enforces a credential TTL and restricts which peer CIDRs it will relay to. The playbook leaves these at the role's secure defaults, which are appropriate for typical deployments where TURN peers live on the public Internet."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-livekit-server.md:68
+msgid "If your setup needs TURN to relay to private/restricted ranges, or you want to override the credential TTL, see the [TURN access controls and credential TTL](https://github.com/mother-of-all-self-hosting/ansible-role-livekit-server/blob/main/docs/configuring-livekit-server.md#turn-access-controls-and-credential-ttl) section of the role's documentation."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:70
+msgid "Limitations"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:72
+msgid "LiveKit Server's TURN listener behavior depends on where TLS is terminated:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-livekit-server.md:74
 msgid "Direct LiveKit TURN listeners (`livekit_server_config_turn_external_tls: false`) still use IPv4-only sockets for `3479/udp` and `5350/tcp`, so IPv6 connectivity to these endpoints is not possible."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-livekit-server.md:69
+#: ../../../docs/configuring-playbook-livekit-server.md:75
 msgid "With [TURN TLS handling](#turn-tls-handling) (`livekit_server_config_turn_external_tls: true`), the playbook's dedicated `matrix-livekit-turn` TCP entrypoint can still listen on both IPv4 and IPv6. Traefik then forwards TURN/TCP to LiveKit."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-livekit-server.md:71
+#: ../../../docs/configuring-playbook-livekit-server.md:77
 msgid "It appears that LiveKit Server intentionally only listens on `udp4` and `tcp4` in direct mode, as seen [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L128) and [here](https://github.com/livekit/livekit/blob/154b4d26b769c68a03c096124094b97bf61a996f/pkg/service/turn.go#L92)."
 msgstr ""
