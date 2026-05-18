@@ -1,3 +1,25 @@
+# 2026-05-18
+
+## LiveKit Server has been upgraded to v1.12.0
+
+The playbook now ships [LiveKit Server](./docs/configuring-playbook-livekit-server.md) v1.12.0. See the [upstream release notes](https://github.com/livekit/livekit/releases/tag/v1.12.0) for details.
+
+This release tightens TURN security:
+
+- **TURN credentials now carry a TTL** (default: 300 seconds), exposed via `livekit_server_config_turn_ttl_seconds`.
+- **TURN no longer relays traffic to restricted peer CIDRs** (loopback, link-local, multicast, private, unspecified) by default. If your setup legitimately requires it, list the ranges in `livekit_server_config_turn_allow_restricted_peer_cidrs`.
+
+    For example, to allow TURN to reach the common [RFC1918](https://www.rfc-editor.org/rfc/rfc1918) private ranges, add to your `vars.yml`:
+    ```yaml
+    livekit_server_config_turn_allow_restricted_peer_cidrs:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+    ```
+
+    Adjust the ranges to match your network. To deny specific CIDRs (taking precedence over the allow list above), use `livekit_server_config_turn_deny_peer_cidrs` in the same shape.
+
+
 # 2026-05-07
 
 ## Tuwunel support

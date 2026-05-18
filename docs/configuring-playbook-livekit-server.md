@@ -61,6 +61,12 @@ livekit_server_container_labels_turn_traefik_entrypoints: "<your-livekit-turn-tr
 
 and configuring their own Traefik TCP entrypoint dedicated to LiveKit TURN traffic.
 
+## TURN access controls
+
+LiveKit's embedded TURN server enforces a credential TTL and restricts which peer CIDRs it will relay to. The playbook leaves these at the role's secure defaults, which are appropriate for typical deployments where TURN peers live on the public Internet.
+
+If your setup needs TURN to relay to private/restricted ranges, or you want to override the credential TTL, see the [TURN access controls and credential TTL](https://github.com/mother-of-all-self-hosting/ansible-role-livekit-server/blob/main/docs/configuring-livekit-server.md#turn-access-controls-and-credential-ttl) section of the role's documentation.
+
 ## Limitations
 
 LiveKit Server's TURN listener behavior depends on where TLS is terminated:
