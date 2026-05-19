@@ -31,7 +31,6 @@ Possibly outdated list of roles where self-building the Docker image is currentl
 - `hydrogen`
 - `cinny`
 - `sable`
-- `matrix-registration`
 - `coturn`
 - `matrix-corporal`
 - `exim-relay`
