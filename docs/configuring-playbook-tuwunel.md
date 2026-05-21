@@ -140,14 +140,15 @@ The S3 backend ships with native multipart upload, so no goofys/rclone sidecar i
 
 ### RocksDB and cache tuning
 
-Tuwunel embeds RocksDB. The defaults (`rocksdb_compression_algo: zstd`) suit most deployments. For high-throughput servers you may want to enable direct I/O, raise parallelism, and bump the cache modifier:
+Tuwunel embeds RocksDB. The defaults (`rocksdb_compression_algo: zstd`) suit most deployments. For high-throughput servers you may want to enable direct I/O, raise parallelism, and configure a backup path:
 
 ```yaml
 matrix_tuwunel_config_rocksdb_direct_io: true
 matrix_tuwunel_config_rocksdb_parallelism_threads: 8
-matrix_tuwunel_config_cache_capacity_modifier: 2.0
 matrix_tuwunel_config_database_backup_path: /var/lib/tuwunel/backups
 ```
+
+`matrix_tuwunel_config_cache_capacity_modifier` is left empty by default, so Tuwunel picks a value (`1.0` since v1.7.0, with rebalanced per-cache sizes that already raise memory use). Set it to `2.0` only on small hosts with four or fewer cores; on larger machines the default is recommended.
 
 If you run on ZFS, the [Tuwunel maintenance guide](https://matrix-construct.github.io/tuwunel/maintenance.html#zfs) lists the dataset properties (`recordsize`, `primarycache`, `compression`, `atime`, `logbias`) and config flags (`rocksdb_direct_io`, `rocksdb_allow_fallocate`) you need to adjust to avoid severe write amplification.
 
