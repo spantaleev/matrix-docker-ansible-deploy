@@ -23,6 +23,9 @@ matrix_bot_maubot_initial_password: ''
 
 matrix_bot_maubot_scheme: https
 matrix_bot_maubot_hostname: ''
+
+# The path at which maubot is exposed.
+# This value must either be `/` or not end with a slash (e.g. `/_matrix/maubot`).
 matrix_bot_maubot_path_prefix: /_matrix/maubot
 
 matrix_bot_maubot_container_image_self_build: false
@@ -58,9 +61,9 @@ matrix_bot_maubot_container_src_files_path: "{{ matrix_bot_maubot_base_path }}/d
 matrix_bot_maubot_customized_container_src_files_path: "{{ matrix_bot_maubot_base_path }}/customized-docker-src"
 
 matrix_bot_maubot_bot_server_public_url: "{{ matrix_bot_maubot_scheme }}://{{ matrix_bot_maubot_hostname }}"
-matrix_bot_maubot_bot_server_base_path: "{{ matrix_bot_maubot_path_prefix }}/v1"
+matrix_bot_maubot_bot_server_base_path: "{{ '' if matrix_bot_maubot_path_prefix == '/' else matrix_bot_maubot_path_prefix }}/v1"
 matrix_bot_maubot_bot_server_ui_base_path: "{{ matrix_bot_maubot_path_prefix }}"
-matrix_bot_maubot_bot_server_plugin_base_path: "{{ matrix_bot_maubot_path_prefix }}/plugin/"
+matrix_bot_maubot_bot_server_plugin_base_path: "{{ '' if matrix_bot_maubot_path_prefix == '/' else matrix_bot_maubot_path_prefix }}/plugin/"
 matrix_bot_maubot_bot_server_appservice_base_path: "{{ matrix_bot_maubot_bot_server_base_path }}"
 
 matrix_bot_maubot_proxy_management_interface: true
