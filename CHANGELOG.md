@@ -1,3 +1,11 @@
+# 2026-05-24
+
+## matrix-ldap-registration-proxy has been removed from the playbook
+
+The [matrix-ldap-registration-proxy](./docs/configuring-playbook-matrix-ldap-registration-proxy.md) service has been removed from the playbook, as the source code and the container image have become unavailable.
+
+The playbook will let you know if you're using any `matrix_ldap_registration_proxy_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-matrix-ldap-registration-proxy.md#uninstalling-the-component-manually).
+
 # 2026-05-23
 
 ## Go-NEB has been removed from the playbook
