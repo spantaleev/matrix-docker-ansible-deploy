@@ -711,6 +711,18 @@
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-ldap-registration-proxy variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-ldap-registration-proxy was completely removed from the playbook in May 2026.
+
+      Please remove all `matrix_ldap_registration_proxy_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-matrix-ldap-registration-proxy.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_ldap_registration_proxy_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_ldap_registration_proxy_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report mautrix-facebook variables
   ansible.builtin.fail:
     msg: |-
