@@ -112,8 +112,6 @@ Extend and modify how users are authenticated on your homeserver.
 
 - [Setting up the LDAP authentication password provider module](configuring-playbook-ldap-auth.md) (advanced)
 
-- [Setting up matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) (advanced)
-
 - [Setting up Synapse Simple Antispam](configuring-playbook-synapse-simple-antispam.md) (advanced)
 
 - [Setting up Matrix User Verification Service](configuring-playbook-user-verification-service.md) (advanced)
@@ -278,6 +276,8 @@ Various services that don't fit any other categories.
 - [Setting up ma1sd Identity Server](configuring-playbook-ma1sd.md) (removed; this component has been unmaintained for a long time, so it has been removed from the playbook.)
 
 - [Setting up matrix-bot-chatgpt](configuring-playbook-bot-chatgpt.md) (unmaintained; the bridge's author suggests taking a look at [baibot](https://github.com/etkecc/baibot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bot-baibot.md))
+
+- [Setting up matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) (removed; the repository of the source code has been removed)
 
 - [Setting up matrix-registration](configuring-playbook-matrix-registration.md) (removed; this component has been unmaintained)
 
