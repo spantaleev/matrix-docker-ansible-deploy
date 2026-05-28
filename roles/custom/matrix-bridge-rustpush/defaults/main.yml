@@ -6,16 +6,16 @@
 # matrix-bridge-rustpush is a Matrix <-> iMessage bridge using RustPush
 # Project source code URL: https://github.com/jasonlaguidice/imessage
 
-matrix_rustpush_bridge_enabled: true
+matrix_rustpush_bridge_enabled: false
 
-# No upstream Docker image exists; self-build is always required.
-matrix_rustpush_bridge_container_image_self_build: true
+matrix_rustpush_bridge_container_image_self_build: false
 matrix_rustpush_bridge_container_image_self_build_repo: "https://github.com/jasonlaguidice/imessage.git"
 matrix_rustpush_bridge_container_image_self_build_repo_version: "{{ 'master' if matrix_rustpush_bridge_version == 'latest' else matrix_rustpush_bridge_version }}"
 
+# Adjust to pin to releases
 matrix_rustpush_bridge_version: latest
 matrix_rustpush_bridge_docker_image: "{{ matrix_rustpush_bridge_docker_image_registry_prefix }}jasonlaguidice/imessage:{{ matrix_rustpush_bridge_version }}"
-matrix_rustpush_bridge_docker_image_registry_prefix: "localhost/"
+matrix_rustpush_bridge_docker_image_registry_prefix: "ghcr.io/"
 matrix_rustpush_bridge_docker_image_force_pull: "{{ matrix_rustpush_bridge_docker_image.endswith(':latest') }}"
 
 matrix_rustpush_bridge_base_path: "{{ matrix_base_data_path }}/rustpush-bridge"
@@ -40,7 +40,14 @@ matrix_rustpush_bridge_appservice_public_address: ''
 # {{.Phone}}, {{.Email}}, {{.ID}}
 matrix_rustpush_bridge_network_displayname_template: "{% raw %}{{if .FirstName}}{{.FirstName}}{{if .LastName}} {{.LastName}}{{end}}{{else if .Nickname}}{{.Nickname}}{{else if .Phone}}{{.Phone}}{{else if .Email}}{{.Email}}{{else}}{{.ID}}{{end}}{% endraw %}"
 
-matrix_rustpush_bridge_bridge_command_prefix: "!imessage"
+matrix_rustpush_bridge_cloudkit_backfill: true
+matrix_rustpush_bridge_video_transcoding: true
+matrix_rustpush_bridge_heic_conversion: true
+matrix_rustpush_bridge_disable_facetime: false
+matrix_rustpush_bridge_statuskit_notifications: true
+matrix_rustpush_bridge_statuskit_share_on_startup: true
+
+matrix_rustpush_bridge_bridge_command_prefix: "!im"
 
 matrix_rustpush_bridge_bridge_permissions: |
   {{

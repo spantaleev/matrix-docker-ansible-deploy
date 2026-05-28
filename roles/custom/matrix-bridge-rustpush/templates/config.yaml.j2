@@ -10,6 +10,24 @@ network:
     # Default is 365 (1 year). Set to 0 to use the default.
     initial_sync_days: {{ matrix_rustpush_bridge_initial_sync_days | to_json }}
 
+    # Set to false to disable CloudKit backfill globally
+    cloudkit_backfill: {{ matrix_rustpush_bridge_cloudkit_backfill | to_json }}
+    backfill_source: cloudkit
+
+    # Enable or disable video transcoding
+    video_transcoding: {{ matrix_rustpush_bridge_video_transcoding | to_json }}
+
+    # Enable or disable HEIC conversion
+    heic_conversion: {{ matrix_rustpush_bridge_heic_conversion | to_json }}
+    heic_jpeg_quality: 95
+
+    # Set to true to disable Facetime support globally
+    disable_facetime: {{ matrix_rustpush_bridge_disable_facetime | to_json }}
+
+    # Set to false to disable Statuskit support globally
+    statuskit_notifications: {{ matrix_rustpush_bridge_statuskit_notifications | to_json }}
+    statuskit_share_on_startup: {{ matrix_rustpush_bridge_statuskit_share_on_startup | to_json }}
+
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
