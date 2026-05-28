@@ -26,11 +26,12 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--mount type=bind,src={{ matrix_rustpush_bridge_config_path }},dst=/config,ro \
 			--mount type=bind,src={{ matrix_rustpush_bridge_data_path }},dst=/data \
 			--label-file={{ matrix_rustpush_bridge_base_path }}/labels \
+			--entrypoint /usr/local/bin/mautrix-imessage-v2 \
 			{% for arg in matrix_rustpush_bridge_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_rustpush_bridge_docker_image }} \
-			/usr/bin/mautrix-imessage-v2 -c /config/config.yaml -r /config/registration.yaml --no-update
+			-c /config/config.yaml -r /config/registration.yaml
 
 {% for network in matrix_rustpush_bridge_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-rustpush-bridge
