@@ -8,11 +8,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
-The playbook can install and configure [mautrix-imessage with RustPush](https://github.com/lrhodin/imessage) for you, which provides a bridge to [iMessage](https://support.apple.com/messages) using Apple's push notification service (no Mac needed at runtime).
+The playbook can install and configure [rustpush to bridge iMessage](https://github.com/jasonlaguidice/imessage) for you using Apple's push notification service (no Mac needed at runtime).
 
-See the project's [documentation](https://github.com/lrhodin/imessage/blob/main/README.md) to learn what it does and why it might be useful to you.
-
-**Note**: This bridge is built from source (no pre-built Docker image exists). The build process requires Rust, Go, and C toolchains, which means the initial build will take significant time and resources.
+See the project's [documentation](https://github.com/jasonlaguidice/imessage/blob/main/README.md) to learn what it does and why it might be useful to you.
 
 ## Prerequisites
 
@@ -20,7 +18,7 @@ See the project's [documentation](https://github.com/lrhodin/imessage/blob/main/
 
 To use this bridge on Linux (Docker), you need a **hardware key** extracted from a real Mac. This key contains hardware identifiers needed for iMessage registration.
 
-The key is entered interactively through the bridge bot's login flow (not configured via Ansible variables). See the upstream [README](https://github.com/lrhodin/imessage/blob/main/README.md) for instructions on extracting the key.
+The key is entered interactively through the bridge bot's login flow (not configured via Ansible variables). See the upstream [README](https://github.com/jasonlaguidice/imessage/blob/main/README.md) for instructions on extracting the key.
 
 ### Enable Appservice Double Puppet (optional)
 
@@ -38,11 +36,10 @@ matrix_rustpush_bridge_enabled: true
 
 ### Backfill (optional)
 
-Backfill is disabled by default because Linux Docker cannot access the macOS `chat.db` file. If you are running on macOS with Full Disk Access, you can enable it:
+Backfill can be disabled globally if desired via config. Backfill from chat.db is disabled Linux Docker cannot access the macOS `chat.db` file.
 
 ```yaml
-matrix_rustpush_bridge_backfill_enabled: true
-matrix_rustpush_bridge_initial_sync_days: 365
+matrix_rustpush_bridge_backfill_enabled: false
 ```
 
 ### Extending the configuration
@@ -71,11 +68,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ## Usage
 
 To use the bridge, you need to start a chat with `@imessagebot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
-
-The bridge supports two login flows:
-
-1. **External Key Login** (Linux/Docker): Enter your hardware key (base64), then Apple ID credentials and 2FA code.
-2. **Apple ID Login** (macOS only): Enter Apple ID credentials and 2FA code directly.
 
 After logging in, the bridge will start receiving iMessages and creating portal rooms.
 
