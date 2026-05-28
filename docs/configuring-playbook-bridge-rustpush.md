@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2025 MDAD project contributors
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Setting up iMessage RustPush bridging (optional)
+# Setting up RustPush bridging (optional)
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
@@ -33,7 +33,7 @@ See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_imessage_rustpush_enabled: true
+matrix_rustpush_bridge_enabled: true
 ```
 
 ### Backfill (optional)
@@ -41,8 +41,8 @@ matrix_imessage_rustpush_enabled: true
 Backfill is disabled by default because Linux Docker cannot access the macOS `chat.db` file. If you are running on macOS with Full Disk Access, you can enable it:
 
 ```yaml
-matrix_imessage_rustpush_backfill_enabled: true
-matrix_imessage_rustpush_initial_sync_days: 365
+matrix_rustpush_bridge_backfill_enabled: true
+matrix_rustpush_bridge_initial_sync_days: 365
 ```
 
 ### Extending the configuration
@@ -81,7 +81,7 @@ After logging in, the bridge will start receiving iMessages and creating portal 
 
 ## Troubleshooting
 
-As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-imessage-rustpush`.
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-rustpush-bridge`.
 
 ### Increase logging verbosity
 
@@ -89,5 +89,5 @@ The default logging level for this component is `warn`. If you want to increase 
 
 ```yaml
 # Valid values: fatal, error, warn, info, debug, trace
-matrix_imessage_rustpush_logging_level: 'debug'
+matrix_rustpush_bridge_logging_level: 'debug'
 ```

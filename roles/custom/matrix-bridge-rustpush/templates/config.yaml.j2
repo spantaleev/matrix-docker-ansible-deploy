@@ -4,16 +4,16 @@ network:
     # Displayname template for iMessage contacts.
     # Available variables: {{.FirstName}}, {{.LastName}}, {{.Nickname}},
     # {{.Phone}}, {{.Email}}, {{.ID}}
-    displayname_template: {{ matrix_imessage_rustpush_network_displayname_template | to_json }}
+    displayname_template: {{ matrix_rustpush_bridge_network_displayname_template | to_json }}
 
     # How many days back to look for chats during initial sync.
     # Default is 365 (1 year). Set to 0 to use the default.
-    initial_sync_days: {{ matrix_imessage_rustpush_initial_sync_days | to_json }}
+    initial_sync_days: {{ matrix_rustpush_bridge_initial_sync_days | to_json }}
 
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: {{ matrix_imessage_rustpush_bridge_command_prefix | to_json }}
+    command_prefix: {{ matrix_rustpush_bridge_bridge_command_prefix | to_json }}
     # Should the bridge create a space for each login containing the rooms that account is in?
     personal_filtering_spaces: true
     # Whether the bridge should set names and avatars explicitly for DM portals.
@@ -65,12 +65,12 @@ bridge:
         displayname_format: "{% raw %}{{ .DisambiguatedName }}{% endraw %}"
 
     # Permissions for using the bridge.
-    permissions: {{ matrix_imessage_rustpush_bridge_permissions | to_json }}
+    permissions: {{ matrix_rustpush_bridge_bridge_permissions | to_json }}
 
 # Config for the bridge's database.
 database:
     type: postgres
-    uri: {{ matrix_imessage_rustpush_database_uri | to_json }}
+    uri: {{ matrix_rustpush_bridge_database_uri | to_json }}
     max_open_conns: 5
     max_idle_conns: 1
     max_conn_idle_time: null
@@ -78,34 +78,34 @@ database:
 
 # Homeserver details.
 homeserver:
-    address: {{ matrix_imessage_rustpush_homeserver_address | to_json }}
-    domain: {{ matrix_imessage_rustpush_homeserver_domain | to_json }}
+    address: {{ matrix_rustpush_bridge_homeserver_address | to_json }}
+    domain: {{ matrix_rustpush_bridge_homeserver_domain | to_json }}
     software: standard
     status_endpoint:
     message_send_checkpoint_endpoint:
-    async_media: {{ matrix_imessage_rustpush_homeserver_async_media | to_json }}
+    async_media: {{ matrix_rustpush_bridge_homeserver_async_media | to_json }}
     websocket: false
     ping_interval_seconds: 0
 
 # Application service host/registration related details.
 appservice:
-    address: {{ matrix_imessage_rustpush_appservice_address | to_json }}
-    public_address: {{ matrix_imessage_rustpush_appservice_public_address | to_json }}
+    address: {{ matrix_rustpush_bridge_appservice_address | to_json }}
+    public_address: {{ matrix_rustpush_bridge_appservice_public_address | to_json }}
 
     hostname: 0.0.0.0
     port: 8081
 
-    id: imessage-rustpush
+    id: rustpush-bridge
     bot:
-        username: {{ matrix_imessage_rustpush_appservice_bot_username | to_json }}
-        displayname: {{ matrix_imessage_rustpush_appservice_bot_displayname | to_json(ensure_ascii=False) }}
-        avatar: {{ matrix_imessage_rustpush_appservice_bot_avatar | to_json }}
+        username: {{ matrix_rustpush_bridge_appservice_bot_username | to_json }}
+        displayname: {{ matrix_rustpush_bridge_appservice_bot_displayname | to_json(ensure_ascii=False) }}
+        avatar: {{ matrix_rustpush_bridge_appservice_bot_avatar | to_json }}
 
     ephemeral_events: true
     async_transactions: false
 
-    as_token: {{ matrix_imessage_rustpush_appservice_token | to_json }}
-    hs_token: {{ matrix_imessage_rustpush_homeserver_token | to_json }}
+    as_token: {{ matrix_rustpush_bridge_appservice_token | to_json }}
+    hs_token: {{ matrix_rustpush_bridge_homeserver_token | to_json }}
 
     # Localpart template of MXIDs for remote users.
     username_template: "{% raw %}imessage_{{.}}{% endraw %}"
@@ -116,7 +116,7 @@ matrix:
     delivery_receipts: false
     message_error_notices: true
     sync_direct_chat_list: true
-    federate_rooms: {{ matrix_imessage_rustpush_matrix_federate_rooms | to_json }}
+    federate_rooms: {{ matrix_rustpush_bridge_matrix_federate_rooms | to_json }}
     upload_file_threshold: 5242880
 
 # Segment-compatible analytics endpoint for tracking some events.
@@ -128,15 +128,15 @@ analytics:
 # Settings for provisioning API
 provisioning:
     prefix: /_matrix/provision
-    shared_secret: {{ matrix_imessage_rustpush_provisioning_shared_secret | to_json }}
+    shared_secret: {{ matrix_rustpush_bridge_provisioning_shared_secret | to_json }}
     allow_matrix_auth: true
     debug_endpoints: false
 
 # Settings for backfilling messages.
 backfill:
-    enabled: {{ matrix_imessage_rustpush_backfill_enabled | to_json }}
-    max_initial_messages: {{ matrix_imessage_rustpush_backfill_max_initial_messages | to_json }}
-    max_catchup_messages: {{ matrix_imessage_rustpush_backfill_max_catchup_messages | to_json }}
+    enabled: {{ matrix_rustpush_bridge_backfill_enabled | to_json }}
+    max_initial_messages: {{ matrix_rustpush_bridge_backfill_max_initial_messages | to_json }}
+    max_catchup_messages: {{ matrix_rustpush_bridge_backfill_max_catchup_messages | to_json }}
     unread_hours_threshold: 720
     threads:
         max_initial_messages: 50
@@ -151,18 +151,18 @@ backfill:
 double_puppet:
     servers: {}
     allow_discovery: false
-    secrets: {{ matrix_imessage_rustpush_double_puppet_secrets | to_json }}
+    secrets: {{ matrix_rustpush_bridge_double_puppet_secrets | to_json }}
 
 # End-to-bridge encryption support options.
 encryption:
-    allow: {{ matrix_imessage_rustpush_bridge_encryption_allow | to_json }}
-    default: {{ matrix_imessage_rustpush_bridge_encryption_default | to_json }}
-    require: {{ matrix_imessage_rustpush_bridge_encryption_require | to_json }}
-    appservice: {{ matrix_imessage_rustpush_bridge_encryption_appservice | to_json }}
-    msc4190: {{ matrix_imessage_rustpush_msc4190_enabled | to_json }}
-    self_sign: {{ matrix_imessage_rustpush_self_sign_enabled | to_json }}
-    allow_key_sharing: {{ matrix_imessage_rustpush_bridge_encryption_key_sharing_allow | to_json }}
-    pickle_key: {{ matrix_imessage_rustpush_bridge_encryption_pickle_key | to_json }}
+    allow: {{ matrix_rustpush_bridge_bridge_encryption_allow | to_json }}
+    default: {{ matrix_rustpush_bridge_bridge_encryption_default | to_json }}
+    require: {{ matrix_rustpush_bridge_bridge_encryption_require | to_json }}
+    appservice: {{ matrix_rustpush_bridge_bridge_encryption_appservice | to_json }}
+    msc4190: {{ matrix_rustpush_bridge_msc4190_enabled | to_json }}
+    self_sign: {{ matrix_rustpush_bridge_self_sign_enabled | to_json }}
+    allow_key_sharing: {{ matrix_rustpush_bridge_bridge_encryption_key_sharing_allow | to_json }}
+    pickle_key: {{ matrix_rustpush_bridge_bridge_encryption_pickle_key | to_json }}
     delete_keys:
         delete_outbound_on_ack: false
         dont_store_outbound: false
@@ -184,7 +184,7 @@ encryption:
 
 # Logging config.
 logging:
-    min_level: {{ matrix_imessage_rustpush_logging_level | to_json }}
+    min_level: {{ matrix_rustpush_bridge_logging_level | to_json }}
     writers:
         - type: stdout
           format: pretty-colored

@@ -1,0 +1,115 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Ensure RustPush paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: 0750
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - {path: "{{ matrix_rustpush_bridge_base_path }}", when: true}
+    - {path: "{{ matrix_rustpush_bridge_config_path }}", when: true}
+    - {path: "{{ matrix_rustpush_bridge_data_path }}", when: true}
+    - {path: "{{ matrix_rustpush_bridge_docker_src_files_path }}", when: "{{ matrix_rustpush_bridge_container_image_self_build }}"}
+  when: item.when | bool
+
+- name: Ensure RustPush repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_rustpush_bridge_container_image_self_build_repo }}"
+    version: "{{ matrix_rustpush_bridge_container_image_self_build_repo_version }}"
+    dest: "{{ matrix_rustpush_bridge_docker_src_files_path }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_name }}"
+  register: matrix_rustpush_bridge_git_pull_results
+  when: "matrix_rustpush_bridge_enabled | bool and matrix_rustpush_bridge_container_image_self_build"
+
+- name: Ensure RustPush Dockerfile is installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/Dockerfile.j2"
+    dest: "{{ matrix_rustpush_bridge_docker_src_files_path }}/Dockerfile"
+    mode: 0640
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  when: "matrix_rustpush_bridge_enabled | bool and matrix_rustpush_bridge_container_image_self_build | bool"
+
+- name: Ensure RustPush Docker image is built
+  community.docker.docker_image:
+    name: "{{ matrix_rustpush_bridge_docker_image }}"
+    source: build
+    force_source: "{{ matrix_rustpush_bridge_git_pull_results.changed if matrix_rustpush_bridge_git_pull_results is defined else true }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ matrix_rustpush_bridge_docker_src_files_path }}"
+      pull: true
+  register: matrix_rustpush_bridge_container_image_build_result
+  when: "matrix_rustpush_bridge_enabled | bool and matrix_rustpush_bridge_container_image_self_build | bool"
+
+- name: Ensure RustPush container image is pulled
+  community.docker.docker_image:
+    name: "{{ matrix_rustpush_bridge_docker_image }}"
+    source: pull
+    force_source: "{{ matrix_rustpush_bridge_container_image_force_pull if matrix_rustpush_bridge_container_image_force_pull is defined else true }}"
+  register: matrix_rustpush_bridge_container_image_pull_result
+  when: "matrix_rustpush_bridge_enabled | bool and not matrix_rustpush_bridge_container_image_self_build | bool"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Ensure rustpush-bridge config.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_rustpush_bridge_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_rustpush_bridge_config_path }}/config.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_rustpush_bridge_config_result
+
+- name: Ensure rustpush-bridge registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_rustpush_bridge_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_rustpush_bridge_config_path }}/registration.yaml"
+    mode: 0644
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_rustpush_bridge_registration_result
+
+- name: Ensure rustpush-bridge support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_rustpush_bridge_base_path }}/{{ item }}"
+    mode: 0640
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - labels
+  register: matrix_rustpush_bridge_support_files_result
+
+- name: Ensure matrix-rustpush-bridge container network is created
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_rustpush_bridge_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Ensure matrix-rustpush-bridge.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-rustpush-bridge.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-rustpush-bridge.service"
+    mode: 0644
+  register: matrix_rustpush_bridge_systemd_service_result
+
+- name: Determine whether matrix-rustpush-bridge needs a restart
+  ansible.builtin.set_fact:
+    matrix_rustpush_bridge_restart_necessary: >-
+      {{
+        matrix_rustpush_bridge_config_result.changed | default(false)
+        or matrix_rustpush_bridge_registration_result.changed | default(false)
+        or matrix_rustpush_bridge_support_files_result.changed | default(false)
+        or matrix_rustpush_bridge_systemd_service_result.changed | default(false)
+        or matrix_rustpush_bridge_container_image_pull_result.changed | default(false)
+        or matrix_rustpush_bridge_container_image_build_result.changed | default(false)
+      }}
