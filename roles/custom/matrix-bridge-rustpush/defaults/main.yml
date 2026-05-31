@@ -93,6 +93,19 @@ matrix_rustpush_bridge_container_labels_additional_labels: ''
 # A list of extra arguments to pass to the container
 matrix_rustpush_bridge_container_extra_arguments: []
 
+# Override the Rust log filter passed to the bridge container via RUST_LOG.
+# Leave empty to use the bridge's built-in default
+# ("warn,rustpush=warn,rustpushgo=info,open_absinthe=info").
+#
+# Useful values:
+#   "warn,rustpushgo=info,open_absinthe=debug"   # NAC emulator diagnostics (_enc field sizes, etc.)
+#   "warn,rustpushgo=info,open_absinthe=debug,rustpush=info"  # + upstream rustpush internals
+#   "debug"                                       # everything (very chatty)
+#
+# The open_absinthe crate logs NAC hardware-key diagnostics at INFO and emulator
+# state at DEBUG. These are suppressed by default to reduce log noise.
+matrix_rustpush_bridge_rust_log: ""
+
 # List of systemd services that matrix-rustpush-bridge.service depends on.
 matrix_rustpush_bridge_systemd_required_services_list: "{{ matrix_rustpush_bridge_systemd_required_services_list_default + matrix_rustpush_bridge_systemd_required_services_list_auto + matrix_rustpush_bridge_systemd_required_services_list_custom }}"
 matrix_rustpush_bridge_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"

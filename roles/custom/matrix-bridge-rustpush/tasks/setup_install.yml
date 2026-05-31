@@ -47,6 +47,9 @@
       dockerfile: Dockerfile
       path: "{{ matrix_rustpush_bridge_docker_src_files_path }}"
       pull: true
+      args:
+        BUILD_VERSION: "{{ matrix_rustpush_bridge_container_image_self_build_repo_version }}"
+        BUILD_COMMIT: "{{ matrix_rustpush_bridge_git_pull_results.after[:8] if matrix_rustpush_bridge_git_pull_results is defined and matrix_rustpush_bridge_git_pull_results.after is defined else 'unknown' }}"
   register: matrix_rustpush_bridge_container_image_build_result
   when: "matrix_rustpush_bridge_enabled | bool and matrix_rustpush_bridge_container_image_self_build | bool"
 
