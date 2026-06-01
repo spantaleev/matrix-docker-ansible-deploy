@@ -24,8 +24,8 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--cap-drop=ALL \
 			--network={{ matrix_rustpush_bridge_container_network }} \
 			--env HOME=/data \
-			{% if matrix_rustpush_bridge_rust_log %}--env RUST_LOG={{ matrix_rustpush_bridge_rust_log }} \{% endif %}
-			--mount type=bind,src={{ matrix_rustpush_bridge_config_path }},dst=/config \
+{% if matrix_rustpush_bridge_rust_log %}			--env RUST_LOG={{ matrix_rustpush_bridge_rust_log }} \
+{% endif %}			--mount type=bind,src={{ matrix_rustpush_bridge_config_path }},dst=/config \
 			--mount type=bind,src={{ matrix_rustpush_bridge_data_path }},dst=/data \
 			--label-file={{ matrix_rustpush_bridge_base_path }}/labels \
 			--entrypoint /usr/local/bin/matrix-rustpush \
