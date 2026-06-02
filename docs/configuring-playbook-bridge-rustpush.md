@@ -4,11 +4,11 @@ SPDX-FileCopyrightText: 2025 MDAD project contributors
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
-# Setting up RustPush bridging (optional)
+# Setting up RustPush (iMessage) bridging (optional)
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
-The playbook can install and configure [rustpush to bridge iMessage](https://github.com/jasonlaguidice/imessage) for you using Apple's push notification service (no Mac needed at runtime).
+The playbook can install and configure [rustpush to bridge iMessage](https://github.com/jasonlaguidice/imessage) for you using Apple's push notification service.
 
 See the project's [documentation](https://github.com/jasonlaguidice/imessage/blob/main/README.md) to learn what it does and why it might be useful to you.
 
@@ -19,6 +19,12 @@ See the project's [documentation](https://github.com/jasonlaguidice/imessage/blo
 To use this bridge on Linux (Docker), you need a **hardware key** extracted from a real Mac. This key contains hardware identifiers needed for iMessage registration.
 
 The key is entered interactively through the bridge bot's login flow (not configured via Ansible variables). See the upstream [README](https://github.com/jasonlaguidice/imessage/blob/main/README.md) for instructions on extracting the key.
+
+If extracted from an Intel Mac, the Mac does not need to remain running after the key is extracted for this bridge to work. Apple Silicon Macs must run a NAC relay.
+
+### Phone Number Registration (optional)
+
+This bridge can **not** do phone number registration (PNR). The only way to have your phone number registered and used (instead of an Apple ID e-mail address) is to have an iPhone connected to your Apple account. Reference the [BlueBubbles Phone Number Registration Guide](https://docs.bluebubbles.app/server/advanced/registering-a-phone-number-with-your-imessage-account) for information on how to set this up.
 
 ### Enable Appservice Double Puppet (optional)
 
@@ -34,15 +40,15 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 matrix_rustpush_bridge_enabled: true
 ```
 
-### Backfill (optional)
+### Disable Backfill (optional)
 
-Backfill can be disabled globally if desired via config. Backfill from chat.db is disabled Linux Docker cannot access the macOS `chat.db` file.
+Backfill can be disabled globally if desired via config. By default, the bridge will backfill from iCloud (CloudKit) and APNS if available. Backfill from `chat.db` is only possible when the bridge is running on MacOS.
 
 ```yaml
 matrix_rustpush_bridge_backfill_enabled: false
 ```
 
-### Extending the configuration
+### Extending the Configuration
 
 There are some additional things you may wish to configure about the bridge.
 
@@ -63,13 +69,21 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-- The first run will take longer than usual because the Docker image is built from source (Rust + Go compilation).
-
 ## Usage
 
 To use the bridge, you need to start a chat with `@imessagebot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 After logging in, the bridge will start receiving iMessages and creating portal rooms.
+
+## Interference With Mautrix-iMessage & WSproxy
+
+By default, this bridge uses the same bot user name (`@imessagebot:example.com`) and same localpart for puppet users (`imessage_{{.}}`) as the mautrix-imessage bridge. If you use this bridge on your homeserver have a few options:
+
+1.  Change the bot and appservice name templates:
+
+    Set `matrix_rustpush_bridge_appservice_bot_username` and to a non-default value `matrix_rustpush_bridge_appservice_username_template`
+
+2. After deactivating mautrix-imessage, delete the bot user and all its portal rooms from the database, then re-start the server (more difficult)
 
 ## Troubleshooting
 
@@ -82,4 +96,7 @@ The default logging level for this component is `warn`. If you want to increase 
 ```yaml
 # Valid values: fatal, error, warn, info, debug, trace
 matrix_rustpush_bridge_logging_level: 'debug'
+
+# Enable debug logging for RustPush
+matrix_rustpush_bridge_rust_log: "warn,rustpushgo=info,openabsinthe=debug"
 ```
