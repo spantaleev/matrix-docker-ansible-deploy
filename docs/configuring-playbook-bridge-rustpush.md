@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
-The playbook can install and configure [rustpush to bridge iMessage](https://github.com/jasonlaguidice/imessage) for you using Apple's push notification service.
+The playbook can install and configure [rustpush bridge to iMessage](https://github.com/jasonlaguidice/imessage) for you using Apple's push notification service.
 
 See the project's [documentation](https://github.com/jasonlaguidice/imessage/blob/main/README.md) to learn what it does and why it might be useful to you.
 
