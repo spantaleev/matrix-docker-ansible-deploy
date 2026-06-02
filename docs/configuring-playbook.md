@@ -158,6 +158,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Mautrix wsproxy for bridging Android SMS or Apple iMessage](configuring-playbook-bridge-mautrix-wsproxy.md)
 
+- [Setting up RustPush (iMessage) bridging](configuring-playbook-bridge-rustpush.md)
+
 - [Setting up Appservice IRC bridging](configuring-playbook-bridge-appservice-irc.md)
 
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md)
