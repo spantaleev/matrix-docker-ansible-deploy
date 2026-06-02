@@ -6,7 +6,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 # Setting up RustPush (iMessage) bridging (optional)
-
+## \*\*\* THIS BRIDGE IS IN EARLY DEVELOPMENT \*\*\*
+Be warned, here be ~~dragons~~ bugs. Your use, testing, and feedback of this bridge is appreciated. It may not be desirable to deploy this to a large number of users due to possible stability issues
+<hr>
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
 The playbook can install and configure [rustpush bridge to iMessage](https://github.com/jasonlaguidice/imessage) for you using Apple's push notification service.
@@ -17,11 +19,11 @@ See the project's [documentation](https://github.com/jasonlaguidice/imessage/blo
 
 ### Hardware Key Extraction
 
-To use this bridge on Linux (Docker), you need a **hardware key** extracted from a real Mac. This key contains hardware identifiers needed for iMessage registration.
+To use this bridge on Linux (Docker), each user needs a **hardware key** extracted from a real Mac. This key contains hardware identifiers needed for iMessage registration. Hardware keys can be shared by a number of users (approximately 20) before causing issues with Apple.
 
 The key is entered interactively through the bridge bot's login flow (not configured via Ansible variables). See the upstream [README](https://github.com/jasonlaguidice/imessage/blob/main/README.md) for instructions on extracting the key.
 
-If extracted from an Intel Mac, the Mac does not need to remain running after the key is extracted for this bridge to work. Apple Silicon Macs must run a NAC relay.
+If extracted from an Intel Mac, the Mac does not need to remain running after the key is extracted for this bridge to work. Apple Silicon Macs must run a NAC relay and thus must remain running.
 
 ### Phone Number Registration (optional)
 
