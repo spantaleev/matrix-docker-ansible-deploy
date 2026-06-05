@@ -49,6 +49,7 @@
   until: matrix_sygnal_container_image_pull_result is not failed
 
 - name: Ensure Sygnal container network is created
+  when: matrix_sygnal_container_network not in ['', 'host']
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_sygnal_container_network }}"

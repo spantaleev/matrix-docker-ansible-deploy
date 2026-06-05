@@ -35,9 +35,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endfor %}
 			{{ matrix_user_verification_service_container_image }}
 
+{% if matrix_user_verification_service_container_network not in ['', 'host'] %}
 {% for network in matrix_user_verification_service_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_user_verification_service_container_name }}
 {% endfor %}
+{% endif %}
 ExecStart=/usr/bin/env docker start --attach matrix-user-verification-service
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_user_verification_service_container_name }} 2>/dev/null'

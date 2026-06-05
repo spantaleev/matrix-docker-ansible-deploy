@@ -32,9 +32,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm -
 			{{ matrix_mautrix_wsproxy_container_image }} \
 			/usr/bin/mautrix-wsproxy -config /data/config.yaml
 
+{% if matrix_mautrix_wsproxy_container_network not in ['', 'host'] %}
 {% for network in matrix_mautrix_wsproxy_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-mautrix-wsproxy
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-mautrix-wsproxy
 

@@ -153,6 +153,7 @@
   register: matrix_mautrix_whatsapp_support_files_result
 
 - name: Ensure matrix-mautrix-whatsapp container network is created
+  when: matrix_mautrix_whatsapp_container_network not in ['', 'host']
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_mautrix_whatsapp_container_network }}"

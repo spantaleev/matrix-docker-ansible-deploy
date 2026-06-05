@@ -31,9 +31,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endfor %}
 			{{ matrix_wechat_container_image }} \
 			/usr/bin/matrix-wechat -c /config/config.yaml -r /config/registration.yaml --no-update
+{% if matrix_wechat_container_network not in ['', 'host'] %}
 {% for network in matrix_wechat_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-wechat
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-wechat
 

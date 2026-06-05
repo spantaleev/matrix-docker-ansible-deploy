@@ -83,6 +83,7 @@
       when: "matrix_synapse_auto_compressor_git_pull_results.changed | bool or matrix_synapse_auto_compressor_container_image_check_result.stdout == ''"
 
 - name: Ensure matrix-synapse-auto-compressor container network is created
+  when: matrix_synapse_auto_compressor_container_network not in ['', 'host']
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_synapse_auto_compressor_container_network }}"

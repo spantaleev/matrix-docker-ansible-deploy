@@ -60,6 +60,7 @@
       register: matrix_livekit_jwt_service_container_image_build_result
 
 - name: Ensure LiveKit JWT Service container network is created
+  when: matrix_livekit_jwt_service_container_network not in ['', 'host']
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_livekit_jwt_service_container_network }}"

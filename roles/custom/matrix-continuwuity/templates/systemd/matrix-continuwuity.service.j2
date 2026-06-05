@@ -34,9 +34,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endfor %}
 			{{ matrix_continuwuity_container_image }}
 
+{% if matrix_continuwuity_container_network not in ['', 'host'] %}
 {% for network in matrix_continuwuity_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-continuwuity
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-continuwuity
 

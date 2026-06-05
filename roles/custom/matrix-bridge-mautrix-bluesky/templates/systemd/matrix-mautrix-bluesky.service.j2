@@ -32,9 +32,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_mautrix_bluesky_container_image }} \
 			/usr/bin/mautrix-bluesky -c /config/config.yaml -r /config/registration.yaml --no-update
 
+{% if matrix_mautrix_bluesky_container_network not in ['', 'host'] %}
 {% for network in matrix_mautrix_bluesky_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-mautrix-bluesky
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-mautrix-bluesky
 

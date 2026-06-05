@@ -30,9 +30,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endfor %}
 			{{ matrix_pantalaimon_container_image }}
 
+{% if matrix_pantalaimon_container_network not in ['', 'host'] %}
 {% for network in matrix_pantalaimon_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-pantalaimon
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-pantalaimon
 

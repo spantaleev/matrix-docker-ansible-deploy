@@ -29,9 +29,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--network={{ matrix_bot_matrix_registration_bot_container_network }} \
 			{{ matrix_bot_matrix_registration_bot_container_image }}
 
+{% if matrix_bot_matrix_registration_bot_container_network not in ['', 'host'] %}
 {% for network in matrix_bot_matrix_registration_bot_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-matrix-registration-bot
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-bot-matrix-registration-bot
 

@@ -60,6 +60,7 @@
   register: matrix_sms_bridge_cert_result
 
 - name: Ensure matrix-sms-bridge container network is created
+  when: matrix_sms_bridge_container_network not in ['', 'host']
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_sms_bridge_container_network }}"

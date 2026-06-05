@@ -76,6 +76,7 @@
   register: matrix_corporal_support_files_result
 
 - name: Ensure Matrix Corporal container network is created
+  when: matrix_corporal_container_network not in ['', 'host']
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_corporal_container_network }}"

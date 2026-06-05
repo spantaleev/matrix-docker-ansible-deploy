@@ -32,9 +32,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_steam_bridge_container_image }} \
 			/usr/bin/steam -c /app/config/config.yaml -r /app/config/registration.yaml --no-update
 
+{% if matrix_steam_bridge_container_network not in ['', 'host'] %}
 {% for network in matrix_steam_bridge_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-steam-bridge
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-steam-bridge
 
