@@ -65,22 +65,11 @@
 
 - name: Ensure rustpush-bridge config.yaml installed
   ansible.builtin.copy:
-    content: >-
-      {{
-        matrix_rustpush_bridge_configuration
-        | combine({
-          'network': {
-            'displayname_template': matrix_rustpush_bridge_network_displayname_template_effective,
-          },
-        }, recursive=True)
-        | to_nice_yaml(indent=2, width=999999)
-      }}
+    content: "{{ matrix_rustpush_bridge_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ matrix_rustpush_bridge_config_path }}/config.yaml"
     mode: 0644
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  vars:
-    matrix_rustpush_bridge_network_displayname_template_effective: "{{ (matrix_rustpush_bridge_configuration.network | default({}, true)).displayname_template | default(matrix_rustpush_bridge_network_displayname_template) }}"
   register: matrix_rustpush_bridge_config_result
 
 - name: Ensure rustpush-bridge registration.yaml installed
