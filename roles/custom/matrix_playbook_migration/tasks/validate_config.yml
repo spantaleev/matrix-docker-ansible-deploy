@@ -711,6 +711,18 @@
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-registration-bot variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-registration-bot was completely removed from the playbook in June 2026.
+
+      Please remove all `matrix_bot_matrix_registration_bot_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-bot-matrix-registration-bot.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_bot_matrix_registration_bot_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_bot_matrix_registration_bot_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report matrix-ldap-registration-proxy variables
   ansible.builtin.fail:
     msg: |-

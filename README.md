@@ -144,7 +144,6 @@ Bots provide various additional functionality to your installation.
 | ---- | -------- | ----------- | ------------- |
 | [baibot](https://github.com/etkecc/baibot) | ❌ | Bot that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you | [Link](docs/configuring-playbook-bot-baibot.md) |
 | [matrix-reminder-bot](https://github.com/anoadragon453/matrix-reminder-bot) | ❌ | Bot for scheduling one-off & recurring reminders and alarms | [Link](docs/configuring-playbook-bot-matrix-reminder-bot.md) |
-| [matrix-registration-bot](https://github.com/moan0s/matrix-registration-bot) | ❌ | Bot for invitations by creating and managing registration tokens | [Link](docs/configuring-playbook-bot-matrix-registration-bot.md) |
 | [maubot](https://github.com/maubot/maubot) | ❌ | Plugin-based Matrix bot system | [Link](docs/configuring-playbook-bot-maubot.md) |
 | [Honoroit](https://github.com/etkecc/honoroit) | ❌ | Helpdesk bot | [Link](docs/configuring-playbook-bot-honoroit.md) |
 | [Mjolnir](https://github.com/matrix-org/mjolnir) | ❌ | Moderation tool for Matrix | [Link](docs/configuring-playbook-bot-mjolnir.md) |
