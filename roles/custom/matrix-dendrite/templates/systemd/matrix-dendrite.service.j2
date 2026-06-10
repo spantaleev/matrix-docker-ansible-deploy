@@ -57,9 +57,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			-https-bind-address {{ matrix_dendrite_https_bind_address }}
 			{% endif %}
 
+{% if matrix_dendrite_container_network != 'host' %}
 {% for network in matrix_dendrite_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-dendrite
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-dendrite
 

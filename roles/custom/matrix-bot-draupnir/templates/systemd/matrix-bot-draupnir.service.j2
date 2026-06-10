@@ -36,9 +36,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_bot_draupnir_container_image }} \
 			bot --draupnir-config /data/config/production.yaml
 
+{% if matrix_bot_draupnir_container_network != 'host' %}
 {% for network in matrix_bot_draupnir_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-draupnir
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-bot-draupnir
 

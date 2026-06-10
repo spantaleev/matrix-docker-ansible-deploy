@@ -34,9 +34,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_rageshake_container_image }} \
 			--config /config/config.yaml
 
+{% if matrix_rageshake_container_network != 'host' %}
 {% for network in matrix_rageshake_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-rageshake
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-rageshake
 

@@ -35,9 +35,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_mautrix_googlechat_container_image }} \
 			python3 -m mautrix_googlechat -c /config/config.yaml --no-update
 
+{% if matrix_mautrix_googlechat_container_network != 'host' %}
 {% for network in matrix_mautrix_googlechat_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-mautrix-googlechat
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-mautrix-googlechat
 

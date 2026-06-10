@@ -31,9 +31,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_appservice_kakaotalk_container_image }} \
 			python3 -m matrix_appservice_kakaotalk -c /config/config.yaml --no-update
 
+{% if matrix_appservice_discord_container_network != 'host' %}
 {% for network in matrix_appservice_discord_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-appservice-kakaotalk
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-appservice-kakaotalk
 

@@ -33,9 +33,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--config-path=/config/config.yml {{ matrix_alertmanager_receiver_container_process_extra_arguments | join(' ') }} \
 			--log-level={{ matrix_alertmanager_receiver_container_process_argument_log_level }}
 
+{% if matrix_alertmanager_receiver_container_network != 'host' %}
 {% for network in matrix_alertmanager_receiver_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-alertmanager-receiver
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-alertmanager-receiver
 

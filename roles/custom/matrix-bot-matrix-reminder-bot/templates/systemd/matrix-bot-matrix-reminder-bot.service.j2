@@ -34,9 +34,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_bot_matrix_reminder_bot_container_image }} \
 			-c "matrix-reminder-bot /config/config.yaml"
 
+{% if matrix_bot_matrix_reminder_bot_container_network != 'host' %}
 {% for network in matrix_bot_matrix_reminder_bot_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-matrix-reminder-bot
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-bot-matrix-reminder-bot
 

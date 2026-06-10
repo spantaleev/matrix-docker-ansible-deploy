@@ -44,7 +44,9 @@
   register: matrix_matrixto_container_image_build_result
 
 - name: Ensure Matrix.to container network is created via community.docker.docker_network
-  when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
+  when:
+    - devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
+    - matrix_matrixto_container_network != 'host'
   community.docker.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_matrixto_container_network }}"
@@ -52,7 +54,9 @@
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
 - name: Ensure Matrix.to container network is created via ansible.builtin.command
-  when: devture_systemd_docker_base_container_network_creation_method == 'command'
+  when:
+    - devture_systemd_docker_base_container_network_creation_method == 'command'
+    - matrix_matrixto_container_network != 'host'
   ansible.builtin.command:
     cmd: >-
       {{ devture_systemd_docker_base_host_command_docker }} network create

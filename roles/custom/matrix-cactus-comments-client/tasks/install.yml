@@ -76,6 +76,7 @@
   until: matrix_cactus_comments_client_container_image_pull_result is not failed
 
 - name: Ensure matrix-cactus-comments-client container network is created
+  when: matrix_cactus_comments_client_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_cactus_comments_client_container_network }}"

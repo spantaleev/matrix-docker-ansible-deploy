@@ -32,9 +32,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_bot_mjolnir_container_image }} \
 			bot --mjolnir-config /data/config/production.yaml
 
+{% if matrix_bot_mjolnir_container_network != 'host' %}
 {% for network in matrix_bot_mjolnir_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-bot-mjolnir
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-bot-mjolnir
 
