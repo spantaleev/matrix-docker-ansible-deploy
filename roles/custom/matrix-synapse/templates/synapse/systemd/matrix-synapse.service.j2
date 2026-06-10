@@ -70,7 +70,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_synapse_container_image_final }} \
 			run -m synapse.app.homeserver -c /data/homeserver.yaml
 
-{% if matrix_synapse_container_network not in ['', 'host'] %}
+{% if matrix_synapse_container_network != 'host' %}
 {% for network in matrix_synapse_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-synapse
 {% endfor %}

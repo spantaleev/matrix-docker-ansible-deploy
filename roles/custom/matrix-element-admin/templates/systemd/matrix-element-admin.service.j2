@@ -35,7 +35,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endfor %}
 			{{ matrix_element_admin_container_image }} {{ matrix_element_admin_container_process_extra_arguments | join(' ') }}
 
-{% if matrix_element_admin_container_network not in ['', 'host'] %}
+{% if matrix_element_admin_container_network != 'host' %}
 {% for network in matrix_element_admin_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-element-admin
 {% endfor %}

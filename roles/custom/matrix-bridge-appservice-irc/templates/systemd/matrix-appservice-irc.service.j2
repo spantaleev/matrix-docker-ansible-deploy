@@ -39,7 +39,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_appservice_irc_container_image }} \
 			-c 'node app.js -c /config/config.yaml -f /config/registration.yaml -p 9999'
 
-{% if matrix_appservice_irc_container_network not in ['', 'host'] %}
+{% if matrix_appservice_irc_container_network != 'host' %}
 {% for network in matrix_appservice_irc_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-appservice-irc
 {% endfor %}

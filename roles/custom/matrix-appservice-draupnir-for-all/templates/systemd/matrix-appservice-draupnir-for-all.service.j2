@@ -32,7 +32,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_appservice_draupnir_for_all_container_image }} \
 			appservice -c /data/config/production-appservice.yaml -f /data/config/draupnir-for-all-registration.yaml -p {{ matrix_appservice_draupnir_for_all_appservice_port }} --draupnir-config /data/config/production-bots.yaml
 
-{% if matrix_appservice_draupnir_for_all_container_network not in ['', 'host'] %}
+{% if matrix_appservice_draupnir_for_all_container_network != 'host' %}
 {% for network in matrix_appservice_draupnir_for_all_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-appservice-draupnir-for-all
 {% endfor %}

@@ -118,7 +118,7 @@
       when: "matrix_dendrite_git_pull_results.changed | bool or matrix_dendrite_container_image_check_result.stdout == ''"
 
 - name: Ensure Dendrite container network is created
-  when: matrix_dendrite_container_network not in ['', 'host']
+  when: matrix_dendrite_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_dendrite_container_network }}"

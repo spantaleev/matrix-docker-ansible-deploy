@@ -70,7 +70,7 @@
       when: "matrix_synapse_usage_exporter_git_pull_results.changed | bool or matrix_synapse_usage_exporter_container_image_check_result.stdout == ''"
 
 - name: Ensure synapse-usage-exporter container network is created
-  when: matrix_synapse_usage_exporter_container_network not in ['', 'host']
+  when: matrix_synapse_usage_exporter_container_network != 'host'
   community.general.docker_network:
     name: "{{ matrix_synapse_usage_exporter_container_network }}"
     driver: bridge

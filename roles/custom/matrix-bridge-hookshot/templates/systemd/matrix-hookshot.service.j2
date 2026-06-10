@@ -30,7 +30,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm -
           {% endfor %}
           {{ matrix_hookshot_container_image }}
 
-{% if matrix_hookshot_container_network not in ['', 'host'] %}
+{% if matrix_hookshot_container_network != 'host' %}
 {% for network in matrix_hookshot_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_hookshot_identifier }}
 {% endfor %}

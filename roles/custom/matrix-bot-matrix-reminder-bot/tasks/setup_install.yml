@@ -93,7 +93,7 @@
   register: matrix_bot_matrix_reminder_bot_config_result
 
 - name: Ensure matrix-reminder-bot container network is created
-  when: matrix_bot_matrix_reminder_bot_container_network not in ['', 'host']
+  when: matrix_bot_matrix_reminder_bot_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_bot_matrix_reminder_bot_container_network }}"

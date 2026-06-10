@@ -94,7 +94,7 @@
   until: matrix_static_files_container_image_pull_result is not failed
 
 - name: Ensure matrix-static-files container network is created
-  when: matrix_static_files_container_network not in ['', 'host']
+  when: matrix_static_files_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_static_files_container_network }}"

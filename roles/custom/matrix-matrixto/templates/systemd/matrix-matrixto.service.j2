@@ -42,7 +42,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {% endfor %}
       {{ matrix_matrixto_container_image_self_build_name }}
 
-{% if matrix_matrixto_container_network not in ['', 'host'] %}
+{% if matrix_matrixto_container_network != 'host' %}
 {% for network in matrix_matrixto_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_matrixto_identifier }}
 {% endfor %}

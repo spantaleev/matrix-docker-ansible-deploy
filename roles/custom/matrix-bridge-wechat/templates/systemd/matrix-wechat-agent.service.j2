@@ -33,7 +33,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endfor %}
 			{{ matrix_wechat_agent_container_image }}
 
-{% if matrix_wechat_container_network not in ['', 'host'] %}
+{% if matrix_wechat_container_network != 'host' %}
 {% for network in matrix_wechat_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-wechat-agent
 {% endfor %}

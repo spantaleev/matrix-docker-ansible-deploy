@@ -43,7 +43,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_meshtastic_relay_container_image }} \
 			mmrelay --config /config/config.yaml
 
-{% if matrix_meshtastic_relay_container_network not in ['', 'host'] %}
+{% if matrix_meshtastic_relay_container_network != 'host' %}
 {% for network in matrix_meshtastic_relay_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-meshtastic-relay
 {% endfor %}
