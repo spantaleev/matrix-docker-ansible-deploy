@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: 2026 Chiu Ki Sit
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check if Matrix user exists (Synology)
+  ansible.builtin.command: id {{ matrix_user_name }}
+  register: matrix_user_check
+  changed_when: false
+  failed_when: false
+
+- name: Ensure Matrix user is created (Synology)
+  ansible.builtin.command: /usr/syno/sbin/synouser --add {{ matrix_user_name }} "" "{{ matrix_user_name }}" 0 "" ""
+  when: matrix_user_check.rc != 0
+  changed_when: true
+
+- name: Check if Matrix group exists (Synology)
+  ansible.builtin.command: /usr/syno/sbin/synogroup --get {{ matrix_group_name }}
+  register: matrix_group_check
+  changed_when: false
+  failed_when: false
+
+- name: Ensure Matrix group is created (Synology)
+  ansible.builtin.command: /usr/syno/sbin/synogroup --add {{ matrix_group_name }} {{ matrix_user_name }}
+  when: matrix_group_check.rc != 0
+  changed_when: true
+
+- name: Get Matrix user UID (Synology)
+  ansible.builtin.command: id -u {{ matrix_user_name }}
+  register: matrix_user_uid_result
+  changed_when: false
+
+- name: Get Matrix group GID (Synology)
+  ansible.builtin.command:
+    argv:
+      - python3
+      - -c
+      - "import grp; print(grp.getgrnam('{{ matrix_group_name }}').gr_gid)"
+  register: matrix_user_gid_result
+  changed_when: false
+
+- name: Initialize matrix_user_uid and matrix_user_gid
+  ansible.builtin.set_fact:
+    matrix_user_uid: "{{ matrix_user_uid_result.stdout }}"
+    matrix_user_gid: "{{ matrix_user_gid_result.stdout }}"

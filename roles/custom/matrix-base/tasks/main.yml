@@ -4,6 +4,7 @@
 # SPDX-FileCopyrightText: 2020 Marcel Partap
 # SPDX-FileCopyrightText: 2022 Marko Weltzer
 # SPDX-FileCopyrightText: 2022 Warren Bailey
+# SPDX-FileCopyrightText: 2026 Chiu Ki Sit
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -23,6 +24,13 @@
     - common
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_matrix_user.yml"
+
+- tags:
+    - setup-all
+    - install-all
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_synology_prerequisites.yml"
+      when: matrix_synoinfo_conf_stat.stat.exists | bool
 
 - tags:
     - setup-all

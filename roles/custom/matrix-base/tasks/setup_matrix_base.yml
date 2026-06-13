@@ -7,6 +7,7 @@
 # SPDX-FileCopyrightText: 2022 Sebastian Gumprich
 # SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 # SPDX-FileCopyrightText: 2024 László Várady
+# SPDX-FileCopyrightText: 2026 Chiu Ki Sit
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -28,3 +29,12 @@
     src: "{{ role_path }}/templates/bin/remove-all.j2"
     dest: "{{ matrix_bin_path }}/remove-all"
     mode: '0750'
+
+- name: Ensure Matrix base path ownership is correct using numeric UID/GID (Synology)
+  ansible.builtin.file:
+    path: "{{ matrix_base_data_path }}"
+    owner: "{{ matrix_user_uid }}"
+    group: "{{ matrix_user_gid }}"
+    recurse: true
+    state: directory
+  when: matrix_synoinfo_conf_stat.stat.exists | bool

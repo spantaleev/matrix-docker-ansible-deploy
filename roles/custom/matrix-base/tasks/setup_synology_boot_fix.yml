@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 Chiu Ki Sit
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Deploy Matrix boot recovery script (Synology)
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/bin/matrix-synology-boot-fix.j2"
+    dest: "{{ matrix_bin_path }}/matrix-synology-boot-fix"
+    mode: "0750"
+    owner: root
+    group: root
+
+- name: Deploy Matrix boot recovery service (Synology)
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-synology-boot-fix.service.j2"
+    dest: /etc/systemd/system/matrix-synology-boot-fix.service
+    mode: "0644"
+  register: matrix_synology_boot_fix_service
+
+- name: Reload systemd and enable Matrix boot recovery service (Synology)
+  ansible.builtin.systemd:
+    name: matrix-synology-boot-fix.service
+    daemon_reload: true
+    enabled: true
+  when: matrix_synology_boot_fix_service.changed
