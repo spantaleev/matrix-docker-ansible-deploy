@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Catalan Lover <catalanlover@protonmail.com>
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -36,3 +37,11 @@
     - {'old': 'matrix_continuwuity_docker_image_registry_prefix_upstream', 'new': 'matrix_continuwuity_container_image_registry_prefix_upstream'}
     - {'old': 'matrix_continuwuity_docker_image_registry_prefix_upstream_default', 'new': 'matrix_continuwuity_container_image_registry_prefix_upstream_default'}
     - {'old': 'matrix_continuwuity_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
+
+- name: Fail if required Continuwuity variables are undefined
+  ansible.builtin.fail:
+    msg: "The `{{ item.name }}` variable must be defined and have a non-null value."
+  with_items:
+    - {'name': 'matrix_continuwuity_config_recaptcha_site_key', when: "{{ matrix_continuwuity_config_recaptcha_private_site_key | string | length > 0 }}"}
+    - {'name': 'matrix_continuwuity_config_recaptcha_private_site_key', when: "{{ matrix_continuwuity_config_recaptcha_site_key | string | length > 0 }}"}
+  when: "item.when | bool and (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
