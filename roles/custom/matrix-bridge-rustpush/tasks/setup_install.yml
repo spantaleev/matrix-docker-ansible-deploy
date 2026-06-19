@@ -16,14 +16,14 @@
     - {path: "{{ matrix_rustpush_bridge_base_path }}", when: true}
     - {path: "{{ matrix_rustpush_bridge_config_path }}", when: true}
     - {path: "{{ matrix_rustpush_bridge_data_path }}", when: true}
-    - {path: "{{ matrix_rustpush_bridge_docker_src_files_path }}", when: "{{ matrix_rustpush_bridge_container_image_self_build }}"}
+    - {path: "{{ matrix_rustpush_bridge_container_src_files_path }}", when: "{{ matrix_rustpush_bridge_container_image_self_build }}"}
   when: item.when | bool
 
 - name: Ensure RustPush repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_rustpush_bridge_container_image_self_build_repo }}"
     version: "{{ matrix_rustpush_bridge_container_image_self_build_repo_version }}"
-    dest: "{{ matrix_rustpush_bridge_docker_src_files_path }}"
+    dest: "{{ matrix_rustpush_bridge_container_src_files_path }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
@@ -33,34 +33,34 @@
 - name: Ensure RustPush Dockerfile is installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/Dockerfile.j2"
-    dest: "{{ matrix_rustpush_bridge_docker_src_files_path }}/Dockerfile"
+    dest: "{{ matrix_rustpush_bridge_container_src_files_path }}/Dockerfile"
     mode: 0640
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   when: "matrix_rustpush_bridge_enabled | bool and matrix_rustpush_bridge_container_image_self_build | bool"
 
 - name: Ensure RustPush Docker image is built
-  community.docker.docker_image:
-    name: "{{ matrix_rustpush_bridge_docker_image }}"
-    source: build
-    force_source: "{{ matrix_rustpush_bridge_git_pull_results.changed if matrix_rustpush_bridge_git_pull_results is defined else true }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ matrix_rustpush_bridge_docker_src_files_path }}"
-      pull: true
-      args:
-        BUILD_VERSION: "{{ matrix_rustpush_bridge_container_image_self_build_repo_version }}"
-        BUILD_COMMIT: "{{ matrix_rustpush_bridge_git_pull_results.after[:8] if matrix_rustpush_bridge_git_pull_results is defined and matrix_rustpush_bridge_git_pull_results.after is defined else 'unknown' }}"
+  community.docker.docker_image_build:
+    name: "{{ matrix_rustpush_bridge_container_image }}"
+    dockerfile: Dockerfile
+    path: "{{ matrix_rustpush_bridge_container_src_files_path }}"
+    pull: true
+    rebuild: "{{ 'always' if matrix_rustpush_bridge_git_pull_results.changed | bool else 'never' }}"
+    build_args:
+      BUILD_VERSION: "{{ matrix_rustpush_bridge_container_image_self_build_repo_version }}"
+      BUILD_COMMIT: "{{ matrix_rustpush_bridge_git_pull_results.after[:8] if matrix_rustpush_bridge_git_pull_results is defined and matrix_rustpush_bridge_git_pull_results.after is defined else 'unknown' }}"
   register: matrix_rustpush_bridge_container_image_build_result
   when: "matrix_rustpush_bridge_enabled | bool and matrix_rustpush_bridge_container_image_self_build | bool"
 
 - name: Ensure RustPush container image is pulled
-  community.docker.docker_image:
-    name: "{{ matrix_rustpush_bridge_docker_image }}"
-    source: pull
-    force_source: "{{ matrix_rustpush_bridge_container_image_force_pull if matrix_rustpush_bridge_container_image_force_pull is defined else true }}"
+  community.docker.docker_image_pull:
+    name: "{{ matrix_rustpush_bridge_container_image }}"
+    pull: always
   register: matrix_rustpush_bridge_container_image_pull_result
   when: "matrix_rustpush_bridge_enabled | bool and not matrix_rustpush_bridge_container_image_self_build | bool"
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: matrix_rustpush_bridge_container_image_pull_result is not failed
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Ensure rustpush-bridge config.yaml installed

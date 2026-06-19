@@ -15,14 +15,15 @@ matrix_rustpush_bridge_container_image_self_build_repo_version: "{{ 'master' if 
 
 # Adjust to pin to releases
 matrix_rustpush_bridge_version: v0.0.1
-matrix_rustpush_bridge_docker_image: "{{ matrix_rustpush_bridge_docker_image_registry_prefix }}jasonlaguidice/imessage:{{ matrix_rustpush_bridge_version }}"
-matrix_rustpush_bridge_docker_image_registry_prefix: "ghcr.io/"
-matrix_rustpush_bridge_docker_image_force_pull: "{{ matrix_rustpush_bridge_docker_image.endswith(':latest') }}"
+matrix_rustpush_bridge_container_image: "{{ matrix_rustpush_bridge_container_image_registry_prefix }}jasonlaguidice/imessage:{{ matrix_rustpush_bridge_version }}"
+matrix_rustpush_bridge_container_image_registry_prefix: "{{ 'localhost/' if matrix_rustpush_bridge_container_image_self_build else matrix_rustpush_bridge_container_image_registry_prefix_upstream }}"
+matrix_rustpush_bridge_container_image_registry_prefix_upstream: "{{ matrix_rustpush_bridge_container_image_registry_prefix_upstream_default }}"
+matrix_rustpush_bridge_container_image_registry_prefix_upstream_default: "ghcr.io/"
 
 matrix_rustpush_bridge_base_path: "{{ matrix_base_data_path }}/matrix-rustpush-bridge"
 matrix_rustpush_bridge_config_path: "{{ matrix_rustpush_bridge_base_path }}/config"
 matrix_rustpush_bridge_data_path: "{{ matrix_rustpush_bridge_base_path }}/data"
-matrix_rustpush_bridge_docker_src_files_path: "{{ matrix_rustpush_bridge_base_path }}/docker-src"
+matrix_rustpush_bridge_container_src_files_path: "{{ matrix_rustpush_bridge_base_path }}/docker-src"
 
 matrix_rustpush_bridge_homeserver_address: ""
 # Whether asynchronous uploads via MSC2246 should be enabled for media.
@@ -148,13 +149,13 @@ matrix_rustpush_bridge_double_puppet_secrets: "{{ matrix_rustpush_bridge_double_
 matrix_rustpush_bridge_double_puppet_secrets_auto: {}
 matrix_rustpush_bridge_double_puppet_secrets_custom: {}
 
-matrix_rustpush_bridge_appservice_bot_username: imessagebot
-matrix_rustpush_bridge_appservice_bot_displayname: iMessage bridge bot
+matrix_rustpush_bridge_appservice_bot_username: rustpushbot
+matrix_rustpush_bridge_appservice_bot_displayname: RustPush bridge bot
 matrix_rustpush_bridge_appservice_bot_avatar: ''
 
 # Localpart template for MXIDs of remote (iMessage) users.
 # The `{{.}}` placeholder expands to the iMessage handle (phone/email).
-matrix_rustpush_bridge_appservice_username_template: "{% raw %}imessage_{{.}}{% endraw %}"
+matrix_rustpush_bridge_appservice_username_template: "{% raw %}rustpush_{{.}}{% endraw %}"
 
 # Backfill is disabled by default because Linux Docker cannot access chat.db.
 # On macOS with Full Disk Access, this can be set to true.
@@ -216,7 +217,7 @@ matrix_rustpush_bridge_registration_yaml: |
   namespaces:
     users:
     - exclusive: true
-      regex: '^@imessage_.+:{{ matrix_rustpush_bridge_homeserver_domain | regex_escape }}$'
+      regex: '^@rustpush_.+:{{ matrix_rustpush_bridge_homeserver_domain | regex_escape }}$'
     - exclusive: true
       regex: '^@{{ matrix_rustpush_bridge_appservice_bot_username | regex_escape }}:{{ matrix_rustpush_bridge_homeserver_domain | regex_escape }}$'
   url: {{ matrix_rustpush_bridge_appservice_address }}

@@ -6,9 +6,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 # Setting up RustPush (iMessage) bridging (optional)
-## \*\*\* THIS BRIDGE IS IN EARLY DEVELOPMENT \*\*\*
-Be warned, here be ~~dragons~~ bugs. Your use, testing, and feedback of this bridge is appreciated. It may not be desirable to deploy this to a large number of users due to possible stability issues
-<hr>
+
+> **Note:** This bridge is in early development and may have stability issues. It may not be desirable to deploy this to a large number of users. Your testing and feedback is appreciated.
+
 <sup>Refer the common guide for configuring mautrix bridges: [Setting up a Generic Mautrix Bridge](configuring-playbook-bridge-mautrix-bridges.md)</sup>
 
 The playbook can install and configure [rustpush bridge to iMessage](https://github.com/jasonlaguidice/imessage) for you using Apple's push notification service.
@@ -74,19 +74,9 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 
 ## Usage
 
-To use the bridge, you need to start a chat with `@imessagebot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
+To use the bridge, you need to start a chat with `@rustpushbot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
 After logging in, the bridge will start receiving iMessages and creating portal rooms.
-
-## Interference With Mautrix-iMessage & WSproxy
-
-By default, this bridge uses the same bot user name (`@imessagebot:example.com`) and same localpart for puppet users (`imessage_{{.}}`) as the mautrix-imessage bridge. If you use this bridge on your homeserver have a few options:
-
-1.  Change the bot and appservice name templates:
-
-    Set `matrix_rustpush_bridge_appservice_bot_username` and to a non-default value `matrix_rustpush_bridge_appservice_username_template`
-
-2. After deactivating mautrix-imessage, delete the bot user and all its portal rooms from the database, then re-start the server (more difficult)
 
 ## Troubleshooting
 
