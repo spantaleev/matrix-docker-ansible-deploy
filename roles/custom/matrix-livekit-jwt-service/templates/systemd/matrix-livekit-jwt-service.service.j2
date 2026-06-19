@@ -22,6 +22,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     {% if matrix_livekit_jwt_service_container_http_host_bind_port %}
     -p {{ matrix_livekit_jwt_service_container_http_host_bind_port }}:{{ matrix_livekit_jwt_service_container_port }} \
     {% endif %}
+    {% for arg in matrix_livekit_jwt_service_container_additional_arguments %}
+    {{ arg }} \
+    {% endfor %}
     --env-file={{ matrix_livekit_jwt_service_base_path }}/env \
     --label-file={{ matrix_livekit_jwt_service_base_path }}/labels \
     {{ matrix_livekit_jwt_service_container_image }}
