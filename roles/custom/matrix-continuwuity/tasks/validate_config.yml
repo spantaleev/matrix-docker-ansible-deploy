@@ -38,10 +38,10 @@
     - {'old': 'matrix_continuwuity_docker_image_registry_prefix_upstream_default', 'new': 'matrix_continuwuity_container_image_registry_prefix_upstream_default'}
     - {'old': 'matrix_continuwuity_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
 
-- name: Fail if required Continuwuity variables are undefined
+- name: Fail if Continuwuity ReCAPTCHA is only partially configured
   ansible.builtin.fail:
-    msg: "The `{{ item.name }}` variable must be defined and have a non-null value."
-  with_items:
-    - {'name': 'matrix_continuwuity_config_recaptcha_site_key', when: "{{ matrix_continuwuity_config_recaptcha_private_site_key | string | length > 0 }}"}
-    - {'name': 'matrix_continuwuity_config_recaptcha_private_site_key', when: "{{ matrix_continuwuity_config_recaptcha_site_key | string | length > 0 }}"}
-  when: "item.when | bool and (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
+    msg: >-
+      You have configured only one of `matrix_continuwuity_config_recaptcha_site_key` and
+      `matrix_continuwuity_config_recaptcha_private_site_key`. Configure both to enable ReCAPTCHA
+      registration, or leave both empty to disable it.
+  when: "(matrix_continuwuity_config_recaptcha_site_key | string | length > 0) != (matrix_continuwuity_config_recaptcha_private_site_key | string | length > 0)"

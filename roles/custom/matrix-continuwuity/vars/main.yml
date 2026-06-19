@@ -1,9 +1,15 @@
 # SPDX-FileCopyrightText: 2025 MDAD project contributors
 # SPDX-FileCopyrightText: 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 Catalan Lover <catalanlover@protonmail.com>
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
+
+# Continuwuity has no dedicated "enable ReCAPTCHA" setting. It enables ReCAPTCHA registration based on the
+# presence of a recaptcha private site key, so we only render the keys when both have been configured.
+# This avoids rendering empty keys, which would otherwise enable a broken ReCAPTCHA flow.
+matrix_continuwuity_recaptcha_enabled: "{{ matrix_continuwuity_config_recaptcha_site_key | string | length > 0 and matrix_continuwuity_config_recaptcha_private_site_key | string | length > 0 }}"
 
 matrix_continuwuity_client_api_url_endpoint_public: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_continuwuity_hostname }}/_matrix/client/versions"
 matrix_continuwuity_federation_api_url_endpoint_public: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}://{{ matrix_continuwuity_hostname }}:{{ matrix_federation_public_port }}/_matrix/federation/v1/version"
