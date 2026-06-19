@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Catalan Lover <catalanlover@protonmail.com>
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -36,3 +37,11 @@
     - {'old': 'matrix_continuwuity_docker_image_registry_prefix_upstream', 'new': 'matrix_continuwuity_container_image_registry_prefix_upstream'}
     - {'old': 'matrix_continuwuity_docker_image_registry_prefix_upstream_default', 'new': 'matrix_continuwuity_container_image_registry_prefix_upstream_default'}
     - {'old': 'matrix_continuwuity_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
+
+- name: Fail if Continuwuity ReCAPTCHA is only partially configured
+  ansible.builtin.fail:
+    msg: >-
+      You have configured only one of `matrix_continuwuity_config_recaptcha_site_key` and
+      `matrix_continuwuity_config_recaptcha_private_site_key`. Configure both to enable ReCAPTCHA
+      registration, or leave both empty to disable it.
+  when: "(matrix_continuwuity_config_recaptcha_site_key | string | length > 0) != (matrix_continuwuity_config_recaptcha_private_site_key | string | length > 0)"

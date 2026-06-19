@@ -2,6 +2,7 @@
 SPDX-FileCopyrightText: 2025 MDAD project contributors
 SPDX-FileCopyrightText: 2025 Slavi Pantaleev
 SPDX-FileCopyrightText: 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2026 Catalan Lover <catalanlover@protonmail.com>
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -490,6 +491,7 @@ registration_token = {{ matrix_continuwuity_config_registration_token | to_json 
 #
 #registration_token_file =
 
+{% if matrix_continuwuity_recaptcha_enabled %}
 # The public site key for reCaptcha. If this is provided, reCaptcha
 # becomes required during registration. If both captcha *and*
 # registration token are enabled, both will be required during
@@ -509,6 +511,7 @@ recaptcha_site_key = {{ matrix_continuwuity_config_recaptcha_site_key | to_json 
 # even if `recaptcha_site_key` is set.
 #
 recaptcha_private_site_key = {{ matrix_continuwuity_config_recaptcha_private_site_key | to_json }}
+{% endif %}
 
 # Controls whether encrypted rooms and events are allowed.
 #
