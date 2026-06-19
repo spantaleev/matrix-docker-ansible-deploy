@@ -34,9 +34,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_appservice_discord_container_image }} \
 			node /build/src/discordas.js -p 9005 -c /cfg/config.yaml -f /cfg/registration.yaml
 
+{% if matrix_appservice_discord_container_network != 'host' %}
 {% for network in matrix_appservice_discord_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-appservice-discord
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-appservice-discord
 

@@ -69,6 +69,7 @@
       register: matrix_bot_baibot_container_image_build_result
 
 - name: Ensure baibot container network is created
+  when: matrix_bot_baibot_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_bot_baibot_container_network }}"

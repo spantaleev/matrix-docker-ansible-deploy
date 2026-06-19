@@ -35,9 +35,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_mautrix_meta_messenger_container_image }} \
 			/usr/bin/mautrix-meta -c /config/config.yaml -r /config/registration.yaml --no-update
 
+{% if matrix_mautrix_meta_messenger_container_network != 'host' %}
 {% for network in matrix_mautrix_meta_messenger_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_mautrix_meta_messenger_identifier }}
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ matrix_mautrix_meta_messenger_identifier }}
 

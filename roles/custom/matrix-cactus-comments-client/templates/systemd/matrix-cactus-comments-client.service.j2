@@ -32,9 +32,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--mount type=bind,src={{ matrix_cactus_comments_client_public_path }},dst=/var/public,ro \
 			{{ matrix_cactus_comments_client_container_image }}
 
+{% if matrix_cactus_comments_client_container_network != 'host' %}
 {% for network in matrix_cactus_comments_client_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-cactus-comments-client
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-cactus-comments-client
 

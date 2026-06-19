@@ -36,12 +36,14 @@
   register: matrix_meshtastic_relay_config_result
 
 - name: Ensure matrix-meshtastic-relay container network is created
+  when:
+    - matrix_meshtastic_relay_connection_type != 'ble'
+    - matrix_meshtastic_relay_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ matrix_meshtastic_relay_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
-  when: "matrix_meshtastic_relay_connection_type != 'ble'"
 
 - name: Ensure matrix-meshtastic-relay.service installed
   ansible.builtin.template:

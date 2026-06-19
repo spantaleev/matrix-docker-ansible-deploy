@@ -45,9 +45,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% endfor %}
 			{{ matrix_synapse_reverse_proxy_companion_container_image }}
 
+{% if matrix_synapse_reverse_proxy_companion_container_network != 'host' %}
 {% for network in matrix_synapse_reverse_proxy_companion_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-synapse-reverse-proxy-companion
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-synapse-reverse-proxy-companion
 

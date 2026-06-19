@@ -33,9 +33,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_synapse_auto_compressor_container_image }} \
 			-c '{{ matrix_synapse_auto_compressor_command }}'
 
+{% if matrix_synapse_auto_compressor_container_network != 'host' %}
 {% for network in matrix_synapse_auto_compressor_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-synapse-auto-compressor
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-synapse-auto-compressor
 

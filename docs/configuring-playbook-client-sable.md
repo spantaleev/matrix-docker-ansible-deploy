@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Setting up Sable (optional)
 
-The playbook can install and configure the [Sable](https://github.com/7w1/sable) Matrix web client for you.
+The playbook can install and configure the [Sable](https://github.com/SableClient/Sable) Matrix web client for you.
 
 Sable is a web client focusing primarily on simple, elegant and secure interface. It can be installed alongside or instead of [Element Web](./configuring-playbook-client-element-web.md), [Cinny](./configuring-playbook-client-cinny.md) and others.
 

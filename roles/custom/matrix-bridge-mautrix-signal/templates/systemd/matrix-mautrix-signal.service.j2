@@ -33,9 +33,11 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ matrix_mautrix_signal_container_image }} \
 			/usr/bin/mautrix-signal -c /config/config.yaml -r /config/registration.yaml --no-update
 
+{% if matrix_mautrix_signal_container_network != 'host' %}
 {% for network in matrix_mautrix_signal_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-mautrix-signal
 {% endfor %}
+{% endif %}
 
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-mautrix-signal
 
