@@ -16,6 +16,11 @@
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
+- tags:
+    - always
+  block:
+    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/detect_platform.yml"
+
 # This needs to always run, because it populates `matrix_user_uid` and `matrix_user_gid`,
 # which are required by many other roles.
 - tags:
@@ -30,7 +35,7 @@
     - install-all
   block:
     - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_synology_prerequisites.yml"
-      when: matrix_synoinfo_conf_stat.stat.exists | bool
+      when: matrix_base_host_is_synology
 
 - tags:
     - setup-all

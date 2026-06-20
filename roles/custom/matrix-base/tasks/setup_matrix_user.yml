@@ -6,13 +6,8 @@
 
 ---
 
-- name: Check for Synology DSM
-  ansible.builtin.stat:
-    path: /etc/synoinfo.conf
-  register: matrix_synoinfo_conf_stat
-
 - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_matrix_user_synology.yml"
-  when: matrix_synoinfo_conf_stat.stat.exists | bool
+  when: matrix_base_host_is_synology
 
 - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_matrix_user_linux.yml"
-  when: not (matrix_synoinfo_conf_stat.stat.exists | bool)
+  when: not matrix_base_host_is_synology

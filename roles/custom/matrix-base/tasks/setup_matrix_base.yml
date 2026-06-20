@@ -13,6 +13,14 @@
 
 ---
 
+# Snapshot ownership before any changes so we can decide whether a recursive
+# chown is needed (only when uid/gid actually differs from expected).
+- name: Check current ownership of Matrix base path (Synology)
+  ansible.builtin.stat:
+    path: "{{ matrix_base_data_path }}"
+  register: matrix_base_data_path_stat
+  when: matrix_base_host_is_synology
+
 - name: Ensure Matrix base paths exists
   ansible.builtin.file:
     path: "{{ item }}"
@@ -30,11 +38,17 @@
     dest: "{{ matrix_bin_path }}/remove-all"
     mode: '0750'
 
+# On Synology, name-based chown works for directly-touched paths but leaves
+# existing sub-paths with stale numeric ownership when uid/gid changes between
+# runs. We recurse only when the pre-task uid/gid didn't match, so normal runs
+# skip the expensive tree walk entirely. chown -R is used instead of the file
+# module's recurse option to avoid Ansible iterating every entry in Python.
 - name: Ensure Matrix base path ownership is correct using numeric UID/GID (Synology)
-  ansible.builtin.file:
-    path: "{{ matrix_base_data_path }}"
-    owner: "{{ matrix_user_uid }}"
-    group: "{{ matrix_user_gid }}"
-    recurse: true
-    state: directory
-  when: matrix_synoinfo_conf_stat.stat.exists | bool
+  ansible.builtin.command: chown -R {{ matrix_user_uid }}:{{ matrix_user_gid }} {{ matrix_base_data_path }}
+  changed_when: true
+  when: >-
+    matrix_base_host_is_synology and (
+      not matrix_base_data_path_stat.stat.exists or
+      matrix_base_data_path_stat.stat.uid | int != matrix_user_uid | int or
+      matrix_base_data_path_stat.stat.gid | int != matrix_user_gid | int
+    )

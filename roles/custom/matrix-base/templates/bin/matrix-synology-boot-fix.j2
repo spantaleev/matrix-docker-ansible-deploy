@@ -22,12 +22,12 @@
 # Wait up to 120s for Docker to be ready
 i=0
 while [ "$i" -lt 60 ]; do
-    /usr/local/bin/docker info >/dev/null 2>&1 && break
+    {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1 && break
     i=$((i + 1))
     sleep 2
 done
 
-if ! /usr/local/bin/docker info >/dev/null 2>&1; then
+if ! {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
     echo "matrix-synology-boot-fix: Docker not ready after 120s, aborting" >&2
     exit 1
 fi
@@ -39,12 +39,16 @@ fi
 /bin/mount --make-shared /volume1
 echo "matrix-synology-boot-fix: /volume1 set to shared mount propagation"
 
-# Start any enabled matrix-*.service that is inactive (skipped at boot, not intentionally stopped)
-/bin/systemctl list-unit-files 'matrix-*.service' --state=enabled --no-legend 2>/dev/null | \
+# Start any enabled matrix-*.service that is inactive or failed.
+# Both states indicate the service did not come up at boot — either skipped by
+# Synology's boot ordering or failed due to Docker/mount-propagation not being
+# ready yet (the conditions above now satisfy those prerequisites).
+{{ devture_systemd_docker_base_host_command_systemctl }} list-unit-files 'matrix-*.service' --state=enabled --no-legend 2>/dev/null | \
     while read -r unit _state; do
         [ "$unit" = "matrix-synology-boot-fix.service" ] && continue
-        if [ "$(/bin/systemctl is-active "$unit" 2>/dev/null)" = "inactive" ]; then
-            echo "matrix-synology-boot-fix: starting $unit"
-            /bin/systemctl start "$unit"
+        status="$({{ devture_systemd_docker_base_host_command_systemctl }} is-active "$unit" 2>/dev/null)"
+        if [ "$status" = "inactive" ] || [ "$status" = "failed" ]; then
+            echo "matrix-synology-boot-fix: starting $unit (was $status)"
+            {{ devture_systemd_docker_base_host_command_systemctl }} start "$unit"
         fi
     done
