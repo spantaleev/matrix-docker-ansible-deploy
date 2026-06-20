@@ -43,15 +43,15 @@ You must set a password for this account via `matrix_synology_user_password` in 
 
 Synology DSM has two boot-time quirks that the boot-fix service addresses automatically:
 
-**1. `/volume1` shared mount propagation**
+1. **`/volume1` shared mount propagation**
 
-Docker requires `/volume1` to be mounted as shared (`mount --make-shared /volume1`) for container bind mounts with `bind-propagation=slave` to work correctly (used by matrix-synapse for its media store). On Synology, this cannot be inserted into the systemd chain before Container Manager starts — doing so causes Container Manager to detect a broken dependency and prompt for repair on every boot. The playbook applies this during setup, and the boot-fix service re-applies it on every subsequent reboot, safely outside Container Manager's dependency chain.
+    Docker requires `/volume1` to be mounted as shared (`mount --make-shared /volume1`) for container bind mounts with `bind-propagation=slave` to work correctly (used by matrix-synapse for its media store). On Synology, this cannot be inserted into the systemd chain before Container Manager starts — doing so causes Container Manager to detect a broken dependency and prompt for repair on every boot. The playbook applies this during setup, and the boot-fix service re-applies it on every subsequent reboot, safely outside Container Manager's dependency chain.
 
-**2. Skipped services at boot**
+2. **Skipped services at boot**
 
-Synology's systemd drops services with multi-level dependency chains from the boot activation queue (e.g. `matrix-traefik → matrix-container-socket-proxy → docker`). These services show as `inactive` or `failed` after reboot even though they are enabled. The boot-fix service scans for any enabled `matrix-*.service` in either state and starts them automatically.
+    Synology's systemd drops services with multi-level dependency chains from the boot activation queue (e.g. `matrix-traefik → matrix-container-socket-proxy → docker`). These services show as `inactive` or `failed` after reboot even though they are enabled. The boot-fix service scans for any enabled `matrix-*.service` in either state and starts them automatically.
 
-> **If you previously configured a Task Scheduler entry** (`Control Panel > Task Scheduler`) to run `mount --make-shared /volume1` at boot-up, you can remove it — the boot-fix service now handles this.
+    > **If you previously configured a Task Scheduler entry** (`Control Panel > Task Scheduler`) to run `mount --make-shared /volume1` at boot-up, you can remove it — the boot-fix service now handles this.
 
 ## Synology GUI Preparation
 
