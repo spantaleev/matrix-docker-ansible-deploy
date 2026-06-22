@@ -44,27 +44,19 @@ Custom Nginx Configuration:
 	client_max_body_size 50M;
 ```
 
-Again, under the 'Proxy Hosts' page select `Add Proxy Host`, this time for your federation traffic. Apply the proxy's configuration like this:
+Then, under the 'Streams' page select `Add Stream`, this time for your federation traffic. Apply the configuration like this:
 
 ```md
 # Details
 # Matrix Federation proxy config
-Domain Names: matrix.example.com:8448
-Scheme: http
-Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
+Incoming Port: 8448
+Forward Host/IP: IP-ADDRESS-OF-YOUR-MATRIX
 Forward Port: 8449
+Protocols: TCP
 
 # SSL
 # Either 'Request a new certificate' or select an existing one
 SSL Certificate: matrix.example.com or *.example.com
-Force SSL: true
-HTTP/2 Support: true
-
-# Advanced
-# Allows NPM to listen on the federation port
-Custom Nginx Configuration:
-	listen 8448 ssl http2;
-	client_max_body_size 50M;
 ```
 
 Also note, NPM would need to be configured for whatever other services you are using. For example, you would need to create additional proxy hosts for `element.example.com` or `jitsi.example.com`, which would use the forwarding port `81`.
