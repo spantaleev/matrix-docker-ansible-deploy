@@ -1,0 +1,28 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+	"name": "matrix-docker-ansible-deploy",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+	"postCreateCommand": {
+		"Fix Volume Permissions": "chown -R $(whoami): /commandhistory"
+	},
+	"mounts": [
+		{
+			"source": "matrix-docker-ansible-deploy-bashhistory",
+			"target": "/commandhistory",
+			"type": "volume"
+		}
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"EditorConfig.EditorConfig",
+				"redhat.ansible",
+				"redhat.vscode-yaml",
+				"ms-python.python"
+			]
+		}
+	}
+}
