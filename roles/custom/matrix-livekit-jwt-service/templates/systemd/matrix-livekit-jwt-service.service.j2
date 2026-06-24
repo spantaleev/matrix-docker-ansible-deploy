@@ -22,6 +22,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     {% if matrix_livekit_jwt_service_container_http_host_bind_port %}
     -p {{ matrix_livekit_jwt_service_container_http_host_bind_port }}:{{ matrix_livekit_jwt_service_container_port }} \
     {% endif %}
+    {% for volume in matrix_livekit_jwt_service_container_additional_volumes %}
+    --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options else '' }} \
+    {% endfor %}
     {% for arg in matrix_livekit_jwt_service_container_additional_arguments %}
     {{ arg }} \
     {% endfor %}

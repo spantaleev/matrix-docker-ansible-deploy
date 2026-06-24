@@ -128,3 +128,11 @@ matrix_livekit_jwt_service_restart_necessary: false
 
 # Support additional container arguments for the LiveKit JWT service
 matrix_livekit_jwt_service_container_additional_arguments: []
+
+# A list of additional "volumes" to mount in the container.
+# Contains definition objects like this: `{"type": "bind", "src": "/outside", "dst": "/inside", "options": "readonly"}.
+# See the `--mount` documentation for the `docker run` command.
+# Note: internally, this uses the `--mount` flag for mounting the specified volumes.
+matrix_livekit_jwt_service_container_additional_volumes: "{{ matrix_livekit_jwt_service_container_additional_volumes_auto + matrix_livekit_jwt_service_container_additional_volumes_custom }}"
+matrix_livekit_jwt_service_container_additional_volumes_auto: []
+matrix_livekit_jwt_service_container_additional_volumes_custom: []
