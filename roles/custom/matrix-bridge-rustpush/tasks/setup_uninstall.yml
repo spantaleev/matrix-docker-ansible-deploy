@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Jason LaGuidice
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-rustpush-bridge service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-rustpush-bridge.service"
+  register: matrix_rustpush_bridge_service_stat
+
+- when: matrix_rustpush_bridge_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-rustpush-bridge is stopped
+      ansible.builtin.service:
+        name: matrix-rustpush-bridge
+        state: stopped
+        daemon_reload: true
+
+    - name: Ensure matrix-rustpush-bridge.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-rustpush-bridge.service"
+        state: absent

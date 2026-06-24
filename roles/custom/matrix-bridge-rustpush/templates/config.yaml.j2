@@ -1,0 +1,209 @@
+#jinja2: lstrip_blocks: True
+# Network-specific config options (iMessage via RustPush)
+network:
+    # Displayname template for iMessage contacts.
+    # Available variables:
+    # .FirstName, .LastName, .Nickname
+    # .Phone, .Email, .ID
+    displayname_template: {{ matrix_rustpush_bridge_network_displayname_template | to_json }}
+
+    # How many days back to look for chats during initial sync.
+    # Default is 365 (1 year). Set to 0 to use the default.
+    initial_sync_days: {{ matrix_rustpush_bridge_initial_sync_days | to_json }}
+
+    # Set to false to disable CloudKit backfill globally
+    cloudkit_backfill: {{ matrix_rustpush_bridge_cloudkit_backfill | to_json }}
+    backfill_source: cloudkit
+
+    # Enable or disable video transcoding
+    video_transcoding: {{ matrix_rustpush_bridge_video_transcoding | to_json }}
+
+    # Enable or disable HEIC conversion
+    heic_conversion: {{ matrix_rustpush_bridge_heic_conversion | to_json }}
+    heic_jpeg_quality: 95
+
+    # Set to true to disable Facetime support globally
+    disable_facetime: {{ matrix_rustpush_bridge_disable_facetime | to_json }}
+
+    # Set to false to disable Statuskit support globally
+    statuskit_notifications: {{ matrix_rustpush_bridge_statuskit_notifications | to_json }}
+    statuskit_share_on_startup: {{ matrix_rustpush_bridge_statuskit_share_on_startup | to_json }}
+
+# Config options that affect the central bridge module.
+bridge:
+    # The prefix for commands. Only required in non-management rooms.
+    command_prefix: {{ matrix_rustpush_bridge_bridge_command_prefix | to_json }}
+    # Should the bridge create a space for each login containing the rooms that account is in?
+    personal_filtering_spaces: true
+    # Whether the bridge should set names and avatars explicitly for DM portals.
+    private_chat_portal_meta: true
+    # Should events be handled asynchronously within portal rooms?
+    async_events: false
+    # Should every user have their own portals rather than sharing them?
+    split_portals: false
+    # Should the bridge resend `m.bridge` events to all portals on startup?
+    resend_bridge_info: false
+
+    # Should leaving Matrix rooms be bridged as leaving groups on the remote network?
+    bridge_matrix_leave: false
+    # Should room tags only be synced when creating the portal?
+    tag_only_on_create: true
+    # List of tags to allow bridging.
+    only_bridge_tags: [m.favourite, m.lowpriority]
+    # Should room mute status only be synced when creating the portal?
+    mute_only_on_create: true
+
+    # What should be done to portal rooms when a user logs out or is logged out?
+    cleanup_on_logout:
+        enabled: false
+        manual:
+            private: nothing
+            relayed: nothing
+            shared_no_users: nothing
+            shared_has_users: nothing
+        bad_credentials:
+            private: nothing
+            relayed: nothing
+            shared_no_users: nothing
+            shared_has_users: nothing
+
+    # Settings for relay mode
+    relay:
+        enabled: false
+        admin_only: true
+        default_relays: []
+        message_formats:
+            m.text: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b>: {{ .Message }}{% endraw %}"
+            m.notice: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b>: {{ .Message }}{% endraw %}"
+            m.emote: "{% raw %}* <b>{{ .Sender.DisambiguatedName }}</b> {{ .Message }}{% endraw %}"
+            m.file: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a file{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.image: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent an image{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.audio: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent an audio file{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.video: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a video{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+            m.location: "{% raw %}<b>{{ .Sender.DisambiguatedName }}</b> sent a location{{ if .Caption }}: {{ .Caption }}{{ end }}{% endraw %}"
+        displayname_format: "{% raw %}{{ .DisambiguatedName }}{% endraw %}"
+
+    # Permissions for using the bridge.
+    permissions: {{ matrix_rustpush_bridge_bridge_permissions | to_json }}
+
+# Config for the bridge's database.
+database:
+    type: postgres
+    uri: {{ matrix_rustpush_bridge_database_uri | to_json }}
+    max_open_conns: 5
+    max_idle_conns: 1
+    max_conn_idle_time: null
+    max_conn_lifetime: null
+
+# Homeserver details.
+homeserver:
+    address: {{ matrix_rustpush_bridge_homeserver_address | to_json }}
+    domain: {{ matrix_rustpush_bridge_homeserver_domain | to_json }}
+    software: standard
+    status_endpoint:
+    message_send_checkpoint_endpoint:
+    async_media: {{ matrix_rustpush_bridge_homeserver_async_media | to_json }}
+    websocket: false
+    ping_interval_seconds: 0
+
+# Application service host/registration related details.
+appservice:
+    address: {{ matrix_rustpush_bridge_appservice_address | to_json }}
+    public_address: {{ matrix_rustpush_bridge_appservice_public_address | to_json }}
+
+    hostname: 0.0.0.0
+    port: 8081
+
+    id: rustpush-bridge
+    bot:
+        username: {{ matrix_rustpush_bridge_appservice_bot_username | to_json }}
+        displayname: {{ matrix_rustpush_bridge_appservice_bot_displayname | to_json(ensure_ascii=False) }}
+        avatar: {{ matrix_rustpush_bridge_appservice_bot_avatar | to_json }}
+
+    ephemeral_events: true
+    async_transactions: false
+
+    as_token: {{ matrix_rustpush_bridge_appservice_token | to_json }}
+    hs_token: {{ matrix_rustpush_bridge_homeserver_token | to_json }}
+
+    # Localpart template of MXIDs for remote users.
+    username_template: {{ matrix_rustpush_bridge_appservice_username_template | to_json }}
+
+# Config options that affect the Matrix connector of the bridge.
+matrix:
+    message_status_events: false
+    delivery_receipts: false
+    message_error_notices: true
+    sync_direct_chat_list: true
+    federate_rooms: {{ matrix_rustpush_bridge_matrix_federate_rooms | to_json }}
+    upload_file_threshold: 5242880
+
+# Segment-compatible analytics endpoint for tracking some events.
+analytics:
+    token: null
+    url: https://api.segment.io/v1/track
+    user_id: null
+
+# Settings for provisioning API
+provisioning:
+    prefix: /_matrix/provision
+    shared_secret: {{ matrix_rustpush_bridge_provisioning_shared_secret | to_json }}
+    allow_matrix_auth: true
+    debug_endpoints: false
+
+# Settings for backfilling messages.
+backfill:
+    enabled: {{ matrix_rustpush_bridge_backfill_enabled | to_json }}
+    max_initial_messages: {{ matrix_rustpush_bridge_backfill_max_initial_messages | to_json }}
+    max_catchup_messages: {{ matrix_rustpush_bridge_backfill_max_catchup_messages | to_json }}
+    unread_hours_threshold: 720
+    threads:
+        max_initial_messages: 50
+    queue:
+        enabled: false
+        batch_size: 100
+        batch_delay: 20
+        max_batches: -1
+        max_batches_override: {}
+
+# Settings for enabling double puppeting
+double_puppet:
+    servers: {}
+    allow_discovery: false
+    secrets: {{ matrix_rustpush_bridge_double_puppet_secrets | to_json }}
+
+# End-to-bridge encryption support options.
+encryption:
+    allow: {{ matrix_rustpush_bridge_bridge_encryption_allow | to_json }}
+    default: {{ matrix_rustpush_bridge_bridge_encryption_default | to_json }}
+    require: {{ matrix_rustpush_bridge_bridge_encryption_require | to_json }}
+    appservice: {{ matrix_rustpush_bridge_bridge_encryption_appservice | to_json }}
+    msc4190: {{ matrix_rustpush_bridge_msc4190_enabled | to_json }}
+    self_sign: {{ matrix_rustpush_bridge_self_sign_enabled | to_json }}
+    allow_key_sharing: {{ matrix_rustpush_bridge_bridge_encryption_key_sharing_allow | to_json }}
+    pickle_key: {{ matrix_rustpush_bridge_bridge_encryption_pickle_key | to_json }}
+    delete_keys:
+        delete_outbound_on_ack: false
+        dont_store_outbound: false
+        ratchet_on_decrypt: false
+        delete_fully_used_on_decrypt: false
+        delete_prev_on_new_session: false
+        delete_on_device_delete: false
+        periodically_delete_expired: false
+        delete_outdated_inbound: false
+    verification_levels:
+        receive: unverified
+        send: unverified
+        share: cross-signed-tofu
+    rotation:
+        enable_custom: false
+        milliseconds: 604800000
+        messages: 100
+        disable_device_change_key_rotation: false
+
+# Logging config.
+logging:
+    min_level: {{ matrix_rustpush_bridge_logging_level | to_json }}
+    writers:
+        - type: stdout
+          format: pretty-colored

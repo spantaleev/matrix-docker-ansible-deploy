@@ -1,0 +1,110 @@
+{#
+SPDX-FileCopyrightText: 2026 MDAD project contributors
+SPDX-FileCopyrightText: 2026 Jason LaGuidice
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+# ── Stage 1: builder ─────────────────────────────────────────────────────────
+FROM ubuntu:24.04 AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cmake protobuf-compiler build-essential pkg-config \
+    git curl ca-certificates \
+    libolm-dev libclang-dev libssl-dev libunicorn-dev libheif-dev zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Rust — install to default ~/.cargo so the Makefile's $(HOME)/.cargo/bin path resolves
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+    | sh -s -- -y --default-toolchain stable
+ENV PATH=/root/.cargo/bin:$PATH
+
+# Go — arch-aware, fetches latest stable with fallback
+ARG TARGETARCH
+RUN set -e; \
+    GOARCH="${TARGETARCH:-amd64}"; \
+    GO_VERSION=$(curl -fsSL 'https://go.dev/dl/?mode=json' \
+        | grep -o '"version":"go[0-9.]*"' | head -1 \
+        | sed 's/"version":"//;s/"//'); \
+    : "${GO_VERSION:=go1.25.0}"; \
+    curl -fsSL "https://go.dev/dl/${GO_VERSION}.linux-${GOARCH}.tar.gz" \
+        | tar -C /usr/local -xz
+ENV PATH=/usr/local/go/bin:$PATH \
+    GOTOOLCHAIN=local
+
+WORKDIR /build
+
+# ── Rust build layers ─────────────────────────────────────────────────────────
+# Copy files that determine whether the clone+patch layer is valid.
+# Changing the SHA pin, Makefile, or open-absinthe overlay invalidates this layer.
+COPY third_party/rustpush-upstream.sha third_party/
+COPY rustpush/ rustpush/
+COPY Makefile .
+
+# Clone upstream rustpush at the pinned SHA, apply all patches, overlay open-absinthe.
+RUN make ensure-rustpush-source
+
+# Copy Rust crate sources. Changing these invalidates only the Rust build layer,
+# not the clone layer above.
+COPY pkg/rustpushgo/ pkg/rustpushgo/
+COPY nac-validation/ nac-validation/
+
+# Build the Rust static library (~3 min; cached when Rust source is unchanged).
+# hardware-key enables the unicorn-based x86 NAC emulator required on Linux
+# (both amd64 and arm64 — unicorn supports cross-arch x86 emulation).
+RUN cd pkg/rustpushgo && \
+    cargo build --release --features hardware-key && \
+    cp target/release/librustpushgo.a /build/librustpushgo.a
+
+# ── Go build layers ───────────────────────────────────────────────────────────
+# Download modules first so this layer is cached by go.mod/go.sum.
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy Go source.
+COPY cmd/ cmd/
+COPY pkg/connector/ pkg/connector/
+COPY imessage/ imessage/
+COPY ipc/ ipc/
+
+# Build the bridge binary.
+ARG BUILD_VERSION=dev
+ARG BUILD_COMMIT=unknown
+RUN BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) && \
+    CGO_LDFLAGS="-L/build" \
+    go build \
+    -ldflags "-X main.Tag=${BUILD_VERSION} -X main.Commit=${BUILD_COMMIT} -X main.BuildTime=${BUILD_TIME}" \
+    -o /build/matrix-rustpush \
+    ./cmd/matrix-rustpush/
+
+# ── Stage 2: runtime ─────────────────────────────────────────────────────────
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Runtime shared libraries the bridge binary needs at startup.
+# libunicorn2  — unicorn-engine x86 NAC emulator (hardware-key feature)
+# libheif1     — HEIC/HEIF conversion (linked at compile time even when disabled)
+# libolm3      — Matrix OLM encryption (mautrix bridgev2 framework)
+# libssl3      — OpenSSL (rustpush openssl crate dynamic link)
+# ffmpeg       — video transcoding
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libunicorn2 libheif1 libolm3 libssl3 ffmpeg \
+    ca-certificates openssl curl \
+    && curl -fsSL 'https://www.apple.com/appleca/AppleIncRootCertificate.cer' \
+        -o /tmp/AppleRootCA.cer \
+    && openssl x509 -inform DER -in /tmp/AppleRootCA.cer \
+        -out /usr/local/share/ca-certificates/AppleRootCA.crt \
+    && update-ca-certificates \
+    && rm /tmp/AppleRootCA.cer \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /build/matrix-rustpush /usr/local/bin/matrix-rustpush
+
+WORKDIR /data
+VOLUME /data
+EXPOSE 29332
+
+ENTRYPOINT ["matrix-rustpush", "-c", "/data/config.yaml"]
