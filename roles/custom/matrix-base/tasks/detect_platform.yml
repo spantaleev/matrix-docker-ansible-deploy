@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Chiu Ki Sit
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Detect Synology DSM
+  ansible.builtin.stat:
+    path: /etc/synoinfo.conf
+  register: matrix_base_synoinfo_conf_stat
+  when: matrix_base_host_is_synology is none
+
+- name: Set matrix_base_host_is_synology from detection
+  ansible.builtin.set_fact:
+    matrix_base_host_is_synology: "{{ matrix_base_synoinfo_conf_stat.stat.exists }}"
+  when: matrix_base_host_is_synology is none

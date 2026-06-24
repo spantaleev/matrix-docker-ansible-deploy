@@ -1,0 +1,69 @@
+# SPDX-FileCopyrightText: 2026 Chiu Ki Sit
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if matrix_synology_user_password is not set
+  ansible.builtin.fail:
+    msg: >-
+      You must set `matrix_synology_user_password` to a non-empty value in your vars.yml.
+      This password secures the Matrix service account on Synology DSM.
+      The account is created as expired so the password cannot be used to log in.
+  when: matrix_synology_user_password == '' or matrix_synology_user_password is none
+
+- name: Check if Matrix user exists (Synology)
+  ansible.builtin.command: id {{ matrix_user_name }}
+  register: matrix_user_check
+  changed_when: false
+  failed_when: false
+
+# Created with expired=1 (cannot log in)
+# as this is a service account. If you pre-create the user, you are responsible
+# for securing it; the playbook will not modify an existing account's settings.
+- name: Ensure Matrix user is created (Synology)
+  ansible.builtin.command: >
+    /usr/syno/sbin/synouser --add {{ matrix_user_name }}
+    "{{ matrix_synology_user_password }}" "{{ matrix_user_name }}" 1 "" 0
+  when: matrix_user_check.rc != 0
+  changed_when: true
+  no_log: true
+
+- name: Ensure Matrix user password is up to date (Synology)
+  ansible.builtin.command: /usr/syno/sbin/synouser --setpw {{ matrix_user_name }} "{{ matrix_synology_user_password }}"
+  when: matrix_user_check.rc == 0
+  changed_when: false
+  no_log: true
+
+- name: Check if Matrix group exists (Synology)
+  ansible.builtin.command: /usr/syno/sbin/synogroup --get {{ matrix_group_name }}
+  register: matrix_group_check
+  changed_when: false
+  failed_when: false
+
+- name: Ensure Matrix group is created (Synology)
+  ansible.builtin.command: /usr/syno/sbin/synogroup --add {{ matrix_group_name }} {{ matrix_user_name }}
+  when: matrix_group_check.rc != 0
+  changed_when: true
+
+- name: Get Matrix user UID (Synology)
+  ansible.builtin.command: id -u {{ matrix_user_name }}
+  register: matrix_user_uid_result
+  changed_when: false
+
+- name: Get Matrix group info (Synology)
+  ansible.builtin.command: /usr/syno/sbin/synogroup --get {{ matrix_group_name }}
+  register: matrix_synogroup_result
+  changed_when: false
+
+- name: Initialize matrix_user_uid and matrix_user_gid
+  ansible.builtin.set_fact:
+    matrix_user_uid: "{{ matrix_user_uid_result.stdout }}"
+    matrix_user_gid: >-
+      {{
+        matrix_synogroup_result.stdout_lines
+        | select('match', '^Group ID:')
+        | first
+        | regex_search('\[(\d+)\]', '\1')
+        | first
+      }}

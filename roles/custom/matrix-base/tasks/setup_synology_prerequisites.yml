@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Chiu Ki Sit
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Ensure requests Python package is constrained for Docker SDK compatibility (Synology)
+  ansible.builtin.pip:
+    name: "{{ matrix_base_synology_requests_version_constraint }}"
+    state: present
+
+# Run immediately during setup so matrix services can start without a manual
+# step. The boot-fix service handles this on every subsequent reboot.
+# noqa command-instead-of-module: ansible.builtin.mount does not support
+# changing mount propagation (--make-shared); command is the only option here.
+- name: Ensure /volume1 has shared mount propagation (Synology)
+  ansible.builtin.command: mount --make-shared /volume1  # noqa command-instead-of-module
+  changed_when: false
+
+- ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_synology_boot_fix.yml"

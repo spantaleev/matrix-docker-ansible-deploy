@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2020 - 2022 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2022 Marko Weltzer
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Ensure Matrix group is created
+  ansible.builtin.group:
+    name: "{{ matrix_group_name }}"
+    gid: "{{ omit if matrix_user_gid is none else matrix_user_gid }}"
+    state: present
+    system: "{{ matrix_group_system }}"
+  register: matrix_group
+
+- name: Ensure Matrix user is created
+  ansible.builtin.user:
+    name: "{{ matrix_user_name }}"
+    uid: "{{ omit if matrix_user_uid is none else matrix_user_uid }}"
+    state: present
+    group: "{{ matrix_group_name }}"
+    home: "{{ matrix_base_data_path }}"
+    create_home: false
+    system: "{{ matrix_user_system }}"
+    shell: "{{ matrix_user_shell }}"
+  register: matrix_user
+
+- name: Initialize matrix_user_uid and matrix_user_gid
+  ansible.builtin.set_fact:
+    matrix_user_uid: "{{ matrix_user.uid }}"
+    matrix_user_gid: "{{ matrix_group.gid }}"

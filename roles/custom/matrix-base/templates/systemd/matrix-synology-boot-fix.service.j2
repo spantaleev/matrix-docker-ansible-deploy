@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Chiu Ki Sit
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+[Unit]
+Description=Matrix Services Boot Recovery (Synology)
+# Run after multi-user.target so all matrix services have been attempted first.
+After=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart={{ matrix_bin_path }}/matrix-synology-boot-fix
+
+[Install]
+WantedBy=multi-user.target
