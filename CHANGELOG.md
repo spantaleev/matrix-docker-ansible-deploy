@@ -1,3 +1,13 @@
+# 2026-06-24
+
+## Support for bridging to iMessage via RustPush
+
+Thanks to [jasonlaguidice](https://github.com/jasonlaguidice), the playbook now supports bridging to [iMessage](https://support.apple.com/messages) via a new [RustPush](https://github.com/OpenBubbles/rustpush)-based bridge ([jasonlaguidice/imessage](https://github.com/jasonlaguidice/imessage)).
+
+Unlike the existing [mautrix-wsproxy](./docs/configuring-playbook-bridge-mautrix-wsproxy.md) iMessage bridge, this one talks directly to Apple's push notification service, so it needs neither a running Mac nor a wsproxy on the homeserver. Each user supplies a hardware key extracted from a Mac through the bridge bot's login flow.
+
+To learn more, see our [Setting up RustPush (iMessage) bridging](./docs/configuring-playbook-bridge-rustpush.md) documentation page.
+
 # 2026-05-24
 
 ## matrix-ldap-registration-proxy has been removed from the playbook
