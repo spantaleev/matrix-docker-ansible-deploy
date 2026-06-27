@@ -177,6 +177,43 @@ matrix_tuwunel_config_forbidden_remote_server_names: []
 matrix_tuwunel_config_forbidden_remote_room_directory_server_names: []
 matrix_tuwunel_config_prevent_media_downloads_from: []
 
+# List of IPv4/IPv6 CIDR ranges tuwunel refuses to send outbound requests to (SSRF protection).
+# This applies to push gateway delivery, URL previews, and remote media fetches.
+# Bridges/appservices use a separate resolver and are not affected.
+#
+# The default mirrors tuwunel's own upstream default, which denies RFC1918,
+# loopback, multicast, and other unroutable/testnet ranges.
+#
+# To deny additional ranges, append to `matrix_tuwunel_config_ip_range_denylist_custom`.
+# To permit a range that the default denies (e.g. if you run a push gateway like a
+# localhost Sygnal or a LAN ntfy/UnifiedPush server on a private/loopback address, to
+# which push delivery would otherwise be silently blocked), override
+# `matrix_tuwunel_config_ip_range_denylist_default` with a trimmed list.
+# Set the whole list to `[]` to disable denylisting entirely.
+matrix_tuwunel_config_ip_range_denylist: "{{ matrix_tuwunel_config_ip_range_denylist_default + matrix_tuwunel_config_ip_range_denylist_auto + matrix_tuwunel_config_ip_range_denylist_custom }}"
+matrix_tuwunel_config_ip_range_denylist_default:
+  - '127.0.0.0/8'
+  - '10.0.0.0/8'
+  - '172.16.0.0/12'
+  - '192.168.0.0/16'
+  - '100.64.0.0/10'
+  - '192.0.0.0/24'
+  - '169.254.0.0/16'
+  - '192.88.99.0/24'
+  - '198.18.0.0/15'
+  - '192.0.2.0/24'
+  - '198.51.100.0/24'
+  - '203.0.113.0/24'
+  - '224.0.0.0/4'
+  - '::1/128'
+  - 'fe80::/10'
+  - 'fc00::/7'
+  - '2001:db8::/32'
+  - 'ff00::/8'
+  - 'fec0::/10'
+matrix_tuwunel_config_ip_range_denylist_auto: []
+matrix_tuwunel_config_ip_range_denylist_custom: []
+
 # MSC4284 policy server enforcement.
 # When enabled, rooms with a valid `m.room.policy` state event will have
 # outgoing events signed by the configured policy server before federation.
