@@ -38,6 +38,13 @@ matrix_mautrix_gmessages_homeserver_async_media: false
 matrix_mautrix_gmessages_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_gmessages_appservice_address: "http://matrix-mautrix-gmessages:8080"
 
+# Scheme of the bridge's public address (see `matrix_mautrix_gmessages_bridge_public_address`).
+matrix_mautrix_gmessages_scheme: https
+
+# The public base URL at which this bridge's HTTP API is reachable from outside (when exposed).
+# Used for the provisioning API's external-server (OpenID) flow and for public media links.
+matrix_mautrix_gmessages_bridge_public_address: "{{ (matrix_mautrix_gmessages_scheme + '://' + matrix_mautrix_gmessages_exposure_hostname + matrix_mautrix_gmessages_exposure_path_prefix) if matrix_mautrix_gmessages_exposure_enabled else '' }}"
+
 matrix_mautrix_gmessages_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
 matrix_mautrix_gmessages_self_sign_enabled: "{{ matrix_bridges_self_sign_enabled }}"
 
@@ -74,6 +81,15 @@ matrix_mautrix_gmessages_container_labels_metrics_traefik_tls_certResolver: "{{ 
 matrix_mautrix_gmessages_container_labels_metrics_middleware_basic_auth_enabled: false
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
 matrix_mautrix_gmessages_container_labels_metrics_middleware_basic_auth_users: ''
+
+# Controls whether labels will be added that expose mautrix-gmessages' HTTP API
+# (used by tools like mautrix-manager for bridge login) at `https://<hostname><path_prefix>`.
+matrix_mautrix_gmessages_container_labels_exposure_enabled: "{{ matrix_mautrix_gmessages_exposure_enabled }}"
+matrix_mautrix_gmessages_container_labels_exposure_traefik_rule: "Host(`{{ matrix_mautrix_gmessages_exposure_hostname }}`) && PathPrefix(`{{ matrix_mautrix_gmessages_exposure_path_prefix }}`)"
+matrix_mautrix_gmessages_container_labels_exposure_traefik_priority: 0
+matrix_mautrix_gmessages_container_labels_exposure_traefik_entrypoints: "{{ matrix_mautrix_gmessages_container_labels_traefik_entrypoints }}"
+matrix_mautrix_gmessages_container_labels_exposure_traefik_tls: "{{ matrix_mautrix_gmessages_container_labels_exposure_traefik_entrypoints != 'web' }}"
+matrix_mautrix_gmessages_container_labels_exposure_traefik_tls_certResolver: "{{ matrix_mautrix_gmessages_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # matrix_mautrix_gmessages_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
@@ -118,6 +134,11 @@ matrix_mautrix_gmessages_metrics_enabled: false
 matrix_mautrix_gmessages_metrics_proxying_enabled: false
 matrix_mautrix_gmessages_metrics_proxying_hostname: ''
 matrix_mautrix_gmessages_metrics_proxying_path_prefix: ''
+
+# Controls whether mautrix-gmessages' HTTP API is exposed publicly (used by tools like mautrix-manager for bridge login).
+matrix_mautrix_gmessages_exposure_enabled: false
+matrix_mautrix_gmessages_exposure_hostname: ''
+matrix_mautrix_gmessages_exposure_path_prefix: ''
 
 # Database-related configuration fields.
 #
@@ -167,6 +188,10 @@ matrix_mautrix_gmessages_network_displayname_template: "{% raw %}{{or .FullName 
 matrix_mautrix_gmessages_appservice_username_template: "{% raw %}gmessages_{{.}}{% endraw %}"
 
 matrix_mautrix_gmessages_public_media_signing_key: ''
+
+# Shared secret for authentication of provisioning API requests.
+# If set to "disable", the provisioning API will be disabled.
+matrix_mautrix_gmessages_provisioning_shared_secret: disable
 
 matrix_mautrix_gmessages_bridge_personal_filtering_spaces: true
 

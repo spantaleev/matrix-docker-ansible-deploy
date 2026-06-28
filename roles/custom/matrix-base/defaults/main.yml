@@ -54,6 +54,15 @@ matrix_bridges_msc4190_enabled: "{{ matrix_authentication_service_enabled and ma
 # Global var for enabling bridge self-signing ( On supported bridges)
 matrix_bridges_self_sign_enabled: "{{ matrix_bridges_msc4190_enabled }}"
 
+# Global vars for exposing bridges' HTTP API publicly on the Matrix domain.
+# This is used by tools like mautrix-manager (https://github.com/mautrix/manager) to drive bridge login.
+# Each supported bridge's HTTP endpoint is exposed under `<path_prefix>/<bridge>` (e.g. `/bridges/gmessages`).
+# Requests are authenticated by the bridge itself (e.g. per-user Matrix access token for the provisioning API,
+# or the homeserver token for the appservice endpoints), not by us.
+matrix_bridges_exposure_enabled: true
+matrix_bridges_exposure_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_bridges_exposure_path_prefix: /bridges
+
 # Global var to enable/disable relay mode across all bridges with relay mode support
 matrix_bridges_relay_enabled: false
 
