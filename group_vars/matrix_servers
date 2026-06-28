@@ -2403,6 +2403,7 @@ matrix_mautrix_whatsapp_appservice_token: "{{ (matrix_homeserver_generic_secret_
 
 matrix_mautrix_whatsapp_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_mautrix_whatsapp_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':wa.hs.token') | hash('sha512') | to_uuid }}"
+matrix_mautrix_whatsapp_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':wa.prov') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_whatsapp_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -2420,6 +2421,11 @@ matrix_mautrix_whatsapp_metrics_enabled: "{{ prometheus_enabled or matrix_metric
 matrix_mautrix_whatsapp_metrics_proxying_enabled: "{{ matrix_mautrix_whatsapp_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_whatsapp_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
 matrix_mautrix_whatsapp_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-whatsapp"
+
+matrix_mautrix_whatsapp_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_mautrix_whatsapp_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
+matrix_mautrix_whatsapp_exposure_hostname: "{{ matrix_bridges_exposure_hostname }}"
+matrix_mautrix_whatsapp_exposure_path_prefix: "{{ matrix_bridges_exposure_path_prefix }}/whatsapp"
 
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_whatsapp_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
