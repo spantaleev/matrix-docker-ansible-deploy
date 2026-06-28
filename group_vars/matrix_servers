@@ -1829,6 +1829,11 @@ matrix_mautrix_signal_metrics_proxying_enabled: "{{ matrix_mautrix_signal_metric
 matrix_mautrix_signal_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
 matrix_mautrix_signal_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-signal"
 
+matrix_mautrix_signal_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_mautrix_signal_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
+matrix_mautrix_signal_exposure_hostname: "{{ matrix_bridges_exposure_hostname }}"
+matrix_mautrix_signal_exposure_path_prefix: "{{ matrix_bridges_exposure_path_prefix }}/signal"
+
 matrix_mautrix_signal_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_signal_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_mautrix_signal_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.signal.db') | hash('sha512') | to_uuid }}"
