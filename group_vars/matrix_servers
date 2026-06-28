@@ -2150,6 +2150,11 @@ matrix_mautrix_twitter_metrics_proxying_enabled: "{{ matrix_mautrix_twitter_metr
 matrix_mautrix_twitter_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
 matrix_mautrix_twitter_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-twitter"
 
+matrix_mautrix_twitter_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_mautrix_twitter_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
+matrix_mautrix_twitter_exposure_hostname: "{{ matrix_bridges_exposure_hostname }}"
+matrix_mautrix_twitter_exposure_path_prefix: "{{ matrix_bridges_exposure_path_prefix }}/twitter"
+
 matrix_mautrix_twitter_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_mautrix_twitter_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.twt.db') | hash('sha512') | to_uuid if postgres_enabled else '' }}"
 
