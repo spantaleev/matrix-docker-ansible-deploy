@@ -36,8 +36,12 @@ matrix_mautrix_bluesky_appservice_address: 'http://matrix-mautrix-bluesky:29340'
 matrix_mautrix_bluesky_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
 matrix_mautrix_bluesky_self_sign_enabled: "{{ matrix_bridges_self_sign_enabled }}"
 
-# A public address that external services can use to reach this appservice.
-matrix_mautrix_bluesky_appservice_public_address: ''
+# Scheme of the bridge's public address (see `matrix_mautrix_bluesky_appservice_public_address`).
+matrix_mautrix_bluesky_scheme: https
+
+# A public address that external services can use to reach this appservice (when exposed).
+# Used for the provisioning API's external-server (OpenID) flow and for public media links.
+matrix_mautrix_bluesky_appservice_public_address: "{{ (matrix_mautrix_bluesky_scheme + '://' + matrix_mautrix_bluesky_exposure_hostname + matrix_mautrix_bluesky_exposure_path_prefix) if matrix_mautrix_bluesky_exposure_enabled else '' }}"
 
 # Displayname template for Bluesky users.
 # {{ .DisplayName }} is replaced with the display name of the Bluesky user.
@@ -77,6 +81,15 @@ matrix_mautrix_bluesky_container_labels_metrics_traefik_tls_certResolver: "{{ ma
 matrix_mautrix_bluesky_container_labels_metrics_middleware_basic_auth_enabled: false
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
 matrix_mautrix_bluesky_container_labels_metrics_middleware_basic_auth_users: ''
+
+# Controls whether labels will be added that expose mautrix-bluesky's HTTP API
+# (used by tools like mautrix-manager for bridge login) at `https://<hostname><path_prefix>`.
+matrix_mautrix_bluesky_container_labels_exposure_enabled: "{{ matrix_mautrix_bluesky_exposure_enabled }}"
+matrix_mautrix_bluesky_container_labels_exposure_traefik_rule: "Host(`{{ matrix_mautrix_bluesky_exposure_hostname }}`) && PathPrefix(`{{ matrix_mautrix_bluesky_exposure_path_prefix }}`)"
+matrix_mautrix_bluesky_container_labels_exposure_traefik_priority: 0
+matrix_mautrix_bluesky_container_labels_exposure_traefik_entrypoints: "{{ matrix_mautrix_bluesky_container_labels_traefik_entrypoints }}"
+matrix_mautrix_bluesky_container_labels_exposure_traefik_tls: "{{ matrix_mautrix_bluesky_container_labels_exposure_traefik_entrypoints != 'web' }}"
+matrix_mautrix_bluesky_container_labels_exposure_traefik_tls_certResolver: "{{ matrix_mautrix_bluesky_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # matrix_mautrix_bluesky_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
@@ -157,6 +170,11 @@ matrix_mautrix_bluesky_metrics_enabled: false
 matrix_mautrix_bluesky_metrics_proxying_enabled: false
 matrix_mautrix_bluesky_metrics_proxying_hostname: ''
 matrix_mautrix_bluesky_metrics_proxying_path_prefix: ''
+
+# Controls whether mautrix-bluesky's HTTP API is exposed publicly (used by tools like mautrix-manager for bridge login).
+matrix_mautrix_bluesky_exposure_enabled: false
+matrix_mautrix_bluesky_exposure_hostname: ''
+matrix_mautrix_bluesky_exposure_path_prefix: ''
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
