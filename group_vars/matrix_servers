@@ -2064,6 +2064,11 @@ matrix_mautrix_telegram_metrics_proxying_enabled: "{{ matrix_mautrix_telegram_me
 matrix_mautrix_telegram_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
 matrix_mautrix_telegram_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-telegram"
 
+matrix_mautrix_telegram_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_mautrix_telegram_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
+matrix_mautrix_telegram_exposure_hostname: "{{ matrix_bridges_exposure_hostname }}"
+matrix_mautrix_telegram_exposure_path_prefix: "{{ matrix_bridges_exposure_path_prefix }}/telegram"
+
 # Postgres is the default, except if not using internal Postgres server
 matrix_mautrix_telegram_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
 matrix_mautrix_telegram_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"

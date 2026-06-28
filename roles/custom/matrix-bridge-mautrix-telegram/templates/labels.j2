@@ -46,6 +46,39 @@ traefik.http.routers.matrix-mautrix-telegram-metrics.tls.certResolver={{ matrix_
 ############################################################
 {% endif %}
 
+{% if matrix_mautrix_telegram_container_labels_exposure_enabled %}
+############################################################
+#                                                          #
+# Bridge API exposure                                      #
+#                                                          #
+############################################################
+
+traefik.http.services.matrix-mautrix-telegram-exposure.loadbalancer.server.port=8080
+
+traefik.http.middlewares.matrix-mautrix-telegram-exposure-strip-prefix.stripprefix.prefixes={{ matrix_mautrix_telegram_exposure_path_prefix }}
+traefik.http.routers.matrix-mautrix-telegram-exposure.middlewares=matrix-mautrix-telegram-exposure-strip-prefix
+
+traefik.http.routers.matrix-mautrix-telegram-exposure.rule={{ matrix_mautrix_telegram_container_labels_exposure_traefik_rule }}
+
+{% if matrix_mautrix_telegram_container_labels_exposure_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-telegram-exposure.priority={{ matrix_mautrix_telegram_container_labels_exposure_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-mautrix-telegram-exposure.service=matrix-mautrix-telegram-exposure
+traefik.http.routers.matrix-mautrix-telegram-exposure.entrypoints={{ matrix_mautrix_telegram_container_labels_exposure_traefik_entrypoints }}
+
+traefik.http.routers.matrix-mautrix-telegram-exposure.tls={{ matrix_mautrix_telegram_container_labels_exposure_traefik_tls | to_json }}
+{% if matrix_mautrix_telegram_container_labels_exposure_traefik_tls %}
+traefik.http.routers.matrix-mautrix-telegram-exposure.tls.certResolver={{ matrix_mautrix_telegram_container_labels_exposure_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Bridge API exposure                                     #
+#                                                          #
+############################################################
+{% endif %}
+
 
 {% endif %}
 
