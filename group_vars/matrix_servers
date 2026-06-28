@@ -1899,6 +1899,7 @@ matrix_mautrix_meta_messenger_appservice_token: "{{ (matrix_homeserver_generic_s
 matrix_mautrix_meta_messenger_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
 matrix_mautrix_meta_messenger_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.fb.hs') | hash('sha512') | to_uuid }}"
+matrix_mautrix_meta_messenger_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.fb.prov') | hash('sha512') | to_uuid }}"
 
 matrix_mautrix_meta_messenger_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
@@ -1916,6 +1917,11 @@ matrix_mautrix_meta_messenger_metrics_enabled: "{{ prometheus_enabled or matrix_
 matrix_mautrix_meta_messenger_metrics_proxying_enabled: "{{ matrix_mautrix_meta_messenger_metrics_enabled and matrix_metrics_exposure_enabled }}"
 matrix_mautrix_meta_messenger_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
 matrix_mautrix_meta_messenger_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-meta-messenger"
+
+matrix_mautrix_meta_messenger_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_mautrix_meta_messenger_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
+matrix_mautrix_meta_messenger_exposure_hostname: "{{ matrix_bridges_exposure_hostname }}"
+matrix_mautrix_meta_messenger_exposure_path_prefix: "{{ matrix_bridges_exposure_path_prefix }}/meta-messenger"
 
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
