@@ -1,0 +1,154 @@
+#jinja2: lstrip_blocks: True
+base_url: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_base_url | to_json }}
+
+api_key: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_api_key | to_json }}
+
+{% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_enabled %}
+text_generation:
+  model_id: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_model_id | to_json }}
+  prompt: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_prompt | to_json }}
+  temperature: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_temperature | to_json }}
+  max_response_tokens: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_max_response_tokens | int | to_json }}
+  max_context_tokens: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_max_context_tokens | int | to_json }}
+  prompt_cache_retention: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_prompt_cache_retention | to_json }}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_top_p is not none %}
+  top_p: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_top_p | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_frequency_penalty is not none %}
+  frequency_penalty: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_frequency_penalty | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_presence_penalty is not none %}
+  presence_penalty: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_presence_penalty | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_repetition_penalty is not none %}
+  repetition_penalty: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_repetition_penalty | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_reasoning_effort is not none %}
+  reasoning_effort: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_reasoning_effort | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_show_reasoning is not none %}
+  show_reasoning: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_show_reasoning | to_json }}
+  {% endif %}
+  venice_parameters:
+    enable_web_search: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_web_search | to_json }}
+    strip_thinking_response: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_strip_thinking_response | to_json }}
+    enable_e2ee: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_e2ee | to_json }}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_web_citations is not none %}
+    enable_web_citations: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_web_citations | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_web_scraping is not none %}
+    enable_web_scraping: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_web_scraping | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_include_venice_system_prompt is not none %}
+    include_venice_system_prompt: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_include_venice_system_prompt | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_include_search_results_in_stream is not none %}
+    include_search_results_in_stream: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_include_search_results_in_stream | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_return_search_results_as_documents is not none %}
+    return_search_results_as_documents: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_return_search_results_as_documents | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_x_search is not none %}
+    enable_x_search: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_x_search | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_disable_thinking is not none %}
+    disable_thinking: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_disable_thinking | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_verbosity is not none %}
+    verbosity: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_verbosity | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_character_slug is not none %}
+    character_slug: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_character_slug | to_json }}
+    {% endif %}
+{% endif %}
+
+{% if matrix_bot_baibot_config_agents_static_definitions_venice_config_speech_to_text_enabled %}
+speech_to_text:
+  model_id: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_speech_to_text_model_id | to_json }}
+{% endif %}
+
+{% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_enabled %}
+text_to_speech:
+  model_id: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_model_id | to_json }}
+  voice: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_voice | to_json }}
+  response_format: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_response_format | to_json }}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_speed is not none %}
+  speed: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_speed | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_prompt is not none %}
+  prompt: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_prompt | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_temperature is not none %}
+  temperature: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_temperature | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_top_p is not none %}
+  top_p: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_top_p | to_json }}
+  {% endif %}
+{% endif %}
+
+{% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_enabled %}
+image_generation:
+  model_id: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_model_id | to_json }}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_negative_prompt is not none %}
+  negative_prompt: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_negative_prompt | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_cfg_scale is not none %}
+  cfg_scale: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_cfg_scale | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_steps is not none %}
+  steps: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_steps | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_style_preset is not none %}
+  style_preset: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_style_preset | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_seed is not none %}
+  seed: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_seed | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_safe_mode is not none %}
+  safe_mode: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_safe_mode | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_hide_watermark is not none %}
+  hide_watermark: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_hide_watermark | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_format is not none %}
+  format: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_format | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_width is not none %}
+  width: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_width | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_height is not none %}
+  height: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_height | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_aspect_ratio is not none %}
+  aspect_ratio: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_aspect_ratio | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_resolution is not none %}
+  resolution: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_resolution | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_quality is not none %}
+  quality: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_quality | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_lora_strength is not none %}
+  lora_strength: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_lora_strength | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_embed_exif_metadata is not none %}
+  embed_exif_metadata: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_embed_exif_metadata | to_json }}
+  {% endif %}
+  {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_enable_web_search is not none %}
+  enable_web_search: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_enable_web_search | to_json }}
+  {% endif %}
+  edit:
+    model_id: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_model_id | to_json }}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_output_format is not none %}
+    output_format: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_output_format | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_aspect_ratio is not none %}
+    aspect_ratio: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_aspect_ratio | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_resolution is not none %}
+    resolution: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_resolution | to_json }}
+    {% endif %}
+    {% if matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_safe_mode is not none %}
+    safe_mode: {{ matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_safe_mode | to_json }}
+    {% endif %}
+{% endif %}

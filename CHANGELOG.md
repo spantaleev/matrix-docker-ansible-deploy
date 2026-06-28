@@ -1,3 +1,19 @@
+# 2026-06-28
+
+## baibot now supports Venice, our recommended provider
+
+[baibot](./docs/configuring-playbook-bot-baibot.md) now ships a preset for the [Venice](./docs/configuring-playbook-bot-baibot.md#venice) provider, and it's the one we recommend. It's the most capable provider baibot supports (text generation with vision, file inputs and web search, speech-to-text, text-to-speech, and image generation and editing), and the only one that runs inference with no logging and no training on your data.
+
+Enabling it takes a preset toggle and an API key:
+
+```yaml
+matrix_bot_baibot_config_agents_static_definitions_venice_enabled: true
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_api_key: "YOUR_API_KEY_HERE"
+```
+
+[OpenAI](https://openai.com/) and baibot's other providers remain fully supported. To get started, see the [Setting up baibot](./docs/configuring-playbook-bot-baibot.md#venice) documentation page.
+
 # 2026-06-24
 
 ## Support for bridging to iMessage via RustPush
