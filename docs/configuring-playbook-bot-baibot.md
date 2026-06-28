@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 🤖 [baibot](https://github.com/etkecc/baibot) (pronounced bye-bot) is a [Matrix](https://matrix.org/) bot developed by [etke.cc](https://etke.cc/) that exposes the power of [AI](https://en.wikipedia.org/wiki/Artificial_intelligence) / [Large Language Models](https://en.wikipedia.org/wiki/Large_language_model) to you. 🤖
 
-It supports [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) models, as many well as other [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md).
+It supports many [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md), including the privacy-first [Venice](#venice) we recommend, [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) models, and more.
 
 It's designed as a more private and [✨ featureful](https://github.com/etkecc/baibot/?tab=readme-ov-file#-features) alternative to [matrix-chatgpt-bot](./configuring-playbook-bot-chatgpt.md). See the [baibot](https://github.com/etkecc/baibot) project and its documentation for more information.
 
@@ -159,7 +159,38 @@ Agents defined statically and those created dynamically (via chat) are named dif
 
 Depending on your propensity for [GitOps](https://en.wikipedia.org/wiki/DevOps#GitOps), you may prefer to define agents statically via Ansible, or you may wish to do it dynamically via chat.
 
-Before proceeding, we recommend reading the upstream documentation on [How to choose a provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#how-to-choose-a-provider). In short, it's probably best to go with [OpenAI](#openai).
+Before proceeding, we recommend reading the upstream documentation on [How to choose a provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#how-to-choose-a-provider) for a side-by-side of what each one can do. In short: we recommend [Venice](#venice), the most capable provider baibot supports and the only one that keeps no logs and trains on nothing. If you'd rather start with the most widely-used option, [OpenAI](#openai) is a solid, well-supported choice too.
+
+#### Venice
+
+[Venice](https://venice.ai/chat?ref=kpXDe6) _(ref link with a $10 bonus for you)_ is the provider we recommend. It's the most capable one baibot supports, and the only one that pairs that full feature set with real privacy: inference runs on Venice's own GPUs or on zero-data-retention partner hardware, so your prompts and replies are stored nowhere and never used for training. It serves both frontier proprietary models and the latest open-source ones.
+
+Venice also leaves the content policy to you instead of imposing its own. Its models answer without the reflexive refusals some hosted services apply, and both text and image generation can handle adult or otherwise sensitive subjects when you need them to. Image generation ships a `safe_mode` that blurs adult content by default; you can turn it off (see the sample config). This pairs naturally with the privacy above: a bot you can speak to candidly, that keeps nothing.
+
+Unlike the [OpenAI Compatible](#openai-compatible) provider (which can also point at Venice, but drops images and can't reach its audio or native image endpoints), this is a first-class integration that exposes Venice's full parameter set: text-generation with vision, file inputs, prompt caching and native web search, plus speech-to-text, text-to-speech, and image generation and editing.
+
+You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [Venice provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#venice) with the help of the playbook's preset variables.
+
+Here's an example **addition** to your `vars.yml` file:
+
+```yaml
+matrix_bot_baibot_config_agents_static_definitions_venice_enabled: true
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_api_key: "YOUR_API_KEY_HERE"
+
+# The preset ships sensible defaults for every purpose, so changing only the API key above is enough
+# to get going. Uncomment and adjust any of these if you'd like to use different models:
+# matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_model_id: kimi-k2-5
+# matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_model_id: chroma
+```
+
+Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agent, it will be given a `static/` ID prefix and will be named `static/venice`.
+
+Every Venice knob (sampling, caching, reasoning, web-search behavior, voice and image controls) has a matching `matrix_bot_baibot_config_agents_static_definitions_venice_config_*` variable. The [fully-commented sample config](https://github.com/etkecc/baibot/blob/main/docs/sample-provider-configs/venice.yml) explains every one of them.
+
+If you'd like to use more than one model, take a look at the [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset) section below.
+
+💡 You may also wish to use this new agent for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
 
 #### Anthropic
 
@@ -374,7 +405,7 @@ Example **additional** `vars.yml` configuration:
 # As such, changing any of these values subsequently has no effect on the bot's behavior.
 # Once initially configured, the global configuration is managed via bot commands, not via Ansible.
 
-matrix_bot_baibot_config_initial_global_config_handler_catch_all: static/openai
+matrix_bot_baibot_config_initial_global_config_handler_catch_all: static/venice
 
 # In this example, there's no need to define any of these below.
 # Configuring the catch-all purpose handler is enough.

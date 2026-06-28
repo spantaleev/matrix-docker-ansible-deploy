@@ -200,6 +200,12 @@ matrix_bot_baibot_config_agents_static_definitions_auto: |-
         'provider': matrix_bot_baibot_config_agents_static_definitions_openai_provider,
         'config': matrix_bot_baibot_config_agents_static_definitions_openai_config,
     }] if matrix_bot_baibot_config_agents_static_definitions_openai_enabled else [])
+    +
+    ([{
+        'id': matrix_bot_baibot_config_agents_static_definitions_venice_id,
+        'provider': matrix_bot_baibot_config_agents_static_definitions_venice_provider,
+        'config': matrix_bot_baibot_config_agents_static_definitions_venice_config,
+    }] if matrix_bot_baibot_config_agents_static_definitions_venice_enabled else [])
   }}
 matrix_bot_baibot_config_agents_static_definitions_custom: []
 
@@ -438,6 +444,175 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generatio
 ########################################################################################
 #                                                                                      #
 # /OpenAI agent configuration                                                          #
+#                                                                                      #
+########################################################################################
+
+
+########################################################################################
+#                                                                                      #
+# Venice agent configuration                                                           #
+#                                                                                      #
+########################################################################################
+
+matrix_bot_baibot_config_agents_static_definitions_venice_enabled: false
+matrix_bot_baibot_config_agents_static_definitions_venice_id: venice
+matrix_bot_baibot_config_agents_static_definitions_venice_provider: venice
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config: "{{ matrix_bot_baibot_config_agents_static_definitions_venice_config_yaml | from_yaml | combine(matrix_bot_baibot_config_agents_static_definitions_venice_config_extension, recursive=True) }}"
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_yaml: "{{ lookup('template', 'templates/provider/venice-config.yml.j2') }}"
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_extension: "{{ matrix_bot_baibot_config_agents_static_definitions_venice_config_extension_yaml | from_yaml if matrix_bot_baibot_config_agents_static_definitions_venice_config_extension_yaml | from_yaml is mapping else {} }}"
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_extension_yaml: |
+  # Your custom YAML configuration for this provider's configuration goes here.
+  # This configuration extends the default starting configuration (`matrix_bot_baibot_config_agents_static_definitions_venice_config`).
+  #
+  # You can override individual variables from the default configuration, or introduce new ones.
+  #
+  # If you need something more special, you can take full control by
+  # completely redefining `matrix_bot_baibot_config_agents_static_definitions_venice_config_yaml`.
+  #
+  # The fully-commented sample config (every Venice knob, with explanations) lives at:
+  # https://github.com/etkecc/baibot/blob/main/docs/sample-provider-configs/venice.yml
+  #
+  # Example configuration extension follows:
+  #
+  # text_generation:
+  #   venice_parameters:
+  #     enable_web_search: "off"
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_base_url: https://api.venice.ai/api/v1
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_api_key: ""
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_enabled: true
+# For valid model choices, see: https://docs.venice.ai/models/overview
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_model_id: kimi-k2-5
+# The prompt text to use (can be null or empty to not use a prompt).
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_temperature: 1.0
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_max_response_tokens: 4096
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_max_context_tokens: 128000
+# How long Venice keeps the prompt prefix cached: "default", "extended", or "24h".
+# "24h" makes a long, stable system prompt cheap across a day of conversations.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_prompt_cache_retention: 24h
+# The optional top-level sampling and reasoning knobs below default to null, meaning the knob is
+# omitted from the request and Venice applies its own server-side default. Set a value to override.
+# Nucleus sampling, 0.0-1.0 (an alternative to temperature).
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_top_p: ~
+# Penalize tokens by how often they have already appeared, -2.0-2.0.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_frequency_penalty: ~
+# Penalize tokens that have appeared at all, -2.0-2.0.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_presence_penalty: ~
+# Penalize repetition; values above 1.0 discourage repeats.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_repetition_penalty: ~
+# Reasoning budget for models that support it: "low", "medium", or "high".
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_reasoning_effort: ~
+# Append the model's reasoning below the answer as a collapsible "Reasoning" block (folded by default).
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_show_reasoning: ~
+
+# Venice-specific request parameters (the `venice_parameters` bag). Each non-null knob below is sent;
+# a null knob is omitted, so Venice applies its own default. Omitting a knob is NOT the same as
+# setting it to `false` (which actively sends `false`).
+# Web search: "auto" (model decides), "on" (always), or "off".
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_web_search: auto
+# Strip <think></think> blocks from reasoning models so the user sees only the answer.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_strip_thinking_response: true
+# Run in TEE-only mode (works across all models) instead of end-to-end-encrypted inference (only
+# some models support it). TEE is still zero-retention private; this default keeps every model usable.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_e2ee: false
+# Render web-search sources as readable citations in the reply.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_web_citations: ~
+# Let web search read full page content, not just snippets.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_web_scraping: ~
+# Prepend Venice's own system prompt alongside yours.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_include_venice_system_prompt: ~
+# Include search results inline in the streamed response.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_include_search_results_in_stream: ~
+# Return search results as documents rather than inline text.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_return_search_results_as_documents: ~
+# Allow web search to query X (Twitter).
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_enable_x_search: ~
+# Disable the model's thinking phase entirely.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_disable_thinking: ~
+# Response verbosity for models that support it: "low", "medium", or "high".
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_verbosity: ~
+# Use a public Venice character by its slug.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_venice_parameters_character_slug: ~
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_speech_to_text_enabled: true
+matrix_bot_baibot_config_agents_static_definitions_venice_config_speech_to_text_model_id: nvidia/parakeet-tdt-0.6b-v3
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_enabled: true
+# Other models include tts-qwen3-1-7b, tts-xai-v1, tts-elevenlabs-turbo-v2-5, tts-minimax-speech-02-hd.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_model_id: tts-kokoro
+# Voices are model-specific. Kokoro uses af_*/am_*/bf_*/bm_* (e.g. af_sky, am_adam). You can also pass
+# a cloned-voice handle (vv_<id>). An incompatible voice returns an error.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_voice: af_sky
+# Output audio format: mp3, opus, aac, flac, wav, or pcm. mp3 is the broadest Matrix-client fit.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_response_format: mp3
+# The optional knobs below default to null (omitted). Set a value to override Venice's default.
+# Playback speed, 0.25-4.0 (1.0 is normal).
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_speed: ~
+# A style prompt steering emotion/delivery (e.g. "Excited and energetic."). Only Qwen 3 TTS uses it.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_prompt: ~
+# Sampling temperature, 0.0-2.0. Only Qwen 3 / Orpheus / Chatterbox HD use it.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_temperature: ~
+# Nucleus sampling, 0.0-1.0. Only Qwen 3 TTS uses it.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_to_speech_top_p: ~
+
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_enabled: true
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_model_id: chroma
+# The optional generation knobs below default to null (omitted). Set a value to override Venice's
+# default. Omitting a knob is NOT the same as setting it: an omitted knob lets Venice apply its own
+# default, a set value is sent verbatim.
+# A description of what should NOT appear in the image.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_negative_prompt: ~
+# CFG scale, 0-20. Higher values make the image adhere more closely to the prompt.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_cfg_scale: ~
+# Number of inference steps. Model-specific; some models ignore it.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_steps: ~
+# A named style to apply (e.g. "3D Model"). See Venice's image-styles reference.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_style_preset: ~
+# Random seed, -999999999-999999999. Fix it for reproducible results; omit for a random seed.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_seed: ~
+# Blur images classified as adult content. Defaults to true.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_safe_mode: ~
+# Hide the Venice watermark. Venice may ignore this for certain generated content. Defaults to false.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_hide_watermark: ~
+# Output format: jpeg, png, or webp. webp is smallest; png is highest-quality. Defaults to webp.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_format: ~
+# Image dimensions in pixels, each 1-1280. Default 1024x1024.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_width: ~
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_height: ~
+# Aspect ratio (used by certain models, e.g. Nano Banana): "1:1", "16:9". An alternative to width/height.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_aspect_ratio: ~
+# Resolution tier (used by certain models): "1K", "2K", "4K".
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_resolution: ~
+# Output quality for supported models (e.g. GPT Image 2): low, medium, high. Higher can cost more.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_quality: ~
+# Lora strength, 0-100. Only applies if the model uses additional Loras.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_lora_strength: ~
+# Embed the generation prompt into the image's EXIF metadata. Defaults to false.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_embed_exif_metadata: ~
+# Let the model pull the latest info from the web for the image. Model-specific; costs extra credits.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_enable_web_search: ~
+# Image editing shares this image_generation config block; only the model differs.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_model_id: firered-image-edit
+# The optional edit knobs below default to null (omitted). Set a value to override Venice's default.
+# Output format: jpeg, png, or webp. When omitted, Venice infers it (PNG at 1K, JPEG at 2K/4K).
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_output_format: ~
+# Aspect ratio of the result: auto, 1:1, 3:2, 16:9, 21:9, 9:16, 2:3, 3:4, 4:5 (model-specific).
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_aspect_ratio: ~
+# Resolution tier: 1K, 2K, 4K (model-specific). Defaults to 1K.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_resolution: ~
+# Blur images classified as adult content. Defaults to true.
+matrix_bot_baibot_config_agents_static_definitions_venice_config_image_generation_edit_safe_mode: ~
+
+########################################################################################
+#                                                                                      #
+# /Venice agent configuration                                                          #
 #                                                                                      #
 ########################################################################################
 
