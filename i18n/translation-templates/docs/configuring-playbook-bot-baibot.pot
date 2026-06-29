@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 11:56+0100\n"
+"POT-Creation-Date: 2026-06-29 17:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgid "🤖 [baibot](https://github.com/etkecc/baibot) (pronounced bye-bot) is a
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-baibot.md:17
-msgid "It supports [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) models, as many well as other [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md)."
+msgid "It supports many [☁️ providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md), including the privacy-first [Venice](#venice) we recommend, [OpenAI](https://openai.com/)'s [ChatGPT](https://openai.com/blog/chatgpt/) models, and more."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-baibot.md:19
@@ -183,290 +183,321 @@ msgid "Depending on your propensity for [GitOps](https://en.wikipedia.org/wiki/D
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-baibot.md:162
-msgid "Before proceeding, we recommend reading the upstream documentation on [How to choose a provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#how-to-choose-a-provider). In short, it's probably best to go with [OpenAI](#openai)."
+msgid "Before proceeding, we recommend reading the upstream documentation on [How to choose a provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#how-to-choose-a-provider) for a side-by-side of what each one can do. In short: we recommend [Venice](#venice), the most capable provider baibot supports and the only one that keeps no logs and trains on nothing. If you'd rather start with the most widely-used option, [OpenAI](#openai) is a solid, well-supported choice too."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-baibot.md:164
-msgid "Anthropic"
+msgid "Venice"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-baibot.md:166
-msgid "You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [Anthropic provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#anthropic) with the help of the playbook's preset variables."
+msgid "[Venice](https://venice.ai/chat?ref=kpXDe6) _(ref link with a $10 bonus for you)_ is the provider we recommend. It's the most capable one baibot supports, and the only one that pairs that full feature set with real privacy: inference runs on Venice's own GPUs or on zero-data-retention partner hardware, so your prompts and replies are stored nowhere and never used for training. It serves both frontier proprietary models and the latest open-source ones."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-baibot.md:168
-#: ../../../docs/configuring-playbook-bot-baibot.md:192
+msgid "Venice also leaves the content policy to you instead of imposing its own. Its models answer without the reflexive refusals some hosted services apply, and both text and image generation can handle adult or otherwise sensitive subjects when you need them to. Image generation ships a `safe_mode` that blurs adult content by default; you can turn it off (see the sample config). This pairs naturally with the privacy above: a bot you can speak to candidly, that keeps nothing."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-baibot.md:170
+msgid "Unlike the [OpenAI Compatible](#openai-compatible) provider (which can also point at Venice, but drops images and can't reach its audio or native image endpoints), this is a first-class integration that exposes Venice's full parameter set: text-generation with vision, file inputs, prompt caching and native web search, plus speech-to-text, text-to-speech, and image generation and editing."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-baibot.md:172
+msgid "You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [Venice provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#venice) with the help of the playbook's preset variables."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-baibot.md:174
+#: ../../../docs/configuring-playbook-bot-baibot.md:199
 #: ../../../docs/configuring-playbook-bot-baibot.md:223
-#: ../../../docs/configuring-playbook-bot-baibot.md:251
+#: ../../../docs/configuring-playbook-bot-baibot.md:254
+#: ../../../docs/configuring-playbook-bot-baibot.md:282
 msgid "Here's an example **addition** to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:184
+#: ../../../docs/configuring-playbook-bot-baibot.md:187
+msgid "Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agent, it will be given a `static/` ID prefix and will be named `static/venice`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-baibot.md:189
+msgid "Every Venice knob (sampling, caching, reasoning, web-search behavior, voice and image controls) has a matching `matrix_bot_baibot_config_agents_static_definitions_venice_config_*` variable. The [fully-commented sample config](https://github.com/etkecc/baibot/blob/main/docs/sample-provider-configs/venice.yml) explains every one of them."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-baibot.md:191
 #: ../../../docs/configuring-playbook-bot-baibot.md:215
-#: ../../../docs/configuring-playbook-bot-baibot.md:241
-#: ../../../docs/configuring-playbook-bot-baibot.md:275
+#: ../../../docs/configuring-playbook-bot-baibot.md:246
+#: ../../../docs/configuring-playbook-bot-baibot.md:272
+#: ../../../docs/configuring-playbook-bot-baibot.md:306
 msgid "If you'd like to use more than one model, take a look at the [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset) section below."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:186
+#: ../../../docs/configuring-playbook-bot-baibot.md:193
 #: ../../../docs/configuring-playbook-bot-baibot.md:217
-#: ../../../docs/configuring-playbook-bot-baibot.md:243
-#: ../../../docs/configuring-playbook-bot-baibot.md:277
+#: ../../../docs/configuring-playbook-bot-baibot.md:248
+#: ../../../docs/configuring-playbook-bot-baibot.md:274
+#: ../../../docs/configuring-playbook-bot-baibot.md:308
 msgid "💡 You may also wish to use this new agent for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:188
-msgid "Groq"
+#: ../../../docs/configuring-playbook-bot-baibot.md:195
+msgid "Anthropic"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:190
-msgid "You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [Groq provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#groq) with the help of the playbook's preset variables."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bot-baibot.md:213
-msgid "Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agent, it will be given a `static/` ID prefix and will be named `static/groq`."
+#: ../../../docs/configuring-playbook-bot-baibot.md:197
+msgid "You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [Anthropic provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#anthropic) with the help of the playbook's preset variables."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-baibot.md:219
-msgid "Mistral"
+msgid "Groq"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-baibot.md:221
+msgid "You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [Groq provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#groq) with the help of the playbook's preset variables."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-baibot.md:244
+msgid "Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agent, it will be given a `static/` ID prefix and will be named `static/groq`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-baibot.md:250
+msgid "Mistral"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-baibot.md:252
 msgid "You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [🇫🇷 Mistral provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#mistral) with the help of the playbook's preset variables."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:239
+#: ../../../docs/configuring-playbook-bot-baibot.md:270
 msgid "Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agent, it will be given a `static/` ID prefix and will be named `static/mistral`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:245
+#: ../../../docs/configuring-playbook-bot-baibot.md:276
 msgid "OpenAI"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:247
+#: ../../../docs/configuring-playbook-bot-baibot.md:278
 msgid "You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [OpenAI provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#openai) with the help of the playbook's preset variables."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:249
+#: ../../../docs/configuring-playbook-bot-baibot.md:280
 msgid "The OpenAI provider is **only meant to be used with OpenAI's official API** and compatibility with other services (which do not fully adhere to the OpenAI API spec completely) is limited. **If you're targeting an OpenAI-compatible service**, use the [OpenAI Compatible](#openai-compatible) provider instead."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:273
+#: ../../../docs/configuring-playbook-bot-baibot.md:304
 msgid "Because this is a [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agent, it will be given a `static/` ID prefix and will be named `static/openai`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:279
+#: ../../../docs/configuring-playbook-bot-baibot.md:310
 msgid "OpenAI Compatible"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:281
+#: ../../../docs/configuring-playbook-bot-baibot.md:312
 msgid "You can statically-define a single [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md) instance powered by the [OpenAI Compatible provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#openai-compatible) with the help of the playbook's preset variables."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:283
+#: ../../../docs/configuring-playbook-bot-baibot.md:314
 msgid "This provider allows you to use OpenAI-compatible API services like [OpenRouter](https://github.com/etkecc/baibot/blob/main/docs/providers.md#openrouter), [Together AI](https://github.com/etkecc/baibot/blob/main/docs/providers.md#together-ai), etc."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:285
+#: ../../../docs/configuring-playbook-bot-baibot.md:316
 msgid "Some of these popular services already have **shortcut** providers (see [supported providers](https://github.com/etkecc/baibot/blob/main/docs/providers.md#supported-providers) leading to this one behind the scenes — this make it easier to get started."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:287
+#: ../../../docs/configuring-playbook-bot-baibot.md:318
 msgid "As of this moment, the playbook does not include presets for any of these services, so you'll need to [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:289
+#: ../../../docs/configuring-playbook-bot-baibot.md:320
 msgid "Configuring additional agents (without a preset)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:291
+#: ../../../docs/configuring-playbook-bot-baibot.md:322
 msgid "The Ansible role may be lacking preset variables for some [☁️ provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md), or you may wish to statically-define an agent on the same provider twice (or more) with different configuration."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:293
+#: ../../../docs/configuring-playbook-bot-baibot.md:324
 msgid "It's possible to inject your own agent configuration using the `matrix_bot_baibot_config_agents_static_definitions_custom` Ansible variable."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:295
+#: ../../../docs/configuring-playbook-bot-baibot.md:326
 msgid "You can also define providers at runtime, by chatting with the bot, so using Ansible is not a requirement."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:297
+#: ../../../docs/configuring-playbook-bot-baibot.md:328
 msgid "Below is an an **example** demonstrating **statically-defining agents via Ansible without using presets**:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:336
+#: ../../../docs/configuring-playbook-bot-baibot.md:367
 msgid "Because these are [statically](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md#static-configuration)-defined agents, they will be given a `static/` ID prefix and will be named `static/my-openai-gpt-3.5-turbo-agent` and `static/my-ollama-agent`, respectively."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:338
+#: ../../../docs/configuring-playbook-bot-baibot.md:369
 msgid "💡 To figure out what to put in the `config` section, refer to the [☁️ provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md) page, which contains **sample configuration YAML for each provider**."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:340
+#: ../../../docs/configuring-playbook-bot-baibot.md:371
 msgid "As with any [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md), defining them means they exist. To actually make use of them, they need to be configured as handlers globally or in a specific room — see [Mixing & matching models](https://github.com/etkecc/baibot/blob/main/docs/features.md#mixing--matching-models)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:342
+#: ../../../docs/configuring-playbook-bot-baibot.md:373
 msgid "💡 You may also wish to use these new agents for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:344
+#: ../../../docs/configuring-playbook-bot-baibot.md:375
 msgid "🤝 Configuring initial default handlers"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:346
+#: ../../../docs/configuring-playbook-bot-baibot.md:377
 msgid "This section is only useful if you're [🤖 Configuring agents via Ansible](#-configuring-agents-via-ansible), as it lets you put these agents to use as soon as the bot starts (by adjusting the bot's **initial global configuration**)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:348
+#: ../../../docs/configuring-playbook-bot-baibot.md:379
 msgid "If you're not configuring agents via Ansible, you can skip this section."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:350
+#: ../../../docs/configuring-playbook-bot-baibot.md:381
 msgid "This section is only useful the first time around. **Once initially configured the global configuration cannot be managed Ansible**, but only via bot commands."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:352
+#: ../../../docs/configuring-playbook-bot-baibot.md:383
 msgid "baibot supports [various purposes](https://github.com/etkecc/baibot/blob/main/docs/features.md):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:354
+#: ../../../docs/configuring-playbook-bot-baibot.md:385
 msgid "[💬 text-generation](https://github.com/etkecc/baibot/blob/main/docs/features.md#-text-generation): communicating with you via text"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:356
+#: ../../../docs/configuring-playbook-bot-baibot.md:387
 msgid "[🦻 speech-to-text](https://github.com/etkecc/baibot/blob/main/docs/features.md#-speech-to-text): turning your voice messages into text"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:358
+#: ../../../docs/configuring-playbook-bot-baibot.md:389
 msgid "[🗣️ text-to-speech](https://github.com/etkecc/baibot/blob/main/docs/features.md#-text-to-speech): turning bot or users text messages into voice messages"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:360
+#: ../../../docs/configuring-playbook-bot-baibot.md:391
 msgid "[🖌️ image-generation](https://github.com/etkecc/baibot/blob/main/docs/features.md#-image-generation): generating images based on instructions"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:362
+#: ../../../docs/configuring-playbook-bot-baibot.md:393
 msgid "❓ catch-all: special purposes, indicating use as a fallback (when no specific handler is configured)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:364
+#: ../../../docs/configuring-playbook-bot-baibot.md:395
 msgid "[Mixing & matching models](https://github.com/etkecc/baibot/blob/main/docs/features.md#mixing--matching-models) is made possible by the bot's ability to have different [🤝 handlers](https://github.com/etkecc/baibot/blob/main/docs/configuration/handlers.md) configured for different purposes."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:366
+#: ../../../docs/configuring-playbook-bot-baibot.md:397
 msgid "This configuration can be done as a global fallback, or per-room. Both of these [🛠️ configurations](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md) are managed at runtime (viat chat), but **the global configuration can have some initial defaults configured via Ansible**."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:368
+#: ../../../docs/configuring-playbook-bot-baibot.md:399
 msgid "You can configure the **initial values** for these via Ansible, via the `matrix_bot_baibot_config_initial_global_config_handler_*` variables."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:370
+#: ../../../docs/configuring-playbook-bot-baibot.md:401
 msgid "Example **additional** `vars.yml` configuration:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:387
+#: ../../../docs/configuring-playbook-bot-baibot.md:418
 msgid "**Note**: these are initial defaults for the bot's global configuration. As such, changing any of these values subsequently has no effect on the bot's behavior. **Once initially configured the global configuration cannot be managed Ansible**, but only via bot commands."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:389
+#: ../../../docs/configuring-playbook-bot-baibot.md:420
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:391
+#: ../../../docs/configuring-playbook-bot-baibot.md:422
 msgid "There are some additional things you may wish to configure about the bot."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:393
+#: ../../../docs/configuring-playbook-bot-baibot.md:424
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:395
+#: ../../../docs/configuring-playbook-bot-baibot.md:426
 msgid "`roles/custom/matrix-bot-baibot/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:396
+#: ../../../docs/configuring-playbook-bot-baibot.md:427
 msgid "`roles/custom/matrix-bot-baibot/templates/config.yaml.j2` for the bot's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_baibot_configuration_extension_yaml` variable"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:398
+#: ../../../docs/configuring-playbook-bot-baibot.md:429
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:400
+#: ../../../docs/configuring-playbook-bot-baibot.md:431
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:407
+#: ../../../docs/configuring-playbook-bot-baibot.md:438
 msgid "**Notes**:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:409
+#: ../../../docs/configuring-playbook-bot-baibot.md:440
 msgid "The `ensure-matrix-users-created` playbook tag makes the playbook automatically create the bot's user account when password authentication is used."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:411
+#: ../../../docs/configuring-playbook-bot-baibot.md:442
 msgid "If you're using access-token authentication, the bot account must already exist and the configured token + device ID must match that account. This mode is mainly for MAS/OIDC setups where password-based bot login is not suitable."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:413
+#: ../../../docs/configuring-playbook-bot-baibot.md:444
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:415
+#: ../../../docs/configuring-playbook-bot-baibot.md:446
 msgid "`just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:417
+#: ../../../docs/configuring-playbook-bot-baibot.md:448
 msgid "If you change the bot password (`matrix_bot_baibot_config_user_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [Ketesa](configuring-playbook-ketesa.md) to change it, and then update `matrix_bot_baibot_config_user_password` to let the bot know its new password. (This note applies to password authentication mode.)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:419
+#: ../../../docs/configuring-playbook-bot-baibot.md:450
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:421
+#: ../../../docs/configuring-playbook-bot-baibot.md:452
 msgid "To use the bot, invite it to any existing Matrix room (`/invite @baibot:example.com` where `example.com` is your base domain, not the `matrix.` domain)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:423
+#: ../../../docs/configuring-playbook-bot-baibot.md:454
 msgid "If you're an allowed bot [👥 user](https://github.com/etkecc/baibot/blob/main/docs/access.md#user) (see [👥 Initial users configuration](#-initial-users-configuration)), the bot will accept your invitation and join the room."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:425
+#: ../../../docs/configuring-playbook-bot-baibot.md:456
 msgid "After joining, the bot will introduce itself and show information about the [✨ features](https://github.com/etkecc/baibot/blob/main/docs/features.md) that are enabled for it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:427
+#: ../../../docs/configuring-playbook-bot-baibot.md:458
 msgid "If you've [🤖 configured one or more agents via Ansible](#-configuring-agents-via-ansible) and have [🤝 configured initial default handlers](#configuring-initial-default-handlers), the bot will immediately be able to make use of these agents for this new room. Otherwise, you will need to configure agents and/or handlers via chat commands."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:429
+#: ../../../docs/configuring-playbook-bot-baibot.md:460
 msgid "Send `!bai help` to the bot in the room to see the available commands."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:431
+#: ../../../docs/configuring-playbook-bot-baibot.md:462
 msgid "You can also refer to the upstream [baibot](https://github.com/etkecc/baibot) project's documentation."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:433
+#: ../../../docs/configuring-playbook-bot-baibot.md:464
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:435
+#: ../../../docs/configuring-playbook-bot-baibot.md:466
 msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-bot-baibot`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:437
+#: ../../../docs/configuring-playbook-bot-baibot.md:468
 msgid "Increase logging verbosity"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:439
+#: ../../../docs/configuring-playbook-bot-baibot.md:470
 msgid "The default logging level for this service is `info`. If you want to increase the verbosity to `debug` (or even `trace`), add the following configuration to your `vars.yml` file and re-run the playbook:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-baibot.md:453
+#: ../../../docs/configuring-playbook-bot-baibot.md:484
 msgid "**Alternatively**, you can use a single variable to set the logging level for all of the above (bot + all libraries):"
 msgstr ""

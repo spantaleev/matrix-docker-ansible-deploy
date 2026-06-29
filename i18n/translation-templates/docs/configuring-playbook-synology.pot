@@ -1,0 +1,237 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018-2026, Slavi Pantaleev, Aine Etke, MDAD community members
+# This file is distributed under the same license as the matrix-docker-ansible-deploy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: matrix-docker-ansible-deploy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-29 17:11+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../docs/configuring-playbook-synology.md:7
+msgid "Configuring Synology DSM"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:9
+msgid "This document is a guide for preparing Synology DSM for the installation of the [Matrix Docker Ansible Deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) project."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:11
+msgid "**Note:** Synology DSM is a community-supported platform. It is not officially tested or maintained by the project maintainers. Use at your own discretion."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:13
+msgid "**Intended audience:** Users already familiar with DSM, SSH, and this Ansible project."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:15
+msgid "Assumptions"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:17
+msgid "DSM version 7 or higher"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:18
+msgid "`Volume1` is used as the default Docker storage location"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:19
+msgid "You are using DSM's built-in reverse proxy for handling HTTPS"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:21
+msgid "How Synology Support Works"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:23
+msgid "The playbook automatically detects Synology DSM by checking for `/etc/synoinfo.conf`. When detected, it:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:25
+msgid "Uses `synouser` and `synogroup` (DSM-native tools) instead of standard Linux user management"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:26
+msgid "Constrains the Python `requests` package to a version compatible with the Docker SDK"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:27
+msgid "Ensures `/volume1` has shared mount propagation so container bind mounts work correctly"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:28
+msgid "Deploys a `matrix-synology-boot-fix` service that runs on every boot after Docker is ready"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:30
+msgid "You can override auto-detection by setting `matrix_base_host_is_synology: true` or `false` in your `vars.yml`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:32
+msgid "Matrix Service Account"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:34
+msgid "The playbook creates a `matrix` system account using Synology's `synouser` tool. The account is secured as follows:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:36
+msgid "**Expired** (`expired=1`) — the account cannot be used to log in to DSM or any application"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:38
+msgid "You must set a password for this account via `matrix_synology_user_password` in your `vars.yml` (see [vars.yml Configuration](#varsyml-configuration)). The password cannot be used to log in because the account is expired, but a non-empty password is required as an additional security layer."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:40
+msgid "If you pre-create the `matrix` user manually before running the playbook, the playbook will not modify the existing account's settings — you are responsible for securing it."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:42
+msgid "Boot-fix Service"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:44
+msgid "Synology DSM has two boot-time quirks that the boot-fix service addresses automatically:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:46
+msgid "**`/volume1` shared mount propagation**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:48
+msgid "Docker requires `/volume1` to be mounted as shared (`mount --make-shared /volume1`) for container bind mounts with `bind-propagation=slave` to work correctly (used by matrix-synapse for its media store). On Synology, this cannot be inserted into the systemd chain before Container Manager starts — doing so causes Container Manager to detect a broken dependency and prompt for repair on every boot. The playbook applies this during setup, and the boot-fix service re-applies it on every subsequent reboot, safely outside Container Manager's dependency chain."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:50
+msgid "**Skipped services at boot**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:52
+msgid "Synology's systemd drops services with multi-level dependency chains from the boot activation queue (e.g. `matrix-traefik → matrix-container-socket-proxy → docker`). These services show as `inactive` or `failed` after reboot even though they are enabled. The boot-fix service scans for any enabled `matrix-*.service` in either state and starts them automatically."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:54
+msgid "**If you previously configured a Task Scheduler entry** (`Control Panel > Task Scheduler`) to run `mount --make-shared /volume1` at boot-up, you can remove it — the boot-fix service now handles this."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:56
+msgid "Synology GUI Preparation"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:58
+msgid "**Enable SSH**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:59
+msgid "`Control Panel` > `Terminal & SNMP` > `Enable SSH service`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:61
+msgid "**Enable SFTP**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:62
+msgid "`Control Panel` > `File Service` > `FTP` > `Enable SFTP service` with default port"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:64
+msgid "**Enable User Home Directory**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:65
+msgid "`Control Panel` > `User & Group` > `Advanced` > `Enable user home service`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:67
+msgid "**Install Container Manager**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:68
+msgid "Install from `Package Center`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:70
+msgid "**Configure Reverse Proxy**"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:71
+msgid "`Control Panel` > `Login Portal` > `Advanced` > `Reverse Proxy`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:72
+msgid "Create entries for each service you enable (e.g. Matrix, Element, admin page)"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:73
+msgid "Example entry:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:74
+msgid "Source: `HTTPS` / `matrix.example.com` / port `443`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:75
+msgid "Destination: `HTTP` / `localhost` / port `81`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:77
+msgid "SSH Preparation"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:79
+msgid "(Optional but Recommended) Enable SSH Key Authentication"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:81
+msgid "Configure key-based SSH login to avoid password prompts during Ansible runs."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:83
+msgid "Set Up the Ansible Environment"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:85
+msgid "Create a project folder and Python virtual environment on the DSM host:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:96
+msgid "Inventory Configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:98
+msgid "In your `inventory/hosts` file, set the Python interpreter to your virtual environment:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:105
+msgid "vars.yml Configuration"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:107
+msgid "Add the following Synology-specific variables to your `vars.yml`:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:151
+msgid "Running the Playbook"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:167
+msgid "**Important:** Always include `stop` before `setup-all,start` when changing configuration. Running `setup-all` alone does not restart already-running containers."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:169
+msgid "Creating Matrix Users"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-synology.md:171
+msgid "After the services are running, create your first Matrix user:"
+msgstr ""
