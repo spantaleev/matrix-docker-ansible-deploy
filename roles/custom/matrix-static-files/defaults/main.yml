@@ -360,6 +360,59 @@ matrix_static_files_file_matrix_support_configuration: "{{ matrix_static_files_f
 
 ########################################################################
 #                                                                      #
+# Related to /.well-known/matrix/mautrix                               #
+#                                                                      #
+########################################################################
+
+# Controls whether a `/.well-known/matrix/mautrix` file is generated and used at all.
+# This file allows tools like Mautrix Manager (https://github.com/mautrix/manager) to auto-discover the bridges hosted on this server.
+# By default, it's enabled only when there's something to advertise (see `matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges`).
+matrix_static_files_file_matrix_mautrix_enabled: "{{ matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges | length > 0 }}"
+
+# Controls the fi.mau.bridges property in the /.well-known/matrix/mautrix file.
+# This is a list of base URLs for bridges hosted on (and connected to) this server.
+matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges: "{{ matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges_auto + matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges_custom }}"
+matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges_auto: []
+matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges_custom: []
+
+# Default /.well-known/matrix/mautrix configuration template which covers the generic use case.
+# You can customize it by controlling the various variables inside it.
+#
+# For a more advanced customization, you can extend the default (see `matrix_static_files_file_matrix_mautrix_configuration_extension_json`)
+# or completely replace this variable with your own template.
+matrix_static_files_file_matrix_mautrix_configuration_json: "{{ lookup('template', 'templates/public/.well-known/matrix/mautrix.j2', convert_data=False) | from_json }}"
+
+# Your custom JSON configuration for /.well-known/matrix/mautrix should go to `matrix_static_files_file_matrix_mautrix_configuration_extension_json`.
+# This configuration extends the default starting configuration (`matrix_static_files_file_matrix_mautrix_configuration_extension_json`).
+#
+# You can override individual variables from the default configuration, or introduce new ones.
+#
+# If you need something more special, you can take full control by
+# completely redefining `matrix_static_files_file_matrix_mautrix_configuration_json`.
+#
+# Example configuration extension follows:
+#
+# matrix_static_files_file_matrix_mautrix_configuration_extension_json: |
+#   {
+#     "fi.mau.external_bridge_servers": ["https://bridges.example.com"]
+#   }
+matrix_static_files_file_matrix_mautrix_configuration_extension_json: '{}'
+
+matrix_static_files_file_matrix_mautrix_configuration_extension: "{{ matrix_static_files_file_matrix_mautrix_configuration_extension_json | from_json if matrix_static_files_file_matrix_mautrix_configuration_extension_json | from_json is mapping else {} }}"
+
+# Holds the final /.well-known/matrix/mautrix configuration (a combination of the default and its extension).
+# You most likely don't need to touch this variable. Instead, see `matrix_static_files_file_matrix_mautrix_configuration_json` or `matrix_static_files_file_matrix_mautrix_configuration_extension_json`.
+matrix_static_files_file_matrix_mautrix_configuration: "{{ matrix_static_files_file_matrix_mautrix_configuration_json | combine(matrix_static_files_file_matrix_mautrix_configuration_extension, recursive=True) }}"
+
+########################################################################
+#                                                                      #
+# /Related to /.well-known/matrix/mautrix                              #
+#                                                                      #
+########################################################################
+
+
+########################################################################
+#                                                                      #
 # Related to index.html                                                #
 #                                                                      #
 ########################################################################

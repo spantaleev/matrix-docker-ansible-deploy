@@ -6019,6 +6019,24 @@ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto
     )
   }}
 
+# Advertise all enabled and exposed mautrix bridges for auto-discovery by tools like Mautrix Manager.
+# A bridge's public address is only reachable when the playbook attaches its Traefik labels and emits the exposure router,
+# so we gate on these in addition to the bridge being enabled.
+matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges_auto: |-
+  {{
+    [
+      matrix_mautrix_bluesky_appservice_public_address if (matrix_mautrix_bluesky_enabled and matrix_mautrix_bluesky_container_labels_traefik_enabled and matrix_mautrix_bluesky_container_labels_exposure_enabled) else '',
+      matrix_mautrix_gmessages_bridge_public_address if (matrix_mautrix_gmessages_enabled and matrix_mautrix_gmessages_container_labels_traefik_enabled and matrix_mautrix_gmessages_container_labels_exposure_enabled) else '',
+      matrix_mautrix_meta_instagram_bridge_public_address if (matrix_mautrix_meta_instagram_enabled and matrix_mautrix_meta_instagram_container_labels_traefik_enabled and matrix_mautrix_meta_instagram_container_labels_exposure_enabled) else '',
+      matrix_mautrix_meta_messenger_bridge_public_address if (matrix_mautrix_meta_messenger_enabled and matrix_mautrix_meta_messenger_container_labels_traefik_enabled and matrix_mautrix_meta_messenger_container_labels_exposure_enabled) else '',
+      matrix_mautrix_signal_bridge_public_address if (matrix_mautrix_signal_enabled and matrix_mautrix_signal_container_labels_traefik_enabled and matrix_mautrix_signal_container_labels_exposure_enabled) else '',
+      matrix_mautrix_slack_bridge_public_address if (matrix_mautrix_slack_enabled and matrix_mautrix_slack_container_labels_traefik_enabled and matrix_mautrix_slack_container_labels_exposure_enabled) else '',
+      matrix_mautrix_telegram_bridge_public_address if (matrix_mautrix_telegram_enabled and matrix_mautrix_telegram_container_labels_traefik_enabled and matrix_mautrix_telegram_container_labels_exposure_enabled) else '',
+      matrix_mautrix_twitter_appservice_public_address if (matrix_mautrix_twitter_enabled and matrix_mautrix_twitter_container_labels_traefik_enabled and matrix_mautrix_twitter_container_labels_exposure_enabled) else '',
+      matrix_mautrix_whatsapp_bridge_public_address if (matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_container_labels_traefik_enabled and matrix_mautrix_whatsapp_container_labels_exposure_enabled) else '',
+    ] | select | list
+  }}
+
 matrix_static_files_file_matrix_server_property_m_server: "{{ matrix_server_fqn_matrix_federation }}:{{ matrix_federation_public_port }}"
 
 matrix_static_files_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
