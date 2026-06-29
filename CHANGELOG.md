@@ -1,5 +1,13 @@
 # 2026-06-29
 
+## Support for running on Synology DSM
+
+Thanks to [cksit](https://github.com/cksit), the playbook can now run on [Synology DSM](https://www.synology.com/dsm) 7 and later.
+
+Synology hosts are detected automatically (via `/etc/synoinfo.conf`), so other systems are unaffected. On DSM, the playbook uses the platform's native user management (`synouser`/`synogroup`), works around a Docker SDK incompatibility, and installs a small boot-fix service that handles a few DSM-specific boot quirks.
+
+To get started, see the new [Configuring Synology DSM](./docs/configuring-playbook-synology.md) documentation page.
+
 ## Mautrix bridges now expose their API (for Mautrix Manager and similar tools)
 
 The playbook now exposes the HTTP API of each [mautrix](https://github.com/mautrix) bridge, so tools like [Mautrix Manager](https://github.com/mautrix/manager) can help you log into them. This is especially useful for [mautrix-gmessages](./docs/configuring-playbook-bridge-mautrix-gmessages.md): Google has removed its QR-code login, leaving a [manual cookie-extraction flow](https://docs.mau.fi/bridges/go/gmessages/authentication.html) that tools like Mautrix Manager can streamline.
