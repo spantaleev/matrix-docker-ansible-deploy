@@ -8,7 +8,7 @@
 # This script runs after multi-user.target (outside Container Manager's dependency
 # chain) and does two things:
 #
-# 1. Makes /volume1 mount-shared so Docker bind-propagation=slave mounts work.
+# 1. Makes {{ matrix_base_synology_volume_path }} mount-shared so Docker bind-propagation=slave mounts work.
 #    Inserting this into the systemd chain Before=pkg-ContainerManager-dockerd.service
 #    causes Container Manager to detect a broken dependency and prompt for repair,
 #    so it must run here instead, after Docker is already up.
@@ -32,12 +32,12 @@ if ! {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1;
     exit 1
 fi
 
-# Make /volume1 shared so Docker bind-propagation=slave mounts work correctly.
+# Make {{ matrix_base_synology_volume_path }} shared so Docker bind-propagation=slave mounts work correctly.
 # Must run after Docker is up to avoid interfering with Container Manager's
 # integrity checks, but before matrix-synapse (and any other service using
 # bind-propagation=slave) creates its containers.
-/bin/mount --make-shared /volume1
-echo "matrix-synology-boot-fix: /volume1 set to shared mount propagation"
+/bin/mount --make-shared {{ matrix_base_synology_volume_path }}
+echo "matrix-synology-boot-fix: {{ matrix_base_synology_volume_path }} set to shared mount propagation"
 
 # Start any enabled matrix-*.service that is inactive or failed.
 # Both states indicate the service did not come up at boot — either skipped by
