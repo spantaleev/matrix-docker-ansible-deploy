@@ -89,7 +89,20 @@ To install Matrix services with this playbook, you would at least need 2 configu
 
 For your convenience, we have prepared example files of them ([`vars.yml`](../examples/vars.yml) and [`hosts`](../examples/hosts)).
 
-To start quickly based on these example files, go into the `matrix-docker-ansible-deploy` directory and follow the instructions below:
+To start quickly based on these example files, go into the `matrix-docker-ansible-deploy` directory and follow the instructions below.
+
+
+If you have `just` installed, replace the **domain** and "**1.2.3.4**" with you own and run:
+```sh
+just matrix.yourdomain.com 1.2.3.4
+```
+
+If you have `make`, run:
+```sh
+make domain=matrix.yourdomain.com ip=1.2.3.4
+```
+
+Otherwise you may copy the files manually:
 
 1. Create a directory to hold your configuration: `mkdir -p inventory/host_vars/matrix.example.com` where `example.com` is your "base domain"
 2. Copy the sample configuration file: `cp examples/vars.yml inventory/host_vars/matrix.example.com/vars.yml`
