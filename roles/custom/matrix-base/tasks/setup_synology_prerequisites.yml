@@ -9,12 +9,26 @@
     name: "{{ matrix_base_synology_requests_version_constraint }}"
     state: present
 
+# Determine whether the volume is already a shared mount, so that the
+# make-shared command below only runs (and only reports `changed`) when it
+# actually needs to. We read /proc/self/mountinfo (always present on Linux)
+# and look for the ` shared:` optional tag on the volume's mount point line.
+# grep exits non-zero on no-match or any error, so the make-shared command is
+# skipped only when shared propagation is positively confirmed; every other
+# case falls through to running it (which is idempotent).
+- name: Determine current mount propagation of the Synology volume
+  ansible.builtin.command: grep -E ' {{ matrix_base_synology_volume_path }} .* shared:' /proc/self/mountinfo
+  register: matrix_base_synology_volume_propagation
+  changed_when: false
+  failed_when: false
+
 # Run immediately during setup so matrix services can start without a manual
 # step. The boot-fix service handles this on every subsequent reboot.
 # noqa command-instead-of-module: ansible.builtin.mount does not support
 # changing mount propagation (--make-shared); command is the only option here.
 - name: Ensure the Synology volume has shared mount propagation
   ansible.builtin.command: mount --make-shared {{ matrix_base_synology_volume_path }}  # noqa command-instead-of-module
-  changed_when: false
+  when: matrix_base_synology_volume_propagation.rc != 0
+  changed_when: true
 
 - ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_synology_boot_fix.yml"
