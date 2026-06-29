@@ -36,6 +36,13 @@ matrix_mautrix_slack_homeserver_domain: "{{ matrix_domain }}"
 matrix_mautrix_slack_homeserver_async_media: false
 matrix_mautrix_slack_appservice_address: "http://matrix-mautrix-slack:8080"
 
+# Scheme of the bridge's public address (see `matrix_mautrix_slack_bridge_public_address`).
+matrix_mautrix_slack_scheme: https
+
+# The public base URL at which this bridge's HTTP API is reachable from outside (when exposed).
+# Used for the provisioning API's external-server (OpenID) flow and for public media links.
+matrix_mautrix_slack_bridge_public_address: "{{ (matrix_mautrix_slack_scheme + '://' + matrix_mautrix_slack_exposure_hostname + matrix_mautrix_slack_exposure_path_prefix) if matrix_mautrix_slack_exposure_enabled else '' }}"
+
 matrix_mautrix_slack_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
 matrix_mautrix_slack_self_sign_enabled: "{{ matrix_bridges_self_sign_enabled }}"
 
@@ -73,6 +80,33 @@ matrix_mautrix_slack_container_network: ""
 matrix_mautrix_slack_container_additional_networks: "{{ matrix_mautrix_slack_container_additional_networks_auto + matrix_mautrix_slack_container_additional_networks_custom }}"
 matrix_mautrix_slack_container_additional_networks_auto: []
 matrix_mautrix_slack_container_additional_networks_custom: []
+
+# matrix_mautrix_slack_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# See `../templates/labels.j2` for details.
+#
+# To inject your own other container labels, see `matrix_mautrix_slack_container_labels_additional_labels`.
+matrix_mautrix_slack_container_labels_traefik_enabled: true
+matrix_mautrix_slack_container_labels_traefik_docker_network: "{{ matrix_mautrix_slack_container_network }}"
+matrix_mautrix_slack_container_labels_traefik_entrypoints: web-secure
+matrix_mautrix_slack_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+
+# Controls whether labels will be added that expose mautrix-slack's HTTP API
+# (used by tools like mautrix-manager for bridge login) at `https://<hostname><path_prefix>`.
+matrix_mautrix_slack_container_labels_exposure_enabled: "{{ matrix_mautrix_slack_exposure_enabled }}"
+matrix_mautrix_slack_container_labels_exposure_traefik_rule: "Host(`{{ matrix_mautrix_slack_exposure_hostname }}`) && PathPrefix(`{{ matrix_mautrix_slack_exposure_path_prefix }}`)"
+matrix_mautrix_slack_container_labels_exposure_traefik_priority: 0
+matrix_mautrix_slack_container_labels_exposure_traefik_entrypoints: "{{ matrix_mautrix_slack_container_labels_traefik_entrypoints }}"
+matrix_mautrix_slack_container_labels_exposure_traefik_tls: "{{ matrix_mautrix_slack_container_labels_exposure_traefik_entrypoints != 'web' }}"
+matrix_mautrix_slack_container_labels_exposure_traefik_tls_certResolver: "{{ matrix_mautrix_slack_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# matrix_mautrix_slack_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# See `../templates/labels.j2` for details.
+#
+# Example:
+# matrix_mautrix_slack_container_labels_additional_labels: |
+#   my.label=1
+#   another.label="here"
+matrix_mautrix_slack_container_labels_additional_labels: ''
 
 # A list of extra arguments to pass to the container
 matrix_mautrix_slack_container_extra_arguments: []
@@ -188,6 +222,11 @@ matrix_mautrix_slack_bridge_encryption_pickle_key: maunium.net/go/mautrix-whatsa
 
 matrix_mautrix_slack_provisioning_shared_secret: ''
 matrix_mautrix_slack_public_media_signing_key: ''
+
+# Controls whether mautrix-slack's HTTP API is exposed publicly (used by tools like mautrix-manager for bridge login).
+matrix_mautrix_slack_exposure_enabled: false
+matrix_mautrix_slack_exposure_hostname: ''
+matrix_mautrix_slack_exposure_path_prefix: ''
 
 # Controls whether relay mode is enabled
 matrix_mautrix_slack_bridge_relay_enabled: "{{ matrix_bridges_relay_enabled }}"

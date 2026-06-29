@@ -97,6 +97,17 @@
     group: "{{ matrix_group_name }}"
   register: matrix_mautrix_slack_registration_result
 
+- name: Ensure mautrix-slack support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_mautrix_slack_base_path }}/{{ item }}"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - labels
+  register: matrix_mautrix_slack_support_files_result
+
 - name: Ensure matrix-mautrix-slack container network is created
   when: matrix_mautrix_slack_container_network != 'host'
   community.general.docker_network:
@@ -119,6 +130,7 @@
         matrix_mautrix_slack_migration_requires_restart | default(false)
         or matrix_mautrix_slack_config_result.changed | default(false)
         or matrix_mautrix_slack_registration_result.changed | default(false)
+        or matrix_mautrix_slack_support_files_result.changed | default(false)
         or matrix_mautrix_slack_systemd_service_result.changed | default(false)
         or matrix_mautrix_slack_container_image_pull_result.changed | default(false)
         or matrix_mautrix_slack_container_image_build_result.changed | default(false)
