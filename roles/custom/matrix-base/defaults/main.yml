@@ -204,6 +204,26 @@ matrix_group_system: true
 matrix_user_uid: ~
 matrix_user_gid: ~
 
+# Controls Synology DSM-specific handling. `null` means autodetect (via /etc/synoinfo.conf).
+# Set to `true`/`false` to force.
+matrix_base_host_is_synology: ~
+
+# Password for the Matrix service account on Synology DSM.
+# Must be set to a non-empty value in your vars.yml when running on Synology.
+# The account is created as expired so the password cannot be used to log in.
+matrix_synology_user_password: ""
+
+# Version constraint for the requests Python package installed on Synology hosts.
+# requests >= 2.32 dropped the http+docker URL scheme used by the Docker SDK,
+# causing "Not supported URL scheme http+docker" errors. Installed into the
+# system Python interpreter (ansible_python_interpreter) on the remote host.
+matrix_base_synology_requests_version_constraint: "requests<2.32"
+
+# Synology volume that needs shared mount propagation so that Docker
+# bind-propagation=slave mounts (used by matrix-synapse for its media store)
+# work correctly. Defaults to /volume1 (DSM's default Docker storage volume).
+matrix_base_synology_volume_path: "/volume1"
+
 matrix_base_data_path: "/matrix"
 matrix_base_data_path_mode: "750"
 
