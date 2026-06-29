@@ -1,3 +1,15 @@
+# 2026-06-29
+
+## Mautrix bridges now expose their API (for Mautrix Manager and similar tools)
+
+The playbook now exposes the HTTP API of each [mautrix](https://github.com/mautrix) bridge, so tools like [Mautrix Manager](https://github.com/mautrix/manager) can help you log into them. This is especially useful for [mautrix-gmessages](./docs/configuring-playbook-bridge-mautrix-gmessages.md): Google has removed its QR-code login, leaving a [manual cookie-extraction flow](https://docs.mau.fi/bridges/go/gmessages/authentication.html) that tools like Mautrix Manager can streamline.
+
+The API is exposed at `https://matrix.example.com/bridges/SERVICENAME` (for example, `https://matrix.example.com/bridges/gmessages`) and is advertised via a new `/.well-known/matrix/mautrix` file, so compatible tools can discover your bridges automatically. Such tools authenticate with your own Matrix access token, so no bridge secret needs to be shared with them.
+
+This affects all mautrix bridges based on the new bridge framework (bluesky, gmessages, meta-instagram, meta-messenger, signal, slack, telegram, twitter and whatsapp) and is enabled by default.
+
+To learn more (including how to turn it off), see the [Expose the bridge's API](./docs/configuring-playbook-bridge-mautrix-bridges.md#expose-the-bridges-api-for-mautrix-manager-and-similar-tools) section on our common mautrix bridges documentation page.
+
 # 2026-06-28
 
 ## baibot now supports Venice, our recommended provider

@@ -138,6 +138,35 @@ Replace `warn` with one of the following to control the verbosity of the logs ge
 
 If you have issues with a service, and are requesting support, the higher levels of logging (those that appear earlier in the list, like `trace`) will generally be more helpful.
 
+### Expose the bridge's API (for Mautrix Manager and similar tools)
+
+Each mautrix bridge runs an HTTP API which tools like [Mautrix Manager](https://github.com/mautrix/manager) can use to help you log into the bridge. This is especially handy for bridges where logging in manually is cumbersome (like [mautrix-gmessages](configuring-playbook-bridge-mautrix-gmessages.md)).
+
+By default, the playbook exposes this API publicly at `https://matrix.example.com/bridges/SERVICENAME` (for example, `https://matrix.example.com/bridges/gmessages`). Such tools authenticate to the bridge with your own Matrix access token, so you never need to share any bridge secret with them.
+
+To make discovery easier, the playbook also serves a `/.well-known/matrix/mautrix` file which advertises all your exposed bridges. Mautrix Manager reads this file and offers your bridges automatically, so you don't need to enter their URLs by hand.
+
+This is all enabled by default. To **disable exposing the API for all bridges**, add the following configuration to your `vars.yml` file:
+
+```yaml
+matrix_bridges_exposure_enabled: false
+```
+
+**Alternatively**, to disable it for a specific bridge:
+
+```yaml
+matrix_mautrix_SERVICENAME_exposure_enabled: false
+```
+
+If you run additional bridges on the same server which are not managed by this playbook and would like compatible tools to discover them as well, you can advertise their base URLs in the `/.well-known/matrix/mautrix` file:
+
+```yaml
+matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges_custom:
+  - https://matrix.example.com/bridges/SOME_OTHER_BRIDGE
+```
+
+Only list bridges hosted on (and connected to) this server here, as compatible tools will send your Matrix access token to them. For bridges on other servers, take a look at the `fi.mau.external_bridge_servers` property described in the [Mautrix Manager](https://github.com/mautrix/manager) documentation, which you can add via `matrix_static_files_file_matrix_mautrix_configuration_extension_json`.
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.
