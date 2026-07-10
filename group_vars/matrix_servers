@@ -322,13 +322,6 @@ devture_systemd_service_manager_services_list_auto: |
     }] if matrix_bot_honoroit_enabled else [])
     +
     ([{
-      'name': 'matrix-bot-matrix-registration-bot.service',
-      'priority': 2200,
-      'restart_necessary': (matrix_bot_matrix_registration_bot_restart_necessary | bool),
-      'groups': ['matrix', 'bots', 'registration-bot', 'bot-matrix-registration-bot'],
-    }] if matrix_bot_matrix_registration_bot_enabled else [])
-    +
-    ([{
       'name': 'matrix-bot-matrix-reminder-bot.service',
       'priority': 2200,
       'restart_necessary': (matrix_bot_matrix_reminder_bot_restart_necessary | bool),
@@ -2953,42 +2946,6 @@ matrix_bot_matrix_reminder_bot_allowlist_regexes_auto:
 #
 ######################################################################
 
-
-######################################################################
-#
-# matrix-bot-matrix-registration-bot
-#
-######################################################################
-
-# We don't enable bots by default.
-matrix_bot_matrix_registration_bot_enabled: false
-
-matrix_bot_matrix_registration_bot_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-  }}
-
-matrix_bot_matrix_registration_bot_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_matrix_registration_bot_container_image_registry_prefix_upstream_default }}"
-
-matrix_bot_matrix_registration_bot_container_image_self_build: "{{ matrix_architecture not in ['amd64'] }}"
-
-matrix_bot_matrix_registration_bot_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_bot_matrix_registration_bot_container_additional_networks_auto: |-
-  {{
-    ([matrix_homeserver_container_network] if matrix_bot_matrix_registration_bot_container_network != matrix_homeserver_container_network else [])
-  }}
-
-# Using `matrix_addons_homeserver_client_api_url` would not work here,
-# because `matrix-traefik:8008` (matrix-internal-client-api) does not expose any `/_synapse` paths.
-matrix_bot_matrix_registration_bot_api_base_url: "{{ matrix_homeserver_container_url }}"
-
-######################################################################
-#
-# /matrix-bot-matrix-registration-bot
-#
-######################################################################
-
 ######################################################################
 #
 # matrix-bot-maubot
@@ -5095,10 +5052,6 @@ matrix_ketesa_config_asManagedUsers_auto: |
     ] if matrix_bot_honoroit_enabled else [])
     +
     ([
-      '^@'+(matrix_bot_matrix_registration_bot_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_bot_matrix_registration_bot_enabled else [])
-    +
-    ([
       '^@'+(matrix_bot_matrix_reminder_bot_matrix_user_id_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',
     ] if matrix_bot_matrix_reminder_bot_enabled else [])
     +
@@ -5862,12 +5815,6 @@ matrix_tuwunel_systemd_wanted_services_list_auto: |
 
 matrix_user_creator_users_auto: |
   {{
-    ([{
-      'username': matrix_bot_matrix_registration_bot_matrix_user_id_localpart,
-      'initial_password': matrix_bot_matrix_registration_bot_bot_password,
-      'initial_type': 'admin',
-    }] if matrix_bot_matrix_registration_bot_enabled else [])
-    +
     ([{
       'username': matrix_bot_baibot_config_user_mxid_localpart,
       'initial_password': matrix_bot_baibot_config_user_password,
