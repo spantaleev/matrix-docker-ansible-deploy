@@ -456,6 +456,12 @@ If it is correctly specified, look Traefik's logs (`journalctl -fu matrix-traefi
 
 ## Miscellaneous
 
+### The role to manage the service which I deploy has been removed from the playbook. Does this mean that the service can no longer be used on my server?
+
+Not necessarily. Removing the role from the playbook does not always mean that the service has been deprecated by the upstream developers, so as long as the resource such as the Docker image is available, you should be able to keep running it by reverting the specific commit which has removed the role. This essentially means that you will need to maintain your own version of the playbook.
+
+Please keep in mind that you will occasionally need to fix code conflicts if any.
+
 ### I would like to see this favorite service of mine integrated and become available on my Matrix server. How can I request it?
 
 You can freely create an issue for feature request on the repository at GitHub [here](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/new/choose). Note this is a community project with no financial backing, and there is not assurance that your request would be eventually picked up by others and the requested feature would become available. The easiest way to get a feature into this project is to just develop it yourself.
