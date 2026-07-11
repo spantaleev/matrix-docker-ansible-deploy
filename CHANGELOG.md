@@ -1,3 +1,11 @@
+# 2026-07-11
+
+## matrix-registration-bot has been removed from the playbook
+
+The [matrix-registration-bot](./docs/configuring-playbook-bot-matrix-registration-bot.md) service has been removed from the playbook, as it has been unmaintained.
+
+The playbook will let you know if you're using any `matrix_bot_matrix_registration_bot_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-bot-matrix-registration-bot.md#uninstalling-the-component-manually).
+
 # 2026-06-29
 
 ## Support for running on Synology DSM
