@@ -1,4 +1,8 @@
-FROM ghcr.io/devture/ansible:11.1.0-r0-0
+# SPDX-FileCopyrightText: 2025 Jonah Aragon
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+FROM ghcr.io/devture/ansible:11.6.0-r0-0
 
 # Install additional packages
 RUN apk add --no-cache \

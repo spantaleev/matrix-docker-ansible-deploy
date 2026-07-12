@@ -50,6 +50,8 @@ This ensures that:
 
 You can either [run Ansible in a container on the Matrix server itself](#running-ansible-in-a-container-on-the-matrix-server-itself) or [run Ansible in a container on another computer (not the Matrix server)](#running-ansible-in-a-container-on-another-computer-not-the-matrix-server).
 
+💡 If you use [Visual Studio Code](https://code.visualstudio.com/) or [GitHub Codespaces](https://github.com/features/codespaces), the playbook also ships a [dev container](https://containers.dev/) configuration (see the `.devcontainer/` directory) based on this same Ansible Docker image, which can prepare such a containerized Ansible environment for you automatically.
+
 ### Running Ansible in a container on the Matrix server itself
 
 To run Ansible in a (Docker) container on the Matrix server itself, you need to have a working Docker installation. Docker is normally installed by the playbook, so this may be a bit of a chicken and egg problem. To solve it:
