@@ -16,12 +16,16 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-sygnal 2>/dev/null || true'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-sygnal 2>/dev/null || true'
 
+{# --no-healthcheck is used below, because the healthcheck hardcoded in the image (since v0.16.0) can never pass -
+   it relies on curl, which the image does not include.
+   See https://github.com/element-hq/sygnal/issues/326 and https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/4794 #}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-sygnal \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
+			--no-healthcheck \
 			--env=SYGNAL_CONF=/config/sygnal.yaml \
 			--network={{ matrix_sygnal_container_network }} \
 			{% if matrix_sygnal_container_http_host_bind_port %}
