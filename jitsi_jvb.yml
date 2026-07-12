@@ -11,11 +11,11 @@
   become: true
 
   roles:
-    - role: galaxy/com.devture.ansible.role.playbook_help
-    - role: galaxy/com.devture.ansible.role.systemd_docker_base
+    - role: galaxy/playbook_help
+    - role: galaxy/systemd_docker_base
 
     - when: matrix_playbook_docker_installation_enabled | bool
-      role: galaxy/geerlingguy.docker
+      role: galaxy/docker
       vars:
         docker_install_compose: false
       tags:
@@ -26,7 +26,7 @@
         - install-all
 
     - when: devture_docker_sdk_for_python_installation_enabled | bool
-      role: galaxy/com.devture.ansible.role.docker_sdk_for_python
+      role: galaxy/docker_sdk_for_python
       tags:
         - setup-docker
         - setup-all
@@ -39,4 +39,4 @@
     - custom/matrix-common-after
 
     - when: devture_systemd_service_manager_enabled | bool
-      role: galaxy/com.devture.ansible.role.systemd_service_manager
+      role: galaxy/systemd_service_manager
