@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-07 11:16+0000\n"
+"POT-Creation-Date: 2026-07-12 15:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,229 +213,265 @@ msgid "For your convenience, we have prepared example files of them ([`vars.yml`
 msgstr ""
 
 #: ../../../docs/quick-start.md:92
-msgid "To start quickly based on these example files, go into the `matrix-docker-ansible-deploy` directory and follow the instructions below:"
+msgid "To start quickly based on these example files, go into the `matrix-docker-ansible-deploy` directory and initialize your configuration, either automatically or manually."
 msgstr ""
 
 #: ../../../docs/quick-start.md:94
-msgid "Create a directory to hold your configuration: `mkdir -p inventory/host_vars/matrix.example.com` where `example.com` is your \"base domain\""
-msgstr ""
-
-#: ../../../docs/quick-start.md:95
-msgid "Copy the sample configuration file: `cp examples/vars.yml inventory/host_vars/matrix.example.com/vars.yml`"
+msgid "To initialize it automatically (with the base domain and server address pre-filled and secrets generated for you), run:"
 msgstr ""
 
 #: ../../../docs/quick-start.md:96
-msgid "Copy the sample inventory hosts file: `cp examples/hosts inventory/hosts`"
+msgid "either: `just add-inventory-host example.com 1.2.3.4` (if you have the [`just`](just.md) tool)"
 msgstr ""
 
 #: ../../../docs/quick-start.md:97
-msgid "Edit the configuration file (`inventory/host_vars/matrix.example.com/vars.yml`)"
+msgid "or: `make add-inventory-host domain=example.com ip=1.2.3.4` (if you have the `make` program)"
 msgstr ""
 
-#: ../../../docs/quick-start.md:98
-msgid "Edit the inventory hosts file (`inventory/hosts`)"
+#: ../../../docs/quick-start.md:99
+msgid "… where `example.com` is your \"base domain\" (not `matrix.example.com`) and `1.2.3.4` is your server's external IP address (or domain name)."
 msgstr ""
 
-#: ../../../docs/quick-start.md:100
-msgid "Before editing these 2 files, make sure to read explanations on them to understand what needs to be configured."
-msgstr ""
-
-#: ../../../docs/quick-start.md:102
-msgid "**💡 Notes:**"
+#: ../../../docs/quick-start.md:101
+msgid "Given a base domain of `example.com`, this creates:"
 msgstr ""
 
 #: ../../../docs/quick-start.md:103
-msgid "If you are not in control of anything on the base domain, you would need to set additional configuration on `vars.yml`. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ."
+msgid "an entry for `matrix.example.com` (the Matrix server's default hostname: `matrix.` + your base domain) in the inventory hosts file (`inventory/hosts`)"
 msgstr ""
 
 #: ../../../docs/quick-start.md:104
-msgid "Certain configuration decisions (like the base domain configured in `matrix_domain` and homeserver implementation configured in `matrix_homeserver_implementation`) are final. If you make the wrong choice and wish to change it, you'll have to run the Uninstalling step and start over."
+msgid "a configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) containing `matrix_domain: example.com` and automatically generated secrets"
 msgstr ""
 
-#: ../../../docs/quick-start.md:105
-msgid "Instead of configuring a lot of things all at once, we recommend starting with the basic (default) settings in order to get yourself familiar with how the playbook works. After making sure that everything works as expected, you can add (and remove) advanced settings / features and run the playbook as many times as you wish."
+#: ../../../docs/quick-start.md:106
+msgid "Afterward, edit these 2 files to adjust them further, as necessary. Existing configuration is never overwritten (the command refuses to run if the host is already in your inventory), so it can also be used for adding more hosts later."
 msgstr ""
 
-#: ../../../docs/quick-start.md:107
-msgid "Install"
+#: ../../../docs/quick-start.md:108
+msgid "To initialize it manually, follow the instructions below:"
 msgstr ""
 
-#: ../../../docs/quick-start.md:109
-msgid "<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Installing](installing.md)</sup>"
+#: ../../../docs/quick-start.md:110
+msgid "Create a directory to hold your configuration: `mkdir -p inventory/host_vars/matrix.example.com` where `example.com` is your \"base domain\""
 msgstr ""
 
 #: ../../../docs/quick-start.md:111
-msgid "After editing `vars.yml` and `hosts` files, let's start the **installation** procedure."
+msgid "Copy the sample configuration file: `cp examples/vars.yml inventory/host_vars/matrix.example.com/vars.yml`"
+msgstr ""
+
+#: ../../../docs/quick-start.md:112
+msgid "Copy the sample inventory hosts file: `cp examples/hosts inventory/hosts`"
 msgstr ""
 
 #: ../../../docs/quick-start.md:113
-msgid "Update Ansible roles"
+msgid "Edit the configuration file (`inventory/host_vars/matrix.example.com/vars.yml`)"
 msgstr ""
 
-#: ../../../docs/quick-start.md:115
-msgid "Before installing, you need to update the Ansible roles that this playbook uses and fetches from outside."
+#: ../../../docs/quick-start.md:114
+msgid "Edit the inventory hosts file (`inventory/hosts`)"
 msgstr ""
 
-#: ../../../docs/quick-start.md:117
-msgid "To update your playbook directory and all upstream Ansible roles, run:"
+#: ../../../docs/quick-start.md:116
+msgid "Before editing these 2 files, make sure to read explanations on them to understand what needs to be configured."
+msgstr ""
+
+#: ../../../docs/quick-start.md:118
+msgid "**💡 Notes:**"
 msgstr ""
 
 #: ../../../docs/quick-start.md:119
-msgid "either: `just update`"
+msgid "If you are not in control of anything on the base domain, you would need to set additional configuration on `vars.yml`. For more information, see [How do I install on matrix.example.com without involving the base domain?](faq.md#how-do-i-install-on-matrix-example-com-without-involving-the-base-domain) on our FAQ."
 msgstr ""
 
 #: ../../../docs/quick-start.md:120
-msgid "or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)"
+msgid "Certain configuration decisions (like the base domain configured in `matrix_domain` and homeserver implementation configured in `matrix_homeserver_implementation`) are final. If you make the wrong choice and wish to change it, you'll have to run the Uninstalling step and start over."
 msgstr ""
 
-#: ../../../docs/quick-start.md:122
-msgid "If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly after updating the playbook: `git pull; rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`"
+#: ../../../docs/quick-start.md:121
+msgid "Instead of configuring a lot of things all at once, we recommend starting with the basic (default) settings in order to get yourself familiar with how the playbook works. After making sure that everything works as expected, you can add (and remove) advanced settings / features and run the playbook as many times as you wish."
 msgstr ""
 
-#: ../../../docs/quick-start.md:124
-msgid "Run installation command"
+#: ../../../docs/quick-start.md:123
+msgid "Install"
 msgstr ""
 
-#: ../../../docs/quick-start.md:126
-msgid "Then, run the command below to start installation:"
+#: ../../../docs/quick-start.md:125
+msgid "<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Installing](installing.md)</sup>"
 msgstr ""
 
-#: ../../../docs/quick-start.md:132
-msgid "If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the command."
+#: ../../../docs/quick-start.md:127
+msgid "After editing `vars.yml` and `hosts` files, let's start the **installation** procedure."
 msgstr ""
 
-#: ../../../docs/quick-start.md:134
-msgid "If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to the command."
+#: ../../../docs/quick-start.md:129
+msgid "Update Ansible roles"
+msgstr ""
+
+#: ../../../docs/quick-start.md:131
+msgid "Before installing, you need to update the Ansible roles that this playbook uses and fetches from outside."
+msgstr ""
+
+#: ../../../docs/quick-start.md:133
+msgid "To update your playbook directory and all upstream Ansible roles, run:"
+msgstr ""
+
+#: ../../../docs/quick-start.md:135
+msgid "either: `just update`"
 msgstr ""
 
 #: ../../../docs/quick-start.md:136
-msgid "Wait until the command completes. If it's all green, everything should be running properly."
+msgid "or: a combination of `git pull` and `just roles` (or `make roles` if you have `make` program on your computer instead of `just`)"
 msgstr ""
 
 #: ../../../docs/quick-start.md:138
-msgid "Create your user account"
+msgid "If you don't have either `just` tool or `make` program, you can run the `ansible-galaxy` tool directly after updating the playbook: `git pull; rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`"
 msgstr ""
 
 #: ../../../docs/quick-start.md:140
-msgid "<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Registering users](registering-users.md)</sup>"
+msgid "Run installation command"
 msgstr ""
 
 #: ../../../docs/quick-start.md:142
-msgid "As you have configured your brand new server and the client, you need to **create your user account** on your Matrix server."
-msgstr ""
-
-#: ../../../docs/quick-start.md:144
-msgid "To create your user account (as an administrator of the server) via this Ansible playbook, run the command below on your local computer."
-msgstr ""
-
-#: ../../../docs/quick-start.md:146
-msgid "**💡 Notes**:"
-msgstr ""
-
-#: ../../../docs/quick-start.md:147
-msgid "Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`"
+msgid "Then, run the command below to start installation:"
 msgstr ""
 
 #: ../../../docs/quick-start.md:148
-msgid "For `YOUR_USERNAME_HERE`, use a plain username like `alice`, not your full ID (`@alice:example.com`)"
+msgid "If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the command."
+msgstr ""
+
+#: ../../../docs/quick-start.md:150
+msgid "If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to the command."
+msgstr ""
+
+#: ../../../docs/quick-start.md:152
+msgid "Wait until the command completes. If it's all green, everything should be running properly."
+msgstr ""
+
+#: ../../../docs/quick-start.md:154
+msgid "Create your user account"
+msgstr ""
+
+#: ../../../docs/quick-start.md:156
+msgid "<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Registering users](registering-users.md)</sup>"
+msgstr ""
+
+#: ../../../docs/quick-start.md:158
+msgid "As you have configured your brand new server and the client, you need to **create your user account** on your Matrix server."
 msgstr ""
 
 #: ../../../docs/quick-start.md:160
-msgid "Finalize server installation"
+msgid "To create your user account (as an administrator of the server) via this Ansible playbook, run the command below on your local computer."
 msgstr ""
 
 #: ../../../docs/quick-start.md:162
-msgid "<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Server Delegation](howto-server-delegation.md)</sup>"
+msgid "**💡 Notes**:"
+msgstr ""
+
+#: ../../../docs/quick-start.md:163
+msgid "Make sure to adjust `YOUR_USERNAME_HERE` and `YOUR_PASSWORD_HERE`"
 msgstr ""
 
 #: ../../../docs/quick-start.md:164
+msgid "For `YOUR_USERNAME_HERE`, use a plain username like `alice`, not your full ID (`@alice:example.com`)"
+msgstr ""
+
+#: ../../../docs/quick-start.md:176
+msgid "Finalize server installation"
+msgstr ""
+
+#: ../../../docs/quick-start.md:178
+msgid "<sup>This section is optimized for this quick-start guide and is derived from the following full-documentation page: [Server Delegation](howto-server-delegation.md)</sup>"
+msgstr ""
+
+#: ../../../docs/quick-start.md:180
 msgid "Now that you've configured Matrix services and your user account, you need to **finalize the installation process** by [setting up Matrix delegation (redirection)](howto-server-delegation.md), so that your Matrix server (`matrix.example.com`) can present itself as the base domain (`example.com`) in the Matrix network."
 msgstr ""
 
-#: ../../../docs/quick-start.md:166
+#: ../../../docs/quick-start.md:182
 msgid "**This is required for federation to work!** Without a proper configuration, your server will effectively not be part of the Matrix network."
 msgstr ""
 
-#: ../../../docs/quick-start.md:168
+#: ../../../docs/quick-start.md:184
 msgid "To configure the delegation, you have these two options. Choose one of them according to your situation."
 msgstr ""
 
-#: ../../../docs/quick-start.md:170
+#: ../../../docs/quick-start.md:186
 msgid "If you can afford to point the base domain at the Matrix server, follow the instruction below which guides you into [serving the base domain](configuring-playbook-base-domain-serving.md) from the integrated web server."
 msgstr ""
 
-#: ../../../docs/quick-start.md:171
+#: ../../../docs/quick-start.md:187
 msgid "Alternatively, if you're using the base domain for other purposes and cannot point it to the Matrix server (and thus cannot \"serve the base domain\" from it), you most likely need to [manually install well-known files on the base domain's server](configuring-well-known.md#manually-installing-well-known-files-on-the-base-domains-server)."
 msgstr ""
 
-#: ../../../docs/quick-start.md:173
+#: ../../../docs/quick-start.md:189
 msgid "To have the base domain served from the integrated web server, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/quick-start.md:179
+#: ../../../docs/quick-start.md:195
 msgid "After configuring the playbook, run the command below and wait until it finishes:"
 msgstr ""
 
-#: ../../../docs/quick-start.md:185
+#: ../../../docs/quick-start.md:201
 msgid "💡 Running the `install-matrix-static-files` playbook tag (as done here) is an optimized version of running [the full setup command](#run-installation-command)."
 msgstr ""
 
-#: ../../../docs/quick-start.md:187
+#: ../../../docs/quick-start.md:203
 msgid "After the command finishes, you can also check whether your server federates with the Matrix network by using the [Federation Tester](https://federationtester.matrix.org/) against your base domain (`example.com`), not the `matrix.example.com` subdomain."
 msgstr ""
 
-#: ../../../docs/quick-start.md:189
+#: ../../../docs/quick-start.md:205
 msgid "Re-run the full setup command any time"
 msgstr ""
 
-#: ../../../docs/quick-start.md:191
+#: ../../../docs/quick-start.md:207
 msgid "If you think something is wrong with the server configuration, feel free to re-run the setup command any time:"
 msgstr ""
 
-#: ../../../docs/quick-start.md:197
+#: ../../../docs/quick-start.md:213
 msgid "Log in to your user account"
 msgstr ""
 
-#: ../../../docs/quick-start.md:199
+#: ../../../docs/quick-start.md:215
 msgid "Finally, let's make sure that you can log in to the created account with the specified password."
 msgstr ""
 
-#: ../../../docs/quick-start.md:201
+#: ../../../docs/quick-start.md:217
 msgid "You should be able to log in to it with your own [Element Web](configuring-playbook-client-element-web.md) client which you have set up at `element.example.com` by running the playbook. Open the URL (`https://element.example.com`) in a web browser and enter your credentials to log in."
 msgstr ""
 
-#: ../../../docs/quick-start.md:203
+#: ../../../docs/quick-start.md:219
 msgid "**If you successfully logged in to your account, the installation and configuration have completed successfully**🎉"
 msgstr ""
 
-#: ../../../docs/quick-start.md:205
+#: ../../../docs/quick-start.md:221
 msgid "Come say Hi👋 in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting."
 msgstr ""
 
-#: ../../../docs/quick-start.md:207
+#: ../../../docs/quick-start.md:223
 msgid "Things to do next"
 msgstr ""
 
-#: ../../../docs/quick-start.md:209
+#: ../../../docs/quick-start.md:225
 msgid "Once you get familiar with the playbook, you might probably want to set up additional services such as a bridge on your server."
 msgstr ""
 
-#: ../../../docs/quick-start.md:211
+#: ../../../docs/quick-start.md:227
 msgid "As this page intends to be a quick start guide which explains how to start the core Matrix services, it does not cover a topic like how to set them up. Take a look at the list of [things to do next](installing.md#things-to-do-next) to learn more."
 msgstr ""
 
-#: ../../../docs/quick-start.md:213
+#: ../../../docs/quick-start.md:229
 msgid "⚠️Keep the playbook and services up-to-date"
 msgstr ""
 
-#: ../../../docs/quick-start.md:215
+#: ../../../docs/quick-start.md:231
 msgid "While this playbook helps you to set up Matrix services and maintain them, it will **not** automatically run the maintenance task for you. You will need to update the playbook and re-run it **manually**."
 msgstr ""
 
-#: ../../../docs/quick-start.md:217
+#: ../../../docs/quick-start.md:233
 msgid "Since it is unsafe to keep outdated services running on the server connected to the internet, please consider to update the playbook and re-run it periodically, in order to keep the services up-to-date."
 msgstr ""
 
-#: ../../../docs/quick-start.md:219
+#: ../../../docs/quick-start.md:235
 msgid "For more information about upgrading or maintaining services with the playbook, take a look at this page: [Upgrading the Matrix services](maintenance-upgrading-services.md)"
 msgstr ""
