@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 07:40+0000\n"
+"POT-Creation-Date: 2026-07-12 15:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,92 +101,96 @@ msgid "You can either [run Ansible in a container on the Matrix server itself](#
 msgstr ""
 
 #: ../../../docs/ansible.md:53
-msgid "Running Ansible in a container on the Matrix server itself"
+msgid "💡 If you use [Visual Studio Code](https://code.visualstudio.com/) or [GitHub Codespaces](https://github.com/features/codespaces), the playbook also ships a [dev container](https://containers.dev/) configuration (see the `.devcontainer/` directory) based on this same Ansible Docker image, which can prepare such a containerized Ansible environment for you automatically."
 msgstr ""
 
 #: ../../../docs/ansible.md:55
-msgid "To run Ansible in a (Docker) container on the Matrix server itself, you need to have a working Docker installation. Docker is normally installed by the playbook, so this may be a bit of a chicken and egg problem. To solve it:"
+msgid "Running Ansible in a container on the Matrix server itself"
 msgstr ""
 
 #: ../../../docs/ansible.md:57
+msgid "To run Ansible in a (Docker) container on the Matrix server itself, you need to have a working Docker installation. Docker is normally installed by the playbook, so this may be a bit of a chicken and egg problem. To solve it:"
+msgstr ""
+
+#: ../../../docs/ansible.md:59
 msgid "you **either** need to install Docker manually first. Follow [the upstream instructions](https://docs.docker.com/engine/install/) for your distribution and consider setting `matrix_playbook_docker_installation_enabled: false` in your `vars.yml` file, to prevent the playbook from installing Docker"
 msgstr ""
 
-#: ../../../docs/ansible.md:58
+#: ../../../docs/ansible.md:60
 msgid "**or** you need to run the playbook in another way (e.g. [Running Ansible in a container on another computer (not the Matrix server)](#running-ansible-in-a-container-on-another-computer-not-the-matrix-server)) at least the first time around"
 msgstr ""
 
-#: ../../../docs/ansible.md:60
+#: ../../../docs/ansible.md:62
 msgid "Once you have a working Docker installation on the server, **clone the playbook** somewhere on the server and configure it as per usual (`inventory/hosts`, `inventory/host_vars/…`, etc.), as described in [configuring the playbook](configuring-playbook.md)."
 msgstr ""
 
-#: ../../../docs/ansible.md:62
+#: ../../../docs/ansible.md:64
 msgid "You would then need to add `ansible_connection=community.docker.nsenter` to the host line in `inventory/hosts`. This tells Ansible to connect to the \"remote\" machine by switching Linux namespaces with [nsenter](https://man7.org/linux/man-pages/man1/nsenter.1.html), instead of using SSH."
 msgstr ""
 
-#: ../../../docs/ansible.md:64
+#: ../../../docs/ansible.md:66
 msgid "Alternatively, you can leave your `inventory/hosts` as is and specify the connection type in **each** `ansible-playbook` call you do later, like this: `just install-all --connection=community.docker.nsenter` (or `ansible-playbook --connection=community.docker.nsenter …`)."
 msgstr ""
 
-#: ../../../docs/ansible.md:66
-#: ../../../docs/ansible.md:88
+#: ../../../docs/ansible.md:68
+#: ../../../docs/ansible.md:90
 msgid "Run this from the playbook's directory:"
-msgstr ""
-
-#: ../../../docs/ansible.md:80
-#: ../../../docs/ansible.md:103
-msgid "Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code."
 msgstr ""
 
 #: ../../../docs/ansible.md:82
 #: ../../../docs/ansible.md:105
-msgid "First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues)."
+msgid "Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code."
 msgstr ""
 
 #: ../../../docs/ansible.md:84
-msgid "Finally, you can execute `just` or `ansible-playbook …` (e.g. `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now."
+#: ../../../docs/ansible.md:107
+msgid "First, consider running `git config --global --add safe.directory /work` to [resolve directory ownership issues](#resolve-directory-ownership-issues)."
 msgstr ""
 
 #: ../../../docs/ansible.md:86
+msgid "Finally, you can execute `just` or `ansible-playbook …` (e.g. `ansible-playbook --connection=community.docker.nsenter …`) commands as per normal now."
+msgstr ""
+
+#: ../../../docs/ansible.md:88
 msgid "Running Ansible in a container on another computer (not the Matrix server)"
 msgstr ""
 
-#: ../../../docs/ansible.md:101
+#: ../../../docs/ansible.md:103
 msgid "The above command tries to mount an SSH key (`$HOME/.ssh/id_ed25519`) into the container (at `/root/.ssh/id_ed25519`). If your SSH key is at a different path (not in `$HOME/.ssh/id_ed25519`), adjust that part."
 msgstr ""
 
-#: ../../../docs/ansible.md:107
+#: ../../../docs/ansible.md:109
 msgid "Finally, you execute `just` or `ansible-playbook …` commands as per normal now."
 msgstr ""
 
-#: ../../../docs/ansible.md:109
+#: ../../../docs/ansible.md:111
 msgid "If you don't use SSH keys for authentication"
 msgstr ""
 
-#: ../../../docs/ansible.md:111
+#: ../../../docs/ansible.md:113
 msgid "If you don't use SSH keys for authentication, simply remove that whole line (`--mount type=bind,src$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro`)."
 msgstr ""
 
-#: ../../../docs/ansible.md:113
+#: ../../../docs/ansible.md:115
 msgid "To authenticate at your server using a password, you need to add a package. So, when you are in the shell of the ansible docker container (the previously used `docker run -it …` command), run:"
 msgstr ""
 
-#: ../../../docs/ansible.md:119
+#: ../../../docs/ansible.md:121
 msgid "Then, to be asked for the password whenever running an `ansible-playbook` command add `--ask-pass` to the arguments of the command."
 msgstr ""
 
-#: ../../../docs/ansible.md:121
+#: ../../../docs/ansible.md:123
 msgid "Resolve directory ownership issues"
 msgstr ""
 
-#: ../../../docs/ansible.md:123
+#: ../../../docs/ansible.md:125
 msgid "Because you're `root` in the container running Ansible and this likely differs from the owner (your regular user account) of the playbook directory outside of the container, certain playbook features which use `git` locally may report warnings such as:"
 msgstr ""
 
-#: ../../../docs/ansible.md:125
+#: ../../../docs/ansible.md:127
 msgid "fatal: unsafe repository ('/work' is owned by someone else) To add an exception for this directory, call:  git config --global --add safe.directory /work"
 msgstr ""
 
-#: ../../../docs/ansible.md:129
+#: ../../../docs/ansible.md:131
 msgid "These errors can be resolved by making `git` trust the playbook directory by running `git config --global --add safe.directory /work`"
 msgstr ""
