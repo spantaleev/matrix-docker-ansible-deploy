@@ -276,13 +276,35 @@ allow_announcements_check = {{ matrix_continuwuity_config_allow_announcements_ch
 #
 #ip_lookup_strategy = 5
 
+# The source to use for discovering the real connecting client IP.
+#
+# Takes any of the following options:
+#
+# "cf_connecting_ip" - `Cf-Connecting-Ip` header
+# "cloudfront_viewer_address" - `CloudFront-Viewer-Address` header
+# "fly_client_ip" - `Fly-Client-IP` header
+# "x_forwarded_for" - rightmost value of the `X-Forwarded-For` header
+# "true_client_ip" - `True-Client-Ip` header
+# "x_envoy_external_address" - `X-Envoy-External-Address` header
+# "x_real_ip" - `X-Real-Ip` header
+#
+# Only set this if you are certain only your reverse proxy
+# will send the expected header. There is no "is the connecting IP allowed
+# to set this header" check; if the header selected is present, it is
+# used.
+#
+# Defaults to the IP address actually making the connection.
+#
+#request_ip_source = false
+
 # Max request size for file uploads in bytes. Defaults to 20MB.
+# Also limits incoming federated media.
 #
 max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 
 # This item is undocumented. Please contribute documentation for it.
 #
-#max_fetch_prev_events = 192
+#max_fetch_prev_events = 1024
 
 # How many incoming federation transactions the server is willing to be
 # processing at any given time before it becomes overloaded and starts
@@ -357,21 +379,18 @@ max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 #
 #federation_timeout = 60
 
-# MSC4284 Policy server request timeout (seconds). Generally policy
+# Policy server request timeout (seconds). Generally policy
 # servers should respond near instantly, however may slow down under
 # load. If a policy server doesn't respond in a short amount of time, the
 # room it is configured in may become unusable if this limit is set too
-# high. 10 seconds is a good default, however dropping this to 3-5 seconds
-# can be acceptable.
+# high. 30 seconds is a good default, however lower values may be
+# acceptable if temporary send failures are an okay trade-off.
 #
-# Please be aware that policy requests are *NOT* currently re-tried, so if
-# a spam check request fails, the event will be assumed to be not spam,
-# which in some cases may result in spam being sent to or received from
-# the room that would typically be prevented.
 #
 # About policy servers: https://matrix.org/blog/2025/04/introducing-policy-servers/
+# (Stabilized in Matrix v1.18)
 #
-#policy_server_request_timeout = 10
+#policy_server_request_timeout = 30
 
 # Federation client idle connection pool timeout (seconds).
 #
@@ -444,7 +463,7 @@ max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 # `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`
 #
 # If you would like registration only via token reg, please configure
-# `registration_token` or `registration_token_file`.
+# `registration_token`.
 #
 allow_registration = {{ matrix_continuwuity_config_allow_registration | to_json }}
 
@@ -470,24 +489,24 @@ suspend_on_register = {{ matrix_continuwuity_config_suspend_on_register | to_jso
 yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = {{ matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse | to_json }}
 
 # A static registration token that new users will have to provide when
-# creating an account. If unset and `allow_registration` is true,
-# you must set
-# `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`
-# to true to allow open registration without any conditions.
-#
-# YOU NEED TO EDIT THIS OR USE registration_token_file.
+# creating an account. This token does not supersede tokens from other
+# sources, such as the `!admin token` command or the
+# `registration_token_file` configuration option.
 #
 # example: "o&^uCtes4HPf0Vu@F20jQeeWE7"
 #
+{% if matrix_continuwuity_config_registration_token != '' %}
 registration_token = {{ matrix_continuwuity_config_registration_token | to_json }}
+{% endif %}
 
-# Path to a file on the system that gets read for additional registration
-# tokens. Multiple tokens can be added if you separate them with
-# whitespace
+# A path to a file containing static registration tokens, one per line.
+# Tokens in this file do not supersede tokens from other sources, such as
+# the `!admin token` command or the `registration_token` configuration
+# option.
 #
-# continuwuity must be able to access the file, and it must not be empty
-#
-# example: "/etc/continuwuity/.reg_token"
+# The file will be read once, when Continuwuity starts. It is not
+# currently reread when the server configuration is reloaded. If the file
+# cannot be read, Continuwuity will fail to start.
 #
 #registration_token_file =
 
@@ -512,6 +531,16 @@ recaptcha_site_key = {{ matrix_continuwuity_config_recaptcha_site_key | to_json 
 #
 recaptcha_private_site_key = {{ matrix_continuwuity_config_recaptcha_private_site_key | to_json }}
 {% endif %}
+
+# Controls whether users are allowed to deactivate their own accounts
+# through the account management panel or their Matrix clients. Server
+# admins can always deactivate users using the relevant admin commands.
+#
+# Note that, in some jurisdictions, you may be legally required to honor
+# users who request to deactivate their accounts if you set this option
+# to `false`.
+#
+#allow_deactivation = true
 
 # Controls whether encrypted rooms and events are allowed.
 #
@@ -551,18 +580,6 @@ forget_forced_upon_leave = {{ matrix_continuwuity_config_forget_forced_upon_leav
 #
 #allow_public_room_directory_over_federation = false
 
-# Allow guests/unauthenticated users to access TURN credentials.
-#
-# This is the equivalent of Synapse's `turn_allow_guests` config option.
-# This allows any unauthenticated user to call the endpoint
-# `/_matrix/client/v3/voip/turnServer`.
-#
-# It is unlikely you need to enable this as all major clients support
-# authentication for this endpoint and prevents misuse of your TURN server
-# from potential bots.
-#
-#turn_allow_guests = false
-
 # Set this to true to lock down your server's public room directory and
 # only allow admins to publish rooms to the room directory. Unpublishing
 # is still allowed by all users with this enabled.
@@ -597,7 +614,7 @@ allow_room_creation = {{ matrix_continuwuity_config_allow_room_creation | to_jso
 # Set to false to disable users from joining or creating room versions
 # that aren't officially supported by continuwuity.
 #
-# continuwuity officially supports room versions 6 - 11.
+# continuwuity officially supports room versions 6 - 12.
 #
 # continuwuity has slightly experimental (though works fine in practice)
 # support for versions 3 - 5.
@@ -609,9 +626,41 @@ allow_room_creation = {{ matrix_continuwuity_config_allow_room_creation | to_jso
 # rather than an integer. Forgetting the quotes will make the server fail
 # to start!
 #
-# Per spec, room version "11" is the default.
+# Per spec, room version "12" is the default.
 #
 default_room_version = {{ matrix_continuwuity_config_default_room_version | to_json }}
+
+# A default allow value for the Access Control List when creating a room.
+#
+# If a list is provided, new rooms will be created with
+# a m.room.server_acl event. Only servers which match one of the patterns
+# in the list will be permitted to participate in the room.
+#
+# ACLs in existing rooms will not be updated automatically. This is not
+# a substitute for moderation bots.
+#
+#default_room_acl_allow =
+
+# A default deny value for the Access Control List when creating a room.
+#
+# If a list is provided, new rooms will be created with
+# a m.room.server_acl event. Servers which match one of the patterns
+# in the list will be NOT permitted to participate in the room.
+#
+# This config cannot be used if the default_room_acl_allow config is used.
+#
+# ACLs in existing rooms will not be updated automatically. This is not
+# a substitute for moderation bots.
+#
+#default_room_acl_deny =
+
+# The number of forward extremities to tolerate in a room before
+# attempting to manually squash them with a "dummy event". Setting this
+# above 20 will hinder its efficacy, and setting it below 5 will cause
+# more dummy events to be sent than necessary (which increases federation
+# traffic).
+#
+#dummy_event_threshold = 10
 
 # Enable OpenTelemetry OTLP tracing export. This replaces the deprecated
 # Jaeger exporter. Traces will be sent via OTLP to a collector (such as
@@ -799,7 +848,7 @@ log = {{ matrix_continuwuity_config_log | to_json }}
 # ("turn_secret"), It is recommended to use a shared secret over static
 # credentials.
 #
-{% if matrix_continuwuity_config_turn_username != ''  %}
+{% if matrix_continuwuity_config_turn_username != '' %}
 turn_username = {{ matrix_continuwuity_config_turn_username | to_json }}
 {% endif %}
 
@@ -989,6 +1038,21 @@ auto_join_rooms = {{ matrix_continuwuity_config_auto_join_rooms | to_json }}
 # See https://github.com/facebook/rocksdb/wiki/Compression for more details.
 #
 #rocksdb_bottommost_compression = true
+
+# Compression algorithm for RocksDB's Write-Ahead-Log (WAL).
+#
+# At present, only ZSTD compression is supported by RocksDB for WAL
+# compression. Enabling this can reduce WAL size at the expense of some
+# CPU usage during writes.
+#
+# The options are:
+# - "none" = No compression
+# - "zstd" = ZSTD compression
+#
+# For more information on WAL compression, see:
+# https://github.com/facebook/rocksdb/wiki/WAL-Compression
+#
+#rocksdb_wal_compression = "zstd"
 
 # Database recovery mode (for RocksDB WAL corruption).
 #
@@ -1253,21 +1317,6 @@ allow_outgoing_presence = {{ matrix_continuwuity_config_allow_outgoing_presence 
 #
 #brotli_compression = false
 
-# Set to true to allow user type "guest" registrations. Some clients like
-# Element attempt to register guest users automatically.
-#
-#allow_guest_registration = false
-
-# Set to true to log guest registrations in the admin room. Note that
-# these may be noisy or unnecessary if you're a public homeserver.
-#
-#log_guest_registrations = false
-
-# Set to true to allow guest registrations/users to auto join any rooms
-# specified in `auto_join_rooms`.
-#
-#allow_guests_auto_join_rooms = false
-
 # Enable the legacy unauthenticated Matrix media repository endpoints.
 # These endpoints consist of:
 # - /_matrix/media/*/config
@@ -1380,6 +1429,20 @@ forbidden_remote_room_directory_server_names = {{ matrix_continuwuity_config_for
 #
 ignore_messages_from_server_names = {{ matrix_continuwuity_config_ignore_messages_from_server_names | to_json }}
 
+# List of server names that continuwuity will deprioritize (try last) when
+# a client requests to join a room.
+#
+# This can be used to potentially speed up room join requests, by
+# deprioritizing sending join requests through servers that are known to
+# be large or slow.
+#
+# continuwuity will still send join requests to servers in this list if
+# the room couldn't be joined via other servers it federates with.
+#
+# example: ["example.com"]
+#
+#deprioritize_joins_through_servers = []
+
 # Send messages from users that the user has ignored to the client.
 #
 # There is no way for clients to receive messages sent while a user was
@@ -1389,6 +1452,11 @@ ignore_messages_from_server_names = {{ matrix_continuwuity_config_ignore_message
 # limitation.
 #
 #send_messages_from_ignored_users_to_client = false
+
+# Send "org.matrix.dummy_event" events to the client. This is a debugging
+# option.
+#
+#send_dummy_events_to_clients = false
 
 # Vector list of IPv4 and IPv6 CIDR ranges / subnets *in quotes* that you
 # do not want continuwuity to send outbound requests to. Defaults to
@@ -1552,19 +1620,6 @@ url_preview_check_root_domain = {{ matrix_continuwuity_config_url_preview_check_
 # Admins are always allowed to send and receive all room invites.
 #
 #block_non_admin_invites = false
-
-# Enable or disable making requests to MSC4284 Policy Servers.
-# It is recommended you keep this enabled unless you experience frequent
-# connectivity issues, such as in a restricted networking environment.
-#
-#enable_msc4284_policy_servers = true
-
-# Enable running locally generated events through configured MSC4284
-# policy servers. You may wish to disable this if your server is
-# single-user for a slight speed benefit in some rooms, but otherwise
-# should leave it enabled.
-#
-#policy_server_check_own_events = true
 
 # Allow admins to enter commands in rooms other than "#admins" (admin
 # room) by prefixing your message with "\!admin" or "\\!admin" followed up
@@ -1832,6 +1887,11 @@ client = {{ matrix_continuwuity_config_well_known_client | to_json }}
 #
 #support_page =
 
+# The ed25519 public key for the policy server available at this server's
+# name. Must be unpadded base64.
+#
+#policy_server_public_key =
+
 # Role string for server support contacts, to be served as part of the
 # MSC1929 server support endpoint at /.well-known/matrix/support.
 #
@@ -1852,23 +1912,10 @@ client = {{ matrix_continuwuity_config_well_known_client | to_json }}
 #
 #support_mxid =
 
-[global.blurhashing]
-
-# blurhashing x component, 4 is recommended by https://blurha.sh/
+# PGP key URI for server support contacts, to be served as part of the
+# MSC1929 server support endpoint.
 #
-#components_x = 4
-
-# blurhashing y component, 3 is recommended by https://blurha.sh/
-#
-#components_y = 3
-
-# Max raw size that the server will blurhash, this is the size of the
-# image after converting it to raw data, it should be higher than the
-# upload limit but not too high. The higher it is the higher the
-# potential load will be for clients requesting blurhashes. The default
-# is 33.55MB. Setting it to 0 disables blurhashing.
-#
-#blurhash_max_raw_size = 33554432
+#support_pgp_key =
 
 [global.matrix_rtc]
 
@@ -1890,102 +1937,6 @@ foci = [
   { {% for key, value in focus.items() %}{{ key }} = {{ value | to_json }}{% if not loop.last %}, {% endif %}{% endfor %} }{% if not loop.last %}, {% endif %}
 {% endfor %}
 ]
-
-[global.ldap]
-
-# Whether to enable LDAP login.
-#
-# example: "true"
-#
-#enable = false
-
-# Whether to force LDAP authentication or authorize classical password
-# login.
-#
-# example: "true"
-#
-#ldap_only = false
-
-# URI of the LDAP server.
-#
-# example: "ldap://ldap.example.com:389"
-#
-#uri = ""
-
-# StartTLS for LDAP connections.
-#
-#use_starttls = false
-
-# Skip TLS certificate verification, possibly dangerous.
-#
-#disable_tls_verification = false
-
-# Root of the searches.
-#
-# example: "ou=users,dc=example,dc=org"
-#
-#base_dn = ""
-
-# Bind DN if anonymous search is not enabled.
-#
-# You can use the variable `{username}` that will be replaced by the
-# entered username. In such case, the password used to bind will be the
-# one provided for the login and not the one given by
-# `bind_password_file`. Beware: automatically granting admin rights will
-# not work if you use this direct bind instead of a LDAP search.
-#
-# example: "cn=ldap-reader,dc=example,dc=org" or
-# "cn={username},ou=users,dc=example,dc=org"
-#
-#bind_dn = ""
-
-# Path to a file on the system that contains the password for the
-# `bind_dn`.
-#
-# The server must be able to access the file, and it must not be empty.
-#
-#bind_password_file = ""
-
-# Search filter to limit user searches.
-#
-# You can use the variable `{username}` that will be replaced by the
-# entered username for more complex filters.
-#
-# example: "(&(objectClass=person)(memberOf=matrix))"
-#
-#filter = "(objectClass=*)"
-
-# Attribute to use to uniquely identify the user.
-#
-# example: "uid" or "cn"
-#
-#uid_attribute = "uid"
-
-# Attribute containing the display name of the user.
-#
-# example: "givenName" or "sn"
-#
-#name_attribute = "givenName"
-
-# Root of the searches for admin users.
-#
-# Defaults to `base_dn` if empty.
-#
-# example: "ou=admins,dc=example,dc=org"
-#
-#admin_base_dn = ""
-
-# The LDAP search filter to find administrative users for continuwuity.
-#
-# If left blank, administrative state must be configured manually for each
-# user.
-#
-# You can use the variable `{username}` that will be replaced by the
-# entered username for more complex filters.
-#
-# example: "(objectClass=conduwuitAdmin)" or "(uid={username})"
-#
-#admin_filter = ""
 
 #[global.antispam]
 
@@ -2064,13 +2015,142 @@ sender = {{ matrix_continuwuity_config_smtp_sender | to_json }}
 #sender =
 {% endif %}
 
-# Whether to require that users provide an email address when they
-# register.
+# Whether to allow public registration with an email address.
+#
+# Note that, if this option is enabled, anyone will be able to register an
+# account with just an email address.
+#
+# If either this option or `require_email_for_token_registration` are set,
+# users will not be allowed to remove their email address.
 #
 require_email_for_registration = {{ matrix_continuwuity_config_smtp_require_email_for_registration | to_json }}
 
 # Whether to require that users who register with a registration token
-# provide an email address.
+# provide an email address. This option is independent of
+# `require_email_for_registration`.
 #
 require_email_for_token_registration = {{ matrix_continuwuity_config_smtp_require_email_for_token_registration | to_json }}
 {% endif %}
+
+#[global.registration_terms]
+
+# The language code to provide to clients along with the policy documents.
+#
+#language = "en"
+
+# Policy documents, such as terms and conditions or a privacy policy,
+# which users must agree to when registering an account.
+#
+# Example:
+# ```ignore
+# [global.registration_terms.documents]
+# privacy_policy = { name = "Privacy Policy", url = "https://homeserver.example/en/privacy_policy.html" }
+# ```
+#
+#documents =
+
+#[global.oauth]
+
+# The compatibility mode to use for OAuth.
+#
+# - "disabled": OAuth will be unavailable. Users will only be able to log
+#   in using legacy authentication.
+# - "hybrid": OAuth and legacy authentication will both be available. Some
+#   clients may only use one or the other.
+# - "exclusive": Only OAuth will be available. Clients which require
+#   legacy authentication will be unable to log in.
+#
+#compatibility_mode = "hybrid"
+
+#[global.oauth.oidc]
+# Uncommenting this section will enable Continuwuity's support for
+# authenticating users using an OpenID Connect-compatible identity provider.
+# This is referred to as "delegated authentication".
+#
+# IMPORTANT NOTE: When delegated authentication is active, Continuwuity will behave as if
+# the `global.oauth.compatibility_mode` setting is set to `exclusive`.
+# Matrix clients which do not support OAuth login (also referred to as "next-gen auth") will NOT be able
+# to log in while delegated authentication is active.
+
+
+# The OIDC issuer URL. Continuwuity will use OpenID Connect Discovery to
+# automatically fetch the identity provider's metadata from this URL.
+# Generally you should set this to the base domain your identity provider
+# runs on.
+#
+#discovery_url =
+
+# The OAuth client ID for Continuwuity to use when communicating with the
+# identity provider.
+#
+#client_id =
+
+# The OAuth client secret for Continuwuity to use when communicating with
+# the identity provider.
+#
+#client_secret =
+
+# A path to a file which Continuwuity will read the client secret from.
+# If this option is set, it will override `client_secret`.
+#
+# The server will fail to start if the file cannot be read.
+#
+#client_secret_file =
+
+# Additional scopes Continuwuity should request from the IDP. This may be
+# necessary to access certain claims. Continuwuity always requests the
+# `openid` scope.
+#
+#additional_scopes = []
+
+# Whether the user should be prompted to choose a localpart
+# when signing in for the first time. If this is `false`, Continuwuity
+# will attempt to use the value of the `preferred_username_claim`
+# (see below) as the user's localpart. Authentication will
+# fail if this claim is missing or is not a valid localpart.
+#
+#prompt_for_localpart = true
+
+# The claim to use for the user's localpart, if `prompt_for_localpart` is
+# false.
+#
+#preferred_username_claim = "preferred_username"
+
+# The claim which will be used to set the user's email address,
+# either on initial registration or on every login depending on
+# the value of `profile_key_import_mode`. Continuwuity assumes that
+# the IDP has taken care of verifying that the user controls the email
+# address it provides.
+#
+# This option does nothing if SMTP is not configured.
+#
+# If this option is set, and `profile_key_import_mode` is `on_login`,
+# users will not be able to change their email addresses themselves.
+#
+#email_claim = "email"
+
+# Defines how claims returned from the IDP should be mapped to a user's
+# profile data. The profile field named in each key will be set from the
+# claim named in the corresponding value when the user first registers,
+# and possibly on subsequent logins as well, depending on the value of
+# `profile_key_import_mode` (see below).
+#
+# Per-room overrides to the user's display name or avatar will be
+# preserved by the import process.
+#
+# SECURITY NOTE: If the `avatar_url` field is set, Continuwuity will
+# perform a HTTP GET to the URL in the mapped claim and use the returned
+# file as the user's profile picture. Make sure your users are not able
+# to set the value of the mapped claim to an arbitrary URL.
+#
+#profile_key_map = { displayname = "name" }
+
+# When profile keys should be imported from the IDP's claims.
+#
+# - "on_registration": Listed keys will be imported once, when the user
+#   logs in for the first time and their shadow account is created.
+# - "on_login": Listed keys will be imported every time the user logs in.
+#   Additionally, users will not be able to manually edit any listed keys
+#   through their Matrix client.
+#
+#profile_key_import_mode = "on_registration"

@@ -1,3 +1,11 @@
+# 2026-07-12
+
+## Continuwuity v26 no longer supports LDAP
+
+The playbook now installs [Continuwuity](./docs/configuring-playbook-continuwuity.md) v26, a major upgrade from the v0.5.x series which **removes LDAP authentication support** (see the [v26.6.0 release notes](https://forgejo.ellis.link/continuwuation/continuwuity/releases/tag/v26.6.0)).
+
+The playbook never exposed dedicated variables for Continuwuity's LDAP support, so most people are unaffected. However, if you had enabled LDAP via `matrix_continuwuity_environment_variables_extension` or a custom configuration template, you'll need to migrate to another authentication method, such as the newly introduced [OpenID Connect support](https://continuwuity.org/guides/oidc).
+
 # 2026-06-29
 
 ## Support for running on Synology DSM
