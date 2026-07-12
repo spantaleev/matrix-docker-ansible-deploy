@@ -194,8 +194,6 @@ Bots provide various additional functionality to your installation.
 
 - [Setting up matrix-reminder-bot](configuring-playbook-bot-matrix-reminder-bot.md) — a bot to remind you about stuff
 
-- [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) — a bot to create and manage registration tokens to invite users
-
 - [Setting up maubot](configuring-playbook-bot-maubot.md) — a plugin-based Matrix bot system
 
 - [Setting up Honoroit](configuring-playbook-bot-honoroit.md) — a helpdesk bot
@@ -282,6 +280,8 @@ Various services that don't fit any other categories.
 - [Setting up matrix-ldap-registration-proxy](configuring-playbook-matrix-ldap-registration-proxy.md) (removed; the repository of the source code has been removed)
 
 - [Setting up matrix-registration](configuring-playbook-matrix-registration.md) (removed; this component has been unmaintained)
+
+- [Setting up matrix-registration-bot](configuring-playbook-bot-matrix-registration-bot.md) (removed; this component has been unmaintained)
 
 - [Setting up Mautrix Facebook bridging](configuring-playbook-bridge-mautrix-facebook.md) (deprecated in favor of the Messenger/Instagram bridge with [mautrix-meta-messenger](configuring-playbook-bridge-mautrix-meta-messenger.md))
 
