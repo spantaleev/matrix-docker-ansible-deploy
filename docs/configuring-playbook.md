@@ -95,6 +95,8 @@ Web clients for Matrix that you can host on your own domains.
 
 - [Setting up FluffyChat Web](configuring-playbook-client-fluffychat-web.md), if you've enabled [FluffyChat Web](https://github.com/krille-chan/fluffychat), a cute cross-platform messenger (web, iOS, Android) for Matrix written in [Flutter](https://flutter.dev/)
 
+- [Setting up Commet](configuring-playbook-client-commet.md), if you've enabled [Commet](https://github.com/commetchat/commet), a Matrix web client
+
 
 ### Authentication and user-related
 
