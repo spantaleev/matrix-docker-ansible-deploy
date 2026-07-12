@@ -22,7 +22,7 @@
         };
         agru = pkgs.buildGo125Module {
           pname = "agru";
-          version = "0.1.19";
+          version = "0.2.1";
           src = agru-src;
           vendorHash = null;
         };
