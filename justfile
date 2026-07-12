@@ -13,6 +13,10 @@ prek_home := env("PREK_HOME", justfile_directory() / "var/prek")
 default:
     @{{ just_executable() }} --list --justfile "{{ justfile() }}"
 
+# Adds a new host to the inventory, creating the inventory files if necessary (e.g. `just add-inventory-host example.com 1.2.3.4`)
+add-inventory-host domain server_address:
+    @{{ justfile_directory() }}/bin/add-inventory-host.sh {{ quote(domain) }} {{ quote(server_address) }}
+
 # Pulls external Ansible roles
 roles:
     #!/usr/bin/env sh

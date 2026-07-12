@@ -89,7 +89,23 @@ To install Matrix services with this playbook, you would at least need 2 configu
 
 For your convenience, we have prepared example files of them ([`vars.yml`](../examples/vars.yml) and [`hosts`](../examples/hosts)).
 
-To start quickly based on these example files, go into the `matrix-docker-ansible-deploy` directory and follow the instructions below:
+To start quickly based on these example files, go into the `matrix-docker-ansible-deploy` directory and initialize your configuration, either automatically or manually.
+
+To initialize it automatically (with the base domain and server address pre-filled and secrets generated for you), run:
+
+- either: `just add-inventory-host example.com 1.2.3.4` (if you have the [`just`](just.md) tool)
+- or: `make add-inventory-host domain=example.com ip=1.2.3.4` (if you have the `make` program)
+
+… where `example.com` is your "base domain" (not `matrix.example.com`) and `1.2.3.4` is your server's external IP address (or domain name).
+
+Given a base domain of `example.com`, this creates:
+
+- an entry for `matrix.example.com` (the Matrix server's default hostname: `matrix.` + your base domain) in the inventory hosts file (`inventory/hosts`)
+- a configuration file (`inventory/host_vars/matrix.example.com/vars.yml`) containing `matrix_domain: example.com` and automatically generated secrets
+
+Afterward, edit these 2 files to adjust them further, as necessary. Existing configuration is never overwritten (the command refuses to run if the host is already in your inventory), so it can also be used for adding more hosts later.
+
+To initialize it manually, follow the instructions below:
 
 1. Create a directory to hold your configuration: `mkdir -p inventory/host_vars/matrix.example.com` where `example.com` is your "base domain"
 2. Copy the sample configuration file: `cp examples/vars.yml inventory/host_vars/matrix.example.com/vars.yml`
