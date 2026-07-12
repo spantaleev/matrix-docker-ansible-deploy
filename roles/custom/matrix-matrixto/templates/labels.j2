@@ -56,4 +56,8 @@ traefik.http.routers.{{ matrix_matrixto_identifier }}.tls.certResolver={{ matrix
 traefik.http.services.{{ matrix_matrixto_identifier }}.loadbalancer.server.port={{ matrix_matrixto_container_http_port }}
 {% endif %}
 
+{% if matrix_matrixto_container_labels_watchtower_skip_enabled %}
+com.centurylinklabs.watchtower.enable=false
+{% endif %}
+
 {{ matrix_matrixto_container_labels_additional_labels }}
