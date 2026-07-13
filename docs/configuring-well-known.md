@@ -155,6 +155,23 @@ example.com {
 }
 ```
 
+**Note**: Caddy does not process directives in the order they appear in the Caddyfile, but according to its own [directive order](https://caddyserver.com/docs/caddyfile/directives#directive-order). Notably, `redir` is evaluated before `reverse_proxy`, so a `redir` elsewhere in the same site block (a common way to send the base domain to `www.example.com` or to another site) takes precedence and breaks the well-known reverse-proxying. In such cases, wrap the directives in [`handle`](https://caddyserver.com/docs/caddyfile/directives/handle) blocks to enforce the intended priority:
+
+```caddy
+example.com {
+	handle /.well-known/matrix/* {
+		reverse_proxy https://matrix.example.com {
+			header_up Host {upstream_hostport}
+		}
+	}
+
+	handle {
+		# Everything else, e.g. a redirect to some other site
+		redir https://www.example.com{uri}
+	}
+}
+```
+
 **For HAProxy**, it would be something like this:
 
 ```haproxy
