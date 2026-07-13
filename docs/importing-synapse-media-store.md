@@ -13,6 +13,8 @@ You can manually import your `media_store` files from a previous installation of
 
 Before doing the actual data restore, **you need to upload your media store directory to the server** (any path is okay).
 
+You also need the [rsync](https://rsync.samba.org/) utility installed **on the server**, as the import performs a server-side `rsync` synchronization. The playbook does not install it for you. On most distributions, it is available as a package called `rsync`.
+
 If you are [storing Matrix media files on Amazon S3](configuring-playbook-s3.md) (optional), restoring with this tool is not possible right now.
 
 As an alternative, you can perform a manual restore using the [AWS CLI tool](https://aws.amazon.com/cli/) (e.g. `aws s3 sync /path/to/server/media_store/. s3://name-of-bucket/`)
