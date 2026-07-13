@@ -49,8 +49,8 @@ This is because the Matrix specification expects the federation endpoint to be s
 ```yaml
 # To let Traefik know which domains' certificates to serve
 matrix_synapse_container_labels_additional_labels: |
-  traefik.http.routers.matrix-synapse-federation-api.tls.domains.main="example.com"
-  traefik.http.routers.matrix-synapse-federation-api.tls.domains.sans="*.example.com"
+  traefik.http.routers.matrix-synapse-public-federation-api.tls.domains.main="example.com"
+  traefik.http.routers.matrix-synapse-public-federation-api.tls.domains.sans="*.example.com"
 ```
 
 ### Configure the DNS-01 challenge for let's encrypt
@@ -137,8 +137,8 @@ matrix_synapse_container_labels_public_federation_api_traefik_rule: PathPrefix(`
 
 # To let Traefik know which domains' certificates to serve
 matrix_synapse_container_labels_additional_labels: |
-  traefik.http.routers.matrix-synapse-federation-api.tls.domains.main="example.com"
-  traefik.http.routers.matrix-synapse-federation-api.tls.domains.sans="*.example.com"
+  traefik.http.routers.matrix-synapse-public-federation-api.tls.domains.main="example.com"
+  traefik.http.routers.matrix-synapse-public-federation-api.tls.domains.sans="*.example.com"
 
 # Add a new ACME configuration without having to disable the default one, since it would have a wide range of side effects
 traefik_configuration_extension_yaml: |
