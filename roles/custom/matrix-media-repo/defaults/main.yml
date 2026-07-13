@@ -413,6 +413,14 @@ matrix_media_repo_shared_secret_auth_token: "PutSomeRandomSecureValueHere"
 # thumbnails and other misc data is also stored in these places. The media repo, when looking
 # for a datastore to use, will always use the smallest datastore first.
 
+# Controls whether the file datastore is defined in the configuration at all.
+# A datastore can be defined but disabled for uploads (making it readonly) by keeping this enabled
+# while setting `matrix_media_repo_datastore_file_for_kinds: []`. This is useful when migrating
+# media to another datastore, as previously stored media remains readable.
+# By default, the datastore is defined whenever some kinds are assigned to it, matching the
+# previous behavior of this role.
+matrix_media_repo_datastore_file_enabled: "{{ (matrix_media_repo_datastore_file_for_kinds | length) > 0 }}"
+
 # ID for the file datastore. Any unique alphanumeric string (e.g. generated via `pwgen -s 64 1`).
 # This value CANNOT be changed after media has been stored — matrix-media-repo ties media to this ID.
 matrix_media_repo_datastore_file_id: ""
@@ -433,6 +441,14 @@ matrix_media_repo_datastore_file_for_kinds: ["thumbnails", "remote_media", "loca
 
 # Path to datastore, relative to matrix-media-repo directory root
 matrix_media_repo_datastore_opts_path: "/data/media"
+
+# Controls whether the S3 datastore is defined in the configuration at all.
+# A datastore can be defined but disabled for uploads (making it readonly) by keeping this enabled
+# while setting `matrix_media_repo_datastore_s3_for_kinds: []`. This is useful when migrating
+# media to another datastore, as previously stored media remains readable.
+# By default, the datastore is defined whenever some kinds are assigned to it, matching the
+# previous behavior of this role.
+matrix_media_repo_datastore_s3_enabled: "{{ (matrix_media_repo_datastore_s3_for_kinds | length) > 0 }}"
 
 # ID for the S3 datastore. Any unique alphanumeric string (e.g. generated via `pwgen -s 64 1`).
 # This value CANNOT be changed after media has been stored — matrix-media-repo ties media to this ID.

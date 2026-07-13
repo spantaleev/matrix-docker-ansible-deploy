@@ -198,7 +198,7 @@ sharedSecretAuth:
 # thumbnails and other misc data is also stored in these places. The media repo, when looking
 # for a datastore to use, will always use the smallest datastore first.
 datastores:
-{% if (matrix_media_repo_datastore_file_for_kinds | length) > 0 %}
+{% if matrix_media_repo_datastore_file_enabled %}
   - type: file
     # ID for this datastore (cannot change). Alphanumeric recommended.
     id: {{ matrix_media_repo_datastore_file_id | to_json }}
@@ -218,7 +218,7 @@ datastores:
     opts:
       path: {{ matrix_media_repo_datastore_opts_path | to_json }}
 {% endif %}
-{% if (matrix_media_repo_datastore_s3_for_kinds | length) > 0 %}
+{% if matrix_media_repo_datastore_s3_enabled %}
   - type: s3
     # ID for this datastore (cannot change). Alphanumeric recommended.
     id: {{ matrix_media_repo_datastore_s3_id | to_json }}
