@@ -4248,6 +4248,7 @@ postgres_managed_databases_auto: |
       'name': prometheus_postgres_exporter_database_name,
       'username': prometheus_postgres_exporter_database_username,
       'password': prometheus_postgres_exporter_database_password,
+      'additional_sql_queries': ['GRANT pg_monitor TO "' + prometheus_postgres_exporter_database_username + '";'],
     }] if (prometheus_postgres_exporter_enabled and prometheus_postgres_exporter_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
