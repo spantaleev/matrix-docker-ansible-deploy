@@ -1,3 +1,13 @@
+# 2026-07-14
+
+## BorgBackup now includes Synapse's local thumbnails
+
+For Synapse servers, the built-in [BorgBackup](./docs/configuring-playbook-backup-borg.md) integration no longer excludes the media store's `local_thumbnails` directory from backups.
+
+Synapse only generates thumbnails of local media at upload time (unless `dynamic_thumbnails` is enabled, which the playbook does not do), and there is no tooling to regenerate them. Restoring a backup made with the previous exclusion list therefore left all previously uploaded local images without thumbnails. The [official Synapse backup guide](https://element-hq.github.io/synapse/latest/usage/administration/backups.html) recommends backing this directory up, and the playbook now follows that recommendation.
+
+Expect your backups to grow somewhat, depending on how much image media your local users have uploaded. If you prefer the old behavior, you can redefine `backup_borg_location_exclude_patterns` in your `vars.yml`.
+
 # 2026-07-12
 
 ## matrix-registration-bot has been removed from the playbook
