@@ -79,6 +79,9 @@ matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_as_yam
       labels:
         instance: {{ matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_instance | to_json }}
         worker_id: {{ worker.id | to_json }}
+        {# The only number in a worker id is its per-type index (e.g. federation-sender-1, stream-writer-2-events). #}
+        {# The upstream Synapse Grafana dashboard uses job and index labels in its legends to tell workers apart. #}
+        index: {{ worker.id | regex_search('[0-9]+') }}
         job: {{ worker.type | to_json }}
         app: {{ worker.app | to_json }}
   {% endif %}
