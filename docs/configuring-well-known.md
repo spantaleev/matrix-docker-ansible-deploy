@@ -112,7 +112,9 @@ This option is less fragile and generally better.
 
 On the base domain's server (e.g. `example.com`), you can set up reverse-proxying (or simply a 302 redirect), so that any access for the `/.well-known/matrix` location prefix is forwarded to the Matrix domain's server (e.g. `matrix.example.com`).
 
-With this method, you **don't need** to add special HTTP headers for [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) reasons (like `Access-Control-Allow-Origin`), because your Matrix server (where requests ultimately go) will be configured by this playbook correctly.
+With reverse-proxying, you **don't need** to add special HTTP headers for [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) reasons (like `Access-Control-Allow-Origin`), because your Matrix server (where requests ultimately go) will be configured by this playbook correctly.
+
+If you use a 302 redirect instead, be aware that browsers apply CORS checks to every response in the redirect chain, so the redirect response itself must also carry an `Access-Control-Allow-Origin: *` header. Otherwise, web-based Matrix clients (like Element Web) may fail to work even though the final destination sets the header correctly.
 
 **For nginx**, it would be something like this:
 
