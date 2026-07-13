@@ -51,6 +51,23 @@ traefik.http.routers.matrix-client-element.tls={{ matrix_client_element_containe
 traefik.http.routers.matrix-client-element.tls.certResolver={{ matrix_client_element_container_labels_traefik_tls_certResolver }}
 {% endif %}
 
+{% if matrix_client_element_location_sharing_enabled %}
+{#
+	A dedicated router for the map style file, which attaches an Access-Control-Allow-Origin header.
+	Element Desktop loads the map style from a `vector://vector` origin, so it needs to be allowed cross-origin access.
+#}
+traefik.http.middlewares.matrix-client-element-map-style-add-headers.headers.customresponseheaders.Access-Control-Allow-Origin={{ matrix_client_element_location_sharing_map_style_access_control_allow_origin }}
+
+traefik.http.routers.matrix-client-element-map-style.rule={{ matrix_client_element_container_labels_traefik_rule }} && Path(`{{ (matrix_client_element_container_labels_traefik_path_prefix ~ '/map_style.json') | regex_replace('^//', '/') }}`)
+traefik.http.routers.matrix-client-element-map-style.service=matrix-client-element
+traefik.http.routers.matrix-client-element-map-style.middlewares={{ (middlewares + ['matrix-client-element-map-style-add-headers']) | join(',') }}
+traefik.http.routers.matrix-client-element-map-style.entrypoints={{ matrix_client_element_container_labels_traefik_entrypoints }}
+traefik.http.routers.matrix-client-element-map-style.tls={{ matrix_client_element_container_labels_traefik_tls | to_json }}
+{% if matrix_client_element_container_labels_traefik_tls %}
+traefik.http.routers.matrix-client-element-map-style.tls.certResolver={{ matrix_client_element_container_labels_traefik_tls_certResolver }}
+{% endif %}
+{% endif %}
+
 {% endif %}
 
 {{ matrix_client_element_container_labels_additional_labels }}
