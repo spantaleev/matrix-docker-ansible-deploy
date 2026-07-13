@@ -43,6 +43,19 @@
 
 - when: "matrix_synapse_usage_exporter_container_image_self_build | bool"
   block:
+    # A repository left behind with different file ownership (e.g. cloned by another user in the past)
+    # would make the git update below fail, either with a permission error or with git's
+    # dubious-ownership protection kicking in (which manifests as a confusing
+    # "'origin' does not appear to be a git repository" error, because git ignores
+    # the repository's own configuration in that case).
+    - name: Ensure synapse-usage-exporter repository ownership is correct on self-build
+      ansible.builtin.file:
+        path: "{{ matrix_synapse_usage_exporter_docker_src_files_path }}"
+        state: directory
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+        recurse: true
+
     - name: Ensure synapse-usage-exporter repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_synapse_usage_exporter_container_image_self_build_repo }}"
@@ -51,6 +64,10 @@
         force: "yes"
       become: true
       become_user: "{{ matrix_user_name }}"
+      environment:
+        GIT_CONFIG_COUNT: "1"
+        GIT_CONFIG_KEY_0: safe.directory
+        GIT_CONFIG_VALUE_0: "{{ matrix_synapse_usage_exporter_docker_src_files_path }}"
       register: matrix_synapse_usage_exporter_git_pull_results
 
     - name: Check if synapse-usage-exporter Docker image exists
