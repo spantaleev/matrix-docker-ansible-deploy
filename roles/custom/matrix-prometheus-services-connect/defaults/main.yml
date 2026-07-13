@@ -72,6 +72,7 @@ matrix_prometheus_services_connect_scraper_synapse_workers_enabled: "{{ matrix_p
 
 matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list: []
 
+# No {# #} comments inside the block below: indented, they leak whitespace and corrupt the YAML.
 matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_as_yaml: |
   {% for worker in matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list %}
   {% if worker.metrics_port != 0 %}
@@ -79,9 +80,7 @@ matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_as_yam
       labels:
         instance: {{ matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_instance | to_json }}
         worker_id: {{ worker.id | to_json }}
-        {# The only number in a worker id is its per-type index (e.g. federation-sender-1, stream-writer-2-events). #}
-        {# The upstream Synapse Grafana dashboard uses job and index labels in its legends to tell workers apart. #}
-        index: {{ worker.id | regex_search('[0-9]+') }}
+        index: {{ worker.id | regex_search('[0-9]+') | to_json }}
         job: {{ worker.type | to_json }}
         app: {{ worker.app | to_json }}
   {% endif %}
@@ -89,7 +88,7 @@ matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_as_yam
 
 matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_instance: "{{ matrix_domain }}"
 
-matrix_prometheus_services_connect_scraper_synapse_workers_static_configs: "{{ [] if matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list | length == 0 else matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_as_yaml | from_yaml }}"
+matrix_prometheus_services_connect_scraper_synapse_workers_static_configs: "{{ [] if matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list | length == 0 else matrix_prometheus_services_connect_scraper_synapse_workers_static_configs_as_yaml | from_yaml or [] }}"
 
 # Controls whether Postgres (postgres-exporter) shall be scraped
 matrix_prometheus_services_connect_scraper_postgres_enabled: false
