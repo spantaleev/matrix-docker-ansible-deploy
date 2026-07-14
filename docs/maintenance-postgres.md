@@ -76,6 +76,8 @@ If you are using an [external Postgres server](configuring-playbook-external-pos
 
 Restoring a backup made this way can be done by [importing it](importing-postgres.md).
 
+**Note for Synapse users**: the [official Synapse backup guide](https://element-hq.github.io/synapse/latest/usage/administration/backups.html) recommends that the `e2e_one_time_keys_json` table either not be backed up, or be truncated after restoring (before Synapse is started). The full-server dump command above does include it, so if you ever restore a backup that is older than the server's current state, remember to truncate that table as described in [the importing guide](importing-postgres.md).
+
 ## Upgrading PostgreSQL
 
 Unless you are using an [external Postgres server](configuring-playbook-external-postgres.md), this playbook initially installs Postgres for you.

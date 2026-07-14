@@ -25,6 +25,11 @@ The migration might be a good moment, to "reset" a not properly working bridge. 
 
 Before doing the actual import, **you need to upload your Postgres dump file to the server** (any path is okay).
 
+> [!WARNING]
+> Do not import into a database that already contains tables (e.g. one that a service has already initialized and used). As the [official Synapse backup guide](https://element-hq.github.io/synapse/latest/usage/administration/backups.html) puts it: at best this will error, at worst it will lead to subtle database inconsistencies. Import into an empty (freshly created) database instead.
+
+**Note for Synapse users restoring an older backup**: if the server kept running (and users kept chatting) after the backup you are restoring was made, truncate the `e2e_one_time_keys_json` table after importing and before starting Synapse. Restoring an older backup can otherwise cause already-used one-time keys to be re-issued, leading to message decryption errors for your users. You can do this by [getting a database terminal](maintenance-postgres.md#getting-a-database-terminal), connecting to the Synapse database (`\c synapse`) and running `TRUNCATE e2e_one_time_keys_json;`. Clients will generate and upload fresh one-time keys automatically.
+
 ## Importing
 
 To import, run this command (make sure to replace `SERVER_PATH_TO_POSTGRES_DUMP_FILE` with a file path on your server):
