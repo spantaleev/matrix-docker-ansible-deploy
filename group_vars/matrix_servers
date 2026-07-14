@@ -3837,7 +3837,9 @@ jitsi_turns_port: "{{ coturn_container_stun_tls_host_bind_port_tcp.split(':')[-1
 # Falls back to the scalar.vector.im etherpad in case someone sets `jitsi_etherpad_enabled` to true,
 # while also setting `etherpad_enabled` to false.
 jitsi_etherpad_enabled: "{{ etherpad_enabled }}"
-jitsi_etherpad_base: "{{ etherpad_base_url if etherpad_enabled else 'https://scalar.vector.im/etherpad' }}"
+# The trailing slash is stripped, because the Jitsi role appends path segments (e.g. `/p/`) itself
+# and `etherpad_base_url` ends with a slash, which would otherwise produce double-slash URLs.
+jitsi_etherpad_base: "{{ (etherpad_base_url | regex_replace('/+$', '')) if etherpad_enabled else 'https://scalar.vector.im/etherpad' }}"
 
 # Allow verification using JWT and matrix-UVS
 jitsi_prosody_auth_matrix_uvs_sync_power_levels: "{{ matrix_user_verification_service_enabled }}"
