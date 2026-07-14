@@ -105,6 +105,9 @@ Cache autotuning is **enabled by default** and controlled via the following vari
 
 You can **learn more about cache-autotuning and the global cache factor settings** in the [Synapse's documentation on caches and associated values](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#caches-and-associated-values).
 
+> [!NOTE]
+> These limits apply **per Synapse process**. If you have [workers](configuring-playbook-synapse.md#load-balancing-with-workers) enabled, the main process and every worker each apply the configured limits independently, so the theoretical aggregate cache memory usage gets multiplied by the number of processes. When running many workers on a memory-constrained server, consider setting these variables to lower, explicitly chosen values.
+
 To **disable cache auto-tuning**, unset all values:
 
 ```yaml
