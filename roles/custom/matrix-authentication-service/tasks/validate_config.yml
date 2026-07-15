@@ -25,6 +25,8 @@
     - {'name': 'matrix_authentication_service_container_labels_public_compatibility_layer_hostname', when: "{{ matrix_authentication_service_container_labels_public_compatibility_layer_enabled }}"}
     - {'name': 'matrix_authentication_service_container_labels_internal_compatibility_layer_entrypoints', when: "{{ matrix_authentication_service_container_labels_internal_compatibility_layer_enabled }}"}
     - {'name': 'matrix_authentication_service_config_email_hostname', when: "{{ matrix_authentication_service_config_email_transport == 'smtp' }}"}
+    - {'name': 'matrix_authentication_service_config_captcha_site_key', when: "{{ matrix_authentication_service_config_captcha_service != '' }}"}
+    - {'name': 'matrix_authentication_service_config_captcha_secret_key', when: "{{ matrix_authentication_service_config_captcha_service != '' }}"}
 
 - name: Fail if matrix_authentication_service_config_secrets_encryption is not 64 characters long
   ansible.builtin.fail:
@@ -35,6 +37,11 @@
   ansible.builtin.fail:
     msg: "matrix_authentication_service_config_email_transport must be one of: blackhole, smtp, or aws_ses"
   when: "matrix_authentication_service_config_email_transport not in ['blackhole', 'smtp', 'aws_ses']"
+
+- name: Fail if matrix_authentication_service_config_captcha_service is invalid
+  ansible.builtin.fail:
+    msg: "matrix_authentication_service_config_captcha_service must be one of: recaptcha_v2, cloudflare_turnstile, or hcaptcha (or empty, to disable CAPTCHA protection)"
+  when: "matrix_authentication_service_config_captcha_service not in ['', 'recaptcha_v2', 'cloudflare_turnstile', 'hcaptcha']"
 
 - name: (Deprecation) Catch and report renamed matrix-authentication-service settings
   ansible.builtin.fail:

@@ -1,3 +1,9 @@
+# 2026-07-15
+
+## Dedicated CAPTCHA variables for Matrix Authentication Service
+
+[Matrix Authentication Service](./docs/configuring-playbook-matrix-authentication-service.md) can now be protected with CAPTCHA (ReCaptcha v2, Cloudflare Turnstile, or hCaptcha) via dedicated variables, instead of going through `matrix_authentication_service_configuration_extension_yaml`. See the [captcha documentation](./docs/configuring-captcha.md#matrix-authentication-service) for details.
+
 # 2026-07-14
 
 ## The playbook no longer ships a custom welcome page for Element Web

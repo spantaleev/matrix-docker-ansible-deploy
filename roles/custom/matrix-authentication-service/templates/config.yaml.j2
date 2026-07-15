@@ -72,6 +72,13 @@ account:
   login_with_email_allowed: {{ matrix_authentication_service_config_account_login_with_email_allowed | to_json }}
   registration_token_required: {{ matrix_authentication_service_config_account_registration_token_required | to_json }}
 
+{% if matrix_authentication_service_config_captcha_service %}
+captcha:
+  service: {{ matrix_authentication_service_config_captcha_service | to_json }}
+  site_key: {{ matrix_authentication_service_config_captcha_site_key | to_json }}
+  secret_key: {{ matrix_authentication_service_config_captcha_secret_key | to_json }}
+{% endif %}
+
 clients: {{ matrix_authentication_service_config_clients | to_json }}
 
 {% if matrix_authentication_service_config_upstream_oauth2_providers | length > 0 %}
