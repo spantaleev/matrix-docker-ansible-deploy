@@ -71,4 +71,6 @@ matrix_synapse_federation_port_enabled: false
 matrix_synapse_tls_federation_listener_enabled: false
 ```
 
+**Note**: `matrix_synapse_federation_port_enabled: false` only makes sense in this specific setup, where federation traffic is served through the client port (because of the `federation` entry in `matrix_synapse_http_listener_resource_names`). If federation still flows through the dedicated federation port on your setup (e.g. another reverse proxy of yours forwarding a custom public port to this playbook's federation port), leave `matrix_synapse_federation_port_enabled` at its default (enabled). Disabling it removes the federation route entirely and breaks such setups.
+
 **Use this at you own risk as all the possible side-effects of doing this are not fully known. However, it has been tested and works fine and passes all the tests on <https://federationtester.matrix.org/> without issues.**
