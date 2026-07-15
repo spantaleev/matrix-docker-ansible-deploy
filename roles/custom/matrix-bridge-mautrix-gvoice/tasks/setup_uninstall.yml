@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Nikita Chernyi
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-mautrix-gvoice service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-gvoice.service"
+  register: matrix_mautrix_gvoice_service_stat
+
+- when: matrix_mautrix_gvoice_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-mautrix-gvoice is stopped
+      ansible.builtin.service:
+        name: matrix-mautrix-gvoice
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-mautrix-gvoice.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-gvoice.service"
+        state: absent

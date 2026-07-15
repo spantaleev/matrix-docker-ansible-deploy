@@ -41,6 +41,7 @@ Possibly outdated list of roles where self-building the Docker image is currentl
 - `matrix-bridge-mautrix-telegram`
 - `matrix-bridge-mautrix-signal`
 - `matrix-bridge-mautrix-gmessages`
+- `matrix-bridge-mautrix-gvoice`
 - `matrix-bridge-mautrix-whatsapp`
 - `matrix-bridge-mx-puppet-steam`
 - `matrix-bot-mjolnir`
