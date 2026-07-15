@@ -102,8 +102,6 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_appservice_irc_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_appservice_kakaotalk_config_path + '/registration.yaml,dst=/matrix-appservice-kakaotalk-registration.yaml,ro'] if matrix_appservice_kakaotalk_enabled else [])
-    +
     (['--mount type=bind,src=' + matrix_beeper_linkedin_config_path + '/registration.yaml,dst=/matrix-beeper-linkedin-registration.yaml,ro'] if matrix_beeper_linkedin_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_wechat_config_path + '/registration.yaml,dst=/matrix-wechat-registration.yaml,ro'] if matrix_wechat_enabled else [])
@@ -160,8 +158,6 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-appservice-double-puppet-registration.yaml'] if matrix_appservice_double_puppet_enabled else [])
     +
     (['/matrix-appservice-irc-registration.yaml'] if matrix_appservice_irc_enabled else [])
-    +
-    (['/matrix-appservice-kakaotalk-registration.yaml'] if matrix_appservice_kakaotalk_enabled else [])
     +
     (['/matrix-beeper-linkedin-registration.yaml'] if matrix_beeper_linkedin_enabled else [])
     +
@@ -369,20 +365,6 @@ devture_systemd_service_manager_services_list_auto: |
       'restart_necessary': (matrix_appservice_irc_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'appservice-irc'],
     }] if matrix_appservice_irc_enabled else [])
-    +
-    ([{
-      'name': 'matrix-appservice-kakaotalk.service',
-      'priority': 2000,
-      'restart_necessary': (matrix_appservice_kakaotalk_restart_necessary | bool),
-      'groups': ['matrix', 'bridges', 'appservice-kakaotalk'],
-    }] if matrix_appservice_kakaotalk_enabled else [])
-    +
-    ([{
-      'name': 'matrix-appservice-kakaotalk-node.service',
-      'priority': 1900,
-      'restart_necessary': (matrix_appservice_kakaotalk_restart_necessary | bool),
-      'groups': ['matrix', 'bridges', 'appservice-kakaotalk', 'appservice-kakaotalk-node'],
-    }] if matrix_appservice_kakaotalk_enabled else [])
     +
     ([{
       'name': 'matrix-beeper-linkedin.service',
@@ -1283,56 +1265,6 @@ matrix_appservice_irc_container_labels_traefik_tls_certResolver: "{{ traefik_cer
 ######################################################################
 #
 # /matrix-bridge-appservice-irc
-#
-######################################################################
-
-######################################################################
-#
-# matrix-bridge-appservice-kakaotalk
-#
-######################################################################
-
-# We don't enable bridges by default.
-matrix_appservice_kakaotalk_enabled: false
-
-matrix_appservice_kakaotalk_systemd_required_services_list_auto: |
-  {{
-    matrix_addons_homeserver_systemd_services_list
-    +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_kakaotalk_database_hostname == postgres_connection_hostname) else [])
-  }}
-
-matrix_appservice_kakaotalk_node_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_kakaotalk_node_container_image_registry_prefix_upstream_default }}"
-
-matrix_appservice_kakaotalk_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_kakaotalk_container_image_registry_prefix_upstream_default }}"
-
-matrix_appservice_kakaotalk_container_network: "{{ matrix_addons_container_network }}"
-
-matrix_appservice_kakaotalk_container_additional_networks_auto: |-
-  {{
-    (
-      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
-      +
-      ([postgres_container_network] if (postgres_enabled and matrix_appservice_kakaotalk_database_hostname == postgres_connection_hostname and matrix_appservice_kakaotalk_container_network != postgres_container_network) else [])
-    ) | unique
-  }}
-
-matrix_appservice_kakaotalk_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':as.kakao.hs') | hash('sha512') | to_uuid }}"
-
-matrix_appservice_kakaotalk_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_appservice_kakaotalk_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':as.kakao.hs') | hash('sha512') | to_uuid }}"
-
-matrix_appservice_kakaotalk_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
-
-matrix_appservice_kakaotalk_login_shared_secret: "{{ matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret if matrix_synapse_ext_password_provider_shared_secret_auth_enabled else '' }}"
-
-matrix_appservice_kakaotalk_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
-matrix_appservice_kakaotalk_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_appservice_kakaotalk_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.kakao.db') | hash('sha512') | to_uuid }}"
-
-######################################################################
-#
-# /matrix-bridge-appservice-kakaotalk
 #
 ######################################################################
 
@@ -4127,12 +4059,6 @@ postgres_managed_databases_auto: |
       'username': matrix_appservice_irc_database_username,
       'password': matrix_appservice_irc_database_password,
     }] if (matrix_appservice_irc_enabled and matrix_appservice_irc_database_engine == 'postgres' and matrix_appservice_irc_database_hostname == postgres_connection_hostname) else [])
-    +
-    ([{
-      'name': matrix_appservice_kakaotalk_database_name,
-      'username': matrix_appservice_kakaotalk_database_username,
-      'password': matrix_appservice_kakaotalk_database_password,
-    }] if (matrix_appservice_kakaotalk_enabled and matrix_appservice_kakaotalk_database_engine == 'postgres' and matrix_appservice_kakaotalk_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
       'name': matrix_beeper_linkedin_database_name,

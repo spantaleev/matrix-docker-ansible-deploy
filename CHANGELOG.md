@@ -1,5 +1,11 @@
 # 2026-07-15
 
+## matrix-appservice-kakaotalk has been removed from the playbook
+
+The [matrix-appservice-kakaotalk](./docs/configuring-playbook-bridge-appservice-kakaotalk.md) bridge has been removed from the playbook. This component could only be installed by self-building its source code, and its upstream repository has become unreachable, which makes installation impossible. The bridge was also based on the unmaintained node-kakao library, and there have been reports that using it may get KakaoTalk accounts banned.
+
+The playbook will let you know if you're using any `matrix_appservice_kakaotalk_*` variables. You'll need to remove them from `vars.yml` and potentially [uninstall the component manually](./docs/configuring-playbook-bridge-appservice-kakaotalk.md#uninstalling-the-component-manually).
+
 ## Dedicated CAPTCHA variables for Matrix Authentication Service
 
 [Matrix Authentication Service](./docs/configuring-playbook-matrix-authentication-service.md) can now be protected with CAPTCHA (ReCaptcha v2, Cloudflare Turnstile, or hCaptcha) via dedicated variables, instead of going through `matrix_authentication_service_configuration_extension_yaml`. See the [captcha documentation](./docs/configuring-captcha.md#matrix-authentication-service) for details.

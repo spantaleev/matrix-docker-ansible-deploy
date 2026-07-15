@@ -166,8 +166,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md)
 
-- [Setting up Appservice Kakaotalk bridging](configuring-playbook-bridge-appservice-kakaotalk.md)
-
 - [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md)
 
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) — a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira).
@@ -262,6 +260,8 @@ Various services that don't fit any other categories.
 - [Configuring conduwuit](configuring-playbook-conduwuit.md) (removed; this component has been abandoned and unmaintained)
 
 - [Setting up the Sliding Sync proxy](configuring-playbook-sliding-sync-proxy.md) for clients which require Sliding Sync support (like old Element X versions, before it got switched to Simplified Sliding Sync)
+
+- [Setting up Appservice Kakaotalk bridging](configuring-playbook-bridge-appservice-kakaotalk.md) (removed; the upstream repository has become unreachable and the component could only be installed by self-building it)
 
 - [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md) (removed; this component has been discontinued)
 

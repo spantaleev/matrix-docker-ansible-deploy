@@ -723,6 +723,18 @@
       The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_bot_matrix_registration_bot_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_bot_matrix_registration_bot_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-appservice-kakaotalk variables
+  ansible.builtin.fail:
+    msg: |-
+      matrix-appservice-kakaotalk was completely removed from the playbook in July 2026, because its upstream repository became unreachable and the component could only be installed by self-building it.
+
+      Please remove all `matrix_appservice_kakaotalk_*` variables from your configuration file (vars.yml).
+
+      You may also wish to uninstall the component manually. See `docs/configuring-playbook-bridge-appservice-kakaotalk.md` for more information.
+
+      The following variables in your configuration need to be removed: {{ lookup('ansible.builtin.varnames', '^matrix_appservice_kakaotalk_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_appservice_kakaotalk_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report matrix-ldap-registration-proxy variables
   ansible.builtin.fail:
     msg: |-
