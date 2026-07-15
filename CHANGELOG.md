@@ -1,5 +1,11 @@
 # 2026-07-15
 
+## Google Voice bridging
+
+The playbook can now bridge [Google Voice](https://voice.google.com/) via the [mautrix-gvoice](https://github.com/mautrix/gvoice) bridge. Text and media flow both ways, and portal rooms build themselves for your recent conversations.
+
+Login is by cookie, not a paired phone: you copy the cookies from a browser signed in to voice.google.com and hand them to the bot. Google expires them on its own schedule, so expect to log in again every so often. See [Setting up Mautrix Google Voice bridging](./docs/configuring-playbook-bridge-mautrix-gvoice.md) to get started.
+
 ## matrix-appservice-kakaotalk has been removed from the playbook
 
 The [matrix-appservice-kakaotalk](./docs/configuring-playbook-bridge-appservice-kakaotalk.md) bridge has been removed from the playbook. This component could only be installed by self-building its source code, and its upstream repository has become unreachable, which makes installation impossible. The bridge was also based on the unmaintained node-kakao library, and there have been reports that using it may get KakaoTalk accounts banned.

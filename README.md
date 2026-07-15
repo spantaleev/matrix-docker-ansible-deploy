@@ -116,6 +116,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mautrix-slack](https://github.com/mautrix/slack) | ❌ | Bridge to [Slack](https://slack.com/) | [Link](docs/configuring-playbook-bridge-mautrix-slack.md) |
 | [mautrix-telegram](https://github.com/mautrix/telegram) | ❌ | Bridge to [Telegram](https://telegram.org/) | [Link](docs/configuring-playbook-bridge-mautrix-telegram.md) |
 | [mautrix-gmessages](https://github.com/mautrix/gmessages) | ❌ | Bridge to [Google Messages](https://messages.google.com/) | [Link](docs/configuring-playbook-bridge-mautrix-gmessages.md) |
+| [mautrix-gvoice](https://github.com/mautrix/gvoice) | ❌ | Bridge to [Google Voice](https://voice.google.com/) | [Link](docs/configuring-playbook-bridge-mautrix-gvoice.md) |
 | [mautrix-whatsapp](https://github.com/mautrix/whatsapp) | ❌ | Bridge to [WhatsApp](https://www.whatsapp.com/) | [Link](docs/configuring-playbook-bridge-mautrix-whatsapp.md) |
 | [mautrix-wsproxy](https://github.com/mautrix/wsproxy) | ❌ | Bridge to Android SMS or Apple iMessage | [Link](docs/configuring-playbook-bridge-mautrix-wsproxy.md) |
 | [matrix-rustpush-bridge](https://github.com/jasonlaguidice/imessage) | ❌ | Bridge to [iMessage](https://support.apple.com/messages) via Apple Push Notification service | [Link](docs/configuring-playbook-bridge-rustpush.md) |

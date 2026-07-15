@@ -91,6 +91,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [mautrix-slack](configuring-playbook-bridge-mautrix-slack.md) | [mautrix/slack](https://mau.dev/mautrix/slack/container_registry) | ❌ | Bridge to [Slack](https://slack.com/) |
 | [mautrix-telegram](configuring-playbook-bridge-mautrix-telegram.md) | [mautrix/telegram](https://mau.dev/mautrix/telegram/container_registry) | ❌ | Bridge to [Telegram](https://telegram.org/) |
 | [mautrix-gmessages](configuring-playbook-bridge-mautrix-gmessages.md) | [mautrix/gmessages](https://mau.dev/mautrix/gmessages/container_registry) | ❌ | Bridge to [Google Messages](https://messages.google.com/) |
+| [mautrix-gvoice](configuring-playbook-bridge-mautrix-gvoice.md) | [mautrix/gvoice](https://mau.dev/mautrix/gvoice/container_registry) | ❌ | Bridge to [Google Voice](https://voice.google.com/) |
 | [mautrix-whatsapp](configuring-playbook-bridge-mautrix-whatsapp.md) | [mautrix/whatsapp](https://mau.dev/mautrix/whatsapp/container_registry) | ❌ | Bridge to [WhatsApp](https://www.whatsapp.com/) |
 | [mautrix-wsproxy](configuring-playbook-bridge-mautrix-wsproxy.md) | [mautrix/wsproxy](https://mau.dev/mautrix/wsproxy/container_registry) | ❌ | Bridge to Android SMS or Apple iMessage |
 | [mautrix-twitter](configuring-playbook-bridge-mautrix-twitter.md) | [mautrix/twitter](https://mau.dev/mautrix/twitter/container_registry) | ❌ | Bridge to [Twitter](https://twitter.com/) |
