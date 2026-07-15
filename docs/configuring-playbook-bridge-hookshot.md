@@ -40,6 +40,16 @@ matrix_hookshot_enabled: true
 # matrix_hookshot_github_private_key: "GITHUB_PRIVATE_KEY_HERE"
 ```
 
+> [!NOTE]
+> End-to-bridge encryption also requires the homeserver to support (and have enabled) [MSC2409](https://github.com/matrix-org/matrix-spec-proposals/pull/2409) and [MSC3202](https://github.com/matrix-org/matrix-spec-proposals/pull/3202). If you are using Synapse, enable them by also adding this to your `vars.yml` file:
+>
+> ```yaml
+> matrix_synapse_experimental_features_msc2409_to_device_messages_enabled: true
+> matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: true
+> ```
+>
+> These are experimental homeserver-wide features (as is Hookshot's encryption support itself), so enable them deliberately.
+
 For each of the services (GitHub, GitLab, Jira, Figma, and generic webhooks) fill in the respective variables `matrix_hookshot_service_*` listed in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required.
 
 Take special note of the `matrix_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab and generic webhooks), while you must first add the required configuration and enable the others (GitHub, Jira, and Figma).
