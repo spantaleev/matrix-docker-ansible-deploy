@@ -6,19 +6,19 @@
 
 - name: Check existence of mautrix-meta-instagram service
   ansible.builtin.stat:
-    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_mautrix_meta_instagram_identifier }}.service"
-  register: matrix_mautrix_meta_instagram_service_stat
+    path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_bridge_mautrix_meta_instagram_identifier }}.service"
+  register: matrix_bridge_mautrix_meta_instagram_service_stat
 
-- when: matrix_mautrix_meta_instagram_service_stat.stat.exists | bool
+- when: matrix_bridge_mautrix_meta_instagram_service_stat.stat.exists | bool
   block:
     - name: Ensure mautrix-meta-instagram is stopped
       ansible.builtin.service:
-        name: "{{ matrix_mautrix_meta_instagram_identifier }}"
+        name: "{{ matrix_bridge_mautrix_meta_instagram_identifier }}"
         state: stopped
         enabled: false
         daemon_reload: true
 
     - name: Ensure mautrix-meta-instagram.service doesn't exist
       ansible.builtin.file:
-        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_mautrix_meta_instagram_identifier }}.service"
+        path: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_bridge_mautrix_meta_instagram_identifier }}.service"
         state: absent

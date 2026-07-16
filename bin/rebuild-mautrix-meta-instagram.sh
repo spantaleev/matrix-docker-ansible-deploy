@@ -30,12 +30,12 @@ fi
 cp -ar $messenger_role_path $instagram_role_path
 
 find "$instagram_role_path" -type f | while read -r file; do
-	sed --in-place 's/matrix_mautrix_meta_messenger_/matrix_mautrix_meta_instagram_/g' "$file"
+	sed --in-place 's/matrix_mautrix_meta_messenger_/matrix_bridge_mautrix_meta_instagram_/g' "$file"
 	sed --in-place 's/mautrix-meta-messenger/mautrix-meta-instagram/g' "$file"
 done
 
-sed --in-place 's/matrix_mautrix_meta_instagram_meta_mode: \(.*\)/matrix_mautrix_meta_instagram_meta_mode: instagram/g' $instagram_role_path/defaults/main.yml
-sed --in-place 's/matrix_mautrix_meta_instagram_identifier: \(.*\)/matrix_mautrix_meta_instagram_identifier: matrix-mautrix-meta-instagram/g' $instagram_role_path/defaults/main.yml
+sed --in-place 's/matrix_bridge_mautrix_meta_instagram_meta_mode: \(.*\)/matrix_bridge_mautrix_meta_instagram_meta_mode: instagram/g' $instagram_role_path/defaults/main.yml
+sed --in-place 's/matrix_bridge_mautrix_meta_instagram_identifier: \(.*\)/matrix_bridge_mautrix_meta_instagram_identifier: matrix-mautrix-meta-instagram/g' $instagram_role_path/defaults/main.yml
 
 # Create the README.md file with the license header
 cat > $instagram_role_path/README.md << 'EOF'

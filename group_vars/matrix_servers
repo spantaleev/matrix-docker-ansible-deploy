@@ -124,7 +124,7 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mautrix_meta_messenger_config_path + '/registration.yaml,dst=/matrix-mautrix-meta-messenger-registration.yaml,ro'] if matrix_mautrix_meta_messenger_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_mautrix_meta_instagram_config_path + '/registration.yaml,dst=/matrix-mautrix-meta-instagram-registration.yaml,ro'] if matrix_mautrix_meta_instagram_enabled else [])
+    (['--mount type=bind,src=' + matrix_bridge_mautrix_meta_instagram_config_path + '/registration.yaml,dst=/matrix-mautrix-meta-instagram-registration.yaml,ro'] if matrix_bridge_mautrix_meta_instagram_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_telegram_config_path + '/registration.yaml,dst=/matrix-mautrix-telegram-registration.yaml,ro'] if matrix_mautrix_telegram_enabled else [])
     +
@@ -183,7 +183,7 @@ matrix_homeserver_app_service_config_files_auto: |
     +
     (['/matrix-mautrix-meta-messenger-registration.yaml'] if matrix_mautrix_meta_messenger_enabled else [])
     +
-    (['/matrix-mautrix-meta-instagram-registration.yaml'] if matrix_mautrix_meta_instagram_enabled else [])
+    (['/matrix-mautrix-meta-instagram-registration.yaml'] if matrix_bridge_mautrix_meta_instagram_enabled else [])
     +
     (['/matrix-mautrix-telegram-registration.yaml'] if matrix_mautrix_telegram_enabled else [])
     +
@@ -462,11 +462,11 @@ devture_systemd_service_manager_services_list_auto: |
     }] if matrix_mautrix_meta_messenger_enabled else [])
     +
     ([{
-      'name': (matrix_mautrix_meta_instagram_identifier + '.service'),
+      'name': (matrix_bridge_mautrix_meta_instagram_identifier + '.service'),
       'priority': 2000,
-      'restart_necessary': (matrix_mautrix_meta_instagram_restart_necessary | bool),
+      'restart_necessary': (matrix_bridge_mautrix_meta_instagram_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'mautrix-meta', 'mautrix-meta-instagram'],
-    }] if matrix_mautrix_meta_instagram_enabled else [])
+    }] if matrix_bridge_mautrix_meta_instagram_enabled else [])
     +
     ([{
       'name': 'matrix-mautrix-telegram.service',
@@ -1892,74 +1892,74 @@ matrix_mautrix_meta_messenger_database_password: "{{ ((matrix_homeserver_generic
 ######################################################################
 
 # We don't enable bridges by default.
-matrix_mautrix_meta_instagram_enabled: false
+matrix_bridge_mautrix_meta_instagram_enabled: false
 
-matrix_mautrix_meta_instagram_systemd_required_services_list_auto: |
+matrix_bridge_mautrix_meta_instagram_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_meta_instagram_database_hostname == postgres_connection_hostname) else [])
+    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_bridge_mautrix_meta_instagram_database_hostname == postgres_connection_hostname) else [])
   }}
 
-matrix_mautrix_meta_instagram_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_meta_instagram_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix_upstream_default }}"
 
-matrix_mautrix_meta_instagram_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+matrix_bridge_mautrix_meta_instagram_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
 
-matrix_mautrix_meta_instagram_container_network: "{{ matrix_addons_container_network }}"
+matrix_bridge_mautrix_meta_instagram_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_mautrix_meta_instagram_container_additional_networks_auto: |-
+matrix_bridge_mautrix_meta_instagram_container_additional_networks_auto: |-
   {{
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([postgres_container_network] if (postgres_enabled and matrix_mautrix_meta_instagram_database_hostname == postgres_connection_hostname and matrix_mautrix_meta_instagram_container_network != postgres_container_network) else [])
+      ([postgres_container_network] if (postgres_enabled and matrix_bridge_mautrix_meta_instagram_database_hostname == postgres_connection_hostname and matrix_bridge_mautrix_meta_instagram_container_network != postgres_container_network) else [])
       +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_meta_instagram_container_labels_traefik_enabled) else [])
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_bridge_mautrix_meta_instagram_container_labels_traefik_enabled) else [])
     ) | unique
   }}
 
-matrix_mautrix_meta_instagram_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_mautrix_meta_instagram_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_meta_instagram_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_mautrix_meta_instagram_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+matrix_bridge_mautrix_meta_instagram_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_bridge_mautrix_meta_instagram_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_bridge_mautrix_meta_instagram_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bridge_mautrix_meta_instagram_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+matrix_bridge_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_bridge_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_mautrix_meta_instagram_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.ig.as') | hash('sha512') | to_uuid }}"
+matrix_bridge_mautrix_meta_instagram_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.ig.as') | hash('sha512') | to_uuid }}"
 
-matrix_mautrix_meta_instagram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_bridge_mautrix_meta_instagram_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_mautrix_meta_instagram_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.ig.hs') | hash('sha512') | to_uuid }}"
-matrix_mautrix_meta_instagram_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.ig.prov') | hash('sha512') | to_uuid }}"
+matrix_bridge_mautrix_meta_instagram_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.ig.hs') | hash('sha512') | to_uuid }}"
+matrix_bridge_mautrix_meta_instagram_provisioning_shared_secret: "{{ (matrix_homeserver_generic_secret_key + ':mau.meta.ig.prov') | hash('sha512') | to_uuid }}"
 
-matrix_mautrix_meta_instagram_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+matrix_bridge_mautrix_meta_instagram_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
-matrix_mautrix_meta_instagram_double_puppet_secrets_auto: |-
+matrix_bridge_mautrix_meta_instagram_double_puppet_secrets_auto: |-
   {{
     {
-      matrix_mautrix_meta_instagram_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
+      matrix_bridge_mautrix_meta_instagram_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
     }
     if matrix_appservice_double_puppet_enabled
     else {}
   }}
 
-matrix_mautrix_meta_instagram_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
+matrix_bridge_mautrix_meta_instagram_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
-matrix_mautrix_meta_instagram_metrics_proxying_enabled: "{{ matrix_mautrix_meta_instagram_metrics_enabled and matrix_metrics_exposure_enabled }}"
-matrix_mautrix_meta_instagram_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
-matrix_mautrix_meta_instagram_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-meta-instagram"
+matrix_bridge_mautrix_meta_instagram_metrics_proxying_enabled: "{{ matrix_bridge_mautrix_meta_instagram_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_bridge_mautrix_meta_instagram_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_bridge_mautrix_meta_instagram_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-meta-instagram"
 
-matrix_mautrix_meta_instagram_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
-matrix_mautrix_meta_instagram_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
-matrix_mautrix_meta_instagram_exposure_hostname: "{{ matrix_bridges_exposure_hostname }}"
-matrix_mautrix_meta_instagram_exposure_path_prefix: "{{ matrix_bridges_exposure_path_prefix }}/meta-instagram"
+matrix_bridge_mautrix_meta_instagram_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_bridge_mautrix_meta_instagram_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
+matrix_bridge_mautrix_meta_instagram_exposure_hostname: "{{ matrix_bridges_exposure_hostname }}"
+matrix_bridge_mautrix_meta_instagram_exposure_path_prefix: "{{ matrix_bridges_exposure_path_prefix }}/meta-instagram"
 
 # We'd like to force-set people with external Postgres to SQLite, so the bridge role can complain
 # and point them to a migration path.
-matrix_mautrix_meta_instagram_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite3-fk-wal' }}"
-matrix_mautrix_meta_instagram_database_hostname: "{{ postgres_connection_hostname if (postgres_enabled and matrix_mautrix_meta_instagram_database_engine == 'postgres') else '' }}"
-matrix_mautrix_meta_instagram_database_password: "{{ ((matrix_homeserver_generic_secret_key + ':mau.fb.db') | hash('sha512') | to_uuid) if (postgres_enabled and matrix_mautrix_meta_instagram_database_engine == 'postgres') else '' }}"
+matrix_bridge_mautrix_meta_instagram_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite3-fk-wal' }}"
+matrix_bridge_mautrix_meta_instagram_database_hostname: "{{ postgres_connection_hostname if (postgres_enabled and matrix_bridge_mautrix_meta_instagram_database_engine == 'postgres') else '' }}"
+matrix_bridge_mautrix_meta_instagram_database_password: "{{ ((matrix_homeserver_generic_secret_key + ':mau.fb.db') | hash('sha512') | to_uuid) if (postgres_enabled and matrix_bridge_mautrix_meta_instagram_database_engine == 'postgres') else '' }}"
 
 ######################################################################
 #
@@ -4201,10 +4201,10 @@ postgres_managed_databases_auto: |
     }] if (matrix_mautrix_meta_messenger_enabled and matrix_mautrix_meta_messenger_database_engine == 'postgres' and matrix_mautrix_meta_messenger_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_mautrix_meta_instagram_database_name,
-      'username': matrix_mautrix_meta_instagram_database_username,
-      'password': matrix_mautrix_meta_instagram_database_password,
-    }] if (matrix_mautrix_meta_instagram_enabled and matrix_mautrix_meta_instagram_database_engine == 'postgres' and matrix_mautrix_meta_instagram_database_hostname == postgres_connection_hostname) else [])
+      'name': matrix_bridge_mautrix_meta_instagram_database_name,
+      'username': matrix_bridge_mautrix_meta_instagram_database_username,
+      'password': matrix_bridge_mautrix_meta_instagram_database_password,
+    }] if (matrix_bridge_mautrix_meta_instagram_enabled and matrix_bridge_mautrix_meta_instagram_database_engine == 'postgres' and matrix_bridge_mautrix_meta_instagram_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
       'name': matrix_bridge_mautrix_wsproxy_syncproxy_database_name,
@@ -5151,9 +5151,9 @@ matrix_ketesa_config_asManagedUsers_auto: |
     ] if matrix_bridge_mautrix_googlechat_enabled else [])
     +
     ([
-      '^@'+(matrix_mautrix_meta_instagram_appservice_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
-      '^@'+(matrix_mautrix_meta_instagram_bridge_username_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_mautrix_meta_instagram_enabled else [])
+      '^@'+(matrix_bridge_mautrix_meta_instagram_appservice_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_bridge_mautrix_meta_instagram_bridge_username_prefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bridge_mautrix_meta_instagram_enabled else [])
     +
     ([
       '^@'+(matrix_mautrix_meta_messenger_appservice_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
@@ -6015,7 +6015,7 @@ matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges_auto: |-
       matrix_bridge_mautrix_bluesky_appservice_public_address if (matrix_bridge_mautrix_bluesky_enabled and matrix_bridge_mautrix_bluesky_container_labels_traefik_enabled and matrix_bridge_mautrix_bluesky_container_labels_exposure_enabled) else '',
       matrix_bridge_mautrix_gmessages_bridge_public_address if (matrix_bridge_mautrix_gmessages_enabled and matrix_bridge_mautrix_gmessages_container_labels_traefik_enabled and matrix_bridge_mautrix_gmessages_container_labels_exposure_enabled) else '',
       matrix_bridge_mautrix_gvoice_bridge_public_address if (matrix_bridge_mautrix_gvoice_enabled and matrix_bridge_mautrix_gvoice_container_labels_traefik_enabled and matrix_bridge_mautrix_gvoice_container_labels_exposure_enabled) else '',
-      matrix_mautrix_meta_instagram_bridge_public_address if (matrix_mautrix_meta_instagram_enabled and matrix_mautrix_meta_instagram_container_labels_traefik_enabled and matrix_mautrix_meta_instagram_container_labels_exposure_enabled) else '',
+      matrix_bridge_mautrix_meta_instagram_bridge_public_address if (matrix_bridge_mautrix_meta_instagram_enabled and matrix_bridge_mautrix_meta_instagram_container_labels_traefik_enabled and matrix_bridge_mautrix_meta_instagram_container_labels_exposure_enabled) else '',
       matrix_mautrix_meta_messenger_bridge_public_address if (matrix_mautrix_meta_messenger_enabled and matrix_mautrix_meta_messenger_container_labels_traefik_enabled and matrix_mautrix_meta_messenger_container_labels_exposure_enabled) else '',
       matrix_mautrix_signal_bridge_public_address if (matrix_mautrix_signal_enabled and matrix_mautrix_signal_container_labels_traefik_enabled and matrix_mautrix_signal_container_labels_exposure_enabled) else '',
       matrix_mautrix_slack_bridge_public_address if (matrix_mautrix_slack_enabled and matrix_mautrix_slack_container_labels_traefik_enabled and matrix_mautrix_slack_container_labels_exposure_enabled) else '',
