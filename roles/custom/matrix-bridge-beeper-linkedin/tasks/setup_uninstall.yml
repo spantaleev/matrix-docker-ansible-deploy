@@ -9,9 +9,9 @@
 - name: Check existence of matrix-beeper-linkedin service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-beeper-linkedin.service"
-  register: matrix_beeper_linkedin_service_stat
+  register: matrix_bridge_beeper_linkedin_service_stat
 
-- when: matrix_beeper_linkedin_service_stat.stat.exists | bool
+- when: matrix_bridge_beeper_linkedin_service_stat.stat.exists | bool
   block:
     - name: Ensure matrix-beeper-linkedin is stopped
       ansible.builtin.service:
