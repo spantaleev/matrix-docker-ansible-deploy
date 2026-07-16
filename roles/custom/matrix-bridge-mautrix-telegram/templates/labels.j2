@@ -4,39 +4,39 @@ SPDX-FileCopyrightText: 2024 - 2026 Slavi Pantaleev
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
-{% if matrix_mautrix_telegram_container_labels_traefik_enabled %}
+{% if matrix_bridge_mautrix_telegram_container_labels_traefik_enabled %}
 traefik.enable=true
 
-{% if matrix_mautrix_telegram_container_labels_traefik_docker_network %}
-traefik.docker.network={{ matrix_mautrix_telegram_container_labels_traefik_docker_network }}
+{% if matrix_bridge_mautrix_telegram_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_bridge_mautrix_telegram_container_labels_traefik_docker_network }}
 {% endif %}
 
 traefik.http.services.matrix-mautrix-telegram-metrics.loadbalancer.server.port=8001
 
-{% if matrix_mautrix_telegram_container_labels_metrics_enabled %}
+{% if matrix_bridge_mautrix_telegram_container_labels_metrics_enabled %}
 ############################################################
 #                                                          #
 # Metrics                                                  #
 #                                                          #
 ############################################################
 
-{% if matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_enabled %}
-traefik.http.middlewares.matrix-mautrix-telegram-metrics-basic-auth.basicauth.users={{ matrix_mautrix_telegram_container_labels_metrics_middleware_basic_auth_users }}
+{% if matrix_bridge_mautrix_telegram_container_labels_metrics_middleware_basic_auth_enabled %}
+traefik.http.middlewares.matrix-mautrix-telegram-metrics-basic-auth.basicauth.users={{ matrix_bridge_mautrix_telegram_container_labels_metrics_middleware_basic_auth_users }}
 traefik.http.routers.matrix-mautrix-telegram-metrics.middlewares=matrix-mautrix-telegram-metrics-basic-auth
 {% endif %}
 
-traefik.http.routers.matrix-mautrix-telegram-metrics.rule={{ matrix_mautrix_telegram_container_labels_metrics_traefik_rule }}
+traefik.http.routers.matrix-mautrix-telegram-metrics.rule={{ matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_rule }}
 
-{% if matrix_mautrix_telegram_container_labels_metrics_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-mautrix-telegram-metrics.priority={{ matrix_mautrix_telegram_container_labels_metrics_traefik_priority }}
+{% if matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-telegram-metrics.priority={{ matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-mautrix-telegram-metrics.service=matrix-mautrix-telegram-metrics
-traefik.http.routers.matrix-mautrix-telegram-metrics.entrypoints={{ matrix_mautrix_telegram_container_labels_metrics_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-telegram-metrics.entrypoints={{ matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_entrypoints }}
 
-traefik.http.routers.matrix-mautrix-telegram-metrics.tls={{ matrix_mautrix_telegram_container_labels_metrics_traefik_tls | to_json }}
-{% if matrix_mautrix_telegram_container_labels_metrics_traefik_tls %}
-traefik.http.routers.matrix-mautrix-telegram-metrics.tls.certResolver={{ matrix_mautrix_telegram_container_labels_metrics_traefik_tls_certResolver }}
+traefik.http.routers.matrix-mautrix-telegram-metrics.tls={{ matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_tls | to_json }}
+{% if matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_tls %}
+traefik.http.routers.matrix-mautrix-telegram-metrics.tls.certResolver={{ matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_tls_certResolver }}
 {% endif %}
 
 ############################################################
@@ -46,7 +46,7 @@ traefik.http.routers.matrix-mautrix-telegram-metrics.tls.certResolver={{ matrix_
 ############################################################
 {% endif %}
 
-{% if matrix_mautrix_telegram_container_labels_exposure_enabled %}
+{% if matrix_bridge_mautrix_telegram_container_labels_exposure_enabled %}
 ############################################################
 #                                                          #
 # Bridge API exposure                                      #
@@ -55,21 +55,21 @@ traefik.http.routers.matrix-mautrix-telegram-metrics.tls.certResolver={{ matrix_
 
 traefik.http.services.matrix-mautrix-telegram-exposure.loadbalancer.server.port=8080
 
-traefik.http.middlewares.matrix-mautrix-telegram-exposure-strip-prefix.stripprefix.prefixes={{ matrix_mautrix_telegram_exposure_path_prefix }}
+traefik.http.middlewares.matrix-mautrix-telegram-exposure-strip-prefix.stripprefix.prefixes={{ matrix_bridge_mautrix_telegram_exposure_path_prefix }}
 traefik.http.routers.matrix-mautrix-telegram-exposure.middlewares=matrix-mautrix-telegram-exposure-strip-prefix
 
-traefik.http.routers.matrix-mautrix-telegram-exposure.rule={{ matrix_mautrix_telegram_container_labels_exposure_traefik_rule }}
+traefik.http.routers.matrix-mautrix-telegram-exposure.rule={{ matrix_bridge_mautrix_telegram_container_labels_exposure_traefik_rule }}
 
-{% if matrix_mautrix_telegram_container_labels_exposure_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-mautrix-telegram-exposure.priority={{ matrix_mautrix_telegram_container_labels_exposure_traefik_priority }}
+{% if matrix_bridge_mautrix_telegram_container_labels_exposure_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-telegram-exposure.priority={{ matrix_bridge_mautrix_telegram_container_labels_exposure_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-mautrix-telegram-exposure.service=matrix-mautrix-telegram-exposure
-traefik.http.routers.matrix-mautrix-telegram-exposure.entrypoints={{ matrix_mautrix_telegram_container_labels_exposure_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-telegram-exposure.entrypoints={{ matrix_bridge_mautrix_telegram_container_labels_exposure_traefik_entrypoints }}
 
-traefik.http.routers.matrix-mautrix-telegram-exposure.tls={{ matrix_mautrix_telegram_container_labels_exposure_traefik_tls | to_json }}
-{% if matrix_mautrix_telegram_container_labels_exposure_traefik_tls %}
-traefik.http.routers.matrix-mautrix-telegram-exposure.tls.certResolver={{ matrix_mautrix_telegram_container_labels_exposure_traefik_tls_certResolver }}
+traefik.http.routers.matrix-mautrix-telegram-exposure.tls={{ matrix_bridge_mautrix_telegram_container_labels_exposure_traefik_tls | to_json }}
+{% if matrix_bridge_mautrix_telegram_container_labels_exposure_traefik_tls %}
+traefik.http.routers.matrix-mautrix-telegram-exposure.tls.certResolver={{ matrix_bridge_mautrix_telegram_container_labels_exposure_traefik_tls_certResolver }}
 {% endif %}
 
 ############################################################
@@ -82,4 +82,4 @@ traefik.http.routers.matrix-mautrix-telegram-exposure.tls.certResolver={{ matrix
 
 {% endif %}
 
-{{ matrix_mautrix_telegram_container_labels_additional_labels }}
+{{ matrix_bridge_mautrix_telegram_container_labels_additional_labels }}

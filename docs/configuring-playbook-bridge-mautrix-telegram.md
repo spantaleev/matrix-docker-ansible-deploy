@@ -36,9 +36,9 @@ See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file. Make sure to replace `YOUR_TELEGRAM_APP_ID` and `YOUR_TELEGRAM_API_HASH`.
 
 ```yaml
-matrix_mautrix_telegram_enabled: true
-matrix_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
-matrix_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
+matrix_bridge_mautrix_telegram_enabled: true
+matrix_bridge_mautrix_telegram_api_id: YOUR_TELEGRAM_APP_ID
+matrix_bridge_mautrix_telegram_api_hash: YOUR_TELEGRAM_API_HASH
 ```
 
 ### Relaying
@@ -86,5 +86,5 @@ The default logging level for this component is `warn`. If you want to increase 
 
 ```yaml
 # Valid values: fatal, error, warn, info, debug, trace
-matrix_mautrix_telegram_logging_level: debug
+matrix_bridge_mautrix_telegram_logging_level: debug
 ```

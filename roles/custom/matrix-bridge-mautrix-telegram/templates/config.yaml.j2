@@ -2,8 +2,8 @@
 # Network-specific config options
 network:
     # Get your own API keys at https://my.telegram.org/apps
-    api_id: {{ matrix_mautrix_telegram_api_id | int | to_json }}
-    api_hash: {{ matrix_mautrix_telegram_api_hash | to_json }}
+    api_id: {{ matrix_bridge_mautrix_telegram_api_id | int | to_json }}
+    api_hash: {{ matrix_bridge_mautrix_telegram_api_hash | to_json }}
 
     # Device info shown in the Telegram device list.
     device_info:
@@ -118,14 +118,14 @@ network:
     # Should view-once messages be disabled entirely?
     disable_view_once: false
     # Displayname template for Telegram users.
-    displayname_template: {{ matrix_mautrix_telegram_network_displayname_template | to_json }}
+    displayname_template: {{ matrix_bridge_mautrix_telegram_network_displayname_template | to_json }}
 
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: {{ matrix_mautrix_telegram_command_prefix | to_json }}
+    command_prefix: {{ matrix_bridge_mautrix_telegram_command_prefix | to_json }}
     # Should the bridge create a space for each login containing the rooms that account is in?
-    personal_filtering_spaces: {{ matrix_mautrix_telegram_bridge_personal_filtering_spaces | to_json }}
+    personal_filtering_spaces: {{ matrix_bridge_mautrix_telegram_bridge_personal_filtering_spaces | to_json }}
     # Whether the bridge should set names and avatars explicitly for DM portals.
     # This is only necessary when using clients that don't support MSC4171.
     private_chat_portal_meta: true
@@ -181,12 +181,12 @@ bridge:
     relay:
         # Whether relay mode should be allowed. If allowed, the set-relay command can be used to turn any
         # authenticated user into a relaybot for that chat.
-        enabled: {{ matrix_mautrix_telegram_bridge_relay_enabled | to_json }}
+        enabled: {{ matrix_bridge_mautrix_telegram_bridge_relay_enabled | to_json }}
         # Should only admins be allowed to set themselves as relay users?
         # If true, non-admins can only set users listed in default_relays as relays in a room.
-        admin_only: {{ matrix_mautrix_telegram_bridge_relay_admin_only | to_json }}
+        admin_only: {{ matrix_bridge_mautrix_telegram_bridge_relay_admin_only | to_json }}
         # List of user login IDs which anyone can set as a relay, as long as the relay user is in the room.
-        default_relays: {{ matrix_mautrix_telegram_bridge_relay_default_relays | to_json }}
+        default_relays: {{ matrix_bridge_mautrix_telegram_bridge_relay_default_relays | to_json }}
         # The formats to use when sending messages via the relaybot.
         # Available variables:
         #   .Sender.UserID - The Matrix user ID of the sender.
@@ -218,18 +218,18 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions: {{ matrix_mautrix_telegram_bridge_permissions|to_json }}
+    permissions: {{ matrix_bridge_mautrix_telegram_bridge_permissions|to_json }}
 
 # Config for the bridge's database.
 database:
     # The database type. "sqlite3-fk-wal" and "postgres" are supported.
-    type: {{ matrix_mautrix_telegram_appservice_database_type | to_json }}
+    type: {{ matrix_bridge_mautrix_telegram_appservice_database_type | to_json }}
     # The database URI.
     #   SQLite: A raw file path is supported, but `file:<path>?_txlock=immediate` is recommended.
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: {{ matrix_mautrix_telegram_appservice_database_uri | to_json }}
+    uri: {{ matrix_bridge_mautrix_telegram_appservice_database_uri | to_json }}
     # Maximum number of connections.
     max_open_conns: 20
     max_idle_conns: 2
@@ -243,9 +243,9 @@ homeserver:
     # The address that this appservice can use to connect to the homeserver.
     # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
     # but https also works if they run on different machines.
-    address: {{ matrix_mautrix_telegram_homeserver_address | to_json }}
+    address: {{ matrix_bridge_mautrix_telegram_homeserver_address | to_json }}
     # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-    domain: {{ matrix_mautrix_telegram_homeserver_domain | to_json }}
+    domain: {{ matrix_bridge_mautrix_telegram_homeserver_domain | to_json }}
 
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -261,7 +261,7 @@ homeserver:
     # The bridge will use the appservice as_token to authorize requests.
     message_send_checkpoint_endpoint:
     # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
-    async_media: {{ matrix_mautrix_telegram_homeserver_async_media | to_json }}
+    async_media: {{ matrix_bridge_mautrix_telegram_homeserver_async_media | to_json }}
 
     # Should the bridge use a websocket for connecting to the homeserver?
     # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
@@ -277,11 +277,11 @@ appservice:
     # Like the homeserver address, a local non-https address is recommended when the bridge is on the same machine.
     # If the bridge is elsewhere, you must secure the connection yourself (e.g. with https or wireguard)
     # If you want to use https, you need to use a reverse proxy. The bridge does not have TLS support built in.
-    address: {{ matrix_mautrix_telegram_appservice_address | to_json }}
+    address: {{ matrix_bridge_mautrix_telegram_appservice_address | to_json }}
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    public_address: {{ matrix_mautrix_telegram_bridge_public_address | to_json }}
+    public_address: {{ matrix_bridge_mautrix_telegram_bridge_public_address | to_json }}
 
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
@@ -293,7 +293,7 @@ appservice:
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
-        username: {{ matrix_mautrix_telegram_appservice_bot_username | to_json }}
+        username: {{ matrix_bridge_mautrix_telegram_appservice_bot_username | to_json }}
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
         displayname: Telegram bridge bot
@@ -308,8 +308,8 @@ appservice:
     async_transactions: false
 
     # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
-    as_token: {{ matrix_mautrix_telegram_appservice_token | to_json }}
-    hs_token: {{ matrix_mautrix_telegram_homeserver_token | to_json }}
+    as_token: {{ matrix_bridge_mautrix_telegram_appservice_token | to_json }}
+    hs_token: {{ matrix_bridge_mautrix_telegram_homeserver_token | to_json }}
 
     # Localpart template of MXIDs for remote users.
     # {% raw %}{{.}}{% endraw %} is replaced with the internal ID of the user.
@@ -327,7 +327,7 @@ matrix:
     sync_direct_chat_list: true
     # Whether created rooms should have federation enabled. If false, created portal rooms
     # will never be federated. Changing this option requires recreating rooms.
-    federate_rooms: {{ matrix_mautrix_telegram_federate_rooms|to_json }}
+    federate_rooms: {{ matrix_bridge_mautrix_telegram_federate_rooms|to_json }}
     # The threshold as bytes after which the bridge should roundtrip uploads via the disk
     # rather than keeping the whole file in memory.
     upload_file_threshold: 5242880
@@ -347,7 +347,7 @@ provisioning:
     prefix: /_matrix/provision
     # Shared secret for authentication. If set to "generate" or null, a random secret will be generated,
     # or if set to "disable", the provisioning API will be disabled.
-    shared_secret: {{ matrix_mautrix_telegram_provisioning_shared_secret | to_json }}
+    shared_secret: {{ matrix_bridge_mautrix_telegram_provisioning_shared_secret | to_json }}
     # Whether to allow provisioning API requests to be authed using Matrix access tokens.
     # This follows the same rules as double puppeting to determine which server to contact to check the token,
     # which means that by default, it only works for users on the same server as the bridge.
@@ -363,7 +363,7 @@ public_media:
     enabled: false
     # A key for signing public media URLs.
     # If set to "generate", a random key will be generated.
-    signing_key: {{ matrix_mautrix_telegram_public_media_signing_key | to_json }}
+    signing_key: {{ matrix_bridge_mautrix_telegram_public_media_signing_key | to_json }}
     # Number of seconds that public media URLs are valid for.
     # If set to 0, URLs will never expire.
     expiry: 0
@@ -397,7 +397,7 @@ direct_media:
 # See https://docs.mau.fi/bridges/general/backfill.html for more details.
 backfill:
     # Whether to do backfilling at all.
-    enabled: {{ matrix_mautrix_telegram_backfill_enabled | to_json }}
+    enabled: {{ matrix_bridge_mautrix_telegram_backfill_enabled | to_json }}
     # Maximum number of messages to backfill in empty rooms.
     max_initial_messages: 50
     # Maximum number of missed messages to backfill after bridge restarts.
@@ -436,18 +436,18 @@ double_puppet:
     allow_discovery: false
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
-    secrets: {{ matrix_mautrix_telegram_double_puppet_secrets | to_json }}
+    secrets: {{ matrix_bridge_mautrix_telegram_double_puppet_secrets | to_json }}
 
 # End-to-bridge encryption support options.
 #
 # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
 encryption:
     # Whether to enable encryption at all. If false, the bridge will not function in encrypted rooms.
-    allow: {{ matrix_mautrix_telegram_bridge_encryption_allow | to_json }}
+    allow: {{ matrix_bridge_mautrix_telegram_bridge_encryption_allow | to_json }}
     # Whether to force-enable encryption in all bridged rooms.
-    default: {{ matrix_mautrix_telegram_bridge_encryption_default | to_json }}
+    default: {{ matrix_bridge_mautrix_telegram_bridge_encryption_default | to_json }}
     # Whether to require all messages to be encrypted and drop any unencrypted messages.
-    require: {{ matrix_mautrix_telegram_bridge_encryption_require | to_json }}
+    require: {{ matrix_bridge_mautrix_telegram_bridge_encryption_require | to_json }}
     # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
     # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
     appservice: false
@@ -455,16 +455,16 @@ encryption:
     # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
     # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
     # Changing this option requires updating the appservice registration file.
-    msc4190: {{ matrix_mautrix_telegram_msc4190_enabled | to_json }}
+    msc4190: {{ matrix_bridge_mautrix_telegram_msc4190_enabled | to_json }}
     # Whether to enable self-signing for bridges (Only the bridge bot uses this for now)
     # Requires msc4190 to replace keys on reset
-    self_sign: {{ matrix_mautrix_telegram_self_sign_enabled | to_json }}
+    self_sign: {{ matrix_bridge_mautrix_telegram_self_sign_enabled | to_json }}
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
-    allow_key_sharing: {{ matrix_mautrix_telegram_bridge_encryption_key_sharing_allow | to_json }}
+    allow_key_sharing: {{ matrix_bridge_mautrix_telegram_bridge_encryption_key_sharing_allow | to_json }}
     # Pickle key for encrypting encryption keys in the bridge database.
     # If set to generate, a random key will be generated.
-    pickle_key: {{ matrix_mautrix_telegram_bridge_encryption_pickle_key | to_json }}
+    pickle_key: {{ matrix_bridge_mautrix_telegram_bridge_encryption_pickle_key | to_json }}
     # Options for deleting megolm sessions from the bridge.
     delete_keys:
         # Beeper-specific: delete outbound sessions when hungryserv confirms
@@ -523,7 +523,7 @@ encryption:
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    min_level: {{ matrix_mautrix_telegram_logging_level | to_json }}
+    min_level: {{ matrix_bridge_mautrix_telegram_logging_level | to_json }}
     writers:
         - type: stdout
           format: pretty-colored
