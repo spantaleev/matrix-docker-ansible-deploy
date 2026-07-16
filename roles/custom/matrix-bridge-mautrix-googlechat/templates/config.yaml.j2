@@ -2,9 +2,9 @@
 # Homeserver details
 homeserver:
     # The address that this appservice can use to connect to the homeserver.
-    address: {{ matrix_mautrix_googlechat_homeserver_address }}
+    address: {{ matrix_bridge_mautrix_googlechat_homeserver_address }}
     # The domain of the homeserver (for MXIDs, etc).
-    domain: {{ matrix_mautrix_googlechat_homeserver_domain }}
+    domain: {{ matrix_bridge_mautrix_googlechat_homeserver_domain }}
     # Whether or not to verify the SSL certificate of the homeserver.
     # Only applies if address starts with https://
     verify_ssl: true
@@ -13,7 +13,7 @@ homeserver:
 # Changing these values requires regeneration of the registration.
 appservice:
     # The address that the homeserver can use to connect to this appservice.
-    address: {{ matrix_mautrix_googlechat_appservice_address }}
+    address: {{ matrix_bridge_mautrix_googlechat_appservice_address }}
 
     # The hostname and port where this appservice should listen.
     hostname: 0.0.0.0
@@ -27,24 +27,24 @@ appservice:
     # Format examples:
     #   SQLite:   sqlite:///filename.db
     #   Postgres: postgres://username:password@hostname/dbname
-    database: {{ matrix_mautrix_googlechat_appservice_database|to_json }}
+    database: {{ matrix_bridge_mautrix_googlechat_appservice_database|to_json }}
 
     # The unique ID of this appservice.
     id: googlechat
     # Username of the appservice bot.
-    bot_username: {{ matrix_mautrix_googlechat_appservice_bot_username|to_json }}
+    bot_username: {{ matrix_bridge_mautrix_googlechat_appservice_bot_username|to_json }}
     # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
     # to leave display name/avatar as-is.
     bot_displayname: googlechat bridge bot
     bot_avatar: mxc://maunium.net/FBXZnpfORkBEruORbikmleAy
 
     # Authentication tokens for AS <-> HS communication.
-    as_token: "{{ matrix_mautrix_googlechat_appservice_token }}"
-    hs_token: "{{ matrix_mautrix_googlechat_homeserver_token }}"
+    as_token: "{{ matrix_bridge_mautrix_googlechat_appservice_token }}"
+    hs_token: "{{ matrix_bridge_mautrix_googlechat_homeserver_token }}"
 
 # Prometheus telemetry config. Requires prometheus-client to be installed.
 metrics:
-    enabled: {{ matrix_mautrix_googlechat_metrics_enabled | to_json }}
+    enabled: {{ matrix_bridge_mautrix_googlechat_metrics_enabled | to_json }}
     listen_port: 8000
 
 # Bridge config
@@ -67,7 +67,7 @@ bridge:
     - name
 
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: "{{ matrix_mautrix_googlechat_command_prefix }}"
+    command_prefix: "{{ matrix_bridge_mautrix_googlechat_command_prefix }}"
 
     # Number of chats to sync (and create portals for) on startup/login.
     # Maximum 20, set 0 to disable automatic syncing.
@@ -83,7 +83,7 @@ bridge:
     # If set, custom puppets will be enabled automatically for local users
     # instead of users having to find an access token and run `login-matrix`
     # manually.
-    login_shared_secret: {{ matrix_mautrix_googlechat_login_shared_secret|to_json }}
+    login_shared_secret: {{ matrix_bridge_mautrix_googlechat_login_shared_secret|to_json }}
     # Whether or not to update avatars when syncing all contacts at startup.
     update_avatar_initial_sync: true
     # End-to-bridge encryption support options. These require matrix-nio to be installed with pip
@@ -93,14 +93,14 @@ bridge:
     # application service.
     encryption:
         # Allow encryption, work in group chat rooms with e2ee enabled
-        allow: {{ matrix_mautrix_googlechat_bridge_encryption_allow|to_json }}
+        allow: {{ matrix_bridge_mautrix_googlechat_bridge_encryption_allow|to_json }}
         # Default to encryption, force-enable encryption in all portals the bridge creates
         # This will cause the bridge bot to be in private chats for the encryption to work properly.
-        default: {{ matrix_mautrix_googlechat_bridge_encryption_default|to_json }}
+        default: {{ matrix_bridge_mautrix_googlechat_bridge_encryption_default|to_json }}
 
     # Whether or not created rooms should have federation enabled.
     # If false, created portal rooms will never be federated.
-    federate_rooms: {{ matrix_mautrix_googlechat_federate_rooms|to_json }}
+    federate_rooms: {{ matrix_bridge_mautrix_googlechat_federate_rooms|to_json }}
     # Public website and API configs
     web:
         # Auth server config
@@ -110,8 +110,8 @@ bridge:
             # or otherwise pointed to the appservice's webserver to the path specified below (prefix).
             # This path should usually include a trailing slash.
             # Internal prefix in the appservice web server for the login endpoints.
-            public: "{{ matrix_homeserver_url }}{{ matrix_mautrix_googlechat_public_endpoint }}/login"
-            prefix: "{{ matrix_mautrix_googlechat_public_endpoint }}/login"
+            public: "{{ matrix_homeserver_url }}{{ matrix_bridge_mautrix_googlechat_public_endpoint }}/login"
+            prefix: "{{ matrix_bridge_mautrix_googlechat_public_endpoint }}/login"
 
 
     # Permissions for using the bridge.
@@ -122,7 +122,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions: {{ matrix_mautrix_googlechat_bridge_permissions|to_json }}
+    permissions: {{ matrix_bridge_mautrix_googlechat_bridge_permissions|to_json }}
 
 # Python logging configuration.
 #
@@ -142,11 +142,11 @@ logging:
             formatter: colored
     loggers:
         mau:
-            level: {{ matrix_mautrix_googlechat_logging_level|to_json }}
+            level: {{ matrix_bridge_mautrix_googlechat_logging_level|to_json }}
         hangups:
-            level: {{ matrix_mautrix_googlechat_logging_level|to_json }}
+            level: {{ matrix_bridge_mautrix_googlechat_logging_level|to_json }}
         aiohttp:
-            level: {{ matrix_mautrix_googlechat_logging_level|to_json }}
+            level: {{ matrix_bridge_mautrix_googlechat_logging_level|to_json }}
     root:
-        level: {{ matrix_mautrix_googlechat_logging_level|to_json }}
+        level: {{ matrix_bridge_mautrix_googlechat_logging_level|to_json }}
         handlers: [console]

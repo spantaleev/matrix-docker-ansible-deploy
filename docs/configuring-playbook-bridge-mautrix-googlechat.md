@@ -30,7 +30,7 @@ See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-
 To enable the [Google Chat](https://chat.google.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_mautrix_googlechat_enabled: true
+matrix_bridge_mautrix_googlechat_enabled: true
 ```
 
 ### Extending the configuration
@@ -70,5 +70,5 @@ As with all other services, you can find the logs in [systemd-journald](https://
 The default logging level for this component is `WARNING`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
-matrix_mautrix_googlechat_logging_level: DEBUG
+matrix_bridge_mautrix_googlechat_logging_level: DEBUG
 ```
