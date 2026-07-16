@@ -4046,7 +4046,13 @@ postgres_db_name: matrix
 
 postgres_systemd_services_to_stop_for_maintenance_list_auto: "{{ devture_systemd_service_manager_services_list_auto | map(attribute='name') | reject('equalto', (postgres_identifier + '.service')) }}"
 
-postgres_max_connections: "{{ 500 if matrix_synapse_workers_enabled else 200 }}"
+# When Synapse workers are enabled, connection demand grows with the number of Synapse processes:
+# each process (the main one and every worker) maintains its own connection pool of up to `matrix_synapse_database_cp_max` connections.
+# The formula below reserves a 200-connection baseline for everything else talking to Postgres and adds `cp_max` per Synapse process.
+# It never goes below 500, the fixed value used previously, so existing worker setups are not downsized.
+# Note: the worker count reflects the `matrix_synapse_workers_*_count` variables.
+# If you populate `matrix_synapse_workers_enabled_list` manually, consider overriding `postgres_max_connections` yourself.
+postgres_max_connections: "{{ [200 + (matrix_synapse_database_cp_max | int) * ((matrix_synapse_workers_total_count | int) + 1), 500] | max if matrix_synapse_workers_enabled else 200 }}"
 
 postgres_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else postgres_container_image_registry_prefix_upstream_default }}"
 

@@ -1239,6 +1239,25 @@ matrix_synapse_workers_background_workers_container_arguments: []
 # `run_background_tasks_on` is meant to point to a worker, which is dedicated to processing background tasks.
 matrix_synapse_run_background_tasks_on: "{{ (matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'background') | list)[0].name if (matrix_synapse_workers_enabled and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'background') | list | length > 0) else '' }}"
 
+# matrix_synapse_workers_total_count reflects the total number of Synapse worker processes that the `matrix_synapse_workers_*_count` variables ask for.
+# This is useful for sizing resources that depend on the number of Synapse processes (e.g. the maximum number of Postgres connections).
+# Note: if `matrix_synapse_workers_enabled_list` is populated manually (instead of via the count variables), this count does not reflect it.
+matrix_synapse_workers_total_count: |
+  {{
+    (matrix_synapse_workers_room_workers_count | int)
+    + (matrix_synapse_workers_sync_workers_count | int)
+    + (matrix_synapse_workers_client_reader_workers_count | int)
+    + (matrix_synapse_workers_federation_reader_workers_count | int)
+    + (matrix_synapse_workers_generic_workers_count | int)
+    + (matrix_synapse_workers_pusher_workers_count | int)
+    + (matrix_synapse_workers_federation_sender_workers_count | int)
+    + (matrix_synapse_workers_media_repository_workers_count | int)
+    + (matrix_synapse_workers_appservice_workers_count | int)
+    + (matrix_synapse_workers_user_dir_workers_count | int)
+    + (matrix_synapse_workers_background_workers_count | int)
+    + (matrix_synapse_workers_stream_writers | length)
+  }}
+
 # Default list of workers to spawn.
 #
 # Unless you populate this manually, this list is dynamically generated
