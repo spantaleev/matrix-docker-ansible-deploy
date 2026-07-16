@@ -28,7 +28,7 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/signal/index.ht
 
 If you're running with the Postgres database server integrated by the playbook (which is the default), you don't need to do anything special and can easily proceed with installing.
 
-However, if you're [using an external Postgres server](configuring-playbook-external-postgres.md), you'd need to manually prepare a Postgres database for this bridge and adjust the variables related to that (`matrix_mautrix_signal_database_*`).
+However, if you're [using an external Postgres server](configuring-playbook-external-postgres.md), you'd need to manually prepare a Postgres database for this bridge and adjust the variables related to that (`matrix_bridge_mautrix_signal_database_*`).
 
 ### Enable Appservice Double Puppet
 
@@ -41,7 +41,7 @@ See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_mautrix_signal_enabled: true
+matrix_bridge_mautrix_signal_enabled: true
 ```
 
 ### Extending the configuration
@@ -83,5 +83,5 @@ The default logging level for this component is `warn`. If you want to increase 
 
 ```yaml
 # Valid values: fatal, error, warn, info, debug, trace
-matrix_mautrix_signal_logging_level: 'debug'
+matrix_bridge_mautrix_signal_logging_level: 'debug'
 ```
