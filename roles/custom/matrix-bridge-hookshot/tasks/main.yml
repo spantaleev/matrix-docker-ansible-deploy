@@ -9,7 +9,7 @@
 - tags:
     - reset-hookshot-encryption
   block:
-    - when: matrix_hookshot_enabled | bool
+    - when: matrix_bridge_hookshot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/reset_encryption.yml"
 
 - tags:
@@ -20,10 +20,10 @@
     - install-hookshot
     - install-bridge-hookshot
   block:
-    - when: matrix_hookshot_enabled | bool
+    - when: matrix_bridge_hookshot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-    - when: matrix_hookshot_enabled | bool
+    - when: matrix_bridge_hookshot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
 - tags:
@@ -31,5 +31,5 @@
     - setup-hookshot
     - setup-bridge-hookshot
   block:
-    - when: not matrix_hookshot_enabled | bool
+    - when: not matrix_bridge_hookshot_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

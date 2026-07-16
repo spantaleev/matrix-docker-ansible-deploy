@@ -3,94 +3,94 @@ bridge:
   # Basic homeserver configuration
   #
   domain: {{ matrix_domain }}
-  url: {{ matrix_hookshot_homeserver_address }}
-  mediaUrl: {{ matrix_hookshot_homeserver_address }}
-  port: {{ matrix_hookshot_appservice_port }}
+  url: {{ matrix_bridge_hookshot_homeserver_address }}
+  mediaUrl: {{ matrix_bridge_hookshot_homeserver_address }}
+  port: {{ matrix_bridge_hookshot_appservice_port }}
   bindAddress: 0.0.0.0
-{% if matrix_hookshot_github_enabled %}
+{% if matrix_bridge_hookshot_github_enabled %}
 github:
   # (Optional) Configure this to enable GitHub support
   #
   auth:
     # Authentication for the GitHub App.
     #
-    id: {{ matrix_hookshot_github_auth_id | to_json }}
-    privateKeyFile: /data/{{ matrix_hookshot_github_private_key_file }}
+    id: {{ matrix_bridge_hookshot_github_auth_id | to_json }}
+    privateKeyFile: /data/{{ matrix_bridge_hookshot_github_private_key_file }}
   webhook:
     # Webhook settings for the GitHub app.
     #
-    secret: {{ matrix_hookshot_github_webhook_secret | to_json }}
-{% if matrix_hookshot_github_oauth_enabled %}
+    secret: {{ matrix_bridge_hookshot_github_webhook_secret | to_json }}
+{% if matrix_bridge_hookshot_github_oauth_enabled %}
   oauth:
     # (Optional) Settings for allowing users to sign in via OAuth.
     #
-    client_id: {{ matrix_hookshot_github_oauth_client_id | to_json }}
-    client_secret: {{ matrix_hookshot_github_oauth_client_secret | to_json }}
-    redirect_uri: {{ matrix_hookshot_github_oauth_redirect_uri | to_json }}
+    client_id: {{ matrix_bridge_hookshot_github_oauth_client_id | to_json }}
+    client_secret: {{ matrix_bridge_hookshot_github_oauth_client_secret | to_json }}
+    redirect_uri: {{ matrix_bridge_hookshot_github_oauth_redirect_uri | to_json }}
 {% endif %}
   defaultOptions:
     # (Optional) Default options for GitHub connections.
     #
-    ignoreHooks: {{ matrix_hookshot_github_defaultOptions_ignoreHooks | to_json }}
-    commandPrefix: {{ matrix_hookshot_github_defaultOptions_commandPrefix | to_json }}
-    showIssueRoomLink: {{ matrix_hookshot_github_defaultOptions_showIssueRoomLink | to_json }}
-    prDiff: {{ matrix_hookshot_github_defaultOptions_prDiff | to_json }}
-    includingLabels: {{ matrix_hookshot_github_defaultOptions_includingLabels | to_json }}
-    excludingLabels: {{ matrix_hookshot_github_defaultOptions_excludingLabels | to_json }}
+    ignoreHooks: {{ matrix_bridge_hookshot_github_defaultOptions_ignoreHooks | to_json }}
+    commandPrefix: {{ matrix_bridge_hookshot_github_defaultOptions_commandPrefix | to_json }}
+    showIssueRoomLink: {{ matrix_bridge_hookshot_github_defaultOptions_showIssueRoomLink | to_json }}
+    prDiff: {{ matrix_bridge_hookshot_github_defaultOptions_prDiff | to_json }}
+    includingLabels: {{ matrix_bridge_hookshot_github_defaultOptions_includingLabels | to_json }}
+    excludingLabels: {{ matrix_bridge_hookshot_github_defaultOptions_excludingLabels | to_json }}
     hotlinkIssues:
-      prefix: {{ matrix_hookshot_github_defaultOptions_hotlinkIssues_prefix | to_json }}
+      prefix: {{ matrix_bridge_hookshot_github_defaultOptions_hotlinkIssues_prefix | to_json }}
 {% endif %}
-{% if matrix_hookshot_gitlab_enabled %}
+{% if matrix_bridge_hookshot_gitlab_enabled %}
 gitlab:
   # (Optional) Configure this to enable GitLab support
   #
-  instances: {{ matrix_hookshot_gitlab_instances | to_json }}
+  instances: {{ matrix_bridge_hookshot_gitlab_instances | to_json }}
   webhook:
-    secret: {{ matrix_hookshot_gitlab_webhook_secret | to_json }}
-    publicUrl: {{ matrix_hookshot_gitlab_webhook_publicUrl | to_json }}
+    secret: {{ matrix_bridge_hookshot_gitlab_webhook_secret | to_json }}
+    publicUrl: {{ matrix_bridge_hookshot_gitlab_webhook_publicUrl | to_json }}
 {% endif %}
-{% if matrix_hookshot_figma_enabled %}
+{% if matrix_bridge_hookshot_figma_enabled %}
 figma:
   # (Optional) Configure this to enable Figma support
   #
-  publicUrl: {{ matrix_hookshot_figma_publicUrl | to_json }}
-  instances: {{ matrix_hookshot_figma_instances | to_json }}
+  publicUrl: {{ matrix_bridge_hookshot_figma_publicUrl | to_json }}
+  instances: {{ matrix_bridge_hookshot_figma_instances | to_json }}
 {% endif %}
-{% if matrix_hookshot_jira_enabled %}
+{% if matrix_bridge_hookshot_jira_enabled %}
 jira:
   # (Optional) Configure this to enable Jira support
   #
   webhook:
-    secret: {{ matrix_hookshot_jira_webhook_secret | to_json }}
-{% if matrix_hookshot_jira_oauth_enabled %}
+    secret: {{ matrix_bridge_hookshot_jira_webhook_secret | to_json }}
+{% if matrix_bridge_hookshot_jira_oauth_enabled %}
   oauth:
-    client_id: {{ matrix_hookshot_jira_oauth_client_id | to_json }}
-    client_secret: {{ matrix_hookshot_jira_oauth_client_secret | to_json }}
-    redirect_uri: {{ matrix_hookshot_jira_oauth_redirect_uri | to_json }}
+    client_id: {{ matrix_bridge_hookshot_jira_oauth_client_id | to_json }}
+    client_secret: {{ matrix_bridge_hookshot_jira_oauth_client_secret | to_json }}
+    redirect_uri: {{ matrix_bridge_hookshot_jira_oauth_redirect_uri | to_json }}
 {% endif %}
 {% endif %}
-{% if matrix_hookshot_generic_enabled %}
+{% if matrix_bridge_hookshot_generic_enabled %}
 generic:
   # (Optional) Support for generic webhook events. `allowJsTransformationFunctions` will allow users to write short transformation snippets in code, and thus is unsafe in untrusted environments
   #
-  enabled: {{ matrix_hookshot_generic_enabled | to_json }}
-  outbound: {{ matrix_hookshot_generic_outbound | to_json }}
-  enableHttpGet: {{ matrix_hookshot_generic_enableHttpGet | to_json }}
-  urlPrefix: {{ matrix_hookshot_generic_urlPrefix | to_json }}
-  userIdPrefix: {{ matrix_hookshot_generic_userIdPrefix | to_json }}
-  allowJsTransformationFunctions: {{ matrix_hookshot_generic_allowJsTransformationFunctions | to_json }}
-  waitForComplete: {{ matrix_hookshot_generic_waitForComplete | to_json }}
-  sendExpiryNotice: {{ matrix_hookshot_generic_sendExpiryNotice | to_json }}
-  requireExpiryTime: {{ matrix_hookshot_generic_requireExpiryTime | to_json }}
-  maxExpiryTime: {{ matrix_hookshot_generic_maxExpiryTime | to_json }}
+  enabled: {{ matrix_bridge_hookshot_generic_enabled | to_json }}
+  outbound: {{ matrix_bridge_hookshot_generic_outbound | to_json }}
+  enableHttpGet: {{ matrix_bridge_hookshot_generic_enableHttpGet | to_json }}
+  urlPrefix: {{ matrix_bridge_hookshot_generic_urlPrefix | to_json }}
+  userIdPrefix: {{ matrix_bridge_hookshot_generic_userIdPrefix | to_json }}
+  allowJsTransformationFunctions: {{ matrix_bridge_hookshot_generic_allowJsTransformationFunctions | to_json }}
+  waitForComplete: {{ matrix_bridge_hookshot_generic_waitForComplete | to_json }}
+  sendExpiryNotice: {{ matrix_bridge_hookshot_generic_sendExpiryNotice | to_json }}
+  requireExpiryTime: {{ matrix_bridge_hookshot_generic_requireExpiryTime | to_json }}
+  maxExpiryTime: {{ matrix_bridge_hookshot_generic_maxExpiryTime | to_json }}
 {% endif %}
-{% if matrix_hookshot_feeds_enabled %}
+{% if matrix_bridge_hookshot_feeds_enabled %}
 feeds:
   # (Optional) Configure this to enable RSS/Atom feed support
   #
-  enabled: {{ matrix_hookshot_feeds_enabled | to_json }}
-  pollIntervalSeconds: {{ matrix_hookshot_feeds_pollIntervalSeconds | to_json }}
-  pollTimeoutSeconds: {{ matrix_hookshot_feeds_pollTimeoutSeconds | to_json }}
+  enabled: {{ matrix_bridge_hookshot_feeds_enabled | to_json }}
+  pollIntervalSeconds: {{ matrix_bridge_hookshot_feeds_pollIntervalSeconds | to_json }}
+  pollTimeoutSeconds: {{ matrix_bridge_hookshot_feeds_pollTimeoutSeconds | to_json }}
 {% endif %}
 passFile:
   # A passkey used to encrypt tokens stored inside the bridge.
@@ -100,62 +100,62 @@ passFile:
 bot:
   # (Optional) Define profile information for the bot user
   #
-  displayname: {{ matrix_hookshot_bot_displayname | to_json(ensure_ascii=False) }}
-  avatar: {{ matrix_hookshot_bot_avatar | to_json }}
+  displayname: {{ matrix_bridge_hookshot_bot_displayname | to_json(ensure_ascii=False) }}
+  avatar: {{ matrix_bridge_hookshot_bot_avatar | to_json }}
 metrics:
   # (Optional) Prometheus metrics support
   #
-  enabled: {{ matrix_hookshot_metrics_enabled | to_json }}
-{% if matrix_hookshot_cache_redisUri %}
+  enabled: {{ matrix_bridge_hookshot_metrics_enabled | to_json }}
+{% if matrix_bridge_hookshot_cache_redisUri %}
 cache:
-  redisUri: {{ matrix_hookshot_cache_redisUri | to_json }}
+  redisUri: {{ matrix_bridge_hookshot_cache_redisUri | to_json }}
 {% endif %}
-{% if matrix_hookshot_encryption_enabled %}
+{% if matrix_bridge_hookshot_encryption_enabled %}
 encryption:
   storagePath: /data/encryption
 {% endif %}
 logging:
   # (Optional) Logging settings. You can have a severity debug,info,warn,error
   #
-  level: {{ matrix_hookshot_logging_level | to_json }}
-{% if matrix_hookshot_widgets_enabled %}
+  level: {{ matrix_bridge_hookshot_logging_level | to_json }}
+{% if matrix_bridge_hookshot_widgets_enabled %}
 widgets:
   # (Optional) EXPERIMENTAL support for complimentary widgets
   #
-  addToAdminRooms: {{ matrix_hookshot_widgets_addToAdminRooms | to_json }}
-{% if matrix_hookshot_widgets_roomSetupWidget_enabled %}
+  addToAdminRooms: {{ matrix_bridge_hookshot_widgets_addToAdminRooms | to_json }}
+{% if matrix_bridge_hookshot_widgets_roomSetupWidget_enabled %}
   roomSetupWidget:
-    addOnInvite: {{ matrix_hookshot_widgets_roomSetupWidget_addOnInvite | to_json }}
+    addOnInvite: {{ matrix_bridge_hookshot_widgets_roomSetupWidget_addOnInvite | to_json }}
 {% endif %}
-{% if not matrix_hookshot_widgets_disallowedIpRanges is in [None, ''] %}
-  disallowedIpRanges: {{ matrix_hookshot_widgets_disallowedIpRanges | to_json }}
+{% if not matrix_bridge_hookshot_widgets_disallowedIpRanges is in [None, ''] %}
+  disallowedIpRanges: {{ matrix_bridge_hookshot_widgets_disallowedIpRanges | to_json }}
 {% endif %}
-  publicUrl: {{ matrix_hookshot_widgets_publicUrl | to_json }}
+  publicUrl: {{ matrix_bridge_hookshot_widgets_publicUrl | to_json }}
   branding:
-    widgetTitle: {{ matrix_hookshot_widgets_branding_widgetTitle | to_json }}
+    widgetTitle: {{ matrix_bridge_hookshot_widgets_branding_widgetTitle | to_json }}
 {% endif %}
-{% if matrix_hookshot_permissions %}
-permissions: {{ matrix_hookshot_permissions | to_json }}
+{% if matrix_bridge_hookshot_permissions %}
+permissions: {{ matrix_bridge_hookshot_permissions | to_json }}
 {% endif %}
-connections: {{ matrix_hookshot_connections | to_json }}
+connections: {{ matrix_bridge_hookshot_connections | to_json }}
 listeners:
   # (Optional) HTTP Listener configuration.
   # Bind resource endpoints to ports and addresses.
   # 'resources' may be any of webhooks, widgets, metrics
   #
 {# always enabled since all services need it #}
-  - port: {{ matrix_hookshot_webhook_port }}
+  - port: {{ matrix_bridge_hookshot_webhook_port }}
     bindAddress: 0.0.0.0
     resources:
       - webhooks
-{% if matrix_hookshot_metrics_enabled %}
-  - port: {{ matrix_hookshot_metrics_port }}
+{% if matrix_bridge_hookshot_metrics_enabled %}
+  - port: {{ matrix_bridge_hookshot_metrics_port }}
     bindAddress: 0.0.0.0
     resources:
       - metrics
 {% endif %}
-{% if matrix_hookshot_widgets_enabled %}
-  - port: {{ matrix_hookshot_widgets_port }}
+{% if matrix_bridge_hookshot_widgets_enabled %}
+  - port: {{ matrix_bridge_hookshot_widgets_port }}
     bindAddress: 0.0.0.0
     resources:
       - widgets

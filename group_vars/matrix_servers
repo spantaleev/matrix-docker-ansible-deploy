@@ -108,7 +108,7 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_bridge_heisenbridge_base_path + '/registration.yaml,dst=/heisenbridge-registration.yaml,ro'] if matrix_bridge_heisenbridge_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_hookshot_base_path + '/registration.yml,dst=/hookshot-registration.yml,ro'] if matrix_hookshot_enabled else [])
+    (['--mount type=bind,src=' + matrix_bridge_hookshot_base_path + '/registration.yml,dst=/hookshot-registration.yml,ro'] if matrix_bridge_hookshot_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_bluesky_config_path + '/registration.yaml,dst=/matrix-mautrix-bluesky-registration.yaml,ro'] if matrix_mautrix_bluesky_enabled else [])
     +
@@ -167,7 +167,7 @@ matrix_homeserver_app_service_config_files_auto: |
     +
     (['/heisenbridge-registration.yaml'] if matrix_bridge_heisenbridge_enabled else [])
     +
-    (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
+    (['/hookshot-registration.yml'] if matrix_bridge_hookshot_enabled else [])
     +
     (['/matrix-mautrix-bluesky-registration.yaml'] if matrix_mautrix_bluesky_enabled else [])
     +
@@ -401,9 +401,9 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-hookshot.service',
       'priority': 2000,
-      'restart_necessary': (matrix_hookshot_restart_necessary | bool),
+      'restart_necessary': (matrix_bridge_hookshot_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'hookshot', 'bridge-hookshot'],
-    }] if matrix_hookshot_enabled else [])
+    }] if matrix_bridge_hookshot_enabled else [])
     +
     ([{
       'name': 'matrix-meshtastic-relay.service',
@@ -2567,64 +2567,64 @@ matrix_bridge_heisenbridge_homeserver_url: "{{ matrix_addons_homeserver_client_a
 ######################################################################
 
 # We don't enable bridges by default.
-matrix_hookshot_enabled: false
+matrix_bridge_hookshot_enabled: false
 
-matrix_hookshot_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_hookshot_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_hookshot_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bridge_hookshot_container_image_registry_prefix_upstream_default }}"
 
-matrix_hookshot_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+matrix_bridge_hookshot_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_hookshot_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':hookshot.as.tok') | hash('sha512') | to_uuid }}"
+matrix_bridge_hookshot_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':hookshot.as.tok') | hash('sha512') | to_uuid }}"
 
-matrix_hookshot_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':hookshot.hs.tok') | hash('sha512') | to_uuid }}"
+matrix_bridge_hookshot_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':hookshot.hs.tok') | hash('sha512') | to_uuid }}"
 
-matrix_hookshot_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_bridge_hookshot_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_hookshot_systemd_wanted_services_list: |
+matrix_bridge_hookshot_systemd_wanted_services_list: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([(valkey_identifier + '.service')] if valkey_enabled and matrix_hookshot_cache_redis_host == valkey_identifier else [])
+    ([(valkey_identifier + '.service')] if valkey_enabled and matrix_bridge_hookshot_cache_redis_host == valkey_identifier else [])
   }}
 
 # Hookshot's experimental encryption feature (and possibly others) may benefit from Redis, if available.
 # We only connect to Redis if encryption is enabled (not for everyone who has Redis enabled),
 # because connectivity is still potentially troublesome and is to be investigated.
-matrix_hookshot_cache_redis_host: "{{ valkey_identifier if valkey_enabled else '' }}"
+matrix_bridge_hookshot_cache_redis_host: "{{ valkey_identifier if valkey_enabled else '' }}"
 
-matrix_hookshot_container_network: "{{ matrix_addons_container_network }}"
+matrix_bridge_hookshot_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_hookshot_container_additional_networks_auto: |
+matrix_bridge_hookshot_container_additional_networks_auto: |
   {{
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([valkey_container_network] if valkey_enabled and matrix_hookshot_cache_redis_host == valkey_identifier else [])
+      ([valkey_container_network] if valkey_enabled and matrix_bridge_hookshot_cache_redis_host == valkey_identifier else [])
       +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_hookshot_container_labels_traefik_enabled else [])
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_bridge_hookshot_container_labels_traefik_enabled else [])
     ) | unique
   }}
 
-matrix_hookshot_container_http_host_bind_ports_defaultmapping:
-  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_appservice_port }}:{{ matrix_hookshot_appservice_port }}"
-  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_metrics_port }}:{{ matrix_hookshot_metrics_port }}"
-  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_hookshot_webhook_port }}:{{ matrix_hookshot_webhook_port }}"
+matrix_bridge_hookshot_container_http_host_bind_ports_defaultmapping:
+  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_bridge_hookshot_appservice_port }}:{{ matrix_bridge_hookshot_appservice_port }}"
+  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_bridge_hookshot_metrics_port }}:{{ matrix_bridge_hookshot_metrics_port }}"
+  - "{{ matrix_playbook_service_host_bind_interface_prefix }}{{ matrix_bridge_hookshot_webhook_port }}:{{ matrix_bridge_hookshot_webhook_port }}"
 
-matrix_hookshot_container_http_host_bind_ports: "{{ matrix_hookshot_container_http_host_bind_ports_defaultmapping if matrix_playbook_service_host_bind_interface_prefix else [] }}"
+matrix_bridge_hookshot_container_http_host_bind_ports: "{{ matrix_bridge_hookshot_container_http_host_bind_ports_defaultmapping if matrix_playbook_service_host_bind_interface_prefix else [] }}"
 
-matrix_hookshot_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_hookshot_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_hookshot_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_hookshot_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+matrix_bridge_hookshot_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_bridge_hookshot_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_bridge_hookshot_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bridge_hookshot_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_hookshot_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
+matrix_bridge_hookshot_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
 
-matrix_hookshot_metrics_proxying_enabled: "{{ matrix_hookshot_metrics_enabled and matrix_metrics_exposure_enabled }}"
-matrix_hookshot_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
-matrix_hookshot_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/hookshot"
-matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+matrix_bridge_hookshot_metrics_proxying_enabled: "{{ matrix_bridge_hookshot_metrics_enabled and matrix_metrics_exposure_enabled }}"
+matrix_bridge_hookshot_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
+matrix_bridge_hookshot_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/hookshot"
+matrix_bridge_hookshot_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+matrix_bridge_hookshot_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
 
-matrix_hookshot_public_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_bridge_hookshot_public_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
 ######################################################################
 #
@@ -4426,7 +4426,7 @@ ntfy_visitor_request_limit_exempt_hosts_hostnames_auto: |
 #
 ######################################################################
 
-valkey_enabled: "{{ matrix_synapse_workers_enabled or (matrix_hookshot_enabled and matrix_hookshot_encryption_enabled) }}"
+valkey_enabled: "{{ matrix_synapse_workers_enabled or (matrix_bridge_hookshot_enabled and matrix_bridge_hookshot_encryption_enabled) }}"
 
 valkey_identifier: matrix-valkey
 
@@ -5117,8 +5117,8 @@ matrix_ketesa_config_asManagedUsers_auto: |
       '^@_github_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
       '^@_gitlab_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
       '^@_jira_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-      '^@'+(matrix_hookshot_generic_userIdPrefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_hookshot_enabled else [])
+      '^@'+(matrix_bridge_hookshot_generic_userIdPrefix | default('') | regex_escape)+'[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_bridge_hookshot_enabled else [])
     +
     ([
       '^@'+(matrix_mautrix_bluesky_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
@@ -5410,7 +5410,7 @@ prometheus_container_additional_networks_auto: |
       +
       ([prometheus_postgres_exporter_container_network] if matrix_prometheus_services_connect_scraper_postgres_enabled and prometheus_postgres_exporter_container_network != prometheus_container_network else [])
       +
-      ([matrix_hookshot_container_network] if matrix_prometheus_services_connect_scraper_hookshot_enabled and matrix_hookshot_container_network != prometheus_container_network else [])
+      ([matrix_bridge_hookshot_container_network] if matrix_prometheus_services_connect_scraper_hookshot_enabled and matrix_bridge_hookshot_container_network != prometheus_container_network else [])
       +
       ([matrix_media_repo_container_network] if matrix_prometheus_services_connect_scraper_media_repo_enabled and matrix_media_repo_container_network != prometheus_container_network else [])
       +
@@ -5470,8 +5470,8 @@ matrix_prometheus_services_connect_scraper_synapse_workers_enabled_list: "{{ mat
 matrix_prometheus_services_connect_scraper_postgres_enabled: "{{ prometheus_postgres_exporter_enabled }}"
 matrix_prometheus_services_connect_scraper_postgres_static_configs_target: "{{ prometheus_postgres_exporter_identifier }}:{{ prometheus_postgres_exporter_container_http_port | string }}"
 
-matrix_prometheus_services_connect_scraper_hookshot_enabled: "{{ matrix_hookshot_enabled and matrix_hookshot_metrics_enabled }}"
-matrix_prometheus_services_connect_scraper_hookshot_static_configs_target: "{{ matrix_hookshot_container_url }}:{{ matrix_hookshot_metrics_port | string }}"
+matrix_prometheus_services_connect_scraper_hookshot_enabled: "{{ matrix_bridge_hookshot_enabled and matrix_bridge_hookshot_metrics_enabled }}"
+matrix_prometheus_services_connect_scraper_hookshot_static_configs_target: "{{ matrix_bridge_hookshot_container_url }}:{{ matrix_bridge_hookshot_metrics_port | string }}"
 
 matrix_prometheus_services_connect_scraper_nginxlog_enabled: "{{ prometheus_nginxlog_exporter_enabled }}"
 matrix_prometheus_services_connect_scraper_nginxlog_static_configs_target: "{{ prometheus_nginxlog_exporter_identifier }}:{{ prometheus_nginxlog_exporter_container_metrics_port | string }}"

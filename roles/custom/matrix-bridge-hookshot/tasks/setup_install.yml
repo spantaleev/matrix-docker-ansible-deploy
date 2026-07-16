@@ -24,50 +24,50 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - {path: "{{ matrix_hookshot_base_path }}", when: true}
-    - {path: "{{ matrix_hookshot_container_src_files_path }}", when: "{{ matrix_hookshot_container_image_self_build }}"}
+    - {path: "{{ matrix_bridge_hookshot_base_path }}", when: true}
+    - {path: "{{ matrix_bridge_hookshot_container_src_files_path }}", when: "{{ matrix_bridge_hookshot_container_image_self_build }}"}
   when: item.when | bool
 
 - name: Ensure hookshot image is pulled
   community.docker.docker_image_pull:
-    name: "{{ matrix_hookshot_container_image }}"
+    name: "{{ matrix_bridge_hookshot_container_image }}"
     pull: always
-  when: not matrix_hookshot_container_image_self_build
-  register: matrix_hookshot_container_image_pull_result
+  when: not matrix_bridge_hookshot_container_image_self_build
+  register: matrix_bridge_hookshot_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: matrix_hookshot_container_image_pull_result is not failed
+  until: matrix_bridge_hookshot_container_image_pull_result is not failed
 
 - name: Ensure hookshot repository is present on self-build
   ansible.builtin.git:
-    repo: "{{ matrix_hookshot_container_image_self_build_repo }}"
-    dest: "{{ matrix_hookshot_container_src_files_path }}"
-    version: "{{ matrix_hookshot_container_image_self_build_branch }}"
+    repo: "{{ matrix_bridge_hookshot_container_image_self_build_repo }}"
+    dest: "{{ matrix_bridge_hookshot_container_src_files_path }}"
+    version: "{{ matrix_bridge_hookshot_container_image_self_build_branch }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
-  register: matrix_hookshot_git_pull_results
-  when: "matrix_hookshot_container_image_self_build | bool"
+  register: matrix_bridge_hookshot_git_pull_results
+  when: "matrix_bridge_hookshot_container_image_self_build | bool"
 
 - name: Ensure hookshot Docker image is built
   community.docker.docker_image_build:
-    name: "{{ matrix_hookshot_container_image }}"
+    name: "{{ matrix_bridge_hookshot_container_image }}"
     dockerfile: Dockerfile
-    path: "{{ matrix_hookshot_container_src_files_path }}"
+    path: "{{ matrix_bridge_hookshot_container_src_files_path }}"
     pull: true
-    rebuild: "{{ 'always' if matrix_hookshot_git_pull_results.changed | bool else 'never' }}"
-  when: "matrix_hookshot_container_image_self_build | bool"
-  register: matrix_hookshot_container_image_build_result
+    rebuild: "{{ 'always' if matrix_bridge_hookshot_git_pull_results.changed | bool else 'never' }}"
+  when: "matrix_bridge_hookshot_container_image_self_build | bool"
+  register: matrix_bridge_hookshot_container_image_build_result
 
 - name: Check if hookshot passkey exists
   ansible.builtin.stat:
-    path: "{{ matrix_hookshot_base_path }}/passkey.pem"
+    path: "{{ matrix_bridge_hookshot_base_path }}/passkey.pem"
   register: hookshot_passkey_file
 
 - name: Generate hookshot passkey if it doesn't exist
   ansible.builtin.shell:
-    cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_hookshot_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096"
-    creates: "{{ matrix_hookshot_base_path }}/passkey.pem"
+    cmd: "{{ matrix_host_command_openssl }} genpkey -out {{ matrix_bridge_hookshot_base_path }}/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096"
+    creates: "{{ matrix_bridge_hookshot_base_path }}/passkey.pem"
   become: true
   become_user: "{{ matrix_user_name }}"
   when: "not hookshot_passkey_file.stat.exists"
@@ -79,32 +79,32 @@
 # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/5033
 - name: Ensure hookshot passkey has correct ownership and mode
   ansible.builtin.file:
-    path: "{{ matrix_hookshot_base_path }}/passkey.pem"
+    path: "{{ matrix_bridge_hookshot_base_path }}/passkey.pem"
     state: file
     mode: '0600'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_hookshot_passkey_result
+  register: matrix_bridge_hookshot_passkey_result
 
 - name: Ensure hookshot config.yml installed if provided
   ansible.builtin.copy:
-    content: "{{ matrix_hookshot_configuration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_hookshot_base_path }}/config.yml"
+    content: "{{ matrix_bridge_hookshot_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_hookshot_base_path }}/config.yml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_hookshot_config_result
+  register: matrix_bridge_hookshot_config_result
 
 - name: Validate hookshot config.yml
   ansible.builtin.command:
     cmd: |
       {{ devture_systemd_docker_base_host_command_docker }} run
       --rm
-      --name={{ matrix_hookshot_container_url }}-validate
+      --name={{ matrix_bridge_hookshot_container_url }}-validate
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
-      --mount type=bind,src={{ matrix_hookshot_base_path }}/config.yml,dst=/config.yml,ro
-      {{ matrix_hookshot_container_image }} node config/Config.js /config.yml
+      --mount type=bind,src={{ matrix_bridge_hookshot_base_path }}/config.yml,dst=/config.yml,ro
+      {{ matrix_bridge_hookshot_container_image }} node config/Config.js /config.yml
   register: hookshot_config_validation_result
   changed_when: false
 
@@ -115,59 +115,59 @@
 
 - name: Ensure hookshot registration.yml installed if provided
   ansible.builtin.copy:
-    content: "{{ matrix_hookshot_registration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_hookshot_base_path }}/registration.yml"
+    content: "{{ matrix_bridge_hookshot_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_hookshot_base_path }}/registration.yml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_hookshot_registration_result
+  register: matrix_bridge_hookshot_registration_result
 
 - name: Ensure hookshot github private key file installed if github is enabled
   ansible.builtin.copy:
-    content: "{{ matrix_hookshot_github_private_key }}"
-    dest: "{{ matrix_hookshot_base_path }}/{{ matrix_hookshot_github_private_key_file }}"
+    content: "{{ matrix_bridge_hookshot_github_private_key }}"
+    dest: "{{ matrix_bridge_hookshot_base_path }}/{{ matrix_bridge_hookshot_github_private_key_file }}"
     mode: '0400'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  when: matrix_hookshot_github_enabled | bool and matrix_hookshot_github_private_key|length > 0
-  register: matrix_hookshot_github_key_result
+  when: matrix_bridge_hookshot_github_enabled | bool and matrix_bridge_hookshot_github_private_key|length > 0
+  register: matrix_bridge_hookshot_github_key_result
 
 - name: Ensure matrix-hookshot container network is created
-  when: matrix_hookshot_container_network != 'host'
+  when: matrix_bridge_hookshot_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-    name: "{{ matrix_hookshot_container_network }}"
+    name: "{{ matrix_bridge_hookshot_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
 - name: Ensure mautrix-hookshot support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ matrix_hookshot_base_path }}/{{ item }}"
+    dest: "{{ matrix_bridge_hookshot_base_path }}/{{ item }}"
     mode: '0640'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
-  register: matrix_hookshot_support_files_result
+  register: matrix_bridge_hookshot_support_files_result
 
 - name: Ensure matrix-hookshot.service installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/matrix-hookshot.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-hookshot.service"
     mode: '0644'
-  register: matrix_hookshot_systemd_service_result
+  register: matrix_bridge_hookshot_systemd_service_result
 
 - name: Determine whether matrix-hookshot needs a restart
   ansible.builtin.set_fact:
-    matrix_hookshot_restart_necessary: >-
+    matrix_bridge_hookshot_restart_necessary: >-
       {{
-        matrix_hookshot_config_result.changed | default(false)
-        or matrix_hookshot_registration_result.changed | default(false)
-        or matrix_hookshot_github_key_result.changed | default(false)
-        or matrix_hookshot_passkey_result.changed | default(false)
-        or matrix_hookshot_support_files_result.changed | default(false)
-        or matrix_hookshot_systemd_service_result.changed | default(false)
-        or matrix_hookshot_container_image_pull_result.changed | default(false)
-        or matrix_hookshot_container_image_build_result.changed | default(false)
+        matrix_bridge_hookshot_config_result.changed | default(false)
+        or matrix_bridge_hookshot_registration_result.changed | default(false)
+        or matrix_bridge_hookshot_github_key_result.changed | default(false)
+        or matrix_bridge_hookshot_passkey_result.changed | default(false)
+        or matrix_bridge_hookshot_support_files_result.changed | default(false)
+        or matrix_bridge_hookshot_systemd_service_result.changed | default(false)
+        or matrix_bridge_hookshot_container_image_pull_result.changed | default(false)
+        or matrix_bridge_hookshot_container_image_build_result.changed | default(false)
       }}

@@ -15,192 +15,192 @@
 # A bridge between Matrix and multiple project management services, such as GitHub, GitLab and JIRA.
 # Project source code URL: https://github.com/matrix-org/matrix-hookshot
 
-matrix_hookshot_enabled: true
+matrix_bridge_hookshot_enabled: true
 
-matrix_hookshot_identifier: matrix-hookshot
+matrix_bridge_hookshot_identifier: matrix-hookshot
 
-matrix_hookshot_container_image_self_build: false
-matrix_hookshot_container_image_self_build_repo: "https://github.com/matrix-org/matrix-hookshot.git"
-matrix_hookshot_container_image_self_build_branch: "{{ 'main' if matrix_hookshot_version == 'latest' else matrix_hookshot_version }}"
+matrix_bridge_hookshot_container_image_self_build: false
+matrix_bridge_hookshot_container_image_self_build_repo: "https://github.com/matrix-org/matrix-hookshot.git"
+matrix_bridge_hookshot_container_image_self_build_branch: "{{ 'main' if matrix_bridge_hookshot_version == 'latest' else matrix_bridge_hookshot_version }}"
 
 # Specifies additional networks for the Hookshot container to connect with
-matrix_hookshot_container_additional_networks: "{{ matrix_hookshot_container_additional_networks_auto + matrix_hookshot_container_additional_networks_custom }}"
-matrix_hookshot_container_additional_networks_auto: []
-matrix_hookshot_container_additional_networks_custom: []
+matrix_bridge_hookshot_container_additional_networks: "{{ matrix_bridge_hookshot_container_additional_networks_auto + matrix_bridge_hookshot_container_additional_networks_custom }}"
+matrix_bridge_hookshot_container_additional_networks_auto: []
+matrix_bridge_hookshot_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=halfshot/matrix-hookshot
-matrix_hookshot_version: 7.3.2
+matrix_bridge_hookshot_version: 7.3.2
 
-matrix_hookshot_container_image: "{{ matrix_hookshot_container_image_registry_prefix }}matrix-org/matrix-hookshot:{{ matrix_hookshot_version }}"
-matrix_hookshot_container_image_registry_prefix: "{{ 'localhost/' if matrix_hookshot_container_image_self_build else matrix_hookshot_container_image_registry_prefix_upstream }}"
-matrix_hookshot_container_image_registry_prefix_upstream: "{{ matrix_hookshot_container_image_registry_prefix_upstream_default }}"
-matrix_hookshot_container_image_registry_prefix_upstream_default: "ghcr.io/"
+matrix_bridge_hookshot_container_image: "{{ matrix_bridge_hookshot_container_image_registry_prefix }}matrix-org/matrix-hookshot:{{ matrix_bridge_hookshot_version }}"
+matrix_bridge_hookshot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bridge_hookshot_container_image_self_build else matrix_bridge_hookshot_container_image_registry_prefix_upstream }}"
+matrix_bridge_hookshot_container_image_registry_prefix_upstream: "{{ matrix_bridge_hookshot_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_hookshot_container_image_registry_prefix_upstream_default: "ghcr.io/"
 
-matrix_hookshot_base_path: "{{ matrix_base_data_path }}/hookshot"
+matrix_bridge_hookshot_base_path: "{{ matrix_base_data_path }}/hookshot"
 
-matrix_hookshot_container_src_files_path: "{{ matrix_hookshot_base_path }}/docker-src"
+matrix_bridge_hookshot_container_src_files_path: "{{ matrix_bridge_hookshot_base_path }}/docker-src"
 
-matrix_hookshot_homeserver_address: ""
-matrix_hookshot_container_url: 'matrix-hookshot'
+matrix_bridge_hookshot_homeserver_address: ""
+matrix_bridge_hookshot_container_url: 'matrix-hookshot'
 
 # Sets the localpart of the Matrix ID for the hookshot bot
-matrix_hookshot_bot_localpart: "hookshot"
+matrix_bridge_hookshot_bot_localpart: "hookshot"
 
-matrix_hookshot_public_scheme: https
-matrix_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
-matrix_hookshot_public_endpoint: /hookshot
+matrix_bridge_hookshot_public_scheme: https
+matrix_bridge_hookshot_public_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_bridge_hookshot_public_endpoint: /hookshot
 
 # This is the base URL prefix shared among all endpoints.
 #
-# It intentionally does not include the path prefix (`matrix_hookshot_public_endpoint`),
-# because of how it's used - it's concatenated with paths that already use matrix_hookshot_public_endpoint` within them.
-matrix_hookshot_urlprefix: "{{ matrix_hookshot_public_scheme }}://{{ matrix_hookshot_public_hostname }}"
+# It intentionally does not include the path prefix (`matrix_bridge_hookshot_public_endpoint`),
+# because of how it's used - it's concatenated with paths that already use matrix_bridge_hookshot_public_endpoint` within them.
+matrix_bridge_hookshot_urlprefix: "{{ matrix_bridge_hookshot_public_scheme }}://{{ matrix_bridge_hookshot_public_hostname }}"
 
-# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
-matrix_hookshot_appservice_port: 9993
-matrix_hookshot_appservice_hostname: "{{ matrix_hookshot_public_hostname }}"
-matrix_hookshot_appservice_endpoint: "{{ matrix_hookshot_public_endpoint }}/_matrix/app"
+# There is no need to edit ports. use matrix_bridge_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_bridge_hookshot_appservice_port: 9993
+matrix_bridge_hookshot_appservice_hostname: "{{ matrix_bridge_hookshot_public_hostname }}"
+matrix_bridge_hookshot_appservice_endpoint: "{{ matrix_bridge_hookshot_public_endpoint }}/_matrix/app"
 
 # The variables below control the Redis cache parameters.
-# Using caching is required when encryption is enabled (`matrix_hookshot_encryption_enabled`)
+# Using caching is required when encryption is enabled (`matrix_bridge_hookshot_encryption_enabled`)
 # but may also speed up Hookshot startup, etc.
-matrix_hookshot_cache_redis_host: ''
-matrix_hookshot_cache_redis_port: "6379"
-matrix_hookshot_cache_redisUri: "{{ ('redis://' + matrix_hookshot_cache_redis_host + ':' + matrix_hookshot_cache_redis_port) if matrix_hookshot_cache_redis_host else '' }}"  # noqa var-naming
+matrix_bridge_hookshot_cache_redis_host: ''
+matrix_bridge_hookshot_cache_redis_port: "6379"
+matrix_bridge_hookshot_cache_redisUri: "{{ ('redis://' + matrix_bridge_hookshot_cache_redis_host + ':' + matrix_bridge_hookshot_cache_redis_port) if matrix_bridge_hookshot_cache_redis_host else '' }}"  # noqa var-naming
 
 # Controls whether the end-to-bridge encryption support is enabled.
 # This requires that:
 # - the homeserver to support MSC2409 (to-device messages for appservices) and MSC3202 (encryption-related appservice transaction extensions), and to have them enabled.
 #   These are typically experimental homeserver features which are disabled by default, so they usually need to be enabled explicitly via homeserver-specific configuration.
-# - Hookshot to be pointed at a Redis instance via the `matrix_hookshot_cache_redis*` variables. Note that this is configured automatically by the playbook when encryption is enabled.
+# - Hookshot to be pointed at a Redis instance via the `matrix_bridge_hookshot_cache_redis*` variables. Note that this is configured automatically by the playbook when encryption is enabled.
 # See: https://matrix-org.github.io/matrix-hookshot/latest/advanced/encryption.html
 # NOTE: Encryption is not currently (2025-12-30) supported when using MAS (https://github.com/matrix-org/matrix-hookshot/issues/1084)
-matrix_hookshot_encryption_enabled: "{{ matrix_bridges_encryption_enabled }}"
+matrix_bridge_hookshot_encryption_enabled: "{{ matrix_bridges_encryption_enabled }}"
 
 # Controls whether metrics are enabled in the bridge configuration.
 # Enabling them is usually enough for a local (in-container) Prometheus to consume them.
-# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_hookshot_metrics_proxying_enabled`.
-matrix_hookshot_metrics_enabled: false
+# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_bridge_hookshot_metrics_proxying_enabled`.
+matrix_bridge_hookshot_metrics_enabled: false
 
 # Controls whether Hookshot metrics should be proxied (exposed) on a public URL.
-matrix_hookshot_metrics_proxying_enabled: false
-matrix_hookshot_metrics_proxying_hostname: ''
-matrix_hookshot_metrics_proxying_path_prefix: ''
+matrix_bridge_hookshot_metrics_proxying_enabled: false
+matrix_bridge_hookshot_metrics_proxying_hostname: ''
+matrix_bridge_hookshot_metrics_proxying_path_prefix: ''
 
 # There is no need to edit ports.
 # Read the documentation to learn about using Hookshot metrics with external Prometheus
-# If you still want something different, use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
-matrix_hookshot_metrics_port: 9001
+# If you still want something different, use matrix_bridge_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_bridge_hookshot_metrics_port: 9001
 
-# There is no need to edit ports. use matrix_hookshot_container_http_host_bind_ports below to expose ports instead.
-matrix_hookshot_webhook_port: 9000
-matrix_hookshot_webhook_hostname: "{{ matrix_hookshot_public_hostname }}"
-matrix_hookshot_webhook_endpoint: "{{ matrix_hookshot_public_endpoint }}/webhooks"
+# There is no need to edit ports. use matrix_bridge_hookshot_container_http_host_bind_ports below to expose ports instead.
+matrix_bridge_hookshot_webhook_port: 9000
+matrix_bridge_hookshot_webhook_hostname: "{{ matrix_bridge_hookshot_public_hostname }}"
+matrix_bridge_hookshot_webhook_endpoint: "{{ matrix_bridge_hookshot_public_endpoint }}/webhooks"
 
 
 # You need to create a GitHub app to enable this and fill in the empty variables below
 # https://matrix-org.github.io/matrix-hookshot/setup/github.html
-matrix_hookshot_github_enabled: false
-matrix_hookshot_github_auth_id: ''
+matrix_bridge_hookshot_github_enabled: false
+matrix_bridge_hookshot_github_auth_id: ''
 # Set this variable to the contents of the generated and downloaded GitHub private key:
-# matrix_hookshot_github_private_key: |
+# matrix_bridge_hookshot_github_private_key: |
 #   -----BEGIN RSA PRIVATE KEY-----
 #   0123456789ABCDEF…
 #   -----END RSA PRIVATE KEY-----
 # Alternatively, leave it empty and do it manually or use matrix-aux instead, see docs/matrix-bridge-hookshot.md for info.
-matrix_hookshot_github_private_key: ''
-matrix_hookshot_github_private_key_file: 'private-key.pem'
-matrix_hookshot_github_webhook_secret: ''  # "Webhook secret" on the GitHub App page
-matrix_hookshot_github_oauth_enabled: false
+matrix_bridge_hookshot_github_private_key: ''
+matrix_bridge_hookshot_github_private_key_file: 'private-key.pem'
+matrix_bridge_hookshot_github_webhook_secret: ''  # "Webhook secret" on the GitHub App page
+matrix_bridge_hookshot_github_oauth_enabled: false
 # You need to configure oauth settings only when you have enabled oauth (optional)
-matrix_hookshot_github_oauth_client_id: ''  # "Client ID" on the GitHub App page
-matrix_hookshot_github_oauth_client_secret: ''  # "Client Secret" on the GitHub App page
-# Default value of matrix_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
-matrix_hookshot_github_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/oauth"
-matrix_hookshot_github_oauth_redirect_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_github_oauth_endpoint }}"
+matrix_bridge_hookshot_github_oauth_client_id: ''  # "Client ID" on the GitHub App page
+matrix_bridge_hookshot_github_oauth_client_secret: ''  # "Client Secret" on the GitHub App page
+# Default value of matrix_bridge_hookshot_github_oauth_endpoint: "/hookshot/webhooks/oauth"
+matrix_bridge_hookshot_github_oauth_endpoint: "{{ matrix_bridge_hookshot_webhook_endpoint }}/oauth"
+matrix_bridge_hookshot_github_oauth_redirect_uri: "{{ matrix_bridge_hookshot_urlprefix }}{{ matrix_bridge_hookshot_github_oauth_endpoint }}"
 
 # These are the default settings mentioned here and don't need to be modified: https://matrix-org.github.io/matrix-hookshot/usage/room_configuration/github_repo.html#configuration
-matrix_hookshot_github_defaultOptions_ignoreHooks: {}  # noqa var-naming
-matrix_hookshot_github_defaultOptions_commandPrefix: '!gh'  # noqa var-naming
-matrix_hookshot_github_defaultOptions_showIssueRoomLink: false   # noqa var-naming
-matrix_hookshot_github_defaultOptions_prDiff:   # noqa var-naming
+matrix_bridge_hookshot_github_defaultOptions_ignoreHooks: {}  # noqa var-naming
+matrix_bridge_hookshot_github_defaultOptions_commandPrefix: '!gh'  # noqa var-naming
+matrix_bridge_hookshot_github_defaultOptions_showIssueRoomLink: false   # noqa var-naming
+matrix_bridge_hookshot_github_defaultOptions_prDiff:   # noqa var-naming
   enabled: false
   maxLines: 5
-matrix_hookshot_github_defaultOptions_includingLabels: ''  # noqa var-naming
-matrix_hookshot_github_defaultOptions_excludingLabels: ''  # noqa var-naming
-matrix_hookshot_github_defaultOptions_hotlinkIssues_prefix: "#"  # noqa var-naming
+matrix_bridge_hookshot_github_defaultOptions_includingLabels: ''  # noqa var-naming
+matrix_bridge_hookshot_github_defaultOptions_excludingLabels: ''  # noqa var-naming
+matrix_bridge_hookshot_github_defaultOptions_hotlinkIssues_prefix: "#"  # noqa var-naming
 
 
-matrix_hookshot_gitlab_enabled: true
+matrix_bridge_hookshot_gitlab_enabled: true
 # Optionally add your instances, e.g.
-# matrix_hookshot_gitlab_instances:
+# matrix_bridge_hookshot_gitlab_instances:
 #   gitlab.com:
 #     url: https://gitlab.com
 #   mygitlab:
 #     url: https://gitlab.example.org
-matrix_hookshot_gitlab_instances:
+matrix_bridge_hookshot_gitlab_instances:
   gitlab.com:
     url: https://gitlab.com
 
 # This will be the "Secret token" you have to enter into all GitLab instances for authentication
-matrix_hookshot_gitlab_webhook_secret: ''
-matrix_hookshot_gitlab_webhook_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_webhook_endpoint }}"  # noqa var-naming
+matrix_bridge_hookshot_gitlab_webhook_secret: ''
+matrix_bridge_hookshot_gitlab_webhook_publicUrl: "{{ matrix_bridge_hookshot_urlprefix }}{{ matrix_bridge_hookshot_webhook_endpoint }}"  # noqa var-naming
 
 
-matrix_hookshot_figma_enabled: false
-# Default value of matrix_hookshot_figma_endpoint: "/hookshot/webhooks/figma/webhook"
-matrix_hookshot_figma_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/figma/webhook"
-matrix_hookshot_figma_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_figma_endpoint }}"  # noqa var-naming
+matrix_bridge_hookshot_figma_enabled: false
+# Default value of matrix_bridge_hookshot_figma_endpoint: "/hookshot/webhooks/figma/webhook"
+matrix_bridge_hookshot_figma_endpoint: "{{ matrix_bridge_hookshot_webhook_endpoint }}/figma/webhook"
+matrix_bridge_hookshot_figma_publicUrl: "{{ matrix_bridge_hookshot_urlprefix }}{{ matrix_bridge_hookshot_figma_endpoint }}"  # noqa var-naming
 # To bridge figma webhooks, you need to configure one of multiple instances like this:
-# matrix_hookshot_figma_instances:
+# matrix_bridge_hookshot_figma_instances:
 #   your-instance:
 #       teamId: your-team-id
 #       accessToken: your-personal-access-token
 #       passcode: your-webhook-passcode
-matrix_hookshot_figma_instances: {}
+matrix_bridge_hookshot_figma_instances: {}
 
-matrix_hookshot_jira_enabled: false
+matrix_bridge_hookshot_jira_enabled: false
 # Get the these values from https://matrix-org.github.io/matrix-hookshot/setup/jira.html#jira-oauth
-matrix_hookshot_jira_webhook_secret: ''
-matrix_hookshot_jira_oauth_enabled: false
-matrix_hookshot_jira_oauth_client_id: ''
-matrix_hookshot_jira_oauth_client_secret: ''
-# Default value of matrix_hookshot_jira_oauth_endpoint: "/hookshot/webhooks/jira/oauth"
-matrix_hookshot_jira_oauth_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/jira/oauth"
-matrix_hookshot_jira_oauth_redirect_uri: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_jira_oauth_endpoint }}"
+matrix_bridge_hookshot_jira_webhook_secret: ''
+matrix_bridge_hookshot_jira_oauth_enabled: false
+matrix_bridge_hookshot_jira_oauth_client_id: ''
+matrix_bridge_hookshot_jira_oauth_client_secret: ''
+# Default value of matrix_bridge_hookshot_jira_oauth_endpoint: "/hookshot/webhooks/jira/oauth"
+matrix_bridge_hookshot_jira_oauth_endpoint: "{{ matrix_bridge_hookshot_webhook_endpoint }}/jira/oauth"
+matrix_bridge_hookshot_jira_oauth_redirect_uri: "{{ matrix_bridge_hookshot_urlprefix }}{{ matrix_bridge_hookshot_jira_oauth_endpoint }}"
 
 
 # No need to change these
-matrix_hookshot_generic_enabled: true
-matrix_hookshot_generic_outbound: true
-matrix_hookshot_generic_enableHttpGet: false  # noqa var-naming
-# Default value of matrix_hookshot_generic_endpoint: "/hookshot/webhooks"
-matrix_hookshot_generic_endpoint: "{{ matrix_hookshot_webhook_endpoint }}/webhook"
+matrix_bridge_hookshot_generic_enabled: true
+matrix_bridge_hookshot_generic_outbound: true
+matrix_bridge_hookshot_generic_enableHttpGet: false  # noqa var-naming
+# Default value of matrix_bridge_hookshot_generic_endpoint: "/hookshot/webhooks"
+matrix_bridge_hookshot_generic_endpoint: "{{ matrix_bridge_hookshot_webhook_endpoint }}/webhook"
 # urlprefix gets updated with protocol & port in group_vars/matrix_servers
-matrix_hookshot_generic_urlPrefix: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_generic_endpoint }}"  # noqa var-naming
+matrix_bridge_hookshot_generic_urlPrefix: "{{ matrix_bridge_hookshot_urlprefix }}{{ matrix_bridge_hookshot_generic_endpoint }}"  # noqa var-naming
 # If you're also using matrix-appservice-webhooks, take care that these prefixes don't overlap
-matrix_hookshot_generic_userIdPrefix: '_webhooks_'  # noqa var-naming
-matrix_hookshot_generic_allowJsTransformationFunctions: false  # noqa var-naming
-matrix_hookshot_generic_waitForComplete: false  # noqa var-naming
-matrix_hookshot_generic_sendExpiryNotice: false  # noqa var-naming
-matrix_hookshot_generic_requireExpiryTime: false  # noqa var-naming
-matrix_hookshot_generic_maxExpiryTime: "30d"  # noqa var-naming
+matrix_bridge_hookshot_generic_userIdPrefix: '_webhooks_'  # noqa var-naming
+matrix_bridge_hookshot_generic_allowJsTransformationFunctions: false  # noqa var-naming
+matrix_bridge_hookshot_generic_waitForComplete: false  # noqa var-naming
+matrix_bridge_hookshot_generic_sendExpiryNotice: false  # noqa var-naming
+matrix_bridge_hookshot_generic_requireExpiryTime: false  # noqa var-naming
+matrix_bridge_hookshot_generic_maxExpiryTime: "30d"  # noqa var-naming
 
 
-matrix_hookshot_feeds_enabled: true
-matrix_hookshot_feeds_pollIntervalSeconds: 600  # noqa var-naming
-matrix_hookshot_feeds_pollTimeoutSeconds: 30  # noqa var-naming
+matrix_bridge_hookshot_feeds_enabled: true
+matrix_bridge_hookshot_feeds_pollIntervalSeconds: 600  # noqa var-naming
+matrix_bridge_hookshot_feeds_pollTimeoutSeconds: 30  # noqa var-naming
 
 # Valid values: error, warn, info, debug
-matrix_hookshot_logging_level: warn
+matrix_bridge_hookshot_logging_level: warn
 
-matrix_hookshot_widgets_enabled: true
-matrix_hookshot_widgets_port: 9003
-matrix_hookshot_widgets_addToAdminRooms: false  # default off as it is a beta feature  # noqa var-naming
-matrix_hookshot_widgets_roomSetupWidget_enabled: true   # noqa var-naming
-matrix_hookshot_widgets_roomSetupWidget_addOnInvite: false   # noqa var-naming
+matrix_bridge_hookshot_widgets_enabled: true
+matrix_bridge_hookshot_widgets_port: 9003
+matrix_bridge_hookshot_widgets_addToAdminRooms: false  # default off as it is a beta feature  # noqa var-naming
+matrix_bridge_hookshot_widgets_roomSetupWidget_enabled: true   # noqa var-naming
+matrix_bridge_hookshot_widgets_roomSetupWidget_addOnInvite: false   # noqa var-naming
 # `disallowedIpRanges` describes which IP ranges should be disallowed when resolving homeserver IP addresses (for security reasons). Unless you know what you are doing, it is recommended to not include this key. The following IPs are blocked by default, unless you supply another list.
-# matrix_hookshot_widgets_disallowedIpRanges:
+# matrix_bridge_hookshot_widgets_disallowedIpRanges:
 #   - 127.0.0.0/8
 #   - 10.0.0.0/8
 #   - 172.16.0.0/12
@@ -220,18 +220,18 @@ matrix_hookshot_widgets_roomSetupWidget_addOnInvite: false   # noqa var-naming
 #   - 2001:db8::/32
 #   - ff00::/8
 #   - fec0::/10
-matrix_hookshot_widgets_disallowedIpRanges: ''   # noqa var-naming
-matrix_hookshot_widgets_internal: "/widgetapi"
-matrix_hookshot_widgets_hostname: "{{ matrix_hookshot_public_hostname }}"
-matrix_hookshot_widgets_endpoint: "{{ matrix_hookshot_public_endpoint }}{{ matrix_hookshot_widgets_internal }}"
-matrix_hookshot_widgets_publicUrl: "{{ matrix_hookshot_urlprefix }}{{ matrix_hookshot_widgets_endpoint }}/v1/static/"   # noqa var-naming
-matrix_hookshot_widgets_branding_widgetTitle: "Hookshot Configuration"   # noqa var-naming
+matrix_bridge_hookshot_widgets_disallowedIpRanges: ''   # noqa var-naming
+matrix_bridge_hookshot_widgets_internal: "/widgetapi"
+matrix_bridge_hookshot_widgets_hostname: "{{ matrix_bridge_hookshot_public_hostname }}"
+matrix_bridge_hookshot_widgets_endpoint: "{{ matrix_bridge_hookshot_public_endpoint }}{{ matrix_bridge_hookshot_widgets_internal }}"
+matrix_bridge_hookshot_widgets_publicUrl: "{{ matrix_bridge_hookshot_urlprefix }}{{ matrix_bridge_hookshot_widgets_endpoint }}/v1/static/"   # noqa var-naming
+matrix_bridge_hookshot_widgets_branding_widgetTitle: "Hookshot Configuration"   # noqa var-naming
 
 
 # You can configure access to the bridge as documented here https://matrix-org.github.io/matrix-hookshot/setup.html#permissions
 # When empty, the default permissions are applied.
 # Example:
-# matrix_hookshot_permissions:
+# matrix_bridge_hookshot_permissions:
 #   - actor: *
 #     services:
 #       - service: *
@@ -240,148 +240,148 @@ matrix_hookshot_widgets_branding_widgetTitle: "Hookshot Configuration"   # noqa 
 #     services:
 #       - service: "*"
 #         level: admin
-matrix_hookshot_permissions: []
+matrix_bridge_hookshot_permissions: []
 
 # Static connections that can be configured by an administrator, as documented here:
 # https://matrix-org.github.io/matrix-hookshot/latest/usage/static_connections.html
 # Currently only generic webhooks are supported.
 # Example:
-# matrix_hookshot_connections:
+# matrix_bridge_hookshot_connections:
 #   - connectionType: uk.half-shot.matrix-hookshot.generic.hook
 #     stateKey: my-unique-webhook-id
 #     roomId: "!room-id"
 #     state:
 #       name: My Static Webhook
-matrix_hookshot_connections: []
+matrix_bridge_hookshot_connections: []
 
-matrix_hookshot_bot_displayname: Hookshot Bot
-matrix_hookshot_bot_avatar: 'mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d'
+matrix_bridge_hookshot_bot_displayname: Hookshot Bot
+matrix_bridge_hookshot_bot_avatar: 'mxc://half-shot.uk/2876e89ccade4cb615e210c458e2a7a6883fe17d'
 
-matrix_hookshot_container_network: ""
+matrix_bridge_hookshot_container_network: ""
 
 # A list of extra arguments to pass to the container
-matrix_hookshot_container_extra_arguments: []
+matrix_bridge_hookshot_container_extra_arguments: []
 
-# matrix_hookshot_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# matrix_bridge_hookshot_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
 # See `../templates/labels.j2` for details.
 #
-# To inject your own other container labels, see `matrix_hookshot_container_labels_additional_labels`.
-matrix_hookshot_container_labels_traefik_enabled: true
-matrix_hookshot_container_labels_traefik_docker_network: "{{ matrix_hookshot_container_network }}"
-matrix_hookshot_container_labels_traefik_entrypoints: web-secure
-matrix_hookshot_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+# To inject your own other container labels, see `matrix_bridge_hookshot_container_labels_additional_labels`.
+matrix_bridge_hookshot_container_labels_traefik_enabled: true
+matrix_bridge_hookshot_container_labels_traefik_docker_network: "{{ matrix_bridge_hookshot_container_network }}"
+matrix_bridge_hookshot_container_labels_traefik_entrypoints: web-secure
+matrix_bridge_hookshot_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
 # Controls whether labels will be added that expose Hookshot's webhooks endpoint
-matrix_hookshot_container_labels_webhooks_enabled: true
-matrix_hookshot_container_labels_webhooks_traefik_rule: "Host(`{{ matrix_hookshot_webhook_hostname }}`) && PathPrefix(`{{ matrix_hookshot_webhook_endpoint }}`)"
-matrix_hookshot_container_labels_webhooks_traefik_priority: 0
-matrix_hookshot_container_labels_webhooks_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
-matrix_hookshot_container_labels_webhooks_traefik_tls: "{{ matrix_hookshot_container_labels_webhooks_traefik_entrypoints != 'web' }}"
-matrix_hookshot_container_labels_webhooks_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_bridge_hookshot_container_labels_webhooks_enabled: true
+matrix_bridge_hookshot_container_labels_webhooks_traefik_rule: "Host(`{{ matrix_bridge_hookshot_webhook_hostname }}`) && PathPrefix(`{{ matrix_bridge_hookshot_webhook_endpoint }}`)"
+matrix_bridge_hookshot_container_labels_webhooks_traefik_priority: 0
+matrix_bridge_hookshot_container_labels_webhooks_traefik_entrypoints: "{{ matrix_bridge_hookshot_container_labels_traefik_entrypoints }}"
+matrix_bridge_hookshot_container_labels_webhooks_traefik_tls: "{{ matrix_bridge_hookshot_container_labels_webhooks_traefik_entrypoints != 'web' }}"
+matrix_bridge_hookshot_container_labels_webhooks_traefik_tls_certResolver: "{{ matrix_bridge_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose Hookshot's appservice endpoint
-matrix_hookshot_container_labels_appservice_enabled: true
-matrix_hookshot_container_labels_appservice_traefik_rule: "Host(`{{ matrix_hookshot_appservice_hostname }}`) && PathPrefix(`{{ matrix_hookshot_appservice_endpoint }}`)"
-matrix_hookshot_container_labels_appservice_traefik_priority: 0
-matrix_hookshot_container_labels_appservice_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
-matrix_hookshot_container_labels_appservice_traefik_tls: "{{ matrix_hookshot_container_labels_appservice_traefik_entrypoints != 'web' }}"
-matrix_hookshot_container_labels_appservice_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_bridge_hookshot_container_labels_appservice_enabled: true
+matrix_bridge_hookshot_container_labels_appservice_traefik_rule: "Host(`{{ matrix_bridge_hookshot_appservice_hostname }}`) && PathPrefix(`{{ matrix_bridge_hookshot_appservice_endpoint }}`)"
+matrix_bridge_hookshot_container_labels_appservice_traefik_priority: 0
+matrix_bridge_hookshot_container_labels_appservice_traefik_entrypoints: "{{ matrix_bridge_hookshot_container_labels_traefik_entrypoints }}"
+matrix_bridge_hookshot_container_labels_appservice_traefik_tls: "{{ matrix_bridge_hookshot_container_labels_appservice_traefik_entrypoints != 'web' }}"
+matrix_bridge_hookshot_container_labels_appservice_traefik_tls_certResolver: "{{ matrix_bridge_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose Hookshot's widgets endpoint
-matrix_hookshot_container_labels_widgets_enabled: "{{ matrix_hookshot_widgets_enabled }}"
-matrix_hookshot_container_labels_widgets_traefik_rule: "Host(`{{ matrix_hookshot_widgets_hostname }}`) && PathPrefix(`{{ matrix_hookshot_widgets_endpoint }}`)"
-matrix_hookshot_container_labels_widgets_traefik_priority: 0
-matrix_hookshot_container_labels_widgets_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
-matrix_hookshot_container_labels_widgets_traefik_tls: "{{ matrix_hookshot_container_labels_widgets_traefik_entrypoints != 'web' }}"
-matrix_hookshot_container_labels_widgets_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_bridge_hookshot_container_labels_widgets_enabled: "{{ matrix_bridge_hookshot_widgets_enabled }}"
+matrix_bridge_hookshot_container_labels_widgets_traefik_rule: "Host(`{{ matrix_bridge_hookshot_widgets_hostname }}`) && PathPrefix(`{{ matrix_bridge_hookshot_widgets_endpoint }}`)"
+matrix_bridge_hookshot_container_labels_widgets_traefik_priority: 0
+matrix_bridge_hookshot_container_labels_widgets_traefik_entrypoints: "{{ matrix_bridge_hookshot_container_labels_traefik_entrypoints }}"
+matrix_bridge_hookshot_container_labels_widgets_traefik_tls: "{{ matrix_bridge_hookshot_container_labels_widgets_traefik_entrypoints != 'web' }}"
+matrix_bridge_hookshot_container_labels_widgets_traefik_tls_certResolver: "{{ matrix_bridge_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # Controls whether labels will be added that expose Hookshot's metrics endpoint
-matrix_hookshot_container_labels_metrics_enabled: "{{ matrix_hookshot_metrics_enabled and matrix_hookshot_metrics_proxying_enabled }}"
-matrix_hookshot_container_labels_metrics_traefik_rule: "Host(`{{ matrix_hookshot_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_hookshot_metrics_proxying_path_prefix }}`)"
-matrix_hookshot_container_labels_metrics_traefik_priority: 0
-matrix_hookshot_container_labels_metrics_traefik_entrypoints: "{{ matrix_hookshot_container_labels_traefik_entrypoints }}"
-matrix_hookshot_container_labels_metrics_traefik_tls: "{{ matrix_hookshot_container_labels_metrics_traefik_entrypoints != 'web' }}"
-matrix_hookshot_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_hookshot_container_labels_metrics_middleware_basic_auth_enabled: false
+matrix_bridge_hookshot_container_labels_metrics_enabled: "{{ matrix_bridge_hookshot_metrics_enabled and matrix_bridge_hookshot_metrics_proxying_enabled }}"
+matrix_bridge_hookshot_container_labels_metrics_traefik_rule: "Host(`{{ matrix_bridge_hookshot_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_bridge_hookshot_metrics_proxying_path_prefix }}`)"
+matrix_bridge_hookshot_container_labels_metrics_traefik_priority: 0
+matrix_bridge_hookshot_container_labels_metrics_traefik_entrypoints: "{{ matrix_bridge_hookshot_container_labels_traefik_entrypoints }}"
+matrix_bridge_hookshot_container_labels_metrics_traefik_tls: "{{ matrix_bridge_hookshot_container_labels_metrics_traefik_entrypoints != 'web' }}"
+matrix_bridge_hookshot_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_bridge_hookshot_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_bridge_hookshot_container_labels_metrics_middleware_basic_auth_enabled: false
 # See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
-matrix_hookshot_container_labels_metrics_middleware_basic_auth_users: ''
+matrix_bridge_hookshot_container_labels_metrics_middleware_basic_auth_users: ''
 
-# matrix_hookshot_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
+# matrix_bridge_hookshot_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
 #
 # Example:
-# matrix_hookshot_container_labels_additional_labels: |
+# matrix_bridge_hookshot_container_labels_additional_labels: |
 #   my.label=1
 #   another.label="here"
-matrix_hookshot_container_labels_additional_labels: ''
+matrix_bridge_hookshot_container_labels_additional_labels: ''
 
 # List of systemd services that service depends on.
-matrix_hookshot_systemd_required_services_list: "{{ matrix_hookshot_systemd_required_services_list_default + matrix_hookshot_systemd_required_services_list_auto + matrix_hookshot_systemd_required_services_list_custom }}"
-matrix_hookshot_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
-matrix_hookshot_systemd_required_services_list_auto: []
-matrix_hookshot_systemd_required_services_list_custom: []
+matrix_bridge_hookshot_systemd_required_services_list: "{{ matrix_bridge_hookshot_systemd_required_services_list_default + matrix_bridge_hookshot_systemd_required_services_list_auto + matrix_bridge_hookshot_systemd_required_services_list_custom }}"
+matrix_bridge_hookshot_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_bridge_hookshot_systemd_required_services_list_auto: []
+matrix_bridge_hookshot_systemd_required_services_list_custom: []
 
 # List of systemd services that service wants
-matrix_hookshot_systemd_wanted_services_list: []
+matrix_bridge_hookshot_systemd_wanted_services_list: []
 
 # List of ports to bind to the host to expose them directly.
 # Supply docker port bind arguments in a list like this:
 #
-# matrix_hookshot_container_http_host_bind_ports:
-#   - "127.0.0.1:9999:{{ matrix_hookshot_metrics_port }}"
+# matrix_bridge_hookshot_container_http_host_bind_ports:
+#   - "127.0.0.1:9999:{{ matrix_bridge_hookshot_metrics_port }}"
 #
 # Above example will bind the metrics port in the container to port 9999 on localhost.
-matrix_hookshot_container_http_host_bind_ports: []
+matrix_bridge_hookshot_container_http_host_bind_ports: []
 
 # These tokens will be set automatically
-matrix_hookshot_appservice_token: ''
-matrix_hookshot_homeserver_token: ''
+matrix_bridge_hookshot_appservice_token: ''
+matrix_bridge_hookshot_homeserver_token: ''
 
 # Default configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
 # For a more advanced customization, you can extend the default (see `matrixhookshot_configuration_extension_yaml`)
 # or completely replace this variable with your own template.
-matrix_hookshot_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+matrix_bridge_hookshot_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
-matrix_hookshot_configuration_extension_yaml: |
+matrix_bridge_hookshot_configuration_extension_yaml: |
   # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_hookshot_configuration_yaml`).
+  # This configuration extends the default starting configuration (`matrix_bridge_hookshot_configuration_yaml`).
   #
   # You can override individual variables from the default configuration, or introduce new ones.
   #
   # If you need something more special, you can take full control by
-  # completely redefining `matrix_hookshot_configuration_yaml`.
+  # completely redefining `matrix_bridge_hookshot_configuration_yaml`.
 
-matrix_hookshot_configuration_extension: "{{ matrix_hookshot_configuration_extension_yaml | from_yaml if matrix_hookshot_configuration_extension_yaml | from_yaml is mapping else {} }}"
+matrix_bridge_hookshot_configuration_extension: "{{ matrix_bridge_hookshot_configuration_extension_yaml | from_yaml if matrix_bridge_hookshot_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final configuration (a combination of the default and its extension).
-# You most likely don't need to touch this variable. Instead, see `matrix_hookshot_configuration_yaml`.
-matrix_hookshot_configuration: "{{ matrix_hookshot_configuration_yaml | from_yaml | combine(matrix_hookshot_configuration_extension, recursive=True) }}"
+# You most likely don't need to touch this variable. Instead, see `matrix_bridge_hookshot_configuration_yaml`.
+matrix_bridge_hookshot_configuration: "{{ matrix_bridge_hookshot_configuration_yaml | from_yaml | combine(matrix_bridge_hookshot_configuration_extension, recursive=True) }}"
 
 # Default registration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
 # For a more advanced customization, you can extend the default (see `matrixhookshot_registration_extension_yaml`)
 # or completely replace this variable with your own template.
-matrix_hookshot_registration_yaml: "{{ lookup('template', 'templates/registration.yml.j2') }}"
+matrix_bridge_hookshot_registration_yaml: "{{ lookup('template', 'templates/registration.yml.j2') }}"
 
-matrix_hookshot_registration_extension_yaml: |
+matrix_bridge_hookshot_registration_extension_yaml: |
   # Your custom YAML registration goes here.
-  # This registration extends the default starting registration (`matrix_hookshot_registration_yaml`).
+  # This registration extends the default starting registration (`matrix_bridge_hookshot_registration_yaml`).
   #
   # You can override individual variables from the default registration, or introduce new ones.
   #
   # If you need something more special, you can take full control by
-  # completely redefining `matrix_hookshot_registration_yaml`.
+  # completely redefining `matrix_bridge_hookshot_registration_yaml`.
 
-matrix_hookshot_registration_extension: "{{ matrix_hookshot_registration_extension_yaml | from_yaml if matrix_hookshot_registration_extension_yaml | from_yaml is mapping else {} }}"
+matrix_bridge_hookshot_registration_extension: "{{ matrix_bridge_hookshot_registration_extension_yaml | from_yaml if matrix_bridge_hookshot_registration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final registration (a combination of the default and its extension).
-# You most likely don't need to touch this variable. Instead, see `matrix_hookshot_registration_yaml`.
-matrix_hookshot_registration: "{{ matrix_hookshot_registration_yaml | from_yaml | combine(matrix_hookshot_registration_extension, recursive=True) }}"
+# You most likely don't need to touch this variable. Instead, see `matrix_bridge_hookshot_registration_yaml`.
+matrix_bridge_hookshot_registration: "{{ matrix_bridge_hookshot_registration_yaml | from_yaml | combine(matrix_bridge_hookshot_registration_extension, recursive=True) }}"
 
-# matrix_hookshot_restart_necessary controls whether the service
+# matrix_bridge_hookshot_restart_necessary controls whether the service
 # will be restarted (when true) or merely started (when false) by the
 # systemd service manager role (when conditional restart is enabled).
 #
@@ -389,4 +389,4 @@ matrix_hookshot_registration: "{{ matrix_hookshot_registration_yaml | from_yaml 
 # any configuration files, the systemd service file, or the container image changed.
 # The default of `false` means "no restart needed" — appropriate when the role's
 # installation tasks haven't run (e.g., due to --tags skipping them).
-matrix_hookshot_restart_necessary: false
+matrix_bridge_hookshot_restart_necessary: false

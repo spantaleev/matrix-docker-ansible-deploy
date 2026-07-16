@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=A bridge between Matrix and multiple project management services, such as GitHub, GitLab and JIRA.
-{% for service in matrix_hookshot_systemd_required_services_list %}
+{% for service in matrix_bridge_hookshot_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_hookshot_systemd_wanted_services_list %}
+{% for service in matrix_bridge_hookshot_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -13,37 +13,37 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_hookshot_identifier }}
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_hookshot_identifier }}
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm --name {{ matrix_hookshot_identifier }} \
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_bridge_hookshot_identifier }}
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_bridge_hookshot_identifier }}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create --rm --name {{ matrix_bridge_hookshot_identifier }} \
           --log-driver=none \
           --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
           --cap-drop=ALL \
-          --network={{ matrix_hookshot_container_network }} \
-          --mount type=bind,src={{ matrix_hookshot_base_path }},dst=/data \
-          --label-file={{ matrix_hookshot_base_path }}/labels \
-          {% for port in matrix_hookshot_container_http_host_bind_ports %}
+          --network={{ matrix_bridge_hookshot_container_network }} \
+          --mount type=bind,src={{ matrix_bridge_hookshot_base_path }},dst=/data \
+          --label-file={{ matrix_bridge_hookshot_base_path }}/labels \
+          {% for port in matrix_bridge_hookshot_container_http_host_bind_ports %}
           -p {{ port }} \
           {% endfor %}
-          {% for arg in matrix_hookshot_container_extra_arguments %}
+          {% for arg in matrix_bridge_hookshot_container_extra_arguments %}
           {{ arg }} \
           {% endfor %}
-          {{ matrix_hookshot_container_image }}
+          {{ matrix_bridge_hookshot_container_image }}
 
-{% if matrix_hookshot_container_network != 'host' %}
-{% for network in matrix_hookshot_container_additional_networks %}
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_hookshot_identifier }}
+{% if matrix_bridge_hookshot_container_network != 'host' %}
+{% for network in matrix_bridge_hookshot_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ matrix_bridge_hookshot_identifier }}
 {% endfor %}
 {% endif %}
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ matrix_hookshot_identifier }}
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ matrix_bridge_hookshot_identifier }}
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_hookshot_identifier }}
-ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_hookshot_identifier }}
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_bridge_hookshot_identifier }}
+ExecStop=-{{ devture_systemd_docker_base_host_command_docker }} rm {{ matrix_bridge_hookshot_identifier }}
 
 Restart=always
 RestartSec=30
-SyslogIdentifier={{ matrix_hookshot_identifier }}
+SyslogIdentifier={{ matrix_bridge_hookshot_identifier }}
 
 [Install]
 WantedBy=multi-user.target
