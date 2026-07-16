@@ -30,7 +30,7 @@ fi
 cp -ar $messenger_role_path $instagram_role_path
 
 find "$instagram_role_path" -type f | while read -r file; do
-	sed --in-place 's/matrix_mautrix_meta_messenger_/matrix_bridge_mautrix_meta_instagram_/g' "$file"
+	sed --in-place 's/matrix_bridge_mautrix_meta_messenger_/matrix_bridge_mautrix_meta_instagram_/g' "$file"
 	sed --in-place 's/mautrix-meta-messenger/mautrix-meta-instagram/g' "$file"
 done
 
