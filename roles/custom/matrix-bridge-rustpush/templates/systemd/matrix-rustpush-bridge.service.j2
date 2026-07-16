@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix RustPush bridge
-{% for service in matrix_rustpush_bridge_systemd_required_services_list %}
+{% for service in matrix_bridge_rustpush_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_rustpush_bridge_systemd_wanted_services_list %}
+{% for service in matrix_bridge_rustpush_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -22,20 +22,20 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_rustpush_bridge_container_network }} \
+			--network={{ matrix_bridge_rustpush_container_network }} \
 			--env HOME=/data \
-{% if matrix_rustpush_bridge_rust_log %}			--env RUST_LOG={{ matrix_rustpush_bridge_rust_log }} \
-{% endif %}			--mount type=bind,src={{ matrix_rustpush_bridge_config_path }},dst=/config \
-			--mount type=bind,src={{ matrix_rustpush_bridge_data_path }},dst=/data \
-			--label-file={{ matrix_rustpush_bridge_base_path }}/labels \
+{% if matrix_bridge_rustpush_rust_log %}			--env RUST_LOG={{ matrix_bridge_rustpush_rust_log }} \
+{% endif %}			--mount type=bind,src={{ matrix_bridge_rustpush_config_path }},dst=/config \
+			--mount type=bind,src={{ matrix_bridge_rustpush_data_path }},dst=/data \
+			--label-file={{ matrix_bridge_rustpush_base_path }}/labels \
 			--entrypoint /usr/local/bin/matrix-rustpush \
-			{% for arg in matrix_rustpush_bridge_container_extra_arguments %}
+			{% for arg in matrix_bridge_rustpush_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_rustpush_bridge_container_image }} \
+			{{ matrix_bridge_rustpush_container_image }} \
 			-c /config/config.yaml -r /config/registration.yaml
 
-{% for network in matrix_rustpush_bridge_container_additional_networks %}
+{% for network in matrix_bridge_rustpush_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-rustpush-bridge
 {% endfor %}
 

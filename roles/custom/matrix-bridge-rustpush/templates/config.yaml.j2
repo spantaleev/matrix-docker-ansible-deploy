@@ -5,38 +5,38 @@ network:
     # Available variables:
     # .FirstName, .LastName, .Nickname
     # .Phone, .Email, .ID
-    displayname_template: {{ matrix_rustpush_bridge_network_displayname_template | to_json }}
+    displayname_template: {{ matrix_bridge_rustpush_network_displayname_template | to_json }}
 
     # How many days back to look for chats during initial sync.
     # Default is 365 (1 year). Set to 0 to use the default.
-    initial_sync_days: {{ matrix_rustpush_bridge_initial_sync_days | to_json }}
+    initial_sync_days: {{ matrix_bridge_rustpush_initial_sync_days | to_json }}
 
     # Set to false to disable CloudKit backfill globally
-    cloudkit_backfill: {{ matrix_rustpush_bridge_cloudkit_backfill | to_json }}
+    cloudkit_backfill: {{ matrix_bridge_rustpush_cloudkit_backfill | to_json }}
     backfill_source: cloudkit
 
     # Enable or disable video transcoding
-    video_transcoding: {{ matrix_rustpush_bridge_video_transcoding | to_json }}
+    video_transcoding: {{ matrix_bridge_rustpush_video_transcoding | to_json }}
 
     # Enable or disable HEIC conversion
-    heic_conversion: {{ matrix_rustpush_bridge_heic_conversion | to_json }}
+    heic_conversion: {{ matrix_bridge_rustpush_heic_conversion | to_json }}
     heic_jpeg_quality: 95
 
     # Set to true to disable Facetime support globally
-    disable_facetime: {{ matrix_rustpush_bridge_disable_facetime | to_json }}
+    disable_facetime: {{ matrix_bridge_rustpush_disable_facetime | to_json }}
 
     # Set to false to disable Statuskit support globally
-    statuskit_notifications: {{ matrix_rustpush_bridge_statuskit_notifications | to_json }}
-    statuskit_share_on_startup: {{ matrix_rustpush_bridge_statuskit_share_on_startup | to_json }}
+    statuskit_notifications: {{ matrix_bridge_rustpush_statuskit_notifications | to_json }}
+    statuskit_share_on_startup: {{ matrix_bridge_rustpush_statuskit_share_on_startup | to_json }}
     # How to surface a contact's Focus/DND status. Only takes effect when statuskit_notifications is true.
     # - topic: set the DM room topic to the contact's Focus/DND state, clearing it when available.
     # - notice: post a silent m.notice instead (legacy behavior). Group chats always use notice.
-    statuskit_notification_style: {{ matrix_rustpush_bridge_statuskit_notification_style | to_json }}
+    statuskit_notification_style: {{ matrix_bridge_rustpush_statuskit_notification_style | to_json }}
 
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: {{ matrix_rustpush_bridge_bridge_command_prefix | to_json }}
+    command_prefix: {{ matrix_bridge_rustpush_bridge_command_prefix | to_json }}
     # Should the bridge create a space for each login containing the rooms that account is in?
     personal_filtering_spaces: true
     # Whether the bridge should set names and avatars explicitly for DM portals.
@@ -88,12 +88,12 @@ bridge:
         displayname_format: "{% raw %}{{ .DisambiguatedName }}{% endraw %}"
 
     # Permissions for using the bridge.
-    permissions: {{ matrix_rustpush_bridge_bridge_permissions | to_json }}
+    permissions: {{ matrix_bridge_rustpush_bridge_permissions | to_json }}
 
 # Config for the bridge's database.
 database:
     type: postgres
-    uri: {{ matrix_rustpush_bridge_database_uri | to_json }}
+    uri: {{ matrix_bridge_rustpush_database_uri | to_json }}
     max_open_conns: 5
     max_idle_conns: 1
     max_conn_idle_time: null
@@ -101,37 +101,37 @@ database:
 
 # Homeserver details.
 homeserver:
-    address: {{ matrix_rustpush_bridge_homeserver_address | to_json }}
-    domain: {{ matrix_rustpush_bridge_homeserver_domain | to_json }}
+    address: {{ matrix_bridge_rustpush_homeserver_address | to_json }}
+    domain: {{ matrix_bridge_rustpush_homeserver_domain | to_json }}
     software: standard
     status_endpoint:
     message_send_checkpoint_endpoint:
-    async_media: {{ matrix_rustpush_bridge_homeserver_async_media | to_json }}
+    async_media: {{ matrix_bridge_rustpush_homeserver_async_media | to_json }}
     websocket: false
     ping_interval_seconds: 0
 
 # Application service host/registration related details.
 appservice:
-    address: {{ matrix_rustpush_bridge_appservice_address | to_json }}
-    public_address: {{ matrix_rustpush_bridge_appservice_public_address | to_json }}
+    address: {{ matrix_bridge_rustpush_appservice_address | to_json }}
+    public_address: {{ matrix_bridge_rustpush_appservice_public_address | to_json }}
 
     hostname: 0.0.0.0
     port: 8081
 
     id: rustpush-bridge
     bot:
-        username: {{ matrix_rustpush_bridge_appservice_bot_username | to_json }}
-        displayname: {{ matrix_rustpush_bridge_appservice_bot_displayname | to_json(ensure_ascii=False) }}
-        avatar: {{ matrix_rustpush_bridge_appservice_bot_avatar | to_json }}
+        username: {{ matrix_bridge_rustpush_appservice_bot_username | to_json }}
+        displayname: {{ matrix_bridge_rustpush_appservice_bot_displayname | to_json(ensure_ascii=False) }}
+        avatar: {{ matrix_bridge_rustpush_appservice_bot_avatar | to_json }}
 
     ephemeral_events: true
     async_transactions: false
 
-    as_token: {{ matrix_rustpush_bridge_appservice_token | to_json }}
-    hs_token: {{ matrix_rustpush_bridge_homeserver_token | to_json }}
+    as_token: {{ matrix_bridge_rustpush_appservice_token | to_json }}
+    hs_token: {{ matrix_bridge_rustpush_homeserver_token | to_json }}
 
     # Localpart template of MXIDs for remote users.
-    username_template: {{ matrix_rustpush_bridge_appservice_username_template | to_json }}
+    username_template: {{ matrix_bridge_rustpush_appservice_username_template | to_json }}
 
 # Config options that affect the Matrix connector of the bridge.
 matrix:
@@ -139,7 +139,7 @@ matrix:
     delivery_receipts: false
     message_error_notices: true
     sync_direct_chat_list: true
-    federate_rooms: {{ matrix_rustpush_bridge_matrix_federate_rooms | to_json }}
+    federate_rooms: {{ matrix_bridge_rustpush_matrix_federate_rooms | to_json }}
     upload_file_threshold: 5242880
 
 # Segment-compatible analytics endpoint for tracking some events.
@@ -151,15 +151,15 @@ analytics:
 # Settings for provisioning API
 provisioning:
     prefix: /_matrix/provision
-    shared_secret: {{ matrix_rustpush_bridge_provisioning_shared_secret | to_json }}
+    shared_secret: {{ matrix_bridge_rustpush_provisioning_shared_secret | to_json }}
     allow_matrix_auth: true
     debug_endpoints: false
 
 # Settings for backfilling messages.
 backfill:
-    enabled: {{ matrix_rustpush_bridge_backfill_enabled | to_json }}
-    max_initial_messages: {{ matrix_rustpush_bridge_backfill_max_initial_messages | to_json }}
-    max_catchup_messages: {{ matrix_rustpush_bridge_backfill_max_catchup_messages | to_json }}
+    enabled: {{ matrix_bridge_rustpush_backfill_enabled | to_json }}
+    max_initial_messages: {{ matrix_bridge_rustpush_backfill_max_initial_messages | to_json }}
+    max_catchup_messages: {{ matrix_bridge_rustpush_backfill_max_catchup_messages | to_json }}
     unread_hours_threshold: 720
     threads:
         max_initial_messages: 50
@@ -174,18 +174,18 @@ backfill:
 double_puppet:
     servers: {}
     allow_discovery: false
-    secrets: {{ matrix_rustpush_bridge_double_puppet_secrets | to_json }}
+    secrets: {{ matrix_bridge_rustpush_double_puppet_secrets | to_json }}
 
 # End-to-bridge encryption support options.
 encryption:
-    allow: {{ matrix_rustpush_bridge_bridge_encryption_allow | to_json }}
-    default: {{ matrix_rustpush_bridge_bridge_encryption_default | to_json }}
-    require: {{ matrix_rustpush_bridge_bridge_encryption_require | to_json }}
-    appservice: {{ matrix_rustpush_bridge_bridge_encryption_appservice | to_json }}
-    msc4190: {{ matrix_rustpush_bridge_msc4190_enabled | to_json }}
-    self_sign: {{ matrix_rustpush_bridge_self_sign_enabled | to_json }}
-    allow_key_sharing: {{ matrix_rustpush_bridge_bridge_encryption_key_sharing_allow | to_json }}
-    pickle_key: {{ matrix_rustpush_bridge_bridge_encryption_pickle_key | to_json }}
+    allow: {{ matrix_bridge_rustpush_bridge_encryption_allow | to_json }}
+    default: {{ matrix_bridge_rustpush_bridge_encryption_default | to_json }}
+    require: {{ matrix_bridge_rustpush_bridge_encryption_require | to_json }}
+    appservice: {{ matrix_bridge_rustpush_bridge_encryption_appservice | to_json }}
+    msc4190: {{ matrix_bridge_rustpush_msc4190_enabled | to_json }}
+    self_sign: {{ matrix_bridge_rustpush_self_sign_enabled | to_json }}
+    allow_key_sharing: {{ matrix_bridge_rustpush_bridge_encryption_key_sharing_allow | to_json }}
+    pickle_key: {{ matrix_bridge_rustpush_bridge_encryption_pickle_key | to_json }}
     delete_keys:
         delete_outbound_on_ack: false
         dont_store_outbound: false
@@ -207,7 +207,7 @@ encryption:
 
 # Logging config.
 logging:
-    min_level: {{ matrix_rustpush_bridge_logging_level | to_json }}
+    min_level: {{ matrix_bridge_rustpush_logging_level | to_json }}
     writers:
         - type: stdout
           format: pretty-colored

@@ -40,7 +40,7 @@ See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_rustpush_bridge_enabled: true
+matrix_bridge_rustpush_enabled: true
 ```
 
 ### Disable Backfill (optional)
@@ -48,7 +48,7 @@ matrix_rustpush_bridge_enabled: true
 Backfill can be disabled globally if desired via config. By default, the bridge will backfill from iCloud (CloudKit) and APNS if available. Backfill from `chat.db` is only possible when the bridge is running on MacOS.
 
 ```yaml
-matrix_rustpush_bridge_backfill_enabled: false
+matrix_bridge_rustpush_backfill_enabled: false
 ```
 
 ### Extending the Configuration
@@ -88,13 +88,13 @@ The default logging level for this component is `warn`. If you want to increase 
 
 ```yaml
 # Valid values: fatal, error, warn, info, debug, trace
-matrix_rustpush_bridge_logging_level: 'debug'
+matrix_bridge_rustpush_logging_level: 'debug'
 
 # Enable debug logging for RustPush
-matrix_rustpush_bridge_rust_log: "warn,rustpushgo=info,openabsinthe=debug"
+matrix_bridge_rustpush_rust_log: "warn,rustpushgo=info,openabsinthe=debug"
 ```
 ## Notable Configuration Options
-- `matrix_rustpush_bridge_statuskit_notifications` will display StatusKit information for conversation participants. In some clients, this update will cause the DM to be pushed to the top of the conversation list continuously, so this option is disabled by default.
-  - `matrix_rustpush_bridge_statuskit_notification_style` can be set to either `topic` or `notice`
+- `matrix_bridge_rustpush_statuskit_notifications` will display StatusKit information for conversation participants. In some clients, this update will cause the DM to be pushed to the top of the conversation list continuously, so this option is disabled by default.
+  - `matrix_bridge_rustpush_statuskit_notification_style` can be set to either `topic` or `notice`
   - `topic` sets the status as a room topic. In supported clients (like Cinny and Sable), this will display `🔕 Focus` as a second line when the person has focus mode enabled.
   - `notice` sends an `m.notice` event to the room which will display text in the room but should not generate a notification
