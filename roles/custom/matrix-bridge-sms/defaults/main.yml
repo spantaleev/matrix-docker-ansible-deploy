@@ -12,61 +12,61 @@
 # matrix-sms-bridge is a Matrix <-> SMS bridge
 # Project source code URL: https://github.com/benkuly/matrix-sms-bridge
 
-matrix_sms_bridge_enabled: true
+matrix_bridge_sms_enabled: true
 
 # renovate: datasource=docker depName=folivonet/matrix-sms-bridge
-matrix_sms_bridge_version: 0.5.13
-matrix_sms_bridge_container_image: "{{ matrix_sms_bridge_container_image_registry_prefix }}folivonet/matrix-sms-bridge:{{ matrix_sms_bridge_container_image_tag }}"
-matrix_sms_bridge_container_image_registry_prefix: "{{ matrix_sms_bridge_container_image_registry_prefix_upstream }}"
-matrix_sms_bridge_container_image_registry_prefix_upstream: "{{ matrix_sms_bridge_container_image_registry_prefix_upstream_default }}"
-matrix_sms_bridge_container_image_registry_prefix_upstream_default: "docker.io/"
-matrix_sms_bridge_container_image_tag: "{{ matrix_sms_bridge_version }}"
+matrix_bridge_sms_version: 0.5.13
+matrix_bridge_sms_container_image: "{{ matrix_bridge_sms_container_image_registry_prefix }}folivonet/matrix-sms-bridge:{{ matrix_bridge_sms_container_image_tag }}"
+matrix_bridge_sms_container_image_registry_prefix: "{{ matrix_bridge_sms_container_image_registry_prefix_upstream }}"
+matrix_bridge_sms_container_image_registry_prefix_upstream: "{{ matrix_bridge_sms_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_sms_container_image_registry_prefix_upstream_default: "docker.io/"
+matrix_bridge_sms_container_image_tag: "{{ matrix_bridge_sms_version }}"
 
-matrix_sms_bridge_base_path: "{{ matrix_base_data_path }}/matrix-sms-bridge"
-matrix_sms_bridge_config_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/config"
-matrix_sms_bridge_data_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data"
+matrix_bridge_sms_base_path: "{{ matrix_base_data_path }}/matrix-sms-bridge"
+matrix_bridge_sms_config_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/config"
+matrix_bridge_sms_data_path: "{{ matrix_base_data_path }}/matrix-sms-bridge/data"
 
-matrix_sms_bridge_appservice_token: ''
-matrix_sms_bridge_homeserver_token: ''
+matrix_bridge_sms_appservice_token: ''
+matrix_bridge_sms_homeserver_token: ''
 
-matrix_sms_bridge_container_http_host_bind_port: ''
+matrix_bridge_sms_container_http_host_bind_port: ''
 
-matrix_sms_bridge_container_network: ""
+matrix_bridge_sms_container_network: ""
 
-matrix_sms_bridge_container_additional_networks: "{{ matrix_sms_bridge_container_additional_networks_auto + matrix_sms_bridge_container_additional_networks_custom }}"
-matrix_sms_bridge_container_additional_networks_auto: []
-matrix_sms_bridge_container_additional_networks_custom: []
+matrix_bridge_sms_container_additional_networks: "{{ matrix_bridge_sms_container_additional_networks_auto + matrix_bridge_sms_container_additional_networks_custom }}"
+matrix_bridge_sms_container_additional_networks_auto: []
+matrix_bridge_sms_container_additional_networks_custom: []
 
 # A list of extra arguments to pass to the container
-matrix_sms_bridge_container_extra_arguments: []
+matrix_bridge_sms_container_extra_arguments: []
 
 # List of systemd services that service depends on.
-matrix_sms_bridge_systemd_required_services_list: "{{ matrix_sms_bridge_systemd_required_services_list_default + matrix_sms_bridge_systemd_required_services_list_auto + matrix_sms_bridge_systemd_required_services_list_custom }}"
-matrix_sms_bridge_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
-matrix_sms_bridge_systemd_required_services_list_auto: []
-matrix_sms_bridge_systemd_required_services_list_custom: []
+matrix_bridge_sms_systemd_required_services_list: "{{ matrix_bridge_sms_systemd_required_services_list_default + matrix_bridge_sms_systemd_required_services_list_auto + matrix_bridge_sms_systemd_required_services_list_custom }}"
+matrix_bridge_sms_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_bridge_sms_systemd_required_services_list_auto: []
+matrix_bridge_sms_systemd_required_services_list_custom: []
 
 # List of systemd services that service wants
-matrix_sms_bridge_systemd_wanted_services_list: []
+matrix_bridge_sms_systemd_wanted_services_list: []
 
-matrix_sms_bridge_appservice_url: 'http://matrix-sms-bridge:8080'
-matrix_sms_bridge_homeserver_hostname: ''
-matrix_sms_bridge_homeserver_port: ""
+matrix_bridge_sms_appservice_url: 'http://matrix-sms-bridge:8080'
+matrix_bridge_sms_homeserver_hostname: ''
+matrix_bridge_sms_homeserver_port: ""
 
-matrix_sms_bridge_homserver_domain: "{{ matrix_domain }}"
-matrix_sms_bridge_default_room: ''
-matrix_sms_bridge_default_region: ''
-matrix_sms_bridge_default_timezone: ''
-matrix_sms_bridge_single_mode_enabled: false
+matrix_bridge_sms_homserver_domain: "{{ matrix_domain }}"
+matrix_bridge_sms_default_room: ''
+matrix_bridge_sms_default_region: ''
+matrix_bridge_sms_default_timezone: ''
+matrix_bridge_sms_single_mode_enabled: false
 
-matrix_sms_bridge_provider_android_baseurl: ''
-matrix_sms_bridge_provider_android_username: ''
-matrix_sms_bridge_provider_android_password: ''
-matrix_sms_bridge_provider_android_truststore_local_path: ''
-matrix_sms_bridge_provider_android_truststore_password: ''
+matrix_bridge_sms_provider_android_baseurl: ''
+matrix_bridge_sms_provider_android_username: ''
+matrix_bridge_sms_provider_android_password: ''
+matrix_bridge_sms_provider_android_truststore_local_path: ''
+matrix_bridge_sms_provider_android_truststore_password: ''
 
 
-matrix_sms_bridge_configuration_yaml: |
+matrix_bridge_sms_configuration_yaml: |
   #jinja2: lstrip_blocks: True
 
   # Database connection
@@ -75,30 +75,30 @@ matrix_sms_bridge_configuration_yaml: |
       sms:
         # (optional) SMS messages without a valid token a routed to this room.
         # Note that you must invite @smsbot:yourHomeServer to this room.
-        defaultRoomId: "{{ matrix_sms_bridge_default_room }}"
-        defaultRegion: "{{ matrix_sms_bridge_default_region }}"
-        defaultTimeZone: "{{ matrix_sms_bridge_default_timezone }}"
-        singleModeEnabled: "{{ matrix_sms_bridge_single_mode_enabled }}"
+        defaultRoomId: "{{ matrix_bridge_sms_default_room }}"
+        defaultRegion: "{{ matrix_bridge_sms_default_region }}"
+        defaultTimeZone: "{{ matrix_bridge_sms_default_timezone }}"
+        singleModeEnabled: "{{ matrix_bridge_sms_single_mode_enabled }}"
         provider:
           android:
             # (optional) default is disabled
             enabled: true
             # The url to the android-sms-gateway-server
-            baseUrl: {{ matrix_sms_bridge_provider_android_baseurl }}
+            baseUrl: {{ matrix_bridge_sms_provider_android_baseurl }}
             # The username of the gateway
-            username: {{ matrix_sms_bridge_provider_android_username }}
+            username: {{ matrix_bridge_sms_provider_android_username }}
             # The password of the gateway
-            password: {{ matrix_sms_bridge_provider_android_password }}
+            password: {{ matrix_bridge_sms_provider_android_password }}
             # (optional) if you use a self signed certificate, you can add the public key here
-            {% if matrix_sms_bridge_provider_android_truststore_local_path %}
+            {% if matrix_bridge_sms_provider_android_truststore_local_path %}
             trustStore:
               path: /config/matrix-sms-gateway-server.p12
-              password: {{ matrix_sms_bridge_provider_android_truststore_password }}
+              password: {{ matrix_bridge_sms_provider_android_truststore_password }}
               type: PKCS12
             {% endif %}
     bot:
       # The domain-part of matrix-ids. E. g. example.org when your userIds look like @unicorn:example.org
-      serverName: {{ matrix_sms_bridge_homserver_domain }}
+      serverName: {{ matrix_bridge_sms_homserver_domain }}
       migration:
         url: "jdbc:h2:file:/data/database/db"
         username: sa
@@ -108,48 +108,48 @@ matrix_sms_bridge_configuration_yaml: |
     client:
       homeServer:
         # The hostname of your Homeserver.
-        hostname: {{ matrix_sms_bridge_homeserver_hostname }}
+        hostname: {{ matrix_bridge_sms_homeserver_hostname }}
         # (optional) The port of your Homeserver. Default is 443.
-        port: {{ matrix_sms_bridge_homeserver_port }}
+        port: {{ matrix_bridge_sms_homeserver_port }}
         # (optional) Use http or https. Default is true (so uses https).
         secure: false
       # The token to authenticate against the Homeserver.
-      token: {{ matrix_sms_bridge_appservice_token }}
+      token: {{ matrix_bridge_sms_appservice_token }}
     appservice:
       # A unique token for Homeservers to use to authenticate requests to this application service.
-      hsToken: {{ matrix_sms_bridge_homeserver_token }}
+      hsToken: {{ matrix_bridge_sms_homeserver_token }}
 
-matrix_sms_bridge_configuration_extension_yaml: |
+matrix_bridge_sms_configuration_extension_yaml: |
   # Your custom YAML configuration goes here.
-  # This configuration extends the default starting configuration (`matrix_sms_bridge_configuration_yaml`).
+  # This configuration extends the default starting configuration (`matrix_bridge_sms_configuration_yaml`).
   #
   # You can override individual variables from the default configuration, or introduce new ones.
   #
   # If you need something more special, you can take full control by
-  # completely redefining `matrix_sms_bridge_configuration_yaml`.
+  # completely redefining `matrix_bridge_sms_configuration_yaml`.
 
-matrix_sms_bridge_configuration_extension: "{{ matrix_sms_bridge_configuration_extension_yaml | from_yaml if matrix_sms_bridge_configuration_extension_yaml | from_yaml is mapping else {} }}"
+matrix_bridge_sms_configuration_extension: "{{ matrix_bridge_sms_configuration_extension_yaml | from_yaml if matrix_bridge_sms_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
-matrix_sms_bridge_configuration: "{{ matrix_sms_bridge_configuration_yaml | from_yaml | combine(matrix_sms_bridge_configuration_extension, recursive=True) }}"
+matrix_bridge_sms_configuration: "{{ matrix_bridge_sms_configuration_yaml | from_yaml | combine(matrix_bridge_sms_configuration_extension, recursive=True) }}"
 
-matrix_sms_bridge_registration_yaml: |
+matrix_bridge_sms_registration_yaml: |
   id: sms
-  as_token: "{{ matrix_sms_bridge_appservice_token }}"
-  hs_token: "{{ matrix_sms_bridge_homeserver_token }}"
+  as_token: "{{ matrix_bridge_sms_appservice_token }}"
+  hs_token: "{{ matrix_bridge_sms_homeserver_token }}"
   namespaces:
       users:
       - exclusive: true
-        regex: '^@sms_.+:{{ matrix_sms_bridge_homserver_domain | regex_escape }}$'
+        regex: '^@sms_.+:{{ matrix_bridge_sms_homserver_domain | regex_escape }}$'
       aliases:
       - exclusive: true
-        regex: '^#sms_.+:{{ matrix_sms_bridge_homserver_domain | regex_escape }}$'
-  url: {{ matrix_sms_bridge_appservice_url }}
+        regex: '^#sms_.+:{{ matrix_bridge_sms_homserver_domain | regex_escape }}$'
+  url: {{ matrix_bridge_sms_appservice_url }}
   sender_localpart: smsbot
   rate_limited: false
 
-matrix_sms_bridge_registration: "{{ matrix_sms_bridge_registration_yaml | from_yaml }}"
+matrix_bridge_sms_registration: "{{ matrix_bridge_sms_registration_yaml | from_yaml }}"
 
-# matrix_sms_bridge_restart_necessary controls whether the service
+# matrix_bridge_sms_restart_necessary controls whether the service
 # will be restarted (when true) or merely started (when false) by the
 # systemd service manager role (when conditional restart is enabled).
 #
@@ -157,4 +157,4 @@ matrix_sms_bridge_registration: "{{ matrix_sms_bridge_registration_yaml | from_y
 # any configuration files, the systemd service file, or the container image changed.
 # The default of `false` means "no restart needed" — appropriate when the role's
 # installation tasks haven't run (e.g., due to --tags skipping them).
-matrix_sms_bridge_restart_necessary: false
+matrix_bridge_sms_restart_necessary: false

@@ -144,7 +144,7 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_bridge_mx_puppet_steam_config_path + '/registration.yaml,dst=/matrix-mx-puppet-steam-registration.yaml,ro'] if matrix_bridge_mx_puppet_steam_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_sms_bridge_config_path + '/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro'] if matrix_sms_bridge_enabled else [])
+    (['--mount type=bind,src=' + matrix_bridge_sms_config_path + '/registration.yaml,dst=/matrix-sms-bridge-registration.yaml,ro'] if matrix_bridge_sms_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_steam_bridge_config_path + '/registration.yaml,dst=/matrix-steam-bridge-registration.yaml,ro'] if matrix_steam_bridge_enabled else [])
     +
@@ -203,7 +203,7 @@ matrix_homeserver_app_service_config_files_auto: |
     +
     (['/matrix-mx-puppet-steam-registration.yaml'] if matrix_bridge_mx_puppet_steam_enabled else [])
     +
-    (['/matrix-sms-bridge-registration.yaml'] if matrix_sms_bridge_enabled else [])
+    (['/matrix-sms-bridge-registration.yaml'] if matrix_bridge_sms_enabled else [])
     +
     (['/matrix-cactus-comments.yaml'] if matrix_cactus_comments_enabled else [])
     +
@@ -541,9 +541,9 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-sms-bridge.service',
       'priority': 2000,
-      'restart_necessary': (matrix_sms_bridge_restart_necessary | bool),
+      'restart_necessary': (matrix_bridge_sms_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'sms'],
-    }] if matrix_sms_bridge_enabled else [])
+    }] if matrix_bridge_sms_enabled else [])
     +
     ([{
       'name': 'matrix-steam-bridge.service',
@@ -2486,27 +2486,27 @@ matrix_bridge_mautrix_whatsapp_database_password: "{{ (matrix_homeserver_generic
 ######################################################################
 
 # We don't enable bridges by default.
-matrix_sms_bridge_enabled: false
+matrix_bridge_sms_enabled: false
 
-matrix_sms_bridge_systemd_required_services_list_auto: |
+matrix_bridge_sms_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
   }}
 
-matrix_sms_bridge_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_sms_bridge_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_sms_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bridge_sms_container_image_registry_prefix_upstream_default }}"
 
-matrix_sms_bridge_container_network: "{{ matrix_addons_container_network }}"
+matrix_bridge_sms_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_sms_bridge_container_additional_networks_auto: |-
+matrix_bridge_sms_container_additional_networks_auto: |-
   {{
     ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
   }}
 
-matrix_sms_bridge_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':sms.as.token') | hash('sha512') | to_uuid }}"
+matrix_bridge_sms_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':sms.as.token') | hash('sha512') | to_uuid }}"
 
-matrix_sms_bridge_homeserver_hostname: "{{ (matrix_homeserver_container_client_api_endpoint | split(':'))[0] }}"
-matrix_sms_bridge_homeserver_port: "{{ (matrix_homeserver_container_client_api_endpoint | split(':'))[1] }}"
-matrix_sms_bridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':sms.hs.token') | hash('sha512') | to_uuid }}"
+matrix_bridge_sms_homeserver_hostname: "{{ (matrix_homeserver_container_client_api_endpoint | split(':'))[0] }}"
+matrix_bridge_sms_homeserver_port: "{{ (matrix_homeserver_container_client_api_endpoint | split(':'))[1] }}"
+matrix_bridge_sms_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':sms.hs.token') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -5201,7 +5201,7 @@ matrix_ketesa_config_asManagedUsers_auto: |
     ([
       '^@smsbot:'+(matrix_domain | regex_escape)+'$',
       '^@sms_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_sms_bridge_enabled else [])
+    ] if matrix_bridge_sms_enabled else [])
     +
     ([
       '^@'+(matrix_wechat_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',

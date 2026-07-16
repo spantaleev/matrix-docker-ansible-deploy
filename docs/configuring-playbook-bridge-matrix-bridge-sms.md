@@ -21,23 +21,23 @@ The bridge uses [android-sms-gateway-server](https://github.com/RebekkaMa/androi
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_sms_bridge_enabled: true
+matrix_bridge_sms_enabled: true
 
 # (optional but recommended) a room ID to a default room
-matrix_sms_bridge_default_room: ""
+matrix_bridge_sms_default_room: ""
 
 # (optional but recommended) configure your server location
-matrix_sms_bridge_default_region: DE
-matrix_sms_bridge_default_timezone: Europe/Berlin
+matrix_bridge_sms_default_region: DE
+matrix_bridge_sms_default_timezone: Europe/Berlin
 
 # Settings to connect to android-sms-gateway-server
-matrix_sms_bridge_provider_android_baseurl: https://192.168.24.24:9090
-matrix_sms_bridge_provider_android_username: admin
-matrix_sms_bridge_provider_android_password: supeSecretPassword
+matrix_bridge_sms_provider_android_baseurl: https://192.168.24.24:9090
+matrix_bridge_sms_provider_android_username: admin
+matrix_bridge_sms_provider_android_password: supeSecretPassword
 
 # (optional) if your android-sms-gateway-server uses a self signed vertificate, the bridge needs a "truststore". This can be the certificate itself.
-matrix_sms_bridge_provider_android_truststore_local_path: android-sms-gateway-server.p12
-matrix_sms_bridge_provider_android_truststore_password: 123
+matrix_bridge_sms_provider_android_truststore_local_path: android-sms-gateway-server.p12
+matrix_bridge_sms_provider_android_truststore_password: 123
 ```
 
 ### Extending the configuration
@@ -46,7 +46,7 @@ There are some additional things you may wish to configure about the bridge.
 
 Take a look at:
 
-- `roles/custom/matrix-bridge-sms/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_sms_bridge_configuration_extension_yaml` variable
+- `roles/custom/matrix-bridge-sms/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bridge_sms_configuration_extension_yaml` variable
 
 ## Installing
 

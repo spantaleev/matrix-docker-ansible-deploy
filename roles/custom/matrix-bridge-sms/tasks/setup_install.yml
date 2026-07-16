@@ -12,12 +12,12 @@
 
 - name: Ensure matrix-sms-bridge image is pulled
   community.docker.docker_image_pull:
-    name: "{{ matrix_sms_bridge_container_image }}"
+    name: "{{ matrix_bridge_sms_container_image }}"
     pull: always
-  register: matrix_sms_bridge_container_image_pull_result
+  register: matrix_bridge_sms_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: matrix_sms_bridge_container_image_pull_result is not failed
+  until: matrix_bridge_sms_container_image_pull_result is not failed
 
 - name: Ensure matrix-sms-bridge paths exist
   ansible.builtin.file:
@@ -27,43 +27,43 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - "{{ matrix_sms_bridge_base_path }}"
-    - "{{ matrix_sms_bridge_config_path }}"
-    - "{{ matrix_sms_bridge_data_path }}"
+    - "{{ matrix_bridge_sms_base_path }}"
+    - "{{ matrix_bridge_sms_config_path }}"
+    - "{{ matrix_bridge_sms_data_path }}"
 
 - name: Ensure matrix-sms-bridge application.yml installed
   ansible.builtin.copy:
-    content: "{{ matrix_sms_bridge_configuration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_sms_bridge_config_path }}/application.yml"
+    content: "{{ matrix_bridge_sms_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_sms_config_path }}/application.yml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_sms_bridge_config_result
+  register: matrix_bridge_sms_config_result
 
 - name: Ensure matrix-sms-bridge registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_sms_bridge_registration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_sms_bridge_config_path }}/registration.yaml"
+    content: "{{ matrix_bridge_sms_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_sms_config_path }}/registration.yaml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_sms_bridge_registration_result
+  register: matrix_bridge_sms_registration_result
 
 - name: Ensure android-sms-gateway-server cert installed
   ansible.builtin.copy:
-    src: "{{ matrix_sms_bridge_provider_android_truststore_local_path }}"
-    dest: "{{ matrix_sms_bridge_config_path }}/matrix-sms-gateway-server.p12"
+    src: "{{ matrix_bridge_sms_provider_android_truststore_local_path }}"
+    dest: "{{ matrix_bridge_sms_config_path }}/matrix-sms-gateway-server.p12"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  when: matrix_sms_bridge_provider_android_truststore_local_path != ""
-  register: matrix_sms_bridge_cert_result
+  when: matrix_bridge_sms_provider_android_truststore_local_path != ""
+  register: matrix_bridge_sms_cert_result
 
 - name: Ensure matrix-sms-bridge container network is created
-  when: matrix_sms_bridge_container_network != 'host'
+  when: matrix_bridge_sms_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-    name: "{{ matrix_sms_bridge_container_network }}"
+    name: "{{ matrix_bridge_sms_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
@@ -72,15 +72,15 @@
     src: "{{ role_path }}/templates/systemd/matrix-sms-bridge.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-sms-bridge.service"
     mode: '0644'
-  register: matrix_sms_bridge_systemd_service_result
+  register: matrix_bridge_sms_systemd_service_result
 
 - name: Determine whether matrix-sms-bridge needs a restart
   ansible.builtin.set_fact:
-    matrix_sms_bridge_restart_necessary: >-
+    matrix_bridge_sms_restart_necessary: >-
       {{
-        matrix_sms_bridge_config_result.changed | default(false)
-        or matrix_sms_bridge_registration_result.changed | default(false)
-        or matrix_sms_bridge_cert_result.changed | default(false)
-        or matrix_sms_bridge_systemd_service_result.changed | default(false)
-        or matrix_sms_bridge_container_image_pull_result.changed | default(false)
+        matrix_bridge_sms_config_result.changed | default(false)
+        or matrix_bridge_sms_registration_result.changed | default(false)
+        or matrix_bridge_sms_cert_result.changed | default(false)
+        or matrix_bridge_sms_systemd_service_result.changed | default(false)
+        or matrix_bridge_sms_container_image_pull_result.changed | default(false)
       }}
