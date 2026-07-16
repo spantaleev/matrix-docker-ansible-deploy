@@ -21,7 +21,7 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 
 ```yaml
 # Replace SERVICENAME with one of: twitter, discord, signal, googlechat, etc.
-matrix_mautrix_SERVICENAME_enabled: true
+matrix_bridge_mautrix_SERVICENAME_enabled: true
 ```
 
 **Note**: for bridging to Meta's Messenger or Instagram, you would need to add `meta` with an underscore symbol (`_`) or hyphen (`-`) based on the context as prefix to each `SERVICENAME`; add `_` to variables (as in `matrix_bridge_mautrix_meta_messenger_configuration_extension_yaml` for example) and `-` to paths of the configuration files (as in `roles/custom/matrix-bridge-mautrix-meta-messenger/templates/config.yaml.j2`), respectively.
@@ -43,7 +43,7 @@ If you don't define the `matrix_admin` in your configuration (e.g. `matrix_admin
 **Alternatively** (more verbose, but allows multiple admins to be configured), you can do the same on a per-bridge basis with:
 
 ```yaml
-matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
+matrix_bridge_mautrix_SERVICENAME_configuration_extension_yaml: |
   bridge:
     permissions:
       '@alice:{{ matrix_domain }}': admin
@@ -67,8 +67,8 @@ matrix_bridges_encryption_default: true
 **Alternatively**, for a specific bridge:
 
 ```yaml
-matrix_mautrix_SERVICENAME_bridge_encryption_enabled: true
-matrix_mautrix_SERVICENAME_bridge_encryption_default: true
+matrix_bridge_mautrix_SERVICENAME_bridge_encryption_enabled: true
+matrix_bridge_mautrix_SERVICENAME_bridge_encryption_default: true
 ```
 
 ### Enable relay mode (optional)
@@ -86,16 +86,16 @@ matrix_bridges_relay_enabled: true
 **Alternatively**, for a specific bridge:
 
 ```yaml
-matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
+matrix_bridge_mautrix_SERVICENAME_configuration_extension_yaml: |
   bridge:
     relay:
       enabled: true
 ```
 
-You can only have one `matrix_mautrix_SERVICENAME_configuration_extension_yaml` definition in `vars.yml` per bridge, so if you need multiple pieces of configuration there, just merge them like this:
+You can only have one `matrix_bridge_mautrix_SERVICENAME_configuration_extension_yaml` definition in `vars.yml` per bridge, so if you need multiple pieces of configuration there, just merge them like this:
 
 ```yaml
-matrix_mautrix_SERVICENAME_configuration_extension_yaml: |
+matrix_bridge_mautrix_SERVICENAME_configuration_extension_yaml: |
   bridge:
     relay:
       enabled: true
@@ -115,7 +115,7 @@ Use `!prefix set-pl 100` to be able for the bot to modify room settings and invi
 By default, only admins are allowed to set themselves as relay users. To allow anyone on your homeserver to set themselves as relay users, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_mautrix_SERVICENAME_bridge_relay_admin_only: false
+matrix_bridge_mautrix_SERVICENAME_bridge_relay_admin_only: false
 ```
 
 ### Set the bot's username (optional)
@@ -123,7 +123,7 @@ matrix_mautrix_SERVICENAME_bridge_relay_admin_only: false
 To set the bot's username, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
+matrix_bridge_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
 ```
 
 ### Configure the logging level (optional)
@@ -131,7 +131,7 @@ matrix_mautrix_SERVICENAME_appservice_bot_username: "BOTNAME"
 To specify the logging level, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_mautrix_SERVICENAME_logging_level: warn
+matrix_bridge_mautrix_SERVICENAME_logging_level: warn
 ```
 
 Replace `warn` with one of the following to control the verbosity of the logs generated: `trace`, `debug`, `info`, `warn`, `error` or `fatal`.
@@ -155,7 +155,7 @@ matrix_bridges_exposure_enabled: false
 **Alternatively**, to disable it for a specific bridge:
 
 ```yaml
-matrix_mautrix_SERVICENAME_exposure_enabled: false
+matrix_bridge_mautrix_SERVICENAME_exposure_enabled: false
 ```
 
 If you run additional bridges on the same server which are not managed by this playbook and would like compatible tools to discover them as well, you can advertise their base URLs in the `/.well-known/matrix/mautrix` file:
@@ -174,7 +174,7 @@ There are some additional things you may wish to configure about the bridge.
 Take a look at:
 
 - `roles/custom/matrix-bridge-mautrix-SERVICENAME/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_mautrix_SERVICENAME_configuration_extension_yaml` variable
+- `roles/custom/matrix-bridge-mautrix-SERVICENAME/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bridge_mautrix_SERVICENAME_configuration_extension_yaml` variable
 
 ## Installing
 
