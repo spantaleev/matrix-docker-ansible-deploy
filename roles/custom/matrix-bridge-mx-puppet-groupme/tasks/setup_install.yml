@@ -18,16 +18,16 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - {path: "{{ matrix_mx_puppet_groupme_base_path }}", when: true}
-    - {path: "{{ matrix_mx_puppet_groupme_config_path }}", when: true}
-    - {path: "{{ matrix_mx_puppet_groupme_data_path }}", when: true}
-    - {path: "{{ matrix_mx_puppet_groupme_container_src_files_path }}", when: "{{ matrix_mx_puppet_groupme_container_image_self_build }}"}
-  when: matrix_mx_puppet_groupme_enabled | bool and item.when | bool
+    - {path: "{{ matrix_bridge_mx_puppet_groupme_base_path }}", when: true}
+    - {path: "{{ matrix_bridge_mx_puppet_groupme_config_path }}", when: true}
+    - {path: "{{ matrix_bridge_mx_puppet_groupme_data_path }}", when: true}
+    - {path: "{{ matrix_bridge_mx_puppet_groupme_container_src_files_path }}", when: "{{ matrix_bridge_mx_puppet_groupme_container_image_self_build }}"}
+  when: matrix_bridge_mx_puppet_groupme_enabled | bool and item.when | bool
 
 - name: Check if an old database file already exists
   ansible.builtin.stat:
-    path: "{{ matrix_mx_puppet_groupme_base_path }}/database.db"
-  register: matrix_mx_puppet_groupme_stat_database
+    path: "{{ matrix_bridge_mx_puppet_groupme_base_path }}/database.db"
+  register: matrix_bridge_mx_puppet_groupme_stat_database
 
 - name: (Data relocation) Ensure matrix-mx-puppet-groupme.service is stopped
   ansible.builtin.service:
@@ -36,96 +36,96 @@
     enabled: false
     daemon_reload: true
   failed_when: false
-  when: "matrix_mx_puppet_groupme_stat_database.stat.exists"
+  when: "matrix_bridge_mx_puppet_groupme_stat_database.stat.exists"
 
 - name: (Data relocation) Move mx-puppet-groupme database file to ./data directory
   ansible.builtin.command:
-    cmd: "mv {{ matrix_mx_puppet_groupme_base_path }}/database.db {{ matrix_mx_puppet_groupme_data_path }}/database.db"
-    creates: "{{ matrix_mx_puppet_groupme_data_path }}/database.db"
-    removes: "{{ matrix_mx_puppet_groupme_base_path }}/database.db"
-  when: "matrix_mx_puppet_groupme_stat_database.stat.exists"
+    cmd: "mv {{ matrix_bridge_mx_puppet_groupme_base_path }}/database.db {{ matrix_bridge_mx_puppet_groupme_data_path }}/database.db"
+    creates: "{{ matrix_bridge_mx_puppet_groupme_data_path }}/database.db"
+    removes: "{{ matrix_bridge_mx_puppet_groupme_base_path }}/database.db"
+  when: "matrix_bridge_mx_puppet_groupme_stat_database.stat.exists"
 
 - ansible.builtin.set_fact:
-    matrix_mx_puppet_groupme_migration_requires_restart: false
+    matrix_bridge_mx_puppet_groupme_migration_requires_restart: false
 
-- when: "matrix_mx_puppet_groupme_database_engine == 'postgres'"
+- when: "matrix_bridge_mx_puppet_groupme_database_engine == 'postgres'"
   block:
     - name: Check if an SQLite database already exists
       ansible.builtin.stat:
-        path: "{{ matrix_mx_puppet_groupme_sqlite_database_path_local }}"
-      register: matrix_mx_puppet_groupme_sqlite_database_path_local_stat_result
+        path: "{{ matrix_bridge_mx_puppet_groupme_sqlite_database_path_local }}"
+      register: matrix_bridge_mx_puppet_groupme_sqlite_database_path_local_stat_result
 
-    - when: "matrix_mx_puppet_groupme_sqlite_database_path_local_stat_result.stat.exists | bool"
+    - when: "matrix_bridge_mx_puppet_groupme_sqlite_database_path_local_stat_result.stat.exists | bool"
       block:
         - ansible.builtin.include_role:
             name: galaxy/postgres
             tasks_from: migrate_db_to_postgres
           vars:
             postgres_db_migration_request:
-              src: "{{ matrix_mx_puppet_groupme_sqlite_database_path_local }}"
-              dst: "{{ matrix_mx_puppet_groupme_database_connection_string }}"
+              src: "{{ matrix_bridge_mx_puppet_groupme_sqlite_database_path_local }}"
+              dst: "{{ matrix_bridge_mx_puppet_groupme_database_connection_string }}"
               caller: "{{ role_path | basename }}"
-              engine_variable_name: 'matrix_mx_puppet_groupme_database_engine'
+              engine_variable_name: 'matrix_bridge_mx_puppet_groupme_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-mx-puppet-groupme.service']
 
         - ansible.builtin.set_fact:
-            matrix_mx_puppet_groupme_migration_requires_restart: true
+            matrix_bridge_mx_puppet_groupme_migration_requires_restart: true
 
 - name: Ensure MX Puppet Groupme image is pulled
   community.docker.docker_image_pull:
-    name: "{{ matrix_mx_puppet_groupme_container_image }}"
+    name: "{{ matrix_bridge_mx_puppet_groupme_container_image }}"
     pull: always
-  when: matrix_mx_puppet_groupme_enabled | bool and not matrix_mx_puppet_groupme_container_image_self_build
-  register: matrix_mx_puppet_groupme_container_image_pull_result
+  when: matrix_bridge_mx_puppet_groupme_enabled | bool and not matrix_bridge_mx_puppet_groupme_container_image_self_build
+  register: matrix_bridge_mx_puppet_groupme_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: matrix_mx_puppet_groupme_container_image_pull_result is not failed
+  until: matrix_bridge_mx_puppet_groupme_container_image_pull_result is not failed
 
 - name: Ensure MX Puppet Groupme repository is present on self build
   ansible.builtin.git:
-    repo: "{{ matrix_mx_puppet_groupme_container_image_self_build_repo }}"
-    version: "{{ matrix_mx_puppet_groupme_container_image_self_build_repo_version }}"
-    dest: "{{ matrix_mx_puppet_groupme_container_src_files_path }}"
+    repo: "{{ matrix_bridge_mx_puppet_groupme_container_image_self_build_repo }}"
+    version: "{{ matrix_bridge_mx_puppet_groupme_container_image_self_build_repo_version }}"
+    dest: "{{ matrix_bridge_mx_puppet_groupme_container_src_files_path }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
-  register: matrix_mx_puppet_groupme_git_pull_results
-  when: "matrix_mx_puppet_groupme_enabled | bool and matrix_mx_puppet_groupme_container_image_self_build"
+  register: matrix_bridge_mx_puppet_groupme_git_pull_results
+  when: "matrix_bridge_mx_puppet_groupme_enabled | bool and matrix_bridge_mx_puppet_groupme_container_image_self_build"
 
 - name: Ensure MX Puppet Groupme Docker image is built
   community.docker.docker_image_build:
-    name: "{{ matrix_mx_puppet_groupme_container_image }}"
+    name: "{{ matrix_bridge_mx_puppet_groupme_container_image }}"
     dockerfile: Dockerfile
-    path: "{{ matrix_mx_puppet_groupme_container_src_files_path }}"
+    path: "{{ matrix_bridge_mx_puppet_groupme_container_src_files_path }}"
     pull: true
-    rebuild: "{{ 'always' if matrix_mx_puppet_groupme_git_pull_results.changed | bool else 'never' }}"
-  when: "matrix_mx_puppet_groupme_enabled | bool and matrix_mx_puppet_groupme_container_image_self_build"
-  register: matrix_mx_puppet_groupme_container_image_build_result
+    rebuild: "{{ 'always' if matrix_bridge_mx_puppet_groupme_git_pull_results.changed | bool else 'never' }}"
+  when: "matrix_bridge_mx_puppet_groupme_enabled | bool and matrix_bridge_mx_puppet_groupme_container_image_self_build"
+  register: matrix_bridge_mx_puppet_groupme_container_image_build_result
 
 - name: Ensure mx-puppet-groupme config.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mx_puppet_groupme_configuration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_mx_puppet_groupme_config_path }}/config.yaml"
+    content: "{{ matrix_bridge_mx_puppet_groupme_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_mx_puppet_groupme_config_path }}/config.yaml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_mx_puppet_groupme_config_result
+  register: matrix_bridge_mx_puppet_groupme_config_result
 
 - name: Ensure mx-puppet-groupme groupme-registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mx_puppet_groupme_registration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_mx_puppet_groupme_config_path }}/registration.yaml"
+    content: "{{ matrix_bridge_mx_puppet_groupme_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_mx_puppet_groupme_config_path }}/registration.yaml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_mx_puppet_groupme_registration_result
+  register: matrix_bridge_mx_puppet_groupme_registration_result
 
 - name: Ensure mx-puppet-groupme container network is created
-  when: matrix_mx_puppet_groupme_container_network != 'host'
+  when: matrix_bridge_mx_puppet_groupme_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-    name: "{{ matrix_mx_puppet_groupme_container_network }}"
+    name: "{{ matrix_bridge_mx_puppet_groupme_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
@@ -134,18 +134,18 @@
     src: "{{ role_path }}/templates/systemd/matrix-mx-puppet-groupme.service.j2"
     dest: "/etc/systemd/system/matrix-mx-puppet-groupme.service"
     mode: '0644'
-  register: matrix_mx_puppet_groupme_systemd_service_result
+  register: matrix_bridge_mx_puppet_groupme_systemd_service_result
 
 - name: Determine whether matrix-mx-puppet-groupme needs a restart
   ansible.builtin.set_fact:
-    matrix_mx_puppet_groupme_restart_necessary: >-
+    matrix_bridge_mx_puppet_groupme_restart_necessary: >-
       {{
-        matrix_mx_puppet_groupme_migration_requires_restart | default(false)
-        or matrix_mx_puppet_groupme_config_result.changed | default(false)
-        or matrix_mx_puppet_groupme_registration_result.changed | default(false)
-        or matrix_mx_puppet_groupme_systemd_service_result.changed | default(false)
-        or matrix_mx_puppet_groupme_container_image_pull_result.changed | default(false)
-        or matrix_mx_puppet_groupme_container_image_build_result.changed | default(false)
+        matrix_bridge_mx_puppet_groupme_migration_requires_restart | default(false)
+        or matrix_bridge_mx_puppet_groupme_config_result.changed | default(false)
+        or matrix_bridge_mx_puppet_groupme_registration_result.changed | default(false)
+        or matrix_bridge_mx_puppet_groupme_systemd_service_result.changed | default(false)
+        or matrix_bridge_mx_puppet_groupme_container_image_pull_result.changed | default(false)
+        or matrix_bridge_mx_puppet_groupme_container_image_build_result.changed | default(false)
       }}
 
 - name: Ensure matrix-mx-puppet-groupme.service restarted, if necessary
@@ -153,4 +153,4 @@
     name: "matrix-mx-puppet-groupme.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mx_puppet_groupme_migration_requires_restart | bool"
+  when: "matrix_bridge_mx_puppet_groupme_migration_requires_restart | bool"

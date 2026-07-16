@@ -18,7 +18,7 @@ See the project's [documentation](https://gitlab.com/xangelix-pub/matrix/mx-pupp
 To enable the [GroupMe](https://groupme.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_mx_puppet_groupme_enabled: true
+matrix_bridge_mx_puppet_groupme_enabled: true
 ```
 
 ## Installing
