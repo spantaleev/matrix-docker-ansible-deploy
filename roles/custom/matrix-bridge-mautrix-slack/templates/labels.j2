@@ -4,14 +4,14 @@ SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
-{% if matrix_mautrix_slack_container_labels_traefik_enabled %}
+{% if matrix_bridge_mautrix_slack_container_labels_traefik_enabled %}
 traefik.enable=true
 
-{% if matrix_mautrix_slack_container_labels_traefik_docker_network %}
-traefik.docker.network={{ matrix_mautrix_slack_container_labels_traefik_docker_network }}
+{% if matrix_bridge_mautrix_slack_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_bridge_mautrix_slack_container_labels_traefik_docker_network }}
 {% endif %}
 
-{% if matrix_mautrix_slack_container_labels_exposure_enabled %}
+{% if matrix_bridge_mautrix_slack_container_labels_exposure_enabled %}
 ############################################################
 #                                                          #
 # Bridge API exposure                                      #
@@ -20,21 +20,21 @@ traefik.docker.network={{ matrix_mautrix_slack_container_labels_traefik_docker_n
 
 traefik.http.services.matrix-mautrix-slack-exposure.loadbalancer.server.port=8080
 
-traefik.http.middlewares.matrix-mautrix-slack-exposure-strip-prefix.stripprefix.prefixes={{ matrix_mautrix_slack_exposure_path_prefix }}
+traefik.http.middlewares.matrix-mautrix-slack-exposure-strip-prefix.stripprefix.prefixes={{ matrix_bridge_mautrix_slack_exposure_path_prefix }}
 traefik.http.routers.matrix-mautrix-slack-exposure.middlewares=matrix-mautrix-slack-exposure-strip-prefix
 
-traefik.http.routers.matrix-mautrix-slack-exposure.rule={{ matrix_mautrix_slack_container_labels_exposure_traefik_rule }}
+traefik.http.routers.matrix-mautrix-slack-exposure.rule={{ matrix_bridge_mautrix_slack_container_labels_exposure_traefik_rule }}
 
-{% if matrix_mautrix_slack_container_labels_exposure_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-mautrix-slack-exposure.priority={{ matrix_mautrix_slack_container_labels_exposure_traefik_priority }}
+{% if matrix_bridge_mautrix_slack_container_labels_exposure_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-slack-exposure.priority={{ matrix_bridge_mautrix_slack_container_labels_exposure_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-mautrix-slack-exposure.service=matrix-mautrix-slack-exposure
-traefik.http.routers.matrix-mautrix-slack-exposure.entrypoints={{ matrix_mautrix_slack_container_labels_exposure_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-slack-exposure.entrypoints={{ matrix_bridge_mautrix_slack_container_labels_exposure_traefik_entrypoints }}
 
-traefik.http.routers.matrix-mautrix-slack-exposure.tls={{ matrix_mautrix_slack_container_labels_exposure_traefik_tls | to_json }}
-{% if matrix_mautrix_slack_container_labels_exposure_traefik_tls %}
-traefik.http.routers.matrix-mautrix-slack-exposure.tls.certResolver={{ matrix_mautrix_slack_container_labels_exposure_traefik_tls_certResolver }}
+traefik.http.routers.matrix-mautrix-slack-exposure.tls={{ matrix_bridge_mautrix_slack_container_labels_exposure_traefik_tls | to_json }}
+{% if matrix_bridge_mautrix_slack_container_labels_exposure_traefik_tls %}
+traefik.http.routers.matrix-mautrix-slack-exposure.tls.certResolver={{ matrix_bridge_mautrix_slack_container_labels_exposure_traefik_tls_certResolver }}
 {% endif %}
 
 ############################################################
@@ -47,4 +47,4 @@ traefik.http.routers.matrix-mautrix-slack-exposure.tls.certResolver={{ matrix_ma
 
 {% endif %}
 
-{{ matrix_mautrix_slack_container_labels_additional_labels }}
+{{ matrix_bridge_mautrix_slack_container_labels_additional_labels }}
