@@ -923,3 +923,24 @@
   when:
     - matrix_playbook_migration_matrix_synapse_admin_ketesa_variable_transition_checks_enabled | bool
     - "lookup('ansible.builtin.varnames', '^matrix_synapse_admin_(enabled|base_path|config|container|hostname|path_prefix|http_|floc_|hsts_|restart_|systemd_)', wantlist=True) | length > 0"
+
+# In July 2026, all bridge roles (`roles/custom/matrix-bridge-*`) had their variable prefixes renamed to a uniform scheme,
+# where the variable prefix matches the role directory name (e.g. `matrix_mautrix_telegram_` -> `matrix_bridge_mautrix_telegram_`).
+# This catches all old-style prefixes at once and points people to the CHANGELOG, which contains the full rename map.
+# Prefixes of bridges removed from the playbook before this rename (e.g. `matrix_mautrix_facebook_`) are intentionally not matched here.
+# They are caught by their own dedicated tasks above, which ask for removal instead of renaming.
+- name: (Deprecation) Catch and report bridge variables that use pre-rename prefixes
+  ansible.builtin.fail:
+    msg: |-
+      Your configuration contains bridge variables which now have different names.
+
+      All bridge variables were renamed so that each variable prefix matches its role directory name (`matrix_bridge_*`).
+      For example, `matrix_mautrix_telegram_enabled` is now `matrix_bridge_mautrix_telegram_enabled`.
+
+      Please rename all such variables in your configuration file (vars.yml).
+      See the `Bridge variables have been renamed` entry in the CHANGELOG (https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/CHANGELOG.md) for the full rename map.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_(appservice_discord|appservice_irc|beeper_linkedin|heisenbridge|hookshot|mautrix_androidsms|mautrix_bluesky|mautrix_discord|mautrix_gmessages|mautrix_googlechat|mautrix_gvoice|mautrix_imessage|mautrix_meta_instagram|mautrix_meta_messenger|mautrix_signal|mautrix_slack|mautrix_telegram|mautrix_twitter|mautrix_whatsapp|mautrix_wsproxy|meshtastic_relay|mx_puppet_groupme|mx_puppet_steam|postmoogle|rustpush_bridge|sms_bridge|steam_bridge|wechat)_.+', wantlist=True) | join(', ') }}
+  when:
+    - matrix_playbook_migration_bridge_prefix_rename_validation_enabled | bool
+    - "lookup('ansible.builtin.varnames', '^matrix_(appservice_discord|appservice_irc|beeper_linkedin|heisenbridge|hookshot|mautrix_androidsms|mautrix_bluesky|mautrix_discord|mautrix_gmessages|mautrix_googlechat|mautrix_gvoice|mautrix_imessage|mautrix_meta_instagram|mautrix_meta_messenger|mautrix_signal|mautrix_slack|mautrix_telegram|mautrix_twitter|mautrix_whatsapp|mautrix_wsproxy|meshtastic_relay|mx_puppet_groupme|mx_puppet_steam|postmoogle|rustpush_bridge|sms_bridge|steam_bridge|wechat)_.+', wantlist=True) | length > 0"
