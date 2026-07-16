@@ -106,7 +106,7 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_wechat_config_path + '/registration.yaml,dst=/matrix-wechat-registration.yaml,ro'] if matrix_wechat_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_heisenbridge_base_path + '/registration.yaml,dst=/heisenbridge-registration.yaml,ro'] if matrix_heisenbridge_enabled else [])
+    (['--mount type=bind,src=' + matrix_bridge_heisenbridge_base_path + '/registration.yaml,dst=/heisenbridge-registration.yaml,ro'] if matrix_bridge_heisenbridge_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_hookshot_base_path + '/registration.yml,dst=/hookshot-registration.yml,ro'] if matrix_hookshot_enabled else [])
     +
@@ -165,7 +165,7 @@ matrix_homeserver_app_service_config_files_auto: |
     +
     (['/matrix-wechat-registration.yaml'] if matrix_wechat_enabled else [])
     +
-    (['/heisenbridge-registration.yaml'] if matrix_heisenbridge_enabled else [])
+    (['/heisenbridge-registration.yaml'] if matrix_bridge_heisenbridge_enabled else [])
     +
     (['/hookshot-registration.yml'] if matrix_hookshot_enabled else [])
     +
@@ -394,9 +394,9 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-heisenbridge.service',
       'priority': 2000,
-      'restart_necessary': (matrix_heisenbridge_restart_necessary | bool),
+      'restart_necessary': (matrix_bridge_heisenbridge_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'heisenbridge'],
-    }] if matrix_heisenbridge_enabled else [])
+    }] if matrix_bridge_heisenbridge_enabled else [])
     +
     ([{
       'name': 'matrix-hookshot.service',
@@ -2521,38 +2521,38 @@ matrix_sms_bridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + 
 ######################################################################
 
 # We don't enable bridges by default.
-matrix_heisenbridge_enabled: false
+matrix_bridge_heisenbridge_enabled: false
 
-matrix_heisenbridge_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_bridge_heisenbridge_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
-matrix_heisenbridge_systemd_required_services_list_auto: |
+matrix_bridge_heisenbridge_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
   }}
 
-matrix_heisenbridge_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_heisenbridge_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_heisenbridge_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bridge_heisenbridge_container_image_registry_prefix_upstream_default }}"
 
-matrix_heisenbridge_container_network: "{{ matrix_addons_container_network }}"
+matrix_bridge_heisenbridge_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_heisenbridge_container_additional_networks_auto: |-
+matrix_bridge_heisenbridge_container_additional_networks_auto: |-
   {{
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_heisenbridge_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else []
+      [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_bridge_heisenbridge_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else []
     ) | unique
   }}
 
-matrix_heisenbridge_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_heisenbridge_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_heisenbridge_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_heisenbridge_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+matrix_bridge_heisenbridge_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_bridge_heisenbridge_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_bridge_heisenbridge_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bridge_heisenbridge_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_heisenbridge_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':heisen.as.tok') | hash('sha512') | to_uuid }}"
+matrix_bridge_heisenbridge_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':heisen.as.tok') | hash('sha512') | to_uuid }}"
 
-matrix_heisenbridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':heisen.hs.tok') | hash('sha512') | to_uuid }}"
+matrix_bridge_heisenbridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':heisen.hs.tok') | hash('sha512') | to_uuid }}"
 
-matrix_heisenbridge_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_bridge_heisenbridge_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
 ######################################################################
 #
@@ -5110,7 +5110,7 @@ matrix_ketesa_config_asManagedUsers_auto: |
     ([
       '^@heisenbridge:'+(matrix_domain | regex_escape)+'$',
       '^@hbirc_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_heisenbridge_enabled else [])
+    ] if matrix_bridge_heisenbridge_enabled else [])
     +
     ([
       '^@hookshot:'+(matrix_domain | regex_escape)+'$',

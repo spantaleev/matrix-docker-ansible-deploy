@@ -12,12 +12,12 @@
 
 - name: Ensure Heisenbridge image is pulled
   community.docker.docker_image_pull:
-    name: "{{ matrix_heisenbridge_container_image }}"
+    name: "{{ matrix_bridge_heisenbridge_container_image }}"
     pull: always
-  register: matrix_heisenbridge_container_image_pull_result
+  register: matrix_bridge_heisenbridge_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: matrix_heisenbridge_container_image_pull_result is not failed
+  until: matrix_bridge_heisenbridge_container_image_pull_result is not failed
 
 - name: Ensure Heisenbridge paths exist
   ansible.builtin.file:
@@ -27,33 +27,33 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - "{{ matrix_heisenbridge_base_path }}"
+    - "{{ matrix_bridge_heisenbridge_base_path }}"
 
 - name: Ensure Heisenbridge registration.yaml installed if provided
   ansible.builtin.copy:
-    content: "{{ matrix_heisenbridge_registration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_heisenbridge_base_path }}/registration.yaml"
+    content: "{{ matrix_bridge_heisenbridge_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_heisenbridge_base_path }}/registration.yaml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_heisenbridge_registration_result
+  register: matrix_bridge_heisenbridge_registration_result
 
 - name: Ensure Heisenbridge support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ matrix_heisenbridge_base_path }}/{{ item }}"
+    dest: "{{ matrix_bridge_heisenbridge_base_path }}/{{ item }}"
     mode: '0640'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
-  register: matrix_heisenbridge_support_files_result
+  register: matrix_bridge_heisenbridge_support_files_result
 
 - name: Ensure Heisenbridge container network is created
-  when: matrix_heisenbridge_container_network != 'host'
+  when: matrix_bridge_heisenbridge_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-    name: "{{ matrix_heisenbridge_container_network }}"
+    name: "{{ matrix_bridge_heisenbridge_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
@@ -62,14 +62,14 @@
     src: "{{ role_path }}/templates/systemd/matrix-heisenbridge.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-heisenbridge.service"
     mode: '0644'
-  register: matrix_heisenbridge_systemd_service_result
+  register: matrix_bridge_heisenbridge_systemd_service_result
 
 - name: Determine whether matrix-heisenbridge needs a restart
   ansible.builtin.set_fact:
-    matrix_heisenbridge_restart_necessary: >-
+    matrix_bridge_heisenbridge_restart_necessary: >-
       {{
-        matrix_heisenbridge_registration_result.changed | default(false)
-        or matrix_heisenbridge_support_files_result.changed | default(false)
-        or matrix_heisenbridge_systemd_service_result.changed | default(false)
-        or matrix_heisenbridge_container_image_pull_result.changed | default(false)
+        matrix_bridge_heisenbridge_registration_result.changed | default(false)
+        or matrix_bridge_heisenbridge_support_files_result.changed | default(false)
+        or matrix_bridge_heisenbridge_systemd_service_result.changed | default(false)
+        or matrix_bridge_heisenbridge_container_image_pull_result.changed | default(false)
       }}

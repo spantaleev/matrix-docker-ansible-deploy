@@ -25,26 +25,26 @@ If you wish to adjust it, see the section [below](#adjusting-the-heisenbridge-ur
 To enable Heisenbridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_heisenbridge_enabled: true
+matrix_bridge_heisenbridge_enabled: true
 
 # Setting the owner is optional as the first local user to DM `@heisenbridge:example.com` will be made the owner.
 # If you are not using a local user you must set it as otherwise you can't DM it at all.
-matrix_heisenbridge_owner: "@alice:{{ matrix_domain }}"
+matrix_bridge_heisenbridge_owner: "@alice:{{ matrix_domain }}"
 
 # Uncomment to enable identd on host port 113/TCP (optional)
-# matrix_heisenbridge_identd_enabled: true
+# matrix_bridge_heisenbridge_identd_enabled: true
 ```
 
 ### Adjusting the Heisenbridge URL (optional)
 
-By tweaking the `matrix_heisenbridge_hostname` and `matrix_heisenbridge_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+By tweaking the `matrix_bridge_heisenbridge_hostname` and `matrix_bridge_heisenbridge_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
 
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname and path prefix
-matrix_heisenbridge_hostname: heisenbridge.example.com
-matrix_heisenbridge_path_prefix: /
+matrix_bridge_heisenbridge_hostname: heisenbridge.example.com
+matrix_bridge_heisenbridge_path_prefix: /
 ```
 
 If you've changed the default hostname, you may need to create a CNAME record for the Heisenbridge domain (`heisenbridge.example.com`), which targets `matrix.example.com`.
