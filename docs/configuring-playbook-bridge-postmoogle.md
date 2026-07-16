@@ -24,7 +24,7 @@ Open the following ports on your server to be able to receive incoming emails:
 
 If you don't open these ports, you will still be able to send emails, but not receive any.
 
-These port numbers are configurable via the `matrix_postmoogle_smtp_host_bind_port` and `matrix_postmoogle_submission_host_bind_port` variables, but other email servers will try to deliver on these default (standard) ports, so changing them is of little use.
+These port numbers are configurable via the `matrix_bridge_postmoogle_smtp_host_bind_port` and `matrix_bridge_postmoogle_submission_host_bind_port` variables, but other email servers will try to deliver on these default (standard) ports, so changing them is of little use.
 
 ## Adjusting DNS records
 
@@ -44,17 +44,17 @@ To make Postmoogle enable its email sending features, you need to configure MX a
 Add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_postmoogle_enabled: true
+matrix_bridge_postmoogle_enabled: true
 
 # Uncomment and adjust this part if you'd like to use a username different than the default
-# matrix_postmoogle_login: postmoogle
+# matrix_bridge_postmoogle_login: postmoogle
 
 # Generate a strong password for the bot. You can create one with a command like `pwgen -s 64 1`.
-matrix_postmoogle_password: PASSWORD_FOR_THE_BOT
+matrix_bridge_postmoogle_password: PASSWORD_FOR_THE_BOT
 
 # Uncomment to add one or more admins to this bridge:
 #
-# matrix_postmoogle_admins:
+# matrix_bridge_postmoogle_admins:
 #  - '@yourAdminAccount:{{ matrix_domain }}'
 #
 # … unless you've made yourself an admin of all bots/bridges like this:
@@ -87,7 +87,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
   `just install-all` is useful for maintaining your setup quickly ([2x-5x faster](../CHANGELOG.md#2x-5x-performance-improvements-in-playbook-runtime) than `just setup-all`) when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed.
 
-- If you change the bridge's bot password (`matrix_postmoogle_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [Ketesa](configuring-playbook-ketesa.md) to change it, and then update `matrix_postmoogle_password` to let the bot know its new password.
+- If you change the bridge's bot password (`matrix_bridge_postmoogle_password` in your `vars.yml` file) subsequently, the bot user's credentials on the homeserver won't be updated automatically. If you'd like to change the bot user's password, use a tool like [Ketesa](configuring-playbook-ketesa.md) to change it, and then update `matrix_bridge_postmoogle_password` to let the bot know its new password.
 
 ## Usage
 
@@ -108,5 +108,5 @@ As with all other services, you can find the logs in [systemd-journald](https://
 The default logging level for this component is `INFO`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:
 
 ```yaml
-matrix_postmoogle_loglevel: 'DEBUG'
+matrix_bridge_postmoogle_loglevel: 'DEBUG'
 ```

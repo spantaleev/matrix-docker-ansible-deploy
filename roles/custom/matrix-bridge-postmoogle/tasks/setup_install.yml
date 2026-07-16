@@ -32,29 +32,29 @@
         path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-postmoogle.service"
         state: absent
 
-- when: "matrix_postmoogle_database_engine == 'postgres'"
+- when: "matrix_bridge_postmoogle_database_engine == 'postgres'"
   block:
     - name: Check if an SQLite database already exists
       ansible.builtin.stat:
-        path: "{{ matrix_postmoogle_sqlite_database_path_local }}"
-      register: matrix_postmoogle_sqlite_database_path_local_stat_result
+        path: "{{ matrix_bridge_postmoogle_sqlite_database_path_local }}"
+      register: matrix_bridge_postmoogle_sqlite_database_path_local_stat_result
 
-    - when: "matrix_postmoogle_sqlite_database_path_local_stat_result.stat.exists | bool"
+    - when: "matrix_bridge_postmoogle_sqlite_database_path_local_stat_result.stat.exists | bool"
       block:
         - ansible.builtin.include_role:
             name: galaxy/postgres
             tasks_from: migrate_db_to_postgres
           vars:
             postgres_db_migration_request:
-              src: "{{ matrix_postmoogle_sqlite_database_path_local }}"
-              dst: "{{ matrix_postmoogle_database_connection_string }}"
+              src: "{{ matrix_bridge_postmoogle_sqlite_database_path_local }}"
+              dst: "{{ matrix_bridge_postmoogle_database_connection_string }}"
               caller: "{{ role_path | basename }}"
-              engine_variable_name: 'matrix_postmoogle_database_engine'
+              engine_variable_name: 'matrix_bridge_postmoogle_database_engine'
               engine_old: 'sqlite'
               systemd_services_to_stop: ['matrix-postmoogle.service']
 
         - ansible.builtin.set_fact:
-            matrix_postmoogle_migration_requires_restart: true
+            matrix_bridge_postmoogle_migration_requires_restart: true
 
 - name: Ensure postmoogle paths exist
   ansible.builtin.file:
@@ -64,56 +64,56 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - {path: "{{ matrix_postmoogle_config_path }}", when: true}
-    - {path: "{{ matrix_postmoogle_data_path }}", when: true}
-    - {path: "{{ matrix_postmoogle_container_src_files_path }}", when: "{{ matrix_postmoogle_container_image_self_build }}"}
+    - {path: "{{ matrix_bridge_postmoogle_config_path }}", when: true}
+    - {path: "{{ matrix_bridge_postmoogle_data_path }}", when: true}
+    - {path: "{{ matrix_bridge_postmoogle_container_src_files_path }}", when: "{{ matrix_bridge_postmoogle_container_image_self_build }}"}
   when: "item.when | bool"
 
 - name: Ensure postmoogle environment variables file created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/env.j2"
-    dest: "{{ matrix_postmoogle_config_path }}/env"
+    dest: "{{ matrix_bridge_postmoogle_config_path }}/env"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
     mode: '0640'
-  register: matrix_postmoogle_env_result
+  register: matrix_bridge_postmoogle_env_result
 
 - name: Ensure postmoogle image is pulled
   community.docker.docker_image_pull:
-    name: "{{ matrix_postmoogle_container_image }}"
+    name: "{{ matrix_bridge_postmoogle_container_image }}"
     pull: always
-  when: "not matrix_postmoogle_container_image_self_build | bool"
-  register: matrix_postmoogle_container_image_pull_result
+  when: "not matrix_bridge_postmoogle_container_image_self_build | bool"
+  register: matrix_bridge_postmoogle_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: matrix_postmoogle_container_image_pull_result is not failed
+  until: matrix_bridge_postmoogle_container_image_pull_result is not failed
 
 - name: Ensure postmoogle repository is present on self-build
   ansible.builtin.git:
-    repo: "{{ matrix_postmoogle_container_repo }}"
-    version: "{{ matrix_postmoogle_container_repo_version }}"
-    dest: "{{ matrix_postmoogle_container_src_files_path }}"
+    repo: "{{ matrix_bridge_postmoogle_container_repo }}"
+    version: "{{ matrix_bridge_postmoogle_container_repo_version }}"
+    dest: "{{ matrix_bridge_postmoogle_container_src_files_path }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
-  register: matrix_postmoogle_git_pull_results
-  when: "matrix_postmoogle_container_image_self_build | bool"
+  register: matrix_bridge_postmoogle_git_pull_results
+  when: "matrix_bridge_postmoogle_container_image_self_build | bool"
 
 - name: Ensure postmoogle image is built
   community.docker.docker_image_build:
-    name: "{{ matrix_postmoogle_container_image }}"
+    name: "{{ matrix_bridge_postmoogle_container_image }}"
     dockerfile: Dockerfile
-    path: "{{ matrix_postmoogle_container_src_files_path }}"
+    path: "{{ matrix_bridge_postmoogle_container_src_files_path }}"
     pull: true
-    rebuild: "{{ 'always' if matrix_postmoogle_git_pull_results.changed | bool else 'never' }}"
-  when: "matrix_postmoogle_container_image_self_build | bool"
-  register: matrix_postmoogle_container_image_build_result
+    rebuild: "{{ 'always' if matrix_bridge_postmoogle_git_pull_results.changed | bool else 'never' }}"
+  when: "matrix_bridge_postmoogle_container_image_self_build | bool"
+  register: matrix_bridge_postmoogle_container_image_build_result
 
 - name: Ensure postmoogle container network is created
-  when: matrix_postmoogle_container_network != 'host'
+  when: matrix_bridge_postmoogle_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-    name: "{{ matrix_postmoogle_container_network }}"
+    name: "{{ matrix_bridge_postmoogle_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
@@ -122,15 +122,15 @@
     src: "{{ role_path }}/templates/systemd/matrix-postmoogle.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-postmoogle.service"
     mode: '0644'
-  register: matrix_postmoogle_systemd_service_result
+  register: matrix_bridge_postmoogle_systemd_service_result
 
 - name: Determine whether matrix-postmoogle needs a restart
   ansible.builtin.set_fact:
-    matrix_postmoogle_restart_necessary: >-
+    matrix_bridge_postmoogle_restart_necessary: >-
       {{
-        matrix_postmoogle_migration_requires_restart | default(false)
-        or matrix_postmoogle_env_result.changed | default(false)
-        or matrix_postmoogle_systemd_service_result.changed | default(false)
-        or matrix_postmoogle_container_image_pull_result.changed | default(false)
-        or matrix_postmoogle_container_image_build_result.changed | default(false)
+        matrix_bridge_postmoogle_migration_requires_restart | default(false)
+        or matrix_bridge_postmoogle_env_result.changed | default(false)
+        or matrix_bridge_postmoogle_systemd_service_result.changed | default(false)
+        or matrix_bridge_postmoogle_container_image_pull_result.changed | default(false)
+        or matrix_bridge_postmoogle_container_image_build_result.changed | default(false)
       }}
