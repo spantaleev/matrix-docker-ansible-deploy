@@ -114,7 +114,7 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_rustpush_bridge_config_path + '/registration.yaml,dst=/matrix-rustpush-bridge-registration.yaml,ro'] if matrix_rustpush_bridge_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_mautrix_discord_enabled else [])
+    (['--mount type=bind,src=' + matrix_bridge_mautrix_discord_config_path + '/registration.yaml,dst=/matrix-mautrix-discord-registration.yaml,ro'] if matrix_bridge_mautrix_discord_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mautrix_slack_config_path + '/registration.yaml,dst=/matrix-mautrix-slack-registration.yaml,ro'] if matrix_mautrix_slack_enabled else [])
     +
@@ -173,7 +173,7 @@ matrix_homeserver_app_service_config_files_auto: |
     +
     (['/matrix-rustpush-bridge-registration.yaml'] if matrix_rustpush_bridge_enabled else [])
     +
-    (['/matrix-mautrix-discord-registration.yaml'] if matrix_mautrix_discord_enabled else [])
+    (['/matrix-mautrix-discord-registration.yaml'] if matrix_bridge_mautrix_discord_enabled else [])
     +
     (['/matrix-mautrix-slack-registration.yaml'] if matrix_mautrix_slack_enabled else [])
     +
@@ -429,9 +429,9 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-mautrix-discord.service',
       'priority': 2000,
-      'restart_necessary': (matrix_mautrix_discord_restart_necessary | bool),
+      'restart_necessary': (matrix_bridge_mautrix_discord_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'mautrix-discord'],
-    }] if matrix_mautrix_discord_enabled else [])
+    }] if matrix_bridge_mautrix_discord_enabled else [])
     +
     ([{
       'name': 'matrix-mautrix-slack.service',
@@ -1499,66 +1499,66 @@ matrix_rustpush_bridge_database_password: "{{ (matrix_homeserver_generic_secret_
 ######################################################################
 
 # We don't enable bridges by default.
-matrix_mautrix_discord_enabled: false
+matrix_bridge_mautrix_discord_enabled: false
 
-matrix_mautrix_discord_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_discord_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_mautrix_discord_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bridge_mautrix_discord_container_image_registry_prefix_upstream_default }}"
 
-matrix_mautrix_discord_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
+matrix_bridge_mautrix_discord_container_image_self_build: "{{ matrix_architecture not in ['arm64', 'amd64'] }}"
 
-matrix_mautrix_discord_container_network: "{{ matrix_addons_container_network }}"
+matrix_bridge_mautrix_discord_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_mautrix_discord_container_additional_networks_auto: |-
+matrix_bridge_mautrix_discord_container_additional_networks_auto: |-
   {{
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([postgres_container_network] if postgres_enabled and matrix_mautrix_discord_database_hostname == postgres_connection_hostname else [])
+      ([postgres_container_network] if postgres_enabled and matrix_bridge_mautrix_discord_database_hostname == postgres_connection_hostname else [])
       +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_mautrix_discord_container_labels_traefik_enabled) else [])
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_playbook_reverse_proxyable_services_additional_network and matrix_bridge_mautrix_discord_container_labels_traefik_enabled) else [])
     ) | unique
   }}
 
-matrix_mautrix_discord_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_mautrix_discord_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_discord_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_mautrix_discord_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+matrix_bridge_mautrix_discord_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_bridge_mautrix_discord_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_bridge_mautrix_discord_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bridge_mautrix_discord_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_mautrix_discord_systemd_required_services_list_auto: |
+matrix_bridge_mautrix_discord_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_discord_database_hostname == postgres_connection_hostname) else [])
+    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_bridge_mautrix_discord_database_hostname == postgres_connection_hostname) else [])
   }}
 
-matrix_mautrix_discord_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.as.tok') | hash('sha512') | to_uuid }}"
+matrix_bridge_mautrix_discord_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.as.tok') | hash('sha512') | to_uuid }}"
 
-matrix_mautrix_discord_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_mautrix_discord_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.hs.tok') | hash('sha512') | to_uuid }}"
+matrix_bridge_mautrix_discord_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_bridge_mautrix_discord_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.hs.tok') | hash('sha512') | to_uuid }}"
 
-matrix_mautrix_discord_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
+matrix_bridge_mautrix_discord_homeserver_async_media: "{{ matrix_homeserver_implementation in ['synapse'] }}"
 
-matrix_mautrix_discord_bridge_avatar_proxy_key: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.avatar') | hash('sha512') | to_uuid }}"
+matrix_bridge_mautrix_discord_bridge_avatar_proxy_key: "{{ (matrix_homeserver_generic_secret_key + ':maudisc.avatar') | hash('sha512') | to_uuid }}"
 
-matrix_mautrix_discord_hostname: "{{ matrix_server_fqn_matrix }}"
-matrix_mautrix_discord_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+matrix_bridge_mautrix_discord_hostname: "{{ matrix_server_fqn_matrix }}"
+matrix_bridge_mautrix_discord_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
-matrix_mautrix_discord_bridge_login_shared_secret_map_auto: |-
+matrix_bridge_mautrix_discord_bridge_login_shared_secret_map_auto: |-
   {{
     ({
-      matrix_mautrix_discord_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
+      matrix_bridge_mautrix_discord_homeserver_domain: ("as_token:" + matrix_appservice_double_puppet_registration_as_token)
     })
     if matrix_appservice_double_puppet_enabled
     else (
-      {matrix_mautrix_discord_homeserver_domain: matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret}
+      {matrix_bridge_mautrix_discord_homeserver_domain: matrix_synapse_ext_password_provider_shared_secret_auth_shared_secret}
       if matrix_synapse_ext_password_provider_shared_secret_auth_enabled
       else {}
     )
   }}
 
 # Postgres is the default, except if not using internal Postgres server
-matrix_mautrix_discord_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
-matrix_mautrix_discord_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_discord_database_password: "{{ (matrix_homeserver_generic_secret_key + ':maudiscord.db') | hash('sha512') | to_uuid }}"
+matrix_bridge_mautrix_discord_database_engine: "{{ 'postgres' if postgres_enabled else 'sqlite' }}"
+matrix_bridge_mautrix_discord_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_bridge_mautrix_discord_database_password: "{{ (matrix_homeserver_generic_secret_key + ':maudiscord.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -4243,10 +4243,10 @@ postgres_managed_databases_auto: |
     }] if (matrix_mautrix_whatsapp_enabled and matrix_mautrix_whatsapp_database_engine == 'postgres' and matrix_mautrix_whatsapp_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_mautrix_discord_database_name,
-      'username': matrix_mautrix_discord_database_username,
-      'password': matrix_mautrix_discord_database_password,
-    }] if (matrix_mautrix_discord_enabled and matrix_mautrix_discord_database_engine == 'postgres' and matrix_mautrix_discord_database_hostname == postgres_connection_hostname) else [])
+      'name': matrix_bridge_mautrix_discord_database_name,
+      'username': matrix_bridge_mautrix_discord_database_username,
+      'password': matrix_bridge_mautrix_discord_database_password,
+    }] if (matrix_bridge_mautrix_discord_enabled and matrix_bridge_mautrix_discord_database_engine == 'postgres' and matrix_bridge_mautrix_discord_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
       'name': matrix_mautrix_slack_database_name,
@@ -5131,9 +5131,9 @@ matrix_ketesa_config_asManagedUsers_auto: |
     ] if matrix_rustpush_bridge_enabled else [])
     +
     ([
-      '^@'+(matrix_mautrix_discord_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_bridge_mautrix_discord_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
       '^@discord_[0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_mautrix_discord_enabled else [])
+    ] if matrix_bridge_mautrix_discord_enabled else [])
     +
     ([
       '^@'+(matrix_mautrix_gmessages_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
