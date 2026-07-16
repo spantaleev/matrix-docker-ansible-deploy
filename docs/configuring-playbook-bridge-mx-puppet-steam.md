@@ -20,7 +20,7 @@ See the project's [documentation](https://codeberg.org/icewind/mx-puppet-steam/b
 To enable the [Steam](https://steampowered.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_mx_puppet_steam_enabled: true
+matrix_bridge_mx_puppet_steam_enabled: true
 ```
 
 ## Installing
