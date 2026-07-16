@@ -3399,12 +3399,12 @@ backup_borg_postgresql_databases_password: "{{ postgres_connection_password if p
 backup_borg_postgresql_databases_port: "{{ postgres_connection_port if postgres_enabled else 5432 }}"
 backup_borg_postgresql_databases_auto: "{{ postgres_managed_databases | map(attribute='name') if postgres_enabled else [] }}"
 
-backup_borg_location_source_directories:
+backup_borg_location_source_directories_auto:
   - "{{ matrix_base_data_path }}"
 
 # local_thumbnails is deliberately NOT excluded: with dynamic_thumbnails disabled (Synapse's default),
 # nothing regenerates lost thumbnails, so the official Synapse backup guide recommends backing them up.
-backup_borg_location_exclude_patterns: |
+backup_borg_location_exclude_patterns_auto: |
   {{
     ([matrix_synapse_media_store_path + '/remote_content', matrix_synapse_media_store_path + '/remote_thumbnail', matrix_synapse_media_store_path + '/url_cache', matrix_synapse_media_store_path + '/url_cache_thumbnails'] if matrix_homeserver_implementation == 'synapse' else [])
     +
