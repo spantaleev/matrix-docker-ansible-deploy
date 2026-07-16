@@ -19,7 +19,7 @@ See the project's [documentation](https://github.com/duo/matrix-wechat/blob/mast
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_wechat_enabled: true
+matrix_bridge_wechat_enabled: true
 ```
 
 ### Extending the configuration
@@ -29,7 +29,7 @@ There are some additional things you may wish to configure about the bridge.
 Take a look at:
 
 - `roles/custom/matrix-bridge-wechat/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-bridge-wechat/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_wechat_configuration_extension_yaml` variable
+- `roles/custom/matrix-bridge-wechat/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bridge_wechat_configuration_extension_yaml` variable
 
 ## Installing
 
@@ -62,5 +62,5 @@ The default logging level for this component is `warn`. If you want to increase 
 
 ```yaml
 # Valid values: fatal, error, warn, info, debug
-matrix_wechat_log_level: 'debug'
+matrix_bridge_wechat_log_level: 'debug'
 ```

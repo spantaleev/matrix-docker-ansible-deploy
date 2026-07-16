@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix WeChat Agent
-{% for service in matrix_wechat_systemd_required_services_list %}
+{% for service in matrix_bridge_wechat_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_wechat_systemd_wanted_services_list %}
+{% for service in matrix_bridge_wechat_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -24,17 +24,17 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--rm \
 			--name=matrix-wechat-agent \
 			--log-driver=none \
-			--user={{ matrix_wechat_agent_container_user_uid }}:{{ matrix_wechat_agent_container_user_gid }} \
+			--user={{ matrix_bridge_wechat_agent_container_user_uid }}:{{ matrix_bridge_wechat_agent_container_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_wechat_container_network }} \
-			--mount type=bind,src={{ matrix_wechat_config_path }}/agent-config.yaml,dst=/home/user/matrix-wechat-agent/configure.yaml,ro \
-			{% for arg in matrix_wechat_container_extra_arguments %}
+			--network={{ matrix_bridge_wechat_container_network }} \
+			--mount type=bind,src={{ matrix_bridge_wechat_config_path }}/agent-config.yaml,dst=/home/user/matrix-wechat-agent/configure.yaml,ro \
+			{% for arg in matrix_bridge_wechat_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_wechat_agent_container_image }}
+			{{ matrix_bridge_wechat_agent_container_image }}
 
-{% if matrix_wechat_container_network != 'host' %}
-{% for network in matrix_wechat_container_additional_networks %}
+{% if matrix_bridge_wechat_container_network != 'host' %}
+{% for network in matrix_bridge_wechat_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-wechat-agent
 {% endfor %}
 {% endif %}

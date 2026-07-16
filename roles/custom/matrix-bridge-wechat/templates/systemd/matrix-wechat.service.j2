@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix WeChat Bridge
-{% for service in matrix_wechat_systemd_required_services_list %}
+{% for service in matrix_bridge_wechat_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_wechat_systemd_wanted_services_list %}
+{% for service in matrix_bridge_wechat_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -22,17 +22,17 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_wechat_container_network }} \
-			--mount type=bind,src={{ matrix_wechat_config_path }},dst=/config,ro \
-			--mount type=bind,src={{ matrix_wechat_data_path }},dst=/data \
+			--network={{ matrix_bridge_wechat_container_network }} \
+			--mount type=bind,src={{ matrix_bridge_wechat_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_bridge_wechat_data_path }},dst=/data \
 			--workdir=/data \
-			{% for arg in matrix_wechat_container_extra_arguments %}
+			{% for arg in matrix_bridge_wechat_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_wechat_container_image }} \
+			{{ matrix_bridge_wechat_container_image }} \
 			/usr/bin/matrix-wechat -c /config/config.yaml -r /config/registration.yaml --no-update
-{% if matrix_wechat_container_network != 'host' %}
-{% for network in matrix_wechat_container_additional_networks %}
+{% if matrix_bridge_wechat_container_network != 'host' %}
+{% for network in matrix_bridge_wechat_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-wechat
 {% endfor %}
 {% endif %}
