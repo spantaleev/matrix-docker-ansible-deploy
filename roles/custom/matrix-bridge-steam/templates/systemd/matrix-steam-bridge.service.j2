@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix Steam bridge
-{% for service in matrix_steam_bridge_systemd_required_services_list %}
+{% for service in matrix_bridge_steam_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_steam_bridge_systemd_wanted_services_list %}
+{% for service in matrix_bridge_steam_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -22,18 +22,18 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_steam_bridge_container_network }} \
-			--mount type=bind,src={{ matrix_steam_bridge_config_path }},dst=/app/config,ro \
-			--mount type=bind,src={{ matrix_steam_bridge_data_path }},dst=/app/data \
-			--label-file={{ matrix_steam_bridge_base_path }}/labels \
-			{% for arg in matrix_steam_bridge_container_extra_arguments %}
+			--network={{ matrix_bridge_steam_container_network }} \
+			--mount type=bind,src={{ matrix_bridge_steam_config_path }},dst=/app/config,ro \
+			--mount type=bind,src={{ matrix_bridge_steam_data_path }},dst=/app/data \
+			--label-file={{ matrix_bridge_steam_base_path }}/labels \
+			{% for arg in matrix_bridge_steam_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_steam_bridge_container_image }} \
+			{{ matrix_bridge_steam_container_image }} \
 			/usr/bin/steam -c /app/config/config.yaml -r /app/config/registration.yaml --no-update
 
-{% if matrix_steam_bridge_container_network != 'host' %}
-{% for network in matrix_steam_bridge_container_additional_networks %}
+{% if matrix_bridge_steam_container_network != 'host' %}
+{% for network in matrix_bridge_steam_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-steam-bridge
 {% endfor %}
 {% endif %}

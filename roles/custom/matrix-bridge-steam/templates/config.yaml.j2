@@ -7,7 +7,7 @@ network:
     get_proxy_url: null
 
     # Displayname template for Steam users.
-    displayname_template: {{ matrix_steam_bridge_network_displayname_template | to_json }}
+    displayname_template: {{ matrix_bridge_steam_network_displayname_template | to_json }}
 
     # Maximum number of conversations to sync on startup
     conversation_sync_limit: 20
@@ -22,7 +22,7 @@ network:
         # Enable presence tracking from Matrix to Steam
         # When enabled, your Steam status will automatically change based on
         # your Matrix presence and activity
-        enabled: {{ matrix_steam_bridge_network_presence_enabled | to_json }}
+        enabled: {{ matrix_bridge_steam_network_presence_enabled | to_json }}
 
         # Inactivity timeout in minutes before changing Steam status
         # This is used as a fallback when your Matrix server doesn't support
@@ -33,7 +33,7 @@ network:
 
         # Status to set after inactivity timeout
         # Valid values: "snooze" (appear away/idle) or "invisible" (appear offline)
-        inactivity_status: {{ matrix_steam_bridge_network_presence_inactivity_status | to_json }}
+        inactivity_status: {{ matrix_bridge_steam_network_presence_inactivity_status | to_json }}
         # Whether typing events in Matrix should reset the inactivity timer
         # When true, typing will count as activity and keep you marked as online
         typing_resets_presence: true
@@ -46,17 +46,17 @@ network:
     # Sets a Steam friend's current game (+ rich presence flavor text) as the DM room's m.room.topic.
     presence_topic:
         # Master switch for setting the DM room topic to the friend's current game
-        enabled: {{ matrix_steam_bridge_network_presence_topic_enabled | to_json }}
+        enabled: {{ matrix_bridge_steam_network_presence_topic_enabled | to_json }}
         # Append resolved rich presence flavor text to the topic (e.g. "Deadlock — Street Brawl: Paige (12 min)")
-        rich_presence_enabled: {{ matrix_steam_bridge_network_presence_topic_rich_presence_enabled | to_json }}
+        rich_presence_enabled: {{ matrix_bridge_steam_network_presence_topic_rich_presence_enabled | to_json }}
         # Fallback: show the raw unresolved rich presence token if resolution fails
-        show_raw_tokens: {{ matrix_steam_bridge_network_presence_topic_show_raw_tokens | to_json }}
+        show_raw_tokens: {{ matrix_bridge_steam_network_presence_topic_show_raw_tokens | to_json }}
 
 
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: {{ matrix_steam_bridge_command_prefix | to_json }}
+    command_prefix: {{ matrix_bridge_steam_command_prefix | to_json }}
     # Should the bridge create a space for each login containing the rooms that account is in?
     personal_filtering_spaces: true
     # Whether the bridge should set names and avatars explicitly for DM portals.
@@ -70,7 +70,7 @@ bridge:
     # By default, users who are in the same group on the remote network will be
     # in the same Matrix room bridged to that group. If this is set to true,
     # every user will get their own Matrix room instead.
-    split_portals: {{ matrix_steam_bridge_bridge_split_portals | to_json }}
+    split_portals: {{ matrix_bridge_steam_bridge_split_portals | to_json }}
     # Should the bridge resend `m.bridge` events to all portals on startup?
     resend_bridge_info: false
     # Should `m.bridge` events be sent without a state key?
@@ -109,24 +109,24 @@ bridge:
     #   delete - Remove all ghosts and users from the room (i.e. delete it)
     cleanup_on_logout:
         # Should cleanup on logout be enabled at all?
-        enabled: {{ matrix_steam_bridge_bridge_cleanup_on_logout_enabled | to_json }}
+        enabled: {{ matrix_bridge_steam_bridge_cleanup_on_logout_enabled | to_json }}
         # Settings for manual logouts (explicitly initiated by the Matrix user)
         manual:
             # Action for private portals which will never be shared with other Matrix users.
-            private: {{ matrix_steam_bridge_bridge_cleanup_on_logout_manual_private | to_json }}
+            private: {{ matrix_bridge_steam_bridge_cleanup_on_logout_manual_private | to_json }}
             # Action for portals with a relay user configured.
-            relayed: {{ matrix_steam_bridge_bridge_cleanup_on_logout_manual_relayed | to_json }}
+            relayed: {{ matrix_bridge_steam_bridge_cleanup_on_logout_manual_relayed | to_json }}
             # Action for portals which may be shared, but don't currently have any other Matrix users.
-            shared_no_users: {{ matrix_steam_bridge_bridge_cleanup_on_logout_manual_shared_no_users | to_json }}
+            shared_no_users: {{ matrix_bridge_steam_bridge_cleanup_on_logout_manual_shared_no_users | to_json }}
             # Action for portals which have other logged-in Matrix users.
-            shared_has_users: {{ matrix_steam_bridge_bridge_cleanup_on_logout_manual_shared_has_users | to_json }}
+            shared_has_users: {{ matrix_bridge_steam_bridge_cleanup_on_logout_manual_shared_has_users | to_json }}
         # Settings for credentials being invalidated (initiated by the remote network, possibly through user action).
         # Keys have the same meanings as in the manual section.
         bad_credentials:
-            private: {{ matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_private | to_json }}
-            relayed: {{ matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_relayed | to_json }}
-            shared_no_users: {{ matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_shared_no_users | to_json }}
-            shared_has_users: {{ matrix_steam_bridge_bridge_cleanup_on_logout_bad_credentials_shared_has_users | to_json }}
+            private: {{ matrix_bridge_steam_bridge_cleanup_on_logout_bad_credentials_private | to_json }}
+            relayed: {{ matrix_bridge_steam_bridge_cleanup_on_logout_bad_credentials_relayed | to_json }}
+            shared_no_users: {{ matrix_bridge_steam_bridge_cleanup_on_logout_bad_credentials_shared_no_users | to_json }}
+            shared_has_users: {{ matrix_bridge_steam_bridge_cleanup_on_logout_bad_credentials_shared_has_users | to_json }}
 
     # Settings for relay mode
     relay:
@@ -173,7 +173,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions: {{ matrix_steam_bridge_bridge_permissions | to_json }}
+    permissions: {{ matrix_bridge_steam_bridge_permissions | to_json }}
 
 # Config for the bridge's database.
 database:
@@ -184,7 +184,7 @@ database:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: {{ matrix_steam_bridge_database_uri | to_json }}
+    uri: {{ matrix_bridge_steam_database_uri | to_json }}
     # Maximum number of connections.
     max_open_conns: 5
     max_idle_conns: 2
@@ -198,9 +198,9 @@ homeserver:
     # The address that this appservice can use to connect to the homeserver.
     # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
     # but https also works if they run on different machines.
-    address: {{ matrix_steam_bridge_homeserver_address | to_json }}
+    address: {{ matrix_bridge_steam_homeserver_address | to_json }}
     # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-    domain: {{ matrix_steam_bridge_homeserver_domain | to_json }}
+    domain: {{ matrix_bridge_steam_homeserver_domain | to_json }}
 
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -216,7 +216,7 @@ homeserver:
     # The bridge will use the appservice as_token to authorize requests.
     message_send_checkpoint_endpoint:
     # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
-    async_media: {{ matrix_steam_bridge_homeserver_async_media | to_json }}
+    async_media: {{ matrix_bridge_steam_homeserver_async_media | to_json }}
 
     # Should the bridge use a websocket for connecting to the homeserver?
     # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
@@ -232,27 +232,27 @@ appservice:
     # Like the homeserver address, a local non-https address is recommended when the bridge is on the same machine.
     # If the bridge is elsewhere, you must secure the connection yourself (e.g. with https or wireguard)
     # If you want to use https, you need to use a reverse proxy. The bridge does not have TLS support built in.
-    address: {{ matrix_steam_bridge_appservice_address | to_json }}
+    address: {{ matrix_bridge_steam_appservice_address | to_json }}
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    public_address: {{ matrix_steam_bridge_appservice_public_address | to_json }}
+    public_address: {{ matrix_bridge_steam_appservice_public_address | to_json }}
 
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
     hostname: 0.0.0.0
-    port: {{ matrix_steam_bridge_appservice_port }}
+    port: {{ matrix_bridge_steam_appservice_port }}
 
     # The unique ID of this appservice.
     id: steam
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
-        username: {{ matrix_steam_bridge_appservice_bot_username | to_json }}
+        username: {{ matrix_bridge_steam_appservice_bot_username | to_json }}
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
-        displayname: {{ matrix_steam_bridge_appservice_bot_displayname | to_json(ensure_ascii=False) }}
-        avatar: {{ matrix_steam_bridge_appservice_bot_avatar | to_json }}
+        displayname: {{ matrix_bridge_steam_appservice_bot_displayname | to_json(ensure_ascii=False) }}
+        avatar: {{ matrix_bridge_steam_appservice_bot_avatar | to_json }}
 
     # Whether to receive ephemeral events via appservice transactions.
     ephemeral_events: true
@@ -263,8 +263,8 @@ appservice:
     async_transactions: false
 
     # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
-    as_token: {{ matrix_steam_bridge_appservice_token | to_json }}
-    hs_token: {{ matrix_steam_bridge_homeserver_token | to_json }}
+    as_token: {{ matrix_bridge_steam_appservice_token | to_json }}
+    hs_token: {{ matrix_bridge_steam_homeserver_token | to_json }}
 
     # Localpart template of MXIDs for remote users.
     # {% raw %}{{.}}{% endraw %} is replaced with the internal ID of the user.
@@ -282,7 +282,7 @@ matrix:
     sync_direct_chat_list: true
     # Whether created rooms should have federation enabled. If false, created portal rooms
     # will never be federated. Changing this option requires recreating rooms.
-    federate_rooms: {{ matrix_steam_bridge_matrix_federate_rooms | to_json }}
+    federate_rooms: {{ matrix_bridge_steam_matrix_federate_rooms | to_json }}
     # The threshold as bytes after which the bridge should roundtrip uploads via the disk
     # rather than keeping the whole file in memory.
     upload_file_threshold: 5242880
@@ -302,7 +302,7 @@ provisioning:
     prefix: /_matrix/provision
     # Shared secret for authentication. If set to "generate" or null, a random secret will be generated,
     # or if set to "disable", the provisioning API will be disabled.
-    shared_secret: {{ matrix_steam_bridge_provisioning_shared_secret | to_json }}
+    shared_secret: {{ matrix_bridge_steam_provisioning_shared_secret | to_json }}
     # Whether to allow provisioning API requests to be authed using Matrix access tokens.
     # This follows the same rules as double puppeting to determine which server to contact to check the token,
     # which means that by default, it only works for users on the same server as the bridge.
@@ -316,15 +316,15 @@ provisioning:
 public_media:
     # Should public media be enabled at all?
     # The public_address field under the appservice section MUST be set when enabling public media.
-    enabled: {{ matrix_steam_bridge_public_media_enabled | to_json }}
+    enabled: {{ matrix_bridge_steam_public_media_enabled | to_json }}
     # A key for signing public media URLs.
     # If set to "generate", a random key will be generated.
-    signing_key: {{ matrix_steam_bridge_public_media_signing_key | to_json }}
+    signing_key: {{ matrix_bridge_steam_public_media_signing_key | to_json }}
     # Number of seconds that public media URLs are valid for.
     # If set to 0, URLs will never expire.
-    expiry: {{ matrix_steam_bridge_public_media_expiry | to_json }}
+    expiry: {{ matrix_bridge_steam_public_media_expiry | to_json }}
     # Length of hash to use for public media URLs. Must be between 0 and 32.
-    hash_length: {{ matrix_steam_bridge_public_media_hash_length | to_json }}
+    hash_length: {{ matrix_bridge_steam_public_media_hash_length | to_json }}
 
 # Settings for converting remote media to custom mxc:// URIs instead of reuploading.
 # More details can be found at https://docs.mau.fi/bridges/go/discord/direct-media.html
@@ -353,11 +353,11 @@ direct_media:
 # See https://docs.mau.fi/bridges/general/backfill.html for more details.
 backfill:
     # Whether to do backfilling at all.
-    enabled: {{ matrix_steam_bridge_backfill_enabled | to_json }}
+    enabled: {{ matrix_bridge_steam_backfill_enabled | to_json }}
     # Maximum number of messages to backfill in empty rooms.
-    max_initial_messages: {{ matrix_steam_bridge_backfill_max_initial_messages | to_json }}
+    max_initial_messages: {{ matrix_bridge_steam_backfill_max_initial_messages | to_json }}
     # Maximum number of missed messages to backfill after bridge restarts.
-    max_catchup_messages: {{ matrix_steam_bridge_backfill_max_catchup_messages | to_json }}
+    max_catchup_messages: {{ matrix_bridge_steam_backfill_max_catchup_messages | to_json }}
     # If a backfilled chat is older than this number of hours,
     # mark it as read even if it's unread on the remote network.
     unread_hours_threshold: 720
@@ -392,35 +392,35 @@ double_puppet:
     allow_discovery: false
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
-    secrets: {{ matrix_steam_bridge_double_puppet_secrets | to_json }}
+    secrets: {{ matrix_bridge_steam_double_puppet_secrets | to_json }}
 
 # End-to-bridge encryption support options.
 #
 # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
 encryption:
     # Whether to enable encryption at all. If false, the bridge will not function in encrypted rooms.
-    allow: {{ matrix_steam_bridge_bridge_encryption_allow | to_json }}
+    allow: {{ matrix_bridge_steam_bridge_encryption_allow | to_json }}
     # Whether to force-enable encryption in all bridged rooms.
-    default: {{ matrix_steam_bridge_bridge_encryption_default | to_json }}
+    default: {{ matrix_bridge_steam_bridge_encryption_default | to_json }}
     # Whether to require all messages to be encrypted and drop any unencrypted messages.
-    require: {{ matrix_steam_bridge_bridge_encryption_require | to_json }}
+    require: {{ matrix_bridge_steam_bridge_encryption_require | to_json }}
     # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
     # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
-    appservice: {{ matrix_steam_bridge_bridge_encryption_appservice | to_json }}
+    appservice: {{ matrix_bridge_steam_bridge_encryption_appservice | to_json }}
     # Whether to use MSC4190 instead of appservice login to create the bridge bot device.
     # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
     # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
     # Changing this option requires updating the appservice registration file.
-    msc4190: {{ matrix_steam_bridge_msc4190_enabled | to_json }}
+    msc4190: {{ matrix_bridge_steam_msc4190_enabled | to_json }}
     # Whether to enable self-signing for bridges (Only the bridge bot uses this for now)
     # Requires msc4190 to replace keys on reset
-    self_sign: {{ matrix_steam_bridge_self_sign_enabled | to_json }}
+    self_sign: {{ matrix_bridge_steam_self_sign_enabled | to_json }}
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
-    allow_key_sharing: {{ matrix_steam_bridge_bridge_encryption_key_sharing_allow | to_json }}
+    allow_key_sharing: {{ matrix_bridge_steam_bridge_encryption_key_sharing_allow | to_json }}
     # Pickle key for encrypting encryption keys in the bridge database.
     # If set to generate, a random key will be generated.
-    pickle_key: {{ matrix_steam_bridge_bridge_encryption_pickle_key | to_json }}
+    pickle_key: {{ matrix_bridge_steam_bridge_encryption_pickle_key | to_json }}
     # Options for deleting megolm sessions from the bridge.
     delete_keys:
         # Beeper-specific: delete outbound sessions when hungryserv confirms
@@ -479,7 +479,7 @@ encryption:
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    min_level: {{ matrix_steam_bridge_logging_level | to_json }}
+    min_level: {{ matrix_bridge_steam_logging_level | to_json }}
     writers:
         - type: stdout
           format: pretty-colored

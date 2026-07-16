@@ -15,7 +15,7 @@ See the project's [documentation](https://github.com/jasonlaguidice/matrix-steam
 To enable the [Steam](https://steampowered.com/) bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_steam_bridge_enabled: true
+matrix_bridge_steam_enabled: true
 ```
 
 ## Installing
@@ -48,4 +48,4 @@ Chat rooms will automatically be opened as new messages are received.
 Send `help` to the bot to see the available commands.
 
 ## Notable Configuration Options
-- `matrix_steam_bridge_network_presence_topic_enabled` and `matrix_steam_bridge_network_presence_topic_rich_presence_enabled` mirror Steam's [Enhanced Rich Presence](https://partner.steamgames.com/doc/features/enhancedrichpresence) feature in Matrix. This will display the user's current game and rich presence if supported by the game. This sets the DM room's `m.topic` field to achieve this. Some games (like Deadlock) update the rich presence every minute with a match timer. In some clients, the topic update will cause the DM to be pushed to the top of the conversation list continuously, so this option is disabled by default.
+- `matrix_bridge_steam_network_presence_topic_enabled` and `matrix_bridge_steam_network_presence_topic_rich_presence_enabled` mirror Steam's [Enhanced Rich Presence](https://partner.steamgames.com/doc/features/enhancedrichpresence) feature in Matrix. This will display the user's current game and rich presence if supported by the game. This sets the DM room's `m.topic` field to achieve this. Some games (like Deadlock) update the rich presence every minute with a match timer. In some clients, the topic update will cause the DM to be pushed to the top of the conversation list continuously, so this option is disabled by default.

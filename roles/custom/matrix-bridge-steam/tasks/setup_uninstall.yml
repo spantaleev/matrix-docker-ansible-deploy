@@ -7,9 +7,9 @@
 - name: Check existence of matrix-steam-bridge service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-steam-bridge.service"
-  register: matrix_steam_bridge_service_stat
+  register: matrix_bridge_steam_service_stat
 
-- when: matrix_steam_bridge_service_stat.stat.exists | bool
+- when: matrix_bridge_steam_service_stat.stat.exists | bool
   block:
     - name: Ensure matrix-steam-bridge is stopped
       ansible.builtin.service:
