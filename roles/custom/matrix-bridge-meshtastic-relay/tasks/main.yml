@@ -11,15 +11,15 @@
     - install-all
     - install-meshtastic-relay
   block:
-    - when: matrix_meshtastic_relay_enabled | bool
+    - when: matrix_bridge_meshtastic_relay_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-    - when: matrix_meshtastic_relay_enabled | bool
+    - when: matrix_bridge_meshtastic_relay_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
 
 - tags:
     - setup-all
     - setup-meshtastic-relay
   block:
-    - when: not matrix_meshtastic_relay_enabled | bool
+    - when: not matrix_bridge_meshtastic_relay_enabled | bool
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"

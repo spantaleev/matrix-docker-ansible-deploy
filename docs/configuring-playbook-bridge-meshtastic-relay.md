@@ -26,42 +26,42 @@ You also need access to a Meshtastic device, connected to the server via one of:
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_meshtastic_relay_enabled: true
+matrix_bridge_meshtastic_relay_enabled: true
 
 # Password for the bot's Matrix account.
 # On first startup, the bridge uses this to log in and persist credentials
 # (including End-to-End Encryption material) under its data directory.
 # After that, the password can be removed from this variable.
-matrix_meshtastic_relay_matrix_bot_password: "PASSWORD_FOR_THE_BOT"
+matrix_bridge_meshtastic_relay_matrix_bot_password: "PASSWORD_FOR_THE_BOT"
 
 # How the bridge connects to your Meshtastic device.
 # One of: tcp, serial, ble
-matrix_meshtastic_relay_connection_type: tcp
+matrix_bridge_meshtastic_relay_connection_type: tcp
 
 # For connection_type: tcp
-matrix_meshtastic_relay_tcp_host: "meshtastic.local"
+matrix_bridge_meshtastic_relay_tcp_host: "meshtastic.local"
 
 # For connection_type: serial
-# matrix_meshtastic_relay_serial_port: "/dev/ttyUSB0"
+# matrix_bridge_meshtastic_relay_serial_port: "/dev/ttyUSB0"
 
 # For connection_type: ble
-# matrix_meshtastic_relay_ble_address: "AA:BB:CC:DD:EE:FF"
+# matrix_bridge_meshtastic_relay_ble_address: "AA:BB:CC:DD:EE:FF"
 
 # Matrix rooms to bridge to Meshtastic channels.
-matrix_meshtastic_relay_matrix_rooms_list:
+matrix_bridge_meshtastic_relay_matrix_rooms_list:
   - id: "#meshtastic:{{ matrix_domain }}"
     meshtastic_channel: "0"
 ```
 
-By default, the bot's Matrix ID is `@meshtasticbot:{{ matrix_domain }}`. To change it, adjust `matrix_meshtastic_relay_matrix_bot_user_id`.
+By default, the bot's Matrix ID is `@meshtasticbot:{{ matrix_domain }}`. To change it, adjust `matrix_bridge_meshtastic_relay_matrix_bot_user_id`.
 
 ### Bluetooth (BLE) connections
 
-When `matrix_meshtastic_relay_connection_type` is `ble`, the container runs with `--network=host` and bind-mounts the host's DBus socket — both are required for Bluetooth pairing/communication. Only use this connection type if you trust the playbook-managed host and are comfortable with these privileges.
+When `matrix_bridge_meshtastic_relay_connection_type` is `ble`, the container runs with `--network=host` and bind-mounts the host's DBus socket — both are required for Bluetooth pairing/communication. Only use this connection type if you trust the playbook-managed host and are comfortable with these privileges.
 
 ### Serial connections
 
-When `matrix_meshtastic_relay_connection_type` is `serial`, the host device referenced by `matrix_meshtastic_relay_serial_port` is passed through to the container. Make sure that `matrix_user_uid` / `matrix_user_gid` have read/write access to that device (e.g. by adding the matrix user to the `dialout` group, or adjusting udev rules).
+When `matrix_bridge_meshtastic_relay_connection_type` is `serial`, the host device referenced by `matrix_bridge_meshtastic_relay_serial_port` is passed through to the container. Make sure that `matrix_user_uid` / `matrix_user_gid` have read/write access to that device (e.g. by adding the matrix user to the `dialout` group, or adjusting udev rules).
 
 ### Extending the configuration
 
@@ -69,7 +69,7 @@ There are some additional things you may wish to configure about the bridge.
 
 Take a look at:
 
-- `roles/custom/matrix-bridge-meshtastic-relay/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override individual `matrix_meshtastic_relay_*` variables, or make finer-grained adjustments via `matrix_meshtastic_relay_configuration_extension_yaml`.
+- `roles/custom/matrix-bridge-meshtastic-relay/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override individual `matrix_bridge_meshtastic_relay_*` variables, or make finer-grained adjustments via `matrix_bridge_meshtastic_relay_configuration_extension_yaml`.
 
 ## Installing
 
@@ -86,7 +86,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 ## Usage
 
-Invite the bot to the Matrix rooms listed in `matrix_meshtastic_relay_matrix_rooms_list` and it will relay between Matrix and the corresponding Meshtastic channel. Messages sent on Meshtastic will appear in Matrix and vice versa.
+Invite the bot to the Matrix rooms listed in `matrix_bridge_meshtastic_relay_matrix_rooms_list` and it will relay between Matrix and the corresponding Meshtastic channel. Messages sent on Meshtastic will appear in Matrix and vice versa.
 
 See the [project's wiki](https://github.com/jeremiah-k/meshtastic-matrix-relay/wiki) for details about commands, plugins and advanced usage.
 

@@ -11,16 +11,16 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
-    - {'name': 'matrix_meshtastic_relay_matrix_host', when: true}
-    - {'name': 'matrix_meshtastic_relay_matrix_bot_password', when: true}
-    - {'name': 'matrix_meshtastic_relay_connection_type', when: true}
+    - {'name': 'matrix_bridge_meshtastic_relay_matrix_host', when: true}
+    - {'name': 'matrix_bridge_meshtastic_relay_matrix_bot_password', when: true}
+    - {'name': 'matrix_bridge_meshtastic_relay_connection_type', when: true}
 
-- name: Fail if matrix_meshtastic_relay_connection_type is invalid
+- name: Fail if matrix_bridge_meshtastic_relay_connection_type is invalid
   ansible.builtin.fail:
     msg: >-
-      `matrix_meshtastic_relay_connection_type` must be one of: `tcp`, `serial`, `ble`.
-      Got: `{{ matrix_meshtastic_relay_connection_type }}`.
-  when: "matrix_meshtastic_relay_connection_type not in ['tcp', 'serial', 'ble']"
+      `matrix_bridge_meshtastic_relay_connection_type` must be one of: `tcp`, `serial`, `ble`.
+      Got: `{{ matrix_bridge_meshtastic_relay_connection_type }}`.
+  when: "matrix_bridge_meshtastic_relay_connection_type not in ['tcp', 'serial', 'ble']"
 
 - name: (Deprecation) Catch and report renamed matrix-meshtastic-relay variables
   ansible.builtin.fail:
@@ -28,4 +28,4 @@
       The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
-    - {'old': 'matrix_meshtastic_relay_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
+    - {'old': 'matrix_bridge_meshtastic_relay_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}

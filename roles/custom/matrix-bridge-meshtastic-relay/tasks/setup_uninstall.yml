@@ -8,9 +8,9 @@
 - name: Check existence of matrix-meshtastic-relay service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-meshtastic-relay.service"
-  register: matrix_meshtastic_relay_service_stat
+  register: matrix_bridge_meshtastic_relay_service_stat
 
-- when: matrix_meshtastic_relay_service_stat.stat.exists | bool
+- when: matrix_bridge_meshtastic_relay_service_stat.stat.exists | bool
   block:
     - name: Ensure matrix-meshtastic-relay is stopped
       ansible.builtin.service:

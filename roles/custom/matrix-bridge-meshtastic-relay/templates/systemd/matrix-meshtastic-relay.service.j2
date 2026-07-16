@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix <-> Meshtastic bridge
-{% for service in matrix_meshtastic_relay_systemd_required_services_list %}
+{% for service in matrix_bridge_meshtastic_relay_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_meshtastic_relay_systemd_wanted_services_list %}
+{% for service in matrix_bridge_meshtastic_relay_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -25,26 +25,26 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--read-only \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=50m \
 			--tmpfs=/.cache:rw,noexec,nosuid,size=50m \
-			--mount type=bind,src={{ matrix_meshtastic_relay_config_path }},dst=/config,ro \
-			--mount type=bind,src={{ matrix_meshtastic_relay_data_path }},dst=/data \
-			{% if matrix_meshtastic_relay_connection_type == 'ble' %}
+			--mount type=bind,src={{ matrix_bridge_meshtastic_relay_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_bridge_meshtastic_relay_data_path }},dst=/data \
+			{% if matrix_bridge_meshtastic_relay_connection_type == 'ble' %}
 			--network=host \
 			--security-opt apparmor=unconfined \
 			--mount type=bind,src=/var/run/dbus,dst=/var/run/dbus,ro \
 			{% else %}
-			--network={{ matrix_meshtastic_relay_container_network }} \
+			--network={{ matrix_bridge_meshtastic_relay_container_network }} \
 			{% endif %}
-			{% if matrix_meshtastic_relay_connection_type == 'serial' %}
-			--device={{ matrix_meshtastic_relay_serial_port }} \
+			{% if matrix_bridge_meshtastic_relay_connection_type == 'serial' %}
+			--device={{ matrix_bridge_meshtastic_relay_serial_port }} \
 			{% endif %}
-			{% for arg in matrix_meshtastic_relay_container_extra_arguments %}
+			{% for arg in matrix_bridge_meshtastic_relay_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_meshtastic_relay_container_image }} \
+			{{ matrix_bridge_meshtastic_relay_container_image }} \
 			mmrelay --config /config/config.yaml
 
-{% if matrix_meshtastic_relay_container_network != 'host' %}
-{% for network in matrix_meshtastic_relay_container_additional_networks %}
+{% if matrix_bridge_meshtastic_relay_container_network != 'host' %}
+{% for network in matrix_bridge_meshtastic_relay_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-meshtastic-relay
 {% endfor %}
 {% endif %}
