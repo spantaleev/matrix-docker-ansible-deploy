@@ -46,3 +46,6 @@ Once logged in, send `search [name]` to search through recognized Steam friends.
 Chat rooms will automatically be opened as new messages are received.
 
 Send `help` to the bot to see the available commands.
+
+## Notable Configuration Options
+- `matrix_steam_bridge_network_presence_topic_enabled` and `matrix_steam_bridge_network_presence_topic_rich_presence_enabled` mirror Steam's [Enhanced Rich Presence](https://partner.steamgames.com/doc/features/enhancedrichpresence) feature in Matrix. This will display the user's current game and rich presence if supported by the game. This sets the DM room's `m.topic` field to achieve this. Some games (like Deadlock) update the rich presence every minute with a match timer. In some clients, the topic update will cause the DM to be pushed to the top of the conversation list continuously, so this option is disabled by default.

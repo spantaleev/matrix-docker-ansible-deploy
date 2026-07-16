@@ -28,6 +28,10 @@ network:
     # Set to false to disable Statuskit support globally
     statuskit_notifications: {{ matrix_rustpush_bridge_statuskit_notifications | to_json }}
     statuskit_share_on_startup: {{ matrix_rustpush_bridge_statuskit_share_on_startup | to_json }}
+    # How to surface a contact's Focus/DND status. Only takes effect when statuskit_notifications is true.
+    # - topic: set the DM room topic to the contact's Focus/DND state, clearing it when available.
+    # - notice: post a silent m.notice instead (legacy behavior). Group chats always use notice.
+    statuskit_notification_style: {{ matrix_rustpush_bridge_statuskit_notification_style | to_json }}
 
 # Config options that affect the central bridge module.
 bridge:
