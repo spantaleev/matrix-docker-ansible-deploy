@@ -28,7 +28,7 @@ See [this section](configuring-playbook-bridge-mautrix-bridges.md#set-up-double-
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_mautrix_twitter_enabled: true
+matrix_bridge_mautrix_twitter_enabled: true
 ```
 
 ### Extending the configuration
@@ -69,5 +69,5 @@ The default logging level for this component is `warn`. If you want to increase 
 
 ```yaml
 # Valid values: fatal, error, warn, info, debug, trace
-matrix_mautrix_twitter_logging_level: 'debug'
+matrix_bridge_mautrix_twitter_logging_level: 'debug'
 ```

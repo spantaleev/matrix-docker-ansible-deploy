@@ -4,39 +4,39 @@ SPDX-FileCopyrightText: 2024 Slavi Pantaleev
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
-{% if matrix_mautrix_twitter_container_labels_traefik_enabled %}
+{% if matrix_bridge_mautrix_twitter_container_labels_traefik_enabled %}
 traefik.enable=true
 
-{% if matrix_mautrix_twitter_container_labels_traefik_docker_network %}
-traefik.docker.network={{ matrix_mautrix_twitter_container_labels_traefik_docker_network }}
+{% if matrix_bridge_mautrix_twitter_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_bridge_mautrix_twitter_container_labels_traefik_docker_network }}
 {% endif %}
 
 traefik.http.services.matrix-mautrix-twitter-metrics.loadbalancer.server.port=8000
 
-{% if matrix_mautrix_twitter_container_labels_metrics_enabled %}
+{% if matrix_bridge_mautrix_twitter_container_labels_metrics_enabled %}
 ############################################################
 #                                                          #
 # Metrics                                                  #
 #                                                          #
 ############################################################
 
-{% if matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_enabled %}
-traefik.http.middlewares.matrix-mautrix-twitter-metrics-basic-auth.basicauth.users={{ matrix_mautrix_twitter_container_labels_metrics_middleware_basic_auth_users }}
+{% if matrix_bridge_mautrix_twitter_container_labels_metrics_middleware_basic_auth_enabled %}
+traefik.http.middlewares.matrix-mautrix-twitter-metrics-basic-auth.basicauth.users={{ matrix_bridge_mautrix_twitter_container_labels_metrics_middleware_basic_auth_users }}
 traefik.http.routers.matrix-mautrix-twitter-metrics.middlewares=matrix-mautrix-twitter-metrics-basic-auth
 {% endif %}
 
-traefik.http.routers.matrix-mautrix-twitter-metrics.rule={{ matrix_mautrix_twitter_container_labels_metrics_traefik_rule }}
+traefik.http.routers.matrix-mautrix-twitter-metrics.rule={{ matrix_bridge_mautrix_twitter_container_labels_metrics_traefik_rule }}
 
-{% if matrix_mautrix_twitter_container_labels_metrics_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-mautrix-twitter-metrics.priority={{ matrix_mautrix_twitter_container_labels_metrics_traefik_priority }}
+{% if matrix_bridge_mautrix_twitter_container_labels_metrics_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-twitter-metrics.priority={{ matrix_bridge_mautrix_twitter_container_labels_metrics_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-mautrix-twitter-metrics.service=matrix-mautrix-twitter-metrics
-traefik.http.routers.matrix-mautrix-twitter-metrics.entrypoints={{ matrix_mautrix_twitter_container_labels_metrics_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-twitter-metrics.entrypoints={{ matrix_bridge_mautrix_twitter_container_labels_metrics_traefik_entrypoints }}
 
-traefik.http.routers.matrix-mautrix-twitter-metrics.tls={{ matrix_mautrix_twitter_container_labels_metrics_traefik_tls | to_json }}
-{% if matrix_mautrix_twitter_container_labels_metrics_traefik_tls %}
-traefik.http.routers.matrix-mautrix-twitter-metrics.tls.certResolver={{ matrix_mautrix_twitter_container_labels_metrics_traefik_tls_certResolver }}
+traefik.http.routers.matrix-mautrix-twitter-metrics.tls={{ matrix_bridge_mautrix_twitter_container_labels_metrics_traefik_tls | to_json }}
+{% if matrix_bridge_mautrix_twitter_container_labels_metrics_traefik_tls %}
+traefik.http.routers.matrix-mautrix-twitter-metrics.tls.certResolver={{ matrix_bridge_mautrix_twitter_container_labels_metrics_traefik_tls_certResolver }}
 {% endif %}
 
 ############################################################
@@ -46,7 +46,7 @@ traefik.http.routers.matrix-mautrix-twitter-metrics.tls.certResolver={{ matrix_m
 ############################################################
 {% endif %}
 
-{% if matrix_mautrix_twitter_container_labels_exposure_enabled %}
+{% if matrix_bridge_mautrix_twitter_container_labels_exposure_enabled %}
 ############################################################
 #                                                          #
 # Bridge API exposure                                      #
@@ -55,21 +55,21 @@ traefik.http.routers.matrix-mautrix-twitter-metrics.tls.certResolver={{ matrix_m
 
 traefik.http.services.matrix-mautrix-twitter-exposure.loadbalancer.server.port=29327
 
-traefik.http.middlewares.matrix-mautrix-twitter-exposure-strip-prefix.stripprefix.prefixes={{ matrix_mautrix_twitter_exposure_path_prefix }}
+traefik.http.middlewares.matrix-mautrix-twitter-exposure-strip-prefix.stripprefix.prefixes={{ matrix_bridge_mautrix_twitter_exposure_path_prefix }}
 traefik.http.routers.matrix-mautrix-twitter-exposure.middlewares=matrix-mautrix-twitter-exposure-strip-prefix
 
-traefik.http.routers.matrix-mautrix-twitter-exposure.rule={{ matrix_mautrix_twitter_container_labels_exposure_traefik_rule }}
+traefik.http.routers.matrix-mautrix-twitter-exposure.rule={{ matrix_bridge_mautrix_twitter_container_labels_exposure_traefik_rule }}
 
-{% if matrix_mautrix_twitter_container_labels_exposure_traefik_priority | int > 0 %}
-traefik.http.routers.matrix-mautrix-twitter-exposure.priority={{ matrix_mautrix_twitter_container_labels_exposure_traefik_priority }}
+{% if matrix_bridge_mautrix_twitter_container_labels_exposure_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-mautrix-twitter-exposure.priority={{ matrix_bridge_mautrix_twitter_container_labels_exposure_traefik_priority }}
 {% endif %}
 
 traefik.http.routers.matrix-mautrix-twitter-exposure.service=matrix-mautrix-twitter-exposure
-traefik.http.routers.matrix-mautrix-twitter-exposure.entrypoints={{ matrix_mautrix_twitter_container_labels_exposure_traefik_entrypoints }}
+traefik.http.routers.matrix-mautrix-twitter-exposure.entrypoints={{ matrix_bridge_mautrix_twitter_container_labels_exposure_traefik_entrypoints }}
 
-traefik.http.routers.matrix-mautrix-twitter-exposure.tls={{ matrix_mautrix_twitter_container_labels_exposure_traefik_tls | to_json }}
-{% if matrix_mautrix_twitter_container_labels_exposure_traefik_tls %}
-traefik.http.routers.matrix-mautrix-twitter-exposure.tls.certResolver={{ matrix_mautrix_twitter_container_labels_exposure_traefik_tls_certResolver }}
+traefik.http.routers.matrix-mautrix-twitter-exposure.tls={{ matrix_bridge_mautrix_twitter_container_labels_exposure_traefik_tls | to_json }}
+{% if matrix_bridge_mautrix_twitter_container_labels_exposure_traefik_tls %}
+traefik.http.routers.matrix-mautrix-twitter-exposure.tls.certResolver={{ matrix_bridge_mautrix_twitter_container_labels_exposure_traefik_tls_certResolver }}
 {% endif %}
 
 ############################################################
@@ -82,4 +82,4 @@ traefik.http.routers.matrix-mautrix-twitter-exposure.tls.certResolver={{ matrix_
 
 {% endif %}
 
-{{ matrix_mautrix_twitter_container_labels_additional_labels }}
+{{ matrix_bridge_mautrix_twitter_container_labels_additional_labels }}
