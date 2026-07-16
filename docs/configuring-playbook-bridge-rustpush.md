@@ -93,3 +93,8 @@ matrix_rustpush_bridge_logging_level: 'debug'
 # Enable debug logging for RustPush
 matrix_rustpush_bridge_rust_log: "warn,rustpushgo=info,openabsinthe=debug"
 ```
+## Notable Configuration Options
+- `matrix_rustpush_bridge_statuskit_notifications` will display StatusKit information for conversation participants. In some clients, this update will cause the DM to be pushed to the top of the conversation list continuously, so this option is disabled by default.
+  - `matrix_rustpush_bridge_statuskit_notification_style` can be set to either `topic` or `notice`
+  - `topic` sets the status as a room topic. In supported clients (like Cinny and Sable), this will display `🔕 Focus` as a second line when the person has focus mode enabled.
+  - `notice` sends an `m.notice` event to the room which will display text in the room but should not generate a notification

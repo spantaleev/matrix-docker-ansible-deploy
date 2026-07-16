@@ -42,6 +42,16 @@ network:
         # When true, reading messages will count as activity and keep you marked as online
         read_receipts_reset_presence: false
 
+    # Presence topic settings
+    # Sets a Steam friend's current game (+ rich presence flavor text) as the DM room's m.room.topic.
+    presence_topic:
+        # Master switch for setting the DM room topic to the friend's current game
+        enabled: {{ matrix_steam_bridge_network_presence_topic_enabled | to_json }}
+        # Append resolved rich presence flavor text to the topic (e.g. "Deadlock — Street Brawl: Paige (12 min)")
+        rich_presence_enabled: {{ matrix_steam_bridge_network_presence_topic_rich_presence_enabled | to_json }}
+        # Fallback: show the raw unresolved rich presence token if resolution fails
+        show_raw_tokens: {{ matrix_steam_bridge_network_presence_topic_show_raw_tokens | to_json }}
+
 
 # Config options that affect the central bridge module.
 bridge:
