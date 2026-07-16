@@ -12,15 +12,15 @@
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
-    - {'old': 'matrix_appservice_discord_container_expose_client_server_api_port', 'new': '<superseded by matrix_appservice_discord_container_http_host_bind_port>'}
-    - {'old': 'matrix_appservice_discord_container_image_name_prefix', 'new': 'matrix_appservice_discord_container_image_registry_prefix'}
-    - {'old': 'matrix_appservice_discord_docker_image', 'new': 'matrix_appservice_discord_container_image'}
-    - {'old': 'matrix_appservice_discord_docker_image_force_pull', 'new': 'matrix_appservice_discord_container_image_force_pull'}
-    - {'old': 'matrix_appservice_discord_docker_image_registry_prefix', 'new': 'matrix_appservice_discord_container_image_registry_prefix'}
-    - {'old': 'matrix_appservice_discord_docker_image_registry_prefix_upstream', 'new': 'matrix_appservice_discord_container_image_registry_prefix_upstream'}
-    - {'old': 'matrix_appservice_discord_docker_image_registry_prefix_upstream_default', 'new': 'matrix_appservice_discord_container_image_registry_prefix_upstream_default'}
-    - {'old': 'matrix_appservice_discord_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
-    - {'old': 'matrix_appservice_discord_container_image_self_build', 'new': '<removed> (self-building was never actually implemented for this role, so enabling it only led to image pull failures; the prebuilt image is amd64-only, so on other architectures consider the mautrix-discord bridge instead)'}
+    - {'old': 'matrix_bridge_appservice_discord_container_expose_client_server_api_port', 'new': '<superseded by matrix_bridge_appservice_discord_container_http_host_bind_port>'}
+    - {'old': 'matrix_bridge_appservice_discord_container_image_name_prefix', 'new': 'matrix_bridge_appservice_discord_container_image_registry_prefix'}
+    - {'old': 'matrix_bridge_appservice_discord_docker_image', 'new': 'matrix_bridge_appservice_discord_container_image'}
+    - {'old': 'matrix_bridge_appservice_discord_docker_image_force_pull', 'new': 'matrix_bridge_appservice_discord_container_image_force_pull'}
+    - {'old': 'matrix_bridge_appservice_discord_docker_image_registry_prefix', 'new': 'matrix_bridge_appservice_discord_container_image_registry_prefix'}
+    - {'old': 'matrix_bridge_appservice_discord_docker_image_registry_prefix_upstream', 'new': 'matrix_bridge_appservice_discord_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_bridge_appservice_discord_docker_image_registry_prefix_upstream_default', 'new': 'matrix_bridge_appservice_discord_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_bridge_appservice_discord_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
+    - {'old': 'matrix_bridge_appservice_discord_container_image_self_build', 'new': '<removed> (self-building was never actually implemented for this role, so enabling it only led to image pull failures; the prebuilt image is amd64-only, so on other architectures consider the mautrix-discord bridge instead)'}
 
 - name: Fail if required appservice-discord settings not defined
   ansible.builtin.fail:
@@ -28,15 +28,15 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
-    - {'name': 'matrix_appservice_discord_client_id', when: true}
-    - {'name': 'matrix_appservice_discord_bot_token', when: true}
-    - {'name': 'matrix_appservice_discord_appservice_token', when: true}
-    - {'name': 'matrix_appservice_discord_homeserver_token', when: true}
-    - {'name': 'matrix_appservice_discord_homeserver_domain', when: true}
-    - {'name': 'matrix_appservice_discord_container_network', when: true}
-    - {'name': 'matrix_appservice_discord_database_hostname', when: "{{ matrix_appservice_discord_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_bridge_appservice_discord_client_id', when: true}
+    - {'name': 'matrix_bridge_appservice_discord_bot_token', when: true}
+    - {'name': 'matrix_bridge_appservice_discord_appservice_token', when: true}
+    - {'name': 'matrix_bridge_appservice_discord_homeserver_token', when: true}
+    - {'name': 'matrix_bridge_appservice_discord_homeserver_domain', when: true}
+    - {'name': 'matrix_bridge_appservice_discord_container_network', when: true}
+    - {'name': 'matrix_bridge_appservice_discord_database_hostname', when: "{{ matrix_bridge_appservice_discord_database_engine == 'postgres' }}"}
 
 - name: Require a valid database engine
   ansible.builtin.fail:
-    msg: "`matrix_appservice_discord_database_engine` needs to be either 'sqlite' or 'postgres'"
-  when: "matrix_appservice_discord_database_engine not in ['sqlite', 'postgres']"
+    msg: "`matrix_bridge_appservice_discord_database_engine` needs to be either 'sqlite' or 'postgres'"
+  when: "matrix_bridge_appservice_discord_database_engine not in ['sqlite', 'postgres']"

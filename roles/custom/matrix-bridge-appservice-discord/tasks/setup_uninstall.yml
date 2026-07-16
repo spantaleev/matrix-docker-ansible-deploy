@@ -9,9 +9,9 @@
 - name: Check existence of matrix-appservice-discord service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-discord.service"
-  register: matrix_appservice_discord_service_stat
+  register: matrix_bridge_appservice_discord_service_stat
 
-- when: matrix_appservice_discord_service_stat.stat.exists | bool
+- when: matrix_bridge_appservice_discord_service_stat.stat.exists | bool
   block:
     - name: Ensure matrix-appservice-discord is stopped
       ansible.builtin.service:

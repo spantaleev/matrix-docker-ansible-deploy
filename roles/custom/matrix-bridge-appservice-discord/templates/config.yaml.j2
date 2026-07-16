@@ -1,10 +1,10 @@
 #jinja2: lstrip_blocks: True
 bridge:
   # Domain part of the bridge, e.g. matrix.org
-  domain: {{ matrix_appservice_discord_bridge_domain|to_json }}
+  domain: {{ matrix_bridge_appservice_discord_bridge_domain|to_json }}
   # This should be your publicly facing URL because Discord may use it to
   # fetch media from the media store.
-  homeserverUrl: {{ matrix_appservice_discord_bridge_homeserverUrl|to_json }}
+  homeserverUrl: {{ matrix_bridge_appservice_discord_bridge_homeserverUrl|to_json }}
   # Interval at which to process users in the 'presence queue'. If you have
   # 5 users, one user will be processed every 500 milliseconds according to the
   # value below. This has a minimum value of 250.
@@ -13,17 +13,17 @@ bridge:
   presenceInterval: 500
   # Disable setting presence for 'ghost users' which means Discord users on Matrix
   # will not be shown as away or online.
-  disablePresence: {{ matrix_appservice_discord_bridge_disablePresence|to_json }}
+  disablePresence: {{ matrix_bridge_appservice_discord_bridge_disablePresence|to_json }}
   # Disable sending typing notifications when somebody on Discord types.
   disableTypingNotifications: false
   # Disable deleting messages on Discord if a message is redacted on Matrix.
   disableDeletionForwarding: false
   # Disable portal bridging, where Matrix users can search for unbridged Discord
   # rooms on their Matrix server.
-  disablePortalBridging: {{ matrix_appservice_discord_bridge_disablePortalBridging|to_json }}
+  disablePortalBridging: {{ matrix_bridge_appservice_discord_bridge_disablePortalBridging|to_json }}
   # Enable users to bridge rooms using !discord commands. See
   # https://t2bot.io/discord for instructions.
-  enableSelfServiceBridging: {{ matrix_appservice_discord_bridge_enableSelfServiceBridging|to_json }}
+  enableSelfServiceBridging: {{ matrix_bridge_appservice_discord_bridge_enableSelfServiceBridging|to_json }}
   # Disable sending of read receipts for Matrix events which have been
   # successfully bridged to Discord.
   disableReadReceipts: false
@@ -41,11 +41,11 @@ bridge:
   invalidTokenMessage: 'Your Discord bot token seems to be invalid, and the bridge cannot function. Please update it in your bridge settings and restart the bridge'
 # Authentication configuration for the discord bot.
 auth:
-  clientID: {{ matrix_appservice_discord_client_id | string|to_json }}
-  botToken: {{ matrix_appservice_discord_bot_token|to_json }}
+  clientID: {{ matrix_bridge_appservice_discord_client_id | string|to_json }}
+  botToken: {{ matrix_bridge_appservice_discord_bot_token|to_json }}
   # You must enable "Privileged Gateway Intents" in your bot settings on discord.com (e.g. https://discord.com/developers/applications/12345/bot)
   # for this to work
-  usePrivilegedIntents: {{ matrix_appservice_discord_auth_usePrivilegedIntents|to_json }}
+  usePrivilegedIntents: {{ matrix_bridge_appservice_discord_auth_usePrivilegedIntents|to_json }}
 logging:
   # What level should the logger output to the console at.
   console: "warn" # Valid values: silent, error, warn, http, info, verbose, silly
@@ -67,10 +67,10 @@ database:
   # If you are migrating, see https://github.com/matrix-org/matrix-appservice-discord/blob/master/docs/howto.md#migrate-to-postgres-from-sqlite
   # WARNING: You will almost certainly be fine with sqlite unless your bridge
   # is in heavy demand and you suffer from IO slowness.
-  {% if matrix_appservice_discord_database_engine == 'sqlite' %}
-  filename: {{ matrix_appservice_discord_database_filename|to_json }}
+  {% if matrix_bridge_appservice_discord_database_engine == 'sqlite' %}
+  filename: {{ matrix_bridge_appservice_discord_database_filename|to_json }}
   {% else %}
-  connString: {{ matrix_appservice_discord_database_connString|to_json }}
+  connString: {{ matrix_bridge_appservice_discord_database_connString|to_json }}
   {% endif %}
 room:
   # Set the default visibility of alias rooms, defaults to "public".

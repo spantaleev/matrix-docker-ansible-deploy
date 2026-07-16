@@ -26,9 +26,9 @@ Create a Discord Application [here](https://discordapp.com/developers/applicatio
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_appservice_discord_enabled: true
-matrix_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
-matrix_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
+matrix_bridge_appservice_discord_enabled: true
+matrix_bridge_appservice_discord_client_id: "YOUR DISCORD APP CLIENT ID"
+matrix_bridge_appservice_discord_bot_token: "YOUR DISCORD APP BOT TOKEN"
 
 # As of Synapse 1.90.0, uncomment to enable the backwards compatibility (https://matrix-org.github.io/synapse/latest/upgrade#upgrading-to-v1900) that this bridge needs.
 # Note: This deprecated method is considered insecure.
@@ -44,7 +44,7 @@ There are some additional things you may wish to configure about the bridge.
 Take a look at:
 
 - `roles/custom/matrix-bridge-appservice-discord/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-bridge-appservice-discord/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_discord_configuration_extension_yaml` variable
+- `roles/custom/matrix-bridge-appservice-discord/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bridge_appservice_discord_configuration_extension_yaml` variable
 
 ## Installing
 
@@ -65,7 +65,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 Self-service bridging allows you to bridge specific and existing Matrix rooms to specific Discord rooms. To enable it, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_appservice_discord_bridge_enableSelfServiceBridging: true
+matrix_bridge_appservice_discord_bridge_enableSelfServiceBridging: true
 ```
 
 **Note**: If self-service bridging is not enabled, `!discord help` commands will return no results.
@@ -91,14 +91,14 @@ All Matrix rooms created this way are **listed publicly** by default, and you wi
 To disable portal bridging, add the following configuration to your `vars.yml` file:
 
 ```yaml
-matrix_appservice_discord_bridge_disablePortalBridging: true
+matrix_bridge_appservice_discord_bridge_disablePortalBridging: true
 ```
 
 ### Usage
 
 To get started with Portal Bridging:
 
-1. To invite the bot to Discord, retrieve the invite link from the `{{ matrix_appservice_discord_config_path }}/invite_link` file on the server (this defaults to `/matrix/appservice-discord/config/invite_link`). You need to peek at the file on the server via SSH, etc., because it's not available via HTTP(S).
+1. To invite the bot to Discord, retrieve the invite link from the `{{ matrix_bridge_appservice_discord_config_path }}/invite_link` file on the server (this defaults to `/matrix/appservice-discord/config/invite_link`). You need to peek at the file on the server via SSH, etc., because it's not available via HTTP(S).
 2. Room addresses follow this syntax: `#_discord_<guildID>_<channelID>`. You can easily find the guild and channel IDs by logging into Discord in a browser and opening the desired channel. The URL will have this format: `discord.com/channels/<guildID>/<channelID>`.
 3. Once you have figured out the appropriate room address, you can join by doing `/join #_discord_<guildID>_<channelID>` in your Matrix client.
 
@@ -124,7 +124,7 @@ As with all other services, you can find the logs in [systemd-journald](https://
 The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file (adapt to your needs) and re-run the playbook:
 
 ```yaml
-matrix_appservice_discord_configuration_extension_yaml: |
+matrix_bridge_appservice_discord_configuration_extension_yaml: |
   logging:
     # What level should the logger output to the console at.
     console: "info" # Valid values: silent, error, warn, http, info, verbose, silly

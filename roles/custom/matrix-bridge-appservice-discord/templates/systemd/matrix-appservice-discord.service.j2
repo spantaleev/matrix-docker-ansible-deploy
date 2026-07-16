@@ -1,11 +1,11 @@
 #jinja2: lstrip_blocks: True
 [Unit]
 Description=Matrix Appservice Discord bridge
-{% for service in matrix_appservice_discord_systemd_required_services_list %}
+{% for service in matrix_bridge_appservice_discord_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
 {% endfor %}
-{% for service in matrix_appservice_discord_systemd_wanted_services_list %}
+{% for service in matrix_bridge_appservice_discord_systemd_wanted_services_list %}
 Wants={{ service }}
 {% endfor %}
 DefaultDependencies=no
@@ -22,20 +22,20 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--log-driver=none \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
-			--network={{ matrix_appservice_discord_container_network }} \
-			{% if matrix_appservice_discord_container_http_host_bind_port %}
-			-p {{ matrix_appservice_discord_container_http_host_bind_port }}:9005 \
+			--network={{ matrix_bridge_appservice_discord_container_network }} \
+			{% if matrix_bridge_appservice_discord_container_http_host_bind_port %}
+			-p {{ matrix_bridge_appservice_discord_container_http_host_bind_port }}:9005 \
 			{% endif %}
-			--mount type=bind,src={{ matrix_appservice_discord_config_path }},dst=/cfg \
-			--mount type=bind,src={{ matrix_appservice_discord_data_path }},dst=/data \
-			{% for arg in matrix_appservice_discord_container_extra_arguments %}
+			--mount type=bind,src={{ matrix_bridge_appservice_discord_config_path }},dst=/cfg \
+			--mount type=bind,src={{ matrix_bridge_appservice_discord_data_path }},dst=/data \
+			{% for arg in matrix_bridge_appservice_discord_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
-			{{ matrix_appservice_discord_container_image }} \
+			{{ matrix_bridge_appservice_discord_container_image }} \
 			node /build/src/discordas.js -p 9005 -c /cfg/config.yaml -f /cfg/registration.yaml
 
-{% if matrix_appservice_discord_container_network != 'host' %}
-{% for network in matrix_appservice_discord_container_additional_networks %}
+{% if matrix_bridge_appservice_discord_container_network != 'host' %}
+{% for network in matrix_bridge_appservice_discord_container_additional_networks %}
 ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-appservice-discord
 {% endfor %}
 {% endif %}
