@@ -5,17 +5,17 @@
 ---
 
 - ansible.builtin.set_fact:
-    matrix_mautrix_bluesky_migration_requires_restart: false
+    matrix_bridge_mautrix_bluesky_migration_requires_restart: false
 
 - name: Ensure Mautrix Bluesky image is pulled
   community.docker.docker_image_pull:
-    name: "{{ matrix_mautrix_bluesky_container_image }}"
+    name: "{{ matrix_bridge_mautrix_bluesky_container_image }}"
     pull: always
-  when: matrix_mautrix_bluesky_enabled | bool and not matrix_mautrix_bluesky_container_image_self_build
-  register: matrix_mautrix_bluesky_container_image_pull_result
+  when: matrix_bridge_mautrix_bluesky_enabled | bool and not matrix_bridge_mautrix_bluesky_container_image_self_build
+  register: matrix_bridge_mautrix_bluesky_container_image_pull_result
   retries: "{{ devture_playbook_help_container_retries_count }}"
   delay: "{{ devture_playbook_help_container_retries_delay }}"
-  until: matrix_mautrix_bluesky_container_image_pull_result is not failed
+  until: matrix_bridge_mautrix_bluesky_container_image_pull_result is not failed
 
 - name: Ensure Mautrix Bluesky paths exist
   ansible.builtin.file:
@@ -25,67 +25,67 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - {path: "{{ matrix_mautrix_bluesky_base_path }}", when: true}
-    - {path: "{{ matrix_mautrix_bluesky_config_path }}", when: true}
-    - {path: "{{ matrix_mautrix_bluesky_data_path }}", when: true}
-    - {path: "{{ matrix_mautrix_bluesky_container_src_files_path }}", when: "{{ matrix_mautrix_bluesky_container_image_self_build }}"}
+    - {path: "{{ matrix_bridge_mautrix_bluesky_base_path }}", when: true}
+    - {path: "{{ matrix_bridge_mautrix_bluesky_config_path }}", when: true}
+    - {path: "{{ matrix_bridge_mautrix_bluesky_data_path }}", when: true}
+    - {path: "{{ matrix_bridge_mautrix_bluesky_container_src_files_path }}", when: "{{ matrix_bridge_mautrix_bluesky_container_image_self_build }}"}
   when: item.when | bool
 
 - name: Ensure Mautrix Bluesky repository is present on self-build
   ansible.builtin.git:
-    repo: "{{ matrix_mautrix_bluesky_container_image_self_build_repo }}"
-    version: "{{ matrix_mautrix_bluesky_container_image_self_build_repo_version }}"
-    dest: "{{ matrix_mautrix_bluesky_container_src_files_path }}"
+    repo: "{{ matrix_bridge_mautrix_bluesky_container_image_self_build_repo }}"
+    version: "{{ matrix_bridge_mautrix_bluesky_container_image_self_build_repo_version }}"
+    dest: "{{ matrix_bridge_mautrix_bluesky_container_src_files_path }}"
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
-  register: matrix_mautrix_bluesky_git_pull_results
-  when: "matrix_mautrix_bluesky_enabled | bool and matrix_mautrix_bluesky_container_image_self_build"
+  register: matrix_bridge_mautrix_bluesky_git_pull_results
+  when: "matrix_bridge_mautrix_bluesky_enabled | bool and matrix_bridge_mautrix_bluesky_container_image_self_build"
 
 - name: Ensure Mautrix Bluesky Docker image is built
   community.docker.docker_image_build:
-    name: "{{ matrix_mautrix_bluesky_container_image }}"
+    name: "{{ matrix_bridge_mautrix_bluesky_container_image }}"
     dockerfile: Dockerfile
-    path: "{{ matrix_mautrix_bluesky_container_src_files_path }}"
+    path: "{{ matrix_bridge_mautrix_bluesky_container_src_files_path }}"
     pull: true
-    rebuild: "{{ 'always' if matrix_mautrix_bluesky_git_pull_results.changed | bool else 'never' }}"
-  when: "matrix_mautrix_bluesky_enabled | bool and matrix_mautrix_bluesky_container_image_self_build | bool"
-  register: matrix_mautrix_bluesky_container_image_build_result
+    rebuild: "{{ 'always' if matrix_bridge_mautrix_bluesky_git_pull_results.changed | bool else 'never' }}"
+  when: "matrix_bridge_mautrix_bluesky_enabled | bool and matrix_bridge_mautrix_bluesky_container_image_self_build | bool"
+  register: matrix_bridge_mautrix_bluesky_container_image_build_result
 
 - name: Ensure mautrix-bluesky config.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_bluesky_configuration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_mautrix_bluesky_config_path }}/config.yaml"
+    content: "{{ matrix_bridge_mautrix_bluesky_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_mautrix_bluesky_config_path }}/config.yaml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_mautrix_bluesky_config_result
+  register: matrix_bridge_mautrix_bluesky_config_result
 
 - name: Ensure mautrix-bluesky registration.yaml installed
   ansible.builtin.copy:
-    content: "{{ matrix_mautrix_bluesky_registration | to_nice_yaml(indent=2, width=999999) }}"
-    dest: "{{ matrix_mautrix_bluesky_config_path }}/registration.yaml"
+    content: "{{ matrix_bridge_mautrix_bluesky_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_mautrix_bluesky_config_path }}/registration.yaml"
     mode: '0644'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
-  register: matrix_mautrix_bluesky_registration_result
+  register: matrix_bridge_mautrix_bluesky_registration_result
 
 - name: Ensure mautrix-bluesky support files installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ matrix_mautrix_bluesky_base_path }}/{{ item }}"
+    dest: "{{ matrix_bridge_mautrix_bluesky_base_path }}/{{ item }}"
     mode: '0640'
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
     - labels
-  register: matrix_mautrix_bluesky_support_files_result
+  register: matrix_bridge_mautrix_bluesky_support_files_result
 
 - name: Ensure matrix-mautrix-bluesky container network is created
-  when: matrix_mautrix_bluesky_container_network != 'host'
+  when: matrix_bridge_mautrix_bluesky_container_network != 'host'
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
-    name: "{{ matrix_mautrix_bluesky_container_network }}"
+    name: "{{ matrix_bridge_mautrix_bluesky_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
@@ -94,19 +94,19 @@
     src: "{{ role_path }}/templates/systemd/matrix-mautrix-bluesky.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-mautrix-bluesky.service"
     mode: '0644'
-  register: matrix_mautrix_bluesky_systemd_service_result
+  register: matrix_bridge_mautrix_bluesky_systemd_service_result
 
 - name: Determine whether matrix-mautrix-bluesky needs a restart
   ansible.builtin.set_fact:
-    matrix_mautrix_bluesky_restart_necessary: >-
+    matrix_bridge_mautrix_bluesky_restart_necessary: >-
       {{
-        matrix_mautrix_bluesky_migration_requires_restart | default(false)
-        or matrix_mautrix_bluesky_config_result.changed | default(false)
-        or matrix_mautrix_bluesky_registration_result.changed | default(false)
-        or matrix_mautrix_bluesky_support_files_result.changed | default(false)
-        or matrix_mautrix_bluesky_systemd_service_result.changed | default(false)
-        or matrix_mautrix_bluesky_container_image_pull_result.changed | default(false)
-        or matrix_mautrix_bluesky_container_image_build_result.changed | default(false)
+        matrix_bridge_mautrix_bluesky_migration_requires_restart | default(false)
+        or matrix_bridge_mautrix_bluesky_config_result.changed | default(false)
+        or matrix_bridge_mautrix_bluesky_registration_result.changed | default(false)
+        or matrix_bridge_mautrix_bluesky_support_files_result.changed | default(false)
+        or matrix_bridge_mautrix_bluesky_systemd_service_result.changed | default(false)
+        or matrix_bridge_mautrix_bluesky_container_image_pull_result.changed | default(false)
+        or matrix_bridge_mautrix_bluesky_container_image_build_result.changed | default(false)
       }}
 
 - name: Ensure matrix-mautrix-bluesky.service restarted, if necessary
@@ -114,4 +114,4 @@
     name: "matrix-mautrix-bluesky.service"
     state: restarted
     daemon_reload: true
-  when: "matrix_mautrix_bluesky_migration_requires_restart | bool"
+  when: "matrix_bridge_mautrix_bluesky_migration_requires_restart | bool"

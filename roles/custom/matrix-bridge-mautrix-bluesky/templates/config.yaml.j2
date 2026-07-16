@@ -11,7 +11,7 @@ network:
     # {{ .DisplayName }} is replaced with the display name of the Bluesky user.
     # {{ .Username }} is replaced with the username of the Bluesky user.
     # {% endraw %}
-    displayname_template: {{ matrix_mautrix_bluesky_network_displayname_template | to_json }}
+    displayname_template: {{ matrix_bridge_mautrix_bluesky_network_displayname_template | to_json }}
 
     # Maximum number of conversations to sync on startup
     conversation_sync_limit: 20
@@ -20,7 +20,7 @@ network:
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: {{ matrix_mautrix_bluesky_bridge_command_prefix | to_json }}
+    command_prefix: {{ matrix_bridge_mautrix_bluesky_bridge_command_prefix | to_json }}
     # Should the bridge create a space for each login containing the rooms that account is in?
     personal_filtering_spaces: true
     # Whether the bridge should set names and avatars explicitly for DM portals.
@@ -121,7 +121,7 @@ bridge:
     #        * - All Matrix users
     #   domain - All users on that homeserver
     #     mxid - Specific user
-    permissions: {{ matrix_mautrix_bluesky_bridge_permissions | to_json }}
+    permissions: {{ matrix_bridge_mautrix_bluesky_bridge_permissions | to_json }}
 
 # Config for the bridge's database.
 database:
@@ -132,7 +132,7 @@ database:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: {{ matrix_mautrix_bluesky_database_uri | to_json }}
+    uri: {{ matrix_bridge_mautrix_bluesky_database_uri | to_json }}
     # Maximum number of connections.
     max_open_conns: 5
     max_idle_conns: 1
@@ -146,9 +146,9 @@ homeserver:
     # The address that this appservice can use to connect to the homeserver.
     # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
     # but https also works if they run on different machines.
-    address: {{ matrix_mautrix_bluesky_homeserver_address | to_json }}
+    address: {{ matrix_bridge_mautrix_bluesky_homeserver_address | to_json }}
     # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-    domain: {{ matrix_mautrix_bluesky_homeserver_domain | to_json }}
+    domain: {{ matrix_bridge_mautrix_bluesky_homeserver_domain | to_json }}
 
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -164,7 +164,7 @@ homeserver:
     # The bridge will use the appservice as_token to authorize requests.
     message_send_checkpoint_endpoint:
     # Does the homeserver support https://github.com/matrix-org/matrix-spec-proposals/pull/2246?
-    async_media: {{ matrix_mautrix_bluesky_homeserver_async_media | to_json }}
+    async_media: {{ matrix_bridge_mautrix_bluesky_homeserver_async_media | to_json }}
 
     # Should the bridge use a websocket for connecting to the homeserver?
     # The server side is currently not documented anywhere and is only implemented by mautrix-wsproxy,
@@ -180,11 +180,11 @@ appservice:
     # Like the homeserver address, a local non-https address is recommended when the bridge is on the same machine.
     # If the bridge is elsewhere, you must secure the connection yourself (e.g. with https or wireguard)
     # If you want to use https, you need to use a reverse proxy. The bridge does not have TLS support built in.
-    address: {{ matrix_mautrix_bluesky_appservice_address | to_json }}
+    address: {{ matrix_bridge_mautrix_bluesky_appservice_address | to_json }}
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    public_address: {{ matrix_mautrix_bluesky_appservice_public_address | to_json }}
+    public_address: {{ matrix_bridge_mautrix_bluesky_appservice_public_address | to_json }}
 
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
@@ -196,11 +196,11 @@ appservice:
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
-        username: {{ matrix_mautrix_bluesky_appservice_bot_username | to_json }}
+        username: {{ matrix_bridge_mautrix_bluesky_appservice_bot_username | to_json }}
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
-        displayname: {{ matrix_mautrix_bluesky_appservice_bot_displayname | to_json(ensure_ascii=False) }}
-        avatar: {{ matrix_mautrix_bluesky_appservice_bot_avatar | to_json }}
+        displayname: {{ matrix_bridge_mautrix_bluesky_appservice_bot_displayname | to_json(ensure_ascii=False) }}
+        avatar: {{ matrix_bridge_mautrix_bluesky_appservice_bot_avatar | to_json }}
 
     # Whether to receive ephemeral events via appservice transactions.
     ephemeral_events: true
@@ -211,8 +211,8 @@ appservice:
     async_transactions: false
 
     # Authentication tokens for AS <-> HS communication. Autogenerated; do not modify.
-    as_token: {{ matrix_mautrix_bluesky_appservice_token | to_json }}
-    hs_token: {{ matrix_mautrix_bluesky_homeserver_token | to_json }}
+    as_token: {{ matrix_bridge_mautrix_bluesky_appservice_token | to_json }}
+    hs_token: {{ matrix_bridge_mautrix_bluesky_homeserver_token | to_json }}
 
     # Localpart template of MXIDs for remote users.
     # {% raw %}{{.}}{% endraw %} is replaced with the internal ID of the user.
@@ -230,7 +230,7 @@ matrix:
     sync_direct_chat_list: true
     # Whether created rooms should have federation enabled. If false, created portal rooms
     # will never be federated. Changing this option requires recreating rooms.
-    federate_rooms: {{ matrix_mautrix_bluesky_matrix_federate_rooms | to_json }}
+    federate_rooms: {{ matrix_bridge_mautrix_bluesky_matrix_federate_rooms | to_json }}
     # The threshold as bytes after which the bridge should roundtrip uploads via the disk
     # rather than keeping the whole file in memory.
     upload_file_threshold: 5242880
@@ -250,7 +250,7 @@ provisioning:
     prefix: /_matrix/provision
     # Shared secret for authentication. If set to "generate" or null, a random secret will be generated,
     # or if set to "disable", the provisioning API will be disabled.
-    shared_secret: {{ matrix_mautrix_bluesky_provisioning_shared_secret | to_json }}
+    shared_secret: {{ matrix_bridge_mautrix_bluesky_provisioning_shared_secret | to_json }}
     # Whether to allow provisioning API requests to be authed using Matrix access tokens.
     # This follows the same rules as double puppeting to determine which server to contact to check the token,
     # which means that by default, it only works for users on the same server as the bridge.
@@ -300,11 +300,11 @@ direct_media:
 # See https://docs.mau.fi/bridges/general/backfill.html for more details.
 backfill:
     # Whether to do backfilling at all.
-    enabled: {{ matrix_mautrix_bluesky_backfill_enabled | to_json }}
+    enabled: {{ matrix_bridge_mautrix_bluesky_backfill_enabled | to_json }}
     # Maximum number of messages to backfill in empty rooms.
-    max_initial_messages: {{ matrix_mautrix_bluesky_backfill_max_initial_messages | to_json }}
+    max_initial_messages: {{ matrix_bridge_mautrix_bluesky_backfill_max_initial_messages | to_json }}
     # Maximum number of missed messages to backfill after bridge restarts.
-    max_catchup_messages: {{ matrix_mautrix_bluesky_backfill_max_catchup_messages | to_json }}
+    max_catchup_messages: {{ matrix_bridge_mautrix_bluesky_backfill_max_catchup_messages | to_json }}
     # If a backfilled chat is older than this number of hours,
     # mark it as read even if it's unread on the remote network.
     unread_hours_threshold: 720
@@ -339,35 +339,35 @@ double_puppet:
     allow_discovery: false
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
-    secrets: {{ matrix_mautrix_bluesky_double_puppet_secrets | to_json }}
+    secrets: {{ matrix_bridge_mautrix_bluesky_double_puppet_secrets | to_json }}
 
 # End-to-bridge encryption support options.
 #
 # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
 encryption:
     # Whether to enable encryption at all. If false, the bridge will not function in encrypted rooms.
-    allow: {{ matrix_mautrix_bluesky_bridge_encryption_allow | to_json }}
+    allow: {{ matrix_bridge_mautrix_bluesky_bridge_encryption_allow | to_json }}
     # Whether to force-enable encryption in all bridged rooms.
-    default: {{ matrix_mautrix_bluesky_bridge_encryption_default | to_json }}
+    default: {{ matrix_bridge_mautrix_bluesky_bridge_encryption_default | to_json }}
     # Whether to require all messages to be encrypted and drop any unencrypted messages.
-    require: {{ matrix_mautrix_bluesky_bridge_encryption_require | to_json }}
+    require: {{ matrix_bridge_mautrix_bluesky_bridge_encryption_require | to_json }}
     # Whether to use MSC2409/MSC3202 instead of /sync long polling for receiving encryption-related data.
     # This option is not yet compatible with standard Matrix servers like Synapse and should not be used.
-    appservice: {{ matrix_mautrix_bluesky_bridge_encryption_appservice | to_json }}
+    appservice: {{ matrix_bridge_mautrix_bluesky_bridge_encryption_appservice | to_json }}
     # Whether to use MSC4190 instead of appservice login to create the bridge bot device.
     # Requires the homeserver to support MSC4190 and the device masquerading parts of MSC3202.
     # Only relevant when using end-to-bridge encryption, required when using encryption with next-gen auth (MSC3861).
     # Changing this option requires updating the appservice registration file.
-    msc4190: {{ matrix_mautrix_bluesky_msc4190_enabled | to_json }}
+    msc4190: {{ matrix_bridge_mautrix_bluesky_msc4190_enabled | to_json }}
     # Whether to enable self-signing for bridges (Only the bridge bot uses this for now)
     # Requires msc4190 to replace keys on reset
-    self_sign: {{ matrix_mautrix_bluesky_self_sign_enabled | to_json }}
+    self_sign: {{ matrix_bridge_mautrix_bluesky_self_sign_enabled | to_json }}
     # Enable key sharing? If enabled, key requests for rooms where users are in will be fulfilled.
     # You must use a client that supports requesting keys from other users to use this feature.
-    allow_key_sharing: {{ matrix_mautrix_bluesky_bridge_encryption_key_sharing_allow | to_json }}
+    allow_key_sharing: {{ matrix_bridge_mautrix_bluesky_bridge_encryption_key_sharing_allow | to_json }}
     # Pickle key for encrypting encryption keys in the bridge database.
     # If set to generate, a random key will be generated.
-    pickle_key: {{ matrix_mautrix_bluesky_bridge_encryption_pickle_key | to_json }}
+    pickle_key: {{ matrix_bridge_mautrix_bluesky_bridge_encryption_pickle_key | to_json }}
     # Options for deleting megolm sessions from the bridge.
     delete_keys:
         # Beeper-specific: delete outbound sessions when hungryserv confirms
@@ -426,7 +426,7 @@ encryption:
 
 # Logging config. See https://github.com/tulir/zeroconfig for details.
 logging:
-    min_level: {{ matrix_mautrix_bluesky_logging_level | to_json }}
+    min_level: {{ matrix_bridge_mautrix_bluesky_logging_level | to_json }}
     writers:
         - type: stdout
           format: pretty-colored
