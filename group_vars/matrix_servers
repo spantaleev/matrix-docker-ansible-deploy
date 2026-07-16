@@ -136,9 +136,9 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_mautrix_whatsapp_config_path + '/registration.yaml,dst=/matrix-mautrix-whatsapp-registration.yaml,ro'] if matrix_mautrix_whatsapp_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_mautrix_wsproxy_config_path + '/androidsms-registration.yaml,dst=/matrix-mautrix-androidsms-registration.yaml,ro'] if matrix_mautrix_wsproxy_enabled else [])
+    (['--mount type=bind,src=' + matrix_bridge_mautrix_wsproxy_config_path + '/androidsms-registration.yaml,dst=/matrix-mautrix-androidsms-registration.yaml,ro'] if matrix_bridge_mautrix_wsproxy_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_mautrix_wsproxy_config_path + '/imessage-registration.yaml,dst=/matrix-mautrix-imessage-registration.yaml,ro'] if matrix_mautrix_wsproxy_enabled else [])
+    (['--mount type=bind,src=' + matrix_bridge_mautrix_wsproxy_config_path + '/imessage-registration.yaml,dst=/matrix-mautrix-imessage-registration.yaml,ro'] if matrix_bridge_mautrix_wsproxy_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_mx_puppet_groupme_config_path + '/registration.yaml,dst=/matrix-mx-puppet-groupme-registration.yaml,ro'] if matrix_mx_puppet_groupme_enabled else [])
     +
@@ -195,9 +195,9 @@ matrix_homeserver_app_service_config_files_auto: |
     +
     (['/matrix-mautrix-whatsapp-registration.yaml'] if matrix_mautrix_whatsapp_enabled else [])
     +
-    (['/matrix-mautrix-androidsms-registration.yaml'] if matrix_mautrix_wsproxy_enabled else [])
+    (['/matrix-mautrix-androidsms-registration.yaml'] if matrix_bridge_mautrix_wsproxy_enabled else [])
     +
-    (['/matrix-mautrix-imessage-registration.yaml'] if matrix_mautrix_wsproxy_enabled else [])
+    (['/matrix-mautrix-imessage-registration.yaml'] if matrix_bridge_mautrix_wsproxy_enabled else [])
     +
     (['/matrix-mx-puppet-groupme-registration.yaml'] if matrix_mx_puppet_groupme_enabled else [])
     +
@@ -506,16 +506,16 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-mautrix-wsproxy.service',
       'priority': 2000,
-      'restart_necessary': (matrix_mautrix_wsproxy_restart_necessary | bool),
+      'restart_necessary': (matrix_bridge_mautrix_wsproxy_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'mautrix-wsproxy'],
-    }] if matrix_mautrix_wsproxy_enabled else [])
+    }] if matrix_bridge_mautrix_wsproxy_enabled else [])
     +
     ([{
       'name': 'matrix-mautrix-wsproxy-syncproxy.service',
       'priority': 2000,
-      'restart_necessary': (matrix_mautrix_wsproxy_syncproxy_restart_necessary | bool),
+      'restart_necessary': (matrix_bridge_mautrix_wsproxy_syncproxy_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'mautrix-wsproxy-syncproxy'],
-    }] if matrix_mautrix_wsproxy_enabled else [])
+    }] if matrix_bridge_mautrix_wsproxy_enabled else [])
     +
     ([{
       'name': 'matrix-mx-puppet-groupme.service',
@@ -2298,43 +2298,43 @@ matrix_mautrix_gvoice_database_password: "{{ (matrix_homeserver_generic_secret_k
 ######################################################################
 
 # We don't enable bridges by default.
-matrix_mautrix_wsproxy_enabled: false
+matrix_bridge_mautrix_wsproxy_enabled: false
 
-matrix_mautrix_wsproxy_systemd_required_services_list_default: |
+matrix_bridge_mautrix_wsproxy_systemd_required_services_list_default: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_mautrix_wsproxy_syncproxy_database_hostname == postgres_connection_hostname) else [])
+    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_bridge_mautrix_wsproxy_syncproxy_database_hostname == postgres_connection_hostname) else [])
   }}
 
-matrix_mautrix_wsproxy_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_bridge_mautrix_wsproxy_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_mautrix_wsproxy_hostname: "wsproxy.{{ matrix_mautrix_wsproxy_homeserver_domain }}"
+matrix_bridge_mautrix_wsproxy_hostname: "wsproxy.{{ matrix_bridge_mautrix_wsproxy_homeserver_domain }}"
 
-matrix_mautrix_wsproxy_syncproxy_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_bridge_mautrix_wsproxy_syncproxy_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
 
-matrix_mautrix_wsproxy_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_mautrix_wsproxy_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_mautrix_wsproxy_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bridge_mautrix_wsproxy_container_image_registry_prefix_upstream_default }}"
 
-matrix_mautrix_wsproxy_container_network: "{{ matrix_addons_container_network }}"
+matrix_bridge_mautrix_wsproxy_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_mautrix_wsproxy_container_additional_networks: |
+matrix_bridge_mautrix_wsproxy_container_additional_networks: |
   {{
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network else [])
       +
-      ([postgres_container_network] if (postgres_enabled and matrix_mautrix_wsproxy_syncproxy_database_hostname == postgres_connection_hostname and postgres_container_network != matrix_mautrix_wsproxy_container_network) else [])
+      ([postgres_container_network] if (postgres_enabled and matrix_bridge_mautrix_wsproxy_syncproxy_database_hostname == postgres_connection_hostname and postgres_container_network != matrix_bridge_mautrix_wsproxy_container_network) else [])
     ) | unique
   }}
 
-matrix_mautrix_wsproxy_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_mautrix_wsproxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_mautrix_wsproxy_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_mautrix_wsproxy_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+matrix_bridge_mautrix_wsproxy_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_bridge_mautrix_wsproxy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_bridge_mautrix_wsproxy_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bridge_mautrix_wsproxy_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_mautrix_wsproxy_syncproxy_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_mautrix_wsproxy_syncproxy_database_password: "{{ (matrix_homeserver_generic_secret_key + ':wsproxy.db') | hash('sha512') | to_uuid }}"
+matrix_bridge_mautrix_wsproxy_syncproxy_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_bridge_mautrix_wsproxy_syncproxy_database_password: "{{ (matrix_homeserver_generic_secret_key + ':wsproxy.db') | hash('sha512') | to_uuid }}"
 
 ######################################################################
 #
@@ -4207,10 +4207,10 @@ postgres_managed_databases_auto: |
     }] if (matrix_mautrix_meta_instagram_enabled and matrix_mautrix_meta_instagram_database_engine == 'postgres' and matrix_mautrix_meta_instagram_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_mautrix_wsproxy_syncproxy_database_name,
-      'username': matrix_mautrix_wsproxy_syncproxy_database_username,
-      'password': matrix_mautrix_wsproxy_syncproxy_database_password,
-    }] if (matrix_mautrix_wsproxy_enabled and matrix_mautrix_wsproxy_syncproxy_database_engine == 'postgres' and matrix_mautrix_wsproxy_syncproxy_database_hostname == 'matrix-postgres') else [])
+      'name': matrix_bridge_mautrix_wsproxy_syncproxy_database_name,
+      'username': matrix_bridge_mautrix_wsproxy_syncproxy_database_username,
+      'password': matrix_bridge_mautrix_wsproxy_syncproxy_database_password,
+    }] if (matrix_bridge_mautrix_wsproxy_enabled and matrix_bridge_mautrix_wsproxy_syncproxy_database_engine == 'postgres' and matrix_bridge_mautrix_wsproxy_syncproxy_database_hostname == 'matrix-postgres') else [])
     +
     ([{
       'name': matrix_mautrix_telegram_database_name,
@@ -5186,9 +5186,9 @@ matrix_ketesa_config_asManagedUsers_auto: |
     ] if matrix_mautrix_whatsapp_enabled else [])
     +
     ([
-      '^@'+(matrix_mautrix_imessage_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_bridge_mautrix_wsproxy_imessage_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
       '^@imessage_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
-    ] if matrix_mautrix_wsproxy_enabled else [])
+    ] if matrix_bridge_mautrix_wsproxy_enabled else [])
     +
     ([
       '^@_groupmepuppet_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',

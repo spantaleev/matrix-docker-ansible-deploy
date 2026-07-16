@@ -12,15 +12,15 @@
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
-    - {'old': 'matrix_mautrix_wsproxy_docker_image', 'new': 'matrix_mautrix_wsproxy_container_image'}
-    - {'old': 'matrix_mautrix_wsproxy_docker_image_force_pull', 'new': 'matrix_mautrix_wsproxy_container_image_force_pull'}
-    - {'old': 'matrix_mautrix_wsproxy_docker_image_registry_prefix', 'new': 'matrix_mautrix_wsproxy_container_image_registry_prefix'}
-    - {'old': 'matrix_mautrix_wsproxy_docker_image_registry_prefix_upstream', 'new': 'matrix_mautrix_wsproxy_container_image_registry_prefix_upstream'}
-    - {'old': 'matrix_mautrix_wsproxy_docker_image_registry_prefix_upstream_default', 'new': 'matrix_mautrix_wsproxy_container_image_registry_prefix_upstream_default'}
-    - {'old': 'matrix_mautrix_wsproxy_syncproxy_docker_image', 'new': 'matrix_mautrix_wsproxy_syncproxy_container_image'}
-    - {'old': 'matrix_mautrix_wsproxy_syncproxy_docker_image_force_pull', 'new': 'matrix_mautrix_wsproxy_syncproxy_container_image_force_pull'}
-    - {'old': 'matrix_mautrix_wsproxy_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
-    - {'old': 'matrix_mautrix_wsproxy_syncproxy_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_docker_image', 'new': 'matrix_bridge_mautrix_wsproxy_container_image'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_docker_image_force_pull', 'new': 'matrix_bridge_mautrix_wsproxy_container_image_force_pull'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_docker_image_registry_prefix', 'new': 'matrix_bridge_mautrix_wsproxy_container_image_registry_prefix'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_docker_image_registry_prefix_upstream', 'new': 'matrix_bridge_mautrix_wsproxy_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_docker_image_registry_prefix_upstream_default', 'new': 'matrix_bridge_mautrix_wsproxy_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_syncproxy_docker_image', 'new': 'matrix_bridge_mautrix_wsproxy_syncproxy_container_image'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_syncproxy_docker_image_force_pull', 'new': 'matrix_bridge_mautrix_wsproxy_syncproxy_container_image_force_pull'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
+    - {'old': 'matrix_bridge_mautrix_wsproxy_syncproxy_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
 
 
 - name: Fail if required settings not defined
@@ -29,12 +29,12 @@
       You need to define a required configuration setting (`{{ item }}`).
   when: "lookup('vars', item, default='') == ''"
   with_items:
-    - "matrix_mautrix_androidsms_appservice_token"
-    - "matrix_mautrix_androidsms_homeserver_token"
-    - "matrix_mautrix_imessage_appservice_token"
-    - "matrix_mautrix_imessage_homeserver_token"
-    - "matrix_mautrix_wsproxy_homeserver_address"
-    - "matrix_mautrix_wsproxy_syncproxy_shared_secret"
-    - "matrix_mautrix_wsproxy_syncproxy_homeserver_url"
-    - "matrix_mautrix_wsproxy_syncproxy_database_hostname"
-    - "matrix_mautrix_wsproxy_syncproxy_database_password"
+    - "matrix_bridge_mautrix_wsproxy_androidsms_appservice_token"
+    - "matrix_bridge_mautrix_wsproxy_androidsms_homeserver_token"
+    - "matrix_bridge_mautrix_wsproxy_imessage_appservice_token"
+    - "matrix_bridge_mautrix_wsproxy_imessage_homeserver_token"
+    - "matrix_bridge_mautrix_wsproxy_homeserver_address"
+    - "matrix_bridge_mautrix_wsproxy_syncproxy_shared_secret"
+    - "matrix_bridge_mautrix_wsproxy_syncproxy_homeserver_url"
+    - "matrix_bridge_mautrix_wsproxy_syncproxy_database_hostname"
+    - "matrix_bridge_mautrix_wsproxy_syncproxy_database_password"

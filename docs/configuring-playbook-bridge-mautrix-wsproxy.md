@@ -25,26 +25,26 @@ When setting, replace `example.com` with your own.
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_mautrix_wsproxy_enabled: true
+matrix_bridge_mautrix_wsproxy_enabled: true
 
-matrix_mautrix_androidsms_appservice_token: 'secret token from bridge'
-matrix_mautrix_androidsms_homeserver_token: 'secret token from bridge'
-matrix_mautrix_imessage_appservice_token: 'secret token from bridge'
-matrix_mautrix_imessage_homeserver_token: 'secret token from bridge'
-matrix_mautrix_wsproxy_syncproxy_shared_secret: 'secret token from bridge'
+matrix_bridge_mautrix_wsproxy_androidsms_appservice_token: 'secret token from bridge'
+matrix_bridge_mautrix_wsproxy_androidsms_homeserver_token: 'secret token from bridge'
+matrix_bridge_mautrix_wsproxy_imessage_appservice_token: 'secret token from bridge'
+matrix_bridge_mautrix_wsproxy_imessage_homeserver_token: 'secret token from bridge'
+matrix_bridge_mautrix_wsproxy_syncproxy_shared_secret: 'secret token from bridge'
 ```
 
 Note that the tokens must match what is compiled into the [mautrix-imessage](https://github.com/mautrix/imessage) bridge running on your Mac or Android device.
 
 ### Adjusting the wsproxy URL (optional)
 
-By tweaking the `matrix_mautrix_wsproxy_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
+By tweaking the `matrix_bridge_mautrix_wsproxy_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname
-matrix_mautrix_wsproxy_hostname: ws.example.com
+matrix_bridge_mautrix_wsproxy_hostname: ws.example.com
 ```
 
 After changing the domain, **you may need to adjust your DNS** records to point the wsproxy domain to the Matrix server.
