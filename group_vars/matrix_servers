@@ -100,7 +100,7 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_appservice_double_puppet_config_path + '/registration.yaml,dst=/matrix-appservice-double-puppet-registration.yaml,ro'] if matrix_appservice_double_puppet_enabled else [])
     +
-    (['--mount type=bind,src=' + matrix_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_appservice_irc_enabled else [])
+    (['--mount type=bind,src=' + matrix_bridge_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_bridge_appservice_irc_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_beeper_linkedin_config_path + '/registration.yaml,dst=/matrix-beeper-linkedin-registration.yaml,ro'] if matrix_beeper_linkedin_enabled else [])
     +
@@ -159,7 +159,7 @@ matrix_homeserver_app_service_config_files_auto: |
     +
     (['/matrix-appservice-double-puppet-registration.yaml'] if matrix_appservice_double_puppet_enabled else [])
     +
-    (['/matrix-appservice-irc-registration.yaml'] if matrix_appservice_irc_enabled else [])
+    (['/matrix-appservice-irc-registration.yaml'] if matrix_bridge_appservice_irc_enabled else [])
     +
     (['/matrix-beeper-linkedin-registration.yaml'] if matrix_beeper_linkedin_enabled else [])
     +
@@ -366,9 +366,9 @@ devture_systemd_service_manager_services_list_auto: |
     ([{
       'name': 'matrix-appservice-irc.service',
       'priority': 2000,
-      'restart_necessary': (matrix_appservice_irc_restart_necessary | bool),
+      'restart_necessary': (matrix_bridge_appservice_irc_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'appservice-irc'],
-    }] if matrix_appservice_irc_enabled else [])
+    }] if matrix_bridge_appservice_irc_enabled else [])
     +
     ([{
       'name': 'matrix-beeper-linkedin.service',
@@ -1224,54 +1224,54 @@ matrix_bridge_appservice_discord_database_password: "{{ (matrix_homeserver_gener
 ######################################################################
 
 # We don't enable bridges by default.
-matrix_appservice_irc_enabled: false
+matrix_bridge_appservice_irc_enabled: false
 
-matrix_appservice_irc_systemd_required_services_list_auto: |
+matrix_bridge_appservice_irc_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
     +
-    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_appservice_irc_database_hostname == postgres_connection_hostname) else [])
+    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_bridge_appservice_irc_database_hostname == postgres_connection_hostname) else [])
   }}
 
-matrix_appservice_irc_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_appservice_irc_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_appservice_irc_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bridge_appservice_irc_container_image_registry_prefix_upstream_default }}"
 
-matrix_appservice_irc_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
+matrix_bridge_appservice_irc_container_image_self_build: "{{ matrix_architecture != 'amd64' }}"
 
-matrix_appservice_irc_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9999') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+matrix_bridge_appservice_irc_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '9999') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
-matrix_appservice_irc_container_network: "{{ matrix_addons_container_network }}"
+matrix_bridge_appservice_irc_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_appservice_irc_container_additional_networks_auto: |-
+matrix_bridge_appservice_irc_container_additional_networks_auto: |-
   {{
     (
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
-      ([postgres_container_network] if (postgres_enabled and matrix_appservice_irc_database_hostname == postgres_connection_hostname and matrix_appservice_irc_container_network != postgres_container_network) else [])
+      ([postgres_container_network] if (postgres_enabled and matrix_bridge_appservice_irc_database_hostname == postgres_connection_hostname and matrix_bridge_appservice_irc_container_network != postgres_container_network) else [])
       +
-      [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_appservice_irc_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else []
+      [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_bridge_appservice_irc_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else []
     ) | unique
   }}
 
 # The IRC bridge docs say that if homeserver presence is disabled, it's better to also disable
 # IRC bridge presence, for performance reasons.
-matrix_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_presence_enabled if matrix_homeserver_implementation == 'synapse' else true }}"
+matrix_bridge_appservice_irc_homeserver_enablePresence: "{{ matrix_synapse_presence_enabled if matrix_homeserver_implementation == 'synapse' else true }}"
 
-matrix_appservice_irc_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':irc.as.token') | hash('sha512') | to_uuid }}"
+matrix_bridge_appservice_irc_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':irc.as.token') | hash('sha512') | to_uuid }}"
 
-matrix_appservice_irc_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
-matrix_appservice_irc_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':irc.hs.token') | hash('sha512') | to_uuid }}"
+matrix_bridge_appservice_irc_homeserver_url: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_bridge_appservice_irc_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':irc.hs.token') | hash('sha512') | to_uuid }}"
 
-matrix_appservice_irc_database_engine: "{{ 'postgres' if postgres_enabled else 'nedb' }}"
-matrix_appservice_irc_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
-matrix_appservice_irc_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.irc.db') | hash('sha512') | to_uuid }}"
-matrix_appservice_irc_database_container_network: "{{ postgres_container_network if postgres_enabled else '' }}"
+matrix_bridge_appservice_irc_database_engine: "{{ 'postgres' if postgres_enabled else 'nedb' }}"
+matrix_bridge_appservice_irc_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_bridge_appservice_irc_database_password: "{{ (matrix_homeserver_generic_secret_key + ':as.irc.db') | hash('sha512') | to_uuid }}"
+matrix_bridge_appservice_irc_database_container_network: "{{ postgres_container_network if postgres_enabled else '' }}"
 
-matrix_appservice_irc_ircService_mediaProxy_publicUrl_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"  # noqa var-naming
+matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"  # noqa var-naming
 
-matrix_appservice_irc_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_appservice_irc_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_appservice_irc_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"  # noqa var-naming
+matrix_bridge_appservice_irc_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_bridge_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_bridge_appservice_irc_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bridge_appservice_irc_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"  # noqa var-naming
 
 ######################################################################
 #
@@ -4153,10 +4153,10 @@ postgres_managed_databases_auto: |
     }] if (matrix_appservice_draupnir_for_all_enabled and matrix_appservice_draupnir_for_all_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
-      'name': matrix_appservice_irc_database_name,
-      'username': matrix_appservice_irc_database_username,
-      'password': matrix_appservice_irc_database_password,
-    }] if (matrix_appservice_irc_enabled and matrix_appservice_irc_database_engine == 'postgres' and matrix_appservice_irc_database_hostname == postgres_connection_hostname) else [])
+      'name': matrix_bridge_appservice_irc_database_name,
+      'username': matrix_bridge_appservice_irc_database_username,
+      'password': matrix_bridge_appservice_irc_database_password,
+    }] if (matrix_bridge_appservice_irc_enabled and matrix_bridge_appservice_irc_database_engine == 'postgres' and matrix_bridge_appservice_irc_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
       'name': matrix_beeper_linkedin_database_name,

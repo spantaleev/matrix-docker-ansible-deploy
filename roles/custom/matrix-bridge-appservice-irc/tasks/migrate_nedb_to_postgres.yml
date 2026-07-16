@@ -38,13 +38,13 @@
 - name: Check existence of matrix-appservice-irc service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-appservice-irc.service"
-  register: matrix_appservice_irc_service_stat
+  register: matrix_bridge_appservice_irc_service_stat
 
 - name: Ensure matrix-appservice-irc is stopped
   ansible.builtin.service:
     name: matrix-appservice-irc
     state: stopped
-  when: "matrix_appservice_irc_service_stat.stat.exists"
+  when: "matrix_bridge_appservice_irc_service_stat.stat.exists"
 
 - name: Import appservice-irc NeDB database into Postgres
   ansible.builtin.command:
@@ -53,25 +53,25 @@
       --rm
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
-      {% if matrix_appservice_irc_database_container_network %}
-      --network={{ matrix_appservice_irc_database_container_network }}
+      {% if matrix_bridge_appservice_irc_database_container_network %}
+      --network={{ matrix_bridge_appservice_irc_database_container_network }}
       {% endif %}
-      --mount type=bind,src={{ matrix_appservice_irc_data_path }},dst=/data
+      --mount type=bind,src={{ matrix_bridge_appservice_irc_data_path }},dst=/data
       --entrypoint=/bin/sh
-      {{ matrix_appservice_irc_container_image }}
+      {{ matrix_bridge_appservice_irc_container_image }}
       -c
-      '/usr/local/bin/node /app/lib/scripts/migrate-db-to-pgres.js --dbdir /data --privateKey /data/passkey.pem --connectionString {{ matrix_appservice_irc_database_connection_string }}'
-  register: matrix_appservice_irc_import_nedb_to_postgres_result
-  changed_when: matrix_appservice_irc_import_nedb_to_postgres_result.rc == 0
+      '/usr/local/bin/node /app/lib/scripts/migrate-db-to-pgres.js --dbdir /data --privateKey /data/passkey.pem --connectionString {{ matrix_bridge_appservice_irc_database_connection_string }}'
+  register: matrix_bridge_appservice_irc_import_nedb_to_postgres_result
+  changed_when: matrix_bridge_appservice_irc_import_nedb_to_postgres_result.rc == 0
 
 - name: Archive NeDB database files
   ansible.builtin.command:
-    cmd: "mv {{ matrix_appservice_irc_data_path }}/{{ item }} {{ matrix_appservice_irc_data_path }}/{{ item }}.backup"
+    cmd: "mv {{ matrix_bridge_appservice_irc_data_path }}/{{ item }} {{ matrix_bridge_appservice_irc_data_path }}/{{ item }}.backup"
   with_items:
     - rooms.db
     - users.db
-  register: matrix_appservice_irc_import_nedb_to_postgres_move_result
-  changed_when: matrix_appservice_irc_import_nedb_to_postgres_move_result.rc == 0
+  register: matrix_bridge_appservice_irc_import_nedb_to_postgres_move_result
+  changed_when: matrix_bridge_appservice_irc_import_nedb_to_postgres_move_result.rc == 0
 
 - name: Inject result
   ansible.builtin.set_fact:
@@ -80,6 +80,6 @@
         devture_playbook_runtime_messages_list | default([])
         +
         [
-          "Note: Your appservice-irc database files have been imported into Postgres. The original database files have been moved from `" + matrix_appservice_irc_data_path + "/*.db` to `" + matrix_appservice_irc_data_path + "/*.db.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete these files."
+          "Note: Your appservice-irc database files have been imported into Postgres. The original database files have been moved from `" + matrix_bridge_appservice_irc_data_path + "/*.db` to `" + matrix_bridge_appservice_irc_data_path + "/*.db.backup`. When you've confirmed that the import went well and everything works, you should be able to safely delete these files."
         ]
       }}

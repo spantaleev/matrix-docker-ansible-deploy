@@ -13,20 +13,20 @@
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
-    - {'old': 'matrix_appservice_irc_container_expose_client_server_api_port', 'new': '<superseded by matrix_appservice_irc_container_http_host_bind_port>'}
-    - {'old': 'matrix_appservice_irc_container_self_build', 'new': 'matrix_appservice_irc_container_image_self_build'}
-    - {'old': 'matrix_appservice_irc_docker_image_name_prefix', 'new': 'matrix_appservice_irc_container_image_registry_prefix'}
-    - {'old': 'matrix_appservice_irc_homeserver_media_url', 'new': '<removed; media proxying now uses matrix_appservice_irc_ircService_mediaProxy_publicUrl>'}
-    - {'old': 'matrix_appservice_irc_docker_image', 'new': 'matrix_appservice_irc_container_image'}
-    - {'old': 'matrix_appservice_irc_docker_image_force_pull', 'new': 'matrix_appservice_irc_container_image_force_pull'}
-    - {'old': 'matrix_appservice_irc_docker_image_registry_prefix', 'new': 'matrix_appservice_irc_container_image_registry_prefix'}
-    - {'old': 'matrix_appservice_irc_docker_image_registry_prefix_upstream', 'new': 'matrix_appservice_irc_container_image_registry_prefix_upstream'}
-    - {'old': 'matrix_appservice_irc_docker_image_registry_prefix_upstream_default', 'new': 'matrix_appservice_irc_container_image_registry_prefix_upstream_default'}
-    - {'old': 'matrix_appservice_irc_docker_image_tag', 'new': 'matrix_appservice_irc_container_image_tag'}
-    - {'old': 'matrix_appservice_irc_docker_repo', 'new': 'matrix_appservice_irc_container_repo'}
-    - {'old': 'matrix_appservice_irc_docker_repo_version', 'new': 'matrix_appservice_irc_container_repo_version'}
-    - {'old': 'matrix_appservice_irc_docker_src_files_path', 'new': 'matrix_appservice_irc_container_src_files_path'}
-    - {'old': 'matrix_appservice_irc_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
+    - {'old': 'matrix_bridge_appservice_irc_container_expose_client_server_api_port', 'new': '<superseded by matrix_bridge_appservice_irc_container_http_host_bind_port>'}
+    - {'old': 'matrix_bridge_appservice_irc_container_self_build', 'new': 'matrix_bridge_appservice_irc_container_image_self_build'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_image_name_prefix', 'new': 'matrix_bridge_appservice_irc_container_image_registry_prefix'}
+    - {'old': 'matrix_bridge_appservice_irc_homeserver_media_url', 'new': '<removed; media proxying now uses matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl>'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_image', 'new': 'matrix_bridge_appservice_irc_container_image'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_image_force_pull', 'new': 'matrix_bridge_appservice_irc_container_image_force_pull'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_image_registry_prefix', 'new': 'matrix_bridge_appservice_irc_container_image_registry_prefix'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_image_registry_prefix_upstream', 'new': 'matrix_bridge_appservice_irc_container_image_registry_prefix_upstream'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_image_registry_prefix_upstream_default', 'new': 'matrix_bridge_appservice_irc_container_image_registry_prefix_upstream_default'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_image_tag', 'new': 'matrix_bridge_appservice_irc_container_image_tag'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_repo', 'new': 'matrix_bridge_appservice_irc_container_repo'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_repo_version', 'new': 'matrix_bridge_appservice_irc_container_repo_version'}
+    - {'old': 'matrix_bridge_appservice_irc_docker_src_files_path', 'new': 'matrix_bridge_appservice_irc_container_src_files_path'}
+    - {'old': 'matrix_bridge_appservice_irc_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
 
 - name: Fail if required appservice-irc settings not defined
   ansible.builtin.fail:
@@ -34,16 +34,16 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
-    - {'name': 'matrix_appservice_irc_appservice_token', when: true}
-    - {'name': 'matrix_appservice_irc_homeserver_url', when: true}
-    - {'name': 'matrix_appservice_irc_homeserver_token', when: true}
-    - {'name': 'matrix_appservice_irc_database_hostname', when: "{{ matrix_appservice_irc_database_engine == 'postgres' }}"}
-    - {'name': 'matrix_appservice_irc_container_network', when: true}
+    - {'name': 'matrix_bridge_appservice_irc_appservice_token', when: true}
+    - {'name': 'matrix_bridge_appservice_irc_homeserver_url', when: true}
+    - {'name': 'matrix_bridge_appservice_irc_homeserver_token', when: true}
+    - {'name': 'matrix_bridge_appservice_irc_database_hostname', when: "{{ matrix_bridge_appservice_irc_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_bridge_appservice_irc_container_network', when: true}
 
-# Our base configuration (`matrix_appservice_irc_configuration_yaml`) is not enough to
+# Our base configuration (`matrix_bridge_appservice_irc_configuration_yaml`) is not enough to
 # let the playbook run without errors.
 #
-# Unless the final configuration (`matrix_appservice_irc_configuration`) contains an `ircService` definition,
+# Unless the final configuration (`matrix_bridge_appservice_irc_configuration`) contains an `ircService` definition,
 # we'd fail generating the registration.yaml file with a non-helpful error.
 #
 # This is a safety check to ensure we fail earlier and in a nicer way.
@@ -52,30 +52,30 @@
   ansible.builtin.fail:
     msg: >-
       Your Appservice IRC configuration is incomplete (lacking an `ircService.servers` configuration).
-      You need to define one or more servers by either using `matrix_appservice_irc_ircService_servers`
-      or by extending the base configuration with additional configuration in `matrix_appservice_irc_configuration_extension_yaml`.
-      Overriding the whole bridge's configuration (`matrix_appservice_irc_configuration`) is yet another possibility.
-  when: "matrix_appservice_irc_configuration.ircService.servers | length == 0"
+      You need to define one or more servers by either using `matrix_bridge_appservice_irc_ircService_servers`
+      or by extending the base configuration with additional configuration in `matrix_bridge_appservice_irc_configuration_extension_yaml`.
+      Overriding the whole bridge's configuration (`matrix_bridge_appservice_irc_configuration`) is yet another possibility.
+  when: "matrix_bridge_appservice_irc_configuration.ircService.servers | length == 0"
 
-- name: Fail if matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix does not start with a slash
+- name: Fail if matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix does not start with a slash
   ansible.builtin.fail:
     msg: >-
-      matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix (`{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}`) must start with a slash (e.g. `/` or `/irc/`).
-  when: "matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix[0] != '/'"
+      matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix (`{{ matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}`) must start with a slash (e.g. `/` or `/irc/`).
+  when: "matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix[0] != '/'"
 
-- name: Fail if matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix does not end with a slash
+- name: Fail if matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix does not end with a slash
   ansible.builtin.fail:
     msg: >-
-      matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix (`{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}`) must end with a slash (e.g. `/` or `/irc/`).
-  when: "matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix[-1] != '/'"
+      matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix (`{{ matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}`) must end with a slash (e.g. `/` or `/irc/`).
+  when: "matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix[-1] != '/'"
 
-- when: matrix_appservice_irc_container_labels_traefik_enabled | bool
+- when: matrix_bridge_appservice_irc_container_labels_traefik_enabled | bool
   block:
     # We ensure it doesn't end with a slash, because we handle both (slash and no-slash).
     # Knowing that the path_prefix does not end with a slash ensures we know how to set these routes up
     # without having to do "does it end with a slash" checks elsewhere.
-    - name: Fail if matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix ends with a slash
+    - name: Fail if matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_path_prefix ends with a slash
       ansible.builtin.fail:
         msg: >-
-          matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix (`{{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/irc`).
-      when: "matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix != '/' and matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix[-1] == '/'"
+          matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_path_prefix (`{{ matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/irc`).
+      when: "matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_path_prefix != '/' and matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_path_prefix[-1] == '/'"

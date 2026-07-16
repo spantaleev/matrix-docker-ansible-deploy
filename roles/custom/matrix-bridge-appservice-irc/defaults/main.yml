@@ -23,70 +23,70 @@
 # Matrix Appservice IRC is a Matrix <-> IRC bridge
 # Project source code URL: https://github.com/matrix-org/matrix-appservice-irc
 
-matrix_appservice_irc_enabled: true
+matrix_bridge_appservice_irc_enabled: true
 
-matrix_appservice_irc_container_image_self_build: false
-matrix_appservice_irc_container_repo: "https://github.com/matrix-org/matrix-appservice-irc.git"
-matrix_appservice_irc_container_repo_version: "{{ 'master' if matrix_appservice_irc_version == 'latest' else matrix_appservice_irc_version }}"
-matrix_appservice_irc_container_src_files_path: "{{ matrix_base_data_path }}/appservice-irc/docker-src"
+matrix_bridge_appservice_irc_container_image_self_build: false
+matrix_bridge_appservice_irc_container_repo: "https://github.com/matrix-org/matrix-appservice-irc.git"
+matrix_bridge_appservice_irc_container_repo_version: "{{ 'master' if matrix_bridge_appservice_irc_version == 'latest' else matrix_bridge_appservice_irc_version }}"
+matrix_bridge_appservice_irc_container_src_files_path: "{{ matrix_base_data_path }}/appservice-irc/docker-src"
 
-# matrix_appservice_irc_version used to contain the full Docker image tag (e.g. `release-X.X.X`).
+# matrix_bridge_appservice_irc_version used to contain the full Docker image tag (e.g. `release-X.X.X`).
 # It's a bare version number now. We try to somewhat retain compatibility below.
 # renovate: datasource=docker depName=docker.io/matrixdotorg/matrix-appservice-irc
-matrix_appservice_irc_version: 4.0.0
-matrix_appservice_irc_container_image: "{{ matrix_appservice_irc_container_image_registry_prefix }}matrixdotorg/matrix-appservice-irc:{{ matrix_appservice_irc_container_image_tag }}"
-matrix_appservice_irc_container_image_registry_prefix: "{{ 'localhost/' if matrix_appservice_irc_container_image_self_build else matrix_appservice_irc_container_image_registry_prefix_upstream }}"
-matrix_appservice_irc_container_image_registry_prefix_upstream: "{{ matrix_appservice_irc_container_image_registry_prefix_upstream_default }}"
-matrix_appservice_irc_container_image_registry_prefix_upstream_default: docker.io/
-matrix_appservice_irc_container_image_tag: "{{ 'latest' if matrix_appservice_irc_version == 'latest' else ('release-' + matrix_appservice_irc_version) }}"
+matrix_bridge_appservice_irc_version: 4.0.0
+matrix_bridge_appservice_irc_container_image: "{{ matrix_bridge_appservice_irc_container_image_registry_prefix }}matrixdotorg/matrix-appservice-irc:{{ matrix_bridge_appservice_irc_container_image_tag }}"
+matrix_bridge_appservice_irc_container_image_registry_prefix: "{{ 'localhost/' if matrix_bridge_appservice_irc_container_image_self_build else matrix_bridge_appservice_irc_container_image_registry_prefix_upstream }}"
+matrix_bridge_appservice_irc_container_image_registry_prefix_upstream: "{{ matrix_bridge_appservice_irc_container_image_registry_prefix_upstream_default }}"
+matrix_bridge_appservice_irc_container_image_registry_prefix_upstream_default: docker.io/
+matrix_bridge_appservice_irc_container_image_tag: "{{ 'latest' if matrix_bridge_appservice_irc_version == 'latest' else ('release-' + matrix_bridge_appservice_irc_version) }}"
 
-matrix_appservice_irc_base_path: "{{ matrix_base_data_path }}/appservice-irc"
-matrix_appservice_irc_config_path: "{{ matrix_appservice_irc_base_path }}/config"
-matrix_appservice_irc_data_path: "{{ matrix_appservice_irc_base_path }}/data"
+matrix_bridge_appservice_irc_base_path: "{{ matrix_base_data_path }}/appservice-irc"
+matrix_bridge_appservice_irc_config_path: "{{ matrix_bridge_appservice_irc_base_path }}/config"
+matrix_bridge_appservice_irc_data_path: "{{ matrix_bridge_appservice_irc_base_path }}/data"
 
-matrix_appservice_irc_homeserver_url: ""
-matrix_appservice_irc_homeserver_domain: '{{ matrix_domain }}'
+matrix_bridge_appservice_irc_homeserver_url: ""
+matrix_bridge_appservice_irc_homeserver_domain: '{{ matrix_domain }}'
 
 # ircService.mediaProxy configuration for serving publicly accessible URLs to authenticated Matrix media
-matrix_appservice_irc_ircService_mediaProxy_bindPort: 11111  # noqa var-naming
-matrix_appservice_irc_ircService_mediaProxy_publicUrl_scheme: https  # noqa var-naming
-matrix_appservice_irc_ircService_mediaProxy_publicUrl_hostname: '{{ matrix_server_fqn_matrix }}'  # noqa var-naming
-matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix: '/irc/'  # noqa var-naming
-matrix_appservice_irc_ircService_mediaProxy_publicUrl: "{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_scheme }}://{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_hostname }}{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}"  # noqa var-naming
+matrix_bridge_appservice_irc_ircService_mediaProxy_bindPort: 11111  # noqa var-naming
+matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_scheme: https  # noqa var-naming
+matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_hostname: '{{ matrix_server_fqn_matrix }}'  # noqa var-naming
+matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix: '/irc/'  # noqa var-naming
+matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl: "{{ matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_scheme }}://{{ matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_hostname }}{{ matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix }}"  # noqa var-naming
 
-matrix_appservice_irc_homeserver_enablePresence: true  # noqa var-naming
-matrix_appservice_irc_appservice_address: 'http://matrix-appservice-irc:9999'
+matrix_bridge_appservice_irc_homeserver_enablePresence: true  # noqa var-naming
+matrix_bridge_appservice_irc_appservice_address: 'http://matrix-appservice-irc:9999'
 
-matrix_appservice_irc_database_engine: nedb
-matrix_appservice_irc_database_username: matrix_appservice_irc
-matrix_appservice_irc_database_password: 'some-password'
-matrix_appservice_irc_database_hostname: ''
-matrix_appservice_irc_database_port: 5432
-matrix_appservice_irc_database_name: matrix_appservice_irc
-matrix_appservice_irc_database_sslmode: disable
+matrix_bridge_appservice_irc_database_engine: nedb
+matrix_bridge_appservice_irc_database_username: matrix_appservice_irc
+matrix_bridge_appservice_irc_database_password: 'some-password'
+matrix_bridge_appservice_irc_database_hostname: ''
+matrix_bridge_appservice_irc_database_port: 5432
+matrix_bridge_appservice_irc_database_name: matrix_appservice_irc
+matrix_bridge_appservice_irc_database_sslmode: disable
 
 # The name of the container network to use when importing a NeDB database into Postgres.
 # For Postgres not working in a container, this can be left empty.
-matrix_appservice_irc_database_container_network: ''
+matrix_bridge_appservice_irc_database_container_network: ''
 
 # This is just the Postgres connection string, if Postgres is used.
-# Naming clashes with `matrix_appservice_irc_database_connectionString` somewhat.
-matrix_appservice_irc_database_connection_string: 'postgresql://{{ matrix_appservice_irc_database_username }}:{{ matrix_appservice_irc_database_password }}@{{ matrix_appservice_irc_database_hostname }}:{{ matrix_appservice_irc_database_port }}/{{ matrix_appservice_irc_database_name }}?sslmode={{ matrix_appservice_irc_database_sslmode }}'
+# Naming clashes with `matrix_bridge_appservice_irc_database_connectionString` somewhat.
+matrix_bridge_appservice_irc_database_connection_string: 'postgresql://{{ matrix_bridge_appservice_irc_database_username }}:{{ matrix_bridge_appservice_irc_database_password }}@{{ matrix_bridge_appservice_irc_database_hostname }}:{{ matrix_bridge_appservice_irc_database_port }}/{{ matrix_bridge_appservice_irc_database_name }}?sslmode={{ matrix_bridge_appservice_irc_database_sslmode }}'
 
 # This is what actually goes into `database.connectionString` for the bridge.
-matrix_appservice_irc_database_connectionString: |-  # noqa var-naming
+matrix_bridge_appservice_irc_database_connectionString: |-  # noqa var-naming
   {{
     {
       'nedb': 'nedb:///data',
-      'postgres': matrix_appservice_irc_database_connection_string,
-    }[matrix_appservice_irc_database_engine]
+      'postgres': matrix_bridge_appservice_irc_database_connection_string,
+    }[matrix_bridge_appservice_irc_database_engine]
   }}
 
-matrix_appservice_irc_ircService_servers: []  # noqa var-naming
+matrix_bridge_appservice_irc_ircService_servers: []  # noqa var-naming
 
-# Example of `matrix_appservice_irc_ircService_servers` with one server (and all its options):
+# Example of `matrix_bridge_appservice_irc_ircService_servers` with one server (and all its options):
 #
-# matrix_appservice_irc_ircService_servers:
+# matrix_bridge_appservice_irc_ircService_servers:
 #   # The address of the server to connect to.
 #   irc.example.com:
 #     # A human-readable short name. This is used to label IRC status rooms
@@ -471,68 +471,68 @@ matrix_appservice_irc_ircService_servers: []  # noqa var-naming
 # Controls whether the matrix-appservice-irc container exposes its HTTP port (tcp/9999 in the container).
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:9999"), or empty string to not expose.
-matrix_appservice_irc_container_http_host_bind_port: ''
+matrix_bridge_appservice_irc_container_http_host_bind_port: ''
 
 # Controls whether the matrix-appservice-irc container exposes its media proxy HTTP port.
 #
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:11111"), or empty string to not expose.
-matrix_appservice_irc_container_media_proxy_host_bind_port: ''
+matrix_bridge_appservice_irc_container_media_proxy_host_bind_port: ''
 
-matrix_appservice_irc_container_network: ""
+matrix_bridge_appservice_irc_container_network: ""
 
-matrix_appservice_irc_container_additional_networks: "{{ matrix_appservice_irc_container_additional_networks_auto + matrix_appservice_irc_container_additional_networks_custom }}"
-matrix_appservice_irc_container_additional_networks_auto: []
-matrix_appservice_irc_container_additional_networks_custom: []
+matrix_bridge_appservice_irc_container_additional_networks: "{{ matrix_bridge_appservice_irc_container_additional_networks_auto + matrix_bridge_appservice_irc_container_additional_networks_custom }}"
+matrix_bridge_appservice_irc_container_additional_networks_auto: []
+matrix_bridge_appservice_irc_container_additional_networks_custom: []
 
 # A list of extra arguments to pass to the container
-matrix_appservice_irc_container_extra_arguments: []
+matrix_bridge_appservice_irc_container_extra_arguments: []
 
-# matrix_appservice_irc_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
-# To inject your own other container labels, see `matrix_appservice_irc_container_labels_additional_labels`.
-matrix_appservice_irc_container_labels_traefik_enabled: true
-matrix_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_appservice_irc_container_network }}"
-matrix_appservice_irc_container_labels_traefik_entrypoints: web-secure
-matrix_appservice_irc_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+# matrix_bridge_appservice_irc_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to the container.
+# To inject your own other container labels, see `matrix_bridge_appservice_irc_container_labels_additional_labels`.
+matrix_bridge_appservice_irc_container_labels_traefik_enabled: true
+matrix_bridge_appservice_irc_container_labels_traefik_docker_network: "{{ matrix_bridge_appservice_irc_container_network }}"
+matrix_bridge_appservice_irc_container_labels_traefik_entrypoints: web-secure
+matrix_bridge_appservice_irc_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
 # Controls whether Traefik labels for the media proxy will be applied
-matrix_appservice_irc_container_labels_media_proxy_enabled: true
+matrix_bridge_appservice_irc_container_labels_media_proxy_enabled: true
 # Derived from publicUrl_pathPrefix, stripping any trailing slash (unless it's just "/")
-matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix: "{{ '/' if matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix == '/' else matrix_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix.rstrip('/') }}"
-matrix_appservice_irc_container_labels_media_proxy_traefik_rule: "Host(`{{ matrix_appservice_irc_ircService_mediaProxy_publicUrl_hostname }}`) && PathPrefix(`{{ matrix_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}`)"
-matrix_appservice_irc_container_labels_media_proxy_traefik_priority: 2000
-matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints: "{{ matrix_appservice_irc_container_labels_traefik_entrypoints }}"
-matrix_appservice_irc_container_labels_media_proxy_traefik_tls: "{{ matrix_appservice_irc_container_labels_media_proxy_traefik_entrypoints != 'web' }}"
-matrix_appservice_irc_container_labels_media_proxy_traefik_tls_certResolver: "{{ matrix_appservice_irc_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_path_prefix: "{{ '/' if matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix == '/' else matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_pathPrefix.rstrip('/') }}"
+matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_rule: "Host(`{{ matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl_hostname }}`) && PathPrefix(`{{ matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_path_prefix }}`)"
+matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_priority: 2000
+matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_entrypoints: "{{ matrix_bridge_appservice_irc_container_labels_traefik_entrypoints }}"
+matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_tls: "{{ matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_entrypoints != 'web' }}"
+matrix_bridge_appservice_irc_container_labels_media_proxy_traefik_tls_certResolver: "{{ matrix_bridge_appservice_irc_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
 # matrix-appservice-irc container additional labels
-matrix_appservice_irc_container_labels_additional_labels: ''
+matrix_bridge_appservice_irc_container_labels_additional_labels: ''
 
 # List of systemd services that matrix-appservice-irc.service depends on.
-matrix_appservice_irc_systemd_required_services_list: "{{ matrix_appservice_irc_systemd_required_services_list_default + matrix_appservice_irc_systemd_required_services_list_auto + matrix_appservice_irc_systemd_required_services_list_custom }}"
-matrix_appservice_irc_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
-matrix_appservice_irc_systemd_required_services_list_auto: []
-matrix_appservice_irc_systemd_required_services_list_custom: []
+matrix_bridge_appservice_irc_systemd_required_services_list: "{{ matrix_bridge_appservice_irc_systemd_required_services_list_default + matrix_bridge_appservice_irc_systemd_required_services_list_auto + matrix_bridge_appservice_irc_systemd_required_services_list_custom }}"
+matrix_bridge_appservice_irc_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_bridge_appservice_irc_systemd_required_services_list_auto: []
+matrix_bridge_appservice_irc_systemd_required_services_list_custom: []
 
 # List of systemd services that matrix-appservice-irc.service wants
-matrix_appservice_irc_systemd_wanted_services_list: []
+matrix_bridge_appservice_irc_systemd_wanted_services_list: []
 
-matrix_appservice_irc_appservice_token: ''
-matrix_appservice_irc_homeserver_token: ''
+matrix_bridge_appservice_irc_appservice_token: ''
+matrix_bridge_appservice_irc_homeserver_token: ''
 
-matrix_appservice_irc_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+matrix_bridge_appservice_irc_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
-matrix_appservice_irc_configuration_extension_yaml: |
+matrix_bridge_appservice_irc_configuration_extension_yaml: |
   # Your custom YAML configuration for Appservice IRC servers goes here.
-  # This configuration extends the default starting configuration (`matrix_appservice_irc_configuration_yaml`).
+  # This configuration extends the default starting configuration (`matrix_bridge_appservice_irc_configuration_yaml`).
   #
   # You can override individual variables from the default configuration, or introduce new ones.
   #
   # If you need something more special, you can take full control by
-  # completely redefining `matrix_appservice_irc_configuration_yaml`.
+  # completely redefining `matrix_bridge_appservice_irc_configuration_yaml`.
 
-matrix_appservice_irc_configuration_extension: "{{ matrix_appservice_irc_configuration_extension_yaml | from_yaml if matrix_appservice_irc_configuration_extension_yaml | from_yaml is mapping else {} }}"
+matrix_bridge_appservice_irc_configuration_extension: "{{ matrix_bridge_appservice_irc_configuration_extension_yaml | from_yaml if matrix_bridge_appservice_irc_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
-matrix_appservice_irc_configuration: "{{ matrix_appservice_irc_configuration_yaml | from_yaml | combine(matrix_appservice_irc_configuration_extension, recursive=True) }}"
+matrix_bridge_appservice_irc_configuration: "{{ matrix_bridge_appservice_irc_configuration_yaml | from_yaml | combine(matrix_bridge_appservice_irc_configuration_extension, recursive=True) }}"
 
 # The original registration.yaml file generated by AppService IRC is merged with this config override,
 # to produce the final registration.yaml file ultimately used by both the bridge and the homeserver.
@@ -542,14 +542,14 @@ matrix_appservice_irc_configuration: "{{ matrix_appservice_irc_configuration_yam
 # - always having the same AS/HS token and appservice ID in the registration.yaml file
 #
 # Learn more about this in `setup_install.yml`
-matrix_appservice_irc_registration_override_yaml: |
+matrix_bridge_appservice_irc_registration_override_yaml: |
   id: appservice-irc
-  as_token: "{{ matrix_appservice_irc_appservice_token }}"
-  hs_token: "{{ matrix_appservice_irc_homeserver_token }}"
+  as_token: "{{ matrix_bridge_appservice_irc_appservice_token }}"
+  hs_token: "{{ matrix_bridge_appservice_irc_homeserver_token }}"
 
-matrix_appservice_irc_registration_override: "{{ matrix_appservice_irc_registration_override_yaml | from_yaml }}"
+matrix_bridge_appservice_irc_registration_override: "{{ matrix_bridge_appservice_irc_registration_override_yaml | from_yaml }}"
 
-# matrix_appservice_irc_restart_necessary controls whether the service
+# matrix_bridge_appservice_irc_restart_necessary controls whether the service
 # will be restarted (when true) or merely started (when false) by the
 # systemd service manager role (when conditional restart is enabled).
 #
@@ -557,4 +557,4 @@ matrix_appservice_irc_registration_override: "{{ matrix_appservice_irc_registrat
 # any configuration files, the systemd service file, or the container image changed.
 # The default of `false` means "no restart needed" — appropriate when the role's
 # installation tasks haven't run (e.g., due to --tags skipping them).
-matrix_appservice_irc_restart_necessary: false
+matrix_bridge_appservice_irc_restart_necessary: false

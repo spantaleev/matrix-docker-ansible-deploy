@@ -7,7 +7,7 @@
 # Unless otherwise specified, these keys CANNOT be hot-reloaded.
 homeserver:
   # The URL to the home server for client-server API calls
-  url: "{{ matrix_appservice_irc_homeserver_url }}"
+  url: "{{ matrix_bridge_appservice_irc_homeserver_url }}"
 
   # Drop Matrix messages which are older than this number of seconds, according to
   # the event's origin_server_ts.
@@ -24,12 +24,12 @@ homeserver:
 
   # The 'domain' part for user IDs on this home server. Usually (but not always)
   # is the "domain name" part of the HS URL.
-  domain: "{{ matrix_appservice_irc_homeserver_domain }}"
+  domain: "{{ matrix_bridge_appservice_irc_homeserver_domain }}"
 
   # Should presence be enabled for Matrix clients on this bridge. If disabled on the
   # homeserver then it should also be disabled here to avoid excess traffic.
   # Default: true
-  enablePresence: {{ matrix_appservice_irc_homeserver_enablePresence|to_json }}
+  enablePresence: {{ matrix_bridge_appservice_irc_homeserver_enablePresence|to_json }}
 
   # Which port should the appservice bind to. Can be overridden by the one provided in the
   # command line! Optional.
@@ -62,7 +62,7 @@ ircService:
 
   # All server keys can be hot-reloaded, however existing IRC connections
   # will not have changes applied to them.
-  servers: {{ matrix_appservice_irc_ircService_servers|to_json }}
+  servers: {{ matrix_bridge_appservice_irc_ircService_servers|to_json }}
 
   # present relevant UI to the user. MSC2346
   bridgeInfoState:
@@ -141,9 +141,9 @@ ircService:
     # How long should the generated URLs be valid for
     ttlSeconds: 604800
     # The port for the media proxy to listen on
-    bindPort: {{ matrix_appservice_irc_ircService_mediaProxy_bindPort | to_json }}
+    bindPort: {{ matrix_bridge_appservice_irc_ircService_mediaProxy_bindPort | to_json }}
     # The publicly accessible URL to the media proxy
-    publicUrl: {{ matrix_appservice_irc_ircService_mediaProxy_publicUrl | to_json }}
+    publicUrl: {{ matrix_bridge_appservice_irc_ircService_mediaProxy_publicUrl | to_json }}
 
 # Options here are generally only applicable to large-scale bridges and may have
 # consequences greater than other options in this configuration file.
@@ -162,8 +162,8 @@ advanced:
 # This key CANNOT be hot-reloaded.
 database:
   # database engine (must be 'postgres' or 'nedb'). Default: nedb
-  engine: {{ matrix_appservice_irc_database_engine|to_json }}
+  engine: {{ matrix_bridge_appservice_irc_database_engine|to_json }}
   # Either a PostgreSQL connection string, or a path to the NeDB storage directory.
   # For postgres, it must start with postgres://
   # For NeDB, it must start with nedb://. The path is relative to the project directory.
-  connectionString: {{ matrix_appservice_irc_database_connectionString | to_json }}
+  connectionString: {{ matrix_bridge_appservice_irc_database_connectionString | to_json }}

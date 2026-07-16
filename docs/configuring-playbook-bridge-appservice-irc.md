@@ -20,9 +20,9 @@ See the project's [documentation](https://github.com/matrix-org/matrix-appservic
 To enable the bridge, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_appservice_irc_enabled: true
+matrix_bridge_appservice_irc_enabled: true
 
-matrix_appservice_irc_ircService_servers:
+matrix_bridge_appservice_irc_ircService_servers:
   irc.example.com:
     name: "ExampleNet"
     port: 6697
@@ -76,7 +76,7 @@ There are some additional things you may wish to configure about the bridge.
 Take a look at:
 
 - `roles/custom/matrix-bridge-appservice-irc/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-bridge-appservice-irc/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_appservice_irc_configuration_extension_yaml` variable
+- `roles/custom/matrix-bridge-appservice-irc/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bridge_appservice_irc_configuration_extension_yaml` variable
 
 ## Installing
 
@@ -104,7 +104,7 @@ As with all other services, you can find the logs in [systemd-journald](https://
 The default logging level for this component is `debug`, and the log is output to the console only. If you want to change the verbosity or enable logging to a file, add the following configuration to your `vars.yml` file (adapt to your needs) and re-run the playbook:
 
 ```yaml
-matrix_appservice_irc_configuration_extension_yaml: |
+matrix_bridge_appservice_irc_configuration_extension_yaml: |
   logging:
     # Level to log on console/logfile.
     # Valid values: error, warn, info, debug
