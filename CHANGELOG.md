@@ -1,3 +1,14 @@
+# 2026-07-17
+
+## prometheus-nginxlog-exporter metric names have changed
+
+If you have enabled [metrics for nginx logs](docs/configuring-playbook-prometheus-grafana.md) (`prometheus_nginxlog_exporter_enabled: true`), note that the exporter's metric names have changed.
+
+The exporter's configuration used to ship a leftover `myprefix` placeholder as the metric name prefix, producing metrics like `myprefix_http_response_count_total`. The bundled Grafana dashboard queries unprefixed metric names (`http_response_count_total`), so it could never show any data (reported in [#3380](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/3380)).
+
+Metric names are now unprefixed, matching the bundled dashboard, which should start working. Each metric carries a `namespace` label, whose value is now `nginx` (previously `matrix`); it is configurable via `prometheus_nginxlog_exporter_config_namespace_name`. If you have built custom dashboards or alerts on top of the old `myprefix_*` metric names, adjust them accordingly, or restore the old behavior by setting `prometheus_nginxlog_exporter_config_namespace_metrics_prefix: myprefix` in your `vars.yml` file.
+
+
 # 2026-07-16
 
 ## (Backward Compatibility Break) Bridge variables have been renamed
