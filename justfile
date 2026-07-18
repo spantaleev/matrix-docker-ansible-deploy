@@ -22,10 +22,10 @@ roles:
     #!/usr/bin/env sh
     echo "[NOTE] This command just updates the roles, but if you want to update everything at once (playbook, roles, etc.) - use 'just update'"
     if [ -x "$(command -v agru)" ]; then
-    	agru
+        agru
     else
-    	rm -rf roles/galaxy
-    	ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
+        rm -rf roles/galaxy
+        ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
     fi
 
 # Updates the playbook and installs the necessary Ansible roles pinned in requirements.yml. If a -u flag is passed, also updates the requirements.yml file with new role versions (if available)
