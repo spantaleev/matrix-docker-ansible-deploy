@@ -90,6 +90,8 @@ If your server and services experience issues, feel free to come to [our support
 
 - [Self-building](self-building.md)
 
+- [Style guide for playbook developers](style-guide.md)
+
 - [Uninstalling](uninstalling.md)
 
 - [Updating users passwords](updating-users-passwords.md)
