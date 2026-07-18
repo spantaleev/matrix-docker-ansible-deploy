@@ -1,3 +1,14 @@
+# 2026-07-18
+
+## LiveKit Server port configuration must be unambiguous now
+
+This only affects you if you have configured a LiveKit Server RTC port range (`livekit_server_config_rtc_port_range_start` and `livekit_server_config_rtc_port_range_end`).
+
+LiveKit only uses one of the two port configuration mechanisms: when a port range is defined, the multiplexed UDP port (`livekit_server_config_rtc_udp_port`) is ignored entirely. Previously, the role would silently render its default UDP port (7882) into the configuration alongside your port range, misleadingly suggesting that both are in effect.
+
+The role now asks you to make the choice explicit: if you define a port range, unset the UDP port by adding `livekit_server_config_rtc_udp_port: ''` to your `vars.yml` file. A validation error will guide you, if your configuration is affected.
+
+
 # 2026-07-17
 
 ## prometheus-nginxlog-exporter metric names have changed
