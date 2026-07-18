@@ -22,7 +22,7 @@ roles:
     #!/usr/bin/env sh
     echo "[NOTE] This command just updates the roles, but if you want to update everything at once (playbook, roles, etc.) - use 'just update'"
     if [ -x "$(command -v agru)" ]; then
-        agru
+        agru -no-tui
     else
         rm -rf roles/galaxy
         ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
@@ -33,7 +33,7 @@ update *flags: update-playbook-only
     #!/usr/bin/env sh
     if [ -x "$(command -v agru)" ]; then
         echo {{ if flags == "" { "Installing roles pinned in requirements.yml…" } else { if flags == "-u" { "Updating roles and pinning new versions in requirements.yml…" } else { "Unknown flags passed" } } }}
-        agru {{ flags }}
+        agru -no-tui {{ flags }}
     else
         echo "[NOTE] You are using the standard ansible-galaxy tool to install roles, which is slow and lacks other features. We recommend installing the 'agru' tool to speed up the process: https://github.com/etkecc/agru#where-to-get"
         echo "Installing roles…"
