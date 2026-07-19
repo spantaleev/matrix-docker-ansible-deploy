@@ -136,6 +136,59 @@ traefik.http.routers.matrix-tuwunel-public-federation-api.tls.certResolver={{ ma
 {% endif %}
 
 
+{% if matrix_tuwunel_container_labels_public_tuwunel_api_enabled %}
+############################################################
+#                                                          #
+# Public Tuwunel API (/_tuwunel)                           #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-tuwunel-public-tuwunel-api.rule={{ matrix_tuwunel_container_labels_public_tuwunel_api_traefik_rule }}
+
+{% if matrix_tuwunel_container_labels_public_tuwunel_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-tuwunel-public-tuwunel-api.priority={{ matrix_tuwunel_container_labels_public_tuwunel_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-tuwunel-public-tuwunel-api.service=matrix-tuwunel
+traefik.http.routers.matrix-tuwunel-public-tuwunel-api.entrypoints={{ matrix_tuwunel_container_labels_public_tuwunel_api_traefik_entrypoints }}
+
+traefik.http.routers.matrix-tuwunel-public-tuwunel-api.tls={{ matrix_tuwunel_container_labels_public_tuwunel_api_traefik_tls | to_json }}
+{% if matrix_tuwunel_container_labels_public_tuwunel_api_traefik_tls %}
+traefik.http.routers.matrix-tuwunel-public-tuwunel-api.tls.certResolver={{ matrix_tuwunel_container_labels_public_tuwunel_api_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Public Tuwunel API (/_tuwunel)                          #
+#                                                          #
+############################################################
+{% endif %}
+
+
+{% if matrix_tuwunel_container_labels_internal_tuwunel_api_enabled %}
+############################################################
+#                                                          #
+# Internal Tuwunel API (/_tuwunel)                         #
+#                                                          #
+############################################################
+
+traefik.http.routers.matrix-tuwunel-internal-tuwunel-api.rule={{ matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_rule }}
+
+{% if matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-tuwunel-internal-tuwunel-api.priority={{ matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-tuwunel-internal-tuwunel-api.service=matrix-tuwunel
+traefik.http.routers.matrix-tuwunel-internal-tuwunel-api.entrypoints={{ matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_entrypoints }}
+
+############################################################
+#                                                          #
+# /Internal Tuwunel API (/_tuwunel)                        #
+#                                                          #
+############################################################
+{% endif %}
+
+
 {% if matrix_tuwunel_container_labels_public_client_synapse_admin_api_enabled %}
 ############################################################
 #                                                          #

@@ -106,6 +106,26 @@ matrix_tuwunel_container_labels_public_federation_api_traefik_entrypoints: ''
 matrix_tuwunel_container_labels_public_federation_api_traefik_tls: true
 matrix_tuwunel_container_labels_public_federation_api_traefik_tls_certResolver: "{{ matrix_tuwunel_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
+# Controls whether labels will be added that expose Tuwunel's first-party API (`/_tuwunel`) on a public Traefik entrypoint.
+# This namespace carries ad-hoc routes such as `/_tuwunel/server_version` and `/_tuwunel/local_user_count`, as well as the
+# native OpenID Connect provider endpoints (`/_tuwunel/oidc/...`) that clients use when Tuwunel performs OIDC login itself.
+# It is enabled by default because the reverse proxy must route it for those features to work.
+matrix_tuwunel_container_labels_public_tuwunel_api_enabled: true
+matrix_tuwunel_container_labels_public_tuwunel_api_traefik_hostname: "{{ matrix_tuwunel_hostname }}"
+matrix_tuwunel_container_labels_public_tuwunel_api_traefik_path_prefix: /_tuwunel
+matrix_tuwunel_container_labels_public_tuwunel_api_traefik_rule: "Host(`{{ matrix_tuwunel_container_labels_public_tuwunel_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_tuwunel_container_labels_public_tuwunel_api_traefik_path_prefix }}`)"
+matrix_tuwunel_container_labels_public_tuwunel_api_traefik_priority: 0
+matrix_tuwunel_container_labels_public_tuwunel_api_traefik_entrypoints: "{{ matrix_tuwunel_container_labels_traefik_entrypoints }}"
+matrix_tuwunel_container_labels_public_tuwunel_api_traefik_tls: "{{ matrix_tuwunel_container_labels_public_tuwunel_api_traefik_entrypoints != 'web' }}"
+matrix_tuwunel_container_labels_public_tuwunel_api_traefik_tls_certResolver: "{{ matrix_tuwunel_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose Tuwunel's first-party API (`/_tuwunel`) on the internal Traefik entrypoint.
+matrix_tuwunel_container_labels_internal_tuwunel_api_enabled: false
+matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_path_prefix: /_tuwunel
+matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_rule: "PathPrefix(`{{ matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_path_prefix }}`)"
+matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_priority: 0
+matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_entrypoints: ""
+
 # Controls whether labels will be added that expose the Synapse-compatible Administration API (`/_synapse/admin`) on a public Traefik entrypoint.
 # Tuwunel serves this API so that administration dashboards (synapse-admin, ketesa) and moderation bots (Draupnir, Meowlnir) work against it.
 # Every endpoint requires an administrator access token. It is disabled by default; you may prefer to expose it only on the internal entrypoint below.

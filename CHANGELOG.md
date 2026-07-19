@@ -1,3 +1,14 @@
+# 2026-07-19
+
+## Tuwunel now exposes its administration and /_tuwunel API paths
+
+The [Tuwunel](docs/configuring-playbook-tuwunel.md) role previously routed only the `/_matrix` path through the reverse proxy. It now also exposes the two other API paths that Tuwunel serves.
+
+The Synapse-compatible administration API (`/_synapse/admin`) powers administration dashboards and moderation bots. As with Synapse and Dendrite, the playbook now exposes it automatically when such a tool is installed: publicly for [Ketesa](docs/configuring-playbook-ketesa.md) or [Element Admin](docs/configuring-playbook-element-admin.md), and on the internal entrypoint for [Draupnir](docs/configuring-playbook-bot-draupnir.md). To expose it yourself, set `matrix_tuwunel_container_labels_public_client_synapse_admin_api_enabled: true` (or the `internal_` variant).
+
+Tuwunel also serves first-party routes under `/_tuwunel`, including its native OpenID Connect provider endpoints, which the reverse proxy must route for OIDC login to work. This path is now routed on the public entrypoint by default. To keep it off the public entrypoint, set `matrix_tuwunel_container_labels_public_tuwunel_api_enabled: false`.
+
+
 # 2026-07-18
 
 ## LiveKit Server port configuration must be unambiguous now

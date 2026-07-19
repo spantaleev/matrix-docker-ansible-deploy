@@ -180,6 +180,17 @@ When enabled, rooms with a valid `m.room.policy` state event have outgoing event
 
 The role sets `default_room_version: '12'`, so newly created rooms default to Matrix [room version 12](https://github.com/matrix-org/matrix-spec-proposals/pull/4289) ("Hydra"). Override `matrix_tuwunel_config_default_room_version` if you need an earlier version for client compatibility.
 
+### The `/_tuwunel` API path
+
+Besides `/_matrix`, Tuwunel serves its own first-party routes under `/_tuwunel`. This namespace carries ad-hoc endpoints such as `/_tuwunel/server_version` and `/_tuwunel/local_user_count`, and the [native OpenID Connect provider](https://matrix-construct.github.io/tuwunel/authentication/oidc-server.html) endpoints (`/_tuwunel/oidc/...`) that clients use when Tuwunel handles OIDC login itself, rather than delegating to an upstream provider as described above. The role routes `/_tuwunel` on the public entrypoint by default so these features work out of the box.
+
+To keep this namespace off the public entrypoint and expose it only on the internal one, set:
+
+```yaml
+matrix_tuwunel_container_labels_public_tuwunel_api_enabled: false
+matrix_tuwunel_container_labels_internal_tuwunel_api_enabled: true
+```
+
 ### Exposing the Administration API
 
 Tuwunel serves a Synapse-compatible Administration API under the `/_synapse/admin` path, so administration dashboards (such as synapse-admin and ketesa) and moderation bots (such as Draupnir and Meowlnir) work against it. The served endpoints are listed on the [Tuwunel Synapse Admin API page](https://matrix-construct.github.io/tuwunel/development/compliance/synapse-admin.html).
