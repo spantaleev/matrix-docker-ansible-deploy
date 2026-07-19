@@ -106,6 +106,25 @@ matrix_tuwunel_container_labels_public_federation_api_traefik_entrypoints: ''
 matrix_tuwunel_container_labels_public_federation_api_traefik_tls: true
 matrix_tuwunel_container_labels_public_federation_api_traefik_tls_certResolver: "{{ matrix_tuwunel_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
 
+# Controls whether labels will be added that expose the Synapse-compatible Administration API (`/_synapse/admin`) on a public Traefik entrypoint.
+# Tuwunel serves this API so that administration dashboards (synapse-admin, ketesa) and moderation bots (Draupnir, Meowlnir) work against it.
+# Every endpoint requires an administrator access token. It is disabled by default; you may prefer to expose it only on the internal entrypoint below.
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_enabled: false
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_hostname: "{{ matrix_tuwunel_hostname }}"
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_path_prefix: /_synapse/admin
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_rule: "Host(`{{ matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_hostname }}`) && PathPrefix(`{{ matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_path_prefix }}`)"
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_priority: 0
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_tuwunel_container_labels_traefik_entrypoints }}"
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_tls: "{{ matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_entrypoints != 'web' }}"
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_traefik_tls_certResolver: "{{ matrix_tuwunel_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
+# Controls whether labels will be added that expose the Synapse-compatible Administration API (`/_synapse/admin`) on the internal Traefik entrypoint.
+matrix_tuwunel_container_labels_internal_client_synapse_admin_api_enabled: false
+matrix_tuwunel_container_labels_internal_client_synapse_admin_api_traefik_path_prefix: /_synapse/admin
+matrix_tuwunel_container_labels_internal_client_synapse_admin_api_traefik_rule: "PathPrefix(`{{ matrix_tuwunel_container_labels_internal_client_synapse_admin_api_traefik_path_prefix }}`)"
+matrix_tuwunel_container_labels_internal_client_synapse_admin_api_traefik_priority: 0
+matrix_tuwunel_container_labels_internal_client_synapse_admin_api_traefik_entrypoints: ""
+
 # Additional Docker container labels (multiline string) appended verbatim to the label file.
 # See `../templates/labels.j2`.
 matrix_tuwunel_container_labels_additional_labels: ''

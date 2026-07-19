@@ -41,6 +41,7 @@ matrix_ketesa_enabled: true
 
 - for [Synapse](./configuring-playbook-synapse.md) (our default homeserver implementation): `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true`
 - for [Dendrite](./configuring-playbook-dendrite.md): `matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: true`
+- for [Tuwunel](./configuring-playbook-tuwunel.md): `matrix_tuwunel_container_labels_public_client_synapse_admin_api_enabled: true`
 
 By default, Ketesa installation will be [restricted to only work with one homeserver](https://github.com/etkecc/ketesa/blob/main/README.md#restricting-available-homeserver) — the one managed by the playbook. To adjust these restrictions, tweak the `matrix_ketesa_config_restrictBaseUrl` variable.
 

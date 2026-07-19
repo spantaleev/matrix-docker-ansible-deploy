@@ -180,6 +180,22 @@ When enabled, rooms with a valid `m.room.policy` state event have outgoing event
 
 The role sets `default_room_version: '12'`, so newly created rooms default to Matrix [room version 12](https://github.com/matrix-org/matrix-spec-proposals/pull/4289) ("Hydra"). Override `matrix_tuwunel_config_default_room_version` if you need an earlier version for client compatibility.
 
+### Exposing the Administration API
+
+Tuwunel serves a Synapse-compatible Administration API under the `/_synapse/admin` path, so administration dashboards (such as synapse-admin and ketesa) and moderation bots (such as Draupnir and Meowlnir) work against it. The served endpoints are listed on the [Tuwunel Synapse Admin API page](https://matrix-construct.github.io/tuwunel/development/compliance/synapse-admin.html).
+
+The API is not routed through the reverse proxy by default. Every endpoint requires an administrator access token, but you may still prefer to keep it off the public entrypoint. To reach it only from trusted networks, expose it on the internal Traefik entrypoint:
+
+```yaml
+matrix_tuwunel_container_labels_internal_client_synapse_admin_api_enabled: true
+```
+
+To expose it publicly instead (for example, when a dashboard runs in the browser), set:
+
+```yaml
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_enabled: true
+```
+
 ## Creating the first user account
 
 Unlike Synapse and Dendrite, Tuwunel does not register users from the command line or via the playbook. On first startup it logs a one-time-use registration token to its journal:

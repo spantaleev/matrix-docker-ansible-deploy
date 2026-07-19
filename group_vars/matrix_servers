@@ -5819,6 +5819,10 @@ matrix_tuwunel_container_labels_traefik_tls_certResolver: "{{ traefik_certResolv
 matrix_tuwunel_container_labels_public_client_root_redirection_enabled: "{{ matrix_tuwunel_container_labels_public_client_root_redirection_url != '' }}"
 matrix_tuwunel_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
 
+matrix_tuwunel_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_ketesa_enabled or matrix_element_admin_enabled }}"
+matrix_tuwunel_container_labels_internal_client_synapse_admin_api_enabled: "{{ (matrix_bot_draupnir_enabled and matrix_bot_draupnir_admin_api_enabled) }}"
+matrix_tuwunel_container_labels_internal_client_synapse_admin_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
+
 matrix_tuwunel_container_labels_public_federation_api_traefik_hostname: "{{ matrix_server_fqn_matrix_federation }}"
 matrix_tuwunel_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
 matrix_tuwunel_container_labels_public_federation_api_traefik_tls: "{{ matrix_federation_traefik_entrypoint_tls }}"
