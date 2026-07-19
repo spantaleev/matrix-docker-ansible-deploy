@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-21 19:21+0000\n"
+"POT-Creation-Date: 2026-07-19 03:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -201,69 +201,97 @@ msgid "The role sets `default_room_version: '12'`, so newly created rooms defaul
 msgstr ""
 
 #: ../../../docs/configuring-playbook-tuwunel.md:183
-msgid "Creating the first user account"
+msgid "The `/_tuwunel` API path"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-tuwunel.md:185
-msgid "Unlike Synapse and Dendrite, Tuwunel does not register users from the command line or via the playbook. On first startup it logs a one-time-use registration token to its journal:"
+msgid "Besides `/_matrix`, Tuwunel serves its own first-party routes under `/_tuwunel`. This namespace carries ad-hoc endpoints such as `/_tuwunel/server_version` and `/_tuwunel/local_user_count`, and the [native OpenID Connect provider](https://matrix-construct.github.io/tuwunel/authentication/oidc-server.html) endpoints (`/_tuwunel/oidc/...`) that clients use when Tuwunel handles OIDC login itself, rather than delegating to an upstream provider as described above. The role routes `/_tuwunel` on the public entrypoint by default so these features work out of the box."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:192
-msgid "Use the token to create your first account from any client that supports token-gated registration (e.g. [Element Web](configuring-playbook-client-element-web.md)). The account is auto-promoted to admin and invited to the admin room together with the `@conduit:<server_name>` server bot. The bot keeps the legacy `conduit` localpart due to the project's lineage from Conduit."
+#: ../../../docs/configuring-playbook-tuwunel.md:187
+msgid "To keep this namespace off the public entrypoint and expose it only on the internal one, set:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-tuwunel.md:194
-msgid "Configuring bridges and appservices"
+msgid "Exposing the Administration API"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-tuwunel.md:196
-msgid "The playbook does not auto-register appservices for Tuwunel. After your bridge has produced its `registration.yaml` (e.g. `/matrix/mautrix-signal/bridge/registration.yaml`), register it manually by sending the contents to the admin room, prefixed with `!admin appservices register` and wrapped in a fenced code block:"
+msgid "Tuwunel serves a Synapse-compatible Administration API under the `/_synapse/admin` path, so administration dashboards (such as synapse-admin and ketesa) and moderation bots (such as Draupnir and Meowlnir) work against it. The served endpoints are listed on the [Tuwunel Synapse Admin API page](https://matrix-construct.github.io/tuwunel/development/compliance/synapse-admin.html)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:217
-msgid "Registrations stored this way are persisted in the database and survive restarts. Re-running the command with the same `id` replaces the existing entry. See [Application services](https://matrix-construct.github.io/tuwunel/appservices.html) for the full reference and admin commands."
+#: ../../../docs/configuring-playbook-tuwunel.md:198
+msgid "The API is not routed through the reverse proxy by default. Every endpoint requires an administrator access token, but you may still prefer to keep it off the public entrypoint. To reach it only from trusted networks, expose it on the internal Traefik entrypoint:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-tuwunel.md:204
+msgid "To expose it publicly instead (for example, when a dashboard runs in the browser), set:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-tuwunel.md:210
+msgid "Creating the first user account"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-tuwunel.md:212
+msgid "Unlike Synapse and Dendrite, Tuwunel does not register users from the command line or via the playbook. On first startup it logs a one-time-use registration token to its journal:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-tuwunel.md:219
-msgid "Migrating from conduwuit"
+msgid "Use the token to create your first account from any client that supports token-gated registration (e.g. [Element Web](configuring-playbook-client-element-web.md)). The account is auto-promoted to admin and invited to the admin room together with the `@conduit:<server_name>` server bot. The bot keeps the legacy `conduit` localpart due to the project's lineage from Conduit."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-tuwunel.md:221
-msgid "Tuwunel is a \"binary swap\" for conduwuit; it reads conduwuit's RocksDB layout directly, so migration is a data move, not an export/import."
+msgid "Configuring bridges and appservices"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-tuwunel.md:223
+msgid "The playbook does not auto-register appservices for Tuwunel. After your bridge has produced its `registration.yaml` (e.g. `/matrix/mautrix-signal/bridge/registration.yaml`), register it manually by sending the contents to the admin room, prefixed with `!admin appservices register` and wrapped in a fenced code block:"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-tuwunel.md:244
+msgid "Registrations stored this way are persisted in the database and survive restarts. Re-running the command with the same `id` replaces the existing entry. See [Application services](https://matrix-construct.github.io/tuwunel/appservices.html) for the full reference and admin commands."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-tuwunel.md:246
+msgid "Migrating from conduwuit"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-tuwunel.md:248
+msgid "Tuwunel is a \"binary swap\" for conduwuit; it reads conduwuit's RocksDB layout directly, so migration is a data move, not an export/import."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-tuwunel.md:250
 msgid "Set `matrix_homeserver_implementation: tuwunel` on `vars.yml` and remove any `matrix_conduwuit_*` overrides."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:224
+#: ../../../docs/configuring-playbook-tuwunel.md:251
 msgid "Run a full installation so that the new service is created and the old one removed (e.g. `just setup-all`)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:225
+#: ../../../docs/configuring-playbook-tuwunel.md:252
 msgid "Run `just run-tags tuwunel-migrate-from-conduwuit`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:227
+#: ../../../docs/configuring-playbook-tuwunel.md:254
 msgid "The migration stops `matrix-conduwuit.service`, copies `/matrix/conduwuit` into `/matrix/tuwunel`, renames the config file, and starts `matrix-tuwunel.service`. The freshly generated tuwunel data directory is preserved alongside as `/matrix/tuwunel_old` until you remove it manually."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:230
+#: ../../../docs/configuring-playbook-tuwunel.md:257
 msgid "Migrating from any other Conduit derivative (Conduit itself, Continuwuity, or any other fork) is **not supported** and will corrupt your database. All Conduit forks share the same linear database version with no awareness of each other; switching between them produces unrecoverable damage. See the [upstream migration table](https://matrix-construct.github.io/tuwunel/#migrating-to-tuwunel)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:232
+#: ../../../docs/configuring-playbook-tuwunel.md:259
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:234
+#: ../../../docs/configuring-playbook-tuwunel.md:261
 msgid "As with all other services, the logs are available via [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html):"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:240
+#: ../../../docs/configuring-playbook-tuwunel.md:267
 msgid "Logging verbosity is controlled by `matrix_tuwunel_config_log` in [`tracing-subscriber` env-filter syntax](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html). The default (`info,state_res=warn`) is reasonable for production; for debugging, try `debug` or scope it tighter, e.g. `info,tuwunel_service::sending=debug`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-tuwunel.md:242
+#: ../../../docs/configuring-playbook-tuwunel.md:269
 msgid "For RocksDB-level issues, online backups, and offline backup procedures, see the [Tuwunel maintenance guide](https://matrix-construct.github.io/tuwunel/maintenance.html). For protocol-compliance state across MSCs, the spec, and Complement, the project's [compliance dashboard](https://matrix-construct.github.io/tuwunel/development/compliance.html) is the authoritative tracker."
 msgstr ""
