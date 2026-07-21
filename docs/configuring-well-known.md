@@ -104,6 +104,14 @@ All you need to do is:
 
 - set up the server at your base domain (e.g. `example.com`) so that it adds an extra HTTP header when serving the `/.well-known/matrix/client` file. [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), the `Access-Control-Allow-Origin` header should be set with a value of `*`. If you don't do this step, web-based Matrix clients (like Element Web) may fail to work. Setting up headers for the `/.well-known/matrix/server` file is not necessary, as this file is only consumed by non-browsers, which don't care about CORS.
 
+- make sure the files are served with a `Content-Type: application/json` HTTP header. You can verify this by running `curl -i https://example.com/.well-known/matrix/client`. Some web servers serve extensionless files as plain text or even offer them as downloads, which breaks stricter clients such as Element X ([manifesting as errors like `MISSING_MATRIX_RTC_FOCUS`](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4763)). On Apache-based hosting, you can force the correct content type by placing an `.htaccess` file next to the files:
+
+  ```apache
+  <FilesMatch "^(client|server|support)$">
+      ForceType application/json
+  </FilesMatch>
+  ```
+
 This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server. It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again.
 
 #### (Option 2): **Setting up reverse-proxying** of the well-known files from the base domain's server to the Matrix server
