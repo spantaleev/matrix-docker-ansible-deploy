@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 13:47+0000\n"
+"POT-Creation-Date: 2026-07-21 04:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -165,97 +165,101 @@ msgid "set up the server at your base domain (e.g. `example.com`) so that it add
 msgstr ""
 
 #: ../../../docs/configuring-well-known.md:107
-msgid "This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server. It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again."
-msgstr ""
-
-#: ../../../docs/configuring-well-known.md:109
-msgid "(Option 2): **Setting up reverse-proxying** of the well-known files from the base domain's server to the Matrix server"
-msgstr ""
-
-#: ../../../docs/configuring-well-known.md:111
-msgid "This option is less fragile and generally better."
-msgstr ""
-
-#: ../../../docs/configuring-well-known.md:113
-msgid "On the base domain's server (e.g. `example.com`), you can set up reverse-proxying (or simply a 302 redirect), so that any access for the `/.well-known/matrix` location prefix is forwarded to the Matrix domain's server (e.g. `matrix.example.com`)."
+msgid "make sure the files are served with a `Content-Type: application/json` HTTP header. You can verify this by running `curl -i https://example.com/.well-known/matrix/client`. Some web servers serve extensionless files as plain text or even offer them as downloads, which breaks stricter clients such as Element X ([manifesting as errors like `MISSING_MATRIX_RTC_FOCUS`](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/4763)). On Apache-based hosting, you can force the correct content type by placing an `.htaccess` file next to the files:"
 msgstr ""
 
 #: ../../../docs/configuring-well-known.md:115
-msgid "With reverse-proxying, you **don't need** to add special HTTP headers for [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) reasons (like `Access-Control-Allow-Origin`), because your Matrix server (where requests ultimately go) will be configured by this playbook correctly."
+msgid "This is relatively easy to do and possibly your only choice if you can only host static files from the base domain's server. It is, however, **a little fragile**, as future updates performed by this playbook may regenerate the well-known files and you may need to notice that and copy them over again."
 msgstr ""
 
 #: ../../../docs/configuring-well-known.md:117
-msgid "If you use a 302 redirect instead, be aware that browsers apply CORS checks to every response in the redirect chain, so the redirect response itself must also carry an `Access-Control-Allow-Origin: *` header. Otherwise, web-based Matrix clients (like Element Web) may fail to work even though the final destination sets the header correctly."
+msgid "(Option 2): **Setting up reverse-proxying** of the well-known files from the base domain's server to the Matrix server"
 msgstr ""
 
 #: ../../../docs/configuring-well-known.md:119
+msgid "This option is less fragile and generally better."
+msgstr ""
+
+#: ../../../docs/configuring-well-known.md:121
+msgid "On the base domain's server (e.g. `example.com`), you can set up reverse-proxying (or simply a 302 redirect), so that any access for the `/.well-known/matrix` location prefix is forwarded to the Matrix domain's server (e.g. `matrix.example.com`)."
+msgstr ""
+
+#: ../../../docs/configuring-well-known.md:123
+msgid "With reverse-proxying, you **don't need** to add special HTTP headers for [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) reasons (like `Access-Control-Allow-Origin`), because your Matrix server (where requests ultimately go) will be configured by this playbook correctly."
+msgstr ""
+
+#: ../../../docs/configuring-well-known.md:125
+msgid "If you use a 302 redirect instead, be aware that browsers apply CORS checks to every response in the redirect chain, so the redirect response itself must also carry an `Access-Control-Allow-Origin: *` header. Otherwise, web-based Matrix clients (like Element Web) may fail to work even though the final destination sets the header correctly."
+msgstr ""
+
+#: ../../../docs/configuring-well-known.md:127
 msgid "**For nginx**, it would be something like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:136
+#: ../../../docs/configuring-well-known.md:144
 msgid "**For Apache2**, it would be something like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:150
+#: ../../../docs/configuring-well-known.md:158
 msgid "**For Caddy 2**, it would be something like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:160
+#: ../../../docs/configuring-well-known.md:168
 msgid "**Note**: Caddy does not process directives in the order they appear in the Caddyfile, but according to its own [directive order](https://caddyserver.com/docs/caddyfile/directives#directive-order). Notably, `redir` is evaluated before `reverse_proxy`, so a `redir` elsewhere in the same site block (a common way to send the base domain to `www.example.com` or to another site) takes precedence and breaks the well-known reverse-proxying. In such cases, wrap the directives in [`handle`](https://caddyserver.com/docs/caddyfile/directives/handle) blocks to enforce the intended priority:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:177
+#: ../../../docs/configuring-well-known.md:185
 msgid "**For HAProxy**, it would be something like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:196
+#: ../../../docs/configuring-well-known.md:204
 msgid "**For Netlify**, configure a [redirect](https://docs.netlify.com/routing/redirects/) using a `_redirects` file in the [publish directory](https://docs.netlify.com/configure-builds/overview/#definitions) with contents like this:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:202
+#: ../../../docs/configuring-well-known.md:210
 msgid "**For AWS CloudFront**"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:204
+#: ../../../docs/configuring-well-known.md:212
 msgid "Add a custom origin with matrix.example.com to your distribution"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:205
+#: ../../../docs/configuring-well-known.md:213
 msgid "Add two behaviors, one for `.well-known/matrix/client` and one for `.well-known/matrix/server` and point them to your new origin."
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:207
+#: ../../../docs/configuring-well-known.md:215
 msgid "Make sure to:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:209
+#: ../../../docs/configuring-well-known.md:217
 msgid "**replace `example.com`** in the server configuration with your actual domain name"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:210
+#: ../../../docs/configuring-well-known.md:218
 msgid "and: to **do this for the HTTPS-enabled server block**, as that's where Matrix expects the file to be"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:212
+#: ../../../docs/configuring-well-known.md:220
 msgid "Confirming it works"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:214
+#: ../../../docs/configuring-well-known.md:222
 msgid "No matter which method you've used to set up the well-known files, if you've done it correctly you should be able to see a JSON file at these URLs:"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:216
+#: ../../../docs/configuring-well-known.md:224
 msgid "`https://example.com/.well-known/matrix/server`"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:217
+#: ../../../docs/configuring-well-known.md:225
 msgid "`https://example.com/.well-known/matrix/client`"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:218
+#: ../../../docs/configuring-well-known.md:226
 msgid "`https://example.com/.well-known/matrix/support`"
 msgstr ""
 
-#: ../../../docs/configuring-well-known.md:220
+#: ../../../docs/configuring-well-known.md:228
 msgid "You can also check if everything is configured correctly, by [checking if services work](maintenance-and-troubleshooting.md#how-to-check-if-services-work)."
 msgstr ""
