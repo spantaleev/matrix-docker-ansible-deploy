@@ -1500,6 +1500,49 @@ matrix_synapse_experimental_features_msc4354_enabled: false
 # See https://github.com/matrix-org/matrix-spec-proposals/pull/4429
 matrix_synapse_experimental_features_msc4429_enabled: false
 
+# Holds the final `experimental_features` configuration for the Synapse homeserver.
+#
+# This is constructed from various other variables and is not meant to be redefined directly.
+# To influence it, use the various `matrix_synapse_experimental_features_msc*_enabled` variables or add your own configuration to `matrix_synapse_experimental_features_custom`.
+matrix_synapse_experimental_features: "{{ matrix_synapse_experimental_features_default | combine(matrix_synapse_experimental_features_auto, recursive=True) | combine(matrix_synapse_experimental_features_custom, recursive=True) }}"
+
+# Holds the default `experimental_features` configuration, driven by the various `matrix_synapse_experimental_features_msc*_enabled` variables.
+#
+# Flags are only included when enabled, because Synapse changes flag defaults (or removes flags) across versions and we don't wish to interfere.
+# The end result is always a mapping (potentially an empty one), never `null`, because Synapse (v1.157.0+) does not tolerate `experimental_features` being `null`.
+matrix_synapse_experimental_features_default: |
+  {{
+    {
+      'msc2409_to_device_messages_enabled': matrix_synapse_experimental_features_msc2409_to_device_messages_enabled | bool,
+      'msc3202_transaction_extensions': matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled | bool,
+      'msc3266_enabled': matrix_synapse_experimental_features_msc3266_enabled | bool,
+      'msc4108_enabled': matrix_synapse_experimental_features_msc4108_enabled | bool,
+      'msc4140_enabled': matrix_synapse_experimental_features_msc4140_enabled | bool,
+      'msc4143_enabled': matrix_synapse_experimental_features_msc4143_enabled | bool,
+      'msc4222_enabled': matrix_synapse_experimental_features_msc4222_enabled | bool,
+      'msc4306_enabled': matrix_synapse_experimental_features_msc4306_enabled | bool,
+      'msc4354_enabled': matrix_synapse_experimental_features_msc4354_enabled | bool,
+      'msc4429_enabled': matrix_synapse_experimental_features_msc4429_enabled | bool,
+    }
+    | dict2items
+    | selectattr('value')
+    | list
+    | items2dict
+  }}
+
+# Holds `experimental_features` configuration that this playbook enables automatically, based on the state of other services.
+#
+# This variable is meant to be used by the playbook (see `group_vars/matrix_servers`) and is not meant to be redefined by users.
+# To inject your own configuration, use `matrix_synapse_experimental_features_custom`.
+matrix_synapse_experimental_features_auto: {}
+
+# Holds additional `experimental_features` configuration that you may wish to inject.
+#
+# Example:
+# matrix_synapse_experimental_features_custom:
+#   msc9999_enabled: true
+matrix_synapse_experimental_features_custom: {}
+
 # Enable this to activate the REST auth password provider module.
 # See: https://github.com/ma1uta/matrix-synapse-rest-password-provider
 matrix_synapse_ext_password_provider_rest_auth_enabled: false
