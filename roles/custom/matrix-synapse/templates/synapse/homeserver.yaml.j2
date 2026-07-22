@@ -3003,7 +3003,19 @@ matrix_authentication_service:
   secret: {{ matrix_synapse_matrix_authentication_service_secret | to_json }}
 {% endif %}
 
-experimental_features:
+{% set experimental_features_enabled =
+       matrix_synapse_experimental_features_msc2409_to_device_messages_enabled
+    or matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled
+    or matrix_synapse_experimental_features_msc3266_enabled
+    or matrix_synapse_experimental_features_msc4108_enabled
+    or matrix_synapse_experimental_features_msc4140_enabled
+    or matrix_synapse_experimental_features_msc4143_enabled
+    or matrix_synapse_experimental_features_msc4222_enabled
+    or matrix_synapse_experimental_features_msc4306_enabled
+    or matrix_synapse_experimental_features_msc4354_enabled
+    or matrix_synapse_experimental_features_msc4429_enabled
+%}
+experimental_features:{{ ' {}' if not experimental_features_enabled else '' }}
   {% if matrix_synapse_experimental_features_msc2409_to_device_messages_enabled %}
   msc2409_to_device_messages_enabled: true
   {% endif %}
