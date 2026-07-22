@@ -4931,7 +4931,7 @@ matrix_synapse_ext_synapse_http_antispam_config_async: "{{ matrix_bot_draupnir_s
 
 # Enable Synapse statistics reporting when using synapse-usage-exporter
 matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
-matrix_synapse_report_stats_endpoint: "{{ (('http://' + matrix_synapse_usage_exporter_identifier + ':' + matrix_synapse_usage_exporter_container_port | string + '/report-usage-stats/push') if matrix_synapse_usage_exporter_enabled else '') }}"
+matrix_synapse_report_stats_endpoint: "{{ (('http://' + matrix_synapse_usage_exporter_identifier + ':' + matrix_synapse_usage_exporter_container_port | string + '/report-usage-stats/push') if matrix_synapse_usage_exporter_enabled else matrix_synapse_report_stats_endpoint_default) }}"
 
 matrix_synapse_matrix_authentication_service_enabled: "{{ matrix_authentication_service_enabled }}"
 matrix_synapse_matrix_authentication_service_endpoint: "{{ matrix_authentication_service_http_base_container_url if matrix_authentication_service_enabled else '' }}"
