@@ -537,7 +537,7 @@ matrix_synapse_federation_rr_transactions_per_room_per_second: 50
 
 # Controls the rate limit for delayed event management.
 #
-# This is only applied if `matrix_synapse_experimental_features_msc4140_enabled` is set to `true`.
+# This is only applied if `matrix_synapse_delayed_events_enabled` is set to `true`.
 matrix_synapse_rc_delayed_event_mgmt:
   per_second: 1
   burst_count: 20
@@ -1435,16 +1435,7 @@ matrix_synapse_experimental_features_msc4108_enabled: false
 ################################################################################
 
 
-# Controls whether to enable the "room summary API" experimental feature.
-# See https://github.com/matrix-org/matrix-spec-proposals/pull/3266
-# Despite being experimental, this feature is mandatory for the next-generation Element X clients, which is why it is enabled by default:
-# https://github.com/element-hq/element-x-ios/issues/3713#issuecomment-2620958291
-# If you're worried about the privacy implications of this unauthenticated API, see:
-# https://github.com/deepbluev7/matrix-doc/blob/room-summaries/proposals/3266-room-summary.md#client-server-api
-# Set this to false if you still want to disable to API for some reason. Note that doing so breaks Element X compatibility though.
-matrix_synapse_experimental_features_msc3266_enabled: true
-
-# Controls whether to enable the "Delayed Events" experimental feature.
+# Controls whether to enable the "Delayed Events" feature (MSC4140).
 # Delayed events are required for proper call (Element Call) participation signalling.
 # If disabled it is very likely that you end up with stuck calls in Matrix rooms.
 #
@@ -1453,11 +1444,12 @@ matrix_synapse_experimental_features_msc3266_enabled: true
 # - `matrix_synapse_rc_delayed_event_mgmt`
 #
 # See https://github.com/matrix-org/matrix-spec-proposals/pull/4140
-matrix_synapse_experimental_features_msc4140_enabled: false
+matrix_synapse_delayed_events_enabled: false
 
 # Controls the maximum allowed duration by which sent events can be delayed, as per MSC4140.
+# Synapse enables delayed events based on this configuration setting being present.
 #
-# See `matrix_synapse_experimental_features_msc4140_enabled`.
+# This is only applied if `matrix_synapse_delayed_events_enabled` is set to `true`.
 matrix_synapse_max_event_delay_duration: 24h
 
 # Controls whether to enable the MSC4143 experimental feature (RTC transports).
@@ -1492,14 +1484,6 @@ matrix_synapse_experimental_features_msc4306_enabled: false
 # See https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 matrix_synapse_experimental_features_msc4354_enabled: false
 
-# Controls whether to enable the MSC4429 experimental feature (profile updates for legacy `/sync`).
-#
-# This allows servers to notify clients using the legacy `/sync` endpoint of profile changes
-# for other users, enabling features such as user status.
-#
-# See https://github.com/matrix-org/matrix-spec-proposals/pull/4429
-matrix_synapse_experimental_features_msc4429_enabled: false
-
 # Holds the final `experimental_features` configuration for the Synapse homeserver.
 #
 # This is constructed from various other variables and is not meant to be redefined directly.
@@ -1515,14 +1499,11 @@ matrix_synapse_experimental_features_default: |
     {
       'msc2409_to_device_messages_enabled': matrix_synapse_experimental_features_msc2409_to_device_messages_enabled | bool,
       'msc3202_transaction_extensions': matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled | bool,
-      'msc3266_enabled': matrix_synapse_experimental_features_msc3266_enabled | bool,
       'msc4108_enabled': matrix_synapse_experimental_features_msc4108_enabled | bool,
-      'msc4140_enabled': matrix_synapse_experimental_features_msc4140_enabled | bool,
       'msc4143_enabled': matrix_synapse_experimental_features_msc4143_enabled | bool,
       'msc4222_enabled': matrix_synapse_experimental_features_msc4222_enabled | bool,
       'msc4306_enabled': matrix_synapse_experimental_features_msc4306_enabled | bool,
       'msc4354_enabled': matrix_synapse_experimental_features_msc4354_enabled | bool,
-      'msc4429_enabled': matrix_synapse_experimental_features_msc4429_enabled | bool,
     }
     | dict2items
     | selectattr('value')
