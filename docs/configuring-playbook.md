@@ -170,6 +170,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md)
 
+- [Setting up Beeper LINE bridging](configuring-playbook-bridge-beeper-line.md)
+
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) — a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira).
 
 - [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md)

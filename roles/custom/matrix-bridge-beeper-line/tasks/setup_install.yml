@@ -1,0 +1,143 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Nikita Chernyi
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- ansible.builtin.set_fact:
+    matrix_bridge_beeper_line_migration_requires_restart: false
+
+- when: "matrix_bridge_beeper_line_database_engine == 'postgres'"
+  block:
+    - name: Check if an SQLite database already exists
+      ansible.builtin.stat:
+        path: "{{ matrix_bridge_beeper_line_sqlite_database_path_local }}"
+      register: matrix_bridge_beeper_line_sqlite_database_path_local_stat_result
+
+    - when: "matrix_bridge_beeper_line_sqlite_database_path_local_stat_result.stat.exists | bool"
+      block:
+        - ansible.builtin.include_role:
+            name: galaxy/postgres
+            tasks_from: migrate_db_to_postgres
+          vars:
+            postgres_db_migration_request:
+              src: "{{ matrix_bridge_beeper_line_sqlite_database_path_local }}"
+              dst: "{{ matrix_bridge_beeper_line_database_connection_string }}"
+              caller: "{{ role_path | basename }}"
+              engine_variable_name: 'matrix_bridge_beeper_line_database_engine'
+              engine_old: 'sqlite'
+              systemd_services_to_stop: ['matrix-beeper-line.service']
+              pgloader_options: ['--with "quote identifiers"']
+
+        - ansible.builtin.set_fact:
+            matrix_bridge_beeper_line_migration_requires_restart: true
+
+- name: Ensure Beeper LINE paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - {path: "{{ matrix_bridge_beeper_line_base_path }}", when: true}
+    - {path: "{{ matrix_bridge_beeper_line_config_path }}", when: true}
+    - {path: "{{ matrix_bridge_beeper_line_data_path }}", when: true}
+    - {path: "{{ matrix_bridge_beeper_line_container_src_files_path }}", when: "{{ matrix_bridge_beeper_line_container_image_self_build }}"}
+  when: item.when | bool
+
+- name: Ensure Beeper LINE image is pulled
+  community.docker.docker_image_pull:
+    name: "{{ matrix_bridge_beeper_line_container_image }}"
+    pull: always
+  when: not matrix_bridge_beeper_line_container_image_self_build
+  register: matrix_bridge_beeper_line_container_image_pull_result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: matrix_bridge_beeper_line_container_image_pull_result is not failed
+
+- name: Ensure Beeper LINE repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_bridge_beeper_line_container_image_self_build_repo }}"
+    dest: "{{ matrix_bridge_beeper_line_container_src_files_path }}"
+    version: "{{ matrix_bridge_beeper_line_container_image_self_build_branch }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_name }}"
+  register: matrix_bridge_beeper_line_git_pull_results
+  when: "matrix_bridge_beeper_line_container_image_self_build | bool"
+
+- name: Ensure Beeper LINE Docker image is built
+  community.docker.docker_image_build:
+    name: "{{ matrix_bridge_beeper_line_container_image }}"
+    dockerfile: Dockerfile
+    path: "{{ matrix_bridge_beeper_line_container_src_files_path }}"
+    pull: true
+    rebuild: "{{ 'always' if matrix_bridge_beeper_line_git_pull_results.changed | bool else 'never' }}"
+  when: "matrix_bridge_beeper_line_container_image_self_build | bool"
+  register: matrix_bridge_beeper_line_container_image_build_result
+
+- name: Ensure beeper-line config.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_bridge_beeper_line_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_beeper_line_config_path }}/config.yaml"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_bridge_beeper_line_config_result
+
+- name: Ensure beeper-line registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_bridge_beeper_line_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bridge_beeper_line_config_path }}/registration.yaml"
+    mode: '0644'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_bridge_beeper_line_registration_result
+
+- name: Ensure matrix-beeper-line.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-beeper-line.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-beeper-line.service"
+    mode: '0644'
+  register: matrix_bridge_beeper_line_systemd_service_result
+
+- name: Ensure beeper-line support files installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ matrix_bridge_beeper_line_base_path }}/{{ item }}"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - labels
+  register: matrix_bridge_beeper_line_support_files_result
+
+- name: Ensure matrix-beeper-line container network is created
+  when: matrix_bridge_beeper_line_container_network != 'host'
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_bridge_beeper_line_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Determine whether matrix-beeper-line needs a restart
+  ansible.builtin.set_fact:
+    matrix_bridge_beeper_line_restart_necessary: >-
+      {{
+        matrix_bridge_beeper_line_migration_requires_restart | default(false)
+        or matrix_bridge_beeper_line_config_result.changed | default(false)
+        or matrix_bridge_beeper_line_registration_result.changed | default(false)
+        or matrix_bridge_beeper_line_support_files_result.changed | default(false)
+        or matrix_bridge_beeper_line_systemd_service_result.changed | default(false)
+        or matrix_bridge_beeper_line_container_image_pull_result.changed | default(false)
+        or matrix_bridge_beeper_line_container_image_build_result.changed | default(false)
+      }}
+
+- name: Ensure matrix-beeper-line.service restarted, if necessary
+  ansible.builtin.service:
+    name: "matrix-beeper-line.service"
+    state: restarted
+    daemon_reload: true
+  when: "matrix_bridge_beeper_line_migration_requires_restart | bool"
