@@ -38,7 +38,7 @@ matrix_bridge_beeper_line_appservice_address: "http://matrix-beeper-line:29322"
 matrix_bridge_beeper_line_scheme: https
 
 # The public base URL at which this bridge's HTTP API is reachable from outside (when exposed).
-# Used for the provisioning API's external-server (OpenID) flow and for public media links.
+# Used for the provisioning API's external-server (OpenID) flow.
 matrix_bridge_beeper_line_bridge_public_address: "{{ (matrix_bridge_beeper_line_scheme + '://' + matrix_bridge_beeper_line_exposure_hostname + matrix_bridge_beeper_line_exposure_path_prefix) if matrix_bridge_beeper_line_exposure_enabled else '' }}"
 
 matrix_bridge_beeper_line_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
@@ -48,7 +48,6 @@ matrix_bridge_beeper_line_backfill_enabled: false
 matrix_bridge_beeper_line_backfill_max_initial_messages: 50
 matrix_bridge_beeper_line_backfill_max_catchup_messages: 500
 matrix_bridge_beeper_line_backfill_unread_hours_threshold: 720
-matrix_bridge_beeper_line_backfill_threads_max_initial_messages: 50
 
 matrix_bridge_beeper_line_command_prefix: "!line"
 
@@ -162,8 +161,6 @@ matrix_bridge_beeper_line_bridge_encryption_pickle_key: mautrix.bridge.e2ee
 
 matrix_bridge_beeper_line_appservice_username_template: "{% raw %}line_{{.}}{% endraw %}"
 
-matrix_bridge_beeper_line_public_media_signing_key: ''
-
 # Shared secret for authentication of provisioning API requests.
 # If set to "disable", the provisioning API will be disabled.
 matrix_bridge_beeper_line_provisioning_shared_secret: disable
@@ -203,7 +200,6 @@ matrix_bridge_beeper_line_registration_yaml: |
   url: {{ matrix_bridge_beeper_line_appservice_address }}
   as_token: "{{ matrix_bridge_beeper_line_appservice_token }}"
   hs_token: "{{ matrix_bridge_beeper_line_homeserver_token }}"
-  # See https://github.com/mautrix/signal/issues/43
   sender_localpart: _bot_{{ matrix_bridge_beeper_line_appservice_bot_username }}
   rate_limited: false
   namespaces:
