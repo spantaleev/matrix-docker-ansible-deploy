@@ -1,0 +1,51 @@
+#jinja2: lstrip_blocks: True
+[Unit]
+Description=Matrix Beeper LINE bridge
+{% for service in matrix_bridge_beeper_line_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_bridge_beeper_line_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-beeper-line 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-beeper-line 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-beeper-line \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_bridge_beeper_line_container_network }} \
+			--mount type=bind,src={{ matrix_bridge_beeper_line_config_path }},dst=/config,ro \
+			--mount type=bind,src={{ matrix_bridge_beeper_line_data_path }},dst=/data \
+			--label-file={{ matrix_bridge_beeper_line_base_path }}/labels \
+			--workdir=/data \
+			{% for arg in matrix_bridge_beeper_line_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_bridge_beeper_line_container_image }} \
+			/usr/bin/matrix-line -c /config/config.yaml -r /config/registration.yaml --no-update
+
+{% if matrix_bridge_beeper_line_container_network != 'host' %}
+{% for network in matrix_bridge_beeper_line_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-beeper-line
+{% endfor %}
+{% endif %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-beeper-line
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-beeper-line 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-beeper-line 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-beeper-line
+
+[Install]
+WantedBy=multi-user.target
