@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+# SPDX-FileCopyrightText: 2026 Nikita Chernyi
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: (Deprecation) Catch and report renamed settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a variable, which now has a different name.
+      Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
+  when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
+  with_items: []
+
+- name: Fail if required mautrix-linkedin settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {'name': 'matrix_bridge_mautrix_linkedin_appservice_token', when: true}
+    - {'name': 'matrix_bridge_mautrix_linkedin_homeserver_address', when: true}
+    - {'name': 'matrix_bridge_mautrix_linkedin_homeserver_token', when: true}
+    - {'name': 'matrix_bridge_mautrix_linkedin_database_hostname', when: "{{ matrix_bridge_mautrix_linkedin_database_engine == 'postgres' }}"}
+    - {'name': 'matrix_bridge_mautrix_linkedin_metrics_proxying_hostname', when: "{{ matrix_bridge_mautrix_linkedin_metrics_proxying_enabled }}"}
+    - {'name': 'matrix_bridge_mautrix_linkedin_metrics_proxying_path_prefix', when: "{{ matrix_bridge_mautrix_linkedin_metrics_proxying_enabled }}"}
+    - {'name': 'matrix_bridge_mautrix_linkedin_container_network', when: true}
+
+- name: Fail if the deprecated beeper-linkedin bridge is also enabled
+  ansible.builtin.fail:
+    msg: >-
+      Both `matrix_bridge_beeper_linkedin_enabled` and `matrix_bridge_mautrix_linkedin_enabled` are set.
+      Both register `@linkedinbot` and the `@linkedin_*` user range as exclusive appservice namespaces,
+      so running them together makes homeserver event routing for those users ambiguous and lets one
+      bridge act as the other's puppets. Disable the deprecated beeper-linkedin bridge
+      (`matrix_bridge_beeper_linkedin_enabled: false`) and re-run the playbook so its uninstall removes
+      the old registration, then enable this bridge.
+  when: "matrix_bridge_beeper_linkedin_enabled | default(false) | bool"

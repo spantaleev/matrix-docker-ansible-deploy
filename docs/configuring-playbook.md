@@ -148,6 +148,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Mautrix Google Voice bridging](configuring-playbook-bridge-mautrix-gvoice.md)
 
+- [Setting up Mautrix LinkedIn bridging](configuring-playbook-bridge-mautrix-linkedin.md)
+
 - [Setting up Mautrix Whatsapp bridging](configuring-playbook-bridge-mautrix-whatsapp.md)
 
 - [Setting up Instagram bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-instagram.md)
