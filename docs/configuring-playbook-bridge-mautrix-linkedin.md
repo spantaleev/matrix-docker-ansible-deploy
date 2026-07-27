@@ -90,7 +90,7 @@ Once you log in, the bridge builds portal rooms for your recent conversations an
 
 ## Troubleshooting
 
-**Q. The paste went through, but the bot does not seem to be working.** — A. It is most likely because you have obtained the cURL output on other browsers than Chrome or a Chrome-based browser. LinkedIn silently throws out a session replayed under a different user-agent. Please try again with the log in steps described above on Chrome or a Chrome-based browser.
+**Q. I have copied and pasted the cURL output to log in, but the bot does not seem to be working. Why, and how to fix it?** — A. It is most likely because you have obtained the output on other browsers than Chrome or a Chrome-based browser. LinkedIn silently throws out a session replayed under a different user-agent. Please try again with the log in steps described above on Chrome or a Chrome-based browser.
 
 **Q. The bot worked yesterday, but does not work today. Why?** — A. It is likely because your LinkedIn cookies expired (or LinkedIn had it expired). Please send `login` to the bot, and follow the login steps described above again.
 
