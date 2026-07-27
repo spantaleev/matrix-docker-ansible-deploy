@@ -1,6 +1,7 @@
 <!--
 SPDX-FileCopyrightText: 2026 MDAD project contributors
 SPDX-FileCopyrightText: 2026 Nikita Chernyi
+SPDX-FileCopyrightText: 2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -11,9 +12,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 The playbook can install and configure [mautrix-linkedin](https://github.com/mautrix/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) messaging.
 
-LinkedIn keeps its messaging behind a login wall with no usable public API, so this bridge does it the undignified way: it borrows your own browser's LinkedIn session, cookies copied out by hand. It works, it carries messages both ways, and it is held together with tape and good intentions. The login is clumsier than any QR-code bridge you have set up, and LinkedIn drops the session whenever it pleases. Go in expecting to redo it now and then, and you will be fine.
-
 See the project's [documentation](https://docs.mau.fi/bridges/go/linkedin/index.html) to learn what it does and why it might be useful to you.
+
+>[!NOTE]
+> LinkedIn keeps its messaging function behind a login wall and does not provide a usable public API, so using this bridge requires you to manually copy cookies on a web browser for logging in. Refer to [this section](#usage) below for details.
 
 ## Prerequisite (optional)
 
@@ -57,23 +59,36 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 Start a chat with `@linkedinbot:example.com` (where `example.com` is your base domain, the bare one without the `matrix.` prefix) and send `login`.
 
-**Before you open devtools, read this, because it is where almost everyone gets stuck.** LinkedIn pins the session to the exact browser that made the request. Copy the cURL from Chrome, replay it from Firefox, and the session dies on the spot: no error, no "invalid login", just silence and a bot that stares back while you spend an hour wondering what you broke. You broke nothing; LinkedIn simply refused a session that arrived under the wrong user-agent. The bridge presents itself as Chrome on Linux, so grab your request from Chrome, or from a browser that lies about itself in exactly the same way. [mautrix-manager](https://github.com/mautrix/manager) does the whole grab with the right user-agent, if you would rather never think about any of this.
+### Logging in
 
-With the landmine flagged, here is the login itself. LinkedIn has no QR code, no OAuth, and no dignity, so you log in by handing the bot a request your own browser already made while signed in:
+First you need to log in to LinkedIn to obtain the request which the web browser sent while signed in. Because the bridge presents itself as Chrome on Linux, you need to obtain it with **Chrome or a Chrome-based browser**.
 
-1. Open [linkedin.com](https://www.linkedin.com/) in a private/incognito window and sign in.
-2. Open your browser's devtools (F12) and go to the Network tab.
-3. Filter for `graphql`.
-4. Right-click any one of those requests, then "Copy" and "Copy as cURL".
-5. Paste that whole wall of text into the chat with the bot.
+>[!WARNING]
+> LinkedIn pins the session to the exact browser that made the request, and refuses a session that arrived under a different user-agent. Therefore, if you copy the cURL from Chrome and replay it on Firefox, then the session dies right away.
 
-The bridge's [official Authentication guide](https://docs.mau.fi/bridges/go/linkedin/authentication.html) walks the same steps with screenshots. Once you log in, the bridge builds portal rooms for your recent conversations and carries messages both ways. Those cookies are a login session, and LinkedIn expires them whenever the mood strikes, days or weeks, no warning. When the bridge goes quiet, send `login` and run the devtools dance again. Nothing is broken, that is just how cookie auth ages.
+You need to follow these steps to log in:
+
+1. Open [linkedin.com](https://www.linkedin.com/) in a private/incognito window on Chrome / a Chrome-based browser
+2. Sign in to LinkedIn
+3. Open your browser's devtools (F12) and go to the Network tab
+4. Filter for `graphql`
+5. Right-click any one of those requests, then "Copy" and "Copy as cURL"
+6. Paste the output into the chat with the bot and send it
+
+The bridge's [official Authentication guide](https://docs.mau.fi/bridges/go/linkedin/authentication.html) walks the same steps with screenshots.
+
+Once you log in, the bridge builds portal rooms for your recent conversations and carries messages both ways.
+
+**💡 Notes:**
+
+- The cookies are a login session, and LinkedIn can have them expired at their will. When the bridge seems to have become inactive, please re-log in by following the login steps.
+- If you do not want to bother with request retrieval, you might want to take at look at [mautrix-manager](https://github.com/mautrix/manager).
 
 ## Troubleshooting
 
-**The paste went through and the bot just sat there?** You grabbed the cURL in Firefox, Safari, or Edge, did you not, and that is the single most common reason anyone lands on this page. LinkedIn silently throws out a session replayed under a different user-agent. Redo the copy in Chrome, or match the bridge's user-agent, and try again.
+**Q. The paste went through, but the bot does not seem to be working.** — A. It is most likely because you have obtained the cURL output on other browsers than Chrome or a Chrome-based browser. LinkedIn silently throws out a session replayed under a different user-agent. Please try again with the log in steps described above on Chrome or a Chrome-based browser.
 
-**Worked yesterday, dead today?** Your LinkedIn cookies expired, which they do on LinkedIn's own whims, because a Fortune 500 company apparently treats session auth like a weekend hobby project. Send `login` to the bot and run the devtools dance one more time.
+**Q. The bot worked yesterday, but does not work today. Why?** — A. It is likely because your LinkedIn cookies expired (or LinkedIn had it expired). Please send `login` to the bot, and follow the login steps described above again.
 
 For everything else, as with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-linkedin`.
 
