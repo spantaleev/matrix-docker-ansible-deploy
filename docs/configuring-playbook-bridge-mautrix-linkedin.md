@@ -17,9 +17,15 @@ See the project's [documentation](https://docs.mau.fi/bridges/go/linkedin/index.
 >[!NOTE]
 > LinkedIn keeps its messaging function behind a login wall and does not provide a usable public API, so using this bridge requires you to manually copy cookies on a web browser for logging in. Refer to [this section](#usage) below for details.
 
-## Prerequisite (optional)
+## Prerequisite
 
-### Enable Appservice Double Puppet
+### Uninstalling `beeper-linkedin`
+
+If `beeper-linkedin` bridge is enabled on your host, you need to uninstall it first, since it claims the `@linkedinbot` username and `@linkedin_*` user range as exclusive appservice namespaces, which will cause conflicts with `mautrix-linkedin`.
+
+To uninstall the bridge, set `matrix_bridge_beeper_linkedin_enabled: false` and re-run the playbook. The playbook refuses to install `mautrix-linkedin` until `beeper-linkedin` is uninstalled.
+
+### Enable Appservice Double Puppet (optional)
 
 If you want to set up [Double Puppeting](https://docs.mau.fi/bridges/general/double-puppeting.html) (hint: you most likely do) for this bridge automatically, you need to have enabled [Appservice Double Puppet](configuring-playbook-appservice-double-puppet.md) for this playbook.
 
@@ -32,8 +38,6 @@ To enable the bridge, add the following configuration to your `inventory/host_va
 ```yaml
 matrix_bridge_mautrix_linkedin_enabled: true
 ```
-
-If you previously ran the older, now-defunct `beeper-linkedin` bridge on this host, turn it off before you turn this one on. Both bridges claim the same `@linkedinbot` username and `@linkedin_*` user range as exclusive appservice namespaces, and two appservices brawling over one namespace means Synapse routes those users at random and one bridge can quietly act as the other's puppets. The playbook refuses to run with both enabled and says so to your face. Set `matrix_bridge_beeper_linkedin_enabled: false` and re-run the playbook first: its uninstall path pulls the old registration out of the way, and then this bridge comes up clean.
 
 ### Extending the configuration
 
