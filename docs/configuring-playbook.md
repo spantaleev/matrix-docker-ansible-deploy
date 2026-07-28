@@ -170,8 +170,6 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Appservice Discord bridging](configuring-playbook-bridge-appservice-discord.md)
 
-- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md)
-
 - [Setting up matrix-hookshot](configuring-playbook-bridge-hookshot.md) — a bridge between Matrix and multiple project management services, such as [GitHub](https://github.com), [GitLab](https://about.gitlab.com) and [JIRA](https://www.atlassian.com/software/jira).
 
 - [Setting up MX Puppet GroupMe bridging](configuring-playbook-bridge-mx-puppet-groupme.md)
@@ -270,6 +268,8 @@ Various services that don't fit any other categories.
 - [Setting up Appservice Slack bridging](configuring-playbook-bridge-appservice-slack.md) (removed; this component has been discontinued)
 
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md))
+
+- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (unmaintained; the upstream repository has been archived. Consider [setting up Mautrix LinkedIn bridging](configuring-playbook-bridge-mautrix-linkedin.md))
 
 - [Setting up the Dimension integration manager](configuring-playbook-dimension.md) ([unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
 
