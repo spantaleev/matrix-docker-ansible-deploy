@@ -37,6 +37,7 @@ Possibly outdated list of roles where self-building the Docker image is currentl
 - `matrix-bridge-hookshot`
 - `matrix-bridge-appservice-irc`
 - `matrix-bridge-beeper-linkedin`
+- `matrix-bridge-beeper-line`
 - `matrix-bridge-mautrix-googlechat`
 - `matrix-bridge-mautrix-telegram`
 - `matrix-bridge-mautrix-signal`
