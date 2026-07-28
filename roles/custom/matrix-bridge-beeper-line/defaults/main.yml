@@ -20,7 +20,8 @@ matrix_bridge_beeper_line_container_image_self_build_branch: "{{ 'main' if matri
 # A side effect is that Renovate cannot track updates for this component, so its version needs to be bumped manually.
 matrix_bridge_beeper_line_version: 412eda7f028f0ee946d6fe584c64c7e97f27c7a7
 
-# This image is maintained separately from the upstream project.
+# Upstream does not publish container images publicly (its CI only pushes to Beeper's private registry), so this is a community-maintained image built from the upstream source.
+# It is only available for the amd64 architecture, which is why the playbook falls back to self-building on other architectures.
 # To use another prebuilt image, override this variable directly.
 matrix_bridge_beeper_line_container_image: "{{ matrix_bridge_beeper_line_container_image_registry_prefix }}crispyduck/beeper-line:{{ matrix_bridge_beeper_line_version }}"
 matrix_bridge_beeper_line_container_image_registry_prefix: "{{ 'localhost/' if matrix_bridge_beeper_line_container_image_self_build else matrix_bridge_beeper_line_container_image_registry_prefix_upstream }}"
