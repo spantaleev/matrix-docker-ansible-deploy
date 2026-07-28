@@ -1,5 +1,6 @@
 {#
 SPDX-FileCopyrightText: 2024 Michael Hollister
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -13,6 +14,7 @@ traefik.docker.network={{ matrix_synapse_usage_exporter_container_labels_traefik
 
 traefik.http.services.matrix-synapse-usage-exporter.loadbalancer.server.port={{ matrix_synapse_usage_exporter_container_port }}
 
+{% if matrix_synapse_usage_exporter_container_labels_traefik_usage_stats_enabled %}
 ############################################################
 #                                                          #
 # Report Usage Stats (/report-usage-stats/push)            #
@@ -38,6 +40,46 @@ traefik.http.routers.matrix-synapse-usage-exporter.tls.certResolver={{ matrix_sy
 # /Report Usage Stats (/report-usage-stats/push)           #
 #                                                          #
 ############################################################
+{% endif %}
+
+{% if matrix_synapse_usage_exporter_container_labels_traefik_metrics_enabled %}
+############################################################
+#                                                          #
+# Metrics                                                  #
+#                                                          #
+############################################################
+
+{% set metricsMiddlewares = [] %}
+
+{% if matrix_synapse_usage_exporter_container_labels_traefik_metrics_middleware_basic_auth_enabled %}
+{% set metricsMiddlewares = metricsMiddlewares + ['matrix-synapse-usage-exporter-metrics-basic-auth'] %}
+traefik.http.middlewares.matrix-synapse-usage-exporter-metrics-basic-auth.basicauth.users={{ matrix_synapse_usage_exporter_container_labels_traefik_metrics_middleware_basic_auth_users }}
+{% endif %}
+
+{% set metricsMiddlewares = metricsMiddlewares + ['matrix-synapse-usage-exporter-metrics-replace-path'] %}
+traefik.http.middlewares.matrix-synapse-usage-exporter-metrics-replace-path.replacepath.path=/metrics
+
+traefik.http.routers.matrix-synapse-usage-exporter-metrics.rule={{ matrix_synapse_usage_exporter_container_labels_traefik_metrics_rule }}
+traefik.http.routers.matrix-synapse-usage-exporter-metrics.middlewares={{ metricsMiddlewares | join(',') }}
+
+{% if matrix_synapse_usage_exporter_container_labels_traefik_metrics_priority | int > 0 %}
+traefik.http.routers.matrix-synapse-usage-exporter-metrics.priority={{ matrix_synapse_usage_exporter_container_labels_traefik_metrics_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-synapse-usage-exporter-metrics.service=matrix-synapse-usage-exporter
+traefik.http.routers.matrix-synapse-usage-exporter-metrics.entrypoints={{ matrix_synapse_usage_exporter_container_labels_traefik_metrics_entrypoints }}
+
+traefik.http.routers.matrix-synapse-usage-exporter-metrics.tls={{ matrix_synapse_usage_exporter_container_labels_traefik_metrics_tls | to_json }}
+{% if matrix_synapse_usage_exporter_container_labels_traefik_metrics_tls %}
+traefik.http.routers.matrix-synapse-usage-exporter-metrics.tls.certResolver={{ matrix_synapse_usage_exporter_container_labels_traefik_metrics_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Metrics                                                 #
+#                                                          #
+############################################################
+{% endif %}
 
 {% endif %}
 

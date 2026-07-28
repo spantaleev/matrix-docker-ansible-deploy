@@ -1,7 +1,7 @@
 <!--
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
 SPDX-FileCopyrightText: 2024 Michael Hollister
-SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2026 Slavi Pantaleev
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -38,12 +38,34 @@ To enable synapse-usage-exporter, add the following configuration to your `inven
 ```yaml
 matrix_synapse_usage_exporter_enabled: true
 
-# (Optional) Expose endpoint if you want to collect statistics from outside (from other homeservers).
+# (Optional) Expose the usage-stats ingestion endpoint if you want to collect statistics from outside (from other homeservers).
 # If enabled, synapse-usage-exporter will be exposed publicly at `matrix.example.com/report-usage-stats/push`.
 # When collecting usage statistics for Synapse running on the same host, you don't need to enable this.
 # You can adjust the hostname and path via `matrix_synapse_usage_exporter_hostname` and `matrix_synapse_usage_exporter_path_prefix`.
 # matrix_synapse_usage_exporter_proxying_enabled: true
 ```
+
+**Note**: `matrix_synapse_usage_exporter_proxying_enabled` only exposes the endpoint that Synapse pushes usage statistics **to** (`/report-usage-stats/push`). Despite its generic name, it has nothing to do with the metrics endpoint that Prometheus reads **from**. See [below](#collecting-metrics-to-an-external-prometheus-server) for exposing metrics.
+
+### Collecting metrics to an external Prometheus server
+
+Metrics are always served on the container network, so the [integrated Prometheus](./configuring-playbook-prometheus-grafana.md) (`prometheus_enabled: true`) scrapes them without any additional configuration.
+
+To collect them with an **external Prometheus server**, you need to expose them publicly. You can do so by enabling metrics exposure for all services (`matrix_metrics_exposure_enabled: true`), or just for this service:
+
+```yaml
+# Expose the metrics on https://matrix.example.com/metrics/synapse-usage-exporter
+matrix_synapse_usage_exporter_metrics_proxying_enabled: true
+
+# Uncomment to password-protect the metrics for synapse-usage-exporter.
+# matrix_synapse_usage_exporter_container_labels_traefik_metrics_middleware_basic_auth_enabled: true
+
+# Uncomment and set this part to the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint.
+# See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
+# matrix_synapse_usage_exporter_container_labels_traefik_metrics_middleware_basic_auth_users: ''
+```
+
+Refer to [this section](./configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) of the Prometheus and Grafana documentation for more details.
 
 ### Adjusting the synapse-usage-exporter URL (optional)
 
