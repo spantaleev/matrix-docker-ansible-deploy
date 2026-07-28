@@ -13,6 +13,11 @@ matrix_bridge_beeper_line_container_image_self_build: false
 matrix_bridge_beeper_line_container_image_self_build_repo: "https://github.com/beeper/line.git"
 matrix_bridge_beeper_line_container_image_self_build_branch: "{{ 'main' if matrix_bridge_beeper_line_version == 'latest' else matrix_bridge_beeper_line_version }}"
 
+# Unlike other components, this one is pinned to a commit hash and not to a version number.
+# beeper-line's release tags are not maintained: the latest one (1.2.0) dates back to 2026-05-17 and lags behind the `main` branch by more than a hundred bugfix commits.
+# This is because upstream releases by deploying the `main` branch from CI, not by tagging.
+# Pinning to a tag would mean shipping a bridge which misses months' worth of fixes, so we pin to a commit from `main` instead.
+# A side effect is that Renovate cannot track updates for this component, so its version needs to be bumped manually.
 matrix_bridge_beeper_line_version: 412eda7f028f0ee946d6fe584c64c7e97f27c7a7
 
 # This image is maintained separately from the upstream project.
