@@ -4411,7 +4411,7 @@ ntfy_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary
 # We have ntfy serve its metrics endpoint on a dedicated port, instead of on the regular HTTP port.
 # Were it served on the regular HTTP port, the endpoint would also become reachable at `https://ntfy.example.com/metrics`.
 # Nothing protects it there, because ntfy does not apply its own access-control rules to the metrics endpoint.
-ntfy_metrics_listen_http_port: "{{ 9090 if matrix_metrics_exposure_enabled else '' }}"
+ntfy_metrics_listen_http_port: "{{ 9090 if (prometheus_enabled or matrix_metrics_exposure_enabled) else '' }}"
 
 ntfy_container_labels_traefik_metrics_enabled: "{{ matrix_metrics_exposure_enabled }}"
 
@@ -5430,6 +5430,8 @@ prometheus_container_additional_networks_auto: |
       ([matrix_media_repo_container_network] if matrix_prometheus_services_connect_scraper_media_repo_enabled and matrix_media_repo_container_network != prometheus_container_network else [])
       +
       ([matrix_synapse_usage_exporter_container_network] if matrix_prometheus_services_connect_scraper_synapse_usage_exporter_enabled and matrix_synapse_usage_exporter_container_network != prometheus_container_network else [])
+      +
+      ([ntfy_container_network] if matrix_prometheus_services_connect_scraper_ntfy_enabled and ntfy_container_network != prometheus_container_network else [])
     ) | unique
   }}
 
@@ -5456,6 +5458,8 @@ prometheus_config_scrape_configs_auto: |
     (matrix_prometheus_services_connect_scraper_media_repo_scrape_configs if matrix_prometheus_services_connect_scraper_media_repo_enabled else [])
     +
     (matrix_prometheus_services_connect_scraper_synapse_usage_exporter_scrape_configs if matrix_prometheus_services_connect_scraper_synapse_usage_exporter_enabled else [])
+    +
+    (matrix_prometheus_services_connect_scraper_ntfy_scrape_configs if matrix_prometheus_services_connect_scraper_ntfy_enabled else [])
   }}
 
 ######################################################################
@@ -5496,6 +5500,9 @@ matrix_prometheus_services_connect_scraper_media_repo_static_configs_target: "{{
 
 matrix_prometheus_services_connect_scraper_synapse_usage_exporter_enabled: "{{ matrix_synapse_usage_exporter_enabled }}"
 matrix_prometheus_services_connect_scraper_synapse_usage_exporter_static_configs_target: "{{ matrix_synapse_usage_exporter_identifier }}:{{ matrix_synapse_usage_exporter_container_port | string }}"
+
+matrix_prometheus_services_connect_scraper_ntfy_enabled: "{{ ntfy_enabled and ntfy_metrics_listen_http_port | string | length > 0 }}"
+matrix_prometheus_services_connect_scraper_ntfy_static_configs_target: "{{ ntfy_identifier }}:{{ ntfy_metrics_listen_http_port | string }}"
 
 ######################################################################
 #
