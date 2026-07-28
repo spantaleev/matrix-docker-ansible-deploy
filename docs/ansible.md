@@ -39,6 +39,18 @@ If using the `pip` method, do note that the `ansible-playbook` binary may not be
 
 **Note**: Both of the above methods are a bad way to run system software such as Ansible. If you find yourself needing to resort to such hacks, please consider reporting a bug to your distribution and/or switching to a sane distribution, which provides up-to-date software.
 
+## SSH host key and passphrase prompts
+
+If Ansible fails with `Host key verification failed` (or a similar `Data could not be sent to remote host` error) without asking you to confirm the SSH host key of your server, you're likely on Ansible 2.21 or later.
+
+Since Ansible 2.21, forked workers call `setsid()` and thus lose the controlling terminal. SSH cannot open `/dev/tty` anymore, so it can no longer ask you to confirm an unknown host key or prompt you for the passphrase of an SSH key.
+
+The simplest fix is to connect to the server once (e.g. `ssh root@matrix.example.com`) and confirm the host key. Ansible runs after that will find it in your `known_hosts` file.
+
+Alternatively, run Ansible with the `ANSIBLE_WORKER_SESSION_ISOLATION=False` environment variable to get these prompts back (e.g. `ANSIBLE_WORKER_SESSION_ISOLATION=False just install-all`).
+
+**Note**: this does not affect you if you're [using Ansible via Docker](#using-ansible-via-docker), because our Docker image already disables session isolation for you.
+
 ## Using Ansible via Docker
 
 Alternatively, you can run Ansible inside a Docker container (powered by the [ghcr.io/devture/ansible](https://github.com/devture/docker-ansible/pkgs/container/ansible) Docker image).
