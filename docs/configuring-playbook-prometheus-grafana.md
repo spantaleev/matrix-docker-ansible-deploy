@@ -183,6 +183,8 @@ Name | Description
 `prometheus_postgres_exporter_container_labels_metrics_enabled`|Set this to `true` to expose the [Postgres exporter](#enable-metrics-and-graphs-for-postgres-optional) metrics on `https://matrix.example.com/metrics/postgres-exporter`.
 `prometheus_nginxlog_exporter_enabled`|Set this to `true` to enable the [prometheus-nginxlog-exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) (locally, on the container network).
 `prometheus_nginxlog_exporter_container_labels_metrics_enabled`|Set this to `true` to expose the [prometheus-nginxlog-exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) metrics on `https://matrix.example.com/metrics/nginxlog`.
+`ntfy_metrics_listen_http_port`|Set this to a port number (e.g. `9090`) to make [ntfy](configuring-playbook-ntfy.md) serve its metrics (locally, on the container network) on that port.
+`ntfy_container_labels_traefik_metrics_enabled`|Set this to `true` to expose the [ntfy](configuring-playbook-ntfy.md) metrics on `https://matrix.example.com/metrics/ntfy`.
 
 ### Expose metrics of other services/roles
 

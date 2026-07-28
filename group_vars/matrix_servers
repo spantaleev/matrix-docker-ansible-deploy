@@ -4408,6 +4408,21 @@ ntfy_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxya
 ntfy_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 ntfy_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
+# We have ntfy serve its metrics endpoint on a dedicated port, instead of on the regular HTTP port.
+# Were it served on the regular HTTP port, the endpoint would also become reachable at `https://ntfy.example.com/metrics`.
+# Nothing protects it there, because ntfy does not apply its own access-control rules to the metrics endpoint.
+ntfy_metrics_listen_http_port: "{{ 9090 if matrix_metrics_exposure_enabled else '' }}"
+
+ntfy_container_labels_traefik_metrics_enabled: "{{ matrix_metrics_exposure_enabled }}"
+
+# For consistency with other things hosted at the Matrix FQN, we adjust the metrics endpoint
+# so that metrics would be served at something like `/metrics/SERVICE_NAME`, and not at the default path for the role (`/metrics`).
+ntfy_container_labels_traefik_metrics_hostname: "{{ matrix_server_fqn_matrix }}"
+ntfy_container_labels_traefik_metrics_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/ntfy"
+
+ntfy_container_labels_traefik_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
+ntfy_container_labels_traefik_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
+
 ntfy_visitor_request_limit_exempt_hosts_hostnames_auto: |
   {{
     [matrix_server_fqn_matrix]
