@@ -37,7 +37,7 @@ This bridge supersedes [beeper-linkedin](./docs/configuring-playbook-bridge-beep
 
 ## Support for bridging to LINE via beeper-line
 
-The playbook can now bridge [LINE](https://line.me/) via [beeper-line](https://github.com/beeper/line), a bridge based on the modern mautrix bridge framework. It supports LINE accounts with Letter Sealing enabled or disabled and bridges messages, media, reactions, replies, receipts, and other common chat features.
+Thanks to [Co van Leeuwen](https://github.com/c00), the playbook can now bridge [LINE](https://line.me/) via [beeper-line](https://github.com/beeper/line), a bridge based on the modern mautrix bridge framework. It supports LINE accounts with Letter Sealing enabled or disabled and bridges messages, media, reactions, replies, receipts, and other common chat features.
 
 The bridge identifies itself as a LINE Chrome Extension client, so it cannot be used at the same time as the real LINE Chrome Extension. See [Setting up Beeper LINE bridging](docs/configuring-playbook-bridge-beeper-line.md) to get started.
 
