@@ -65,10 +65,10 @@ Start a chat with `@linkedinbot:example.com` (where `example.com` is your base d
 
 ### Logging in
 
-First you need to log in to LinkedIn to obtain the request which the web browser sent while signed in. Because the bridge presents itself as Chrome on Linux, you need to obtain it with **Chrome or a Chrome-based browser**.
+To log in, you need to sign in to LinkedIn with a web browser and hand one of the requests it makes to the bot. Because the bridge presents itself as Chrome on Linux, the request needs to come from **Chrome or a Chrome-based browser**.
 
 >[!WARNING]
-> LinkedIn pins the session to the exact browser that made the request, and refuses a session that arrived under a different user-agent. Therefore, if you copy the cURL from Chrome and replay it on Firefox, then the session dies right away.
+> LinkedIn ties the session to the browser that made the request and rejects it when it is replayed under a different user-agent. A request copied from Firefox therefore results in a session that stops working immediately, without an error message.
 
 You need to follow these steps to log in:
 
@@ -85,16 +85,22 @@ Once you log in, the bridge builds portal rooms for your recent conversations an
 
 **💡 Notes:**
 
-- The cookies are a login session, and LinkedIn can have them expired at their will. When the bridge seems to have become inactive, please re-log in by following the login steps.
-- If you do not want to bother with request retrieval, you might want to take at look at [mautrix-manager](https://github.com/mautrix/manager).
+- The request contains a login session, which LinkedIn may expire at any time. When the bridge goes quiet, log in again by following the steps above.
+- If you would rather not retrieve the request yourself, you may wish to take a look at [mautrix-manager](https://github.com/mautrix/manager).
 
 ## Troubleshooting
 
-**Q. I have copied and pasted the cURL output to log in, but the bot does not seem to be working. Why, and how to fix it?** — A. It is most likely because you have obtained the output on other browsers than Chrome or a Chrome-based browser. LinkedIn silently throws out a session replayed under a different user-agent. Please try again with the log in steps described above on Chrome or a Chrome-based browser.
+### The bot does not respond after you send it the cURL output
 
-**Q. The bot worked yesterday, but does not work today. Why?** — A. It is likely because your LinkedIn cookies expired (or LinkedIn had it expired). Please send `login` to the bot, and follow the login steps described above again.
+This most likely means that you have obtained the request with a browser other than Chrome or a Chrome-based one. LinkedIn silently discards a session replayed under a different user-agent. Follow the login steps above again, this time using Chrome or a Chrome-based browser.
 
-For everything else, as with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-linkedin`.
+### The bridge worked before, but has gone quiet
+
+Your LinkedIn session has most likely expired. Send `login` to the bot and follow the login steps above again.
+
+### Other issues
+
+As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-mautrix-linkedin`.
 
 ### Increase logging verbosity
 
