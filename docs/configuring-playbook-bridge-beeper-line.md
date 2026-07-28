@@ -81,7 +81,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 To use the bridge, start a chat with `@linebot:example.com` (where `example.com` is your base domain, not the `matrix.` domain).
 
-Send `login` and follow the prompts to enter your LINE email address and password and approve the new session in the LINE mobile app.
+Send `login` and enter your LINE email address and password when prompted. The bridge then shows you a PIN code, which you need to enter into the LINE app on your mobile device to approve the new session.
 
 ## Troubleshooting
 
