@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Setting up Beeper Linkedin bridging (optional, unmaintained)
 
-**Note**: this bridge is unmaintained. Its upstream repository has been archived and has not seen a change since March 2025. For bridging to LinkedIn, consider using the [mautrix-linkedin](configuring-playbook-bridge-mautrix-linkedin.md) bridge instead, which is actively maintained and also supported by the playbook.
+**Note**: this bridge is unmaintained. Its [upstream repository](https://github.com/beeper/linkedin) has been archived and has not seen a change since March 2025. For bridging to LinkedIn, consider using the [mautrix-linkedin](configuring-playbook-bridge-mautrix-linkedin.md) bridge instead, which is actively maintained and also supported by the playbook.
 
 The playbook can install and configure [beeper-linkedin](https://github.com/beeper/linkedin) for you, for bridging to [LinkedIn](https://www.linkedin.com/) Messaging. This bridge is based on the mautrix-python framework and can be configured in a similar way to the mautrix bridges.
 

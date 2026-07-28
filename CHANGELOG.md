@@ -29,11 +29,11 @@ Users with the `admin` role get access to all topics. Others start with no acces
 
 ## Support for bridging to LinkedIn via mautrix-linkedin
 
-Thanks to [Aine](https://github.com/aine-etke), the playbook now supports bridging to [LinkedIn](https://www.linkedin.com/) via [mautrix-linkedin](https://github.com/mautrix/linkedin).
+Thanks to [Aine](https://gitlab.com/etke.cc) of [etke.cc](https://etke.cc/), the playbook now supports bridging to [LinkedIn](https://www.linkedin.com/) via [mautrix-linkedin](https://github.com/mautrix/linkedin).
 
 Logging in requires copying a request out of your browser's developer tools, and only works with Chrome or another Chrome-based browser. To learn more, see our [Setting up Mautrix LinkedIn bridging](./docs/configuring-playbook-bridge-mautrix-linkedin.md) documentation page.
 
-This bridge supersedes [beeper-linkedin](./docs/configuring-playbook-bridge-beeper-linkedin.md), which is now considered unmaintained (its upstream repository has been archived). The old bridge remains installable, but you may wish to switch. Both bridges claim the same appservice namespaces, so the playbook refuses to install mautrix-linkedin while beeper-linkedin is still enabled.
+This bridge supersedes [beeper-linkedin](./docs/configuring-playbook-bridge-beeper-linkedin.md), which is now considered unmaintained (its [upstream repository](https://github.com/beeper/linkedin) has been archived). The old bridge remains installable, but you may wish to switch. Both bridges claim the same appservice namespaces, so the playbook refuses to install mautrix-linkedin while beeper-linkedin is still enabled.
 
 # 2026-07-19
 

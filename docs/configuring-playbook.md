@@ -269,7 +269,7 @@ Various services that don't fit any other categories.
 
 - [Setting up Appservice Webhooks bridging](configuring-playbook-bridge-appservice-webhooks.md) (deprecated; the bridge's author suggests taking a look at [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) as a replacement, which can also be [installed using this playbook](configuring-playbook-bridge-hookshot.md))
 
-- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (unmaintained; the upstream repository has been archived. Consider [setting up Mautrix LinkedIn bridging](configuring-playbook-bridge-mautrix-linkedin.md))
+- [Setting up Beeper LinkedIn bridging](configuring-playbook-bridge-beeper-linkedin.md) (unmaintained; the [upstream repository](https://github.com/beeper/linkedin) has been archived. Consider [setting up Mautrix LinkedIn bridging](configuring-playbook-bridge-mautrix-linkedin.md))
 
 - [Setting up the Dimension integration manager](configuring-playbook-dimension.md) ([unmaintained](https://github.com/spantaleev/matrix-docker-ansible-deploy/issues/2806#issuecomment-1673559299); after [installing](installing.md))
 
