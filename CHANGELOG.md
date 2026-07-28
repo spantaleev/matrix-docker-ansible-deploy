@@ -27,12 +27,13 @@ Your existing ntfy users are left alone and keep working until you declare them 
 
 Users with the `admin` role get access to all topics. Others start with no access at all, and can be granted access to specific topics via `ntfy_auth_access_custom`. It is also now possible to control what unauthenticated visitors may do (`ntfy_auth_default_access`) and whether users may log in at all (`ntfy_enable_login`, which follows your authentication setup by default). See the role's [documentation on access control](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy/blob/main/docs/configuring-ntfy.md#enable-access-control-with-authentication-optional) for details.
 
-## LinkedIn bridging
+## LinkedIn bridging via mautrix-linkedin
 
-The playbook can now bridge [LinkedIn](https://www.linkedin.com/) messaging via the [mautrix-linkedin](https://github.com/mautrix/linkedin) bridge. Messages flow both ways and portal rooms build themselves for your recent conversations, so your recruiter spam finally lands in Matrix.
+The playbook can now bridge [LinkedIn](https://www.linkedin.com/) messaging via the [mautrix-linkedin](https://github.com/mautrix/linkedin) bridge. Messages flow both ways, and portal rooms build themselves for your recent conversations.
 
-LinkedIn has no usable public messaging API, so login is gloriously undignified: you sign in through a browser, dig a `graphql` request out of devtools, copy it as cURL, and paste that wall of text to the bot. **The catch that will bite you:** LinkedIn pins the session to the exact browser that grabbed it. Pull the request in Chrome (the bridge presents as Chrome on Linux) and you are fine; do it in Firefox and the login dies without a word, no error, just silence and a bot that ignores you. See [Setting up Mautrix LinkedIn bridging](./docs/configuring-playbook-bridge-mautrix-linkedin.md) to get started.
+LinkedIn provides no usable public messaging API, so logging in is a manual affair: you sign in with a browser, copy a `graphql` request from your browser's developer tools as cURL, and paste it to the bot. The bridge presents itself as Chrome on Linux and LinkedIn ties the session to the browser that made the request, so the request needs to come from Chrome or another Chrome-based browser. Copying it from Firefox yields a session that fails silently. See [Setting up Mautrix LinkedIn bridging](./docs/configuring-playbook-bridge-mautrix-linkedin.md) to get started.
 
+This bridge supersedes the [beeper-linkedin](./docs/configuring-playbook-bridge-beeper-linkedin.md) bridge, whose upstream repository has been archived. Both bridges claim the same appservice namespaces, so the playbook refuses to install mautrix-linkedin while beeper-linkedin is still enabled.
 
 # 2026-07-19
 
