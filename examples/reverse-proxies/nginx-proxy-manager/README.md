@@ -1,7 +1,7 @@
 <!--
 SPDX-FileCopyrightText: 2024 Gouthaman Raveendran
 SPDX-FileCopyrightText: 2024 MDAD project contributors
-SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2024 - 2026 Slavi Pantaleev
 SPDX-FileCopyrightText: 2024 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
@@ -60,3 +60,27 @@ SSL Certificate: matrix.example.com or *.example.com
 ```
 
 Also note, NPM would need to be configured for whatever other services you are using. For example, you would need to create additional proxy hosts for `element.example.com` or `jitsi.example.com`, which would use the forwarding port `81`.
+
+## Serving the base domain (optional)
+
+The configuration above only covers `matrix.example.com`. Many people serve their base domain (`example.com`) from somewhere else entirely, in which case there is nothing more to do here. Arrange [server delegation](../../../docs/howto-server-delegation.md) on whichever server hosts the base domain instead.
+
+If you have made this Matrix server responsible for the base domain as well (by [serving the base domain](../../../docs/configuring-playbook-base-domain-serving.md) with `matrix_static_files_container_labels_base_domain_enabled: true`), then the base domain needs a proxy host of its own. Without it, requests for `https://example.com/.well-known/matrix/server` and `https://example.com/.well-known/matrix/client` never reach Traefik, NPM answers with a `404` error of its own, and both [Federation Server Discovery](../../../docs/configuring-well-known.md#federation-server-discovery) and [Client-Server discovery](../../../docs/configuring-well-known.md#client-server-discovery) break.
+
+Add another proxy host, this time for the base domain:
+
+```md
+# Details
+# Base domain proxy config
+Domain Names: example.com
+Scheme: http
+Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
+Forward Port: 81
+
+# SSL
+# Note that a `*.example.com` wildcard certificate does not cover the base domain itself,
+# so the certificate you use here needs to include `example.com`
+SSL Certificate: example.com
+Force SSL: true
+HTTP/2 Support: true
+```
