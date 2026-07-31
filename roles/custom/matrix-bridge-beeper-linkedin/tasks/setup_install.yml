@@ -55,6 +55,15 @@
 
 - when: "matrix_bridge_beeper_linkedin_container_image_self_build | bool"
   block:
+    # A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+    - name: Ensure Beeper LinkedIn repository ownership is correct on self-build
+      ansible.builtin.file:
+        path: "{{ matrix_bridge_beeper_linkedin_container_src_files_path }}"
+        state: directory
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+        recurse: true
+
     - name: Ensure Beeper LinkedIn repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_bridge_beeper_linkedin_container_image_self_build_repo }}"

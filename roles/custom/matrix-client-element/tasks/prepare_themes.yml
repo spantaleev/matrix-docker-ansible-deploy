@@ -15,11 +15,17 @@
   delegate_to: 127.0.0.1
   become: false
   block:
+    # This checkout lives on the Ansible controller, so we cannot correct its ownership like we do for checkouts on the server.
+    # Marking it as a safe directory keeps git's dubious-ownership protection from failing the task when the playbook directory belongs to another user.
     - name: Ensure Element Web themes repository is pulled
       ansible.builtin.git:
         repo: "{{ matrix_client_element_themes_repository_url }}"
         version: "{{ matrix_client_element_themes_repository_version }}"
         dest: "{{ role_path }}/files/scratchpad/themes"
+      environment:
+        GIT_CONFIG_COUNT: "1"
+        GIT_CONFIG_KEY_0: safe.directory
+        GIT_CONFIG_VALUE_0: "{{ role_path }}/files/scratchpad/themes"
 
     - name: Find all Element Web theme files
       ansible.builtin.find:

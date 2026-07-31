@@ -19,6 +19,16 @@
     - {path: "{{ matrix_bridge_rustpush_container_src_files_path }}", when: "{{ matrix_bridge_rustpush_container_image_self_build }}"}
   when: item.when | bool
 
+# A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+- name: Ensure RustPush repository ownership is correct on self-build
+  ansible.builtin.file:
+    path: "{{ matrix_bridge_rustpush_container_src_files_path }}"
+    state: directory
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+    recurse: true
+  when: "matrix_bridge_rustpush_enabled | bool and matrix_bridge_rustpush_container_image_self_build"
+
 - name: Ensure RustPush repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_bridge_rustpush_container_image_self_build_repo }}"

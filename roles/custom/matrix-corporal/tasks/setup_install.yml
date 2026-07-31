@@ -24,6 +24,16 @@
     - "{{ matrix_corporal_cache_dir_path }}"
     - "{{ matrix_corporal_var_dir_path }}"
 
+# A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+- name: Ensure Matrix Corporal repository ownership is correct on self-build
+  ansible.builtin.file:
+    path: "{{ matrix_corporal_container_src_files_path }}"
+    state: directory
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+    recurse: true
+  when: matrix_corporal_container_image_self_build | bool
+
 - name: Ensure Matrix Corporal repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_corporal_container_image_self_build_repo }}"

@@ -40,6 +40,15 @@
       when: not matrix_client_commet_git_config_file_stat.stat.exists
       become: true
 
+    # A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+    - name: Ensure Commet repository ownership is correct on self-build
+      ansible.builtin.file:
+        path: "{{ matrix_client_commet_container_src_path }}"
+        state: directory
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+        recurse: true
+
     - name: Ensure Commet repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_client_commet_container_image_self_build_repo }}"

@@ -28,6 +28,16 @@
   until: matrix_user_verification_service_container_image_pull_result is not failed
   when: "not matrix_user_verification_service_container_image_self_build | bool"
 
+# A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+- name: Ensure Matrix User Verification Service repository ownership is correct when self-building
+  ansible.builtin.file:
+    path: "{{ matrix_user_verification_service_container_src_files_path }}"
+    state: directory
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+    recurse: true
+  when: "matrix_user_verification_service_container_image_self_build | bool"
+
 - name: Ensure Matrix User Verification Service repository is present when self-building
   ansible.builtin.git:
     repo: "{{ matrix_user_verification_service_container_image_self_build_repo }}"

@@ -19,11 +19,21 @@
     name: git
     state: present
 
+# A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+- name: Ensure synapse-simple-antispam repository ownership is correct
+  ansible.builtin.file:
+    path: "{{ matrix_synapse_ext_path }}/synapse-simple-antispam"
+    state: directory
+    owner: "{{ matrix_synapse_uid }}"
+    group: "{{ matrix_synapse_gid }}"
+    recurse: true
+
 - name: Clone synapse-simple-antispam git repository
   ansible.builtin.git:
     repo: "{{ matrix_synapse_ext_spam_checker_synapse_simple_antispam_git_repository_url }}"
     version: "{{ matrix_synapse_ext_spam_checker_synapse_simple_antispam_git_version }}"
     dest: "{{ matrix_synapse_ext_path }}/synapse-simple-antispam"
+    force: "yes"
   become: true
   become_user: "{{ matrix_synapse_username }}"
 

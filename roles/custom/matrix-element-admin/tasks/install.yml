@@ -43,6 +43,15 @@
 
 - when: matrix_element_admin_container_image_self_build | bool
   block:
+    # A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+    - name: Ensure Element Admin repository ownership is correct on self-build
+      ansible.builtin.file:
+        path: "{{ matrix_element_admin_container_src_path }}"
+        state: directory
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+        recurse: true
+
     - name: Ensure Element Admin repository is present on self-build
       ansible.builtin.git:
         repo: "{{ matrix_element_admin_container_image_self_build_repo }}"

@@ -72,6 +72,16 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: matrix_bot_honoroit_container_image_pull_result is not failed
 
+# A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+- name: Ensure Honoroit repository ownership is correct on self-build
+  ansible.builtin.file:
+    path: "{{ matrix_bot_honoroit_container_src_files_path }}"
+    state: directory
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+    recurse: true
+  when: "matrix_bot_honoroit_container_image_self_build | bool"
+
 - name: Ensure Honoroit repository is present on self-build
   ansible.builtin.git:
     repo: "{{ matrix_bot_honoroit_container_repo }}"
