@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 07:40+0000\n"
+"POT-Creation-Date: 2026-08-01 17:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -330,90 +330,114 @@ msgstr ""
 msgid "Set this to `true` to expose the [prometheus-nginxlog-exporter](#enable-metrics-and-graphs-for-nginx-logs-optional) metrics on `https://matrix.example.com/metrics/nginxlog`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:187
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:0
+msgid "`ntfy_metrics_listen_http_port`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:0
+msgid "Set this to a port number (e.g. `9090`) to make [ntfy](configuring-playbook-ntfy.md) serve its metrics (locally, on the container network) on that port."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:0
+msgid "`ntfy_container_labels_traefik_metrics_enabled`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:0
+msgid "Set this to `true` to expose the [ntfy](configuring-playbook-ntfy.md) metrics on `https://matrix.example.com/metrics/ntfy`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:0
+msgid "`matrix_synapse_usage_exporter_metrics_proxying_enabled`"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:0
+msgid "Set this to `true` to expose the [synapse-usage-exporter](configuring-playbook-synapse-usage-exporter.md) metrics on `https://matrix.example.com/metrics/synapse-usage-exporter`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:190
 msgid "Expose metrics of other services/roles"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:189
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:192
 msgid "Various other services/roles may provide similar `_metrics_enabled` and `_metrics_proxying_enabled` variables for exposing their metrics. Refer to each role for details."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:191
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:194
 msgid "To password-protect the metrics of a specific role, you can use `matrix_SERVICE_container_labels_metrics_middleware_basic_auth_enabled` and `matrix_SERVICE_container_labels_metrics_middleware_basic_auth_users` variables provided by the role."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:193
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:196
 msgid "**Note**: alternatively you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` in order to password-protect the metrics of all services."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:195
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:198
 msgid "For example, you can enable and expose metrics for Synapse protecting them with dedicated credentials by adding the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:213
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:216
 msgid "Collecting Synapse worker metrics to an external Prometheus server"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:215
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:218
 msgid "If you are using workers (`matrix_synapse_workers_enabled: true`) and have enabled `matrix_synapse_metrics_proxying_enabled` as described above, the playbook will also automatically expose all Synapse worker threads' metrics to `https://matrix.example.com/metrics/synapse/worker/ID`, where `ID` corresponds to the worker `id` as exemplified in `matrix_synapse_workers_enabled_list`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:217
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:220
 msgid "The playbook also generates an exemplary config file (`/matrix/synapse/external_prometheus.yml.template`) with all the correct paths which you can copy to your Prometheus server and adapt to your needs. Make sure to edit the specified `password_file` path and contents and path to your `synapse-v2.rules`. It will look a bit like this:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:245
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:248
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:247
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:250
 msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running the commands below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:248
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:251
 msgid "`journalctl -fu matrix-prometheus` for Prometheus"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:249
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:252
 msgid "`journalctl -fu matrix-prometheus-node-exporter` for Node Exporter"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:250
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:253
 msgid "`journalctl -fu matrix-prometheus-postgres-exporter` for PostgreSQL Server Exporter"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:251
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:254
 msgid "`journalctl -fu matrix-prometheus-nginxlog-exporter` for prometheus-nginxlog-exporter"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:252
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:255
 msgid "`journalctl -fu matrix-grafana` for Grafana"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:254
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:257
 msgid "More information"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:256
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:259
 msgid "[Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:257
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:260
 msgid "[Understanding Synapse Performance Issues Through Grafana Graphs](https://element-hq.github.io/synapse/latest/usage/administration/understanding_synapse_through_grafana_graphs.html) at the Synapse Github Wiki"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:258
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:261
 msgid "[The Prometheus scraping rules](https://github.com/element-hq/synapse/tree/master/contrib/prometheus) (we use v2)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:259
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:262
 msgid "[The Synapse Grafana dashboard](https://github.com/element-hq/synapse/tree/master/contrib/grafana)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:260
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:263
 msgid "[The Node Exporter dashboard](https://github.com/rfrail3/grafana-dashboards) (for generic non-synapse performance graphs)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-prometheus-grafana.md:261
+#: ../../../docs/configuring-playbook-prometheus-grafana.md:264
 msgid "[The PostgreSQL dashboard](https://grafana.com/grafana/dashboards/9628) (generic Postgres dashboard)"
 msgstr ""
