@@ -37,7 +37,7 @@ cd /etc/systemd/system/ && systemctl disable --now matrix*
 
 ## Copy data directory to the new server
 
-After you've confirmed that all services were stopped, copy the `/matrix` directory from the old server to the new server. When copying, make sure to preserve ownership and permissions (use `cp -p` or `rsync -ar`)!
+After you've confirmed that all services were stopped, copy the `/matrix` directory from the old server to the new server. When copying, make sure to preserve ownership and permissions (use `cp -p` or `rsync -a`)!
 
 ## Adjust DNS records
 
