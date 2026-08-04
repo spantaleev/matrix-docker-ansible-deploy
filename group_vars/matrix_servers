@@ -2156,9 +2156,6 @@ matrix_bridge_mautrix_twitter_container_labels_traefik_docker_network: "{{ matri
 matrix_bridge_mautrix_twitter_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_bridge_mautrix_twitter_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_bridge_mautrix_twitter_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_bridge_mautrix_twitter_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
-
 matrix_bridge_mautrix_twitter_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':twt.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_bridge_mautrix_twitter_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
@@ -2176,12 +2173,6 @@ matrix_bridge_mautrix_twitter_double_puppet_secrets_auto: |-
     if matrix_appservice_double_puppet_enabled
     else {}
   }}
-
-matrix_bridge_mautrix_twitter_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
-
-matrix_bridge_mautrix_twitter_metrics_proxying_enabled: "{{ matrix_bridge_mautrix_twitter_metrics_enabled and matrix_metrics_exposure_enabled }}"
-matrix_bridge_mautrix_twitter_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
-matrix_bridge_mautrix_twitter_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-twitter"
 
 matrix_bridge_mautrix_twitter_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 matrix_bridge_mautrix_twitter_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
