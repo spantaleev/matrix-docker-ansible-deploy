@@ -52,17 +52,6 @@ matrix_bridge_mautrix_meta_instagram_container_labels_traefik_docker_network: "{
 matrix_bridge_mautrix_meta_instagram_container_labels_traefik_entrypoints: web-secure
 matrix_bridge_mautrix_meta_instagram_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
-# Controls whether labels will be added that expose the bridge's metrics
-matrix_bridge_mautrix_meta_instagram_container_labels_metrics_enabled: "{{ matrix_bridge_mautrix_meta_instagram_metrics_enabled and matrix_bridge_mautrix_meta_instagram_metrics_proxying_enabled }}"
-matrix_bridge_mautrix_meta_instagram_container_labels_metrics_traefik_rule: "Host(`{{ matrix_bridge_mautrix_meta_instagram_metrics_proxying_hostname }}`) && PathPrefix(`{{ matrix_bridge_mautrix_meta_instagram_metrics_proxying_path_prefix }}`)"
-matrix_bridge_mautrix_meta_instagram_container_labels_metrics_traefik_priority: 0
-matrix_bridge_mautrix_meta_instagram_container_labels_metrics_traefik_entrypoints: "{{ matrix_bridge_mautrix_meta_instagram_container_labels_traefik_entrypoints }}"
-matrix_bridge_mautrix_meta_instagram_container_labels_metrics_traefik_tls: "{{ matrix_bridge_mautrix_meta_instagram_container_labels_metrics_traefik_entrypoints != 'web' }}"
-matrix_bridge_mautrix_meta_instagram_container_labels_metrics_traefik_tls_certResolver: "{{ matrix_bridge_mautrix_meta_instagram_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
-matrix_bridge_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_enabled: false
-# See: https://doc.traefik.io/traefik/middlewares/http/basicauth/#users
-matrix_bridge_mautrix_meta_instagram_container_labels_metrics_middleware_basic_auth_users: ''
-
 # Controls whether labels will be added that expose mautrix-meta-instagram's HTTP API
 # (used by tools like mautrix-manager for bridge login) at `https://<hostname><path_prefix>`.
 matrix_bridge_mautrix_meta_instagram_container_labels_exposure_enabled: "{{ matrix_bridge_mautrix_meta_instagram_exposure_enabled }}"
@@ -187,16 +176,6 @@ matrix_bridge_mautrix_meta_instagram_meta_mode: instagram
 matrix_bridge_mautrix_meta_instagram_meta_ig_e2ee: false
 
 matrix_bridge_mautrix_meta_instagram_provisioning_shared_secret: disable
-
-# Whether or not metrics endpoint should be enabled.
-# Enabling them is usually enough for a local (in-container) Prometheus to consume them.
-# If metrics need to be consumed by another (external) Prometheus server, consider exposing them via `matrix_bridge_mautrix_meta_instagram_metrics_proxying_enabled`.
-matrix_bridge_mautrix_meta_instagram_metrics_enabled: false
-
-# Controls whether metrics should be exposed on a public URL.
-matrix_bridge_mautrix_meta_instagram_metrics_proxying_enabled: false
-matrix_bridge_mautrix_meta_instagram_metrics_proxying_hostname: ''
-matrix_bridge_mautrix_meta_instagram_metrics_proxying_path_prefix: ''
 
 # Controls whether mautrix-meta-instagram's HTTP API is exposed publicly (used by tools like mautrix-manager for bridge login).
 matrix_bridge_mautrix_meta_instagram_exposure_enabled: false
