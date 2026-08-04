@@ -20,6 +20,18 @@
     - {'old': 'matrix_bridge_steam_docker_image_tag', 'new': 'matrix_bridge_steam_container_image_tag'}
     - {'old': 'matrix_bridge_steam_docker_src_files_path', 'new': 'matrix_bridge_steam_container_src_files_path'}
     - {'old': 'matrix_bridge_steam_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
+    - {'old': 'matrix_bridge_steam_metrics_enabled', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_metrics_proxying_enabled', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_metrics_proxying_hostname', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_metrics_proxying_path_prefix', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_container_labels_metrics_enabled', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_container_labels_metrics_traefik_rule', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_container_labels_metrics_traefik_priority', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_container_labels_metrics_traefik_entrypoints', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_container_labels_metrics_traefik_tls', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_container_labels_metrics_traefik_tls_certResolver', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_container_labels_metrics_middleware_basic_auth_enabled', 'new': '<removed> (the Steam bridge does not support metrics)'}
+    - {'old': 'matrix_bridge_steam_container_labels_metrics_middleware_basic_auth_users', 'new': '<removed> (the Steam bridge does not support metrics)'}
 
 - name: Fail if required matrix_bridge_steam settings not defined
   ansible.builtin.fail:
@@ -32,6 +44,4 @@
     - {'name': 'matrix_bridge_steam_homeserver_token', when: true}
     - {'name': 'matrix_bridge_steam_database_hostname', when: "{{ matrix_bridge_steam_database_engine == 'postgres' }}"}
     - {'name': 'matrix_bridge_steam_container_network', when: true}
-    - {'name': 'matrix_bridge_steam_metrics_proxying_hostname', when: "{{ matrix_bridge_steam_metrics_proxying_enabled }}"}
-    - {'name': 'matrix_bridge_steam_metrics_proxying_path_prefix', when: "{{ matrix_bridge_steam_metrics_proxying_enabled }}"}
 # TODO: Confirm additional config isn't mandatory for public_media

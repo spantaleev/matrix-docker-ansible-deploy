@@ -3060,9 +3060,6 @@ matrix_bridge_steam_container_labels_traefik_docker_network: "{{ matrix_playbook
 matrix_bridge_steam_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_bridge_steam_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_bridge_steam_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_bridge_steam_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
-
 matrix_bridge_steam_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':steam.as.token') | hash('sha512') | to_uuid }}"
 
 matrix_bridge_steam_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
@@ -3082,12 +3079,6 @@ matrix_bridge_steam_double_puppet_secrets_auto: |-
     if matrix_appservice_double_puppet_enabled
     else {}
   }}
-
-matrix_bridge_steam_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
-
-matrix_bridge_steam_metrics_proxying_enabled: "{{ matrix_bridge_steam_metrics_enabled and matrix_metrics_exposure_enabled }}"
-matrix_bridge_steam_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
-matrix_bridge_steam_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/matrix-steam-bridge"
 
 matrix_bridge_steam_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
 matrix_bridge_steam_database_password: "{{ (matrix_homeserver_generic_secret_key + ':mau.twt.db') | hash('sha512') | to_uuid if postgres_enabled else '' }}"
