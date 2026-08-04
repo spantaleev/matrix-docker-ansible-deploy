@@ -1532,15 +1532,8 @@ matrix_bridge_rustpush_container_additional_networks_auto: |-
       ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
       +
       ([postgres_container_network] if (postgres_enabled and matrix_bridge_rustpush_database_hostname == postgres_connection_hostname and matrix_bridge_rustpush_container_network != postgres_container_network) else [])
-      +
-      ([matrix_playbook_reverse_proxyable_services_additional_network] if matrix_playbook_reverse_proxyable_services_additional_network and matrix_bridge_rustpush_container_labels_traefik_enabled else [])
     ) | unique
   }}
-
-matrix_bridge_rustpush_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
-matrix_bridge_rustpush_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
-matrix_bridge_rustpush_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
-matrix_bridge_rustpush_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_bridge_rustpush_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':imsg.as.token') | hash('sha512') | to_uuid }}"
 
