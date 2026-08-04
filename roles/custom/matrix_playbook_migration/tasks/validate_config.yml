@@ -270,7 +270,7 @@
 - when: matrix_playbook_migration_redis_valkey_migration_validation_enabled | bool
   block:
     - ansible.builtin.set_fact:
-        matrix_playbook_migration_redis_migration_vars: |-
+        matrix_playbook_migration_redis_valkey_migration_vars: |-
           {{ lookup('ansible.builtin.varnames', '^redis_.+', wantlist=True) }}
 
     - name: (Deprecation) Catch and report redis variables
@@ -282,8 +282,8 @@
 
           After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
 
-          The following variables in your configuration need to be renamed: {{ matrix_playbook_migration_redis_migration_vars | join(', ') }}
-      when: "matrix_playbook_migration_redis_migration_vars | length > 0"
+          The following variables in your configuration need to be renamed: {{ matrix_playbook_migration_redis_valkey_migration_vars | join(', ') }}
+      when: "matrix_playbook_migration_redis_valkey_migration_vars | length > 0"
 
 - when: matrix_playbook_migration_keydb_valkey_migration_validation_enabled | bool
   block:
