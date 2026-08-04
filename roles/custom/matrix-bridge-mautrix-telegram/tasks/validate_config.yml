@@ -80,6 +80,18 @@
     - {'old': 'matrix_telegram_lottieconverter_docker_repo_version', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
     - {'old': 'matrix_telegram_lottieconverter_docker_src_files_path', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
     - {'old': 'matrix_telegram_lottieconverter_docker_image', 'new': '<removed (lottieconverter is now bundled into the mautrix-telegram image)>'}
+    - {'old': 'matrix_bridge_mautrix_telegram_metrics_enabled', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_metrics_proxying_enabled', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_metrics_proxying_hostname', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_metrics_proxying_path_prefix', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_container_labels_metrics_enabled', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_rule', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_priority', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_entrypoints', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_tls', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_container_labels_metrics_traefik_tls_certResolver', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_container_labels_metrics_middleware_basic_auth_enabled', 'new': '<removed> (mautrix-telegram does not support metrics)'}
+    - {'old': 'matrix_bridge_mautrix_telegram_container_labels_metrics_middleware_basic_auth_users', 'new': '<removed> (mautrix-telegram does not support metrics)'}
 
 - name: Fail if required mautrix-telegram settings not defined
   ansible.builtin.fail:
@@ -94,8 +106,6 @@
     - {'name': 'matrix_bridge_mautrix_telegram_homeserver_token', when: true}
     - {'name': 'matrix_bridge_mautrix_telegram_container_network', when: true}
     - {'name': 'matrix_bridge_mautrix_telegram_database_hostname', when: "{{ matrix_bridge_mautrix_telegram_database_engine == 'postgres' }}"}
-    - {'name': 'matrix_bridge_mautrix_telegram_metrics_proxying_hostname', when: "{{ matrix_bridge_mautrix_telegram_metrics_proxying_enabled }}"}
-    - {'name': 'matrix_bridge_mautrix_telegram_metrics_proxying_path_prefix', when: "{{ matrix_bridge_mautrix_telegram_metrics_proxying_enabled }}"}
 
 # Temporary workaround for an upstream SQLite legacy-migration bug in mautrix-telegram v0.2604.0.
 # See the separate task file for details; the whole file (and this include) can be deleted once
