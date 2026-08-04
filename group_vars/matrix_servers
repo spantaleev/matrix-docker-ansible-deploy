@@ -2543,9 +2543,6 @@ matrix_bridge_mautrix_whatsapp_container_labels_traefik_docker_network: "{{ matr
 matrix_bridge_mautrix_whatsapp_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
 matrix_bridge_mautrix_whatsapp_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
-matrix_bridge_mautrix_whatsapp_container_labels_metrics_middleware_basic_auth_enabled: "{{ matrix_metrics_exposure_http_basic_auth_enabled }}"
-matrix_bridge_mautrix_whatsapp_container_labels_metrics_middleware_basic_auth_users: "{{ matrix_metrics_exposure_http_basic_auth_users }}"
-
 matrix_bridge_mautrix_whatsapp_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list
@@ -2569,12 +2566,6 @@ matrix_bridge_mautrix_whatsapp_double_puppet_secrets_auto: |-
     if matrix_appservice_double_puppet_enabled
     else {}
   }}
-
-matrix_bridge_mautrix_whatsapp_metrics_enabled: "{{ prometheus_enabled or matrix_metrics_exposure_enabled }}"
-
-matrix_bridge_mautrix_whatsapp_metrics_proxying_enabled: "{{ matrix_bridge_mautrix_whatsapp_metrics_enabled and matrix_metrics_exposure_enabled }}"
-matrix_bridge_mautrix_whatsapp_metrics_proxying_hostname: "{{ matrix_metrics_exposure_hostname }}"
-matrix_bridge_mautrix_whatsapp_metrics_proxying_path_prefix: "{{ matrix_metrics_exposure_path_prefix }}/mautrix-whatsapp"
 
 matrix_bridge_mautrix_whatsapp_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 matrix_bridge_mautrix_whatsapp_exposure_enabled: "{{ matrix_bridges_exposure_enabled }}"
