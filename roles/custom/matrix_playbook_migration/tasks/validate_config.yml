@@ -273,7 +273,7 @@
         matrix_playbook_migration_redis_migration_vars: |-
           {{ lookup('ansible.builtin.varnames', '^redis_.+', wantlist=True) }}
 
-    - name: (Deprecation) Catch and report matrix_redis variables
+    - name: (Deprecation) Catch and report redis variables
       ansible.builtin.fail:
         msg: >-
           The Redis role that used to be part of this playbook has been superseded by https://github.com/mother-of-all-self-hosting/ansible-role-valkey.
@@ -291,7 +291,7 @@
         matrix_playbook_migration_keydb_migration_vars: |-
           {{ lookup('ansible.builtin.varnames', '^keydb_.+', wantlist=True) }}
 
-    - name: (Deprecation) Catch and report matrix_redis variables
+    - name: (Deprecation) Catch and report keydb variables
       ansible.builtin.fail:
         msg: >-
           The KeyDB role that used to be part of this playbook has been superseded by https://github.com/mother-of-all-self-hosting/ansible-role-valkey.
@@ -479,7 +479,7 @@
 
           You should remove all its variables (`matrix_nginx_proxy_*`) from your configuration file (vars.yml).
 
-          The following variables in your configuration should be renamed: {{ matrix_playbook_migration_nginx_proxy_migration_vars | join(', ') }}
+          The following variables in your configuration need to be removed: {{ matrix_playbook_migration_nginx_proxy_migration_vars | join(', ') }}
       when: "matrix_playbook_migration_nginx_proxy_migration_vars | length > 0"
 
 - when: matrix_playbook_migration_matrix_ssl_leftover_variable_checks_enabled | bool
@@ -495,7 +495,7 @@
 
           You should remove all its variables (`matrix_ssl_*`) from your configuration file (vars.yml).
 
-          The following variables in your configuration should be renamed: {{ matrix_playbook_migration_ssl_migration_vars | join(', ') }}
+          The following variables in your configuration need to be removed: {{ matrix_playbook_migration_ssl_migration_vars | join(', ') }}
       when: "matrix_playbook_migration_ssl_migration_vars | length > 0"
 
 - block:
@@ -503,7 +503,7 @@
         matrix_playbook_migration_matrix_synapse_container_labels_public_client_synapse_oidc_vars: |-
           {{ lookup('ansible.builtin.varnames', '^matrix_synapse_container_labels_public_client_synapse_oidc_.+', wantlist=True) }}
 
-    - name: (Deprecation) Catch and report matrix_ssl variables
+    - name: (Deprecation) Catch and report matrix_synapse_container_labels_public_client_synapse_oidc variables
       ansible.builtin.fail:
         msg: >-
           We found usage of the following variables which are now removed: {{ matrix_playbook_migration_matrix_synapse_container_labels_public_client_synapse_oidc_vars | join(', ') }}
@@ -514,7 +514,7 @@
         matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars: |-
           {{ lookup('ansible.builtin.varnames', '^matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_.+', wantlist=True) }}
 
-    - name: (Deprecation) Catch and report matrix_ssl variables
+    - name: (Deprecation) Catch and report matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc variables
       ansible.builtin.fail:
         msg: >-
           We found usage of the following variables which are now removed: {{ matrix_playbook_migration_matrix_synapse_reverse_proxy_companion_container_labels_public_client_synapse_oidc_vars | join(', ') }}
