@@ -154,10 +154,10 @@ Various services that don't fit any other categories.
 | [synapse_auto_compressor](configuring-playbook-synapse-auto-compressor.md) | [mb-saces/rust-synapse-tools](https://gitlab.com/mb-saces/rust-synapse-tools/container_registry) | ❌ | Cli tool that automatically compresses Synapse's `state_groups` database table in background |
 | [Matrix Corporal](configuring-playbook-matrix-corporal.md) (advanced) | [devture/matrix-corporal](https://hub.docker.com/r/devture/matrix-corporal/) | ❌ | Reconciliator and gateway for a managed Matrix server |
 | [Etherpad](configuring-playbook-etherpad.md) | [etherpad/etherpad](https://hub.docker.com/r/etherpad/etherpad/) | ❌ | Open source collaborative text editor |
-| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://hub.docker.com/r/jitsi/web) | ❌ | [Jitsi](https://jitsi.org/) web UI |
-| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jicofo](https://hub.docker.com/r/jitsi/jicofo) | ❌ | [Jitsi](https://jitsi.org/) Focus component |
-| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/prosody](https://hub.docker.com/r/jitsi/prosody) | ❌ | [Jitsi](https://jitsi.org/) Prosody XMPP server component |
-| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jvb](https://hub.docker.com/r/jitsi/jvb) | ❌ | [Jitsi](https://jitsi.org/) Video Bridge component |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/web](https://github.com/jitsi/docker-jitsi-meet/pkgs/container/web) | ❌ | [Jitsi](https://jitsi.org/) web UI |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jicofo](https://github.com/jitsi/docker-jitsi-meet/pkgs/container/jicofo) | ❌ | [Jitsi](https://jitsi.org/) Focus component |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/prosody](https://github.com/jitsi/docker-jitsi-meet/pkgs/container/prosody) | ❌ | [Jitsi](https://jitsi.org/) Prosody XMPP server component |
+| [Jitsi](configuring-playbook-jitsi.md) | [jitsi/jvb](https://github.com/jitsi/docker-jitsi-meet/pkgs/container/jvb) | ❌ | [Jitsi](https://jitsi.org/) Video Bridge component |
 | [Cactus Comments](configuring-playbook-cactus-comments.md) | [cactuscomments/cactus-appservice](https://hub.docker.com/r/cactuscomments/cactus-appservice/) | ❌ | Federated comment system built on Matrix |
 | [Cactus Comments](configuring-playbook-cactus-comments.md) | [joseluisq/static-web-server](https://hub.docker.com/r/joseluisq/static-web-server) | ❌ | Federated comment system built on Matrix |
 | [Pantalaimon](configuring-playbook-pantalaimon.md) | [matrixdotorg/pantalaimon](https://hub.docker.com/r/matrixdotorg/pantalaimon) | ❌ | E2EE aware proxy daemon |
