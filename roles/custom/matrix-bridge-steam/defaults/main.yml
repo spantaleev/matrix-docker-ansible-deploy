@@ -94,6 +94,21 @@ matrix_bridge_steam_container_labels_traefik_entrypoints: web-secure
 matrix_bridge_steam_container_labels_traefik_tls: "{{ matrix_bridge_steam_container_labels_traefik_entrypoints != 'web' }}"
 matrix_bridge_steam_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
+# Whether this bridge's HTTP API (including the provisioning API) is exposed at a
+# public path via Traefik. Disabled by default. When enabled, requests to
+# https://<matrix_bridge_steam_exposure_hostname><matrix_bridge_steam_exposure_path_prefix>/...
+# are forwarded to the bridge with that path prefix stripped.
+matrix_bridge_steam_exposure_enabled: false
+matrix_bridge_steam_exposure_hostname: ''
+matrix_bridge_steam_exposure_path_prefix: ''
+
+matrix_bridge_steam_container_labels_exposure_enabled: "{{ matrix_bridge_steam_exposure_enabled }}"
+matrix_bridge_steam_container_labels_exposure_traefik_rule: "Host(`{{ matrix_bridge_steam_exposure_hostname }}`) && PathPrefix(`{{ matrix_bridge_steam_exposure_path_prefix }}`)"
+matrix_bridge_steam_container_labels_exposure_traefik_priority: 0
+matrix_bridge_steam_container_labels_exposure_traefik_entrypoints: "{{ matrix_bridge_steam_container_labels_traefik_entrypoints }}"
+matrix_bridge_steam_container_labels_exposure_traefik_tls: "{{ matrix_bridge_steam_container_labels_exposure_traefik_entrypoints != 'web' }}"
+matrix_bridge_steam_container_labels_exposure_traefik_tls_certResolver: "{{ matrix_bridge_steam_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+
 # matrix_bridge_steam_container_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
 #
