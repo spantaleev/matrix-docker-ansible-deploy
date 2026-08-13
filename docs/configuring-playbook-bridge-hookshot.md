@@ -41,14 +41,7 @@ matrix_bridge_hookshot_enabled: true
 ```
 
 > [!NOTE]
-> End-to-bridge encryption also requires the homeserver to support (and have enabled) [MSC2409](https://github.com/matrix-org/matrix-spec-proposals/pull/2409) and [MSC3202](https://github.com/matrix-org/matrix-spec-proposals/pull/3202). If you are using Synapse, enable them by also adding this to your `vars.yml` file:
->
-> ```yaml
-> matrix_synapse_experimental_features_msc2409_to_device_messages_enabled: true
-> matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: true
-> ```
->
-> These are experimental homeserver-wide features (as is Hookshot's encryption support itself), so enable them deliberately.
+> End-to-bridge encryption requires the homeserver to support (and have enabled) [MSC2409](https://github.com/matrix-org/matrix-spec-proposals/pull/2409) and [MSC3202](https://github.com/matrix-org/matrix-spec-proposals/pull/3202). When using Synapse, the playbook turns on the experimental features this depends on (`msc2409_to_device_messages_enabled` and `msc3202_transaction_extensions`) for you. On other homeserver implementations, you need to arrange for this yourself.
 
 For each of the services (GitHub, GitLab, Jira, Figma, and generic webhooks) fill in the respective variables `matrix_bridge_hookshot_service_*` listed in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required.
 

@@ -5161,9 +5161,21 @@ matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks: "{{ matrix_bo
 matrix_synapse_ext_synapse_http_antispam_config_fail_open: "{{ matrix_bot_draupnir_synapse_http_antispam_config_fail_open if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else (matrix_bot_meowlnir_synapse_http_antispam_config_fail_open if matrix_bot_meowlnir_synapse_http_antispam_enabled else {}) }}"
 matrix_synapse_ext_synapse_http_antispam_config_async: "{{ matrix_bot_draupnir_synapse_http_antispam_config_async if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else (matrix_bot_meowlnir_synapse_http_antispam_config_async if matrix_bot_meowlnir_synapse_http_antispam_enabled else {}) }}"
 
-# Meowlnir's bots need these to support end-to-end encryption.
-matrix_synapse_experimental_features_msc2409_to_device_messages_enabled: "{{ matrix_bot_meowlnir_enabled and matrix_bot_meowlnir_config_encryption_enable }}"
-matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: "{{ matrix_bot_meowlnir_enabled and matrix_bot_meowlnir_config_encryption_enable }}"
+# Meowlnir's bots and Hookshot need these to support end-to-end encryption.
+# Synapse only sends the extra data to appservices which ask for it in their registration file,
+# so enabling these affects no other component.
+matrix_synapse_experimental_features_msc2409_to_device_messages_enabled: |-
+  {{
+    (matrix_bot_meowlnir_enabled and matrix_bot_meowlnir_config_encryption_enable)
+    or
+    (matrix_bridge_hookshot_enabled and matrix_bridge_hookshot_encryption_enabled)
+  }}
+matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: |-
+  {{
+    (matrix_bot_meowlnir_enabled and matrix_bot_meowlnir_config_encryption_enable)
+    or
+    (matrix_bridge_hookshot_enabled and matrix_bridge_hookshot_encryption_enabled)
+  }}
 
 # Enable Synapse statistics reporting when using synapse-usage-exporter
 matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
