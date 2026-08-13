@@ -60,6 +60,31 @@ matrix_playbook_public_matrix_federation_api_traefik_entrypoint_config_http3_ena
 # and affects how services configure their public URLs.
 matrix_federation_traefik_entrypoint_tls: "{{ traefik_config_entrypoint_web_secure_enabled }}"
 
+# The public URLs of all playbook-managed Matrix client (web) applications which are enabled,
+# ordered by preference (that is: the same order that these clients are wired up in this file).
+matrix_playbook_public_client_urls: |
+  {{
+    ([matrix_client_element_scheme + '://' + matrix_client_element_hostname + matrix_client_element_path_prefix] if matrix_client_element_enabled else [])
+    +
+    ([matrix_client_commet_scheme + '://' + matrix_client_commet_hostname + matrix_client_commet_path_prefix] if matrix_client_commet_enabled else [])
+    +
+    ([hydrogen_scheme + '://' + hydrogen_hostname + hydrogen_path_prefix] if hydrogen_enabled else [])
+    +
+    ([cinny_scheme + '://' + cinny_hostname + cinny_path_prefix] if cinny_enabled else [])
+    +
+    ([sable_scheme + '://' + sable_hostname + sable_path_prefix] if sable_enabled else [])
+    +
+    ([matrix_client_schildichat_scheme + '://' + matrix_client_schildichat_hostname + matrix_client_schildichat_path_prefix] if matrix_client_schildichat_enabled else [])
+    +
+    ([matrix_client_fluffychat_scheme + '://' + matrix_client_fluffychat_hostname + matrix_client_fluffychat_path_prefix] if matrix_client_fluffychat_enabled else [])
+  }}
+
+# The URL that requests hitting the homeserver's root path (`/`) are redirected to.
+#
+# It points to the most-preferred playbook-managed client (see `matrix_playbook_public_client_urls`),
+# or is empty (no redirection) if no such client is enabled.
+matrix_playbook_public_client_root_redirection_url: "{{ matrix_playbook_public_client_urls | first | default('', true) }}"
+
 ########################################################################
 #                                                                      #
 # /Playbook                                                            #
@@ -5028,7 +5053,7 @@ matrix_synapse_container_labels_traefik_compression_middleware_name: "{{ matrix_
 matrix_synapse_container_labels_matrix_labels_enabled: "{{ not matrix_synapse_workers_enabled }}"
 
 matrix_synapse_container_labels_public_client_root_redirection_enabled: "{{ matrix_synapse_container_labels_public_client_root_redirection_url != '' }}"
-matrix_synapse_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+matrix_synapse_container_labels_public_client_root_redirection_url: "{{ matrix_playbook_public_client_root_redirection_url }}"
 
 matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_ketesa_enabled or matrix_element_admin_enabled }}"
 matrix_synapse_container_labels_internal_client_synapse_admin_api_enabled: "{{ (matrix_bot_draupnir_enabled and matrix_bot_draupnir_admin_api_enabled) }}"
@@ -5855,7 +5880,7 @@ matrix_dendrite_container_labels_traefik_tls_certResolver: "{{ traefik_certResol
 matrix_dendrite_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_ketesa_enabled }}"
 
 matrix_dendrite_container_labels_public_client_root_redirection_enabled: "{{ matrix_dendrite_container_labels_public_client_root_redirection_url != '' }}"
-matrix_dendrite_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+matrix_dendrite_container_labels_public_client_root_redirection_url: "{{ matrix_playbook_public_client_root_redirection_url }}"
 
 matrix_dendrite_container_labels_public_federation_api_traefik_hostname: "{{ matrix_server_fqn_matrix_federation }}"
 matrix_dendrite_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
@@ -5938,7 +5963,7 @@ matrix_conduit_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_prim
 matrix_conduit_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_conduit_container_labels_public_client_root_redirection_enabled: "{{ matrix_conduit_container_labels_public_client_root_redirection_url != '' }}"
-matrix_conduit_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+matrix_conduit_container_labels_public_client_root_redirection_url: "{{ matrix_playbook_public_client_root_redirection_url }}"
 
 matrix_conduit_container_labels_public_federation_api_traefik_hostname: "{{ matrix_server_fqn_matrix_federation }}"
 matrix_conduit_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
@@ -5996,7 +6021,7 @@ matrix_continuwuity_container_labels_traefik_entrypoints: "{{ traefik_entrypoint
 matrix_continuwuity_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_continuwuity_container_labels_public_client_root_redirection_enabled: "{{ matrix_continuwuity_container_labels_public_client_root_redirection_url != '' }}"
-matrix_continuwuity_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+matrix_continuwuity_container_labels_public_client_root_redirection_url: "{{ matrix_playbook_public_client_root_redirection_url }}"
 
 matrix_continuwuity_container_labels_public_federation_api_traefik_hostname: "{{ matrix_server_fqn_matrix_federation }}"
 matrix_continuwuity_container_labels_public_federation_api_traefik_entrypoints: "{{ matrix_federation_traefik_entrypoint_name }}"
@@ -6057,7 +6082,7 @@ matrix_tuwunel_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_prim
 matrix_tuwunel_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
 
 matrix_tuwunel_container_labels_public_client_root_redirection_enabled: "{{ matrix_tuwunel_container_labels_public_client_root_redirection_url != '' }}"
-matrix_tuwunel_container_labels_public_client_root_redirection_url: "{{ (('https://' if matrix_playbook_ssl_enabled else 'http://') + matrix_server_fqn_element) if matrix_client_element_enabled else '' }}"
+matrix_tuwunel_container_labels_public_client_root_redirection_url: "{{ matrix_playbook_public_client_root_redirection_url }}"
 
 matrix_tuwunel_container_labels_public_client_synapse_admin_api_enabled: "{{ matrix_ketesa_enabled or matrix_element_admin_enabled }}"
 matrix_tuwunel_container_labels_internal_client_synapse_admin_api_enabled: "{{ (matrix_bot_draupnir_enabled and matrix_bot_draupnir_admin_api_enabled) }}"
