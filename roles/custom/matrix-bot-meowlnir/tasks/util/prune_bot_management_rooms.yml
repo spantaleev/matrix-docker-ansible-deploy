@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Find the declaration for the Meowlnir bot - {{ live_bot.username | quote }}
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_declared_bot: >-
+      {{
+        (matrix_bot_meowlnir_bots | selectattr('username', 'equalto', live_bot.username) | list | first)
+        | default({}, true)
+      }}
+
+# Rooms created by the playbook are not declared anywhere, so bots which auto-create their management room are left alone.
+# Bots which are no longer declared at all fall through to the empty declaration, meaning all of their rooms get removed — which is also what has to happen before the bot itself can be deleted.
+- name: Determine which management rooms to remove - {{ live_bot.username | quote }}
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_rooms_to_remove: >-
+      {{
+        []
+        if (matrix_bot_meowlnir_declared_bot.management_room_auto_create | default(false) | bool)
+        else (
+          (live_bot.management_rooms | map(attribute='room_id') | list)
+          | difference(matrix_bot_meowlnir_declared_bot.management_rooms | default([], true) | map(attribute='id') | list)
+        )
+      }}
+
+- name: Remove Meowlnir management rooms which are no longer declared - {{ live_bot.username | quote }}
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/prune_management_room.yml"
+  with_items: "{{ matrix_bot_meowlnir_rooms_to_remove }}"
+  loop_control:
+    loop_var: room_id_to_remove

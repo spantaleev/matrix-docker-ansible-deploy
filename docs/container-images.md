@@ -125,6 +125,7 @@ Bots provide various additional functionality to your installation.
 | [Honoroit](configuring-playbook-bot-honoroit.md) | [etke.cc/honoroit](https://github.com/etkecc/honoroit/container_registry) | ❌ | Helpdesk bot |
 | [Mjolnir](configuring-playbook-bot-mjolnir.md) | [matrixdotorg/mjolnir](https://hub.docker.com/r/matrixdotorg/mjolnir) | ❌ | Moderation tool for Matrix |
 | [Draupnir](configuring-playbook-bot-draupnir.md) | [gnuxie/draupnir](https://hub.docker.com/r/gnuxie/draupnir) | ❌ | Moderation tool for Matrix (Fork of Mjolnir) |
+| [Meowlnir](configuring-playbook-bot-meowlnir.md) | [maunium/meowlnir](https://mau.dev/maunium/meowlnir/container_registry) | ❌ | Moderation tool for Matrix, running in appservice mode |
 | [Buscarron](configuring-playbook-bot-buscarron.md) | [etke.cc/buscarron](https://ghcr.io/etkecc/buscarron) | ❌ | Web forms (HTTP POST) to Matrix |
 
 ## Administration

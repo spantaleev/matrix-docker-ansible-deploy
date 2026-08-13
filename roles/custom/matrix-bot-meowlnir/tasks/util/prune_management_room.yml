@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Remove Meowlnir management room - {{ room_id_to_remove | quote }}
+  ansible.builtin.command:
+    cmd: >-
+      {{ matrix_bot_meowlnir_bin_path }}/meowlnir-api
+      DELETE /_meowlnir/v1/management_room/{{ room_id_to_remove }}
+  register: matrix_bot_meowlnir_room_removal_result
+  changed_when: "matrix_bot_meowlnir_room_removal_result.stdout_lines | default([]) | last | default('') == '200'"
+  failed_when: false
+
+- name: Fail if the Meowlnir management room could not be removed - {{ room_id_to_remove | quote }}
+  ansible.builtin.fail:
+    msg: >-
+      De-registering the Meowlnir management room `{{ room_id_to_remove }}` failed.
+      Meowlnir said: {{ matrix_bot_meowlnir_room_removal_result.stdout | default('') | trim }}
+      {{ matrix_bot_meowlnir_room_removal_result.stderr | default('') | trim }}
+  when: >-
+    matrix_bot_meowlnir_room_removal_result.rc != 0
+    or (matrix_bot_meowlnir_room_removal_result.stdout_lines | default([]) | length == 0)
+    or (matrix_bot_meowlnir_room_removal_result.stdout_lines | last not in ['200', '404'])
+
+- name: Report the removed Meowlnir management room - {{ room_id_to_remove | quote }}
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: >-
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Note: the Meowlnir management room " ~ room_id_to_remove ~ " is no longer declared, so it has been de-registered." ~
+          " The room itself still exists and the bot is still in it - Meowlnir simply no longer takes commands there."
+        ]
+      }}
+  when: "matrix_bot_meowlnir_room_removal_result.stdout_lines | default([]) | last | default('') == '200'"

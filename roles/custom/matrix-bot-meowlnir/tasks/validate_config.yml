@@ -1,0 +1,83 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if required matrix-bot-meowlnir variables are undefined
+  ansible.builtin.fail:
+    msg: "The `{{ item.name }}` variable must be defined and have a non-null value."
+  with_items:
+    - {'name': 'matrix_bot_meowlnir_container_network', when: true}
+    - {'name': 'matrix_bot_meowlnir_config_homeserver_address', when: true}
+    - {'name': 'matrix_bot_meowlnir_config_homeserver_domain', when: true}
+    - {'name': 'matrix_bot_meowlnir_appservice_token', when: true}
+    - {'name': 'matrix_bot_meowlnir_homeserver_token', when: true}
+    - {'name': 'matrix_bot_meowlnir_config_meowlnir_management_secret', when: true}
+    - {'name': 'matrix_bot_meowlnir_config_meowlnir_data_secret', when: true}
+    - {'name': 'matrix_bot_meowlnir_config_antispam_secret', when: true}
+    - {'name': 'matrix_bot_meowlnir_config_encryption_pickle_key', when: true}
+    - {'name': 'matrix_bot_meowlnir_database_hostname', when: true}
+    - {'name': 'matrix_bot_meowlnir_database_password', when: true}
+    - {'name': 'matrix_bot_meowlnir_config_policy_server_signing_key', when: "{{ matrix_bot_meowlnir_policy_server_enabled }}"}
+    - {'name': 'matrix_bot_meowlnir_synapse_http_antispam_management_room_id', when: "{{ matrix_bot_meowlnir_synapse_http_antispam_enabled }}"}
+  when: "item.when | bool and (lookup('vars', item.name, default='') == '' or lookup('vars', item.name, default='') is none)"
+
+# Meowlnir re-runs its configuration upgrader in memory on every start, and `generate` is resolved to a fresh random value each time.
+# A `generate` placeholder would therefore rotate the secret on every restart, invalidating the appservice registration or the encryption store.
+- name: Fail if matrix-bot-meowlnir secrets are set to the literal "generate"
+  ansible.builtin.fail:
+    msg: >-
+      The `{{ item }}` variable is set to `generate`. Meowlnir would then mint a new
+      secret on every restart, because the playbook runs it with `--no-update` and its
+      configuration file is managed by Ansible. Set an explicit, stable value instead.
+  when: "lookup('vars', item, default='') == 'generate'"
+  with_items:
+    - matrix_bot_meowlnir_appservice_token
+    - matrix_bot_meowlnir_homeserver_token
+    - matrix_bot_meowlnir_config_meowlnir_management_secret
+    - matrix_bot_meowlnir_config_meowlnir_data_secret
+    - matrix_bot_meowlnir_config_antispam_secret
+    - matrix_bot_meowlnir_config_encryption_pickle_key
+    - matrix_bot_meowlnir_config_policy_server_signing_key
+
+# Bots exist only in Meowlnir's database and are created through its management API, so the whole roster and pruning path depends on that API being reachable.
+# Disabling it is only coherent for an installation whose bots were created some other way, which means an empty roster and pruning turned off.
+- name: Fail if the Meowlnir management API is disabled while the playbook manages bots
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_bot_meowlnir_config_meowlnir_management_secret` is set to `disable`, which
+      turns Meowlnir's management API off. The playbook creates, updates and removes bots
+      through that API, so it cannot manage them while it is disabled.
+      Either give the secret a real value, or - if you manage Meowlnir's bots yourself -
+      leave `matrix_bot_meowlnir_bots_custom` empty and set
+      `matrix_bot_meowlnir_bots_pruning_enabled` to `false`.
+  when: >-
+    matrix_bot_meowlnir_config_meowlnir_management_secret == 'disable'
+    and (matrix_bot_meowlnir_bots | length > 0 or matrix_bot_meowlnir_bots_pruning_enabled | bool)
+
+- name: Fail if the bot user prefix and the localpart template disagree
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_bot_meowlnir_config_meowlnir4all_localpart_template` must start with
+      `matrix_bot_meowlnir_user_prefix` ({{ matrix_bot_meowlnir_user_prefix }}), or the bots
+      Meowlnir creates will fall outside the user namespace declared in its appservice
+      registration file, and the homeserver will refuse to let it operate them.
+  when: "not matrix_bot_meowlnir_config_meowlnir4all_localpart_template.startswith(matrix_bot_meowlnir_user_prefix)"
+
+- name: Validate Meowlnir bot definitions
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/validate_bot.yml"
+  with_items: "{{ matrix_bot_meowlnir_bots }}"
+  loop_control:
+    loop_var: bot
+
+- name: Fail if Meowlnir and Draupnir both claim the synapse-http-antispam module
+  ansible.builtin.fail:
+    msg: >-
+      Both `matrix_bot_meowlnir_synapse_http_antispam_enabled` and
+      `matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled` are enabled.
+      The playbook wires the synapse-http-antispam module up to a single consumer,
+      so you need to pick one of the two.
+  when:
+    - matrix_bot_meowlnir_synapse_http_antispam_enabled | bool
+    - matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled | default(false) | bool

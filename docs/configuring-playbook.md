@@ -208,6 +208,8 @@ Bots provide various additional functionality to your installation.
 
 - [Setting up Draupnir for all/D4A](configuring-playbook-appservice-draupnir-for-all.md) — like the [Draupnir bot](configuring-playbook-bot-draupnir.md) mentioned above, but running in appservice mode and supporting multiple instances
 
+- [Setting up Meowlnir](configuring-playbook-bot-meowlnir.md) — a moderation tool/bot which speaks the same policy list protocol as Draupnir and Mjolnir, but runs in appservice mode and can override policies coming from lists you do not control
+
 - [Setting up Buscarron](configuring-playbook-bot-buscarron.md) — a bot you can use to send any form (HTTP POST, HTML) to a (encrypted) Matrix room
 
 ### Administration

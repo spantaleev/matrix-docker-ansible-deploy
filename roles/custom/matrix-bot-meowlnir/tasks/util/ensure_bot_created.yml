@@ -1,0 +1,81 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# The management API endpoints are idempotent PUTs, so re-running is safe.
+
+# Meowlnir's own record of this bot, as fetched before the loop started.
+# Empty when the bot does not exist yet.
+- name: Look up what Meowlnir already knows about the bot - {{ bot.username | quote }}
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_bot_live: >-
+      {{
+        (matrix_bot_meowlnir_live_bots | selectattr('username', 'equalto', bot.username) | list | first)
+        | default({}, true)
+      }}
+
+# `PUT /_meowlnir/v1/bot/…` answers 200 whether it created the bot, updated it, or did nothing at all, so the response cannot tell us whether anything changed.
+# Comparing against what Meowlnir already holds lets the request be skipped when it would be a no-op, which both avoids pointless calls and lets the task report an honest changed state.
+#
+# Note that this trusts Meowlnir's own record.
+# Changing a bot's profile directly through a Matrix client goes behind its back and will not be corrected here.
+- name: Determine whether the Meowlnir bot needs creating or updating - {{ bot.username | quote }}
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_bot_needs_update: >-
+      {{
+        not matrix_bot_meowlnir_bot_live
+        or (matrix_bot_meowlnir_bot_live.displayname | default('', true)) != bot.displayname
+        or (matrix_bot_meowlnir_bot_live.avatar_url | default('', true)) != bot.avatar_url
+      }}
+    matrix_bot_meowlnir_bot_body: >-
+      {{
+        {
+          'displayname': bot.displayname,
+          'avatar_url': bot.avatar_url,
+        }
+      }}
+
+- name: Ensure Meowlnir bot exists and is up to date - {{ bot.username | quote }}
+  when: matrix_bot_meowlnir_bot_needs_update | bool
+  ansible.builtin.command:
+    cmd: >-
+      {{ matrix_bot_meowlnir_bin_path }}/meowlnir-api
+      PUT /_meowlnir/v1/bot/{{ bot.username }}
+      {{ matrix_bot_meowlnir_bot_body | to_json | quote }}
+  register: matrix_bot_meowlnir_bot_create_result
+  # The task only runs when something needs changing, so a successful call is reported as a change.
+  # Deriving this from the status keeps a failed call from also claiming to have changed anything.
+  # Meowlnir answers 200 even when it could not apply the displayname or avatar (it only logs that), so this is what was asked for, not proof of what landed. A later run retries, since its stored record is unchanged.
+  changed_when: "matrix_bot_meowlnir_bot_create_result.stdout_lines | default([]) | last | default('') == '200'"
+  failed_when: false
+
+- name: Fail if the Meowlnir bot could not be created - {{ bot.username | quote }}
+  ansible.builtin.fail:
+    msg: >-
+      Creating the Meowlnir bot `{{ bot.username }}` failed.
+      Meowlnir said: {{ matrix_bot_meowlnir_bot_create_result.stdout | default('') | trim }}
+      {{ matrix_bot_meowlnir_bot_create_result.stderr | default('') | trim }}
+  when: >-
+    matrix_bot_meowlnir_bot_needs_update | bool
+    and (
+      matrix_bot_meowlnir_bot_create_result.rc | default(1) != 0
+      or (matrix_bot_meowlnir_bot_create_result.stdout_lines | default([]) | length == 0)
+      or (matrix_bot_meowlnir_bot_create_result.stdout_lines | last != '200')
+    )
+
+- name: Determine which management rooms Meowlnir already has for this bot - {{ bot.username | quote }}
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_bot_live_rooms: >-
+      {{ matrix_bot_meowlnir_bot_live.management_rooms | default([], true) | map(attribute='room_id') | list }}
+
+- name: Ensure Meowlnir management room created - {{ bot.username | quote }}
+  when: "bot.management_room_auto_create | bool and matrix_bot_meowlnir_bot_live_rooms | length == 0"
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_management_room_created.yml"
+
+- name: Ensure declared Meowlnir management rooms registered - {{ bot.username | quote }}
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_management_room_registered.yml"
+  with_items: "{{ bot.management_rooms }}"
+  loop_control:
+    loop_var: management_room

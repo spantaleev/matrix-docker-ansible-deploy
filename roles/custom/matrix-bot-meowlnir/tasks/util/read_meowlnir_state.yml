@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# Meowlnir's own database is the source of truth for which bots and management rooms exist, and it can be queried, so the playbook keeps no state of its own about them.
+
+- name: Ask Meowlnir which bots currently exist
+  ansible.builtin.command:
+    cmd: "{{ matrix_bot_meowlnir_bin_path }}/meowlnir-api GET /_meowlnir/v1/bots"
+  register: matrix_bot_meowlnir_state_result
+  changed_when: false
+  failed_when: false
+
+- name: Fail if Meowlnir could not be asked which bots exist
+  ansible.builtin.fail:
+    msg: >-
+      Could not read the list of bots from Meowlnir.
+      Meowlnir said: {{ matrix_bot_meowlnir_state_result.stdout | default('') | trim }}
+      {{ matrix_bot_meowlnir_state_result.stderr | default('') | trim }}
+  when: >-
+    matrix_bot_meowlnir_state_result.rc != 0
+    or (matrix_bot_meowlnir_state_result.stdout_lines | default([]) | length == 0)
+    or (matrix_bot_meowlnir_state_result.stdout_lines | last != '200')
+
+- name: Determine which bots and management rooms Meowlnir knows about
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_live_bots: "{{ (matrix_bot_meowlnir_state_result.stdout_lines[:-1] | join('\n') | from_json).bots | default([], true) }}"

@@ -1,0 +1,90 @@
+#!/bin/sh
+# Creates a management room for a Meowlnir bot, with the given users able to command the bot there.
+#
+# The room is created by the bot itself, impersonated through the appservice token, so no human account's credentials are needed.
+#
+# The `trusted_private_chat` preset is what gives the invited users their standing, and it does the right thing on both old and new room versions: on rooms supporting MSC4289 every invitee becomes an additional creator, and on older ones each is given power level 100.
+# Either way there is nothing for us to adjust afterwards.
+#
+# Usage: meowlnir-create-management-room <bot_localpart> <initial_manager_mxid>...
+#
+# Prints the created room's ID on success.
+
+set -eu
+
+CONFIG_FILE='{{ matrix_bot_meowlnir_config_path }}/config.yaml'
+CONTAINER_NAME='matrix-bot-meowlnir'
+HOMESERVER_ADDRESS='{{ matrix_bot_meowlnir_config_homeserver_address }}'
+HOMESERVER_DOMAIN='{{ matrix_bot_meowlnir_config_homeserver_domain }}'
+ROOM_NAME='{{ matrix_bot_meowlnir_management_room_name }}'
+ROOM_TOPIC='{{ matrix_bot_meowlnir_management_room_topic | trim }}'
+ENCRYPTED='{{ 'true' if matrix_bot_meowlnir_config_encryption_enable else 'false' }}'
+
+if [ $# -lt 2 ]; then
+	echo "Usage: $(basename "$0") <bot_localpart> <initial_manager_mxid>..." >&2
+	exit 2
+fi
+
+bot_localpart="$1"
+shift
+bot_mxid="@$bot_localpart:$HOMESERVER_DOMAIN"
+
+as_token="$(awk '$1 == "as_token:" { print $2; exit }' "$CONFIG_FILE" | sed 's/^"//; s/"$//')"
+
+if [ -z "$as_token" ]; then
+	echo "Could not read as_token from $CONFIG_FILE" >&2
+	exit 1
+fi
+
+urlencode() {
+	printf '%s' "$1" | sed 's/%/%25/g; s/!/%21/g; s/:/%3A/g; s/@/%40/g; s/\$/%24/g; s/\//%2F/g'
+}
+
+jq_run() {
+	{{ devture_systemd_docker_base_host_command_docker }} exec -i "$CONTAINER_NAME" jq "$@"
+}
+
+if [ "$ENCRYPTED" = 'true' ]; then
+	initial_state='[{"type": "m.room.encryption", "state_key": "", "content": {"algorithm": "m.megolm.v1.aes-sha2"}}]'
+else
+	initial_state='[]'
+fi
+
+# Matrix user IDs cannot contain newlines, so splitting on them is safe here.
+invitees="$(printf '%s\n' "$@" | jq_run -R -s 'split("\n") | map(select(length > 0))')"
+
+create_body="$(jq_run -n \
+	--arg name "$ROOM_NAME" \
+	--arg topic "$ROOM_TOPIC" \
+	--argjson invitees "$invitees" \
+	--argjson initial_state "$initial_state" \
+	'{preset: "trusted_private_chat", name: $name, topic: $topic, invite: $invitees, initial_state: $initial_state}')"
+
+user_id_param="$(urlencode "$bot_mxid")"
+
+# Runs curl inside the container, because the homeserver is only reachable over the container network.
+# Prints the body, with the HTTP status code on the final line.
+response="$({{ devture_systemd_docker_base_host_command_docker }} exec "$CONTAINER_NAME" \
+	curl -sS -X POST \
+	-H "Authorization: Bearer $as_token" \
+	-H 'Content-Type: application/json' \
+	-d "$create_body" \
+	-w '\n%{http_code}' \
+	"$HOMESERVER_ADDRESS/_matrix/client/v3/createRoom?user_id=$user_id_param")"
+
+status="$(printf '%s\n' "$response" | tail -n 1)"
+
+if [ "$status" != '200' ]; then
+	echo "Creating the management room failed with HTTP $status:" >&2
+	printf '%s\n' "$response" | sed '$d' >&2
+	exit 1
+fi
+
+room_id="$(printf '%s\n' "$response" | sed '$d' | jq_run -r '.room_id')"
+
+if [ -z "$room_id" ] || [ "$room_id" = 'null' ]; then
+	echo 'The homeserver did not return a room ID' >&2
+	exit 1
+fi
+
+printf '%s\n' "$room_id"

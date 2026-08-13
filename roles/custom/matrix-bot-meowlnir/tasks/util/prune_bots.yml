@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# Makes the declared bot list authoritative: anything Meowlnir still knows about but which is no longer declared gets removed.
+# Meowlnir's own records are re-read first, because the provisioning that just ran will have changed them.
+
+- name: Re-read Meowlnir's bots before pruning
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/read_meowlnir_state.yml"
+
+- name: Determine which Meowlnir bots are no longer declared
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_undeclared_bots: >-
+      {{
+        matrix_bot_meowlnir_live_bots
+        | rejectattr('username', 'in', matrix_bot_meowlnir_bots | map(attribute='username') | list)
+        | list
+      }}
+
+- name: Fail if pruning would remove every Meowlnir bot
+  ansible.builtin.fail:
+    msg: >-
+      No bots are declared in `matrix_bot_meowlnir_bots`, but Meowlnir still has
+      {{ matrix_bot_meowlnir_undeclared_bots | length }} of them
+      ({{ matrix_bot_meowlnir_undeclared_bots | map(attribute='username') | join(', ') }}).
+      Removing them would make Meowlnir forget them along with their management rooms, so the
+      playbook will not act on what is far more often a mistake (a commented-out block, an
+      unset variable) than an instruction.
+      If you really do want them all gone, set
+      `matrix_bot_meowlnir_bots_pruning_on_empty_roster_enabled: true`.
+      To stop the playbook managing bots at all, set
+      `matrix_bot_meowlnir_bots_pruning_enabled: false`.
+  when: >-
+    matrix_bot_meowlnir_bots | length == 0
+    and matrix_bot_meowlnir_undeclared_bots | length > 0
+    and not matrix_bot_meowlnir_bots_pruning_on_empty_roster_enabled | bool
+
+- name: Remove management rooms which are no longer declared
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/prune_bot_management_rooms.yml"
+  with_items: "{{ matrix_bot_meowlnir_live_bots }}"
+  loop_control:
+    loop_var: live_bot
+
+- name: Remove Meowlnir bots which are no longer declared
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/prune_bot.yml"
+  with_items: "{{ matrix_bot_meowlnir_undeclared_bots }}"
+  loop_control:
+    loop_var: live_bot

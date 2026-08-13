@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# Only reached for bots with `management_room_auto_create` which do not have a management room yet.
+# Meowlnir's own record of the bot's rooms is what makes this idempotent, so no state is kept on the Ansible side.
+
+# Recomputed here, because validation runs its own loop over all bots and would leave this holding the last one's value.
+- name: Determine the effective initial managers for a Meowlnir bot - {{ bot.username | quote }}
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_bot_initial_managers: "{{ bot.initial_managers | default(matrix_bot_meowlnir_initial_managers) }}"
+
+- name: Create a Meowlnir management room - {{ bot.username | quote }}
+  ansible.builtin.command:
+    cmd: >-
+      {{ matrix_bot_meowlnir_bin_path }}/meowlnir-create-management-room
+      {{ bot.username | quote }}
+      {{ matrix_bot_meowlnir_bot_initial_managers | map('quote') | join(' ') }}
+  register: matrix_bot_meowlnir_room_creation_result
+  # The script prints the new room's ID on success, so that is what tells us a room was actually created, not merely attempted.
+  changed_when: >-
+    matrix_bot_meowlnir_room_creation_result.rc == 0
+    and (matrix_bot_meowlnir_room_creation_result.stdout | default('') | trim).startswith('!')
+  failed_when: false
+
+- name: Fail if the Meowlnir management room could not be created - {{ bot.username | quote }}
+  ansible.builtin.fail:
+    msg: >-
+      Creating a management room for the Meowlnir bot `{{ bot.username }}` failed.
+      {{ matrix_bot_meowlnir_room_creation_result.stdout | default('') | trim }}
+      {{ matrix_bot_meowlnir_room_creation_result.stderr | default('') | trim }}
+  when: >-
+    matrix_bot_meowlnir_room_creation_result.rc != 0
+    or not (matrix_bot_meowlnir_room_creation_result.stdout | default('') | trim).startswith('!')
+
+- name: Register the created Meowlnir management room - {{ bot.username | quote }}
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_management_room_registered.yml"
+  vars:
+    management_room:
+      id: "{{ matrix_bot_meowlnir_room_creation_result.stdout | trim }}"
+      encrypted: "{{ matrix_bot_meowlnir_config_encryption_enable }}"
+
+- name: Report the created Meowlnir management room - {{ bot.username | quote }}
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: >-
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Note: created a management room (" ~ (matrix_bot_meowlnir_room_creation_result.stdout | trim) ~
+          ") for the Meowlnir bot " ~ bot.username ~ " and invited " ~
+          (matrix_bot_meowlnir_bot_initial_managers | join(", ")) ~
+          " to it. Accept the invitation to start commanding the bot."
+        ]
+      }}

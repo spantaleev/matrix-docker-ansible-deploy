@@ -98,6 +98,8 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_appservice_draupnir_for_all_config_path + '/draupnir-for-all-registration.yaml,dst=/matrix-appservice-draupnir-for-all-registration.yaml,ro'] if matrix_appservice_draupnir_for_all_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_bot_meowlnir_config_path + '/registration.yaml,dst=/matrix-bot-meowlnir-registration.yaml,ro'] if matrix_bot_meowlnir_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_appservice_double_puppet_config_path + '/registration.yaml,dst=/matrix-appservice-double-puppet-registration.yaml,ro'] if matrix_appservice_double_puppet_enabled else [])
     +
     (['--mount type=bind,src=' + matrix_bridge_appservice_irc_config_path + '/registration.yaml,dst=/matrix-appservice-irc-registration.yaml,ro'] if matrix_bridge_appservice_irc_enabled else [])
@@ -160,6 +162,8 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-appservice-discord-registration.yaml'] if matrix_bridge_appservice_discord_enabled else [])
     +
     (['/matrix-appservice-draupnir-for-all-registration.yaml'] if matrix_appservice_draupnir_for_all_enabled else [])
+    +
+    (['/matrix-bot-meowlnir-registration.yaml'] if matrix_bot_meowlnir_enabled else [])
     +
     (['/matrix-appservice-double-puppet-registration.yaml'] if matrix_appservice_double_puppet_enabled else [])
     +
@@ -356,6 +360,13 @@ devture_systemd_service_manager_services_list_auto: |
       'restart_necessary': (matrix_bot_draupnir_restart_necessary | bool),
       'groups': ['matrix', 'bots', 'draupnir', 'bot-draupnir'],
     }] if matrix_bot_draupnir_enabled else [])
+    +
+    ([{
+      'name': 'matrix-bot-meowlnir.service',
+      'priority': 4000,
+      'restart_necessary': (matrix_bot_meowlnir_restart_necessary | bool),
+      'groups': ['matrix', 'bots', 'meowlnir', 'bot-meowlnir'],
+    }] if matrix_bot_meowlnir_enabled else [])
     +
     ([{
       'name': 'matrix-appservice-discord.service',
@@ -3352,6 +3363,91 @@ matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization: "{{ (matrix_ho
 
 ######################################################################
 #
+# matrix-bot-meowlnir
+#
+######################################################################
+
+# We don't enable bots by default.
+matrix_bot_meowlnir_enabled: false
+
+matrix_bot_meowlnir_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '8772') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_bot_meowlnir_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+    +
+    ([postgres_identifier ~ '.service'] if (postgres_enabled and matrix_bot_meowlnir_database_hostname == postgres_connection_hostname) else [])
+  }}
+
+matrix_bot_meowlnir_container_image_registry_prefix_upstream: "{{ matrix_container_global_registry_prefix_override if matrix_container_global_registry_prefix_override else matrix_bot_meowlnir_container_image_registry_prefix_upstream_default }}"
+
+matrix_bot_meowlnir_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm64'] }}"
+
+matrix_bot_meowlnir_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_bot_meowlnir_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else
+        [matrix_addons_homeserver_container_network])
+      +
+      ([matrix_playbook_reverse_proxyable_services_additional_network] if
+        (matrix_playbook_reverse_proxyable_services_additional_network and matrix_bot_meowlnir_container_labels_traefik_enabled) else [])
+      +
+      ([postgres_container_network] if (postgres_enabled and matrix_bot_meowlnir_database_hostname == postgres_connection_hostname and matrix_bot_meowlnir_container_network != postgres_container_network) else [])
+    ) | unique
+  }}
+
+matrix_bot_meowlnir_config_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_bot_meowlnir_config_homeserver_domain: "{{ matrix_domain }}"
+
+# Only consulted by bots configured with `management_room_auto_create`, and only as the
+# default for those which do not carry their own `initial_managers` list.
+# May legitimately be empty, in which case such bots fail validation and ask to be told who
+# their initial managers should be.
+matrix_bot_meowlnir_initial_managers: "{{ [matrix_admin] if matrix_admin else [] }}"
+
+matrix_bot_meowlnir_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':meowlnir.as.token') | hash('sha512') | to_uuid }}"
+matrix_bot_meowlnir_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':meowlnir.hs.token') | hash('sha512') | to_uuid }}"
+matrix_bot_meowlnir_config_meowlnir_management_secret: "{{ (matrix_homeserver_generic_secret_key + ':meowlnir.management') | hash('sha512') | to_uuid }}"
+matrix_bot_meowlnir_config_meowlnir_data_secret: "{{ (matrix_homeserver_generic_secret_key + ':meowlnir.data') | hash('sha512') | to_uuid }}"
+matrix_bot_meowlnir_config_antispam_secret: "{{ (matrix_homeserver_generic_secret_key + ':meowlnir.antispam') | hash('sha512') | to_uuid }}"
+
+# Meowlnir expects a Synapse-style ed25519 private key: `<algorithm> <key ID> <unpadded-base64 32-byte seed>`.
+#
+# Only the seed is stored in this format — Meowlnir derives the actual keypair from it
+# via `ed25519.NewKeyFromSeed`, so no elliptic curve arithmetic happens here. The 32
+# hexadecimal characters sliced out of the hash below serve as the seed's 32 bytes.
+#
+# The key ID is cosmetic: Meowlnir always signs with the hardcoded `ed25519:policy_server`
+# (see `PolicyServerKeyID` upstream), so we use a matching name to avoid confusion.
+#
+# Note that slicing hex text gives the seed 128 bits of entropy, not a full 256.
+# That matches ed25519's own security level, so it is not a practical weakness, but you can
+# override this variable with an independently generated key if you would prefer one.
+matrix_bot_meowlnir_config_policy_server_signing_key: "ed25519 policy_server {{ ((matrix_homeserver_generic_secret_key + ':meowlnir.policy_server.signing_key') | hash('sha512'))[:32] | b64encode | regex_replace('=+$', '') }}"
+
+matrix_bot_meowlnir_database_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+matrix_bot_meowlnir_database_password: "{{ (matrix_homeserver_generic_secret_key + ':bot.meowlnir.db') | hash('sha512') | to_uuid }}"
+
+matrix_bot_meowlnir_synapse_database_uri: "{{ ('postgresql://' + matrix_synapse_database_user + ':' + matrix_synapse_database_password + '@' + matrix_synapse_database_host + ':' + (matrix_synapse_database_port | string) + '/' + matrix_synapse_database_database + '?sslmode=disable') if (matrix_bot_meowlnir_synapse_database_integration_enabled and matrix_synapse_enabled) else '' }}"
+
+matrix_bot_meowlnir_container_labels_traefik_enabled: "{{ (matrix_bot_meowlnir_config_reporting_enabled or matrix_bot_meowlnir_policy_server_enabled) and matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_bot_meowlnir_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_bot_meowlnir_container_labels_reporting_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bot_meowlnir_container_labels_reporting_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"  # noqa var-naming
+matrix_bot_meowlnir_container_labels_policy_server_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_bot_meowlnir_container_labels_policy_server_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"  # noqa var-naming
+
+######################################################################
+#
+# /matrix-bot-meowlnir
+#
+######################################################################
+
+
+######################################################################
+#
 # matrix-appservice-draupnir-for-all
 #
 ######################################################################
@@ -4227,6 +4323,12 @@ postgres_managed_databases_auto: |
     }] if (matrix_appservice_draupnir_for_all_enabled and matrix_appservice_draupnir_for_all_database_hostname == postgres_connection_hostname) else [])
     +
     ([{
+      'name': matrix_bot_meowlnir_database_name,
+      'username': matrix_bot_meowlnir_database_username,
+      'password': matrix_bot_meowlnir_database_password,
+    }] if (matrix_bot_meowlnir_enabled and matrix_bot_meowlnir_database_engine == 'postgres' and matrix_bot_meowlnir_database_hostname == postgres_connection_hostname) else [])
+    +
+    ([{
       'name': matrix_bridge_appservice_irc_database_name,
       'username': matrix_bridge_appservice_irc_database_username,
       'password': matrix_bridge_appservice_irc_database_password,
@@ -5023,12 +5125,18 @@ matrix_synapse_app_service_config_files_auto: "{{ matrix_homeserver_app_service_
 # Disable creation of media repository Synapse worker when using media-repo
 matrix_synapse_ext_media_repo_enabled: "{{ matrix_media_repo_enabled }}"
 
-matrix_synapse_ext_synapse_http_antispam_enabled: "{{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled }}"
-matrix_synapse_ext_synapse_http_antispam_config_base_url: "{{ matrix_bot_draupnir_synapse_http_antispam_config_base_url if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
-matrix_synapse_ext_synapse_http_antispam_config_authorization: "{{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else '' }}"
-matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks: "{{ matrix_bot_draupnir_synapse_http_antispam_config_enabled_callbacks if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else [] }}"
-matrix_synapse_ext_synapse_http_antispam_config_fail_open: "{{ matrix_bot_draupnir_synapse_http_antispam_config_fail_open if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else {} }}"
-matrix_synapse_ext_synapse_http_antispam_config_async: "{{ matrix_bot_draupnir_synapse_http_antispam_config_async if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else {} }}"
+# The synapse-http-antispam module reports to a single consumer, so at most one of
+# Draupnir and Meowlnir may claim it. Each role's validation fails the run if both do.
+matrix_synapse_ext_synapse_http_antispam_enabled: "{{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled or matrix_bot_meowlnir_synapse_http_antispam_enabled }}"
+matrix_synapse_ext_synapse_http_antispam_config_base_url: "{{ matrix_bot_draupnir_synapse_http_antispam_config_base_url if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else (matrix_bot_meowlnir_synapse_http_antispam_config_base_url if matrix_bot_meowlnir_synapse_http_antispam_enabled else '') }}"
+matrix_synapse_ext_synapse_http_antispam_config_authorization: "{{ matrix_bot_draupnir_config_web_synapseHTTPAntispam_authorization if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else (matrix_bot_meowlnir_config_antispam_secret if matrix_bot_meowlnir_synapse_http_antispam_enabled else '') }}"
+matrix_synapse_ext_synapse_http_antispam_config_enabled_callbacks: "{{ matrix_bot_draupnir_synapse_http_antispam_config_enabled_callbacks if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else (matrix_bot_meowlnir_synapse_http_antispam_config_enabled_callbacks if matrix_bot_meowlnir_synapse_http_antispam_enabled else []) }}"
+matrix_synapse_ext_synapse_http_antispam_config_fail_open: "{{ matrix_bot_draupnir_synapse_http_antispam_config_fail_open if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else (matrix_bot_meowlnir_synapse_http_antispam_config_fail_open if matrix_bot_meowlnir_synapse_http_antispam_enabled else {}) }}"
+matrix_synapse_ext_synapse_http_antispam_config_async: "{{ matrix_bot_draupnir_synapse_http_antispam_config_async if matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled else (matrix_bot_meowlnir_synapse_http_antispam_config_async if matrix_bot_meowlnir_synapse_http_antispam_enabled else {}) }}"
+
+# Meowlnir's bots need these to support end-to-end encryption.
+matrix_synapse_experimental_features_msc2409_to_device_messages_enabled: "{{ matrix_bot_meowlnir_enabled and matrix_bot_meowlnir_config_encryption_enable }}"
+matrix_synapse_experimental_features_msc3202_transaction_extensions_enabled: "{{ matrix_bot_meowlnir_enabled and matrix_bot_meowlnir_config_encryption_enable }}"
 
 # Enable Synapse statistics reporting when using synapse-usage-exporter
 matrix_synapse_report_stats: "{{ matrix_synapse_usage_exporter_enabled }}"
@@ -5170,6 +5278,11 @@ matrix_ketesa_config_asManagedUsers_auto: |
     ([
       '^@'+(matrix_appservice_draupnir_for_all_user_prefix | default('') | regex_escape) +'_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_appservice_draupnir_for_all_enabled else [])
+    +
+    ([
+      matrix_bot_meowlnir_user_regex,
+      matrix_bot_meowlnir_appservice_sender_regex,
+    ] if matrix_bot_meowlnir_enabled else [])
     +
     ([
       '^@'+(matrix_bot_baibot_config_user_mxid_localpart | default('') | regex_escape) +':'+(matrix_domain | regex_escape)+'$',

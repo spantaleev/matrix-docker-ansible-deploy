@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-bot-meowlnir service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-meowlnir.service"
+  register: matrix_bot_meowlnir_service_stat
+
+- when: matrix_bot_meowlnir_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-bot-meowlnir is stopped
+      ansible.builtin.service:
+        name: matrix-bot-meowlnir
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-bot-meowlnir.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-meowlnir.service"
+        state: absent
+
+    - name: Ensure matrix-bot-meowlnir paths don't exist
+      ansible.builtin.file:
+        path: "{{ matrix_bot_meowlnir_base_path }}"
+        state: absent

@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if a Meowlnir management room definition lacks required fields
+  ansible.builtin.fail:
+    msg: >-
+      A `management_rooms` entry for the Meowlnir bot `{{ bot.username }}` is missing the
+      `{{ item }}` field. All fields are required on every entry.
+      Offending definition: {{ management_room | to_json }}
+  when: "item not in management_room"
+  with_items:
+    - id
+    - encrypted
+
+- name: Fail if a Meowlnir management room ID does not look like a room ID
+  ansible.builtin.fail:
+    msg: >-
+      A `management_rooms` entry for the Meowlnir bot `{{ bot.username }}` has an `id` of
+      `{{ management_room.id }}`, which does not look like a room ID.
+      It needs to be a room ID (`!qporfwt:example.com`), not a room alias or a matrix.to URL.
+      You can find it in Element Web under the room's Settings -> Advanced.
+  when: "not management_room.id.startswith('!')"

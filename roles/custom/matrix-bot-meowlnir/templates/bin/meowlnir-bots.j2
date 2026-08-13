@@ -1,0 +1,21 @@
+#!/bin/sh
+# Shows the bots Meowlnir knows about, together with their management rooms, protected rooms and watched policy lists.
+#
+# Usage: meowlnir-bots
+
+set -eu
+
+BIN_PATH='{{ matrix_bot_meowlnir_bin_path }}'
+CONTAINER_NAME='matrix-bot-meowlnir'
+
+response="$("$BIN_PATH/meowlnir-api" GET /_meowlnir/v1/bots)"
+status="$(printf '%s\n' "$response" | tail -n 1)"
+body="$(printf '%s\n' "$response" | sed '$d')"
+
+if [ "$status" != '200' ]; then
+	echo "Meowlnir answered with HTTP $status:" >&2
+	echo "$body" >&2
+	exit 1
+fi
+
+printf '%s\n' "$body" | {{ devture_systemd_docker_base_host_command_docker }} exec -i "$CONTAINER_NAME" jq .

@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Build request body for Meowlnir management room - {{ management_room.id | quote }}
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_management_room_body: >-
+      {{
+        {
+          'bot_username': bot.username,
+          'encrypted': management_room.encrypted | bool,
+        }
+      }}
+
+- name: Ensure Meowlnir management room registered - {{ management_room.id | quote }}
+  ansible.builtin.command:
+    cmd: >-
+      {{ matrix_bot_meowlnir_bin_path }}/meowlnir-api
+      PUT /_meowlnir/v1/management_room/{{ management_room.id }}
+      {{ matrix_bot_meowlnir_management_room_body | to_json | quote }}
+  register: matrix_bot_meowlnir_management_room_result
+  # 201 means the room was newly registered, 200 that it already was.
+  changed_when: "matrix_bot_meowlnir_management_room_result.stdout_lines | default([]) | last | default('') == '201'"
+  failed_when: false
+
+- name: Fail if the Meowlnir management room could not be registered - {{ management_room.id | quote }}
+  ansible.builtin.fail:
+    msg: >-
+      Registering `{{ management_room.id }}` as a management room for the Meowlnir bot
+      `{{ bot.username }}` failed.
+      Meowlnir said: {{ matrix_bot_meowlnir_management_room_result.stdout | default('') | trim }}
+      {{ matrix_bot_meowlnir_management_room_result.stderr | default('') | trim }}
+  when: >-
+    matrix_bot_meowlnir_management_room_result.rc != 0
+    or (matrix_bot_meowlnir_management_room_result.stdout_lines | default([]) | length == 0)
+    or (matrix_bot_meowlnir_management_room_result.stdout_lines | last not in ['200', '201'])

@@ -1,3 +1,16 @@
+# 2026-08-13
+
+## Support for Meowlnir
+
+The playbook can now install [Meowlnir](https://github.com/maunium/meowlnir), an opinionated Matrix moderation bot, optimized for Synapse.
+
+Meowlnir joins [Draupnir](docs/configuring-playbook-bot-draupnir.md) and [Mjolnir](docs/configuring-playbook-bot-mjolnir.md) as a 3rd moderation option, speaking the same [policy list](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists) protocol so that it can subscribe to the same community ban lists. Unlike the others, it can override individual policies coming from lists you do not control (by way of an unban policy in a list of your own which is ordered ahead of other policy lists).
+
+You can run it alongside Draupnir while evaluating it — see the documentation for the caveats, the main one being that both want the [synapse-http-antispam](https://github.com/maunium/synapse-http-antispam) module, which only reports to a single consumer.
+
+To get started, see the [Setting up Meowlnir](docs/configuring-playbook-bot-meowlnir.md) documentation page.
+
+
 # 2026-08-06
 
 ## (Backward Compatibility Break) Jitsi no longer uses Colibri WebSockets

@@ -15,6 +15,8 @@ The playbook can install and configure the [Mjolnir](https://github.com/matrix-o
 
 See the project's [documentation](https://github.com/matrix-org/mjolnir/blob/main/README.md) to learn what it does and why it might be useful to you.
 
+**Note**: you can also use the [Draupnir](configuring-playbook-bot-draupnir.md) or [Meowlnir](configuring-playbook-bot-meowlnir.md) bots, which speak the same [policy list](https://the-draupnir-project.github.io/draupnir-documentation/concepts/policy-lists) protocol.
+
 ## Prerequisites
 
 ### Register the bot account

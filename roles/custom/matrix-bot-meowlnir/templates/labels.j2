@@ -1,0 +1,78 @@
+{#
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+{% if matrix_bot_meowlnir_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if matrix_bot_meowlnir_container_labels_traefik_docker_network %}
+traefik.docker.network={{ matrix_bot_meowlnir_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.services.matrix-bot-meowlnir.loadbalancer.server.port={{ matrix_bot_meowlnir_config_meowlnir_port }}
+
+{% if matrix_bot_meowlnir_config_reporting_enabled %}
+############################################################
+#                                                          #
+# Reports (/_matrix/client/../rooms/../report)             #
+#                                                          #
+############################################################
+
+{# Meowlnir serves these paths verbatim and applies CORS headers itself, #}
+{# so no path-rewriting or CORS middleware is necessary here. #}
+
+traefik.http.routers.matrix-bot-meowlnir-reporting.rule={{ matrix_bot_meowlnir_container_labels_reporting_traefik_rule }}
+
+{% if matrix_bot_meowlnir_container_labels_reporting_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-bot-meowlnir-reporting.priority={{ matrix_bot_meowlnir_container_labels_reporting_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-bot-meowlnir-reporting.service=matrix-bot-meowlnir
+traefik.http.routers.matrix-bot-meowlnir-reporting.entrypoints={{ matrix_bot_meowlnir_container_labels_reporting_traefik_entrypoints }}
+traefik.http.routers.matrix-bot-meowlnir-reporting.tls={{ matrix_bot_meowlnir_container_labels_reporting_traefik_tls | to_json }}
+
+{% if matrix_bot_meowlnir_container_labels_reporting_traefik_tls %}
+traefik.http.routers.matrix-bot-meowlnir-reporting.tls.certResolver={{ matrix_bot_meowlnir_container_labels_reporting_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Reports (/_matrix/client/../rooms/../report)            #
+#                                                          #
+############################################################
+{% endif %}
+
+{% if matrix_bot_meowlnir_policy_server_enabled %}
+############################################################
+#                                                          #
+# Policy server (/_matrix/policy)                          #
+#                                                          #
+############################################################
+
+{# Served on the federation endpoint, so that other servers in a room can reach it. #}
+
+traefik.http.routers.matrix-bot-meowlnir-policy-server.rule={{ matrix_bot_meowlnir_container_labels_policy_server_traefik_rule }}
+
+{% if matrix_bot_meowlnir_container_labels_policy_server_traefik_priority | int > 0 %}
+traefik.http.routers.matrix-bot-meowlnir-policy-server.priority={{ matrix_bot_meowlnir_container_labels_policy_server_traefik_priority }}
+{% endif %}
+
+traefik.http.routers.matrix-bot-meowlnir-policy-server.service=matrix-bot-meowlnir
+traefik.http.routers.matrix-bot-meowlnir-policy-server.entrypoints={{ matrix_bot_meowlnir_container_labels_policy_server_traefik_entrypoints }}
+traefik.http.routers.matrix-bot-meowlnir-policy-server.tls={{ matrix_bot_meowlnir_container_labels_policy_server_traefik_tls | to_json }}
+
+{% if matrix_bot_meowlnir_container_labels_policy_server_traefik_tls %}
+traefik.http.routers.matrix-bot-meowlnir-policy-server.tls.certResolver={{ matrix_bot_meowlnir_container_labels_policy_server_traefik_tls_certResolver }}
+{% endif %}
+
+############################################################
+#                                                          #
+# /Policy server (/_matrix/policy)                         #
+#                                                          #
+############################################################
+{% endif %}
+{% endif %}
+
+{{ matrix_bot_meowlnir_container_labels_traefik_labels_additional_labels }}

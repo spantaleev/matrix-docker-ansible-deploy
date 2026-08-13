@@ -1,0 +1,84 @@
+{#
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+{#
+  Note: this template is rendered, parsed as YAML, merged with
+  `matrix_bot_meowlnir_configuration_extension`, and dumped again.
+  Comments written here therefore do not reach the final configuration file.
+
+  Secrets must always be rendered explicitly. Meowlnir re-runs its configuration
+  upgrader in memory on every start, so a literal `generate` value would produce a
+  brand new secret on each restart.
+#}
+homeserver:
+  address: {{ matrix_bot_meowlnir_config_homeserver_address | to_json }}
+  domain: {{ matrix_bot_meowlnir_config_homeserver_domain | to_json }}
+
+meowlnir:
+  id: {{ matrix_bot_meowlnir_appservice_id | to_json }}
+  as_token: {{ matrix_bot_meowlnir_appservice_token | to_json }}
+  hs_token: {{ matrix_bot_meowlnir_homeserver_token | to_json }}
+
+  address: {{ matrix_bot_meowlnir_appservice_url | to_json }}
+  hostname: {{ matrix_bot_meowlnir_config_meowlnir_hostname | to_json }}
+  port: {{ matrix_bot_meowlnir_config_meowlnir_port | int }}
+
+  management_secret: {{ matrix_bot_meowlnir_config_meowlnir_management_secret | to_json }}
+  data_secret: {{ matrix_bot_meowlnir_config_meowlnir_data_secret | to_json }}
+  federation_auth: {{ matrix_bot_meowlnir_config_meowlnir_federation_auth | to_json }}
+  dry_run: {{ matrix_bot_meowlnir_config_meowlnir_dry_run | to_json }}
+  untrusted: {{ matrix_bot_meowlnir_config_meowlnir_untrusted | to_json }}
+
+  report_room: {{ matrix_bot_meowlnir_config_meowlnir_report_room | to_json if matrix_bot_meowlnir_config_meowlnir_report_room else 'null' }}
+  room_ban_room: {{ matrix_bot_meowlnir_config_meowlnir_room_ban_room | to_json if matrix_bot_meowlnir_config_meowlnir_room_ban_room else 'null' }}
+  load_all_room_hashes: {{ matrix_bot_meowlnir_config_meowlnir_load_all_room_hashes | to_json }}
+
+  hacky_rule_filter: {{ matrix_bot_meowlnir_config_meowlnir_hacky_rule_filter | to_json }}
+  hacky_redact_patterns: {{ matrix_bot_meowlnir_config_meowlnir_hacky_redact_patterns | to_json }}
+
+  admin_tokens: {{ matrix_bot_meowlnir_config_meowlnir_admin_tokens | to_json }}
+
+meowlnir4all:
+  admin_room: {{ matrix_bot_meowlnir_config_meowlnir4all_admin_room | to_json if matrix_bot_meowlnir_config_meowlnir4all_admin_room else 'null' }}
+  localpart_template: {{ matrix_bot_meowlnir_config_meowlnir4all_localpart_template | to_json }}
+  displayname: {{ matrix_bot_meowlnir_config_meowlnir4all_displayname | to_json if matrix_bot_meowlnir_config_meowlnir4all_displayname else 'null' }}
+  avatar_url: {{ matrix_bot_meowlnir_config_meowlnir4all_avatar_url | to_json if matrix_bot_meowlnir_config_meowlnir4all_avatar_url else 'null' }}
+  room_name: {{ matrix_bot_meowlnir_config_meowlnir4all_room_name | to_json }}
+  default_watched_lists: {{ matrix_bot_meowlnir_config_meowlnir4all_default_watched_lists | to_json }}
+
+antispam:
+  secret: {{ matrix_bot_meowlnir_config_antispam_secret | to_json }}
+  filter_local_invites: {{ matrix_bot_meowlnir_config_antispam_filter_local_invites | to_json }}
+  auto_reject_invites_token: {{ matrix_bot_meowlnir_config_antispam_auto_reject_invites_token | to_json if matrix_bot_meowlnir_config_antispam_auto_reject_invites_token else 'null' }}
+  notify_management_room: {{ matrix_bot_meowlnir_config_antispam_notify_management_room | to_json }}
+  block_invites_to: {{ matrix_bot_meowlnir_config_antispam_block_invites_to | to_json }}
+
+policy_server:
+  always_redact: {{ matrix_bot_meowlnir_config_policy_server_always_redact | to_json }}
+  signing_key: {{ matrix_bot_meowlnir_config_policy_server_signing_key | to_json }}
+
+encryption:
+  enable: {{ matrix_bot_meowlnir_config_encryption_enable | to_json }}
+  pickle_key: {{ matrix_bot_meowlnir_config_encryption_pickle_key | to_json }}
+
+database:
+  type: {{ matrix_bot_meowlnir_database_engine | to_json }}
+  uri: {{ matrix_bot_meowlnir_database_connection_string | to_json }}
+  max_open_conns: {{ matrix_bot_meowlnir_config_database_max_open_conns | int }}
+  max_idle_conns: {{ matrix_bot_meowlnir_config_database_max_idle_conns | int }}
+  max_conn_idle_time: {{ matrix_bot_meowlnir_config_database_max_conn_idle_time | to_json if matrix_bot_meowlnir_config_database_max_conn_idle_time else 'null' }}
+  max_conn_lifetime: {{ matrix_bot_meowlnir_config_database_max_conn_lifetime | to_json if matrix_bot_meowlnir_config_database_max_conn_lifetime else 'null' }}
+
+synapse_db:
+  type: postgres
+  uri: {{ matrix_bot_meowlnir_synapse_database_uri | to_json }}
+  max_open_conns: {{ matrix_bot_meowlnir_config_synapse_db_max_open_conns | int }}
+  max_idle_conns: {{ matrix_bot_meowlnir_config_synapse_db_max_idle_conns | int }}
+  max_conn_idle_time: {{ matrix_bot_meowlnir_config_synapse_db_max_conn_idle_time | to_json if matrix_bot_meowlnir_config_synapse_db_max_conn_idle_time else 'null' }}
+  max_conn_lifetime: {{ matrix_bot_meowlnir_config_synapse_db_max_conn_lifetime | to_json if matrix_bot_meowlnir_config_synapse_db_max_conn_lifetime else 'null' }}
+
+logging:
+  min_level: {{ matrix_bot_meowlnir_config_logging_min_level | to_json }}
+  writers: {{ matrix_bot_meowlnir_config_logging_writers | to_json }}

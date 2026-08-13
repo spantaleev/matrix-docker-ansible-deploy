@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# These fields are required on every entry, so that a bot's setup can be read off the definition without knowing what the playbook would otherwise default to.
+#
+# The optional `initial_managers` is deliberately not among them: it only overrides an instance-wide default, and demanding it on every bot would defeat that default's purpose.
+- name: Fail if a Meowlnir bot definition lacks required fields
+  ansible.builtin.fail:
+    msg: >-
+      A bot definition in `matrix_bot_meowlnir_bots` is missing the `{{ item }}` field.
+      Required on every entry: {{ matrix_bot_meowlnir_bot_required_fields | join(', ') }}.
+      Offending definition: {{ bot | to_json }}
+  when: "item not in bot"
+  with_items: "{{ matrix_bot_meowlnir_bot_required_fields }}"
+
+- name: Fail if a Meowlnir bot username is empty
+  ansible.builtin.fail:
+    msg: "A bot definition in `matrix_bot_meowlnir_bots` has an empty `username`: {{ bot | to_json }}"
+  when: "not bot.username"
+
+- name: Fail if Meowlnir bot username lacks the required prefix
+  ansible.builtin.fail:
+    msg: >-
+      The Meowlnir bot username `{{ bot.username }}` does not start with
+      `{{ matrix_bot_meowlnir_user_prefix }}`. Bot users need to fall within the user
+      namespace declared in Meowlnir's appservice registration file, or the homeserver
+      will refuse to let Meowlnir operate them.
+      Either rename the bot, or adjust `matrix_bot_meowlnir_user_prefix`.
+  when: "not bot.username.startswith(matrix_bot_meowlnir_user_prefix)"
+
+- name: Fail if a Meowlnir bot mixes management room auto-creation with declared rooms
+  ansible.builtin.fail:
+    msg: >-
+      The Meowlnir bot `{{ bot.username }}` has `management_room_auto_create` enabled, but
+      also declares `management_rooms`. These are mutually exclusive: either let the
+      playbook create a management room, or declare the rooms yourself.
+  when: "bot.management_room_auto_create | bool and bot.management_rooms | length > 0"
+
+- name: Fail if a Meowlnir bot has neither auto-created nor declared management rooms
+  ansible.builtin.fail:
+    msg: >-
+      The Meowlnir bot `{{ bot.username }}` declares no `management_rooms` and does not have
+      `management_room_auto_create` enabled, so there would be no room to command it from.
+      Either create a room yourself and declare it, or enable `management_room_auto_create`.
+  when: "not bot.management_room_auto_create | bool and bot.management_rooms | length == 0"
+
+- name: Fail if a Meowlnir bot declares `initial_managers` which is not a list
+  ansible.builtin.fail:
+    msg: >-
+      The Meowlnir bot `{{ bot.username }}` declares an `initial_managers` value which is not
+      a list. It needs to be a list of full Matrix user IDs (`@alice:example.com`), even when
+      there is only one.
+      Offending definition: {{ bot | to_json }}
+  when: "'initial_managers' in bot and (bot.initial_managers is string or bot.initial_managers is mapping or bot.initial_managers is not iterable)"
+
+# Omitting the key inherits the instance-wide default; declaring it empty means nobody, which is why `default()` is used here without its `boolean` argument.
+- name: Determine the effective initial managers for a Meowlnir bot
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_bot_initial_managers: "{{ bot.initial_managers | default(matrix_bot_meowlnir_initial_managers) }}"
+
+- name: Fail if Meowlnir management room auto-creation lacks an initial manager
+  ansible.builtin.fail:
+    msg: >-
+      The Meowlnir bot `{{ bot.username }}` has `management_room_auto_create` enabled, but no
+      initial managers are set, so nobody would be able to command the bot in the room that
+      gets created.
+      Either give the bot its own `initial_managers` list, or set
+      `matrix_bot_meowlnir_initial_managers` (or the `matrix_admin` variable it follows by
+      default), or disable `management_room_auto_create` and declare `management_rooms`
+      yourself.
+  when: "bot.management_room_auto_create | bool and matrix_bot_meowlnir_bot_initial_managers | length == 0"
+
+# Nothing downstream catches a bad value: the homeserver accepts invitations for users which do not exist, and on room versions supporting MSC4289 an invitee's standing in the room cannot be revoked afterwards.
+# So a typo here is both silent and permanent.
+- name: Fail if a Meowlnir initial manager is not a full Matrix user ID
+  ansible.builtin.fail:
+    msg: >-
+      `{{ item }}` is listed as an initial manager for the Meowlnir bot `{{ bot.username }}`,
+      but it is not a full Matrix user ID (`@alice:example.com`).
+  when: "not (item.startswith('@') and ':' in item)"
+  with_items: "{{ matrix_bot_meowlnir_bot_initial_managers }}"
+
+- name: Validate Meowlnir bot management rooms
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/validate_bot_management_room.yml"
+  with_items: "{{ bot.management_rooms }}"
+  loop_control:
+    loop_var: management_room

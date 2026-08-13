@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# Only reached for bots which are no longer declared, and only after their management rooms have been de-registered — Meowlnir refuses to delete a bot which is still in use.
+
+- name: Remove Meowlnir bot - {{ live_bot.username | quote }}
+  ansible.builtin.command:
+    cmd: >-
+      {{ matrix_bot_meowlnir_bin_path }}/meowlnir-api
+      DELETE /_meowlnir/v1/bot/{{ live_bot.username }}
+  register: matrix_bot_meowlnir_bot_removal_result
+  changed_when: "matrix_bot_meowlnir_bot_removal_result.stdout_lines | default([]) | last | default('') == '200'"
+  failed_when: false
+
+- name: Fail if the Meowlnir bot could not be removed - {{ live_bot.username | quote }}
+  ansible.builtin.fail:
+    msg: >-
+      Removing the Meowlnir bot `{{ live_bot.username }}` failed.
+      Meowlnir said: {{ matrix_bot_meowlnir_bot_removal_result.stdout | default('') | trim }}
+      {{ matrix_bot_meowlnir_bot_removal_result.stderr | default('') | trim }}
+  when: >-
+    matrix_bot_meowlnir_bot_removal_result.rc != 0
+    or (matrix_bot_meowlnir_bot_removal_result.stdout_lines | default([]) | length == 0)
+    or (matrix_bot_meowlnir_bot_removal_result.stdout_lines | last not in ['200', '404'])
+
+- name: Report the removed Meowlnir bot - {{ live_bot.username | quote }}
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: >-
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Note: the Meowlnir bot " ~ live_bot.username ~ " is no longer declared in matrix_bot_meowlnir_bots," ~
+          " so Meowlnir has been told to forget it. Its Matrix user is not deactivated and remains in the rooms" ~
+          " it had joined - clean that up separately if you want it gone for good."
+        ]
+      }}
+  when: "matrix_bot_meowlnir_bot_removal_result.stdout_lines | default([]) | last | default('') == '200'"

@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- tags:
+    - setup-all
+    - setup-bot-meowlnir
+    - install-all
+    - install-bot-meowlnir
+  block:
+    - when: matrix_bot_meowlnir_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_bot_meowlnir_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-bot-meowlnir
+  block:
+    - when: not matrix_bot_meowlnir_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+
+# Creating bots talks to Meowlnir's management API, which means starting the service and writing to its database.
+# Like the matrix-user-creator role, this intentionally stays off the `setup-all` tag, so that an initial installation does not populate a database that is about to be replaced by an import.
+- tags:
+    - ensure-matrix-users-created
+    - ensure-users-created
+  block:
+    # Runs when there are bots to create, but also when there are none and pruning is on: an emptied-out bot list is exactly the case the pruning safeguards need to see.
+    - when: >-
+        matrix_bot_meowlnir_enabled | bool
+        and (matrix_bot_meowlnir_bots | length > 0 or matrix_bot_meowlnir_bots_pruning_enabled | bool)
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_bots.yml"

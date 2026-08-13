@@ -1,0 +1,127 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Ensure matrix-bot-meowlnir paths exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - {path: "{{ matrix_bot_meowlnir_base_path }}", when: true}
+    - {path: "{{ matrix_bot_meowlnir_config_path }}", when: true}
+    - {path: "{{ matrix_bot_meowlnir_data_path }}", when: true}
+    - {path: "{{ matrix_bot_meowlnir_bin_path }}", when: true}
+    - {path: "{{ matrix_bot_meowlnir_container_src_files_path }}", when: "{{ matrix_bot_meowlnir_container_image_self_build }}"}
+  when: "item.when | bool"
+
+- name: Ensure Meowlnir Docker image is pulled
+  community.docker.docker_image_pull:
+    name: "{{ matrix_bot_meowlnir_container_image }}"
+    pull: always
+  when: "not matrix_bot_meowlnir_container_image_self_build | bool"
+  register: matrix_bot_meowlnir_container_image_pull_result
+  retries: "{{ devture_playbook_help_container_retries_count }}"
+  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  until: matrix_bot_meowlnir_container_image_pull_result is not failed
+
+# A checkout owned by a different user (a uid change, an earlier clone by another user, etc.) would make the git task below fail on ownership or permissions.
+- name: Ensure Meowlnir repository ownership is correct on self-build
+  ansible.builtin.file:
+    path: "{{ matrix_bot_meowlnir_container_src_files_path }}"
+    state: directory
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+    recurse: true
+  when: "matrix_bot_meowlnir_container_image_self_build | bool"
+
+- name: Ensure Meowlnir repository is present on self-build
+  ansible.builtin.git:
+    repo: "{{ matrix_bot_meowlnir_container_image_self_build_repo }}"
+    dest: "{{ matrix_bot_meowlnir_container_src_files_path }}"
+    version: "{{ matrix_bot_meowlnir_container_image.split(':')[1] }}"
+    force: "yes"
+  become: true
+  become_user: "{{ matrix_user_name }}"
+  register: matrix_bot_meowlnir_git_pull_results
+  when: "matrix_bot_meowlnir_container_image_self_build | bool"
+
+- name: Ensure Meowlnir Docker image is built
+  community.docker.docker_image_build:
+    name: "{{ matrix_bot_meowlnir_container_image }}"
+    dockerfile: Dockerfile.ci
+    path: "{{ matrix_bot_meowlnir_container_src_files_path }}"
+    pull: true
+    rebuild: "{{ 'always' if matrix_bot_meowlnir_git_pull_results.changed | bool else 'never' }}"
+  when: "matrix_bot_meowlnir_container_image_self_build | bool"
+  register: matrix_bot_meowlnir_container_image_build_result
+
+- name: Ensure matrix-bot-meowlnir config installed
+  ansible.builtin.copy:
+    content: "{{ matrix_bot_meowlnir_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bot_meowlnir_config_path }}/config.yaml"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_bot_meowlnir_config_result
+
+- name: Ensure matrix-bot-meowlnir registration.yaml installed
+  ansible.builtin.copy:
+    content: "{{ matrix_bot_meowlnir_registration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_bot_meowlnir_config_path }}/registration.yaml"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_bot_meowlnir_registration_result
+
+- name: Ensure matrix-bot-meowlnir scripts installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/bin/{{ item }}.j2"
+    dest: "{{ matrix_bot_meowlnir_bin_path }}/{{ item }}"
+    mode: '0750'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - meowlnir-api
+    - meowlnir-bots
+    - meowlnir-create-management-room
+
+- name: Ensure matrix-bot-meowlnir container network is created
+  when: matrix_bot_meowlnir_container_network != 'host'
+  community.general.docker_network:
+    enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
+    name: "{{ matrix_bot_meowlnir_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
+- name: Ensure matrix-bot-meowlnir container labels installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/labels.j2"
+    dest: "{{ matrix_bot_meowlnir_base_path }}/labels"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  register: matrix_bot_meowlnir_labels_result
+
+- name: Ensure matrix-bot-meowlnir.service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/matrix-bot-meowlnir.service.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/matrix-bot-meowlnir.service"
+    mode: '0644'
+  register: matrix_bot_meowlnir_systemd_service_result
+
+- name: Determine whether Meowlnir needs a restart
+  ansible.builtin.set_fact:
+    matrix_bot_meowlnir_restart_necessary: >-
+      {{
+        matrix_bot_meowlnir_config_result.changed | default(false)
+        or matrix_bot_meowlnir_registration_result.changed | default(false)
+        or matrix_bot_meowlnir_labels_result.changed | default(false)
+        or matrix_bot_meowlnir_systemd_service_result.changed | default(false)
+        or matrix_bot_meowlnir_container_image_pull_result.changed | default(false)
+        or matrix_bot_meowlnir_container_image_build_result.changed | default(false)
+      }}
