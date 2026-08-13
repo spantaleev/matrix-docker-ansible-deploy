@@ -34,8 +34,12 @@ matrix_bridge_mautrix_meta_messenger_container_image: "{{ matrix_bridge_mautrix_
 matrix_bridge_mautrix_meta_messenger_container_image_registry_prefix: "{{ 'localhost/' if matrix_bridge_mautrix_meta_messenger_container_image_self_build else matrix_bridge_mautrix_meta_messenger_container_image_registry_prefix_upstream }}"
 matrix_bridge_mautrix_meta_messenger_container_image_registry_prefix_upstream: "{{ matrix_bridge_mautrix_meta_messenger_container_image_registry_prefix_upstream_default }}"
 matrix_bridge_mautrix_meta_messenger_container_image_registry_prefix_upstream_default: "dock.mau.dev/"
+# Since v26.07, Instagram is a separate bridge upstream (its own binary and its own container image).
+# Both bridges are published to the same container image repository, with Instagram's tags carrying an `ig-` prefix.
+# See: https://mau.fi/blog/2026-07-mautrix-release/#new-instagram-bridge
+#
 # Prebuilt container images for specific commit hashes are tagged with an architecture suffix (e.g. `HASH-amd64`).
-matrix_bridge_mautrix_meta_messenger_container_image_tag: "{{ matrix_bridge_mautrix_meta_messenger_version }}{{ ('-' ~ matrix_architecture) if (matrix_bridge_mautrix_meta_messenger_version | length == 40) else '' }}"
+matrix_bridge_mautrix_meta_messenger_container_image_tag: "{{ 'ig-' if matrix_bridge_mautrix_meta_messenger_meta_mode == 'instagram' else '' }}{{ matrix_bridge_mautrix_meta_messenger_version }}{{ ('-' ~ matrix_architecture) if (matrix_bridge_mautrix_meta_messenger_version | length == 40) else '' }}"
 
 matrix_bridge_mautrix_meta_messenger_container_network: ""
 
