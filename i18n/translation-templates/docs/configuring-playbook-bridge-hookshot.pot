@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 13:47+0000\n"
+"POT-Creation-Date: 2026-08-13 05:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,102 +57,98 @@ msgid "Add the following configuration to your `inventory/host_vars/matrix.examp
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bridge-hookshot.md:44
-msgid "End-to-bridge encryption also requires the homeserver to support (and have enabled) [MSC2409](https://github.com/matrix-org/matrix-spec-proposals/pull/2409) and [MSC3202](https://github.com/matrix-org/matrix-spec-proposals/pull/3202). If you are using Synapse, enable them by also adding this to your `vars.yml` file:"
+msgid "End-to-bridge encryption requires the homeserver to support (and have enabled) [MSC2409](https://github.com/matrix-org/matrix-spec-proposals/pull/2409) and [MSC3202](https://github.com/matrix-org/matrix-spec-proposals/pull/3202). When using Synapse, the playbook turns on the experimental features this depends on (`msc2409_to_device_messages_enabled` and `msc3202_transaction_extensions`) for you. On other homeserver implementations, you need to arrange for this yourself."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:51
-msgid "These are experimental homeserver-wide features (as is Hookshot's encryption support itself), so enable them deliberately."
-msgstr ""
-
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:53
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:46
 msgid "For each of the services (GitHub, GitLab, Jira, Figma, and generic webhooks) fill in the respective variables `matrix_bridge_hookshot_service_*` listed in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) as required."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:55
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:48
 msgid "Take special note of the `matrix_bridge_hookshot_*_enabled` variables. Services that need no further configuration are enabled by default (GitLab and generic webhooks), while you must first add the required configuration and enable the others (GitHub, Jira, and Figma)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:57
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:50
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:59
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:52
 msgid "There are some additional things you may wish to configure about the bridge."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:61
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:54
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:63
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:56
 msgid "`roles/custom/matrix-bridge-hookshot/defaults/main.yml` for some variables that you can customize via your `vars.yml` file"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:64
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:57
 msgid "`roles/custom/matrix-bridge-hookshot/templates/config.yaml.j2` for the bridge's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bridge_hookshot_configuration_extension_yaml` and `matrix_bridge_hookshot_registration_extension_yaml` variables"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:66
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:59
 msgid "Refer the [official instructions](https://matrix-org.github.io/matrix-hookshot/latest/setup.html) and the comments in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) to learn what the individual options do."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:68
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:61
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:70
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:63
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:77
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:70
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-service hookshot` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:79
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:72
 msgid "`just install-service hookshot` is useful for maintaining your setup quickly when its components remain unchanged. If you adjust your `vars.yml` to remove other components, you'd need to run `just setup-all`, or these components will still remain installed. Note `just setup-all` runs the `ensure-matrix-users-created` tag too."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:81
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:74
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:83
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:76
 msgid "To use the bridge, you need to create a room and invite the Hookshot bot (`@hookshot:example.com`) to it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:85
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:78
 msgid "Make sure the bot is able to send state events (usually the Moderator power level in clients)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:87
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:80
 msgid "Send `!hookshot help` to the bot to see the available commands."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:89
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:82
 msgid "Refer to [Hookshot's documentation](https://matrix-org.github.io/matrix-hookshot/latest/usage.html) for more details about using the bridge's various features."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:91
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:84
 msgid "💡 **Note**: the different listeners are bound to certain paths which might differ from those assumed by the hookshot documentation. See [URLs for bridges setup](#urls-for-bridges-setup) below."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:93
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:86
 msgid "Reset crypto store"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:95
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:88
 msgid "Should the crypto store be corrupted, you can reset it by executing this Ansible playbook with the tag `reset-hookshot-encryption` added:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:101
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:94
 msgid "More setup documentation"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:103
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:96
 msgid "URLs for bridges setup"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:105
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:98
 msgid "Unless indicated otherwise, the following endpoints are reachable on your `matrix.` subdomain (if the feature is enabled)."
 msgstr ""
 
@@ -284,98 +280,98 @@ msgstr ""
 msgid "Widgets"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:117
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:110
 msgid "Also see the various `matrix_bridge_hookshot_container_labels_*` variables in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml), which expose URLs publicly."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:119
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:112
 msgid "The different listeners are also reachable *internally* in the docker-network via the container's name (configured by `matrix_bridge_hookshot_container_url`) and on different ports (e.g. `matrix_bridge_hookshot_appservice_port`). Read [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml) in detail for more info."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:121
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:114
 msgid "Manage GitHub Private Key with aux role"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:123
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:116
 msgid "The GitHub bridge requires you to install a private key file. This can be done in multiple ways:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:125
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:118
 msgid "copy the *contents* of the downloaded file and set the variable `matrix_bridge_hookshot_github_private_key` to the contents (see example in [main.yml](../roles/custom/matrix-bridge-hookshot/defaults/main.yml))."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:126
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:119
 msgid "somehow copy the file to the path `{{ matrix_bridge_hookshot_base_path }}/{{ matrix_bridge_hookshot_github_private_key_file }}` (default: `/matrix/hookshot/private-key.pem`) on the server manually."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:127
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:120
 msgid "use the [`aux` role](https://github.com/mother-of-all-self-hosting/ansible-role-aux) to copy the file from an arbitrary path on your ansible client to the correct path on the server."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:129
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:122
 msgid "To use the `aux` role, make sure the `matrix_bridge_hookshot_github_private_key` variable is empty. Then add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:140
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:133
 msgid "For more information, see the documentation in the [default configuration of the aux role](https://github.com/mother-of-all-self-hosting/ansible-role-aux/blob/main/defaults/main.yml)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:142
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:135
 msgid "Enable metrics"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:144
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:137
 msgid "The playbook can enable and configure the metrics of the service for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:146
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:139
 msgid "Metrics are **only enabled by default** if the builtin [Prometheus](configuring-playbook-prometheus-grafana.md) is enabled (by default, Prometheus isn't enabled). If so, metrics will automatically be collected by Prometheus and made available in Grafana. You will, however, need to set up your own Dashboard for displaying them."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:148
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:141
 msgid "To enable the metrics, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:155
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:148
 msgid "**To collect metrics from an external Prometheus server**, besides enabling metrics as described above, you will also need to enable metrics exposure on `https://matrix.example.com/metrics/hookshot` by adding the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:161
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:154
 msgid "By default metrics are exposed publicly **without** password-protection. To password-protect the metrics with dedicated credentials, add the following configuration to your `vars.yml` file:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:168
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:161
 msgid "To `matrix_bridge_hookshot_container_labels_metrics_middleware_basic_auth_users`, set the Basic Authentication credentials (raw `htpasswd` file content) used to protect the endpoint. See https://doc.traefik.io/traefik/middlewares/http/basicauth/#users for details about it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:170
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:163
 msgid "**Note**: alternatively, you can use `matrix_metrics_exposure_enabled` to expose all services on this `/metrics/*` feature, and you can use `matrix_metrics_exposure_http_basic_auth_enabled` and `matrix_metrics_exposure_http_basic_auth_users` to password-protect the metrics of them. See [this section](configuring-playbook-prometheus-grafana.md#collecting-metrics-to-an-external-prometheus-server) for more information."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:172
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:165
 msgid "Enable Grafana (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:174
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:167
 msgid "Probably you wish to enable Grafana along with Prometheus for generating graphs of the metrics."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:176
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:169
 msgid "To enable Grafana, see [this section](configuring-playbook-prometheus-grafana.md#adjusting-the-playbook-configuration-grafana) for instructions."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:178
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:171
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:180
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:173
 msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-hookshot`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:182
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:175
 msgid "Increase logging verbosity"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bridge-hookshot.md:184
+#: ../../../docs/configuring-playbook-bridge-hookshot.md:177
 msgid "The default logging level for this component is `warn`. If you want to increase the verbosity, add the following configuration to your `vars.yml` file and re-run the playbook:"
 msgstr ""
