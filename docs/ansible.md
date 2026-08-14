@@ -88,7 +88,7 @@ docker run \
 -w /work \
 --mount type=bind,src=`pwd`,dst=/work \
 --entrypoint=/bin/sh \
-ghcr.io/devture/ansible:14.0.0-r0-1
+ghcr.io/devture/ansible:14.0.0-r0-2
 ```
 
 Once you execute the above command, you'll be dropped into a `/work` directory inside a Docker container. The `/work` directory contains the playbook's code.
@@ -109,7 +109,7 @@ docker run \
 --mount type=bind,src=`pwd`,dst=/work \
 --mount type=bind,src=$HOME/.ssh/id_ed25519,dst=/root/.ssh/id_ed25519,ro \
 --entrypoint=/bin/sh \
-ghcr.io/devture/ansible:14.0.0-r0-1
+ghcr.io/devture/ansible:14.0.0-r0-2
 ```
 
 The above command tries to mount an SSH key (`$HOME/.ssh/id_ed25519`) into the container (at `/root/.ssh/id_ed25519`). If your SSH key is at a different path (not in `$HOME/.ssh/id_ed25519`), adjust that part.
