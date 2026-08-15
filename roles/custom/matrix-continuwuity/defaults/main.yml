@@ -238,13 +238,23 @@ matrix_continuwuity_config_allow_outgoing_presence: false
 
 # Controls MatrixRTC foci served via `/_matrix/client/v1/rtc/transports`
 # and `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` (MSC4143)
-matrix_continuwuity_config_rtc_foci: "{{ matrix_continuwuity_config_rtc_foci_auto + matrix_continuwuity_config_rtc_foci_custom }}"
-matrix_continuwuity_config_rtc_foci_auto: |-
+matrix_continuwuity_config_rtc_foci: "{{ matrix_continuwuity_config_rtc_foci_default + matrix_continuwuity_config_rtc_foci_auto + matrix_continuwuity_config_rtc_foci_custom }}"
+
+# Holds the default MatrixRTC foci list, driven by `matrix_continuwuity_config_rtc_foci_livekit_url`.
+matrix_continuwuity_config_rtc_foci_default: |-
   {{
     (
       [{'type': 'livekit', 'livekit_service_url': matrix_continuwuity_config_rtc_foci_livekit_url}] if matrix_continuwuity_config_rtc_foci_livekit_url != '' else []
     )
   }}
+
+# Holds MatrixRTC foci entries that a playbook may inject automatically, based on the state of other services.
+#
+# This variable is not meant to be redefined by users.
+# To inject your own entries, use `matrix_continuwuity_config_rtc_foci_custom`.
+matrix_continuwuity_config_rtc_foci_auto: []
+
+# Holds additional MatrixRTC foci entries that you may wish to inject.
 matrix_continuwuity_config_rtc_foci_custom: []
 
 # Controls MatrixRTC Livekit URL auto-added to `matrix_continuwuity_config_rtc_foci`.
