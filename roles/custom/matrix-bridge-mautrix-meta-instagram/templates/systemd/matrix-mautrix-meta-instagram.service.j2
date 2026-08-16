@@ -33,7 +33,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_bridge_mautrix_meta_instagram_container_image }} \
-			/usr/bin/mautrix-meta -c /config/config.yaml -r /config/registration.yaml --no-update
+			{{ matrix_bridge_mautrix_meta_instagram_container_binary_path }} -c /config/config.yaml -r /config/registration.yaml --no-update
 
 {% if matrix_bridge_mautrix_meta_instagram_container_network != 'host' %}
 {% for network in matrix_bridge_mautrix_meta_instagram_container_additional_networks %}

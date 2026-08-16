@@ -120,10 +120,6 @@ stop-all *extra_args: (run-tags "stop-all" extra_args)
 stop-group group *extra_args:
     @{{ just_executable() }} --justfile "{{ justfile() }}" run-tags stop-group --extra-vars="group={{ group }}" {{ extra_args }}
 
-# Rebuilds the mautrix-meta-instagram Ansible role using the mautrix-meta-messenger role as a source
-rebuild-mautrix-meta-instagram:
-    /bin/bash "{{ justfile_directory() }}/bin/rebuild-mautrix-meta-instagram.sh" "{{ justfile_directory() }}/roles/custom"
-
 # Internal - ensures var/mise and var/prek directories exist
 _ensure_mise_data_directory:
     @mkdir -p "{{ mise_data_dir }}"

@@ -7,13 +7,11 @@
 
 ---
 
-# mautrix-meta is a Matrix <-> Facebook/Messenger/Instagram bridge
+# mautrix-instagram is a Matrix <-> Instagram bridge
 # Project source code URL: https://github.com/mautrix/meta
 #
-# WARNING: this bridge role is used for both Messenger and Instagram.
-# This Messenger role acts as a source and auto-generates matrix-bridge-mautrix-meta-instagram
-# thanks to `just rebuild-mautrix-meta-instagram` (`bin/rebuild-mautrix-meta-instagram.sh`).
-# If you'd like to make changes to the Instagram role, consider making your changes to the Messenger role instead.
+# Since v26.07, upstream develops the Instagram bridge in the mautrix-meta repository, but ships it as a separate binary and a separate container image (with `ig-` prefixed tags).
+# The Messenger side of mautrix-meta is covered by the matrix-bridge-mautrix-meta-messenger role.
 
 matrix_bridge_mautrix_meta_instagram_enabled: true
 
@@ -30,6 +28,11 @@ matrix_bridge_mautrix_meta_instagram_container_src_files_path: "{{ matrix_bridge
 matrix_bridge_mautrix_meta_instagram_container_image_self_build: false
 matrix_bridge_mautrix_meta_instagram_container_image_self_build_repo: "https://github.com/mautrix/meta.git"
 
+# The path to the bridge binary inside the container image.
+# The prebuilt image is built by upstream's CI, whose Dockerfile copies the Instagram binary to a fixed `/usr/bin/mautrix-meta` destination.
+# Self-building uses the `Dockerfile.ig` file from the source tree, which produces `/usr/bin/mautrix-instagram`.
+matrix_bridge_mautrix_meta_instagram_container_binary_path: "{{ '/usr/bin/mautrix-instagram' if matrix_bridge_mautrix_meta_instagram_container_image_self_build else '/usr/bin/mautrix-meta' }}"
+
 matrix_bridge_mautrix_meta_instagram_container_image: "{{ matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix }}mautrix/meta:{{ matrix_bridge_mautrix_meta_instagram_container_image_tag }}"
 matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix: "{{ 'localhost/' if matrix_bridge_mautrix_meta_instagram_container_image_self_build else matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix_upstream }}"
 matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix_upstream: "{{ matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix_upstream_default }}"
@@ -39,7 +42,7 @@ matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix_upstream_de
 # See: https://mau.fi/blog/2026-07-mautrix-release/#new-instagram-bridge
 #
 # Prebuilt container images for specific commit hashes are tagged with an architecture suffix (e.g. `HASH-amd64`).
-matrix_bridge_mautrix_meta_instagram_container_image_tag: "{{ 'ig-' if matrix_bridge_mautrix_meta_instagram_meta_mode == 'instagram' else '' }}{{ matrix_bridge_mautrix_meta_instagram_version }}{{ ('-' ~ matrix_architecture) if (matrix_bridge_mautrix_meta_instagram_version | length == 40) else '' }}"
+matrix_bridge_mautrix_meta_instagram_container_image_tag: "ig-{{ matrix_bridge_mautrix_meta_instagram_version }}{{ ('-' ~ matrix_architecture) if (matrix_bridge_mautrix_meta_instagram_version | length == 40) else '' }}"
 
 matrix_bridge_mautrix_meta_instagram_container_network: ""
 
@@ -97,21 +100,11 @@ matrix_bridge_mautrix_meta_instagram_database_engine: sqlite3-fk-wal
 matrix_bridge_mautrix_meta_instagram_sqlite_database_path_local: "{{ matrix_bridge_mautrix_meta_instagram_data_path }}/mautrix-meta.db"
 matrix_bridge_mautrix_meta_instagram_sqlite_database_path_in_container: "/data/mautrix-meta.db"
 
-matrix_bridge_mautrix_meta_instagram_database_suffix: |-
-  {{
-    ({
-      'facebook': '_facebook',
-      'facebook-tor': '_facebook',
-      'messenger': '_messenger',
-      'instagram': '_instagram',
-    })[matrix_bridge_mautrix_meta_instagram_meta_mode]
-  }}
-
-matrix_bridge_mautrix_meta_instagram_database_username: "matrix_mautrix_meta{{ matrix_bridge_mautrix_meta_instagram_database_suffix }}"
+matrix_bridge_mautrix_meta_instagram_database_username: matrix_mautrix_meta_instagram
 matrix_bridge_mautrix_meta_instagram_database_password: ''
 matrix_bridge_mautrix_meta_instagram_database_hostname: ''
 matrix_bridge_mautrix_meta_instagram_database_port: 5432
-matrix_bridge_mautrix_meta_instagram_database_name: "matrix_mautrix_meta{{ matrix_bridge_mautrix_meta_instagram_database_suffix }}"
+matrix_bridge_mautrix_meta_instagram_database_name: matrix_mautrix_meta_instagram
 matrix_bridge_mautrix_meta_instagram_database_sslmode: disable
 
 matrix_bridge_mautrix_meta_instagram_database_connection_string: 'postgres://{{ matrix_bridge_mautrix_meta_instagram_database_username }}:{{ matrix_bridge_mautrix_meta_instagram_database_password }}@{{ matrix_bridge_mautrix_meta_instagram_database_hostname }}:{{ matrix_bridge_mautrix_meta_instagram_database_port }}/{{ matrix_bridge_mautrix_meta_instagram_database_name }}?sslmode={{ matrix_bridge_mautrix_meta_instagram_database_sslmode }}'
@@ -132,28 +125,14 @@ matrix_bridge_mautrix_meta_instagram_scheme: https
 # Used for the provisioning API's external-server (OpenID) flow and for public media links.
 matrix_bridge_mautrix_meta_instagram_bridge_public_address: "{{ (matrix_bridge_mautrix_meta_instagram_scheme + '://' + matrix_bridge_mautrix_meta_instagram_exposure_hostname + matrix_bridge_mautrix_meta_instagram_exposure_path_prefix) if matrix_bridge_mautrix_meta_instagram_exposure_enabled else '' }}"
 
-matrix_bridge_mautrix_meta_instagram_appservice_id: "{{ matrix_bridge_mautrix_meta_instagram_meta_mode }}"
+matrix_bridge_mautrix_meta_instagram_appservice_id: instagram
 
 matrix_bridge_mautrix_meta_instagram_msc4190_enabled: "{{ matrix_bridges_msc4190_enabled }}"
 matrix_bridge_mautrix_meta_instagram_self_sign_enabled: "{{ matrix_bridges_self_sign_enabled }}"
 
-# For Facebook/Messenger, we use the same `@messengerbot:example.com` username regardless of how bridging happens for multiple reasons:
-# - it's consistent - regardless of how bridging happens, the bridged service is actually Messenger
-# - it's easy for users - you may change the mode, but the bot is always at `@messengerbot:example.com`
-# - it doesn't conflict with mautrix-facebook which uses `@facebookbot:example.com`
-# - `matrix_bridge_mautrix_meta_instagram_appservice_avatar` only has icons for Messenger and Instagram, not Facebook
-matrix_bridge_mautrix_meta_instagram_appservice_username_prefix: |-
-  {{
-    ({
-      'facebook': 'messenger',
-      'facebook-tor': 'messenger',
-      'messenger': 'messenger',
-      'instagram': 'instagram',
-    })[matrix_bridge_mautrix_meta_instagram_meta_mode]
-  }}
-matrix_bridge_mautrix_meta_instagram_appservice_username: "{{ matrix_bridge_mautrix_meta_instagram_appservice_username_prefix }}bot"
-matrix_bridge_mautrix_meta_instagram_appservice_displayname: "{{ matrix_bridge_mautrix_meta_instagram_meta_mode | capitalize }} bridge bot"
-matrix_bridge_mautrix_meta_instagram_appservice_avatar: "{{ 'mxc://maunium.net/JxjlbZUlCPULEeHZSwleUXQv' if matrix_bridge_mautrix_meta_instagram_meta_mode == 'instagram' else 'mxc://maunium.net/ygtkteZsXnGJLJHRchUwYWak' }}"
+matrix_bridge_mautrix_meta_instagram_appservice_username: instagrambot
+matrix_bridge_mautrix_meta_instagram_appservice_displayname: Instagram bridge bot
+matrix_bridge_mautrix_meta_instagram_appservice_avatar: mxc://maunium.net/JxjlbZUlCPULEeHZSwleUXQv
 
 matrix_bridge_mautrix_meta_instagram_appservice_database_type: "{{ matrix_bridge_mautrix_meta_instagram_database_engine }}"
 
@@ -167,15 +146,6 @@ matrix_bridge_mautrix_meta_instagram_appservice_database_uri: |-
 
 matrix_bridge_mautrix_meta_instagram_appservice_token: ''
 
-# Controls which service this bridge is for.
-# Valid options:
-# * facebook - connect to FB Messenger via facebook.com
-# * facebook-tor - connect to FB Messenger via facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion
-#                  (note: does not currently proxy media downloads)
-# * messenger - connect to FB Messenger via messenger.com (can be used with the facebook side deactivated)
-# * instagram - connect to Instagram DMs via instagram.com
-matrix_bridge_mautrix_meta_instagram_meta_mode: instagram
-
 matrix_bridge_mautrix_meta_instagram_provisioning_shared_secret: disable
 
 # Controls whether mautrix-meta-instagram's HTTP API is exposed publicly (used by tools like mautrix-manager for bridge login).
@@ -183,43 +153,19 @@ matrix_bridge_mautrix_meta_instagram_exposure_enabled: false
 matrix_bridge_mautrix_meta_instagram_exposure_hostname: ''
 matrix_bridge_mautrix_meta_instagram_exposure_path_prefix: ''
 
-matrix_bridge_mautrix_meta_instagram_bridge_username_prefix: |-
-  {{
-    ({
-      'facebook': 'facebook_',
-      'facebook-tor': 'facebook_',
-      'messenger': 'messenger_',
-      'instagram': 'instagram_',
-    })[matrix_bridge_mautrix_meta_instagram_meta_mode]
-  }}
+matrix_bridge_mautrix_meta_instagram_bridge_username_prefix: instagram_
 
-# Localpart template of MXIDs for FB/IG users.
+# Localpart template of MXIDs for IG users.
 # {{.}} is replaced with the internal ID of the FB/IG user.
 # Changing this may require that you change the regex in the appservice.
 matrix_bridge_mautrix_meta_instagram_bridge_username_template: "{{ matrix_bridge_mautrix_meta_instagram_bridge_username_prefix + '{{.}}' }}"
 
-matrix_bridge_mautrix_meta_instagram_bridge_displayname_suffix: |-
-  {{
-    ({
-      'facebook': '(FB)',
-      'facebook-tor': '(FB)',
-      'messenger': '(FB)',
-      'instagram': '(IG)',
-    })[matrix_bridge_mautrix_meta_instagram_meta_mode]
-  }}
+matrix_bridge_mautrix_meta_instagram_bridge_displayname_suffix: '(IG)'
 
 matrix_bridge_mautrix_meta_instagram_bridge_displayname_template: '{% raw %}{{or .DisplayName .Username "Unknown user"}}{% endraw %}{{ (" " ~ matrix_bridge_mautrix_meta_instagram_bridge_displayname_suffix) if matrix_bridge_mautrix_meta_instagram_bridge_displayname_suffix else "" }}'
 
 # The prefix for commands. Only required in non-management rooms.
-matrix_bridge_mautrix_meta_instagram_bridge_command_prefix: |-
-  {{
-    ({
-      'facebook': '!fb',
-      'facebook-tor': '!fb',
-      'messenger': '!fb',
-      'instagram': '!ig',
-    })[matrix_bridge_mautrix_meta_instagram_meta_mode]
-  }}
+matrix_bridge_mautrix_meta_instagram_bridge_command_prefix: '!ig'
 
 # Whether or not created rooms should have federation enabled.
 # If false, created portal rooms will never be federated.

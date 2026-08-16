@@ -80,7 +80,7 @@
     - name: Ensure mautrix-meta-instagram container image is built
       community.docker.docker_image_build:
         name: "{{ matrix_bridge_mautrix_meta_instagram_container_image }}"
-        dockerfile: Dockerfile
+        dockerfile: Dockerfile.ig
         path: "{{ matrix_bridge_mautrix_meta_instagram_container_src_files_path }}"
         pull: true
         rebuild: "{{ 'always' if matrix_bridge_mautrix_meta_instagram_git_pull_results.changed | bool else 'never' }}"
@@ -125,7 +125,7 @@
 
 - name: Ensure mautrix-meta-instagram.service installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/matrix-mautrix-meta.service.j2"
+    src: "{{ role_path }}/templates/systemd/matrix-mautrix-meta-instagram.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_bridge_mautrix_meta_instagram_identifier }}.service"
     mode: '0644'
   register: matrix_bridge_mautrix_meta_instagram_systemd_service_result

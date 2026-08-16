@@ -13,7 +13,7 @@ The playbook can install and configure the [mautrix-meta](https://github.com/mau
 
 See the project's [documentation](https://docs.mau.fi/bridges/go/meta/index.html) to learn what it does and why it might be useful to you.
 
-Since this bridge component can bridge to both [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/) and you may wish to do both at the same time, the playbook makes it available via 2 different Ansible roles (`matrix-bridge-mautrix-meta-messenger` and `matrix-bridge-mautrix-meta-instagram`). The latter is a reconfigured copy of the first one (created by `just rebuild-mautrix-meta-instagram` and `bin/rebuild-mautrix-meta-instagram.sh`).
+The mautrix-meta project provides bridging to both [Messenger](https://messenger.com/) and [Instagram](https://instagram.com/), each via a separate bridge (its own binary and container image) since mautrix-meta v26.07. The playbook makes them available via 2 different Ansible roles (`matrix-bridge-mautrix-meta-messenger` and `matrix-bridge-mautrix-meta-instagram`), which can both be enabled at the same time.
 
 This documentation page only deals with the bridge's ability to bridge to Instagram. For bridging to Facebook/Messenger, see [Setting up Messenger bridging via Mautrix Meta](configuring-playbook-bridge-mautrix-meta-messenger.md).
 
