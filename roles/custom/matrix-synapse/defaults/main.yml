@@ -1459,8 +1459,40 @@ matrix_synapse_max_event_delay_duration: 24h
 #
 # This is used by MatrixRTC clients to discover the unstable RTC transports API.
 #
+# When enabling this, make sure that `matrix_synapse_matrix_rtc_transports` is not empty.
+# Serving the RTC transports API without any transports configured breaks MatrixRTC (Element Call) for clients which consult this API.
+# Such clients treat the API response as authoritative and do not fall back to the `org.matrix.msc4143.rtc_foci` property in the client well-known.
+#
 # See https://github.com/matrix-org/matrix-spec-proposals/pull/4143
 matrix_synapse_experimental_features_msc4143_enabled: false
+
+# Controls the `matrix_rtc.transports` setting - the list of MatrixRTC transports advertised via the RTC transports API (MSC4143).
+#
+# The API serving this list is only enabled when `matrix_synapse_experimental_features_msc4143_enabled` is set to `true`.
+# Otherwise, this setting is parsed by Synapse, but remains unused.
+matrix_synapse_matrix_rtc_transports: "{{ matrix_synapse_matrix_rtc_transports_default + matrix_synapse_matrix_rtc_transports_auto + matrix_synapse_matrix_rtc_transports_custom }}"
+
+# Holds the default MatrixRTC transports list, driven by `matrix_synapse_matrix_rtc_transports_livekit_url`.
+matrix_synapse_matrix_rtc_transports_default: |-
+  {{
+    (
+      [{'type': 'livekit', 'livekit_service_url': matrix_synapse_matrix_rtc_transports_livekit_url}] if matrix_synapse_matrix_rtc_transports_livekit_url != '' else []
+    )
+  }}
+
+# Holds MatrixRTC transports entries that a playbook may inject automatically, based on the state of other services.
+#
+# This variable is not meant to be redefined by users.
+# To inject your own entries, use `matrix_synapse_matrix_rtc_transports_custom`.
+matrix_synapse_matrix_rtc_transports_auto: []
+
+# Holds additional MatrixRTC transports entries that you may wish to inject.
+matrix_synapse_matrix_rtc_transports_custom: []
+
+# Controls the MatrixRTC LiveKit URL auto-added to `matrix_synapse_matrix_rtc_transports`.
+#
+# This is set automatically if you are using the playbook's MatrixRTC stack.
+matrix_synapse_matrix_rtc_transports_livekit_url: ''
 
 # Controls whether to enable the MSC4222 experimental feature (adding `state_after` to sync v2).
 #
