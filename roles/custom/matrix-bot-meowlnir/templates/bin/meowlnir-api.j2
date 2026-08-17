@@ -14,6 +14,7 @@ set -eu
 CONFIG_FILE='{{ matrix_bot_meowlnir_config_path }}/config.yaml'
 CONTAINER_NAME='matrix-bot-meowlnir'
 API_BASE='http://localhost:{{ matrix_bot_meowlnir_config_meowlnir_port }}'
+REQUEST_TIMEOUT='{{ matrix_bot_meowlnir_api_request_timeout_seconds }}'
 
 if [ $# -lt 2 ]; then
 	echo "Usage: $(basename "$0") <METHOD> <PATH> [JSON_BODY]" >&2
@@ -40,7 +41,7 @@ fi
 
 if [ -n "$body" ]; then
 	exec {{ devture_systemd_docker_base_host_command_docker }} exec "$CONTAINER_NAME" \
-		curl -sS -X "$method" \
+		curl -sS --max-time "$REQUEST_TIMEOUT" -X "$method" \
 		-H "Authorization: Bearer $secret" \
 		-H 'Content-Type: application/json' \
 		-d "$body" \
@@ -49,7 +50,7 @@ if [ -n "$body" ]; then
 fi
 
 exec {{ devture_systemd_docker_base_host_command_docker }} exec "$CONTAINER_NAME" \
-	curl -sS -X "$method" \
+	curl -sS --max-time "$REQUEST_TIMEOUT" -X "$method" \
 	-H "Authorization: Bearer $secret" \
 	-w '\n%{http_code}' \
 	"$API_BASE$api_path"

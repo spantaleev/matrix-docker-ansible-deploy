@@ -19,6 +19,7 @@ HOMESERVER_DOMAIN='{{ matrix_bot_meowlnir_config_homeserver_domain }}'
 ROOM_NAME='{{ matrix_bot_meowlnir_management_room_name }}'
 ROOM_TOPIC='{{ matrix_bot_meowlnir_management_room_topic | trim }}'
 ENCRYPTED='{{ 'true' if matrix_bot_meowlnir_config_encryption_enable else 'false' }}'
+REQUEST_TIMEOUT='{{ matrix_bot_meowlnir_api_request_timeout_seconds }}'
 
 if [ $# -lt 2 ]; then
 	echo "Usage: $(basename "$0") <bot_localpart> <initial_manager_mxid>..." >&2
@@ -65,7 +66,7 @@ user_id_param="$(urlencode "$bot_mxid")"
 # Runs curl inside the container, because the homeserver is only reachable over the container network.
 # Prints the body, with the HTTP status code on the final line.
 response="$({{ devture_systemd_docker_base_host_command_docker }} exec "$CONTAINER_NAME" \
-	curl -sS -X POST \
+	curl -sS --max-time "$REQUEST_TIMEOUT" -X POST \
 	-H "Authorization: Bearer $as_token" \
 	-H 'Content-Type: application/json' \
 	-d "$create_body" \

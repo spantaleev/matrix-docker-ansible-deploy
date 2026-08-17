@@ -142,6 +142,11 @@ matrix_bot_meowlnir_bots_pruning_on_empty_roster_enabled: false
 # Only waited on when the service was not already running.
 matrix_bot_meowlnir_bots_start_wait_time_seconds: 15
 
+# How long a single request made through the helper scripts in `bin/` may take, in seconds.
+# Applies to requests against both Meowlnir's management API and the homeserver's Client-Server API.
+# Bounded so that an API which accepts connections but never answers turns into a clear error instead of hanging the playbook (or a human caller) forever.
+matrix_bot_meowlnir_api_request_timeout_seconds: 60
+
 # The name and topic given to management rooms that the playbook creates.
 # Only used by bots with `management_room_auto_create` enabled.
 matrix_bot_meowlnir_management_room_name: Meowlnir management room
