@@ -296,6 +296,10 @@ The playbook drives Meowlnir's management API for you based on `matrix_bot_meowl
 
 # Create another management room for an existing bot, with the given users able to command it there
 /matrix/meowlnir/bin/meowlnir-create-management-room meowlnir_bot @alice:example.com
+
+# Ask the homeserver who Meowlnir's appservice token belongs to.
+# A 401 response means the homeserver is running without Meowlnir's appservice registration, which is also what Meowlnir's own "Failed to connect to homeserver" log messages usually mean.
+/matrix/meowlnir/bin/meowlnir-whoami
 ```
 
 `meowlnir-create-management-room` prints the new room's ID, which you then register with `meowlnir-api PUT /_meowlnir/v1/management_room/<room ID>`.
