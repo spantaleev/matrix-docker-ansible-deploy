@@ -147,6 +147,19 @@ matrix_bot_meowlnir_bots_start_wait_time_seconds: 15
 # Bounded so that an API which accepts connections but never answers turns into a clear error instead of hanging the playbook (or a human caller) forever.
 matrix_bot_meowlnir_api_request_timeout_seconds: 60
 
+# The systemd services to restart if the homeserver turns out to be running without Meowlnir's appservice registration when bots are about to be provisioned.
+#
+# The homeserver only reads appservice registrations on startup, so on the run which first enables Meowlnir it typically still runs without this one and rejects Meowlnir's appservice token (`M_UNKNOWN_TOKEN`).
+# When that is detected, the services listed here are restarted so that provisioning can proceed within the same run.
+#
+# A playbook may inject the homeserver's own systemd service here for homeserver implementations whose appservice registrations it manages.
+# When the list is empty, no restart is attempted and provisioning fails with instructions instead.
+matrix_bot_meowlnir_homeserver_restart_systemd_services_list: []
+
+# How many times (and how many seconds apart) to re-ask the homeserver whether it accepts Meowlnir's appservice token, while waiting for it to come up.
+matrix_bot_meowlnir_appservice_token_check_retries_count: 30
+matrix_bot_meowlnir_appservice_token_check_retries_delay_seconds: 5
+
 # The name and topic given to management rooms that the playbook creates.
 # Only used by bots with `management_room_auto_create` enabled.
 matrix_bot_meowlnir_management_room_name: Meowlnir management room

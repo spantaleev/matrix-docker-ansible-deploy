@@ -275,6 +275,8 @@ With `management_room_auto_create`, you then have an invitation waiting for you 
 
 - Re-running is safe and idempotent, so adding a bot later is a matter of extending the list and running the same command again.
 
+- If the homeserver turns out to be running without Meowlnir's appservice registration (which is the normal state of affairs on the run that first enables Meowlnir), the playbook restarts the homeserver during bot provisioning, so that everything completes in a single run.
+
 - The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`
 
 ## Usage

@@ -3426,6 +3426,12 @@ matrix_bot_meowlnir_container_additional_networks_auto: |-
 matrix_bot_meowlnir_config_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
 matrix_bot_meowlnir_config_homeserver_domain: "{{ matrix_domain }}"
 
+# Provisioning bots (`ensure-matrix-users-created`) requires the homeserver to accept Meowlnir's appservice registration, which it only reads on startup.
+# On the run which first enables Meowlnir, the homeserver is still running without it, so the role restarts these services to load it.
+# Restarting the main service suffices even with Synapse workers, because their units declare `Requires=matrix-synapse.service` and systemd propagates the restart to them.
+# Left empty for homeserver implementations whose appservice registrations the playbook does not manage (Conduit and its forks), where registration is a manual step anyway.
+matrix_bot_meowlnir_homeserver_restart_systemd_services_list: "{{ ['matrix-' ~ matrix_homeserver_implementation ~ '.service'] if matrix_homeserver_implementation in ['synapse', 'dendrite'] else [] }}"
+
 # Only consulted by bots configured with `management_room_auto_create`, and only as the
 # default for those which do not carry their own `initial_managers` list.
 # May legitimately be empty, in which case such bots fail validation and ask to be told who

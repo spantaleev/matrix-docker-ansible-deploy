@@ -21,6 +21,9 @@
     seconds: "{{ matrix_bot_meowlnir_bots_start_wait_time_seconds }}"
   when: matrix_bot_meowlnir_start_result.changed | bool
 
+- name: Ensure the homeserver accepts Meowlnir's appservice token before creating bots
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_appservice_token_accepted.yml"
+
 - name: Read which bots Meowlnir already has
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/read_meowlnir_state.yml"
 

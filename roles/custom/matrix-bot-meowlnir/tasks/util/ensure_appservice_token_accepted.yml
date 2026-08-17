@@ -1,0 +1,94 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+# The homeserver only reads appservice registrations on startup, so on the run which first enables Meowlnir it typically still runs without this one and rejects Meowlnir's appservice token with `M_UNKNOWN_TOKEN`.
+# Meowlnir then cannot register bot users, and the whole provisioning flow below would fail in confusing ways.
+# Restarts are normally left to the systemd service manager at the very end of the playbook, which is too late for the provisioning happening here, so this is checked upfront and the homeserver is restarted early when needed.
+#
+# The checks retry for a while, because the homeserver may still be starting up — an early request fails to connect, or gets a `502` from a reverse proxy in front of the homeserver.
+
+- name: Check whether the homeserver accepts Meowlnir's appservice token
+  block:
+    - name: Ask the homeserver whether it accepts Meowlnir's appservice token
+      ansible.builtin.command:
+        cmd: "{{ matrix_bot_meowlnir_bin_path }}/meowlnir-whoami"
+      register: matrix_bot_meowlnir_whoami_result
+      changed_when: false
+      retries: "{{ matrix_bot_meowlnir_appservice_token_check_retries_count }}"
+      delay: "{{ matrix_bot_meowlnir_appservice_token_check_retries_delay_seconds }}"
+      until: >-
+        matrix_bot_meowlnir_whoami_result.rc == 0
+        and (matrix_bot_meowlnir_whoami_result.stdout_lines | default([]) | length > 0)
+        and (matrix_bot_meowlnir_whoami_result.stdout_lines | last in ['200', '401'])
+  rescue:
+    - name: Fail because the homeserver could not be asked about Meowlnir's appservice token
+      ansible.builtin.fail:
+        msg: >-
+          {{
+            'Could not get a usable answer from the homeserver about Meowlnir\'s appservice token. The last attempt said: '
+            ~ (matrix_bot_meowlnir_whoami_result.stdout | default('') | trim)
+            ~ ' '
+            ~ (matrix_bot_meowlnir_whoami_result.stderr | default('') | trim)
+          }}
+
+- name: Ensure the homeserver picks up Meowlnir's appservice registration
+  when: matrix_bot_meowlnir_whoami_result.stdout_lines | last == '401'
+  block:
+    - name: Fail if the homeserver rejects Meowlnir's appservice token and the playbook does not know how to help
+      ansible.builtin.fail:
+        msg: >-
+          {{
+            'The homeserver rejects Meowlnir\'s appservice token (M_UNKNOWN_TOKEN), meaning it runs without Meowlnir\'s appservice registration, '
+            ~ 'and `matrix_bot_meowlnir_homeserver_restart_systemd_services_list` is empty, so the playbook does not know which service to restart to fix that. '
+            ~ 'If the playbook manages appservice registrations for your homeserver implementation, restart the homeserver (e.g. by running the playbook with `--tags=setup-all,start`) and re-run this tag. '
+            ~ 'Otherwise, register `' ~ matrix_bot_meowlnir_config_path ~ '/registration.yaml` with your homeserver manually, restart it, and re-run this tag.'
+          }}
+      when: matrix_bot_meowlnir_homeserver_restart_systemd_services_list | length == 0
+
+    - name: Ensure the homeserver is restarted, so that it picks up Meowlnir's appservice registration
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: restarted
+        daemon_reload: true
+      with_items: "{{ matrix_bot_meowlnir_homeserver_restart_systemd_services_list }}"
+
+    # The re-check deliberately registers a differently-named variable.
+    # Registration happens even for skipped tasks, so reusing the name would clobber the result which the surrounding block's `when` keeps being evaluated against.
+    - name: Check whether the homeserver accepts Meowlnir's appservice token after the restart
+      block:
+        - name: Ask the homeserver again whether it accepts Meowlnir's appservice token
+          ansible.builtin.command:
+            cmd: "{{ matrix_bot_meowlnir_bin_path }}/meowlnir-whoami"
+          register: matrix_bot_meowlnir_whoami_recheck_result
+          changed_when: false
+          retries: "{{ matrix_bot_meowlnir_appservice_token_check_retries_count }}"
+          delay: "{{ matrix_bot_meowlnir_appservice_token_check_retries_delay_seconds }}"
+          until: >-
+            matrix_bot_meowlnir_whoami_recheck_result.rc == 0
+            and (matrix_bot_meowlnir_whoami_recheck_result.stdout_lines | default([]) | length > 0)
+            and (matrix_bot_meowlnir_whoami_recheck_result.stdout_lines | last == '200')
+      rescue:
+        - name: Fail because the homeserver still rejects Meowlnir's appservice token after being restarted
+          ansible.builtin.fail:
+            msg: >-
+              {{
+                'The homeserver still rejects Meowlnir\'s appservice token after a restart. The last attempt said: '
+                ~ (matrix_bot_meowlnir_whoami_recheck_result.stdout | default('') | trim)
+                ~ ' '
+                ~ (matrix_bot_meowlnir_whoami_recheck_result.stderr | default('') | trim)
+                ~ ' Check the homeserver\'s logs and make sure it is configured to load Meowlnir\'s appservice registration (`' ~ matrix_bot_meowlnir_config_path ~ '/registration.yaml`).'
+              }}
+
+    # Until the homeserver restart above, Meowlnir had only ever seen its token rejected.
+    # It does recover on its own eventually, but a fresh start is quicker and also clears any state left behind by earlier failed provisioning attempts (a bot creation request which never got to finish keeps its management API busy indefinitely).
+    - name: Ensure matrix-bot-meowlnir is restarted, so that it reconnects to the homeserver cleanly
+      ansible.builtin.service:
+        name: matrix-bot-meowlnir.service
+        state: restarted
+
+    - name: Wait a while, so that Meowlnir can manage to start after reconnecting to the homeserver
+      ansible.builtin.pause:
+        seconds: "{{ matrix_bot_meowlnir_bots_start_wait_time_seconds }}"
