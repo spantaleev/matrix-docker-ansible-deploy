@@ -89,7 +89,6 @@
     - custom/matrix-bot-honoroit
     - custom/matrix-bot-mjolnir
     - custom/matrix-bot-draupnir
-    - custom/matrix-bot-meowlnir
     - custom/matrix-cactus-comments
     - custom/matrix-cactus-comments-client
     - custom/matrix-matrixto
@@ -100,6 +99,10 @@
     - custom/matrix-conduit
     - custom/matrix-continuwuity
     - custom/matrix-tuwunel
+    # Meowlnir deliberately runs after the homeserver roles, unlike the other bots.
+    # Its `ensure-matrix-users-created` tasks may need to restart the homeserver so that it picks up Meowlnir's appservice registration,
+    # which only helps once the homeserver's configuration has been brought up to date by its own role.
+    - custom/matrix-bot-meowlnir
     - custom/matrix-ketesa
     - custom/matrix-synapse-usage-exporter
     - galaxy/prometheus_nginxlog_exporter
