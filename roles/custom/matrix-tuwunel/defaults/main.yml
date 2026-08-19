@@ -265,6 +265,12 @@ matrix_tuwunel_config_enable_policy_servers: false
 # signature-fetches against a room's policy server.
 matrix_tuwunel_config_policy_server_request_timeout: 5
 
+# Whether tuwunel evaluates MSC3664 related-event push conditions itself.
+# The default `.im.nheko.msc3664.reply` rule needs this to affect notification counts and pusher delivery.
+# Clients implementing MSC3664 evaluate the rule locally either way.
+# Enabling it costs an extra event lookup for every event carrying a relation.
+matrix_tuwunel_config_msc3664_related_event_match: false
+
 # Outgoing presence is heavy on CPU and network and almost no clients use it. Off by default.
 matrix_tuwunel_config_allow_outgoing_presence: false
 
