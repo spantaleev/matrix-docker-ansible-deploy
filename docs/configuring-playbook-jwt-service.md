@@ -40,7 +40,7 @@ After configuring the playbook and potentially [adjusting your DNS records](#adj
 
 ## Usage
 
-Once installed, a new `org.matrix.msc4143.rtc_foci` section is added to the Element Web client to point to your JWT service URL (e.g., `https://matrix.example.com/livekit-jwt-service`).
+Once installed, the homeserver announces your JWT service URL (e.g., `https://matrix.example.com/livekit-jwt-service`) as a MatrixRTC transport over its `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` API, which is where Matrix clients discover it.
 
 ## Additional Information
 

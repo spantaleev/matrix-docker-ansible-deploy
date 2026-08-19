@@ -1,3 +1,27 @@
+# 2026-08-19
+
+## MatrixRTC transports are no longer advertised in the client well-known
+
+This only affects you if you have the [Matrix RTC stack](docs/configuring-playbook-matrix-rtc.md) or [Element Call](docs/configuring-playbook-element-call.md) enabled.
+
+Your MatrixRTC transport (the URL of your [LiveKit JWT Service](docs/configuring-playbook-livekit-jwt-service.md)) used to be advertised in two places: the `org.matrix.msc4143.rtc_foci` property of the `/.well-known/matrix/client` file, and the homeserver's own `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` API ([MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)).
+
+The well-known property has since been dropped from the spec proposal and [Element Call v0.24.0](https://github.com/element-hq/element-call/releases/tag/v0.24.0) has stopped reading it, so the playbook stops publishing it as well. The homeserver API is now the single source of truth. Every homeserver that the playbook can point at a MatrixRTC stack (Synapse, continuwuity and tuwunel) already announces your transport there, so calls keep working.
+
+If your configuration defines `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom` or one of its companion variables, the playbook will tell you about it. Should you wish to keep publishing the property regardless, you can do so yourself:
+
+```yaml
+matrix_static_files_file_matrix_client_configuration_extension_json: |
+  {
+    "org.matrix.msc4143.rtc_foci": [
+      {
+        "type": "livekit",
+        "livekit_service_url": "https://matrix.example.com/livekit-jwt-service"
+      }
+    ]
+  }
+```
+
 # 2026-08-13
 
 ## The homeserver root path redirects to clients other than Element Web
