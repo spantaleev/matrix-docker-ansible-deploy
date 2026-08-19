@@ -101,6 +101,21 @@ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_auto: []
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom: []
 
+# Controls the LIVEKIT_CS_API_URL_OVERRIDES environment variable.
+#
+# To learn where a user's homeserver serves its Client-Server API, the service performs `.well-known` discovery.
+# That is, it requests `https://<server-name>/.well-known/matrix/client` over the network and reads `m.homeserver.base_url` out of it.
+# Entries listed here are consulted first, so that the server names they cover are resolved without discovery.
+#
+# Keys are Matrix server names and values are Client-Server API base URLs (including the scheme).
+# A playbook may inject an entry for the homeserver it manages, pointing the service at it directly.
+#
+# To add your own entries, use `matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map_custom`.
+matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides: "{{ matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map.items() | map('join', '=') | join(',') }}"
+matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map: "{{ matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map_auto | combine(matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map_custom) }}"
+matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map_auto: {}
+matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map_custom: {}
+
 # Additional environment variables to pass to the container.
 #
 # Environment variables take priority over settings in the configuration file.
