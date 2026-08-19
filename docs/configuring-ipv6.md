@@ -109,7 +109,7 @@ If you do have an IPv6 address, it's still worth [using curl](#with-curl) to con
 The `devture_systemd_docker_base_ipv6_enabled` setting controls whether container networks will be created with IPv6 support.
 
 Changing this setting subsequently requires manual work (deleting all container networks).
-See [I've changed the `devture_systemd_docker_base_ipv6_enabled` setting, but it doesn't seem to have any effect](#i-ve-changed-the-devture_systemd_docker_base_ipv6_enabled-setting-but-it-doesn-t-seem-to-have-any-effect).
+See [I've changed the `devture_systemd_docker_base_ipv6_enabled` setting, but it doesn't seem to have any effect](#ive-changed-the-devture_systemd_docker_base_ipv6_enabled-setting-but-it-doesnt-seem-to-have-any-effect).
 
 #### I've changed the `devture_systemd_docker_base_ipv6_enabled` setting, but it doesn't seem to have any effect.
 
