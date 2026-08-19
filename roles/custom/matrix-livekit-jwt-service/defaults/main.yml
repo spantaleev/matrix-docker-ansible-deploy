@@ -67,6 +67,22 @@ matrix_livekit_jwt_service_container_labels_additional_labels: ''
 # A list of extra arguments to pass to the container
 matrix_livekit_jwt_service_container_extra_arguments: []
 
+# Controls whether the container's built-in healthcheck is left enabled.
+#
+# lk-jwt-service v0.6.0 added a healthcheck which builds its URL as
+# `http://localhost:$LIVEKIT_JWT_BIND/healthz`, interpolating the bind address
+# into the port slot. Because LIVEKIT_JWT_BIND is a bind address (`:8080`), the
+# resulting URL is invalid and the check can never pass, leaving the container
+# permanently unhealthy. Traefik skips unhealthy containers, so the service
+# stops being routed and Element Call cannot obtain an SFU token.
+#
+# There is no way to correct the check from here: the image is built `FROM
+# scratch`, so it has no shell for a `--health-cmd` override to use.
+#
+# Re-enable this once upstream fixes the check.
+# See: https://github.com/element-hq/lk-jwt-service/pull/186
+matrix_livekit_jwt_service_container_healthcheck_enabled: false
+
 # Controls the port that the service listens on internally in the container.
 # This is still used for Traefik configuration and container port binding.
 matrix_livekit_jwt_service_container_port: 8080

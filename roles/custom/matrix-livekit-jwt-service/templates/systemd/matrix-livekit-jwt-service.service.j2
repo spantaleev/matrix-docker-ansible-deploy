@@ -18,6 +18,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
     --log-driver=none \
     --user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
     --cap-drop=ALL \
+    {% if not matrix_livekit_jwt_service_container_healthcheck_enabled %}
+    --no-healthcheck \
+    {% endif %}
     --network={{ matrix_livekit_jwt_service_container_network }} \
     {% if matrix_livekit_jwt_service_container_http_host_bind_port %}
     -p {{ matrix_livekit_jwt_service_container_http_host_bind_port }}:{{ matrix_livekit_jwt_service_container_port }} \
