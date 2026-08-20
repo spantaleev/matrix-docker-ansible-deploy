@@ -108,6 +108,26 @@ An empty, invite-only room is fine. The order matters, because **each step depen
 
 Meowlnir supports several management rooms per bot, and `encrypted` is set per room. Marking a room encrypted only means something when [End-to-End Encryption support](#end-to-end-encryption-support) is switched on, which it is not by default.
 
+### Several management rooms for one bot
+
+Protected rooms, watched policy lists, protection settings and who may command the bot are properties of **a management room**, not of the bot. A room can be protected from exactly one management room, so moving a room means `!rooms unprotect` in the old room and `!rooms protect` in the new one, with its settings and subscriptions set up again there.
+
+That is how you hand one room to another moderator without giving them power over everything else the bot moderates: a second management room, the room moved into it, and power level 50 for them there. That last part is revocable, unlike the creator status everyone invited at creation time receives.
+
+Splitting rooms up this way does not split two other things:
+
+- The variables which name a single management room (`matrix_bot_meowlnir_synapse_http_antispam_management_room_id`, `matrix_bot_meowlnir_config_meowlnir_report_room`, `matrix_bot_meowlnir_config_meowlnir_room_ban_room`) keep pointing at the room you named there.
+- A policy list can be written to from any management room watching it, and its policies apply in every room those management rooms protect. Give a delegated management room a list of its own with `!lists create`.
+
+Create the room with `meowlnir-create-management-room` (see [Inspecting and driving Meowlnir directly](#inspecting-and-driving-meowlnir-directly)), then add its ID to `management_rooms` and re-run the playbook, which is what registers it with Meowlnir.
+
+#### Switching a bot from an auto-created room to declared ones
+
+Auto-creation makes exactly one room, and since it is not declared anywhere, [pruning](#bots-which-are-no-longer-declared) leaves such a bot's rooms alone. Declaring a second room means taking over the declaration of all of them: list what Meowlnir knows about with `/matrix/meowlnir/bin/meowlnir-bots`, set `management_room_auto_create: false`, put **every** one of those rooms under `management_rooms`, and re-run the playbook.
+
+> [!WARNING]
+> A room left out of that list is unregistered on the next run. Nothing is destroyed, but the bot stops taking commands there and stops protecting the rooms attached to it, until you declare the room again.
+
 ### Who can command a bot
 
 **Management room membership alone is not enough**, which is different from what [Draupnir](configuring-playbook-bot-draupnir.md) does, where everyone in the management room can issue commands.
@@ -322,6 +342,8 @@ Invite the bot to a room, give it a power level high enough to act (see below), 
 !rooms protect !qporfwt:example.com
 ```
 
+If the bot has more than one management room, send this to the one that should own the room: a room can only be protected from a single management room. See [Several management rooms for one bot](#several-management-rooms-for-one-bot).
+
 Meowlnir refuses to protect a room unless its power level reaches that room's own `ban` and `redact` levels (50 in a default room). That is only enough for user bans, though: writing `m.room.server_acl` usually requires 100, and without it the server rules in your watched lists have no effect — which is most of what a list like [CME](https://matrix.to/#/%23community-moderation-effort-bl:neko.dev) carries. **Give the bot power level 100** unless you only care about user bans.
 
 Set the power level *before* protecting the room. Meowlnir re-sends server ACLs when it starts and when a watched list changes, but not when its own power level goes up subsequently, so raising it afterwards leaves the room without ACLs until you restart the bot (`systemctl restart matrix-bot-meowlnir` or via the playbook's Ansible `start` tag).
@@ -355,7 +377,7 @@ When several watched lists carry a policy for the same user, **the first match w
 ```
 
 > [!NOTE]
-> If you have already subscribed in the wrong order, fixing it means editing the `fi.mau.meowlnir.watched_lists` state event in the management room by hand. Newer Meowlnir releases (than `v0.2606.0`) add `!lists subscribe … --insert-before <shortcode>`, which will make reordering a single command.
+> To subscribe somewhere other than the end of the list, pass `--insert-before <shortcode>`.
 
 You can then publish an unban policy into your own list, which takes precedence over the community list's ban:
 
