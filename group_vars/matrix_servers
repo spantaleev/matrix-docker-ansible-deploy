@@ -6286,6 +6286,14 @@ matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: "{{
 # We set this regardless of whether Ketesa is enabled, because people may wish to use a hosted (externally) Ketesa installation and still have it auto-configured.
 matrix_static_files_file_matrix_client_property_cc_etke_ketesa_auto: "{{ matrix_ketesa_configuration if matrix_homeserver_implementation == 'synapse' else {} }}"
 
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_livekit_jwt_service_enabled }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: |-
+  {{
+    (
+      [{'type': 'livekit', 'livekit_service_url': matrix_livekit_jwt_service_public_url}] if matrix_livekit_jwt_service_enabled else []
+    )
+  }}
+
 # Advertise all enabled and exposed mautrix bridges for auto-discovery by tools like Mautrix Manager.
 # A bridge's public address is only reachable when the playbook attaches its Traefik labels and emits the exposure router,
 # so we gate on these in addition to the bridge being enabled.

@@ -1,26 +1,16 @@
-# 2026-08-19
+# 2026-08-20
 
-## MatrixRTC transports are no longer advertised in the client well-known
+## MatrixRTC transports are advertised in the client well-known again
 
 This only affects you if you have the [Matrix RTC stack](docs/configuring-playbook-matrix-rtc.md) or [Element Call](docs/configuring-playbook-element-call.md) enabled.
 
-Your MatrixRTC transport (the URL of your [LiveKit JWT Service](docs/configuring-playbook-livekit-jwt-service.md)) used to be advertised in two places: the `org.matrix.msc4143.rtc_foci` property of the `/.well-known/matrix/client` file, and the homeserver's own `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` API ([MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)).
+Yesterday's changelog entry announced that the `org.matrix.msc4143.rtc_foci` property was gone from the `/.well-known/matrix/client` file. That turned out to be premature and has been reverted, so the property is published again as it always was.
 
-The well-known property has since been dropped from the spec proposal and [Element Call v0.24.0](https://github.com/element-hq/element-call/releases/tag/v0.24.0) has stopped reading it, so the playbook stops publishing it as well. The homeserver API is now the single source of truth. Every homeserver that the playbook can point at a MatrixRTC stack (Synapse, continuwuity and tuwunel) already announces your transport there, so calls keep working.
+The property is indeed dropped from [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) and [Element Call v0.24.0](https://github.com/element-hq/element-call/releases/tag/v0.24.0) no longer reads it, but Element Web (and likely other clients who move slowly or are otherwise outdated) does not ship that version of Element Call yet. Element Web v1.12.26 bundles Element Call v0.22.0, which still discovers your transport through the well-known property. It cannot use the homeserver's `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` API instead, because Element Call runs as a widget there and a widget holds no access token, while that API requires authentication. Newer Element Call versions ask their host client for the transports over the widget API ([MSC4515](https://github.com/matrix-org/matrix-spec-proposals/pull/4515)), which is what will eventually make the property unnecessary.
 
-If your configuration defines `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom` or one of its companion variables, the playbook will tell you about it. Should you wish to keep publishing the property regardless, you can do so yourself:
+Dropping the property therefore broke Element Call for Element Web and Element Desktop users, with a `MISSING_MATRIX_RTC_TRANSPORT` error when starting a call. Re-running the playbook (`just install-all`) brings the property back and fixes calls.
 
-```yaml
-matrix_static_files_file_matrix_client_configuration_extension_json: |
-  {
-    "org.matrix.msc4143.rtc_foci": [
-      {
-        "type": "livekit",
-        "livekit_service_url": "https://matrix.example.com/livekit-jwt-service"
-      }
-    ]
-  }
-```
+If you worked around this by publishing the property yourself via `matrix_static_files_file_matrix_client_configuration_extension_json`, you can drop that from your `vars.yml` file now. The `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom` variable and its companions are back as well.
 
 # 2026-08-13
 

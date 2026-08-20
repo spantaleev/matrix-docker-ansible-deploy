@@ -201,6 +201,23 @@ matrix_static_files_file_matrix_client_property_cc_etke_ketesa_auto: {}
 matrix_static_files_file_matrix_client_property_cc_etke_ketesa_custom: {}
 
 
+# The `org.matrix.msc4143.rtc_foci` property has been dropped from MSC4143 in favor of the homeserver's own RTC transports API,
+# but remains the only way to reach clients which cannot consult that API.
+# Element Call running as a widget (which is how Element Web and Element Desktop invoke it) is one such client,
+# because a widget holds no access token of its own and the API requires authentication.
+# Newer Element Call versions ask their host client for the transports over the widget API (MSC4515) instead,
+# so this property can go away once such versions are widely deployed.
+#
+# Controls whether `org.matrix.msc4143.rtc_foci`-related entries should be added to the client well-known.
+# By default, if there are entries in `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci`, we show them (by enabling this).
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci | default({}) | dict2items | length > 0 }}"
+
+# Controls the org.matrix.msc4143.rtc_foci property in the /.well-known/matrix/client file.
+# See `matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enabled`
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci: "{{ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto + matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom }}"
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: []
+matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom: []
+
 # Default /.well-known/matrix/client configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
