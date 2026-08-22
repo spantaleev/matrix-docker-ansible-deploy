@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2025 MDAD project contributors
+# SPDX-FileCopyrightText: 2025 Catalan Lover <catalanlover@protonmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Ensure git installed
+  ansible.builtin.package:
+    name: git
+    state: present
+
+- name: Clone synapse-modules synapse_restrict_room_creation_git repository
+  ansible.builtin.git:
+    repo: "{{ matrix_synapse_ext_synapse_restrict_room_creation_git_repository_url }}"
+    dest: "{{ matrix_synapse_ext_path }}/synapse-restrict-room-creation"
+  become: true
+  become_user: "{{ matrix_synapse_username }}"
+
+- ansible.builtin.set_fact:
+    matrix_synapse_modules: >
+      {{
+        matrix_synapse_modules | default([])
+        +
+        [{
+          "config": {
+            "error_message_top_rooms": "Only server admins can create new spaces and rooms in Home."
+          },
+          "module": "restrict_room_creation.RestrictRoomCreation"
+        }]
+        +
+        [{
+          "module": "restrict_room_creation.RestrictJoinRules"
+        }]
+      }}
+
+    matrix_synapse_container_extra_arguments: >
+      {{
+        matrix_synapse_container_extra_arguments | default([])
+        +
+        ["--mount type=bind,src=" + matrix_synapse_ext_path + "/synapse-restrict-room-creation/synapse_modules/restrict_room_creation,dst=" + matrix_synapse_in_container_python_packages_path + "/restrict_room_creation,ro"]
+      }}
