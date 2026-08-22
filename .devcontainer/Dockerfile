@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-FROM ghcr.io/devture/ansible:14.0.0-r0-2
+FROM ghcr.io/devture/ansible:14.0.0-r0-3
 
 # Install additional packages
 RUN apk add --no-cache \
