@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+name: Matrix i18n
+
+# Exercises the translation toolchain whenever something under i18n/ changes,
+# so that a dependency bump which breaks Sphinx/Babel fails here - before it
+# gets merged - rather than in the next scheduled translations run.
+on:  # yamllint disable-line rule:truthy
+  push:
+    paths:
+      - "i18n/**"
+  pull_request:
+    paths:
+      - "i18n/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extract-translation-templates:
+    name: Extract translation templates
+    runs-on: ubuntu-24.04
+
+    # Same-repository pull requests already run via the push event;
+    # run pull_request jobs only for pull requests from forks.
+    if: >-
+      github.event_name != 'pull_request'
+      || github.event.pull_request.head.repo.full_name != github.repository
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.14'
+
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
+
+      - name: Extract translation catalog templates (POT) files
+        run: just --justfile i18n/justfile extract-translation-templates
