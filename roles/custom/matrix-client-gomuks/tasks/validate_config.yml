@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 Matěj Cepl
 # SPDX-FileCopyrightText: 2026 MDAD project contributors
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -14,9 +15,28 @@
     - {'name': 'matrix_client_gomuks_hostname', when: true}
     - {'name': 'matrix_client_gomuks_path_prefix', when: true}
     - {'name': 'matrix_client_gomuks_container_network', when: true}
-    - {'name': 'matrix_client_gomuks_auth_username', when: "{{ not matrix_client_gomuks_disable_auth | bool }}"}
+    - {'name': 'matrix_client_gomuks_auth_username', when: true}
     - {'name': 'matrix_client_gomuks_auth_password', when: "{{ not matrix_client_gomuks_disable_auth | bool }}"}
     - {'name': 'matrix_client_gomuks_token_key', when: true}
+
+- name: Fail if only one gomuks VAPID key is supplied
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_client_gomuks_push_vapid_private_key` and `matrix_client_gomuks_push_vapid_public_key` must either both be set or both be empty.
+  when: (matrix_client_gomuks_push_vapid_private_key | length == 0) != (matrix_client_gomuks_push_vapid_public_key | length == 0)
+
+- name: Fail if the supplied gomuks VAPID keys have invalid encodings
+  ansible.builtin.fail:
+    msg: >-
+      The supplied gomuks VAPID keys are not raw URL-safe base64-encoded P-256 keys.
+      The private key must contain 43 characters and the uncompressed public key must contain 87 characters and start with `B`.
+  when:
+    - matrix_client_gomuks_push_vapid_private_key | length > 0
+    - >-
+      not (
+        matrix_client_gomuks_push_vapid_private_key is match('^[A-Za-z0-9_-]{43}$')
+        and matrix_client_gomuks_push_vapid_public_key is match('^B[A-Za-z0-9_-]{86}$')
+      )
 
 - when: matrix_client_gomuks_container_labels_traefik_enabled | bool
   block:

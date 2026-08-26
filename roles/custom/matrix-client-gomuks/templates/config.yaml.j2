@@ -1,15 +1,14 @@
 {#
 SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+SPDX-FileCopyrightText: 2026 Matěj Cepl
 SPDX-FileCopyrightText: 2026 MDAD project contributors
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 web:
   listen_address: {{ matrix_client_gomuks_web_listen_address | to_json }}
-{% if not matrix_client_gomuks_disable_auth | bool %}
   username: {{ matrix_client_gomuks_auth_username | to_json }}
   password_hash: {{ matrix_client_gomuks_auth_password_hash | to_json }}
-{% endif %}
   token_key: {{ matrix_client_gomuks_token_key | to_json }}
   debug_endpoints: {{ matrix_client_gomuks_debug_endpoints | to_json }}
   event_buffer_size: {{ matrix_client_gomuks_event_buffer_size | to_json }}
@@ -26,8 +25,10 @@ matrix:
   set_presence: {{ matrix_client_gomuks_matrix_set_presence | to_json }}
 push:
   fcm_gateway: {{ matrix_client_gomuks_push_fcm_gateway | to_json }}
-  vapid_private_key: {{ matrix_client_gomuks_push_vapid_private_key | to_json }}
-  vapid_public_key: {{ matrix_client_gomuks_push_vapid_public_key | to_json }}
+{% if matrix_client_gomuks_push_vapid_private_key_actual %}
+  vapid_private_key: {{ matrix_client_gomuks_push_vapid_private_key_actual | to_json }}
+  vapid_public_key: {{ matrix_client_gomuks_push_vapid_public_key_actual | to_json }}
+{% endif %}
 media:
   thumbnail_size: {{ matrix_client_gomuks_media_thumbnail_size | to_json }}
 logging:

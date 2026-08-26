@@ -1,6 +1,7 @@
 #jinja2: lstrip_blocks: True
 {#
 SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+SPDX-FileCopyrightText: 2026 Matěj Cepl
 SPDX-FileCopyrightText: 2026 MDAD project contributors
 
 SPDX-License-Identifier: AGPL-3.0-or-later
@@ -33,7 +34,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--label-file={{ matrix_client_gomuks_data_path }}/labels \
 			--env-file={{ matrix_client_gomuks_data_path }}/env \
 			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
-			--mount type=bind,src={{ matrix_client_gomuks_data_path }},dst=/data,rw \
+			--mount type=bind,src={{ matrix_client_gomuks_data_path }},dst=/data \
 			{% for arg in matrix_client_gomuks_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

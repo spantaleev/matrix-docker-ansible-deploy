@@ -4792,13 +4792,13 @@ matrix_client_gomuks_enabled: false
 
 matrix_client_gomuks_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
 
-matrix_client_gomuks_hostname: "gomuks.{{ matrix_domain }}"
+matrix_client_gomuks_hostname: "{{ matrix_server_fqn_gomuks }}"
 
 matrix_client_gomuks_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '29325') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
 
 matrix_client_gomuks_container_network: "{{ matrix_addons_container_network }}"
 
-matrix_client_gomuks_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_client_gomuks_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+matrix_client_gomuks_container_additional_networks_auto: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_client_gomuks_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
 
 matrix_client_gomuks_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
 matrix_client_gomuks_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
@@ -4807,6 +4807,8 @@ matrix_client_gomuks_container_labels_traefik_tls_certResolver: "{{ traefik_cert
 
 matrix_client_gomuks_container_labels_traefik_compression_middleware_enabled: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled }}"
 matrix_client_gomuks_container_labels_traefik_compression_middleware_name: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_name if matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled else '' }}"
+
+matrix_client_gomuks_self_check_validate_certificates: "{{ matrix_playbook_ssl_enabled }}"
 
 ######################################################################
 #

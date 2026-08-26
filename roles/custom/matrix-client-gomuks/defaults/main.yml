@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 Matěj Cepl
 # SPDX-FileCopyrightText: 2026 MDAD project contributors
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -9,7 +10,7 @@
 matrix_client_gomuks_enabled: false
 
 # renovate: datasource=docker depName=dock.mau.dev/gomuks/gomuks
-matrix_client_gomuks_version: latest
+matrix_client_gomuks_version: v0.2608.0
 
 matrix_client_gomuks_container_image: "{{ matrix_client_gomuks_container_image_registry_prefix }}gomuks/gomuks:{{ matrix_client_gomuks_version }}"
 matrix_client_gomuks_container_image_registry_prefix: "{{ matrix_client_gomuks_container_image_registry_prefix_upstream }}"
@@ -24,7 +25,9 @@ matrix_client_gomuks_container_network: ''
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
 # Use this to expose this container to a reverse proxy, which runs in a different container network.
-matrix_client_gomuks_container_additional_networks: []
+matrix_client_gomuks_container_additional_networks: "{{ matrix_client_gomuks_container_additional_networks_auto + matrix_client_gomuks_container_additional_networks_custom }}"
+matrix_client_gomuks_container_additional_networks_auto: []
+matrix_client_gomuks_container_additional_networks_custom: []
 
 # The in-container port that gomuks listens on.
 matrix_client_gomuks_container_port: 29325
@@ -81,8 +84,11 @@ matrix_client_gomuks_container_labels_additional_labels: ''
 # A list of extra arguments to pass to the container
 matrix_client_gomuks_container_extra_arguments: []
 
-# List of systemd services that matrix-client-gomuks.service depends on
-matrix_client_gomuks_systemd_required_services_list: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+# List of systemd services that matrix-client-gomuks.service depends on.
+matrix_client_gomuks_systemd_required_services_list: "{{ matrix_client_gomuks_systemd_required_services_list_default + matrix_client_gomuks_systemd_required_services_list_auto + matrix_client_gomuks_systemd_required_services_list_custom }}"
+matrix_client_gomuks_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_client_gomuks_systemd_required_services_list_auto: []
+matrix_client_gomuks_systemd_required_services_list_custom: []
 
 # Specifies the value of the `X-Frame-Options` header.
 matrix_client_gomuks_http_header_x_frame_options: SAMEORIGIN
@@ -125,24 +131,24 @@ matrix_client_gomuks_self_check_validate_certificates: true
 # The address the gomuks web server listens on inside the container.
 matrix_client_gomuks_web_listen_address: "0.0.0.0:{{ matrix_client_gomuks_container_port }}"
 
-# Username for the gomuks web basic auth (NOT your Matrix account).
-# Leave empty to let the playbook generate one from matrix_homeserver_generic_secret_key,
-# or set to your preferred username.
-matrix_client_gomuks_auth_username: "{{ 'gomuks' }}"
+# Username for the gomuks web basic auth (not your Matrix account).
+matrix_client_gomuks_auth_username: gomuks
 
-# Password for the gomuks web basic auth (NOT your Matrix account).
-# Leave empty to auto-generate from matrix_homeserver_generic_secret_key.
+# Password for the gomuks web basic auth (not your Matrix account).
 # This is the plaintext password the user will enter in the browser.
-# The playbook will derive a bcrypt hash from it for the config file.
-matrix_client_gomuks_auth_password: "{{ (matrix_homeserver_generic_secret_key + ':gomuks.auth_password') | hash('sha512') | truncate(24, True, '') }}"
+# The playbook derives a bcrypt hash from it for the config file.
+matrix_client_gomuks_auth_password: ''
 
 # Salt used for deterministic bcrypt hashing of the above password.
 # Changing this will change the derived password hash and trigger a restart.
 matrix_client_gomuks_auth_password_salt: "{{ (matrix_homeserver_generic_secret_key + ':gomuks.password_salt') | hash('sha512') | truncate(22, True, '') }}"
 
+# gomuks requires credentials in its configuration even when its authentication bypass is enabled.
+# Use an inaccessible fallback password in that case so gomuks can start without weakening the fallback behavior.
+matrix_client_gomuks_auth_password_actual: "{{ matrix_client_gomuks_auth_password if not (matrix_client_gomuks_disable_auth | bool) else ((matrix_homeserver_generic_secret_key + ':gomuks.disabled_auth_password') | hash('sha512')) }}"
+
 # Bcrypt hash of the password. The role computes it from the plaintext password and salt.
-# You can override this directly if you wish to provide your own hash.
-matrix_client_gomuks_auth_password_hash: "{{ matrix_client_gomuks_auth_password | password_hash('bcrypt', matrix_client_gomuks_auth_password_salt) }}"
+matrix_client_gomuks_auth_password_hash: "{{ matrix_client_gomuks_auth_password_actual | password_hash('bcrypt', matrix_client_gomuks_auth_password_salt) }}"
 
 # Token key used for signing auth tokens. Auto-generated from the generic secret key.
 matrix_client_gomuks_token_key: "{{ (matrix_homeserver_generic_secret_key + ':gomuks.token_key') | hash('sha512') | b64encode | truncate(64, True, '') | regex_replace('[^A-Za-z0-9]', 'A') }}"
@@ -178,8 +184,15 @@ matrix_client_gomuks_media_thumbnail_size: 120
 
 # Push / VAPID configuration.
 matrix_client_gomuks_push_fcm_gateway: "https://push.gomuks.app"
-matrix_client_gomuks_push_vapid_private_key: "{{ (matrix_homeserver_generic_secret_key + ':gomuks.vapid_private') | hash('sha512') | b64encode | truncate(43, True, '') | regex_replace('[^A-Za-z0-9_-]', 'A') }}"
-matrix_client_gomuks_push_vapid_public_key: "{{ (matrix_homeserver_generic_secret_key + ':gomuks.vapid_public') | hash('sha512') | b64encode | truncate(87, True, '') | regex_replace('[^A-Za-z0-9_-]', 'B') }}"
+
+# Leave both keys empty to let gomuks generate a VAPID key pair on first startup.
+# The role preserves the generated pair on later runs. To supply your own pair, set both variables.
+matrix_client_gomuks_push_vapid_private_key: ''
+matrix_client_gomuks_push_vapid_public_key: ''
+
+# Internal variables populated by the installation tasks. Do not set these in your configuration.
+matrix_client_gomuks_push_vapid_private_key_actual: ''
+matrix_client_gomuks_push_vapid_public_key_actual: ''
 
 # Logging configuration.
 matrix_client_gomuks_logging_min_level: info

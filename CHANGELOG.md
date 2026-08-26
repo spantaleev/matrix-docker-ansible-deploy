@@ -1,3 +1,12 @@
+# 2026-08-26
+
+## Support for gomuks
+
+The playbook can now install [gomuks](docs/configuring-playbook-client-gomuks.md), a Matrix client with a Go backend and a web frontend. The backend stores encryption keys and continues syncing while the browser is closed.
+
+gomuks is disabled by default. Enabling it requires a separate password to protect the backend. Its database and encryption keys remain on the server if the component is disabled later.
+
+
 # 2026-08-20
 
 ## MatrixRTC transports are advertised in the client well-known again

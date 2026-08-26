@@ -1,5 +1,6 @@
 <!--
 SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+SPDX-FileCopyrightText: 2026 Matěj Cepl
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -8,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 The playbook can install and configure [gomuks](https://github.com/gomuks/gomuks) for you.
 
-gomuks is a Matrix client written in Go. The `gomuks` container in this playbook runs the gomuks backend which serves the web frontend. It acts as a bouncer — keeping your encryption keys and syncing in the background, even when the browser is closed. See the project's [documentation](https://docs.mau.fi/gomuks/) to learn what it does and why it might be useful to you.
+gomuks is a Matrix client written in Go. The `gomuks` container runs the backend and serves the web frontend. The backend stores your encryption keys and continues syncing while the browser is closed. See the project's [documentation](https://docs.mau.fi/gomuks/) for more information.
 
 By default, this playbook does not install gomuks. Element Web remains the default client.
 
@@ -16,7 +17,7 @@ By default, this playbook does not install gomuks. Element Web remains the defau
 
 By default, this playbook installs gomuks on the `gomuks.` subdomain (`gomuks.example.com`) and requires you to create a CNAME record for `gomuks`, which targets `matrix.example.com`.
 
-When setting, replace `example.com` with your own.
+When creating the record, replace `example.com` with your own domain.
 
 ## Adjusting the playbook configuration
 
@@ -24,11 +25,16 @@ To enable gomuks, add the following configuration to your `inventory/host_vars/m
 
 ```yaml
 matrix_client_gomuks_enabled: true
+
+# This protects the gomuks backend and is separate from your Matrix password.
+matrix_client_gomuks_auth_password: "YOUR_STRONG_PASSWORD_HERE"
 ```
+
+Replace `YOUR_STRONG_PASSWORD_HERE` with a strong password.
 
 ### Adjusting the gomuks URL (optional)
 
-By tweaking the `matrix_client_gomuks_hostname` and `matrix_client_gomuks_path_prefix` variables, you can easily make the service available at a **different hostname and/or path** than the default one.
+You can make the service available at a different hostname or path by changing `matrix_client_gomuks_hostname` and `matrix_client_gomuks_path_prefix`.
 
 Example additional configuration for your `vars.yml` file:
 
@@ -45,35 +51,26 @@ After changing the domain, **you may need to adjust your DNS** records to point 
 
 If you've decided to reuse the `matrix.` domain, you won't need to do any extra DNS configuration.
 
-**Note**: `matrix_client_gomuks_path_prefix` must either be `/` or not end with a slash (e.g. `/gomuks`).
+`matrix_client_gomuks_path_prefix` must either be `/` or not end with a slash, such as `/gomuks`.
 
-### Adjusting authentication (optional)
+### Configuring authentication
 
-gomuks protects its web interface with a basic-auth username and password (separate from your Matrix account). The playbook auto-generates these from `matrix_homeserver_generic_secret_key`:
-
-- `matrix_client_gomuks_auth_username` — defaults to `gomuks`
-- `matrix_client_gomuks_auth_password` — auto-generated, truncated hash of the secret key
-
-To set your own credentials, add the following to your `vars.yml`:
+gomuks protects its web interface with a basic-auth username and password which are separate from your Matrix account. `matrix_client_gomuks_auth_username` defaults to `gomuks`. You must define `matrix_client_gomuks_auth_password` when enabling the service, unless you disable gomuks authentication as described below:
 
 ```yaml
-matrix_client_gomuks_auth_username: "myuser"
-matrix_client_gomuks_auth_password: "mysupersecretpassword"
+matrix_client_gomuks_auth_username: "gomuks"
+matrix_client_gomuks_auth_password: "YOUR_STRONG_PASSWORD_HERE"
 ```
 
-The playbook derives a bcrypt hash automatically. You can also set the hash directly:
+The playbook stores only a bcrypt hash of this password in the gomuks configuration file.
 
-```yaml
-matrix_client_gomuks_auth_password_hash: "$2a$12$..."
-```
-
-If your gomuks instance is behind an authenticating reverse proxy and you prefer to handle auth there, you can disable gomuks' own auth:
+If your gomuks instance is behind an authenticating reverse proxy and you prefer to handle authentication there, you can disable gomuks authentication:
 
 ```yaml
 matrix_client_gomuks_disable_auth: true
 ```
 
-When disabling auth, be careful not to expose gomuks to untrusted networks. See the [gomuks FAQ](https://docs.mau.fi/gomuks/faq.html#can-i-run-the-backend-behind-a-reverse-proxy) for details.
+`matrix_client_gomuks_auth_password` is not required when authentication is disabled. Be careful not to expose gomuks to untrusted networks. See the [gomuks FAQ](https://docs.mau.fi/gomuks/faq.html#can-i-run-the-backend-behind-a-reverse-proxy) for details.
 
 ### Extending the configuration
 
@@ -81,15 +78,17 @@ There are some additional things you may wish to configure about the component.
 
 Take a look at:
 
-- `roles/custom/matrix-client-gomuks/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/custom/matrix-client-gomuks/templates/config.yaml.j2` for the component's default runtime configuration. gomuks stores additional settings (like VAPID keys, `token_key`, etc.) in `/data/config/config.yaml`; the playbook generates them from your `matrix_homeserver_generic_secret_key` so that they remain stable across restarts
+- `roles/custom/matrix-client-gomuks/defaults/main.yml` for variables that you can customize via your `vars.yml` file
+- `roles/custom/matrix-client-gomuks/templates/config.yaml.j2` for the default runtime configuration
 
-Additional useful variables include:
+By default, gomuks generates a VAPID key pair for Web Push on first startup. The playbook preserves this pair on later runs. You can instead supply a pair with `matrix_client_gomuks_push_vapid_private_key` and `matrix_client_gomuks_push_vapid_public_key`; both variables must be set together.
 
-- `matrix_client_gomuks_container_image` — override the container image
-- `matrix_client_gomuks_web_listen_address` — listen address inside the container
-- `matrix_client_gomuks_origin_patterns` — allowed `Origin` header patterns
-- `matrix_client_gomuks_insecure_cookies` — allow cookies over plain HTTP (useful without TLS, not recommended)
+Other useful variables include:
+
+- `matrix_client_gomuks_container_image` to override the container image
+- `matrix_client_gomuks_web_listen_address` to change the listen address inside the container
+- `matrix_client_gomuks_origin_patterns` to change the allowed `Origin` header patterns
+- `matrix_client_gomuks_insecure_cookies` to allow cookies over plain HTTP, which is not recommended
 
 ## Installing
 
@@ -109,25 +108,25 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 After installation, gomuks will be available at `https://gomuks.example.com` (or your custom hostname/path).
 
 1. Open the URL in your browser.
-2. You will be prompted for the gomuks basic-auth credentials (see [Adjusting authentication](#adjusting-authentication-optional)). This is **not** your Matrix password — it's the bouncer protection.
+2. Enter the gomuks basic-auth credentials described in [Configuring authentication](#configuring-authentication). These are not your Matrix credentials.
 3. Log in with your Matrix account (user ID, password, homeserver).
 
 Your encryption keys stay on the server's `/matrix/client-gomuks/data` directory, so the backend keeps syncing even when no browser is open.
 
-All gomuks data (config, database, logs) lives under `{{ matrix_client_gomuks_data_path }}` (`/matrix/client-gomuks` by default) on the server.
+The `matrix_client_gomuks_data_path` variable controls where gomuks stores its configuration, database, cache, and logs. Its default value is `/matrix/client-gomuks`. Disabling gomuks stops and removes the service but preserves this directory.
 
 ## Troubleshooting
 
 As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by logging in to the server with SSH and running `journalctl -fu matrix-client-gomuks`.
 
-If you changed `matrix_client_gomuks_auth_password` and cannot log in, note that the browser may have cached the old basic-auth credentials — try a private window or clear site data.
+If you changed `matrix_client_gomuks_auth_password` and cannot log in, the browser may have cached the old basic-auth credentials. Try a private window or clear the site's data.
 
 If you see errors about `origin_patterns`, verify that `matrix_client_gomuks_hostname` and `matrix_client_gomuks_origin_patterns` include the hostname you are using to access gomuks (without `https://` and with explicit port if non-standard).
 
-To reset gomuks completely (removes database and forces re-login), stop the service and remove its data directory, then re-run the playbook:
+To log out and remove the locally stored Matrix account state, stop the service and remove its data and cache directories. This preserves the gomuks configuration and VAPID keys:
 
 ```sh
 systemctl stop matrix-client-gomuks
-rm -rf /matrix/client-gomuks/data/*
-# then re-run: just setup-all --tags=setup-client-gomuks
+rm -rf /matrix/client-gomuks/data /matrix/client-gomuks/cache
+just install-service client-gomuks
 ```

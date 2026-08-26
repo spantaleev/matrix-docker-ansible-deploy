@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 Matěj Cepl
 # SPDX-FileCopyrightText: 2026 MDAD project contributors
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -18,6 +19,58 @@
     - {path: "{{ matrix_client_gomuks_data_path }}/logs", when: true}
     - {path: "{{ matrix_client_gomuks_data_path }}/data", when: true}
   when: "item.when | bool"
+
+- name: Initialize existing gomuks configuration
+  ansible.builtin.set_fact:
+    matrix_client_gomuks_existing_config: {}
+  no_log: true
+
+- name: Check whether the gomuks configuration exists
+  ansible.builtin.stat:
+    path: "{{ matrix_client_gomuks_data_path }}/config/config.yaml"
+  register: matrix_client_gomuks_config_stat
+
+- name: Read the existing gomuks configuration
+  when: matrix_client_gomuks_config_stat.stat.exists | bool
+  ansible.builtin.slurp:
+    src: "{{ matrix_client_gomuks_data_path }}/config/config.yaml"
+  register: matrix_client_gomuks_config_slurp
+  no_log: true
+
+- name: Parse the existing gomuks configuration
+  when: matrix_client_gomuks_config_stat.stat.exists | bool
+  ansible.builtin.set_fact:
+    matrix_client_gomuks_existing_config: "{{ matrix_client_gomuks_config_slurp.content | b64decode | from_yaml }}"
+  no_log: true
+
+- name: Select the gomuks VAPID key pair
+  vars:
+    matrix_client_gomuks_existing_push_config: "{{ matrix_client_gomuks_existing_config.get('push') or {} }}"
+    matrix_client_gomuks_existing_vapid_private_key: "{{ matrix_client_gomuks_existing_push_config.get('vapid_private_key', '') }}"
+    matrix_client_gomuks_existing_vapid_public_key: "{{ matrix_client_gomuks_existing_push_config.get('vapid_public_key', '') }}"
+    matrix_client_gomuks_existing_vapid_key_pair_valid: >-
+      {{
+        matrix_client_gomuks_existing_vapid_private_key is match('^[A-Za-z0-9_-]{43}$')
+        and matrix_client_gomuks_existing_vapid_public_key is match('^B[A-Za-z0-9_-]{86}$')
+      }}
+  ansible.builtin.set_fact:
+    matrix_client_gomuks_push_vapid_private_key_actual: >-
+      {{
+        matrix_client_gomuks_push_vapid_private_key
+        if matrix_client_gomuks_push_vapid_private_key
+        else matrix_client_gomuks_existing_vapid_private_key
+        if matrix_client_gomuks_existing_vapid_key_pair_valid
+        else ''
+      }}
+    matrix_client_gomuks_push_vapid_public_key_actual: >-
+      {{
+        matrix_client_gomuks_push_vapid_public_key
+        if matrix_client_gomuks_push_vapid_public_key
+        else matrix_client_gomuks_existing_vapid_public_key
+        if matrix_client_gomuks_existing_vapid_key_pair_valid
+        else ''
+      }}
+  no_log: true
 
 - name: Ensure gomuks container image is pulled
   community.docker.docker_image_pull:
@@ -41,12 +94,12 @@
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ matrix_client_gomuks_data_path }}/{{ item.name }}"
-    mode: '0644'
+    mode: "{{ item.mode }}"
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - {src: "{{ role_path }}/templates/labels.j2", name: "labels"}
-    - {src: "{{ role_path }}/templates/env.j2", name: "env"}
+    - {src: "{{ role_path }}/templates/labels.j2", name: "labels", mode: "0644"}
+    - {src: "{{ role_path }}/templates/env.j2", name: "env", mode: "0640"}
   register: matrix_client_gomuks_support_files_result
 
 - name: Ensure gomuks container network is created
