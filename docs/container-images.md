@@ -42,6 +42,7 @@ Web clients for Matrix that you can host on your own domains.
 | [Cinny](configuring-playbook-client-cinny.md) | [ajbura/cinny](https://hub.docker.com/r/ajbura/cinny) | ❌ | Simple, elegant and secure web client |
 | [Sable](configuring-playbook-client-sable.md) | [7w1/sable](https://ghcr.io/7w1/sable) | ❌ | Simple, elegant and secure web client |
 | [SchildiChat Web](configuring-playbook-client-schildichat-web.md) | [etke.cc/schildichat-web](https://ghcr.io/etkecc/schildichat-web) | ❌ | Based on Element Web, with a more traditional instant messaging experience |
+| [gomuks](configuring-playbook-client-gomuks.md) | [gomuks/gomuks](https://mau.dev/gomuks/gomuks/container_registry) | ❌ | Bouncer-style Matrix client with Go backend and web frontend |
 
 ## Server Components
 

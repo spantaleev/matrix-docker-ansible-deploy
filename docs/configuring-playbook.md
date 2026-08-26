@@ -97,6 +97,8 @@ Web clients for Matrix that you can host on your own domains.
 
 - [Setting up Commet](configuring-playbook-client-commet.md), if you've enabled [Commet](https://github.com/commetchat/commet), a Matrix web client
 
+- [Setting up gomuks](configuring-playbook-client-gomuks.md), if you've enabled [gomuks](https://github.com/gomuks/gomuks), a bouncer-style Matrix client with a web frontend
+
 
 ### Authentication and user-related
 

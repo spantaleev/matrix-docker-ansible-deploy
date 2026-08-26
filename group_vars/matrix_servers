@@ -66,6 +66,8 @@ matrix_playbook_public_client_urls: |
   {{
     ([matrix_client_element_scheme + '://' + matrix_client_element_hostname + matrix_client_element_path_prefix] if matrix_client_element_enabled else [])
     +
+    ([matrix_client_gomuks_scheme + '://' + matrix_client_gomuks_hostname + matrix_client_gomuks_path_prefix] if matrix_client_gomuks_enabled else [])
+    +
     ([matrix_client_commet_scheme + '://' + matrix_client_commet_hostname + matrix_client_commet_path_prefix] if matrix_client_commet_enabled else [])
     +
     ([hydrogen_scheme + '://' + hydrogen_hostname + hydrogen_path_prefix] if hydrogen_enabled else [])
@@ -665,6 +667,13 @@ devture_systemd_service_manager_services_list_auto: |
       'restart_necessary': (matrix_client_commet_restart_necessary | bool),
       'groups': ['matrix', 'clients', 'commet', 'client-commet'],
     }] if matrix_client_commet_enabled else [])
+    +
+    ([{
+      'name': 'matrix-client-gomuks.service',
+      'priority': 2000,
+      'restart_necessary': (matrix_client_gomuks_restart_necessary | bool),
+      'groups': ['matrix', 'clients', 'gomuks', 'client-gomuks'],
+    }] if matrix_client_gomuks_enabled else [])
     +
     ([{
       'name': 'matrix-client-fluffychat.service',
@@ -4770,6 +4779,38 @@ matrix_client_commet_container_labels_traefik_compression_middleware_name: "{{ m
 ######################################################################
 #
 # /matrix-client-commet
+#
+######################################################################
+
+######################################################################
+#
+# matrix-client-gomuks
+#
+######################################################################
+
+matrix_client_gomuks_enabled: false
+
+matrix_client_gomuks_scheme: "{{ 'https' if matrix_playbook_ssl_enabled else 'http' }}"
+
+matrix_client_gomuks_hostname: "gomuks.{{ matrix_domain }}"
+
+matrix_client_gomuks_container_http_host_bind_port: "{{ (matrix_playbook_service_host_bind_interface_prefix ~ '29325') if matrix_playbook_service_host_bind_interface_prefix else '' }}"
+
+matrix_client_gomuks_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_client_gomuks_container_additional_networks: "{{ [matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_client_gomuks_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [] }}"
+
+matrix_client_gomuks_container_labels_traefik_enabled: "{{ matrix_playbook_reverse_proxy_type in ['playbook-managed-traefik', 'other-traefik-container'] }}"
+matrix_client_gomuks_container_labels_traefik_docker_network: "{{ matrix_playbook_reverse_proxyable_services_additional_network }}"
+matrix_client_gomuks_container_labels_traefik_entrypoints: "{{ traefik_entrypoint_primary }}"
+matrix_client_gomuks_container_labels_traefik_tls_certResolver: "{{ traefik_certResolver_primary }}"
+
+matrix_client_gomuks_container_labels_traefik_compression_middleware_enabled: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled }}"
+matrix_client_gomuks_container_labels_traefik_compression_middleware_name: "{{ matrix_playbook_reverse_proxy_traefik_middleware_compression_name if matrix_playbook_reverse_proxy_traefik_middleware_compression_enabled else '' }}"
+
+######################################################################
+#
+# /matrix-client-gomuks
 #
 ######################################################################
 

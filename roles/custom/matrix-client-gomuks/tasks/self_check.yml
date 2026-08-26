@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check gomuks
+  ansible.builtin.uri:
+    url: "{{ matrix_client_gomuks_scheme }}://{{ matrix_client_gomuks_hostname }}{{ matrix_client_gomuks_path_prefix | regex_replace('/$', '') }}/"
+    follow_redirects: none
+    validate_certs: "{{ matrix_client_gomuks_self_check_validate_certificates }}"
+  check_mode: false
+  register: matrix_client_gomuks_self_check_result
+  ignore_errors: true
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Fail if gomuks self-check fails
+  ansible.builtin.fail:
+    msg: "Failed checking gomuks is up at `{{ matrix_client_gomuks_scheme }}://{{ matrix_client_gomuks_hostname }}{{ matrix_client_gomuks_path_prefix }}` (checked `{{ matrix_client_gomuks_scheme }}://{{ matrix_client_gomuks_hostname }}{{ matrix_client_gomuks_path_prefix | regex_replace('/$', '') }}/`). Is gomuks running? Is the hostname correct? Is Trafiek forwarding correctly? ({{ matrix_client_gomuks_self_check_result.msg }})"
+  when: "matrix_client_gomuks_self_check_result.failed | default(false) or matrix_client_gomuks_self_check_result.status not in [200, 302]"

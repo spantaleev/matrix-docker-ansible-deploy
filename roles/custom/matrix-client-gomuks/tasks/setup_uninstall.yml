@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Check existence of matrix-client-gomuks.service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-gomuks.service"
+  register: matrix_client_gomuks_service_stat
+
+- when: matrix_client_gomuks_service_stat.stat.exists | bool
+  block:
+    - name: Ensure matrix-client-gomuks is stopped
+      ansible.builtin.service:
+        name: matrix-client-gomuks
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure matrix-client-gomuks.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/matrix-client-gomuks.service"
+        state: absent
+
+    - name: Ensure gomuks path doesn't exist
+      ansible.builtin.file:
+        path: "{{ matrix_client_gomuks_data_path }}"
+        state: absent

@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2026 MDAD project contributors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- tags:
+    - setup-all
+    - setup-client-gomuks
+    - install-all
+    - install-client-gomuks
+  block:
+    - when: matrix_client_gomuks_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
+
+    - when: matrix_client_gomuks_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_install.yml"
+
+- tags:
+    - setup-all
+    - setup-client-gomuks
+  block:
+    - when: not matrix_client_gomuks_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/setup_uninstall.yml"
+
+- tags:
+    - self-check
+  block:
+    - when: matrix_client_gomuks_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/self_check.yml"

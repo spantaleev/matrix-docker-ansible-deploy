@@ -1,0 +1,36 @@
+{#
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+SPDX-FileCopyrightText: 2026 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+web:
+  listen_address: {{ matrix_client_gomuks_web_listen_address | to_json }}
+{% if not matrix_client_gomuks_disable_auth | bool %}
+  username: {{ matrix_client_gomuks_auth_username | to_json }}
+  password_hash: {{ matrix_client_gomuks_auth_password_hash | to_json }}
+{% endif %}
+  token_key: {{ matrix_client_gomuks_token_key | to_json }}
+  debug_endpoints: {{ matrix_client_gomuks_debug_endpoints | to_json }}
+  event_buffer_size: {{ matrix_client_gomuks_event_buffer_size | to_json }}
+  origin_patterns:
+{% for pattern in matrix_client_gomuks_origin_patterns %}
+    - {{ pattern | to_json }}
+{% endfor %}
+  insecure_cookies: {{ matrix_client_gomuks_insecure_cookies | to_json }}
+{% if matrix_client_gomuks_disable_auth | bool %}
+  disable_auth_because_i_want_my_account_to_be_hacked: true
+{% endif %}
+matrix:
+  disable_http2: {{ matrix_client_gomuks_matrix_disable_http2 | to_json }}
+  set_presence: {{ matrix_client_gomuks_matrix_set_presence | to_json }}
+push:
+  fcm_gateway: {{ matrix_client_gomuks_push_fcm_gateway | to_json }}
+  vapid_private_key: {{ matrix_client_gomuks_push_vapid_private_key | to_json }}
+  vapid_public_key: {{ matrix_client_gomuks_push_vapid_public_key | to_json }}
+media:
+  thumbnail_size: {{ matrix_client_gomuks_media_thumbnail_size | to_json }}
+logging:
+  min_level: {{ matrix_client_gomuks_logging_min_level | to_json }}
+  writers:
+{{ matrix_client_gomuks_logging_writers | to_nice_yaml(indent=2) | indent(2, true) }}

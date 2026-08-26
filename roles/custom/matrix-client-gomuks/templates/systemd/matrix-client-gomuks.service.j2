@@ -1,0 +1,58 @@
+#jinja2: lstrip_blocks: True
+{#
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+SPDX-FileCopyrightText: 2026 MDAD project contributors
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+[Unit]
+Description=Matrix gomuks web client (bouncer)
+{% for service in matrix_client_gomuks_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-gomuks 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-gomuks 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-client-gomuks \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ matrix_client_gomuks_container_network }} \
+			{% if matrix_client_gomuks_container_http_host_bind_port %}
+			-p {{ matrix_client_gomuks_container_http_host_bind_port }}:{{ matrix_client_gomuks_container_port }} \
+			{% endif %}
+			--label-file={{ matrix_client_gomuks_data_path }}/labels \
+			--env-file={{ matrix_client_gomuks_data_path }}/env \
+			--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
+			--mount type=bind,src={{ matrix_client_gomuks_data_path }},dst=/data,rw \
+			{% for arg in matrix_client_gomuks_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_client_gomuks_container_image }}
+
+{% if matrix_client_gomuks_container_network != 'host' %}
+{% for network in matrix_client_gomuks_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-client-gomuks
+{% endfor %}
+{% endif %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-client-gomuks
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-gomuks 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-client-gomuks 2>/dev/null || true'
+
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-client-gomuks
+
+[Install]
+WantedBy=multi-user.target
