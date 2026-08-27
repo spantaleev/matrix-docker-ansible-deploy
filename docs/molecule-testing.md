@@ -90,3 +90,14 @@ own job there, so there is nothing to collide with.
 
 The directories are disposable; `var/` is gitignored. Delete `var/molecule-ansible-home/` to force
 a fresh install.
+
+## Reclaiming the disk space
+
+`just molecule-clean` removes what the runs leave under `var/`.
+
+Two things live there. The per-role Ansible homes are ~7 MB each, rewritten on every run rather
+than grown, so they are bounded by the number of roles that have a scenario. The shared virtualenv
+is the bulk of it, over 500 MB, and is recreated on the next run at the cost of a `pip install`.
+
+`--idle-days N` restricts it to what has not been touched in N days, which is what makes it safe to
+run unattended. `--yes` skips the confirmation.

@@ -139,6 +139,10 @@ stop-group group *extra_args:
 molecule *args:
     @{{ justfile_directory() }}/bin/molecule.sh {{ args }}
 
+# Removes the Molecule virtualenv and per-role Ansible homes from var/
+molecule-clean *args:
+    @{{ justfile_directory() }}/bin/molecule-clean.sh {{ args }}
+
 # Internal - ensures var/mise and var/prek directories exist
 _ensure_mise_data_directory:
     @mkdir -p "{{ mise_data_dir }}"
