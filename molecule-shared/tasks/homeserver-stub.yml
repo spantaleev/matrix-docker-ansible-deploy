@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Stands up a stand-in homeserver on a container network, for scenarios whose
+# component contacts a homeserver while starting up.
+#
+# Include from a scenario's prepare.yml:
+#
+#   - name: Ensure the homeserver stub is running
+#     ansible.builtin.include_tasks:
+#       file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/homeserver-stub.yml"
+#     vars:
+#       molecule_shared_stub_network: "{{ <role>_container_network }}"
+#       molecule_shared_stub_joined_rooms: ["!some-room:molecule.local"]
+#
+# The component should then be pointed at http://matrix.molecule.local:8008.
+#
+# See molecule-shared/homeserver-stub.py for what it answers and, more
+# importantly, for what it is not.
+
+- name: Ensure the homeserver stub script is present
+  ansible.builtin.copy:
+    src: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/homeserver-stub.py"
+    dest: /root/molecule-homeserver-stub.py
+    mode: "0755"
+
+- name: Ensure a previous homeserver stub is gone
+  ansible.builtin.command:
+    argv:
+      - docker
+      - rm
+      - --force
+      - "{{ molecule_shared_stub_name | default('matrix-homeserver-stub') }}"
+  register: molecule_shared_stub_removal
+  changed_when: molecule_shared_stub_removal.rc == 0
+  failed_when: false
+
+# The alias is what the component resolves, so its configuration can name a
+# hostname rather than a container name.
+- name: Ensure the homeserver stub is running
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --detach
+      - --name={{ molecule_shared_stub_name | default('matrix-homeserver-stub') }}
+      - --network={{ molecule_shared_stub_network }}
+      - --network-alias={{ molecule_shared_stub_hostname | default('matrix.molecule.local') }}
+      - --env=STUB_SERVER_NAME={{ molecule_shared_stub_server_name | default('molecule.local') }}
+      - --env=STUB_JOINED_ROOMS={{ (molecule_shared_stub_joined_rooms | default([])) | join(',') }}
+      - --volume=/root/molecule-homeserver-stub.py:/stub.py:ro
+      - "{{ molecule_shared_image_python }}"
+      - python3
+      - /stub.py
+  register: molecule_shared_stub_start
+  changed_when: molecule_shared_stub_start.rc == 0
+
+- name: Wait for the homeserver stub to answer
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --rm
+      - --network={{ molecule_shared_stub_network }}
+      - "{{ molecule_shared_image_curl }}"
+      - --silent
+      - --fail
+      - --max-time
+      - "5"
+      - "http://{{ molecule_shared_stub_hostname | default('matrix.molecule.local') }}:8008/_matrix/client/versions"
+  register: molecule_shared_stub_ready
+  changed_when: false
+  until: molecule_shared_stub_ready.rc == 0
+  retries: 12
+  delay: 5
