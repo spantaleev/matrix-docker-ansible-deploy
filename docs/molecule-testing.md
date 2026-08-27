@@ -57,7 +57,7 @@ Role defaults are out of scope there, so any path it reads has to be pinned in t
 `molecule-shared/` holds what would otherwise be duplicated into every role:
 
 - `requirements.txt` — the Python packages, for both CI and `just molecule`.
-- `requirements.yml` — the external Ansible roles and collections the scenarios need.
+- `requirements.yml` — the external Ansible roles and collections the scenarios need. Each scenario symlinks its own `molecule/default/requirements.yml` at this file: Molecule checks for a requirements file at that default path before it will install anything, so pointing at the shared one through `requirements-file` alone is silently ignored.
 - `vars.yml` — helper container images used for probing, pinned once. They carry `# renovate:` annotations and a custom manager in `.github/renovate.json` keeps them current.
 
 A helper image is used to reach a role's container over its own container network. That indirection is deliberate: the roles publish no host port, matching a real deployment, and publishing one for the test would collide between scenarios running in parallel.
