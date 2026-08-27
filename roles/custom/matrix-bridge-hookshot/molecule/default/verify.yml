@@ -1,0 +1,373 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# What this proves: Hookshot starts, accepts the config.yml and registration.yml
+# the role rendered, and opens exactly the HTTP listeners that configuration
+# described - on the ports the role put there, and not on the ones it did not.
+#
+# What it deliberately does NOT do: configure GitHub, GitLab, Jira or Figma.
+# Every one of those needs an account and a credential on a third-party service,
+# which is the line where a scenario stops testing this repository and starts
+# testing a fake (see docs/molecule-testing.md). The generic webhooks listener
+# needs no credential from anyone, so it is the one that gets exercised live.
+- name: Verify hookshot
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+
+  tasks:
+    # Read from the role's own defaults rather than pinned in molecule.yml, so
+    # the version assertion below compares the running image against what the
+    # role ships instead of against the scenario itself. The default ports come
+    # from here for the same reason: the "these ports stay closed" assertion is
+    # only meaningful against the ports the role would otherwise have used.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: hookshot_role_defaults
+
+    - name: Wait for the hookshot service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-hookshot.service
+      register: hookshot_service
+      until: hookshot_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # `Restart=always` means a bridge crash-looping on a configuration it cannot
+    # read still reports `active`, so the restart counter is checked too. It is
+    # asserted `is defined` because `| int` turns a missing property into 0 and
+    # would pass vacuously.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - hookshot_service.status.ActiveState == 'active'
+          - hookshot_service.status.NRestarts is defined
+          - hookshot_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-hookshot.service is
+          {{ hookshot_service.status.ActiveState | default('unknown') }}
+          after {{ hookshot_service.status.NRestarts | default('?') }}
+          automatic restart(s)
+        success_msg: "matrix-hookshot.service is active and has not restarted"
+
+    # ------------------------------------------------------------------
+    # The rendered configuration
+    # ------------------------------------------------------------------
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_hookshot_base_path }}/config.yml"
+      register: hookshot_config_file
+
+    - name: Parse the rendered configuration
+      ansible.builtin.set_fact:
+        hookshot_config: "{{ hookshot_config_file.content | b64decode | from_yaml }}"
+
+    # Each of these differs from what Hookshot would use on its own AND from
+    # what the role defaults to, so finding them here means the role's
+    # configuration is what Hookshot is running on rather than a coincidence.
+    - name: Assert the rendered configuration carries this scenario's values
+      ansible.builtin.assert:
+        that:
+          - hookshot_config.bridge.domain == matrix_domain
+          - hookshot_config.bridge.url == matrix_bridge_hookshot_homeserver_address
+          - hookshot_config.bridge.port | int == matrix_bridge_hookshot_appservice_port | int
+          - hookshot_config.generic.userIdPrefix == matrix_bridge_hookshot_generic_userIdPrefix
+          - hookshot_config.feeds.pollIntervalSeconds | int == matrix_bridge_hookshot_feeds_pollIntervalSeconds | int
+          - hookshot_config.logging.level == matrix_bridge_hookshot_logging_level
+          - hookshot_config.metrics.enabled | bool
+        fail_msg: "The rendered configuration does not carry the scenario's values"
+        success_msg: "The rendered configuration carries the scenario's values"
+
+    # Hookshot's `listeners` list is the role's own construction: it decides
+    # which resources get a port at all, from a handful of independent switches.
+    # Getting this wrong is invisible in a "did it start" test, which is why it
+    # is asserted as a whole rather than key by key.
+    - name: Assert the role rendered exactly the listeners the scenario asked for
+      ansible.builtin.assert:
+        that:
+          - hookshot_config.listeners | length == 2
+          - hookshot_listener_ports == [matrix_bridge_hookshot_webhook_port | int, matrix_bridge_hookshot_metrics_port | int]
+          - hookshot_config.listeners | map(attribute='resources') | flatten == ['webhooks', 'metrics']
+        fail_msg: >-
+          The rendered listeners are {{ hookshot_config.listeners }}, not the
+          webhooks and metrics listeners this scenario configured
+        success_msg: "The role rendered exactly the webhooks and metrics listeners"
+      vars:
+        hookshot_listener_ports: "{{ hookshot_config.listeners | map(attribute='port') | map('int') | list }}"
+
+    # No third-party service is configured here, so none of their sections may
+    # appear. GitLab is the interesting one: the role turns it ON by default, so
+    # its absence is what proves the scenario's switch reached the template.
+    - name: Assert no third-party service section was rendered
+      ansible.builtin.assert:
+        that:
+          - "'gitlab' not in hookshot_config"
+          - "'github' not in hookshot_config"
+          - "'jira' not in hookshot_config"
+          - "'figma' not in hookshot_config"
+        fail_msg: >-
+          The rendered configuration contains a third-party service section
+          ({{ hookshot_config.keys() | list }}); this scenario configures none
+        success_msg: "No third-party service section was rendered"
+
+    - name: Assert no widgets section was rendered while widgets are disabled
+      ansible.builtin.assert:
+        that:
+          - "'widgets' not in hookshot_config"
+        fail_msg: >-
+          A widgets section was rendered even though
+          matrix_bridge_hookshot_widgets_enabled is false
+        success_msg: "No widgets section was rendered while widgets are disabled"
+
+    # ------------------------------------------------------------------
+    # The rendered registration
+    # ------------------------------------------------------------------
+
+    # The registration file is the half of the appservice handshake the
+    # homeserver reads. The role generates it, Hookshot only consumes it, so it
+    # is worth checking on its own.
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_hookshot_base_path }}/registration.yml"
+      register: hookshot_registration_file
+
+    - name: Parse the rendered registration
+      ansible.builtin.set_fact:
+        hookshot_registration: "{{ hookshot_registration_file.content | b64decode | from_yaml }}"
+
+    # `url` is where the homeserver would push transactions, and the role builds
+    # it out of the container name and the appservice port. It has to agree with
+    # `bridge.port` in config.yml or the two halves would silently disagree.
+    - name: Assert the registration carries the scenario's tokens, bot and callback URL
+      ansible.builtin.assert:
+        that:
+          - hookshot_registration.as_token == matrix_bridge_hookshot_appservice_token
+          - hookshot_registration.hs_token == matrix_bridge_hookshot_homeserver_token
+          - hookshot_registration.sender_localpart == matrix_bridge_hookshot_bot_localpart
+          - hookshot_registration.url == 'http://' + matrix_bridge_hookshot_identifier + ':' + (matrix_bridge_hookshot_appservice_port | string)
+        fail_msg: "The appservice registration does not carry the scenario's tokens, bot and callback URL"
+        success_msg: "The appservice registration carries the scenario's tokens, bot and callback URL"
+
+    # The user namespace is derived from the generic webhook prefix, and the
+    # GitLab namespace is conditional on the service being enabled - so this
+    # checks that the two switches reach the registration, not just config.yml.
+    - name: Assert the registration namespaces follow the enabled services
+      ansible.builtin.assert:
+        that:
+          - hookshot_registration_user_regexes | select('search', matrix_bridge_hookshot_generic_userIdPrefix) | list | length == 1
+          - hookshot_registration_user_regexes | select('search', '_gitlab_') | list | length == 0
+        fail_msg: >-
+          The registration's user namespaces are
+          {{ hookshot_registration_user_regexes }}, which do not follow the
+          services this scenario enabled
+        success_msg: "The registration's user namespaces follow the enabled services"
+      vars:
+        hookshot_registration_user_regexes: "{{ hookshot_registration.namespaces.users | map(attribute='regex') | list }}"
+
+    # ------------------------------------------------------------------
+    # The listeners, live
+    # ------------------------------------------------------------------
+
+    # A helper container is used because the role publishes no host port, exactly
+    # as in a real deployment; see docs/molecule-testing.md.
+    - name: Wait for the webhooks listener to answer on the port the role configured
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_hookshot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --max-time
+          - "5"
+          - --request
+          - POST
+          - --header
+          - "Content-Type: application/json"
+          - --data
+          - "{}"
+          - --write-out
+          - "|HTTP_STATUS=%{http_code}"
+          - "http://{{ matrix_bridge_hookshot_identifier }}:{{ matrix_bridge_hookshot_webhook_port }}/webhook/molecule-no-such-hook"
+      register: hookshot_webhooks_probe
+      changed_when: false
+      until: "'HTTP_STATUS=000' not in hookshot_webhooks_probe.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    # Hookshot answers an unknown webhook id from its generic-webhook handler,
+    # with a JSON body no other component would produce. An Express "Cannot POST"
+    # page here would mean the port is Hookshot's but the generic webhooks
+    # service was never mounted on it; a refused connection would mean the
+    # listener the role described was never opened at all.
+    - name: Assert the generic webhooks service is mounted on that listener
+      ansible.builtin.assert:
+        that:
+          - "'\"ok\":false' in hookshot_webhooks_probe.stdout"
+          - "'Webhook not found' in hookshot_webhooks_probe.stdout"
+          - "'HTTP_STATUS=404' in hookshot_webhooks_probe.stdout"
+        fail_msg: >-
+          Port {{ matrix_bridge_hookshot_webhook_port }} did not answer as
+          Hookshot's generic webhooks service
+          ({{ hookshot_webhooks_probe.stdout | default('no output') }})
+        success_msg: "The generic webhooks service answers on the port the role configured"
+
+    # Metrics are OFF in the role's defaults, so this listener exists only
+    # because the scenario asked for it - and /metrics answers in a format
+    # nothing else on that port could have produced.
+    - name: Probe the metrics listener on the port the role configured
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_hookshot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --max-time
+          - "5"
+          - --write-out
+          - "|HTTP_STATUS=%{http_code}"
+          - "http://{{ matrix_bridge_hookshot_identifier }}:{{ matrix_bridge_hookshot_metrics_port }}/metrics"
+      register: hookshot_metrics_probe
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the metrics listener serves Hookshot's own metrics
+      ansible.builtin.assert:
+        that:
+          - "'HTTP_STATUS=200' in hookshot_metrics_probe.stdout"
+          - "'hookshot_webhooks_http_request' in hookshot_metrics_probe.stdout"
+        fail_msg: >-
+          Port {{ matrix_bridge_hookshot_metrics_port }} did not serve Hookshot's
+          metrics ({{ hookshot_metrics_probe.stdout | default('no output') | truncate(200) }})
+        success_msg: "The metrics listener serves Hookshot's own metrics"
+
+    # The appservice port is not in `listeners` - it comes from `bridge.port` -
+    # so it is a separate socket, opened by a separate part of the config.
+    - name: Probe the appservice port the role configured
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_hookshot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --max-time
+          - "5"
+          - --write-out
+          - "|HTTP_STATUS=%{http_code}"
+          - "http://{{ matrix_bridge_hookshot_identifier }}:{{ matrix_bridge_hookshot_appservice_port }}/_matrix/app/v1/ping"
+      register: hookshot_appservice_probe
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the appservice API answers on the port the role configured
+      ansible.builtin.assert:
+        that:
+          - "'HTTP_STATUS=000' not in hookshot_appservice_probe.stdout"
+          - "'errcode' in hookshot_appservice_probe.stdout"
+        fail_msg: >-
+          Port {{ matrix_bridge_hookshot_appservice_port }} did not answer as a
+          Matrix appservice
+          ({{ hookshot_appservice_probe.stdout | default('no output') }})
+        success_msg: "The appservice API answers on the port the role configured"
+
+    # The other half of the story. Every port above is one the scenario chose;
+    # these are the ones the role and Hookshot would have used if the scenario's
+    # configuration had never reached the process. If any of them answers, then
+    # a passing probe above proves much less than it looks like it does.
+    - name: Probe the ports the role's defaults would have used
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_hookshot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --max-time
+          - "5"
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - "http://{{ matrix_bridge_hookshot_identifier }}:{{ item.port }}/"
+      register: hookshot_closed_probes
+      changed_when: false
+      failed_when: false
+      loop:
+        - port: "{{ hookshot_role_defaults.matrix_bridge_hookshot_appservice_port }}"
+          what: the appservice port the role defaults to
+        - port: "{{ hookshot_role_defaults.matrix_bridge_hookshot_webhook_port }}"
+          what: the webhooks port the role defaults to
+        - port: "{{ hookshot_role_defaults.matrix_bridge_hookshot_metrics_port }}"
+          what: the metrics port the role defaults to
+        - port: "{{ hookshot_role_defaults.matrix_bridge_hookshot_widgets_port }}"
+          what: the widgets port, whose listener this scenario disabled
+      loop_control:
+        label: "{{ item.port }} - {{ item.what }}"
+
+    - name: Assert nothing listens on the ports the role's defaults would have used
+      ansible.builtin.assert:
+        that:
+          - hookshot_closed_probes.results | rejectattr('stdout', 'search', 'HTTP_STATUS=000') | list | length == 0
+        fail_msg: >-
+          Something answered on
+          {{ hookshot_closed_probes.results | rejectattr('stdout', 'search', 'HTTP_STATUS=000') | map(attribute='item') | list }},
+          so the ports this scenario configured are not the only ones Hookshot
+          is listening on
+        success_msg: >-
+          Nothing listens on the ports the role's defaults would have used
+          ({{ hookshot_closed_probes.results | map(attribute='item.port') | list | join(', ') }})
+
+    # ------------------------------------------------------------------
+    # The container the role started
+    # ------------------------------------------------------------------
+
+    - name: Read the image of the running container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - "{{ matrix_bridge_hookshot_identifier }}"
+          - --format
+          - "{{ '{{' }} .Config.Image {{ '}}' }}"
+      register: hookshot_image
+      changed_when: false
+
+    - name: Assert the running container is the version defaults/main.yml pins
+      ansible.builtin.assert:
+        that:
+          - hookshot_role_defaults.matrix_bridge_hookshot_version | string in hookshot_image.stdout
+        fail_msg: >-
+          The running container is {{ hookshot_image.stdout }}, which does not
+          carry the pinned version
+          {{ hookshot_role_defaults.matrix_bridge_hookshot_version }}
+        success_msg: "The running container is the version defaults/main.yml pins"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_hookshot_base_path }}/labels"
+      register: hookshot_labels
+
+    - name: Assert no Traefik labels are emitted while Traefik support is disabled
+      ansible.builtin.assert:
+        that:
+          - "'traefik.' not in (hookshot_labels.content | b64decode)"
+        fail_msg: >-
+          Traefik labels were emitted even though
+          matrix_bridge_hookshot_container_labels_traefik_enabled is false
+        success_msg: "No Traefik labels are emitted while Traefik support is disabled"

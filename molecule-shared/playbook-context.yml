@@ -38,6 +38,16 @@ matrix_user_gid: 1234
 # scenario wants.
 matrix_admin: ''
 
+# --- Host commands (matrix-base) -------------------------------------------
+#
+# Some roles shell out to a host binary through this indirection instead of
+# naming it directly (matrix-bridge-hookshot and matrix-bridge-appservice-irc
+# both generate a key with it). matrix-base's defaults are what supplies the
+# value in a real run; those roles install the binary themselves, by including
+# matrix-base's `ensure_openssl_installed` tasks.
+
+matrix_host_command_openssl: "/usr/bin/env openssl"
+
 # --- Bridge-wide switches (matrix-base) ------------------------------------
 #
 # Every bridge role reads these, so they live here rather than in each bridge's

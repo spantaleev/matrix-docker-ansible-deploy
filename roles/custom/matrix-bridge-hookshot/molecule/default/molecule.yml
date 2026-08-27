@@ -1,0 +1,123 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: hookshot-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  options:
+    # The role's `tasks/main.yml` opens with a block tagged
+    # `reset-hookshot-encryption`, and Ansible runs tagged tasks unless tags are
+    # actually selected - so a tagless play (which is what Molecule runs) hits
+    # it. It stops `matrix-hookshot.service` before that service exists, which
+    # fails on a fresh host. Skipping the tag is what the playbook effectively
+    # does by always running with `--tags=setup-all,start`.
+    #
+    # `molecule-notest,notest` are Molecule's own defaults, repeated here
+    # because this key replaces them rather than adding to them.
+    skip-tags: molecule-notest,notest,reset-hookshot-encryption
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_hookshot_container_network: hookshot-molecule
+
+        # The stub prepare.yml stands up. Hookshot contacts it while starting;
+        # it is not a real homeserver and nothing is asserted about it.
+        matrix_bridge_hookshot_homeserver_address: http://matrix.molecule.local:8008
+
+        # Appservice tokens. These are what Hookshot and the homeserver would
+        # authenticate to each other with; here they only have to reach the
+        # rendered configuration and the registration file.
+        matrix_bridge_hookshot_appservice_token: molecule_as_token_4f2a91
+        matrix_bridge_hookshot_homeserver_token: molecule_hs_token_9b3e77
+
+        # Deliberately different from the role's default (`hookshot`), so the
+        # registration's sender_localpart can only have come from the role.
+        # prepare.yml tells the homeserver stub to claim this same user id.
+        matrix_bridge_hookshot_bot_localpart: molecule-hookshot
+
+        # Hookshot's HTTP surface is the point of this scenario. Every port
+        # below differs from BOTH the role's default and Hookshot's own, so an
+        # answer on one of them can only mean the role's configuration reached
+        # the process. verify.yml also asserts that nothing answers on the
+        # defaults these replace (9993 appservice, 9000 webhooks, 9001 metrics).
+        matrix_bridge_hookshot_appservice_port: 9772
+        matrix_bridge_hookshot_webhook_port: 9741
+
+        # Off in the role's defaults. Enabling it makes the role render a second
+        # entry in Hookshot's `listeners` list, which is the cheapest listener to
+        # assert *content* on: /metrics answers in a format nothing else would.
+        matrix_bridge_hookshot_metrics_enabled: true
+        matrix_bridge_hookshot_metrics_port: 9752
+
+        # On in the role's defaults. Turned off here so that the absence of a
+        # listener can be asserted too - the widgets port staying closed is what
+        # tells "the role rendered the listener list" apart from "Hookshot binds
+        # everything anyway".
+        matrix_bridge_hookshot_widgets_enabled: false
+
+        # No third-party service is configured in this scenario - see the header
+        # of verify.yml. GitLab is the one the role enables by default, so it is
+        # explicitly switched off and its absence from the rendered config and
+        # registration is asserted.
+        matrix_bridge_hookshot_gitlab_enabled: false
+
+        # The generic webhooks listener is the only part of Hookshot that needs
+        # no account anywhere, so it is what this scenario exercises live. The
+        # prefix differs from the role's default (`_webhooks_`).
+        matrix_bridge_hookshot_generic_userIdPrefix: _molecule_hook_  # noqa var-naming
+
+        # Neither the role's default (600) nor Hookshot's own (600).
+        matrix_bridge_hookshot_feeds_pollIntervalSeconds: 907  # noqa var-naming
+
+        # The role defaults to `warn`; Hookshot itself defaults to `info`. This
+        # is a third value, so finding it in config.yml cannot be a coincidence.
+        matrix_bridge_hookshot_logging_level: debug
+
+        # Traefik is not deployed here, so the labels the role would render for
+        # it are switched off and their absence is asserted instead.
+        matrix_bridge_hookshot_container_labels_traefik_enabled: false
+
+        # verify.yml runs as its own play, where role defaults are out of scope,
+        # so what it reads is pinned here. These two match the role's own
+        # defaults on purpose - they name things (a path, a container) rather
+        # than configure them, and nothing is asserted *about* them.
+        matrix_bridge_hookshot_base_path: /matrix/hookshot
+        matrix_bridge_hookshot_identifier: matrix-hookshot
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
