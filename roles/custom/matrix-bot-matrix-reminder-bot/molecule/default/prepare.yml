@@ -74,6 +74,15 @@
     # Not an appservice: it logs in with the username and password the role rendered, retrying
     # every 15 seconds until that succeeds. The stub answers with an access token, which is
     # enough to reach the sync loop. Nothing is asserted about the stub itself.
+    - name: Ensure Postgres is running
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/postgres.yml"
+      vars:
+        molecule_shared_postgres_network: "{{ matrix_bot_matrix_reminder_bot_container_network }}"
+        molecule_shared_postgres_database: "{{ matrix_bot_matrix_reminder_bot_database_name }}"
+        molecule_shared_postgres_username: "{{ matrix_bot_matrix_reminder_bot_database_username }}"
+        molecule_shared_postgres_password: "{{ matrix_bot_matrix_reminder_bot_database_password }}"
+
     - name: Ensure the homeserver stub is running
       ansible.builtin.include_tasks:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/homeserver-stub.yml"

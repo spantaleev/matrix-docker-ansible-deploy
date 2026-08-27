@@ -33,9 +33,18 @@ provisioner:
         # about it.
         matrix_bridge_mautrix_whatsapp_homeserver_address: http://matrix.molecule.local:8008
 
-        # sqlite keeps the scenario to one container. Which database engine the bridge can
-        # talk to is not what this proves.
-        matrix_bridge_mautrix_whatsapp_database_engine: sqlite
+        # Postgres, because that is what `group_vars/matrix_servers` selects whenever postgres
+        # is enabled - which is the default, so it is what essentially every real deployment
+        # runs. prepare.yml stands one up. The password differs from the role's default, so
+        # reaching the database at all means the role's connection string was built from these.
+        # Database name and user differ from the role's defaults, so the bridge reaching the
+        # database at all proves the role built its connection string out of these rather
+        # than out of anything it would have picked on its own. prepare.yml creates them.
+        matrix_bridge_mautrix_whatsapp_database_engine: postgres
+        matrix_bridge_mautrix_whatsapp_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_whatsapp_database_name: molecule_whatsapp
+        matrix_bridge_mautrix_whatsapp_database_username: molecule_whatsapp
+        matrix_bridge_mautrix_whatsapp_database_password: molecule_pg_password_5e8c21
 
         # Here these only have to reach the rendered configuration and the registration.
         matrix_bridge_mautrix_whatsapp_appservice_token: molecule_as_token_4f2a91

@@ -91,6 +91,28 @@ own job there, so there is nothing to collide with.
 The directories are disposable; `var/` is gitignored. Delete `var/molecule-ansible-home/` to force
 a fresh install.
 
+## Databases
+
+Scenarios for roles that have a database run against **Postgres**, not sqlite.
+
+That is what `group_vars/matrix_servers` selects whenever postgres is enabled, which is the
+default, so it is what essentially every deployment runs. sqlite is a path almost nobody is on:
+a bug that stopped the mautrix-meta bridges from starting at all under sqlite sat unreported
+for a long time, which says plainly enough whose path is worth testing.
+
+`molecule-shared/tasks/postgres.yml` stands one up on the scenario's container network. Include
+it from `prepare.yml` and point the role at it with its own `_database_engine`, `_database_hostname`
+and credentials. Give the database and user names that differ from the role's defaults - then the
+component reaching the database at all proves the role built its connection string out of them.
+
+The image is pinned in `molecule-shared/vars.yml` at the major the postgres role deploys to new
+installations, and Renovate carries it forward. When a new major lands, the PR bumping that pin
+runs every scenario against it, which is the earliest warning we get that a component does not
+cope with it.
+
+Prefer asserting on the schema the component created over a file on disk: tables can only appear
+once it has resolved the hostname, authenticated, and run its migrations.
+
 ## Reclaiming the disk space
 
 `just molecule-clean` removes what the runs leave under `var/`.

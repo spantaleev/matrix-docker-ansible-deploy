@@ -34,14 +34,15 @@ provisioner:
         matrix_bridge_mautrix_meta_messenger_homeserver_address: http://matrix.molecule.local:8008
         matrix_bridge_mautrix_meta_messenger_homeserver_domain: molecule.local
 
-        # sqlite keeps the scenario to one container. Which database engine the bridge can
-        # talk to is not what this proves.
-        matrix_bridge_mautrix_meta_messenger_database_engine: sqlite3-fk-wal
-
-        # The URI the role derives is deliberately NOT overridden here. It used to build
-        # `sqlite:///` + the in-container path, which go-sqlite3 takes as a plain filename
-        # rather than parsing as a URL, so the bridge died at startup. This scenario caught
-        # that, and leaving the role's own value in place is what keeps it caught.
+        # Postgres, because that is what `group_vars/matrix_servers` selects whenever postgres
+        # is enabled - which is the default, so it is what essentially every real deployment
+        # runs. prepare.yml stands one up. Name and user differ from the role's defaults, so
+        # reaching the database proves the role built its connection string out of these.
+        matrix_bridge_mautrix_meta_messenger_database_engine: postgres
+        matrix_bridge_mautrix_meta_messenger_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_meta_messenger_database_name: molecule_meta_messenger
+        matrix_bridge_mautrix_meta_messenger_database_username: molecule_meta_messenger
+        matrix_bridge_mautrix_meta_messenger_database_password: molecule_pg_password_d24e70
 
         # Here these only have to reach the rendered configuration and the registration.
         matrix_bridge_mautrix_meta_messenger_appservice_token: molecule_meta_as_token_5c81de

@@ -138,18 +138,17 @@
           matrix_bridge_mautrix_meta_messenger_meta_mode=facebook-tor
         success_msg: "The rendered configuration reflects the Meta mode the scenario selected"
 
-    # The URI must stay a bare path. go-sqlite3 takes it as a filename, so a
-    # `sqlite:///` prefix makes the bridge die at startup - which is what this
-    # role's default used to do.
-    - name: Assert the configuration points the bridge at the sqlite database the role derived
+    - name: Assert the configuration points the bridge at the database the role derived
       ansible.builtin.assert:
         that:
           - mautrix_meta_messenger_config.database.type == matrix_bridge_mautrix_meta_messenger_database_engine
-          - mautrix_meta_messenger_config.database.uri == mautrix_meta_messenger_role_defaults.matrix_bridge_mautrix_meta_messenger_sqlite_database_path_in_container
+          - matrix_bridge_mautrix_meta_messenger_database_username in mautrix_meta_messenger_config.database.uri
+          - matrix_bridge_mautrix_meta_messenger_database_name in mautrix_meta_messenger_config.database.uri
+          - matrix_bridge_mautrix_meta_messenger_database_hostname in mautrix_meta_messenger_config.database.uri
         fail_msg: >-
           database.uri is {{ mautrix_meta_messenger_config.database.uri | default('unset') }},
-          which is not the bare in-container path the role defines
-        success_msg: "The rendered configuration points the bridge at the sqlite database the role derived"
+          which was not built from the scenario's connection settings
+        success_msg: "The rendered configuration points the bridge at the database the role derived"
 
     # The public address is what the role builds out of the three exposure
     # variables; it is the same endpoint the Traefik labels below route to.
@@ -201,23 +200,36 @@
         mautrix_meta_messenger_messenger_ghost_mxid: "@messenger_1234567890:{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"
         mautrix_meta_messenger_bot_mxid: "@{{ matrix_bridge_mautrix_meta_messenger_appservice_username }}:{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"
 
-    # Cheap proof that the data path reached the process and is writable by the uid the role
-    # runs the container as.
-    - name: Look for the bridge's sqlite database under the role's data path
-      ansible.builtin.stat:
-        path: "{{ matrix_bridge_mautrix_meta_messenger_data_path }}/mautrix-meta.db"
-      register: mautrix_meta_messenger_database
+    # The bridge can only have created tables here by resolving the hostname, authenticating
+    # with the credentials the role rendered, and running its migrations to completion.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_meta_messenger_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_meta_messenger_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: mautrix_meta_messenger_tables
+      changed_when: false
 
-    - name: Assert the bridge created its database where the role put its data path
+    - name: Assert the bridge migrated its schema into the database the role pointed it at
       ansible.builtin.assert:
         that:
-          - mautrix_meta_messenger_database.stat.exists
-          - mautrix_meta_messenger_database.stat.uid | int == matrix_user_uid | int
+          - mautrix_meta_messenger_tables.rc == 0
+          - "'version' in mautrix_meta_messenger_table_names"
+          - mautrix_meta_messenger_table_names | length > 5
         fail_msg: >-
-          The bridge did not create its database under
-          {{ matrix_bridge_mautrix_meta_messenger_data_path }}, or it is not owned by
-          uid {{ matrix_user_uid }}
-        success_msg: "The bridge created its database under the role's data path, as the role's uid"
+          The bridge did not create its schema in
+          {{ matrix_bridge_mautrix_meta_messenger_database_name }}
+          (found {{ mautrix_meta_messenger_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the database the role pointed it at"
+      vars:
+        mautrix_meta_messenger_table_names: "{{ mautrix_meta_messenger_tables.stdout_lines | select | list }}"
 
     - name: Read the image of the running container
       ansible.builtin.command:

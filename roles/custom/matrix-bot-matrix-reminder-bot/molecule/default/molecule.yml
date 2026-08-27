@@ -61,10 +61,15 @@ provisioner:
           matrix:
             device_name: Molecule Reminder Bot
 
-        # Moved off the role's default name so verify.yml can assert the bot opened the path
-        # the role gave it, with the default name as a negative control.
-        matrix_bot_matrix_reminder_bot_sqlite_database_path_local: /matrix/matrix-reminder-bot/data/molecule-reminders.db
-        matrix_bot_matrix_reminder_bot_sqlite_database_path_in_container: /data/molecule-reminders.db
+        # Postgres, because that is what `group_vars/matrix_servers` selects whenever postgres
+        # is enabled - which is the default, so it is what essentially every real deployment
+        # runs. prepare.yml stands one up. Name and user differ from the role's defaults, so
+        # reaching the database proves the role built its connection string out of these.
+        matrix_bot_matrix_reminder_bot_database_engine: postgres
+        matrix_bot_matrix_reminder_bot_database_hostname: matrix-postgres-molecule
+        matrix_bot_matrix_reminder_bot_database_name: molecule_reminder_bot
+        matrix_bot_matrix_reminder_bot_database_username: molecule_reminder_bot
+        matrix_bot_matrix_reminder_bot_database_password: molecule_pg_password_3c9b02
 
         # verify.yml runs as its own play, where the role's defaults are out of scope,
         # so the paths it reads are pinned here to match what the role derives.

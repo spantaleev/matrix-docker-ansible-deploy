@@ -97,9 +97,9 @@
     - name: Assert the bot opened the database engine the role selected
       ansible.builtin.assert:
         that:
-          - "\"Database initialization of type 'sqlite' complete\" in matrix_bot_matrix_reminder_bot_journal.stdout"
-        fail_msg: "The bot did not report a completed SQLite database initialization"
-        success_msg: "The bot initialized the SQLite database the role pointed it at"
+          - "\"Database initialization of type 'postgres' complete\" in matrix_bot_matrix_reminder_bot_journal.stdout"
+        fail_msg: "The bot did not report a completed Postgres database initialization"
+        success_msg: "The bot initialized the Postgres database the role pointed it at"
 
     - name: Read the configuration file the role rendered
       ansible.builtin.slurp:
@@ -116,7 +116,9 @@
           - matrix_bot_matrix_reminder_bot_matrix_homeserver_url in matrix_bot_matrix_reminder_bot_config_rendered
           - matrix_bot_matrix_reminder_bot_reminders_timezone in matrix_bot_matrix_reminder_bot_config_rendered
           - matrix_bot_matrix_reminder_bot_command_prefix in matrix_bot_matrix_reminder_bot_config_rendered
-          - "'sqlite://' + matrix_bot_matrix_reminder_bot_sqlite_database_path_in_container in matrix_bot_matrix_reminder_bot_config_rendered"
+          - matrix_bot_matrix_reminder_bot_database_username in matrix_bot_matrix_reminder_bot_config_rendered
+          - matrix_bot_matrix_reminder_bot_database_name in matrix_bot_matrix_reminder_bot_config_rendered
+          - matrix_bot_matrix_reminder_bot_database_hostname in matrix_bot_matrix_reminder_bot_config_rendered
           - "'@molecule-allowed:molecule.local' in matrix_bot_matrix_reminder_bot_config_rendered"
           - "'.*:blocked.molecule.local' in matrix_bot_matrix_reminder_bot_config_rendered"
         fail_msg: "The rendered configuration does not carry the scenario's settings"
@@ -138,41 +140,35 @@
       vars:
         matrix_bot_matrix_reminder_bot_config_rendered: "{{ matrix_bot_matrix_reminder_bot_config_file.content | b64decode }}"
 
-    # With no HTTP surface, where the database landed is the evidence that the storage
-    # configuration reached the running process and not merely the file on disk.
-    - name: Stat the database at the path the scenario configured
-      ansible.builtin.stat:
-        path: "{{ matrix_bot_matrix_reminder_bot_sqlite_database_path_local }}"
-      register: matrix_bot_matrix_reminder_bot_database
+    # With no HTTP surface, the schema in Postgres is the evidence that the storage
+    # configuration reached the running process rather than only the file on disk. The bot can
+    # only have created tables by resolving the hostname, authenticating with the credentials
+    # the role rendered, and running its migrations.
+    - name: List the tables the bot created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bot_matrix_reminder_bot_database_username }}
+          - --dbname={{ matrix_bot_matrix_reminder_bot_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: matrix_bot_matrix_reminder_bot_tables
+      changed_when: false
 
-    - name: Assert the database landed under the role's data path, owned by the role's user
+    - name: Assert the bot created its schema in the database the role pointed it at
       ansible.builtin.assert:
         that:
-          - matrix_bot_matrix_reminder_bot_database.stat.exists
-          - matrix_bot_matrix_reminder_bot_database.stat.uid == matrix_user_uid
-          - matrix_bot_matrix_reminder_bot_database.stat.gid == matrix_user_gid
+          - matrix_bot_matrix_reminder_bot_tables.rc == 0
+          - matrix_bot_matrix_reminder_bot_table_names | length > 0
         fail_msg: >-
-          {{ matrix_bot_matrix_reminder_bot_sqlite_database_path_local }} is missing or is not
-          owned by {{ matrix_user_uid }}:{{ matrix_user_gid }}
-        success_msg: >-
-          The database is at the configured path, owned by {{ matrix_user_uid }}:{{ matrix_user_gid }}
-
-    # Negative control for the assertion above: the role's own default database name must NOT
-    # appear, or a file at the configured path would prove nothing.
-    - name: Stat the database name the role would have used by default
-      ansible.builtin.stat:
-        path: "{{ matrix_bot_matrix_reminder_bot_data_path }}/bot.db"
-      register: matrix_bot_matrix_reminder_bot_default_database
-
-    - name: Assert the role's default database name was not used
-      ansible.builtin.assert:
-        that:
-          - not matrix_bot_matrix_reminder_bot_default_database.stat.exists
-        fail_msg: >-
-          {{ matrix_bot_matrix_reminder_bot_data_path }}/bot.db exists as well, so the
-          database at the configured path does not prove the role's storage
-          configuration reached the bot
-        success_msg: "Only the configured database path was used"
+          The bot created no tables in {{ matrix_bot_matrix_reminder_bot_database_name }}
+        success_msg: "The bot created its schema in the database the role pointed it at"
+      vars:
+        matrix_bot_matrix_reminder_bot_table_names: "{{ matrix_bot_matrix_reminder_bot_tables.stdout_lines | select | list }}"
 
     # matrix-nio writes its encryption store here once login succeeds, so a populated directory
     # means the bot could use the store path the role created inside a read-only container.

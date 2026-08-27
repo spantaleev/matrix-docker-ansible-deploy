@@ -33,9 +33,15 @@ provisioner:
         # about it. There is deliberately no Discord on the other side either.
         matrix_bridge_mautrix_discord_homeserver_address: http://matrix.molecule.local:8008
 
-        # sqlite keeps the scenario to one container. Which database engine the bridge can
-        # talk to is not what this proves.
-        matrix_bridge_mautrix_discord_database_engine: sqlite
+        # Postgres, because that is what `group_vars/matrix_servers` selects whenever postgres
+        # is enabled - which is the default, so it is what essentially every real deployment
+        # runs. prepare.yml stands one up. Name and user differ from the role's defaults, so
+        # reaching the database proves the role built its connection string out of these.
+        matrix_bridge_mautrix_discord_database_engine: postgres
+        matrix_bridge_mautrix_discord_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_discord_database_name: molecule_discord
+        matrix_bridge_mautrix_discord_database_username: molecule_discord
+        matrix_bridge_mautrix_discord_database_password: molecule_pg_password_a17f34
 
         # Here these only have to reach the rendered configuration and the registration.
         matrix_bridge_mautrix_discord_appservice_token: molecule_as_token_d15c07

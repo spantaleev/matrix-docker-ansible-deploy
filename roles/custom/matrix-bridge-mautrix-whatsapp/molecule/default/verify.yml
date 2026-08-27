@@ -117,23 +117,37 @@
       vars:
         mautrix_whatsapp_registration_rendered: "{{ mautrix_whatsapp_registration_file.content | b64decode }}"
 
-    # Cheap proof that the data path reached the process and is writable by the uid the role
-    # runs it as.
-    - name: Look for the bridge's sqlite database under the role's data path
-      ansible.builtin.stat:
-        path: "{{ matrix_bridge_mautrix_whatsapp_data_path }}/mautrix-whatsapp.db"
-      register: mautrix_whatsapp_database
+    # Stronger than the file-on-disk check sqlite allowed: the bridge can only have created
+    # tables here by resolving the hostname, authenticating with the credentials the role
+    # rendered, and running its migrations to completion.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_whatsapp_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_whatsapp_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: mautrix_whatsapp_tables
+      changed_when: false
 
-    - name: Assert the bridge created its database where the role put its data path
+    - name: Assert the bridge migrated its schema into the database the role pointed it at
       ansible.builtin.assert:
         that:
-          - mautrix_whatsapp_database.stat.exists
-          - mautrix_whatsapp_database.stat.uid | int == matrix_user_uid | int
+          - mautrix_whatsapp_tables.rc == 0
+          - "'version' in mautrix_whatsapp_table_names"
+          - mautrix_whatsapp_table_names | length > 5
         fail_msg: >-
-          The bridge did not create its database under
-          {{ matrix_bridge_mautrix_whatsapp_data_path }}, or it is not owned by
-          uid {{ matrix_user_uid }}
-        success_msg: "The bridge created its database under the role's data path, as the role's uid"
+          The bridge did not create its schema in
+          {{ matrix_bridge_mautrix_whatsapp_database_name }}
+          (found {{ mautrix_whatsapp_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the database the role pointed it at"
+      vars:
+        mautrix_whatsapp_table_names: "{{ mautrix_whatsapp_tables.stdout_lines | select | list }}"
 
     - name: Read the image of the running container
       ansible.builtin.command:

@@ -12,3 +12,11 @@ molecule_shared_image_curl: "docker.io/curlimages/curl:8.11.1"
 # Used for small stub services (a fake homeserver, and so on).
 # renovate: datasource=docker depName=docker.io/library/python
 molecule_shared_image_python: "docker.io/library/python:3.13-alpine"
+
+# Postgres for scenarios whose role has a database. Pinned at the major the postgres role
+# deploys to new installations, and left to Renovate from there: when a new major lands,
+# the PR bumping this pin runs every scenario against it, which is the earliest warning we
+# get that a component does not cope. Users who upgrade Postgres promptly are on that major
+# well before the postgres role makes it the default for new installations.
+# renovate: datasource=docker depName=docker.io/library/postgres
+molecule_shared_image_postgres: "docker.io/library/postgres:18.6-alpine"

@@ -74,6 +74,15 @@
     # The bridge calls /whoami before it will run at all, exiting if the id it gets back is
     # not the bot user it was configured as. It is not being asked to bridge anything: there
     # is no Meta account in this scenario, and deliberately never will be.
+    - name: Ensure Postgres is running
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/postgres.yml"
+      vars:
+        molecule_shared_postgres_network: "{{ matrix_bridge_mautrix_meta_messenger_container_network }}"
+        molecule_shared_postgres_database: "{{ matrix_bridge_mautrix_meta_messenger_database_name }}"
+        molecule_shared_postgres_username: "{{ matrix_bridge_mautrix_meta_messenger_database_username }}"
+        molecule_shared_postgres_password: "{{ matrix_bridge_mautrix_meta_messenger_database_password }}"
+
     - name: Ensure the homeserver stub is running
       ansible.builtin.include_tasks:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/homeserver-stub.yml"

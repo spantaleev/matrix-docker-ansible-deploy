@@ -1,0 +1,73 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Stands up Postgres on a container network, for scenarios whose role has a database.
+#
+# Include from a scenario's prepare.yml:
+#
+#   - name: Ensure Postgres is running
+#     ansible.builtin.include_tasks:
+#       file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/postgres.yml"
+#     vars:
+#       molecule_shared_postgres_network: "{{ <role>_container_network }}"
+#       molecule_shared_postgres_database: matrix_<role>
+#       molecule_shared_postgres_username: matrix_<role>
+#       molecule_shared_postgres_password: <something>
+#
+# The role should then be pointed at it with its own `_database_engine: postgres` and
+# `_database_hostname: matrix-postgres-molecule` (or whatever hostname is passed here).
+#
+# This is what the playbook does in a real run: `group_vars/matrix_servers` selects postgres
+# whenever postgres is enabled, which is the default. sqlite is the path almost nobody uses.
+
+- name: Ensure a previous Postgres is gone
+  ansible.builtin.command:
+    argv:
+      - docker
+      - rm
+      - --force
+      - "{{ molecule_shared_postgres_name | default('matrix-postgres-molecule') }}"
+  register: molecule_shared_postgres_removal
+  changed_when: molecule_shared_postgres_removal.rc == 0
+  failed_when: false
+
+- name: Ensure Postgres is running
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --detach
+      - --name={{ molecule_shared_postgres_name | default('matrix-postgres-molecule') }}
+      - --network={{ molecule_shared_postgres_network }}
+      - --network-alias={{ molecule_shared_postgres_hostname | default('matrix-postgres-molecule') }}
+      - --env=POSTGRES_DB={{ molecule_shared_postgres_database }}
+      - --env=POSTGRES_USER={{ molecule_shared_postgres_username }}
+      - --env=POSTGRES_PASSWORD={{ molecule_shared_postgres_password }}
+      # A tmpfs, because the database is thrown away with the container and not writing it
+      # to the overlay filesystem is faster. Mounted at /var/lib/postgresql rather than at
+      # .../data: since 18 the image puts PGDATA in a versioned subdirectory and refuses to
+      # start if it finds a mount at the old path.
+      - --tmpfs=/var/lib/postgresql
+      - "{{ molecule_shared_image_postgres }}"
+  register: molecule_shared_postgres_start
+  changed_when: molecule_shared_postgres_start.rc == 0
+
+# `pg_isready` needs the username: it defaults to the OS user of whoever runs it, which inside
+# this container is `postgres` and may not be the role the scenario created.
+- name: Wait for Postgres to accept connections
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - "{{ molecule_shared_postgres_name | default('matrix-postgres-molecule') }}"
+      - pg_isready
+      - --username={{ molecule_shared_postgres_username }}
+      - --dbname={{ molecule_shared_postgres_database }}
+      - --quiet
+  register: molecule_shared_postgres_ready
+  changed_when: false
+  until: molecule_shared_postgres_ready.rc == 0
+  retries: 30
+  delay: 2
