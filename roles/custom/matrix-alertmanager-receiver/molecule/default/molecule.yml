@@ -1,0 +1,89 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-alertmanager-receiver-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        # This role lives inside the playbook, so the variables the playbook
+        # would normally supply from `matrix-base` and from group_vars have to
+        # be provided here instead. These are the ones the role actually reads.
+        matrix_base_data_path: /matrix
+        matrix_domain: molecule.local
+        matrix_user_name: matrix
+        matrix_group_name: matrix
+        # Deliberately not 1000: the ubuntu2604 image already has a user there,
+        # so a distinct id proves the role used the one it was given.
+        matrix_user_uid: 1234
+        matrix_user_gid: 1234
+
+        matrix_alertmanager_receiver_hostname: alertmanager-receiver.molecule.local
+        matrix_alertmanager_receiver_path_prefix: /
+        matrix_alertmanager_receiver_container_network: matrix-alertmanager-receiver-molecule
+
+        # verify.yml runs as its own play, where the role's defaults are out
+        # of scope, so the paths it reads are pinned here as literals. They
+        # match what the role derives from matrix_base_data_path above.
+        matrix_alertmanager_receiver_base_path: /matrix/alertmanager-receiver
+        matrix_alertmanager_receiver_config_path: /matrix/alertmanager-receiver/config
+
+        # Traefik is not deployed in this scenario, so the labels the role would
+        # render for it are switched off and their absence is asserted instead.
+        matrix_alertmanager_receiver_container_labels_traefik_enabled: false
+
+        # Deliberately different from the role's own defaults (port 12345,
+        # metrics disabled, alerts under /alerts), so that `verify.yml` can tell
+        # what the role rendered apart from what the application would have done
+        # on its own.
+        matrix_alertmanager_receiver_config_http_port: 12399
+        matrix_alertmanager_receiver_config_http_metrics_enabled: true
+        matrix_alertmanager_receiver_config_http_metrics_path: /molecule-metrics
+        matrix_alertmanager_receiver_config_http_alerts_path_prefix: /molecule-alerts
+
+        # The homeserver IS reached at startup - the service fetches its joined
+        # rooms and exits 1 if that fails - so prepare.yml stands up a stub for it
+        matrix_alertmanager_receiver_config_matrix_homeserver_url: http://matrix.molecule.local:8008
+        matrix_alertmanager_receiver_config_matrix_user_id: "@alertmanager:molecule.local"
+        matrix_alertmanager_receiver_config_matrix_access_token: molecule_access_token_4f2a91
+        matrix_alertmanager_receiver_config_matrix_room_mapping:
+          molecule-room: "!molecule-room-id:molecule.local"
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

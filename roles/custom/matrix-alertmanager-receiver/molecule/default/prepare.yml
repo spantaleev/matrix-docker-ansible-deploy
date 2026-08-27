@@ -1,0 +1,126 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Prepare matrix-alertmanager-receiver Molecule tests
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Ensure apt cache is updated
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      when: ansible_os_family == 'Debian'
+
+    - name: Ensure required packages are installed
+      ansible.builtin.package:
+        name:
+          - python3-requests
+          - fuse-overlayfs
+        state: present
+
+    - name: Ensure Docker is installed
+      ansible.builtin.include_role:
+        name: ansible-role-docker
+      vars:
+        docker_daemon_options:
+          storage-driver: fuse-overlayfs
+
+    # The role's file tasks set owner/group by name, and Ansible resolves those
+    # through the passwd database - so they have to exist before it runs. In a
+    # real deployment `matrix-base` creates them.
+    - name: Ensure the matrix group exists
+      ansible.builtin.group:
+        name: "{{ matrix_group_name }}"
+        gid: "{{ matrix_user_gid }}"
+        state: present
+
+    - name: Ensure the matrix user exists
+      ansible.builtin.user:
+        name: "{{ matrix_user_name }}"
+        uid: "{{ matrix_user_uid }}"
+        group: "{{ matrix_group_name }}"
+        create_home: false
+        system: true
+        state: present
+
+    - name: Ensure the base data path exists
+      ansible.builtin.file:
+        path: "{{ matrix_base_data_path }}"
+        state: directory
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+        mode: "0750"
+
+    - name: Ensure the container network the role attaches to exists
+      ansible.builtin.command:
+        argv:
+          - docker
+          - network
+          - create
+          - "{{ matrix_alertmanager_receiver_container_network }}"
+      register: matrix_alertmanager_receiver_molecule_network
+      changed_when: matrix_alertmanager_receiver_molecule_network.rc == 0
+      failed_when:
+        - matrix_alertmanager_receiver_molecule_network.rc != 0
+        - "'already exists' not in matrix_alertmanager_receiver_molecule_network.stderr"
+
+    # matrix-alertmanager-receiver contacts the homeserver while starting up -
+    # it fetches /_matrix/client/v3/joined_rooms to resolve its room mapping -
+    # and exits 1 if that fails. So a homeserver has to exist for the service
+    # to come up at all. A stub is enough: the scenario is testing this role,
+    # not Synapse, and it keeps the run offline and fast.
+    - name: Ensure the Matrix homeserver stub script exists
+      ansible.builtin.copy:
+        dest: /root/matrix-homeserver-stub.py
+        mode: "0755"
+        content: |
+          import json
+          from http.server import BaseHTTPRequestHandler, HTTPServer
+
+          ROOMS = {"joined_rooms": ["{{ matrix_alertmanager_receiver_config_matrix_room_mapping['molecule-room'] }}"]}
+
+          class Handler(BaseHTTPRequestHandler):
+              def _send(self, payload):
+                  body = json.dumps(payload).encode()
+                  self.send_response(200)
+                  self.send_header("Content-Type", "application/json")
+                  self.send_header("Content-Length", str(len(body)))
+                  self.end_headers()
+                  self.wfile.write(body)
+
+              def do_GET(self):
+                  if self.path.endswith("/joined_rooms"):
+                      self._send(ROOMS)
+                  else:
+                      self._send({})
+
+              def do_POST(self):
+                  self._send({"event_id": "$molecule-event-id"})
+
+              def log_message(self, *args):
+                  pass
+
+          HTTPServer(("0.0.0.0", 8008), Handler).serve_forever()
+
+    - name: Ensure the Matrix homeserver stub is running on the role's network
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --detach
+          - --rm
+          - --name=matrix-homeserver-stub
+          - --network={{ matrix_alertmanager_receiver_container_network }}
+          - --network-alias=matrix.molecule.local
+          - --volume=/root/matrix-homeserver-stub.py:/stub.py:ro
+          - docker.io/library/python:3.13-alpine
+          - python3
+          - /stub.py
+      register: matrix_alertmanager_receiver_molecule_stub
+      changed_when: matrix_alertmanager_receiver_molecule_stub.rc == 0
+      failed_when:
+        - matrix_alertmanager_receiver_molecule_stub.rc != 0
+        - "'already in use' not in matrix_alertmanager_receiver_molecule_stub.stderr"

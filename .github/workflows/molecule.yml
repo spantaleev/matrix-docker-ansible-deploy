@@ -1,0 +1,150 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+name: Molecule
+
+# Unlike the MASH role repositories, where one repository holds one role, every
+# role here lives in the same repository. Running every scenario on every push
+# would be unaffordable, so a first job works out which roles the push actually
+# touched and the matrix is built from that. A push that changes documentation,
+# or a role with no scenario yet, runs nothing at all.
+on:  # yamllint disable-line rule:truthy
+  push:
+    paths:
+      - "roles/custom/**"
+      - ".github/workflows/molecule.yml"
+  pull_request:
+    paths:
+      - "roles/custom/**"
+      - ".github/workflows/molecule.yml"
+  workflow_dispatch:
+    inputs:
+      role:
+        description: "Single role to test (directory name under roles/custom), or empty for all roles that have a scenario"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    name: Work out which roles to test
+    runs-on: ubuntu-latest
+
+    # Same rule as the MASH repositories: a pull request from a branch of this
+    # repository would otherwise run everything twice, once for the push and
+    # once for the pull request.
+    if: >-
+      github.event_name != 'pull_request'
+      || github.event.pull_request.head.repo.full_name != github.repository
+
+    outputs:
+      roles: ${{ steps.detect.outputs.roles }}
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Detect roles with a Molecule scenario that this change touches
+        id: detect
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          INPUT_ROLE: ${{ inputs.role }}
+        run: |
+          set -euo pipefail
+
+          have_scenario() {
+            [ -f "roles/custom/$1/molecule/default/molecule.yml" ]
+          }
+
+          # An explicit request through workflow_dispatch wins over detection.
+          if [ -n "${INPUT_ROLE}" ]; then
+            if have_scenario "${INPUT_ROLE}"; then
+              printf 'roles=["%s"]\n' "${INPUT_ROLE}" >> "$GITHUB_OUTPUT"
+            else
+              echo "No scenario at roles/custom/${INPUT_ROLE}/molecule/default" >&2
+              exit 1
+            fi
+            exit 0
+          fi
+
+          # A hand-triggered run with no role named, and any run where the diff
+          # base is unusable (a new branch, a force push, the very first commit),
+          # falls back to every role that has a scenario. That is the safe
+          # direction to fail in: too much testing rather than too little.
+          base=""
+          case "${EVENT_NAME}" in
+            pull_request) base="${BASE_SHA}" ;;
+            push)
+              if [ -n "${BEFORE_SHA}" ] && [ "${BEFORE_SHA}" != "0000000000000000000000000000000000000000" ] \
+                 && git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+                base="${BEFORE_SHA}"
+              fi
+              ;;
+          esac
+
+          if [ -n "${base}" ]; then
+            changed="$(git diff --name-only "${base}" HEAD -- 'roles/custom/*' || true)"
+            candidates="$(printf '%s\n' "${changed}" | awk -F/ 'NF>2 {print $3}' | sort -u)"
+            echo "Changed roles: ${candidates:-none}"
+          else
+            candidates="$(find roles/custom -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)"
+            echo "No usable diff base; considering every role"
+          fi
+
+          selected=""
+          for role in ${candidates}; do
+            if have_scenario "${role}"; then
+              selected="${selected} ${role}"
+            fi
+          done
+
+          if [ -z "${selected}" ]; then
+            echo "Nothing to test"
+            echo 'roles=[]' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Testing:${selected}"
+          json="$(printf '%s\n' ${selected} | jq -R . | jq -c -s .)"
+          echo "roles=${json}" >> "$GITHUB_OUTPUT"
+
+  molecule:
+    name: "Molecule: ${{ matrix.role }}"
+    runs-on: ubuntu-latest
+
+    needs: detect
+    if: needs.detect.outputs.roles != '[]'
+
+    strategy:
+      matrix:
+        role: ${{ fromJson(needs.detect.outputs.roles) }}
+      fail-fast: false
+
+    env:
+      MOLECULE_DISTRO: ubuntu2604
+      PY_COLORS: "1"
+      ANSIBLE_FORCE_COLOR: "1"
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install test dependencies
+        run: python3 -m pip install -r roles/custom/${{ matrix.role }}/molecule/requirements.txt
+
+      - name: Run Molecule
+        working-directory: roles/custom/${{ matrix.role }}
+        run: molecule test --scenario-name default
