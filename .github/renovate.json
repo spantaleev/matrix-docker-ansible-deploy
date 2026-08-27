@@ -70,6 +70,15 @@
       ],
       "automerge": true,
       "automergeType": "branch"
+    },
+    {
+      "description": "Molecule's own dependencies merge via branch push (no PR, no email). Anything under molecule-shared/ - the helper container images, Postgres, and the Python pins - triggers the Molecule workflow, and a change to a shared file makes it run every scenario, so an update only merges once the whole suite has passed on it. A failure surfaces as a PR instead. This is how a new Postgres major reaches us: the bump runs every scenario against it before anything is merged.",
+      "matchFileNames": [
+        "molecule-shared/**",
+        ".github/workflows/molecule.yml"
+      ],
+      "automerge": true,
+      "automergeType": "branch"
     }
   ],
   "pre-commit": {
