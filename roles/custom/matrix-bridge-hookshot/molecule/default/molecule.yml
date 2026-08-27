@@ -24,17 +24,6 @@ provisioner:
   config_options:
     defaults:
       callback_result_format: yaml
-  options:
-    # The role's `tasks/main.yml` opens with a block tagged
-    # `reset-hookshot-encryption`, and Ansible runs tagged tasks unless tags are
-    # actually selected - so a tagless play (which is what Molecule runs) hits
-    # it. It stops `matrix-hookshot.service` before that service exists, which
-    # fails on a fresh host. Skipping the tag is what the playbook effectively
-    # does by always running with `--tags=setup-all,start`.
-    #
-    # `molecule-notest,notest` are Molecule's own defaults, repeated here
-    # because this key replaces them rather than adding to them.
-    skip-tags: molecule-notest,notest,reset-hookshot-encryption
   inventory:
     group_vars:
       all:

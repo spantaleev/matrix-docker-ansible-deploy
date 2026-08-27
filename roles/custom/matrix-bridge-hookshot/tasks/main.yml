@@ -7,6 +7,12 @@
 ---
 
 - tags:
+    # Resetting the crypto store is destructive and is only ever meant to happen
+    # when explicitly asked for. Without `never`, a playbook run that does not
+    # select tags at all runs this block along with everything else - which fails
+    # on a host where the service does not exist yet, and silently resets the
+    # crypto store on one where it does.
+    - never
     - reset-hookshot-encryption
   block:
     - when: matrix_bridge_hookshot_enabled | bool
