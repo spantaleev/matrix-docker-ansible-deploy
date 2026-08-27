@@ -1,0 +1,86 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Prepare mautrix-meta-messenger Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Ensure apt cache is updated
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      when: ansible_os_family == 'Debian'
+
+    - name: Ensure required packages are installed
+      ansible.builtin.package:
+        name:
+          - python3-requests
+          - fuse-overlayfs
+        state: present
+
+    - name: Ensure Docker is installed
+      ansible.builtin.include_role:
+        name: ansible-role-docker
+      vars:
+        docker_daemon_options:
+          storage-driver: fuse-overlayfs
+
+    # The role's file tasks set owner/group by name and Ansible resolves those
+    # through the passwd database, so they have to exist first. matrix-base
+    # creates them in a real deployment.
+    - name: Ensure the matrix group exists
+      ansible.builtin.group:
+        name: "{{ matrix_group_name }}"
+        gid: "{{ matrix_user_gid }}"
+        state: present
+
+    - name: Ensure the matrix user exists
+      ansible.builtin.user:
+        name: "{{ matrix_user_name }}"
+        uid: "{{ matrix_user_uid }}"
+        group: "{{ matrix_group_name }}"
+        create_home: false
+        system: true
+        state: present
+
+    - name: Ensure the base data path exists
+      ansible.builtin.file:
+        path: "{{ matrix_base_data_path }}"
+        state: directory
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+        mode: "0750"
+
+    # The role creates this network itself during converge, but the homeserver
+    # stub below has to be attached to it before that, so it is created here.
+    - name: Ensure the container network the role attaches to exists
+      ansible.builtin.command:
+        argv:
+          - docker
+          - network
+          - create
+          - "{{ matrix_bridge_mautrix_meta_messenger_container_network }}"
+      register: mautrix_meta_messenger_molecule_network
+      changed_when: mautrix_meta_messenger_molecule_network.rc == 0
+      failed_when:
+        - mautrix_meta_messenger_molecule_network.rc != 0
+        - "'already exists' not in mautrix_meta_messenger_molecule_network.stderr"
+
+    # The bridge contacts the homeserver as it starts, and calls /whoami before
+    # it will run at all - it exits if the id it gets back is not the bot user
+    # it was configured as. It is not being asked to bridge anything; there is
+    # no Meta account anywhere in this scenario and there is deliberately never
+    # going to be one. See molecule-shared/homeserver-stub.py.
+    - name: Ensure the homeserver stub is running
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/homeserver-stub.yml"
+      vars:
+        molecule_shared_stub_network: "{{ matrix_bridge_mautrix_meta_messenger_container_network }}"
+        molecule_shared_stub_server_name: "{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"
+        molecule_shared_stub_user_id: "@{{ matrix_bridge_mautrix_meta_messenger_appservice_username }}:{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"

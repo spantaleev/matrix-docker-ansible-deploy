@@ -1,0 +1,280 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# What this proves: the bridge starts, reads the configuration and registration
+# the role rendered, opens its appservice port, and is the Messenger-side image
+# at the version the role pins.
+#
+# The extra thing worth proving for this role in particular is that
+# `matrix_bridge_mautrix_meta_messenger_meta_mode` reaches every place it feeds:
+# one upstream codebase serves several Meta networks, and the mode is what picks
+# which one. The scenario runs the bridge in `facebook-tor` mode rather than the
+# role's default `messenger`, so the assertions below can tell the two apart.
+#
+# It does NOT bridge anything - there is no Facebook or Messenger account on the
+# other side and there is deliberately never going to be one. See
+# docs/molecule-testing.md.
+- name: Verify mautrix-meta-messenger
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  # Lazily evaluated, so they are only resolved by the tasks that come after the
+  # matching slurp. Deliberately not set_fact: the rendered configuration
+  # contains the bridge's own Go templates (`{{.}}` in `username_template`), and
+  # a stored fact gets templated again on every lookup, which would try to
+  # evaluate those as Jinja.
+  vars:
+    mautrix_meta_messenger_config: "{{ mautrix_meta_messenger_config_file.content | b64decode | from_yaml }}"
+    mautrix_meta_messenger_registration: "{{ mautrix_meta_messenger_registration_file.content | b64decode | from_yaml }}"
+    mautrix_meta_messenger_labels_rendered: "{{ mautrix_meta_messenger_labels.content | b64decode }}"
+  gather_facts: false
+
+  tasks:
+    # Read from the role's own defaults rather than pinned in molecule.yml, so
+    # the version assertion below compares the running image against what the
+    # role ships instead of against the scenario itself.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_meta_messenger_role_defaults
+
+    - name: Wait for the mautrix-meta-messenger service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-meta-messenger.service
+      register: mautrix_meta_messenger_service
+      until: mautrix_meta_messenger_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # `Restart=always` means a bridge crash-looping on a configuration it cannot
+    # read still reports `active`, so the restart counter is checked too. It is
+    # asserted `is defined` because `| int` turns a missing property into 0 and
+    # would pass vacuously.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_service.status.ActiveState == 'active'
+          - mautrix_meta_messenger_service.status.NRestarts is defined
+          - mautrix_meta_messenger_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-meta-messenger.service is
+          {{ mautrix_meta_messenger_service.status.ActiveState | default('unknown') }}
+          after {{ mautrix_meta_messenger_service.status.NRestarts | default('?') }}
+          automatic restart(s)
+        success_msg: "matrix-mautrix-meta-messenger.service is active and has not restarted"
+
+    # The appservice port is the bridge's own listener, the one a homeserver
+    # would push transactions to. It opening at all means the bridge got through
+    # reading its configuration, through its /whoami check against the
+    # homeserver, and through setting itself up.
+    - name: Wait for the bridge to open its appservice port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_meta_messenger_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - "http://matrix-mautrix-meta-messenger:29319/_matrix/mau/live"
+      register: mautrix_meta_messenger_live
+      changed_when: false
+      until: "'HTTP_STATUS=000' not in mautrix_meta_messenger_live.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge answers on its appservice port
+      ansible.builtin.assert:
+        that:
+          - "'HTTP_STATUS=000' not in mautrix_meta_messenger_live.stdout"
+        fail_msg: >-
+          The bridge did not answer on its appservice port
+          ({{ mautrix_meta_messenger_live.stdout | default('no output') }})
+        success_msg: "The bridge answers on its appservice port"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_meta_messenger_config_path }}/config.yaml"
+      register: mautrix_meta_messenger_config_file
+
+    # Each of these differs from what the bridge would use on its own, so their
+    # presence means the role's configuration is what the bridge is running on
+    # rather than something that happened to agree with it.
+    - name: Assert the rendered configuration carries this scenario's values
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_config.homeserver.address == matrix_bridge_mautrix_meta_messenger_homeserver_address
+          - mautrix_meta_messenger_config.homeserver.domain == matrix_bridge_mautrix_meta_messenger_homeserver_domain
+          - mautrix_meta_messenger_config.appservice.bot.username == matrix_bridge_mautrix_meta_messenger_appservice_username
+          - mautrix_meta_messenger_config.appservice.as_token == matrix_bridge_mautrix_meta_messenger_appservice_token
+          - mautrix_meta_messenger_config.appservice.hs_token == matrix_bridge_mautrix_meta_messenger_homeserver_token
+          - mautrix_meta_messenger_config.bridge.command_prefix == matrix_bridge_mautrix_meta_messenger_bridge_command_prefix
+          - mautrix_meta_messenger_config.logging.min_level == matrix_bridge_mautrix_meta_messenger_logging_min_level
+          # matrix_admin is empty in the shared context, so the only per-domain
+          # permission left is the one the role derives from the homeserver domain.
+          - mautrix_meta_messenger_config.bridge.permissions[matrix_bridge_mautrix_meta_messenger_homeserver_domain] == 'user'
+          # From the shared context rather than from this scenario, but the role
+          # is what has to carry it into the configuration.
+          - mautrix_meta_messenger_config.encryption.allow == matrix_bridges_encryption_enabled
+        fail_msg: "The rendered configuration does not carry the scenario's values"
+        success_msg: "The rendered configuration carries the scenario's values"
+
+    # The mode is the variable that makes this role family unusual, and it is
+    # not written into the configuration as-is: the role expands it into an
+    # appservice id, a ghost username prefix, a bot displayname and the bridge's
+    # `tor` switch. Each of these holds a different value under the role's
+    # default `messenger` mode, so together they are what proves the choice
+    # propagated rather than being ignored.
+    - name: Assert the configuration reflects the Meta mode the scenario selected
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_config.appservice.id == 'facebook-tor'
+          - mautrix_meta_messenger_config.appservice.username_template.startswith('facebook_')
+          - not mautrix_meta_messenger_config.appservice.username_template.startswith('messenger_')
+          - mautrix_meta_messenger_config.network.tor
+          - mautrix_meta_messenger_config.appservice.bot.displayname == 'Facebook-tor bridge bot'
+          - matrix_bridge_mautrix_meta_messenger_bridge_displayname_suffix in mautrix_meta_messenger_config.network.displayname_template
+        fail_msg: >-
+          The rendered configuration does not reflect
+          matrix_bridge_mautrix_meta_messenger_meta_mode=facebook-tor
+        success_msg: "The rendered configuration reflects the Meta mode the scenario selected"
+
+    # sqlite3-fk-wal was chosen in molecule.yml. The URI is a scenario override
+    # rather than the role's derived value - see the comment in molecule.yml -
+    # so what this checks is only that both reach the configuration. The real
+    # proof that the bridge is using the role's data path is the database file
+    # asserted further down.
+    - name: Assert the configuration points the bridge at the sqlite database the scenario chose
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_config.database.type == matrix_bridge_mautrix_meta_messenger_database_engine
+          - mautrix_meta_messenger_config.database.uri == matrix_bridge_mautrix_meta_messenger_appservice_database_uri
+        fail_msg: "The rendered configuration does not point the bridge at the scenario's sqlite database"
+        success_msg: "The rendered configuration points the bridge at the scenario's sqlite database"
+
+    # The public address is what the role builds out of the three exposure
+    # variables; it is the same endpoint the Traefik labels below route to.
+    - name: Assert the configuration carries the public address the exposure settings imply
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_config.appservice.public_address == 'https://bridges.molecule.local/bridges/meta-messenger'
+        fail_msg: >-
+          appservice.public_address is
+          {{ mautrix_meta_messenger_config.appservice.public_address | default('unset') }}
+        success_msg: "The rendered configuration carries the public address the exposure settings imply"
+
+    # The registration file is the half of the appservice handshake the
+    # homeserver reads, and it is generated by the role rather than by the
+    # bridge, so it is worth checking on its own.
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_meta_messenger_config_path }}/registration.yaml"
+      register: mautrix_meta_messenger_registration_file
+
+    - name: Assert the registration carries the scenario's tokens, id and bot user
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_registration.as_token == matrix_bridge_mautrix_meta_messenger_appservice_token
+          - mautrix_meta_messenger_registration.hs_token == matrix_bridge_mautrix_meta_messenger_homeserver_token
+          - mautrix_meta_messenger_registration.id == 'facebook-tor'
+          - mautrix_meta_messenger_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_meta_messenger_appservice_username
+          - mautrix_meta_messenger_registration.url == 'http://matrix-mautrix-meta-messenger:29319'
+        fail_msg: "The appservice registration does not carry the scenario's tokens, id and bot user"
+        success_msg: "The appservice registration carries the scenario's tokens, id and bot user"
+
+    # The namespaces are regexes the role assembles, so rather than comparing
+    # them as strings - which would only re-derive the role's own escaping -
+    # they are checked by what they do: cover the bot, cover this mode's ghosts,
+    # and not cover the ghosts of the mode the role would have defaulted to.
+    - name: Assert the registration namespaces cover the bot and this mode's ghost users
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_ghost_regex | length > 0
+          - mautrix_meta_messenger_bot_regex | length > 0
+          - mautrix_meta_messenger_facebook_ghost_mxid is match(mautrix_meta_messenger_ghost_regex)
+          - mautrix_meta_messenger_messenger_ghost_mxid is not match(mautrix_meta_messenger_ghost_regex)
+          - mautrix_meta_messenger_bot_mxid is match(mautrix_meta_messenger_bot_regex)
+        fail_msg: "The appservice registration namespaces do not cover the bot and this mode's ghost users"
+        success_msg: "The appservice registration namespaces cover the bot and this mode's ghost users"
+      vars:
+        mautrix_meta_messenger_user_regexes: "{{ mautrix_meta_messenger_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_meta_messenger_ghost_regex: "{{ mautrix_meta_messenger_user_regexes | select('search', 'facebook_') | first | default('') }}"
+        mautrix_meta_messenger_bot_regex: "{{ mautrix_meta_messenger_user_regexes | reject('search', 'facebook_') | first | default('') }}"
+        mautrix_meta_messenger_facebook_ghost_mxid: "@facebook_1234567890:{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"
+        mautrix_meta_messenger_messenger_ghost_mxid: "@messenger_1234567890:{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"
+        mautrix_meta_messenger_bot_mxid: "@{{ matrix_bridge_mautrix_meta_messenger_appservice_username }}:{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"
+
+    # The cheap proof that the data path reached the process and is writable by
+    # the uid the role runs the container as.
+    - name: Look for the bridge's sqlite database under the role's data path
+      ansible.builtin.stat:
+        path: "{{ matrix_bridge_mautrix_meta_messenger_data_path }}/mautrix-meta.db"
+      register: mautrix_meta_messenger_database
+
+    - name: Assert the bridge created its database where the role put its data path
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_database.stat.exists
+          - mautrix_meta_messenger_database.stat.uid | int == matrix_user_uid | int
+        fail_msg: >-
+          The bridge did not create its database under
+          {{ matrix_bridge_mautrix_meta_messenger_data_path }}, or it is not owned by
+          uid {{ matrix_user_uid }}
+        success_msg: "The bridge created its database under the role's data path, as the role's uid"
+
+    - name: Read the image of the running container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-meta-messenger
+          - --format
+          - "{{ '{{' }} .Config.Image {{ '}}' }}"
+      register: mautrix_meta_messenger_image
+      changed_when: false
+
+    # Both Meta bridges are published to the same image repository, with
+    # Instagram's tags carrying an `ig-` prefix, so the tag is compared whole
+    # rather than by substring: an `ig-` prefix would mean this role pulled the
+    # other bridge's image.
+    - name: Assert the running container is the Messenger image at the version defaults/main.yml pins
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_messenger_image.stdout.endswith(':' + mautrix_meta_messenger_role_defaults.matrix_bridge_mautrix_meta_messenger_version)
+        fail_msg: >-
+          The running container is {{ mautrix_meta_messenger_image.stdout }}, which is not
+          the Messenger image at the pinned version
+          {{ mautrix_meta_messenger_role_defaults.matrix_bridge_mautrix_meta_messenger_version }}
+        success_msg: "The running container is the Messenger image at the version defaults/main.yml pins"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_meta_messenger_base_path }}/labels"
+      register: mautrix_meta_messenger_labels
+
+    # Traefik is not running here, so what is checked is what the role wrote,
+    # not what a reverse-proxy would do with it. The port matters: it is
+    # hardcoded in the role's templates rather than derived from a variable, so
+    # nothing else in this scenario would catch it drifting from the port the
+    # bridge actually listens on.
+    - name: Assert the labels route the exposure hostname and path prefix to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_meta_messenger_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-meta-messenger-appservice.loadbalancer.server.port=29319' in mautrix_meta_messenger_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-meta-messenger-exposure.rule=Host(`bridges.molecule.local`) && PathPrefix(`/bridges/meta-messenger`)' in mautrix_meta_messenger_labels_rendered"
+          - "'traefik.http.middlewares.matrix-mautrix-meta-messenger-exposure-strip-prefix.stripprefix.prefixes=/bridges/meta-messenger' in mautrix_meta_messenger_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_meta_messenger_container_network in mautrix_meta_messenger_labels_rendered"
+        fail_msg: "The rendered labels do not route the exposure hostname and path prefix to the appservice port"
+        success_msg: "The rendered labels route the exposure hostname and path prefix to the appservice port"
