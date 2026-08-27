@@ -30,6 +30,16 @@ Molecule is deliberately **not** part of the `prek` hooks. A run is far too slow
 
 When the diff base cannot be determined (a new branch, a force push), it falls back to running every scenario, which errs toward testing too much rather than too little. `workflow_dispatch` accepts an optional role name.
 
+## Automerge
+
+A role that has a scenario is listed in the Molecule automerge rule in `.github/renovate.json`, so
+patch bumps of its component merge on their own once the scenario has passed on them.
+
+**Add your role to that list when you add its scenario.** `bin/check-molecule-automerge-list.py`
+runs from prek and fails the commit if the list and the scenarios have drifted apart. The direction
+that matters is a role staying in the list after losing its scenario, since its bumps would then
+merge with nothing exercising them.
+
 ## Writing a scenario
 
 Start from `roles/custom/matrix-alertmanager-receiver/molecule/default/` — it is the reference. Four things differ from a standalone role's scenario, all of them consequences of these roles living inside a playbook:
@@ -69,6 +79,42 @@ A suite that only waits for the systemd unit to become `active` proves very litt
 Give the scenario values that differ from both the role's defaults and the component's own defaults. Otherwise a passing assertion cannot distinguish "the role configured this" from "it would have happened anyway".
 
 Then try to break it. If a scenario cannot be made to fail by deliberately breaking the thing it checks, it is not testing that thing.
+
+Falsify **every** assertion, not just enough of them to see the scenario go red. An assertion that
+passes is not necessarily an assertion that works: one control here asserted that a component
+emitted no DEBUG records from a particular module, and it passed just as happily with that module
+set to `debug`, because the module emits none on a first run either way. It was green for the wrong
+reason, and only breaking it deliberately exposed that.
+
+Two traps make a falsification pass when it should fail:
+
+- `molecule converge` against an already-running instance rewrites the configuration but only does
+  `state: started`, so the container keeps the old one. Full `molecule test` is unaffected - this
+  bites the local iterate-with-converge loop, which is where falsifications get run.
+- The failure must land on the assertion you aimed at. If it fails at an earlier gate, you have
+  proved something about that gate instead.
+
+### Work out whether the component crashes or retries
+
+Some components exit when their configuration is wrong; others catch everything and retry forever.
+For the second kind, `ActiveState == active` and `NRestarts == 0` **both stay true while the
+component is completely broken** - matrix-reminder-bot and baibot both behave this way, retrying a
+failed login or profile step indefinitely. There the unit assertions prove nothing on their own, and
+something the component says about itself has to carry the scenario.
+
+Establish which kind yours is before deciding what the weight-bearing assertion is.
+
+### Reading the journal
+
+Grep the whole journal rather than tailing it. Startup lines are the **oldest** entries, and a
+component that syncs can bury them under thousands of lines within a minute, so `--lines=N` loses
+exactly what you were looking for. Strip ANSI escapes too - some components colour their output, and
+a plain substring match against raw journal text then fails silently.
+
+### Assert against parsed documents
+
+Where a scenario reads a rendered configuration, parse it and assert on the structure rather than
+matching substrings. A value landing under the wrong key cannot then pass.
 
 ## Running more than one scenario at once
 
