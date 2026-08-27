@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Prepare matrix-alertmanager-receiver Molecule tests
+- name: Prepare mautrix-whatsapp Molecule tests
   hosts: all
   become: true
   vars_files:
@@ -31,9 +31,9 @@
         docker_daemon_options:
           storage-driver: fuse-overlayfs
 
-    # The role's file tasks set owner/group by name, and Ansible resolves those
-    # through the passwd database - so they have to exist before it runs. In a
-    # real deployment `matrix-base` creates them.
+    # The role's file tasks set owner/group by name and Ansible resolves those
+    # through the passwd database, so they have to exist first. matrix-base
+    # creates them in a real deployment.
     - name: Ensure the matrix group exists
       ansible.builtin.group:
         name: "{{ matrix_group_name }}"
@@ -63,20 +63,19 @@
           - docker
           - network
           - create
-          - "{{ matrix_alertmanager_receiver_container_network }}"
-      register: matrix_alertmanager_receiver_molecule_network
-      changed_when: matrix_alertmanager_receiver_molecule_network.rc == 0
+          - "{{ matrix_bridge_mautrix_whatsapp_container_network }}"
+      register: mautrix_whatsapp_molecule_network
+      changed_when: mautrix_whatsapp_molecule_network.rc == 0
       failed_when:
-        - matrix_alertmanager_receiver_molecule_network.rc != 0
-        - "'already exists' not in matrix_alertmanager_receiver_molecule_network.stderr"
+        - mautrix_whatsapp_molecule_network.rc != 0
+        - "'already exists' not in mautrix_whatsapp_molecule_network.stderr"
 
-    # matrix-alertmanager-receiver contacts the homeserver while starting up -
-    # it fetches /_matrix/client/v3/joined_rooms to resolve its room mapping and
-    # exits 1 if that fails - so a homeserver has to exist for it to come up at
-    # all. The shared stub is enough; see molecule-shared/homeserver-stub.py.
+    # The bridge contacts the homeserver as it starts. It is not being asked to
+    # bridge anything - see molecule-shared/homeserver-stub.py.
     - name: Ensure the homeserver stub is running
       ansible.builtin.include_tasks:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/homeserver-stub.yml"
       vars:
-        molecule_shared_stub_network: "{{ matrix_alertmanager_receiver_container_network }}"
-        molecule_shared_stub_joined_rooms: "{{ matrix_alertmanager_receiver_config_matrix_room_mapping.values() | list }}"
+        molecule_shared_stub_network: "{{ matrix_bridge_mautrix_whatsapp_container_network }}"
+        molecule_shared_stub_server_name: molecule.local
+        molecule_shared_stub_user_id: "@{{ matrix_bridge_mautrix_whatsapp_appservice_bot_username }}:{{ matrix_bridge_mautrix_whatsapp_homeserver_domain }}"

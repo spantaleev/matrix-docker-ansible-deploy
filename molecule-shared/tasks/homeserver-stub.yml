@@ -50,6 +50,10 @@
       - --network-alias={{ molecule_shared_stub_hostname | default('matrix.molecule.local') }}
       - --env=STUB_SERVER_NAME={{ molecule_shared_stub_server_name | default('molecule.local') }}
       - --env=STUB_JOINED_ROOMS={{ (molecule_shared_stub_joined_rooms | default([])) | join(',') }}
+      # Appservices call /whoami on startup and refuse to run if the id
+      # returned is not the bot user they were configured as, so a scenario
+      # bridging anything has to tell the stub who it should claim to be.
+      - --env=STUB_USER_ID={{ molecule_shared_stub_user_id | default('@stub:' + (molecule_shared_stub_server_name | default('molecule.local'))) }}
       - --volume=/root/molecule-homeserver-stub.py:/stub.py:ro
       - "{{ molecule_shared_image_python }}"
       - python3

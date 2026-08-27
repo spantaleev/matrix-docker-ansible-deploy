@@ -1,0 +1,177 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# What this proves: the bridge starts, reads the configuration and registration
+# the role rendered, opens its appservice port, and is the version the role
+# pins. It does NOT bridge anything - there is no WhatsApp on the other side and
+# there is deliberately never going to be one. See docs/molecule-testing.md.
+- name: Verify mautrix-whatsapp
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+
+  tasks:
+    # Read from the role's own defaults rather than pinned in molecule.yml, so
+    # the version assertion below compares the running image against what the
+    # role ships instead of against the scenario itself.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_whatsapp_role_defaults
+
+    - name: Wait for the mautrix-whatsapp service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-whatsapp.service
+      register: mautrix_whatsapp_service
+      until: mautrix_whatsapp_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # `Restart=always` means a bridge crash-looping on a configuration it cannot
+    # read still reports `active`, so the restart counter is checked too. It is
+    # asserted `is defined` because `| int` turns a missing property into 0 and
+    # would pass vacuously.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_whatsapp_service.status.ActiveState == 'active'
+          - mautrix_whatsapp_service.status.NRestarts is defined
+          - mautrix_whatsapp_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-whatsapp.service is
+          {{ mautrix_whatsapp_service.status.ActiveState | default('unknown') }}
+          after {{ mautrix_whatsapp_service.status.NRestarts | default('?') }}
+          automatic restart(s)
+        success_msg: "matrix-mautrix-whatsapp.service is active and has not restarted"
+
+    # The appservice port is the bridge's own listener, the one a homeserver
+    # would push transactions to. It opening at all means the bridge got through
+    # reading its configuration and setting itself up.
+    - name: Wait for the bridge to open its appservice port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_whatsapp_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - "http://matrix-mautrix-whatsapp:8080/_matrix/mau/live"
+      register: mautrix_whatsapp_live
+      changed_when: false
+      until: "'HTTP_STATUS=000' not in mautrix_whatsapp_live.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge answers on its appservice port
+      ansible.builtin.assert:
+        that:
+          - "'HTTP_STATUS=000' not in mautrix_whatsapp_live.stdout"
+        fail_msg: >-
+          The bridge did not answer on its appservice port
+          ({{ mautrix_whatsapp_live.stdout | default('no output') }})
+        success_msg: "The bridge answers on its appservice port"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_whatsapp_config_path }}/config.yaml"
+      register: mautrix_whatsapp_config_file
+
+    # Each of these differs from what the bridge would use on its own, so their
+    # presence means the role's configuration is what the bridge is running on
+    # rather than something that happened to agree with it.
+    - name: Assert the rendered configuration carries this scenario's values
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_mautrix_whatsapp_homeserver_address in mautrix_whatsapp_config_rendered
+          - matrix_bridge_mautrix_whatsapp_appservice_bot_username in mautrix_whatsapp_config_rendered
+          - matrix_bridge_mautrix_whatsapp_appservice_token in mautrix_whatsapp_config_rendered
+        fail_msg: "The rendered configuration does not carry the scenario's values"
+        success_msg: "The rendered configuration carries the scenario's values"
+      vars:
+        mautrix_whatsapp_config_rendered: "{{ mautrix_whatsapp_config_file.content | b64decode }}"
+
+    # The registration file is the half of the appservice handshake the
+    # homeserver reads, and it is generated by the role rather than by the
+    # bridge, so it is worth checking on its own.
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_whatsapp_config_path }}/registration.yaml"
+      register: mautrix_whatsapp_registration_file
+
+    - name: Assert the registration carries the scenario's tokens and bot user
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_mautrix_whatsapp_appservice_token in mautrix_whatsapp_registration_rendered
+          - matrix_bridge_mautrix_whatsapp_homeserver_token in mautrix_whatsapp_registration_rendered
+          - matrix_bridge_mautrix_whatsapp_appservice_bot_username in mautrix_whatsapp_registration_rendered
+        fail_msg: "The appservice registration does not carry the scenario's tokens and bot user"
+        success_msg: "The appservice registration carries the scenario's tokens and bot user"
+      vars:
+        mautrix_whatsapp_registration_rendered: "{{ mautrix_whatsapp_registration_file.content | b64decode }}"
+
+    # sqlite was chosen in molecule.yml, so the bridge should have created its
+    # database under the role's data path. This is the cheap proof that the data
+    # path reached the process and is writable by the uid the role runs it as.
+    - name: Look for the bridge's sqlite database under the role's data path
+      ansible.builtin.stat:
+        path: "{{ matrix_bridge_mautrix_whatsapp_data_path }}/mautrix-whatsapp.db"
+      register: mautrix_whatsapp_database
+
+    - name: Assert the bridge created its database where the role put its data path
+      ansible.builtin.assert:
+        that:
+          - mautrix_whatsapp_database.stat.exists
+          - mautrix_whatsapp_database.stat.uid | int == matrix_user_uid | int
+        fail_msg: >-
+          The bridge did not create its database under
+          {{ matrix_bridge_mautrix_whatsapp_data_path }}, or it is not owned by
+          uid {{ matrix_user_uid }}
+        success_msg: "The bridge created its database under the role's data path, as the role's uid"
+
+    - name: Read the image of the running container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-whatsapp
+          - --format
+          - "{{ '{{' }} .Config.Image {{ '}}' }}"
+      register: mautrix_whatsapp_image
+      changed_when: false
+
+    - name: Assert the running container is the version defaults/main.yml pins
+      ansible.builtin.assert:
+        that:
+          - mautrix_whatsapp_role_defaults.matrix_bridge_mautrix_whatsapp_version in mautrix_whatsapp_image.stdout
+        fail_msg: >-
+          The running container is {{ mautrix_whatsapp_image.stdout }}, which does
+          not carry the pinned version
+          {{ mautrix_whatsapp_role_defaults.matrix_bridge_mautrix_whatsapp_version }}
+        success_msg: "The running container is the version defaults/main.yml pins"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_whatsapp_base_path }}/labels"
+      register: mautrix_whatsapp_labels
+
+    - name: Assert no Traefik labels are emitted while Traefik support is disabled
+      ansible.builtin.assert:
+        that:
+          - "'traefik.' not in (mautrix_whatsapp_labels.content | b64decode)"
+        fail_msg: >-
+          Traefik labels were emitted even though
+          matrix_bridge_mautrix_whatsapp_container_labels_traefik_enabled is false
+        success_msg: "No Traefik labels are emitted while Traefik support is disabled"

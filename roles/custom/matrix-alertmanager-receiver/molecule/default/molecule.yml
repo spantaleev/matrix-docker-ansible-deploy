@@ -27,18 +27,6 @@ provisioner:
   inventory:
     group_vars:
       all:
-        # This role lives inside the playbook, so the variables the playbook
-        # would normally supply from `matrix-base` and from group_vars have to
-        # be provided here instead. These are the ones the role actually reads.
-        matrix_base_data_path: /matrix
-        matrix_domain: molecule.local
-        matrix_user_name: matrix
-        matrix_group_name: matrix
-        # Deliberately not 1000: the ubuntu2604 image already has a user there,
-        # so a distinct id proves the role used the one it was given.
-        matrix_user_uid: 1234
-        matrix_user_gid: 1234
-
         matrix_alertmanager_receiver_hostname: alertmanager-receiver.molecule.local
         matrix_alertmanager_receiver_path_prefix: /
         matrix_alertmanager_receiver_container_network: matrix-alertmanager-receiver-molecule

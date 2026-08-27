@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# The variables a role here reads from its surroundings rather than from its own
+# defaults. In a real run `matrix-base` and `group_vars/matrix_servers` provide
+# them; in a scenario they have to come from somewhere, and including
+# `matrix-base` itself does far more than a role scenario needs.
+#
+# Include from a scenario's prepare.yml, converge.yml and verify.yml:
+#
+#   vars_files:
+#     - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+#
+# A scenario can override any of these in its own group_vars - that is the point
+# of testing a role with values it would not have chosen for itself.
+#
+# Keep this to variables that come from OUTSIDE the role under test. Anything the
+# role defines belongs in the scenario, not here.
+
+# --- Identity and paths (matrix-base) --------------------------------------
+
+matrix_base_data_path: /matrix
+matrix_domain: molecule.local
+
+matrix_user_name: matrix
+matrix_group_name: matrix
+
+# Deliberately not 1000: the base images already have a user there, so a distinct
+# id is what proves a role used the one it was given rather than coinciding with
+# the image's own.
+matrix_user_uid: 1234
+matrix_user_gid: 1234
+
+# Empty in the playbook's own defaults too. Components that would invite an
+# administrator into a room skip doing so when it is empty, which is what a
+# scenario wants.
+matrix_admin: ''
+
+# --- Bridge-wide switches (matrix-base) ------------------------------------
+#
+# Every bridge role reads these, so they live here rather than in each bridge's
+# scenario. The values match the playbook's own defaults: encryption off, no
+# relay, no MSC4190. A bridge scenario that wants to prove one of these reaches
+# the rendered configuration should override it in its own group_vars.
+
+matrix_bridges_encryption_enabled: false
+matrix_bridges_encryption_default: false
+matrix_bridges_msc4190_enabled: false
+matrix_bridges_self_sign_enabled: false
+matrix_bridges_relay_enabled: false
+
+matrix_bridges_exposure_enabled: true
+matrix_bridges_exposure_hostname: molecule.local
+matrix_bridges_exposure_path_prefix: /bridges
