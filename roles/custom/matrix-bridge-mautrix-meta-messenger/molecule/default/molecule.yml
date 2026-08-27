@@ -40,19 +40,12 @@ provisioner:
         # database engine the bridge can talk to is not what this proves.
         matrix_bridge_mautrix_meta_messenger_database_engine: sqlite3-fk-wal
 
-        # The URI is overridden because the one the role derives for
-        # `sqlite3-fk-wal` does not work: it builds `sqlite:///` + the
-        # in-container path, and the bridge hands that to go-sqlite3 as a plain
-        # filename rather than parsing it as a URL, so it dies at startup with
-        # `unable to open database file: no such file or directory`. The value
-        # below is the shape the other mautrix roles here use (a bare path;
-        # compare matrix-bridge-mautrix-signal, which adds the same _txlock the
-        # bridge warns about when it is missing).
-        #
-        # The playbook picks postgres whenever postgres is enabled, which is the
-        # default, so nothing normally reaches this code path. Left as an
-        # override rather than a fix: that is a consumer-visible default.
-        matrix_bridge_mautrix_meta_messenger_appservice_database_uri: "/data/mautrix-meta.db?_txlock=immediate"
+        # The URI the role derives for `sqlite3-fk-wal` is deliberately NOT
+        # overridden here. It used to build `sqlite:///` + the in-container path,
+        # which go-sqlite3 takes as a plain filename rather than parsing as a URL,
+        # so the bridge died at startup with `unable to open database file`. This
+        # scenario is what caught it. Leaving the role's own value in place is
+        # what keeps it caught.
 
         # Appservice tokens. These are what the bridge and homeserver would
         # authenticate to each other with; here they only have to reach the
