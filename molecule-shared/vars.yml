@@ -1,0 +1,16 @@
+---
+# Helper container images the scenarios use for probing. They live here rather
+# than inline in each verify.yml so that there is one pin per image instead of
+# one per role, and so Renovate can see them (see the customManager in
+# .github/renovate.json).
+
+# Used to reach a role's container over its own container network. A helper is
+# needed because the role publishes no host port - exactly as in a real
+# deployment - and publishing one for the test would collide between scenarios
+# running in parallel.
+# renovate: datasource=docker depName=docker.io/curlimages/curl
+molecule_shared_image_curl: "docker.io/curlimages/curl:8.11.1"
+
+# Used for small stub services (a fake homeserver, and so on).
+# renovate: datasource=docker depName=docker.io/library/python
+molecule_shared_image_python: "docker.io/library/python:3.13-alpine"

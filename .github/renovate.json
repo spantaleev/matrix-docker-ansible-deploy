@@ -1,72 +1,84 @@
 {
-	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": [
-		"config:recommended",
-		"helpers:pinGitHubActionDigests"
-	],
-	"labels": [
-		"dependencies"
-	],
-	"customManagers": [
-		{
-			"customType": "regex",
-			"managerFilePatterns": [
-				"/defaults/main.yml$/"
-			],
-			"matchStrings": [
-				"# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?\\s+[A-Za-z0-9_]+?(?:_version|_tag)\\s*:\\s*[\"']?(?<currentValue>.+?)[\"']?\\s"
-			]
-		}
-	],
-	"packageRules": [
-		{
-			"ignoreUnstable": false,
-			"versioning": "loose",
-			"matchSourceUrls": [
-				"https://github.com/devture/com.devture.ansible.role{/,}**",
-				"https://github.com/mother-of-all-self-hosting{/,}**"
-			]
-		},
-		{
-			"description": "mautrix images are dual-tagged (v0.YYMM.PATCH and vYY.MM[.PATCH]). Stick to the v0 scheme: it matches the git tags (needed for self-building) and has a consistent number of components (the calver tags do not, which makes Renovate stop offering updates).",
-			"matchPackageNames": [
-				"dock.mau.dev/mautrix/**"
-			],
-			"allowedVersions": "/^v0\\./"
-		},
-		{
-			"description": "Automerge version bumps of roles maintained in the MASH organization and of devture roles (via branch push - no PR)",
-			"matchManagers": ["ansible-galaxy"],
-			"matchSourceUrls": [
-				"https://github.com/devture/com.devture.ansible.role{/,}**",
-				"https://github.com/mother-of-all-self-hosting{/,}**"
-			],
-			"automerge": true,
-			"automergeType": "branch"
-		},
-		{
-			"description": "Housekeeping updates merge via branch push (no PR, no email); a failure on the branch still surfaces as a PR. i18n/requirements.txt bumps are exercised by the Matrix i18n workflow before merging.",
-			"matchFileNames": [
-				".github/workflows/close-stale-issues.yml",
-				".github/workflows/i18n.yml",
-				".github/workflows/lock-threads.yml",
-				".github/workflows/matrix.yml",
-				".github/workflows/update-translations.yml",
-				"flake.lock",
-				"i18n/requirements.txt",
-				"mise.toml"
-			],
-			"automerge": true,
-			"automergeType": "branch"
-		}
-	],
-	"pre-commit": {
-		"enabled": true
-	},
-	"nix": {
-		"enabled": true,
-		"lockFileMaintenance": {
-			"enabled": true
-		}
-	}
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/defaults/main.yml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?\\s+[A-Za-z0-9_]+?(?:_version|_tag)\\s*:\\s*[\"']?(?<currentValue>.+?)[\"']?\\s"
+      ]
+    },
+    {
+      "description": "Helper container images used by the Molecule scenarios. They are pinned once in molecule-shared/vars.yml rather than inline in each role's verify.yml, so this manager keeps that single pin current.",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^molecule-shared/vars\\.yml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)\\s+[A-Za-z0-9_]+?\\s*:\\s*[\"'][^:]+:(?<currentValue>[^\"']+)[\"']"
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "ignoreUnstable": false,
+      "versioning": "loose",
+      "matchSourceUrls": [
+        "https://github.com/devture/com.devture.ansible.role{/,}**",
+        "https://github.com/mother-of-all-self-hosting{/,}**"
+      ]
+    },
+    {
+      "description": "mautrix images are dual-tagged (v0.YYMM.PATCH and vYY.MM[.PATCH]). Stick to the v0 scheme: it matches the git tags (needed for self-building) and has a consistent number of components (the calver tags do not, which makes Renovate stop offering updates).",
+      "matchPackageNames": [
+        "dock.mau.dev/mautrix/**"
+      ],
+      "allowedVersions": "/^v0\\./"
+    },
+    {
+      "description": "Automerge version bumps of roles maintained in the MASH organization and of devture roles (via branch push - no PR)",
+      "matchManagers": [
+        "ansible-galaxy"
+      ],
+      "matchSourceUrls": [
+        "https://github.com/devture/com.devture.ansible.role{/,}**",
+        "https://github.com/mother-of-all-self-hosting{/,}**"
+      ],
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "description": "Housekeeping updates merge via branch push (no PR, no email); a failure on the branch still surfaces as a PR. i18n/requirements.txt bumps are exercised by the Matrix i18n workflow before merging.",
+      "matchFileNames": [
+        ".github/workflows/close-stale-issues.yml",
+        ".github/workflows/i18n.yml",
+        ".github/workflows/lock-threads.yml",
+        ".github/workflows/matrix.yml",
+        ".github/workflows/update-translations.yml",
+        "flake.lock",
+        "i18n/requirements.txt",
+        "mise.toml"
+      ],
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ],
+  "pre-commit": {
+    "enabled": true
+  },
+  "nix": {
+    "enabled": true,
+    "lockFileMaintenance": {
+      "enabled": true
+    }
+  }
 }

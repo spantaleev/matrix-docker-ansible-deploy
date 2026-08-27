@@ -19,6 +19,7 @@ An Ansible playbook that installs and manages a Matrix homeserver and dozens of 
 - `roles/galaxy/`: external roles, downloaded according to `requirements.yml` via [agru](https://github.com/etkecc/agru) (preferred) or `ansible-galaxy`. Run `just roles` to install them (or `just update` to also pull the playbook itself). Editing these roles locally is fine while preparing or testing a fix, but the changes get wiped on the next roles update, so they must be synced back to the role's upstream repository, followed by a version pin update in `requirements.yml`.
 - `group_vars/matrix_servers`: wires roles together (feeding one role's variables into another). Values a role can construct by itself belong in the role's `defaults/main.yml`, not here.
 - `docs/`: user-facing documentation, one page per component.
+- `molecule-shared/`: files shared by the roles' Molecule scenarios (Python and Ansible dependencies, pinned helper container images).
 - `i18n/`: translation infrastructure. Do not edit locale files by hand; they are managed by automation.
 - `CHANGELOG.md`: user-facing announcements, newest first.
 
@@ -30,6 +31,7 @@ Follow the [style guide for playbook developers](docs/style-guide.md). In partic
 - Playbook-extensible list variables use the `_auto` + `_custom` split; `_custom` is reserved for users.
 - Renamed or removed variables get a validation entry, so stale user configuration produces an error instead of being silently ignored. Each role deprecates its own variables in its `validate_config.yml`; the `matrix_playbook_migration` role covers eliminated roles and very-early validation, and also gates breaking changes via `matrix_playbook_migration_expected_version` (see the style guide).
 - Every file carries SPDX license headers ([REUSE](https://reuse.software/) specification).
+- Roles may carry a Molecule scenario, proving the component starts and does not choke on the configuration the role rendered. Run one with `just molecule <role>` (no argument lists the roles that have one); CI runs only the scenarios of roles a push touched. See [Molecule testing for roles](docs/molecule-testing.md) before writing one - roles here need context a standalone role does not.
 - New components must be registered in `setup.yml`, `group_vars/matrix_servers`, `docs/README.md`, `README.md`, `docs/container-images.md`, and get a `CHANGELOG.md` entry.
 
 ## Other notes

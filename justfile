@@ -135,6 +135,10 @@ stop-all *extra_args: (run-tags "stop-all" extra_args)
 stop-group group *extra_args:
     @{{ just_executable() }} --justfile "{{ justfile() }}" run-tags stop-group --extra-vars="group={{ group }}" {{ extra_args }}
 
+# Runs a role's Molecule scenario locally (no argument lists the roles that have one)
+molecule *args:
+    @{{ justfile_directory() }}/bin/molecule.sh {{ args }}
+
 # Internal - ensures var/mise and var/prek directories exist
 _ensure_mise_data_directory:
     @mkdir -p "{{ mise_data_dir }}"

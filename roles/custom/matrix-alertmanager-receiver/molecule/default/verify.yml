@@ -6,6 +6,8 @@
 - name: Verify matrix-alertmanager-receiver
   hosts: all
   become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
   gather_facts: false
 
   tasks:
@@ -54,7 +56,7 @@
           - run
           - --rm
           - --network={{ matrix_alertmanager_receiver_container_network }}
-          - docker.io/curlimages/curl:8.11.1
+          - "{{ molecule_shared_image_curl }}"
           - --silent
           - --show-error
           - --write-out
@@ -100,7 +102,7 @@
           - run
           - --rm
           - --network={{ matrix_alertmanager_receiver_container_network }}
-          - docker.io/curlimages/curl:8.11.1
+          - "{{ molecule_shared_image_curl }}"
           - --silent
           - --output
           - /dev/null

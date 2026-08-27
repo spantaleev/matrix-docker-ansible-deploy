@@ -6,6 +6,8 @@
 - name: Prepare matrix-alertmanager-receiver Molecule tests
   hosts: all
   become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
   gather_facts: true
   tasks:
     - name: Ensure apt cache is updated
@@ -116,7 +118,7 @@
           - --network={{ matrix_alertmanager_receiver_container_network }}
           - --network-alias=matrix.molecule.local
           - --volume=/root/matrix-homeserver-stub.py:/stub.py:ro
-          - docker.io/library/python:3.13-alpine
+          - "{{ molecule_shared_image_python }}"
           - python3
           - /stub.py
       register: matrix_alertmanager_receiver_molecule_stub
