@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# The devture base roles carry the variables this role reads
+# (`devture_systemd_docker_base_*`, `devture_playbook_help_*`), the same way
+# they do when the playbook runs. `matrix-base` is deliberately NOT included:
+# it does far more than this role needs, and what it would supply comes from
+# molecule-shared/playbook-context.yml instead.
+- name: Include roles for matrix-bot-baibot Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Include roles for matrix-bot-baibot Molecule tests
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"
+        public: true
+      loop:
+        - com.devture.ansible.role.playbook_help
+        - com.devture.ansible.role.systemd_docker_base
+        - "custom/{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+      loop_control:
+        loop_var: role_name
+
+# The role installs the unit but does not start it - in the playbook that is
+# `systemd_service_manager`'s job - so the scenario starts it here.
+- name: Ensure matrix-bot-baibot is started
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Ensure systemd daemon is reloaded
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: Ensure matrix-bot-baibot systemd service is started
+      ansible.builtin.systemd_service:
+        name: matrix-bot-baibot.service
+        state: started

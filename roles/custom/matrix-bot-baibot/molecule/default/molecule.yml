@@ -1,0 +1,93 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-bot-baibot-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bot_baibot_container_network: matrix-bot-baibot-molecule
+
+        # verify.yml runs as its own play, where the role's defaults are out
+        # of scope, so the paths it reads are pinned here as literals. They
+        # match what the role derives from matrix_base_data_path.
+        matrix_bot_baibot_base_path: /matrix/baibot
+        matrix_bot_baibot_config_path: /matrix/baibot/config
+        matrix_bot_baibot_data_path: /matrix/baibot/data
+
+        # baibot is a plain Matrix client, not an appservice: it logs in with a
+        # password and then syncs, so a homeserver has to answer for it to get
+        # anywhere. prepare.yml stands up the shared stub for that.
+        matrix_bot_baibot_config_homeserver_url: http://matrix.molecule.local:8008
+
+        # Deliberately different from the role's defaults (localpart `baibot`,
+        # name `baibot`, prefix `!bai`, self-introduction on) AND from baibot's
+        # own built-in defaults, so that a passing assertion cannot be explained
+        # by "it would have happened anyway".
+        matrix_bot_baibot_config_user_mxid_localpart: molecule-baibot
+        matrix_bot_baibot_config_user_name: Molecule baibot
+        matrix_bot_baibot_config_user_password: molecule_baibot_password_5b7c14
+        matrix_bot_baibot_config_command_prefix: "!molecule-bai"
+        matrix_bot_baibot_config_room_post_join_self_introduction_enabled: false
+        matrix_bot_baibot_config_access_admin_patterns:
+          - "@molecule-admin:molecule.local"
+
+        # `debug` rather than the role's `info`, so the journal carries what the
+        # bot loaded. verify.yml reads it.
+        matrix_bot_baibot_config_logging_level_baibot: debug
+
+        # baibot talks to AI providers, and a scenario must not need a provider
+        # account. It does not have to: providers are contacted only when a
+        # message asks an agent to do something, never at startup. So a static
+        # agent is defined with a placeholder key and a base URL that resolves
+        # nowhere. Nothing is ever called, and the agent still has to survive
+        # baibot's startup parsing of `agents.static_definitions` - which is
+        # what proves the role's provider templating produced something the bot
+        # accepts.
+        matrix_bot_baibot_config_agents_static_definitions_anthropic_enabled: true
+        matrix_bot_baibot_config_agents_static_definitions_anthropic_id: molecule-anthropic
+        matrix_bot_baibot_config_agents_static_definitions_anthropic_config_base_url: http://molecule-no-such-provider.invalid/v1
+        matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: molecule-placeholder-not-a-real-key
+        matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id: molecule-model-4-2
+        matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_temperature: 0.25
+        matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_response_tokens: 1234
+        matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_context_tokens: 56789
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

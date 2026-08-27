@@ -25,7 +25,9 @@ import json
 import os
 import re
 import sys
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, urlparse
 
 SERVER_NAME = os.environ.get("STUB_SERVER_NAME", "molecule.local")
 PORT = int(os.environ.get("STUB_PORT", "8008"))
@@ -36,6 +38,13 @@ PORT = int(os.environ.get("STUB_PORT", "8008"))
 JOINED_ROOMS = [r for r in os.environ.get("STUB_JOINED_ROOMS", "").split(",") if r]
 
 USER_ID = os.environ.get("STUB_USER_ID", f"@stub:{SERVER_NAME}")
+
+# Longest a /sync call is held open. Long-polling clients (anything on
+# matrix-sdk: baibot and the other bots) ask for a 30s timeout and immediately
+# ask again when the call returns, so answering instantly would spin them into a
+# hot loop that eats the test machine. Honouring the requested timeout, capped
+# here, keeps an idle bot idle.
+SYNC_MAX_HOLD_SECONDS = 30
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -50,7 +59,40 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _route(self):
-        path = self.path.split("?", 1)[0]
+        parsed = urlparse(self.path)
+        path = parsed.path
+
+        # A client that syncs (every bot here does) needs a `next_batch` back or
+        # the response will not deserialize, and it needs the call to block for
+        # the timeout it asked for or it will hammer this stub. Nothing is ever
+        # reported: an idle bot is what a scenario wants.
+        if path.endswith("/sync"):
+            requested_ms = parse_qs(parsed.query).get("timeout", ["0"])[0]
+            try:
+                hold = min(int(requested_ms) / 1000.0, SYNC_MAX_HOLD_SECONDS)
+            except ValueError:
+                hold = 0
+            if hold > 0:
+                time.sleep(hold)
+            return {"next_batch": "molecule-stub-batch"}
+
+        # Before the generic `/upload` below: this one is the end-to-end
+        # encryption key upload, and the client insists on the key counts.
+        if path.endswith("/keys/upload"):
+            return {"one_time_key_counts": {}}
+
+        # Media. A bot that sets its own avatar asks for the upload limits first
+        # and refuses to proceed without them, then uploads and expects an MXC
+        # URI back.
+        if path.endswith("/media/config") or path.endswith("/media/v3/config"):
+            return {"m.upload.size": 10485760}
+
+        if path.endswith("/upload"):
+            return {"content_uri": f"mxc://{SERVER_NAME}/molecule-stub-media"}
+
+        # Sync filters are uploaded before the first sync and referenced by id.
+        if path.endswith("/filter"):
+            return {"filter_id": "molecule-stub-filter"}
 
         if path.endswith("/joined_rooms"):
             return {"joined_rooms": JOINED_ROOMS}
@@ -67,7 +109,13 @@ class Handler(BaseHTTPRequestHandler):
         if path.endswith("/capabilities"):
             return {"capabilities": {}}
 
-        if path.endswith("/_matrix/client/v3/login"):
+        # Bots that authenticate with a username and password rather than as an
+        # appservice with a token log in here. Matched loosely on purpose:
+        # clients differ on the API version prefix (matrix-nio has shipped both
+        # /_matrix/client/r0/login and /_matrix/client/v3/login over time), and a
+        # login that falls through to the catch-all `{}` below looks to the
+        # client like bad credentials.
+        if path.endswith("/login"):
             return {
                 "user_id": USER_ID,
                 "access_token": "stub_access_token",

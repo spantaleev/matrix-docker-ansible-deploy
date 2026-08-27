@@ -1,0 +1,248 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify matrix-bot-baibot
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+
+  tasks:
+    # The version is read out of the role's own defaults rather than pinned in
+    # molecule.yml, so that the assertion further down compares the running
+    # image against what defaults/main.yml actually ships. Pinning it here
+    # would make that assertion compare the scenario with itself.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_bot_baibot_role_defaults
+
+    - name: Wait for the matrix-bot-baibot service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-bot-baibot.service
+      register: matrix_bot_baibot_service
+      until: matrix_bot_baibot_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # `Restart=always` means a crash-looping container still reports `active`,
+    # so the restart counter is checked alongside it. Asserted as `is defined`
+    # too, because `| int` turns a missing property into 0 and would pass
+    # vacuously on a systemd that does not expose it.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_baibot_service.status.ActiveState == 'active'
+          - matrix_bot_baibot_service.status.NRestarts is defined
+          - matrix_bot_baibot_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-bot-baibot.service is
+          {{ matrix_bot_baibot_service.status.ActiveState | default('unknown') }}
+          after {{ matrix_bot_baibot_service.status.NRestarts | default('?') }}
+          automatic restart(s)
+        success_msg: "matrix-bot-baibot.service is active and has not restarted"
+
+    # baibot publishes no port of its own - it is a Matrix client, not a server -
+    # so what it says about itself has to come from its output. The unit runs
+    # `docker start --attach`, so `--log-driver=none` on the container does not
+    # stop the journal from carrying it.
+    #
+    # `Syncing..` is the line that matters, and it is what carries this scenario
+    # rather than the unit check above. baibot does not exit when its startup
+    # goes wrong: a profile step it cannot complete is retried forever with a
+    # growing delay, so the unit stays `active` with `NRestarts` at 0 while the
+    # bot never reaches its message loop. Point the avatar at a file that is not
+    # there and the assertion above still passes; this one does not.
+    - name: Wait for baibot to reach its sync loop
+      ansible.builtin.shell:
+        cmd: >-
+          set -o pipefail && journalctl -u matrix-bot-baibot.service --no-pager -o cat
+          | sed -e 's/\x1b\[[0-9;]*m//g'
+        executable: /bin/bash
+      register: matrix_bot_baibot_journal
+      changed_when: false
+      until: "'Syncing..' in matrix_bot_baibot_journal.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert baibot got past startup and into its sync loop
+      ansible.builtin.assert:
+        that:
+          - "'Syncing..' in matrix_bot_baibot_journal.stdout"
+          - "'Failed to prepare profile' not in matrix_bot_baibot_journal.stdout"
+        fail_msg: >-
+          baibot never reached its sync loop; it is still in startup or stuck
+          retrying profile setup
+        success_msg: "baibot got past startup and is syncing"
+
+    # `user.name` is the bot's display name. The scenario's value is neither the
+    # role's default (`baibot`) nor what the stub reports the account already has
+    # (`stub`), so the bot naming this as what it wants can only have come from
+    # the configuration the role rendered.
+    - name: Assert the display name the role configured reached the process
+      ansible.builtin.assert:
+        that:
+          - >-
+            'desired_display_name="' ~ matrix_bot_baibot_config_user_name ~ '"'
+            in matrix_bot_baibot_journal.stdout
+        fail_msg: >-
+          baibot did not report {{ matrix_bot_baibot_config_user_name }} as the
+          display name it wants, so `user.name` did not reach the process
+        success_msg: "baibot acts on the display name the role configured"
+
+    # The `logging` setting is one string carrying per-target levels
+    # (`warn,mxlink=info,baibot=debug`), so proving it arrived means proving that
+    # different targets ended up at different levels - a single global level
+    # would satisfy neither half of this.
+    #
+    # First clause: baibot's own records appear at DEBUG, which the role's
+    # default of `info` would not produce.
+    #
+    # Second clause is the control, and it is not vacuous: at DEBUG the crates
+    # underneath (matrix-sdk and its spans, hyper, eyeball) are extremely
+    # talkative - raising the catch-all level turns these two records into
+    # roughly a hundred. Their silence is the `warn` catch-all being enforced.
+    #
+    # A control on mxlink was tried first and is the trap here: mxlink happens to
+    # emit no DEBUG records at all on a first run, so asserting their absence
+    # passed just as happily with mxlink set to `debug`.
+    - name: Assert the per-target logging levels reached the process
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_baibot_debug_lines | select('search', 'baibot::') | list | length > 0
+          - matrix_bot_baibot_debug_lines | reject('search', 'baibot::') | list | length == 0
+        fail_msg: >-
+          The rendered `logging` string did not take effect:
+          {{ matrix_bot_baibot_debug_lines | length }} DEBUG record(s), of which
+          {{ matrix_bot_baibot_debug_lines | select('search', 'baibot::') | list | length }}
+          from baibot itself
+        success_msg: >-
+          baibot logs at DEBUG while everything under it stays at the catch-all
+          level, as the rendered `logging` string asks
+      vars:
+        matrix_bot_baibot_debug_lines: >-
+          {{ matrix_bot_baibot_journal.stdout_lines | select('search', ' DEBUG ') | list }}
+
+    - name: Read the configuration file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_baibot_config_path }}/config.yml"
+      register: matrix_bot_baibot_config_file
+
+    - name: Assert the rendered configuration carries this scenario's Matrix settings
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_baibot_config.homeserver.server_name == matrix_domain
+          - matrix_bot_baibot_config.homeserver.url == matrix_bot_baibot_config_homeserver_url
+          - matrix_bot_baibot_config.user.mxid_localpart == matrix_bot_baibot_config_user_mxid_localpart
+          - matrix_bot_baibot_config.user.name == matrix_bot_baibot_config_user_name
+          - matrix_bot_baibot_config.command_prefix == matrix_bot_baibot_config_command_prefix
+          - matrix_bot_baibot_config.room.post_join_self_introduction_enabled is false
+          - matrix_bot_baibot_config.access.admin_patterns == matrix_bot_baibot_config_access_admin_patterns
+          - matrix_bot_baibot_config.initial_global_config.user_patterns == ['@*:' ~ matrix_domain]
+        fail_msg: "The rendered configuration does not carry the scenario's Matrix settings"
+        success_msg: "The rendered configuration carries the scenario's Matrix settings"
+      vars:
+        matrix_bot_baibot_config: "{{ matrix_bot_baibot_config_file.content | b64decode | from_yaml }}"
+
+    # The role supports two mutually-exclusive authentication modes and refuses
+    # a configuration that sets both. This scenario uses the password mode, so
+    # the access-token keys must be rendered as nulls rather than omitted or
+    # left with a value.
+    - name: Assert only the password authentication mode is rendered
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_baibot_config.user.password == matrix_bot_baibot_config_user_password
+          - matrix_bot_baibot_config.user.access_token is none
+          - matrix_bot_baibot_config.user.device_id is none
+        fail_msg: "The rendered configuration does not use password authentication exclusively"
+        success_msg: "The rendered configuration uses password authentication exclusively"
+      vars:
+        matrix_bot_baibot_config: "{{ matrix_bot_baibot_config_file.content | b64decode | from_yaml }}"
+
+    # The agent presets are the most involved templating in this role: a
+    # per-provider template is rendered to YAML, parsed, merged with an
+    # extension, and dropped into the list as a nested structure. This asserts
+    # the whole round trip, key by key.
+    #
+    # No provider is ever contacted. baibot calls one only when a message asks an
+    # agent to do something, and the base URL here resolves nowhere on purpose -
+    # a scenario must not need an account with an AI provider.
+    - name: Assert the statically-defined agent survived the provider templating
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_baibot_agents | length == 1
+          - matrix_bot_baibot_agent.id == matrix_bot_baibot_config_agents_static_definitions_anthropic_id
+          - matrix_bot_baibot_agent.provider == 'anthropic'
+          - matrix_bot_baibot_agent.config.base_url == matrix_bot_baibot_config_agents_static_definitions_anthropic_config_base_url
+          - matrix_bot_baibot_agent.config.api_key == matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key
+          - matrix_bot_baibot_agent.config.text_generation.model_id == matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_model_id
+          - matrix_bot_baibot_agent.config.text_generation.temperature == matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_temperature
+          - matrix_bot_baibot_agent.config.text_generation.max_response_tokens == matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_response_tokens
+          - matrix_bot_baibot_agent.config.text_generation.max_context_tokens == matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_context_tokens
+        fail_msg: >-
+          The statically-defined agent is not what the role's preset variables ask
+          for: {{ matrix_bot_baibot_agents }}
+        success_msg: "The statically-defined agent carries the scenario's provider settings"
+      vars:
+        matrix_bot_baibot_agents: "{{ (matrix_bot_baibot_config_file.content | b64decode | from_yaml).agents.static_definitions }}"
+        matrix_bot_baibot_agent: "{{ matrix_bot_baibot_agents | first }}"
+
+    - name: Read the container's runtime configuration
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-bot-baibot
+          - --format
+          - "{{ '{{' }} .Config.Image {{ '}}' }} {{ '{{' }} .Config.User {{ '}}' }}"
+      register: matrix_bot_baibot_container
+      changed_when: false
+
+    - name: Assert the image carries the version defaults/main.yml pins
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_baibot_role_defaults.matrix_bot_baibot_version in matrix_bot_baibot_container.stdout
+        fail_msg: >-
+          The running container is {{ matrix_bot_baibot_container.stdout }},
+          which does not carry the pinned version
+          {{ matrix_bot_baibot_role_defaults.matrix_bot_baibot_version }}
+        success_msg: "The running container is the version defaults/main.yml pins"
+
+    # The uid/gid come from outside the role (matrix-base supplies them in a real
+    # run, molecule-shared/playbook-context.yml here) and are deliberately not
+    # 1000, which the base image already uses - so this cannot pass by
+    # coincidence with whatever the image would have run as.
+    - name: Assert the container runs as the identity the playbook supplies
+      ansible.builtin.assert:
+        that:
+          - "matrix_user_uid ~ ':' ~ matrix_user_gid in matrix_bot_baibot_container.stdout"
+        fail_msg: >-
+          The container does not run as {{ matrix_user_uid }}:{{ matrix_user_gid }}
+          ({{ matrix_bot_baibot_container.stdout }})
+        success_msg: "The container runs as the uid/gid the playbook supplies"
+
+    # baibot keeps its session and crypto store here. The file existing proves
+    # the bind mount is writable by the user the container runs as - a
+    # read-only-root container whose data directory it could not write would
+    # never have got as far as logging in.
+    - name: Stat the session file baibot persists
+      ansible.builtin.stat:
+        path: "{{ matrix_bot_baibot_data_path }}/session.json"
+      register: matrix_bot_baibot_session_file
+
+    - name: Assert baibot persisted its session as the matrix user
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_baibot_session_file.stat.exists
+          - matrix_bot_baibot_session_file.stat.uid | int == matrix_user_uid | int
+        fail_msg: >-
+          {{ matrix_bot_baibot_data_path }}/session.json is missing or not owned
+          by uid {{ matrix_user_uid }}
+        success_msg: "baibot persisted its session into the data path as the matrix user"
