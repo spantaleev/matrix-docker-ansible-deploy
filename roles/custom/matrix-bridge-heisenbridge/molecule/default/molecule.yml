@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: heisenbridge-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_heisenbridge_container_network: heisenbridge-molecule
+
+        # The stub prepare.yml stands up. Heisenbridge talks to it while
+        # starting; it is not a real homeserver and nothing is asserted about it.
+        matrix_bridge_heisenbridge_homeserver_url: http://matrix.molecule.local:8008
+
+        matrix_bridge_heisenbridge_appservice_token: molecule_as_token_4f2a91
+
+        # Heisenbridge refuses to start without an owner - it is the Matrix user
+        # allowed to administer the bridge.
+        matrix_bridge_heisenbridge_owner: "@molecule-admin:molecule.local"
+
+        # Deliberately different from the role's defaults, so verify.yml can tell
+        # what the role rendered apart from what heisenbridge would have chosen.
+        matrix_bridge_heisenbridge_path_prefix: /molecule-heisenbridge
+
+        # identd binds host port 113, which would collide with anything else on
+        # the machine and is not what this scenario is proving.
+        matrix_bridge_heisenbridge_identd_enabled: false
+
+        # Traefik is not deployed here, so the labels the role would render for
+        # it are switched off and their absence is asserted instead.
+        matrix_bridge_heisenbridge_container_labels_traefik_enabled: false
+
+        # verify.yml runs as its own play, where role defaults are out of scope.
+        # Unlike the mautrix bridges, heisenbridge keeps everything directly
+        # under its base path rather than in config/ and data/ subdirectories.
+        matrix_bridge_heisenbridge_base_path: /matrix/heisenbridge
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

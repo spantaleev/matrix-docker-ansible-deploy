@@ -1,0 +1,130 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# What this proves: heisenbridge starts, reads the registration the role
+# rendered, and is the version the role pins. It does NOT connect to IRC and
+# never will. See docs/molecule-testing.md.
+- name: Verify heisenbridge
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+
+  tasks:
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: heisenbridge_role_defaults
+
+    - name: Wait for the heisenbridge service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-heisenbridge.service
+      register: heisenbridge_service
+      until: heisenbridge_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # `Restart=always` means a bridge crash-looping on a configuration it cannot
+    # read still reports `active`, so the restart counter is checked too.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - heisenbridge_service.status.ActiveState == 'active'
+          - heisenbridge_service.status.NRestarts is defined
+          - heisenbridge_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-heisenbridge.service is
+          {{ heisenbridge_service.status.ActiveState | default('unknown') }}
+          after {{ heisenbridge_service.status.NRestarts | default('?') }}
+          automatic restart(s)
+        success_msg: "matrix-heisenbridge.service is active and has not restarted"
+
+    # Heisenbridge keeps everything directly under its base path rather than in
+    # config/ and data/ subdirectories the way the mautrix bridges do.
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_heisenbridge_base_path }}/registration.yaml"
+      register: heisenbridge_registration_file
+
+    # The token and the URL both differ from anything heisenbridge would pick on
+    # its own, so their presence means the role rendered this file rather than
+    # the bridge generating one.
+    - name: Assert the registration carries the scenario's token and namespace
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_heisenbridge_appservice_token in heisenbridge_registration_rendered
+          - "'heisenbridge' in heisenbridge_registration_rendered"
+        fail_msg: "The appservice registration does not carry the scenario's token"
+        success_msg: "The appservice registration carries the scenario's token"
+      vars:
+        heisenbridge_registration_rendered: "{{ heisenbridge_registration_file.content | b64decode }}"
+
+    # The owner is what heisenbridge is told to accept administration from, and
+    # the role passes it on the command line rather than through a config file,
+    # so the unit is where it can be checked.
+    - name: Read the systemd unit the role rendered
+      ansible.builtin.slurp:
+        src: /etc/systemd/system/matrix-heisenbridge.service
+      register: heisenbridge_unit_file
+
+    - name: Assert the unit carries the owner and homeserver URL the scenario set
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_heisenbridge_owner in heisenbridge_unit_rendered
+          - matrix_bridge_heisenbridge_homeserver_url in heisenbridge_unit_rendered
+        fail_msg: "The unit does not carry the scenario's owner and homeserver URL"
+        success_msg: "The unit carries the scenario's owner and homeserver URL"
+      vars:
+        heisenbridge_unit_rendered: "{{ heisenbridge_unit_file.content | b64decode }}"
+
+    # identd binds host port 113 when enabled, and this scenario turns it off.
+    # Asserting its absence keeps the default from silently becoming "on".
+    - name: Assert identd is not published while it is disabled
+      ansible.builtin.assert:
+        that:
+          - "'-p 113:' not in (heisenbridge_unit_file.content | b64decode)"
+        fail_msg: >-
+          The unit publishes identd on port 113 even though
+          matrix_bridge_heisenbridge_identd_enabled is false
+        success_msg: "identd is not published while it is disabled"
+
+    - name: Read the image of the running container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-heisenbridge
+          - --format
+          - "{{ '{{' }} .Config.Image {{ '}}' }}"
+      register: heisenbridge_image
+      changed_when: false
+
+    - name: Assert the running container is the version defaults/main.yml pins
+      ansible.builtin.assert:
+        that:
+          - heisenbridge_role_defaults.matrix_bridge_heisenbridge_version | string in heisenbridge_image.stdout
+        fail_msg: >-
+          The running container is {{ heisenbridge_image.stdout }}, which does not
+          carry the pinned version
+          {{ heisenbridge_role_defaults.matrix_bridge_heisenbridge_version }}
+        success_msg: "The running container is the version defaults/main.yml pins"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_heisenbridge_base_path }}/labels"
+      register: heisenbridge_labels
+
+    - name: Assert no Traefik labels are emitted while Traefik support is disabled
+      ansible.builtin.assert:
+        that:
+          - "'traefik.' not in (heisenbridge_labels.content | b64decode)"
+        fail_msg: >-
+          Traefik labels were emitted even though
+          matrix_bridge_heisenbridge_container_labels_traefik_enabled is false
+        success_msg: "No Traefik labels are emitted while Traefik support is disabled"
