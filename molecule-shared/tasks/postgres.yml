@@ -45,11 +45,16 @@
       - --env=POSTGRES_DB={{ molecule_shared_postgres_database }}
       - --env=POSTGRES_USER={{ molecule_shared_postgres_username }}
       - --env=POSTGRES_PASSWORD={{ molecule_shared_postgres_password }}
-      # A tmpfs, because the database is thrown away with the container and not writing it
-      # to the overlay filesystem is faster. Mounted at /var/lib/postgresql rather than at
-      # .../data: since 18 the image puts PGDATA in a versioned subdirectory and refuses to
-      # start if it finds a mount at the old path.
-      - --tmpfs=/var/lib/postgresql
+      # PGDATA is set explicitly, and to /data rather than anywhere under
+      # /var/lib/postgresql, for the same reasons the postgres role does it: v18 changed the
+      # default to a versioned subdirectory, and /var/lib/postgresql is a VOLUME in the image,
+      # so nothing can be mounted beneath it. Setting it explicitly also means a future image
+      # changing its own default cannot move the data out from under this.
+      #
+      # A tmpfs, because the database is thrown away with the container and not writing it to
+      # the overlay filesystem is faster.
+      - --env=PGDATA=/data
+      - --tmpfs=/data
       - "{{ molecule_shared_image_postgres }}"
   register: molecule_shared_postgres_start
   changed_when: molecule_shared_postgres_start.rc == 0
