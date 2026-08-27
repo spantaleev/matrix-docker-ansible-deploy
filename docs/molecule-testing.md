@@ -69,3 +69,24 @@ A suite that only waits for the systemd unit to become `active` proves very litt
 Give the scenario values that differ from both the role's defaults and the component's own defaults. Otherwise a passing assertion cannot distinguish "the role configured this" from "it would have happened anyway".
 
 Then try to break it. If a scenario cannot be made to fail by deliberately breaking the thing it checks, it is not testing that thing.
+
+## Running more than one scenario at once
+
+`bin/molecule.sh` points `ANSIBLE_HOME` at `var/molecule-ansible-home/<role>/`, so each role gets
+its own copy of the Galaxy collections and roles.
+
+This is not an optimisation - it is a correctness fix. Scenarios install their dependencies with
+`force: true`, so two runs sharing `~/.ansible` re-extract the same collections underneath each
+other. The symptom is a collection that was working moments earlier going missing mid-play:
+
+```
+the connection plugin 'community.docker.docker' was not found
+```
+
+If you see that, a concurrent run took the collection out from under you.
+
+`ANSIBLE_HOME` is left alone if you have already set it, and is unset in CI - each role runs in its
+own job there, so there is nothing to collide with.
+
+The directories are disposable; `var/` is gitignored. Delete `var/molecule-ansible-home/` to force
+a fresh install.

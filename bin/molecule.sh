@@ -70,6 +70,20 @@ if [ ! -x "${venv_dir}/bin/molecule" ]; then
 	"${venv_dir}/bin/pip" install --quiet -r "${repo_dir}/molecule-shared/requirements.txt"
 fi
 
+# Galaxy content is installed with `force: true` on every run, so two scenarios
+# running at once will re-extract collections and roles into the same directory
+# and pull them out from under each other mid-play. It shows up as a collection
+# that was working moments earlier going missing:
+#
+#   the connection plugin 'community.docker.docker' was not found
+#
+# ANSIBLE_HOME relocates both `collections/` and `roles/`, so one variable is
+# enough to give each role its own. The scenarios' ANSIBLE_ROLES_PATH follows it.
+#
+# Unset in CI, where it falls back to ~/.ansible - each role runs in its own job
+# there, so there is nothing to collide with and nothing to gain from isolation.
+export ANSIBLE_HOME="${ANSIBLE_HOME:-${repo_dir}/var/molecule-ansible-home/${role}}"
+
 export MOLECULE_DISTRO="${MOLECULE_DISTRO:-ubuntu2604}"
 export PY_COLORS="${PY_COLORS:-1}"
 export ANSIBLE_FORCE_COLOR="${ANSIBLE_FORCE_COLOR:-1}"
