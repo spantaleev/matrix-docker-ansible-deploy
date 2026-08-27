@@ -29,22 +29,18 @@ provisioner:
       all:
         matrix_bot_baibot_container_network: matrix-bot-baibot-molecule
 
-        # verify.yml runs as its own play, where the role's defaults are out
-        # of scope, so the paths it reads are pinned here as literals. They
-        # match what the role derives from matrix_base_data_path.
+        # verify.yml runs as its own play, where the role's defaults are out of scope,
+        # so the paths it reads are pinned here to match what the role derives.
         matrix_bot_baibot_base_path: /matrix/baibot
         matrix_bot_baibot_config_path: /matrix/baibot/config
         matrix_bot_baibot_data_path: /matrix/baibot/data
 
-        # baibot is a plain Matrix client, not an appservice: it logs in with a
-        # password and then syncs, so a homeserver has to answer for it to get
-        # anywhere. prepare.yml stands up the shared stub for that.
+        # baibot is a plain Matrix client, not an appservice: it logs in with a password
+        # and then syncs, so a homeserver has to answer for it to get anywhere.
         matrix_bot_baibot_config_homeserver_url: http://matrix.molecule.local:8008
 
-        # Deliberately different from the role's defaults (localpart `baibot`,
-        # name `baibot`, prefix `!bai`, self-introduction on) AND from baibot's
-        # own built-in defaults, so that a passing assertion cannot be explained
-        # by "it would have happened anyway".
+        # Deliberately different from the role's defaults AND from baibot's own, so a passing
+        # assertion cannot be explained by "it would have happened anyway".
         matrix_bot_baibot_config_user_mxid_localpart: molecule-baibot
         matrix_bot_baibot_config_user_name: Molecule baibot
         matrix_bot_baibot_config_user_password: molecule_baibot_password_5b7c14
@@ -53,18 +49,15 @@ provisioner:
         matrix_bot_baibot_config_access_admin_patterns:
           - "@molecule-admin:molecule.local"
 
-        # `debug` rather than the role's `info`, so the journal carries what the
-        # bot loaded. verify.yml reads it.
+        # `debug` rather than the role's `info`, so the journal carries what the bot loaded.
         matrix_bot_baibot_config_logging_level_baibot: debug
 
-        # baibot talks to AI providers, and a scenario must not need a provider
-        # account. It does not have to: providers are contacted only when a
-        # message asks an agent to do something, never at startup. So a static
-        # agent is defined with a placeholder key and a base URL that resolves
-        # nowhere. Nothing is ever called, and the agent still has to survive
-        # baibot's startup parsing of `agents.static_definitions` - which is
-        # what proves the role's provider templating produced something the bot
-        # accepts.
+        # A scenario must not need an AI provider account, and does not have to: providers are
+        # contacted only when a message asks an agent to do something, never at startup.
+        # So the agent below carries a placeholder key and a base URL that resolves nowhere.
+        # Nothing is ever called, yet the definition still has to survive baibot's startup
+        # parsing - which is what proves the role's provider templating produced something
+        # the bot accepts.
         matrix_bot_baibot_config_agents_static_definitions_anthropic_enabled: true
         matrix_bot_baibot_config_agents_static_definitions_anthropic_id: molecule-anthropic
         matrix_bot_baibot_config_agents_static_definitions_anthropic_config_base_url: http://molecule-no-such-provider.invalid/v1

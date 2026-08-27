@@ -3,13 +3,12 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# What this proves: the bridge starts, reads the configuration and registration
-# the role rendered, opens its appservice port, and is the version the role
-# pins. It also proves the role composed the avatar-proxy labels out of the
-# hostname, scheme and path prefix it was given. It does NOT bridge anything -
-# there is no Discord on the other side and there is deliberately never going to
-# be one, because that would need a Discord account. See
-# docs/molecule-testing.md.
+# Proves the bridge starts, reads the configuration and registration the role rendered, opens
+# its appservice port, is the version the role pins, and composed the avatar-proxy labels out
+# of the hostname, scheme and path prefix it was given.
+#
+# It does NOT bridge anything: there is no Discord on the other side, and deliberately never
+# will be, because that would need a Discord account. See docs/molecule-testing.md.
 - name: Verify mautrix-discord
   hosts: all
   become: true
@@ -19,17 +18,15 @@
   gather_facts: false
 
   vars:
-    # The role derives this from scheme + hostname + path prefix, and role
-    # defaults are out of scope in this play, so it is recomposed here from the
-    # same three values the scenario pinned in molecule.yml.
+    # The role derives this from scheme + hostname + path prefix. Role defaults are out of
+    # scope in this play, so it is recomposed from the same three values molecule.yml pinned.
     mautrix_discord_expected_public_address: >-
       {{ matrix_bridge_mautrix_discord_scheme }}://{{ matrix_bridge_mautrix_discord_hostname }}{{ matrix_bridge_mautrix_discord_path_prefix }}
     mautrix_discord_expected_avatar_proxy_path_prefix: "{{ matrix_bridge_mautrix_discord_path_prefix }}/mautrix-discord/avatar"
 
   tasks:
-    # Read from the role's own defaults rather than pinned in molecule.yml, so
-    # the version assertion below compares the running image against what the
-    # role ships instead of against the scenario itself.
+    # From the role's own defaults rather than pinned in molecule.yml, so the version
+    # assertion compares the running image against what the role ships, not the scenario.
     - name: Load the role's defaults under a separate name
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
@@ -44,10 +41,9 @@
       delay: 5
       failed_when: false
 
-    # `Restart=always` means a bridge crash-looping on a configuration it cannot
-    # read still reports `active`, so the restart counter is checked too. It is
-    # asserted `is defined` because `| int` turns a missing property into 0 and
-    # would pass vacuously.
+    # `Restart=always` means a bridge crash-looping on unreadable config still reports
+    # `active`, so the restart counter is checked too. Asserted `is defined` because
+    # `| int` turns a missing property into 0 and would pass vacuously.
     - name: Assert the service is active and has not been restarting
       ansible.builtin.assert:
         that:
@@ -61,9 +57,8 @@
           automatic restart(s)
         success_msg: "matrix-mautrix-discord.service is active and has not restarted"
 
-    # The appservice port is the bridge's own listener, the one a homeserver
-    # would push transactions to. It opening at all means the bridge got through
-    # reading its configuration and setting itself up.
+    # The appservice listener is where a homeserver would push transactions. It opening at all
+    # means the bridge got through reading its configuration and setting itself up.
     - name: Wait for the bridge to open its appservice port
       ansible.builtin.command:
         argv:
@@ -99,13 +94,12 @@
         src: "{{ matrix_bridge_mautrix_discord_config_path }}/config.yaml"
       register: mautrix_discord_config_file
 
-    # Each of these differs from what the bridge would use on its own, so their
-    # presence means the role's configuration is what the bridge is running on
-    # rather than something that happened to agree with it. The public address
-    # in particular is composed by the role out of three separate variables.
+    # Each differs from what the bridge would use on its own, so their presence rules out a
+    # coincidence. The public address in particular is composed by the role out of three
+    # separate variables.
     #
-    # Asserted against the parsed document rather than by substring, so a value
-    # landing under the wrong key cannot pass.
+    # Asserted against the parsed document rather than by substring, so a value landing under
+    # the wrong key cannot pass.
     - name: Assert the rendered configuration carries this scenario's values
       ansible.builtin.assert:
         that:
@@ -124,10 +118,8 @@
       vars:
         mautrix_discord_config: "{{ mautrix_discord_config_file.content | b64decode | from_yaml }}"
 
-    # The registration file is the half of the appservice handshake the
-    # homeserver reads, and it is generated by the role rather than by the
-    # bridge, so it is worth checking on its own. `sender_localpart` is the
-    # role's own `_bot_` prefixing, not something the bridge would produce.
+    # The role generates the registration; the bridge only consumes it. `sender_localpart`
+    # carries the role's own `_bot_` prefixing, not something the bridge would produce.
     - name: Read the appservice registration the role rendered
       ansible.builtin.slurp:
         src: "{{ matrix_bridge_mautrix_discord_config_path }}/registration.yaml"
@@ -147,9 +139,8 @@
         mautrix_discord_registration: "{{ mautrix_discord_registration_file.content | b64decode | from_yaml }}"
         mautrix_discord_bot_user_regex: "^@{{ matrix_bridge_mautrix_discord_appservice_bot_username | regex_escape }}:{{ matrix_bridge_mautrix_discord_homeserver_domain | regex_escape }}$"
 
-    # sqlite was chosen in molecule.yml, so the bridge should have created its
-    # database under the role's data path. This is the cheap proof that the data
-    # path reached the process and is writable by the uid the role runs it as.
+    # Cheap proof that the data path reached the process and is writable by the uid the role
+    # runs it as.
     - name: Look for the bridge's sqlite database under the role's data path
       ansible.builtin.stat:
         path: "{{ matrix_bridge_mautrix_discord_data_path }}/mautrix-discord.db"
@@ -188,9 +179,9 @@
           {{ mautrix_discord_role_defaults.matrix_bridge_mautrix_discord_version }}
         success_msg: "The running container is the version defaults/main.yml pins"
 
-    # The avatar proxy is this role's own reverse-proxy wiring: the labels only
-    # appear because a public address was configured, and their hostname and
-    # path prefix are composed by the role rather than copied from a variable.
+    # The avatar proxy is this role's own reverse-proxy wiring. The labels only appear because
+    # a public address was configured, and the role composes their hostname and path prefix
+    # rather than copying them from a variable.
     - name: Read the labels the role rendered
       ansible.builtin.slurp:
         src: "{{ matrix_bridge_mautrix_discord_base_path }}/labels"
@@ -211,10 +202,9 @@
       vars:
         mautrix_discord_labels_rendered: "{{ mautrix_discord_labels.content | b64decode }}"
 
-    # The label file is fed to `docker create --label-file`, so a label the role
-    # renders wrongly is not merely cosmetic - it would stop the container from
-    # being created at all. Reading them back off the running container proves
-    # Docker accepted them.
+    # The label file is fed to `docker create --label-file`, so a wrongly rendered label is
+    # not cosmetic: it stops the container being created at all. Reading them back off the
+    # running container proves Docker accepted them.
     - name: Read the labels Docker attached to the running container
       ansible.builtin.command:
         argv:

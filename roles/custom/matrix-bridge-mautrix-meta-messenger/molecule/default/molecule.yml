@@ -29,66 +29,51 @@ provisioner:
       all:
         matrix_bridge_mautrix_meta_messenger_container_network: mautrix-meta-messenger-molecule
 
-        # The homeserver stub prepare.yml stands up. The bridge contacts it
-        # while starting; it is not a real homeserver and nothing is asserted
+        # The stub prepare.yml stands up. Not a real homeserver, and nothing is asserted
         # about it.
         matrix_bridge_mautrix_meta_messenger_homeserver_address: http://matrix.molecule.local:8008
         matrix_bridge_mautrix_meta_messenger_homeserver_domain: molecule.local
 
-        # sqlite keeps the scenario to one container. The role only requires a
-        # database hostname when the engine is postgres, and testing which
-        # database engine the bridge can talk to is not what this proves.
+        # sqlite keeps the scenario to one container. Which database engine the bridge can
+        # talk to is not what this proves.
         matrix_bridge_mautrix_meta_messenger_database_engine: sqlite3-fk-wal
 
-        # The URI the role derives for `sqlite3-fk-wal` is deliberately NOT
-        # overridden here. It used to build `sqlite:///` + the in-container path,
-        # which go-sqlite3 takes as a plain filename rather than parsing as a URL,
-        # so the bridge died at startup with `unable to open database file`. This
-        # scenario is what caught it. Leaving the role's own value in place is
-        # what keeps it caught.
+        # The URI the role derives is deliberately NOT overridden here. It used to build
+        # `sqlite:///` + the in-container path, which go-sqlite3 takes as a plain filename
+        # rather than parsing as a URL, so the bridge died at startup. This scenario caught
+        # that, and leaving the role's own value in place is what keeps it caught.
 
-        # Appservice tokens. These are what the bridge and homeserver would
-        # authenticate to each other with; here they only have to reach the
-        # rendered configuration and the registration file.
+        # Here these only have to reach the rendered configuration and the registration.
         matrix_bridge_mautrix_meta_messenger_appservice_token: molecule_meta_as_token_5c81de
         matrix_bridge_mautrix_meta_messenger_homeserver_token: molecule_meta_hs_token_a70f24
 
-        # The one variable that makes this role family unusual: a single
-        # upstream codebase serves several Meta networks, and this variable is
-        # what picks which one. It reaches the rendered configuration in several
-        # places at once - the appservice id, the ghost username prefix, the bot
-        # displayname and the bridge's `tor` switch - so a value other than the
-        # role's default `messenger` is what tells verify.yml that the role
-        # propagated the choice rather than everything merely agreeing by
-        # accident. `facebook-tor` is the only one of the three modes that also
-        # flips a boolean in the configuration, which is why it is the one used.
+        # What makes this role family unusual: one upstream codebase serves several Meta
+        # networks, and this variable picks which. It reaches the rendered configuration in
+        # four places at once - appservice id, ghost username prefix, bot displayname and the
+        # bridge's `tor` switch - so a value other than the role's default is what tells
+        # verify.yml the role propagated the choice rather than everything agreeing by accident.
         #
-        # Nothing logs in during the scenario, so the bridge never opens a
-        # connection to Meta (over Tor or otherwise). See docs/molecule-testing.md
-        # for why a scenario stops short of that.
+        # `facebook-tor` is used because it is the only mode that also flips a boolean.
+        # Nothing logs in during the scenario, so the bridge never connects to Meta.
         matrix_bridge_mautrix_meta_messenger_meta_mode: facebook-tor
 
-        # Deliberately different from the role's defaults (`messengerbot`,
-        # `!fb`, `(FB)`, `warn`) and from what the bridge would pick on its own,
-        # so verify.yml can tell what the role rendered apart from a
-        # coincidence.
+        # Different from the role's defaults and from what the bridge would pick on its own,
+        # so verify.yml can tell what the role rendered apart from a coincidence.
         matrix_bridge_mautrix_meta_messenger_appservice_username: molecule-metabot
         matrix_bridge_mautrix_meta_messenger_bridge_command_prefix: "!molecule-meta"
         matrix_bridge_mautrix_meta_messenger_bridge_displayname_suffix: "(Molecule)"
         matrix_bridge_mautrix_meta_messenger_logging_min_level: debug
 
-        # The bridge's HTTP API exposure. Traefik is not deployed here, so
-        # nothing routes to it; what is being tested is that the role turns
-        # these three variables into both the container's Traefik labels and the
+        # Traefik is not deployed here, so nothing routes to it. What is tested is that the
+        # role turns these three variables into both the container's Traefik labels and the
         # `appservice.public_address` the bridge itself reads.
         matrix_bridge_mautrix_meta_messenger_exposure_enabled: true
         matrix_bridge_mautrix_meta_messenger_exposure_hostname: bridges.molecule.local
         matrix_bridge_mautrix_meta_messenger_exposure_path_prefix: /bridges/meta-messenger
         matrix_bridge_mautrix_meta_messenger_scheme: https
 
-        # verify.yml runs as its own play, where role defaults are out of scope,
-        # so the paths it reads are pinned here as literals matching what the
-        # role derives from matrix_base_data_path.
+        # verify.yml runs as its own play, where the role's defaults are out of scope,
+        # so the paths it reads are pinned here to match what the role derives.
         matrix_bridge_mautrix_meta_messenger_base_path: /matrix/mautrix-meta-messenger
         matrix_bridge_mautrix_meta_messenger_config_path: /matrix/mautrix-meta-messenger/config
         matrix_bridge_mautrix_meta_messenger_data_path: /matrix/mautrix-meta-messenger/data

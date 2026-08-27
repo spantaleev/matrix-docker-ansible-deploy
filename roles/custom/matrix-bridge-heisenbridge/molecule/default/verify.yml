@@ -3,9 +3,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# What this proves: heisenbridge starts, reads the registration the role
-# rendered, and is the version the role pins. It does NOT connect to IRC and
-# never will. See docs/molecule-testing.md.
+# Proves heisenbridge starts, reads the registration the role rendered, and is the version
+# the role pins. It does NOT connect to IRC. See docs/molecule-testing.md.
 - name: Verify heisenbridge
   hosts: all
   become: true
@@ -29,8 +28,8 @@
       delay: 5
       failed_when: false
 
-    # `Restart=always` means a bridge crash-looping on a configuration it cannot
-    # read still reports `active`, so the restart counter is checked too.
+    # `Restart=always` means a bridge crash-looping on unreadable config still reports
+    # `active`, so the restart counter is checked too.
     - name: Assert the service is active and has not been restarting
       ansible.builtin.assert:
         that:
@@ -44,16 +43,14 @@
           automatic restart(s)
         success_msg: "matrix-heisenbridge.service is active and has not restarted"
 
-    # Heisenbridge keeps everything directly under its base path rather than in
-    # config/ and data/ subdirectories the way the mautrix bridges do.
+    # Heisenbridge keeps everything directly under its base path, unlike the mautrix bridges.
     - name: Read the appservice registration the role rendered
       ansible.builtin.slurp:
         src: "{{ matrix_bridge_heisenbridge_base_path }}/registration.yaml"
       register: heisenbridge_registration_file
 
-    # The token and the URL both differ from anything heisenbridge would pick on
-    # its own, so their presence means the role rendered this file rather than
-    # the bridge generating one.
+    # Token and URL both differ from anything heisenbridge would pick on its own, so their
+    # presence means the role rendered this file rather than the bridge generating one.
     - name: Assert the registration carries the scenario's token and namespace
       ansible.builtin.assert:
         that:
@@ -64,8 +61,7 @@
       vars:
         heisenbridge_registration_rendered: "{{ heisenbridge_registration_file.content | b64decode }}"
 
-    # The owner is what heisenbridge is told to accept administration from, and
-    # the role passes it on the command line rather than through a config file,
+    # The role passes the owner on the command line rather than through a config file,
     # so the unit is where it can be checked.
     - name: Read the systemd unit the role rendered
       ansible.builtin.slurp:
@@ -82,8 +78,8 @@
       vars:
         heisenbridge_unit_rendered: "{{ heisenbridge_unit_file.content | b64decode }}"
 
-    # identd binds host port 113 when enabled, and this scenario turns it off.
-    # Asserting its absence keeps the default from silently becoming "on".
+    # identd binds host port 113 when enabled. Asserting its absence keeps the default from
+    # silently becoming "on".
     - name: Assert identd is not published while it is disabled
       ansible.builtin.assert:
         that:

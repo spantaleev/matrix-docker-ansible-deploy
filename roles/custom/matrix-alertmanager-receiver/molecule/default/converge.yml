@@ -3,11 +3,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# The devture base roles carry the variables this role reads
-# (`devture_systemd_docker_base_*`, `devture_playbook_help_*`), the same way
-# they do when the playbook runs. `matrix-base` is deliberately NOT included:
-# it does far more than this role needs, and the two variables it would supply
-# are set directly in molecule.yml instead.
+# The devture base roles carry the variables this role reads, the same way they do when
+# the playbook runs. `matrix-base` is deliberately NOT included: it does far more than this
+# role needs, and the two variables it would supply are set directly in molecule.yml.
 - name: Include roles for matrix-alertmanager-receiver Molecule tests
   hosts: all
   become: true
@@ -26,8 +24,8 @@
       loop_control:
         loop_var: role_name
 
-# The role installs the unit but does not start it - in the playbook that is
-# `systemd_service_manager`'s job - so the scenario starts it here.
+# The role installs the unit but does not start it; in the playbook that is
+# `systemd_service_manager`'s job.
 - name: Ensure matrix-alertmanager-receiver is started
   hosts: all
   become: true

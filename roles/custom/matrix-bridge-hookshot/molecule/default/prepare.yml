@@ -31,9 +31,8 @@
         docker_daemon_options:
           storage-driver: fuse-overlayfs
 
-    # The role's file tasks set owner/group by name and Ansible resolves those
-    # through the passwd database, so they have to exist first. matrix-base
-    # creates them in a real deployment.
+    # The role's file tasks set owner/group by name, which Ansible resolves through the
+    # passwd database, so they have to exist first. `matrix-base` creates them for real.
     - name: Ensure the matrix group exists
       ansible.builtin.group:
         name: "{{ matrix_group_name }}"

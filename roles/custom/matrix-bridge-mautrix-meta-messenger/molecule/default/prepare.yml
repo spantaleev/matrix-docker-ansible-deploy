@@ -31,9 +31,8 @@
         docker_daemon_options:
           storage-driver: fuse-overlayfs
 
-    # The role's file tasks set owner/group by name and Ansible resolves those
-    # through the passwd database, so they have to exist first. matrix-base
-    # creates them in a real deployment.
+    # The role's file tasks set owner/group by name, which Ansible resolves through the
+    # passwd database, so they have to exist first. `matrix-base` creates them for real.
     - name: Ensure the matrix group exists
       ansible.builtin.group:
         name: "{{ matrix_group_name }}"
@@ -72,11 +71,9 @@
         - mautrix_meta_messenger_molecule_network.rc != 0
         - "'already exists' not in mautrix_meta_messenger_molecule_network.stderr"
 
-    # The bridge contacts the homeserver as it starts, and calls /whoami before
-    # it will run at all - it exits if the id it gets back is not the bot user
-    # it was configured as. It is not being asked to bridge anything; there is
-    # no Meta account anywhere in this scenario and there is deliberately never
-    # going to be one. See molecule-shared/homeserver-stub.py.
+    # The bridge calls /whoami before it will run at all, exiting if the id it gets back is
+    # not the bot user it was configured as. It is not being asked to bridge anything: there
+    # is no Meta account in this scenario, and deliberately never will be.
     - name: Ensure the homeserver stub is running
       ansible.builtin.include_tasks:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/homeserver-stub.yml"

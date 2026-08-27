@@ -3,13 +3,12 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# What this proves: matrix-reminder-bot starts on the configuration the role
-# rendered, logs into a homeserver as the user the role gave it, opens the
-# database at the path the role gave it, and is the version the role pins.
+# Proves matrix-reminder-bot starts on the configuration the role rendered, logs in as the
+# user the role gave it, opens the database at the path the role gave it, and is the version
+# the role pins.
 #
-# The bot has no HTTP surface of its own to probe, so the evidence is what it
-# says about itself in the journal plus what it left on disk. It does NOT set
-# real reminders and never will. See docs/molecule-testing.md.
+# The bot has no HTTP surface to probe, so the evidence is what it says about itself in the
+# journal plus what it left on disk. It does NOT set real reminders. See docs/molecule-testing.md.
 - name: Verify matrix-reminder-bot
   hosts: all
   become: true
@@ -23,10 +22,9 @@
     matrix_bot_matrix_reminder_bot_molecule_container_user: "{{ matrix_user_uid }}:{{ matrix_user_gid }}"
 
   tasks:
-    # The version is read out of the role's own defaults rather than pinned in
-    # molecule.yml, so that the assertion further down compares the running
-    # image against what defaults/main.yml actually ships. Pinning it here
-    # would make that assertion compare the scenario with itself.
+    # Read from the role's own defaults rather than pinned in molecule.yml, so the version
+    # assertion compares the running image against what defaults/main.yml ships.
+    # Pinning it here would make that assertion compare the scenario with itself.
     - name: Load the role's defaults under a separate name
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
@@ -41,12 +39,10 @@
       delay: 5
       failed_when: false
 
-    # `Restart=always` means a bot crash-looping on a configuration it cannot
-    # read still reports `active`, so the restart counter is checked too. The
-    # config file is parsed before the bot's own catch-all retry loop starts, so
-    # anything wrong in what the role rendered shows up here as restarts.
-    # Asserted as `is defined` too, because `| int` turns a missing property
-    # into 0 and would pass vacuously on a systemd that does not expose it.
+    # `Restart=always` means a bot crash-looping on unreadable config still reports `active`,
+    # so the restart counter is checked too. The config file is parsed before the bot's own
+    # catch-all retry loop starts, so anything wrong in what the role rendered shows up here
+    # as restarts. Asserted `is defined` because `| int` turns a missing property into 0.
     - name: Assert the service is active and has not been restarting
       ansible.builtin.assert:
         that:
@@ -60,14 +56,12 @@
           automatic restart(s)
         success_msg: "matrix-bot-matrix-reminder-bot.service is active and has not restarted"
 
-    # The unit runs `docker start --attach`, so the container's output is in the
-    # journal despite `--log-driver=none`. That is the only thing this bot
-    # reports about itself - it serves nothing over HTTP.
+    # The unit runs `docker start --attach`, so the container's output is in the journal
+    # despite `--log-driver=none`. It is the only thing this bot reports about itself.
     #
-    # Filtered rather than tailed: the startup lines are the oldest ones in the
-    # journal, so a `--lines=N` tail would lose them behind anything the bot
-    # logs later, and reading the journal whole would pull an unbounded amount
-    # of text into a variable. The filter keeps the failure line too, so the
+    # Filtered rather than tailed: startup lines are the OLDEST in the journal, so a
+    # `--lines=N` tail loses them behind anything logged later, and reading it whole pulls
+    # unbounded text into a variable. The filter keeps the failure line too, so the
     # "did not fail to log in" assertion below still has something to see.
     - name: Wait for the bot to report that it finished starting up
       ansible.builtin.shell:
@@ -83,10 +77,9 @@
       delay: 5
       failed_when: false
 
-    # "Logged in as ..." is only reached after the bot's login call came back as
-    # something other than a LoginError, so this is the whole chain at once: the
-    # homeserver URL, the user ID and the password the role rendered were good
-    # enough for a real login round-trip against the stub.
+    # "Logged in as ..." is only reached once the login call returned something other than a
+    # LoginError, so this covers the whole chain at once: homeserver URL, user ID and password
+    # were all good enough for a real login round-trip.
     - name: Assert the bot logged in as the user the role configured
       ansible.builtin.assert:
         that:
@@ -99,9 +92,8 @@
         success_msg: >-
           The bot logged in as {{ matrix_bot_matrix_reminder_bot_molecule_user_id }} and finished starting up
 
-    # The role picks the storage engine (SQLite here, Postgres otherwise) by
-    # building the connection string the bot parses, and the bot names the type
-    # it settled on once the database is open.
+    # The role picks the storage engine by building the connection string the bot parses,
+    # and the bot names the type it settled on once the database is open.
     - name: Assert the bot opened the database engine the role selected
       ansible.builtin.assert:
         that:
@@ -114,9 +106,8 @@
         src: "{{ matrix_bot_matrix_reminder_bot_config_path }}/config.yaml"
       register: matrix_bot_matrix_reminder_bot_config_file
 
-    # Every one of these differs from both the role's defaults and the bot's own
-    # fallbacks, so their presence means the role rendered this file rather than
-    # the values coinciding with what would have happened anyway.
+    # Every one differs from both the role's defaults and the bot's own fallbacks, so their
+    # presence means the role rendered this file rather than coinciding with it.
     - name: Assert the rendered configuration carries this scenario's values
       ansible.builtin.assert:
         that:
@@ -133,9 +124,8 @@
       vars:
         matrix_bot_matrix_reminder_bot_config_rendered: "{{ matrix_bot_matrix_reminder_bot_config_file.content | b64decode }}"
 
-    # `device_name` is hardcoded in the role's config template, so this value can
-    # only be there if `..._configuration_extension_yaml` was merged over the
-    # template rather than ignored.
+    # `device_name` is hardcoded in the role's template, so this value can only be here if
+    # `..._configuration_extension_yaml` was merged over it rather than ignored.
     - name: Assert the configuration extension was merged over the template
       ansible.builtin.assert:
         that:
@@ -148,9 +138,8 @@
       vars:
         matrix_bot_matrix_reminder_bot_config_rendered: "{{ matrix_bot_matrix_reminder_bot_config_file.content | b64decode }}"
 
-    # The bot has no HTTP surface, so where its database landed is the evidence
-    # that the storage configuration reached the running process rather than
-    # merely the file on disk.
+    # With no HTTP surface, where the database landed is the evidence that the storage
+    # configuration reached the running process and not merely the file on disk.
     - name: Stat the database at the path the scenario configured
       ansible.builtin.stat:
         path: "{{ matrix_bot_matrix_reminder_bot_sqlite_database_path_local }}"
@@ -168,9 +157,8 @@
         success_msg: >-
           The database is at the configured path, owned by {{ matrix_user_uid }}:{{ matrix_user_gid }}
 
-    # A negative control for the assertion above: the role's own default
-    # database name must NOT appear, or a file at the configured path would not
-    # prove the configuration reached the process.
+    # Negative control for the assertion above: the role's own default database name must NOT
+    # appear, or a file at the configured path would prove nothing.
     - name: Stat the database name the role would have used by default
       ansible.builtin.stat:
         path: "{{ matrix_bot_matrix_reminder_bot_data_path }}/bot.db"
@@ -186,9 +174,8 @@
           configuration reached the bot
         success_msg: "Only the configured database path was used"
 
-    # matrix-nio writes its encryption store here once a login has succeeded, so
-    # a populated directory means the bot could use the store path the role
-    # created for it inside an otherwise read-only container.
+    # matrix-nio writes its encryption store here once login succeeds, so a populated directory
+    # means the bot could use the store path the role created inside a read-only container.
     - name: List the encryption store the role created
       ansible.builtin.find:
         paths: "{{ matrix_bot_matrix_reminder_bot_data_store_path }}"
@@ -216,9 +203,8 @@
       register: matrix_bot_matrix_reminder_bot_container
       changed_when: false
 
-    # The timezone reaches the container twice - through the config file checked
-    # above and through TZ on the unit - and the uid/gid come from the playbook
-    # context rather than from anything the image would pick on its own.
+    # The timezone reaches the container twice, through the config file checked above and
+    # through TZ on the unit. The uid/gid come from the playbook context, not from the image.
     - name: Assert the container runs as the role's user with the configured timezone
       ansible.builtin.assert:
         that:

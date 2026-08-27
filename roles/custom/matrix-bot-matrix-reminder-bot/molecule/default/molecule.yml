@@ -29,28 +29,25 @@ provisioner:
       all:
         matrix_bot_matrix_reminder_bot_container_network: matrix-reminder-bot-molecule
 
-        # Unlike the bridges, this bot is not an appservice: it logs into the
-        # homeserver as an ordinary user with a password. The stub prepare.yml
-        # stands up answers /_matrix/client/v3/login with an access token, which
-        # is all the bot needs to get past its login and into its sync loop.
+        # Unlike the bridges, this bot is not an appservice: it logs in as an ordinary user
+        # with a password. The stub answers /_matrix/client/v3/login with an access token,
+        # which is all the bot needs to reach its sync loop.
         matrix_bot_matrix_reminder_bot_matrix_homeserver_url: http://matrix.molecule.local:8008
 
-        # Deliberately different from the role's default localpart
-        # (`bot.matrix-reminder-bot`), so verify.yml can tell what the role
+        # Different from the role's default localpart, so verify.yml can tell what the role
         # rendered apart from what it would have rendered anyway.
         matrix_bot_matrix_reminder_bot_matrix_user_id_localpart: molecule.reminder-bot
         matrix_bot_matrix_reminder_bot_matrix_user_password: molecule_bot_password_4f2a91
 
-        # The role has no default here and refuses to run without one. Also
-        # different from the bot's own fallback (`Etc/UTC`), and it reaches the
-        # container twice - through the config file and through TZ on the unit.
+        # The role has no default here and refuses to run without one. Also different from the
+        # bot's own fallback, and it reaches the container twice: the config file and TZ.
         matrix_bot_matrix_reminder_bot_reminders_timezone: Europe/Sofia
 
         # The role and the bot both default to `!`.
         matrix_bot_matrix_reminder_bot_command_prefix: "%%"
 
-        # Both lists default to off with no entries, so turning them on with
-        # entries of our own exercises the `_auto + _custom` composition.
+        # Both lists default to off with no entries, so turning them on exercises the
+        # `_auto + _custom` composition.
         matrix_bot_matrix_reminder_bot_allowlist_enabled: true
         matrix_bot_matrix_reminder_bot_allowlist_regexes_custom:
           - "@molecule-allowed:molecule.local"
@@ -58,22 +55,19 @@ provisioner:
         matrix_bot_matrix_reminder_bot_blocklist_regexes_custom:
           - ".*:blocked.molecule.local"
 
-        # The device name is hardcoded in the role's config template, so
-        # overriding it is only possible through the extension mechanism. Doing
-        # it here means the merge of template + extension is tested too.
+        # The device name is hardcoded in the role's template, so overriding it is only
+        # possible through the extension mechanism - which tests that merge too.
         matrix_bot_matrix_reminder_bot_configuration_extension_yaml: |
           matrix:
             device_name: Molecule Reminder Bot
 
-        # The SQLite database path is moved off the role's default (`bot.db`) so
-        # that verify.yml can assert the bot opened the path the role gave it,
-        # with the default name as a negative control.
+        # Moved off the role's default name so verify.yml can assert the bot opened the path
+        # the role gave it, with the default name as a negative control.
         matrix_bot_matrix_reminder_bot_sqlite_database_path_local: /matrix/matrix-reminder-bot/data/molecule-reminders.db
         matrix_bot_matrix_reminder_bot_sqlite_database_path_in_container: /data/molecule-reminders.db
 
-        # verify.yml runs as its own play, where the role's defaults are out of
-        # scope, so the paths it reads are pinned here as literals. They match
-        # what the role derives from `matrix_base_data_path`.
+        # verify.yml runs as its own play, where the role's defaults are out of scope,
+        # so the paths it reads are pinned here to match what the role derives.
         matrix_bot_matrix_reminder_bot_base_path: /matrix/matrix-reminder-bot
         matrix_bot_matrix_reminder_bot_config_path: /matrix/matrix-reminder-bot/config
         matrix_bot_matrix_reminder_bot_data_path: /matrix/matrix-reminder-bot/data

@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# Stands up a stand-in homeserver on a container network, for scenarios whose
-# component contacts a homeserver while starting up.
+# Stands up a stand-in homeserver on a container network, for scenarios whose component
+# contacts a homeserver while starting up.
 #
 # Include from a scenario's prepare.yml:
 #
@@ -17,8 +17,7 @@
 #
 # The component should then be pointed at http://matrix.molecule.local:8008.
 #
-# See molecule-shared/homeserver-stub.py for what it answers and, more
-# importantly, for what it is not.
+# See molecule-shared/homeserver-stub.py for what it answers and, more importantly, what it is not.
 
 - name: Ensure the homeserver stub script is present
   ansible.builtin.copy:
@@ -37,8 +36,8 @@
   changed_when: molecule_shared_stub_removal.rc == 0
   failed_when: false
 
-# The alias is what the component resolves, so its configuration can name a
-# hostname rather than a container name.
+# The alias is what the component resolves, so its configuration can name a hostname
+# rather than a container name.
 - name: Ensure the homeserver stub is running
   ansible.builtin.command:
     argv:
@@ -50,15 +49,13 @@
       - --network-alias={{ molecule_shared_stub_hostname | default('matrix.molecule.local') }}
       - --env=STUB_SERVER_NAME={{ molecule_shared_stub_server_name | default('molecule.local') }}
       - --env=STUB_JOINED_ROOMS={{ (molecule_shared_stub_joined_rooms | default([])) | join(',') }}
-      # Appservices call /whoami on startup and refuse to run if the id
-      # returned is not the bot user they were configured as, so a scenario
-      # bridging anything has to tell the stub who it should claim to be.
+      # Appservices call /whoami on startup and refuse to run if the id returned is not
+      # the bot user they were configured as, so a scenario bridging anything has to tell
+      # the stub who it should claim to be.
       - --env=STUB_USER_ID={{ molecule_shared_stub_user_id | default('@stub:' + (molecule_shared_stub_server_name | default('molecule.local'))) }}
-      # Off by default. Set molecule_shared_stub_verbose to "1" to have the stub
-      # log every request it is asked for, which is both how you find out why a
-      # component will not start and - for a component that exposes no port of
-      # its own - the only place a scenario can observe it acting on what the
-      # role configured.
+      # Set molecule_shared_stub_verbose to "1" to log every request the stub is asked for.
+      # How you find out why a component will not start, and for a component with no port of
+      # its own, the only place to observe it acting on what the role configured.
       - --env=STUB_VERBOSE={{ molecule_shared_stub_verbose | default('') }}
       - --volume=/root/molecule-homeserver-stub.py:/stub.py:ro
       - "{{ molecule_shared_image_python }}"

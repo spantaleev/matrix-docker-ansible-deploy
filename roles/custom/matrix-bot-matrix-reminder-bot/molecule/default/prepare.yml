@@ -31,9 +31,8 @@
         docker_daemon_options:
           storage-driver: fuse-overlayfs
 
-    # The role's file tasks set owner/group by name, and Ansible resolves those
-    # through the passwd database - so they have to exist before it runs. In a
-    # real deployment `matrix-base` creates them.
+    # The role's file tasks set owner/group by name, which Ansible resolves through the
+    # passwd database, so they have to exist first. `matrix-base` creates them for real.
     - name: Ensure the matrix group exists
       ansible.builtin.group:
         name: "{{ matrix_group_name }}"
@@ -57,8 +56,8 @@
         group: "{{ matrix_group_name }}"
         mode: "0750"
 
-    # The role creates this network itself during converge, but the homeserver
-    # stub has to be on it before the bot starts, so it is created here first.
+    # The role creates this network itself during converge, but the stub has to be on it
+    # before the bot starts.
     - name: Ensure the container network the role attaches to exists
       ansible.builtin.command:
         argv:
@@ -72,11 +71,9 @@
         - matrix_bot_matrix_reminder_bot_molecule_network.rc != 0
         - "'already exists' not in matrix_bot_matrix_reminder_bot_molecule_network.stderr"
 
-    # This bot is not an appservice - it logs in with the username and password
-    # the role rendered into its configuration, and retries every 15 seconds
-    # until that succeeds. The shared stub answers the login with an access
-    # token, which is enough to get it into its sync loop. Nothing is asserted
-    # about the stub itself; see molecule-shared/homeserver-stub.py.
+    # Not an appservice: it logs in with the username and password the role rendered, retrying
+    # every 15 seconds until that succeeds. The stub answers with an access token, which is
+    # enough to reach the sync loop. Nothing is asserted about the stub itself.
     - name: Ensure the homeserver stub is running
       ansible.builtin.include_tasks:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/homeserver-stub.yml"

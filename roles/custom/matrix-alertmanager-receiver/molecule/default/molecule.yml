@@ -31,27 +31,24 @@ provisioner:
         matrix_alertmanager_receiver_path_prefix: /
         matrix_alertmanager_receiver_container_network: matrix-alertmanager-receiver-molecule
 
-        # verify.yml runs as its own play, where the role's defaults are out
-        # of scope, so the paths it reads are pinned here as literals. They
-        # match what the role derives from matrix_base_data_path above.
+        # verify.yml runs as its own play, where the role's defaults are out of scope,
+        # so the paths it reads are pinned here to match what the role derives.
         matrix_alertmanager_receiver_base_path: /matrix/alertmanager-receiver
         matrix_alertmanager_receiver_config_path: /matrix/alertmanager-receiver/config
 
-        # Traefik is not deployed in this scenario, so the labels the role would
-        # render for it are switched off and their absence is asserted instead.
+        # Traefik is not deployed here, so the labels the role would render for it are
+        # switched off and their absence is asserted instead.
         matrix_alertmanager_receiver_container_labels_traefik_enabled: false
 
-        # Deliberately different from the role's own defaults (port 12345,
-        # metrics disabled, alerts under /alerts), so that `verify.yml` can tell
-        # what the role rendered apart from what the application would have done
-        # on its own.
+        # Different from the role's own defaults, so verify.yml can tell what the role
+        # rendered apart from what the application would have done on its own.
         matrix_alertmanager_receiver_config_http_port: 12399
         matrix_alertmanager_receiver_config_http_metrics_enabled: true
         matrix_alertmanager_receiver_config_http_metrics_path: /molecule-metrics
         matrix_alertmanager_receiver_config_http_alerts_path_prefix: /molecule-alerts
 
-        # The homeserver IS reached at startup - the service fetches its joined
-        # rooms and exits 1 if that fails - so prepare.yml stands up a stub for it
+        # The homeserver IS reached at startup: the service fetches its joined rooms and
+        # exits 1 if that fails, so prepare.yml stands up a stub for it.
         matrix_alertmanager_receiver_config_matrix_homeserver_url: http://matrix.molecule.local:8008
         matrix_alertmanager_receiver_config_matrix_user_id: "@alertmanager:molecule.local"
         matrix_alertmanager_receiver_config_matrix_access_token: molecule_access_token_4f2a91

@@ -29,31 +29,29 @@ provisioner:
       all:
         matrix_bridge_heisenbridge_container_network: heisenbridge-molecule
 
-        # The stub prepare.yml stands up. Heisenbridge talks to it while
-        # starting; it is not a real homeserver and nothing is asserted about it.
+        # The stub prepare.yml stands up. Not a real homeserver, and nothing is asserted
+        # about it.
         matrix_bridge_heisenbridge_homeserver_url: http://matrix.molecule.local:8008
 
         matrix_bridge_heisenbridge_appservice_token: molecule_as_token_4f2a91
 
-        # Heisenbridge refuses to start without an owner - it is the Matrix user
-        # allowed to administer the bridge.
+        # Heisenbridge refuses to start without an owner: the Matrix user allowed to
+        # administer the bridge.
         matrix_bridge_heisenbridge_owner: "@molecule-admin:molecule.local"
 
-        # Deliberately different from the role's defaults, so verify.yml can tell
-        # what the role rendered apart from what heisenbridge would have chosen.
+        # Different from the role's defaults, so verify.yml can tell what the role rendered
+        # apart from what heisenbridge would have chosen.
         matrix_bridge_heisenbridge_path_prefix: /molecule-heisenbridge
 
-        # identd binds host port 113, which would collide with anything else on
-        # the machine and is not what this scenario is proving.
+        # identd binds host port 113, which would collide with anything else on the machine.
         matrix_bridge_heisenbridge_identd_enabled: false
 
-        # Traefik is not deployed here, so the labels the role would render for
-        # it are switched off and their absence is asserted instead.
+        # Traefik is not deployed here, so the labels the role would render for it are
+        # switched off and their absence is asserted instead.
         matrix_bridge_heisenbridge_container_labels_traefik_enabled: false
 
-        # verify.yml runs as its own play, where role defaults are out of scope.
-        # Unlike the mautrix bridges, heisenbridge keeps everything directly
-        # under its base path rather than in config/ and data/ subdirectories.
+        # verify.yml runs as its own play, where role defaults are out of scope. Unlike the
+        # mautrix bridges, heisenbridge keeps everything directly under its base path.
         matrix_bridge_heisenbridge_base_path: /matrix/heisenbridge
   env:
     # Workaround for https://github.com/ansible/molecule/issues/4391

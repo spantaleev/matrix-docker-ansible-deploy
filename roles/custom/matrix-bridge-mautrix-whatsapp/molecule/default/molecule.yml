@@ -29,35 +29,29 @@ provisioner:
       all:
         matrix_bridge_mautrix_whatsapp_container_network: mautrix-whatsapp-molecule
 
-        # The homeserver stub prepare.yml stands up. The bridge contacts it
-        # while starting; it is not a real homeserver and nothing is asserted
+        # The stub prepare.yml stands up. Not a real homeserver, and nothing is asserted
         # about it.
         matrix_bridge_mautrix_whatsapp_homeserver_address: http://matrix.molecule.local:8008
 
-        # sqlite keeps the scenario to one container. The role only requires a
-        # database hostname when the engine is postgres, and testing which
-        # database engine the bridge can talk to is not what this proves.
+        # sqlite keeps the scenario to one container. Which database engine the bridge can
+        # talk to is not what this proves.
         matrix_bridge_mautrix_whatsapp_database_engine: sqlite
 
-        # Appservice tokens. These are what the bridge and homeserver would
-        # authenticate to each other with; here they only have to reach the
-        # rendered configuration and the registration file.
+        # Here these only have to reach the rendered configuration and the registration.
         matrix_bridge_mautrix_whatsapp_appservice_token: molecule_as_token_4f2a91
         matrix_bridge_mautrix_whatsapp_homeserver_token: molecule_hs_token_9b3e77
 
-        # Deliberately different from the role's defaults, so verify.yml can
-        # tell what the role rendered apart from what the bridge would have
-        # defaulted to on its own.
+        # Different from the role's defaults, so verify.yml can tell what the role rendered
+        # apart from what the bridge would have chosen.
         matrix_bridge_mautrix_whatsapp_appservice_bot_username: molecule-whatsappbot
         matrix_bridge_mautrix_whatsapp_homeserver_domain: molecule.local
 
-        # Traefik is not deployed here, so the labels the role would render for
-        # it are switched off and their absence is asserted instead.
+        # Traefik is not deployed here, so the labels the role would render for it are
+        # switched off and their absence is asserted instead.
         matrix_bridge_mautrix_whatsapp_container_labels_traefik_enabled: false
 
-        # verify.yml runs as its own play, where role defaults are out of scope,
-        # so the paths it reads are pinned here as literals matching what the
-        # role derives from matrix_base_data_path.
+        # verify.yml runs as its own play, where the role's defaults are out of scope,
+        # so the paths it reads are pinned here to match what the role derives.
         matrix_bridge_mautrix_whatsapp_base_path: /matrix/mautrix-whatsapp
         matrix_bridge_mautrix_whatsapp_config_path: /matrix/mautrix-whatsapp/config
         matrix_bridge_mautrix_whatsapp_data_path: /matrix/mautrix-whatsapp/data

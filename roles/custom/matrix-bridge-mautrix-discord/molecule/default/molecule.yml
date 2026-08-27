@@ -29,51 +29,41 @@ provisioner:
       all:
         matrix_bridge_mautrix_discord_container_network: mautrix-discord-molecule
 
-        # The homeserver stub prepare.yml stands up. The bridge contacts it
-        # while starting; it is not a real homeserver and nothing is asserted
-        # about it. There is deliberately no Discord on the other side either -
-        # see docs/molecule-testing.md.
+        # The stub prepare.yml stands up. Not a real homeserver, and nothing is asserted
+        # about it. There is deliberately no Discord on the other side either.
         matrix_bridge_mautrix_discord_homeserver_address: http://matrix.molecule.local:8008
 
-        # sqlite keeps the scenario to one container. The role only requires a
-        # database hostname when the engine is postgres, and testing which
-        # database engine the bridge can talk to is not what this proves.
+        # sqlite keeps the scenario to one container. Which database engine the bridge can
+        # talk to is not what this proves.
         matrix_bridge_mautrix_discord_database_engine: sqlite
 
-        # Appservice tokens. These are what the bridge and homeserver would
-        # authenticate to each other with; here they only have to reach the
-        # rendered configuration and the registration file.
+        # Here these only have to reach the rendered configuration and the registration.
         matrix_bridge_mautrix_discord_appservice_token: molecule_as_token_d15c07
         matrix_bridge_mautrix_discord_homeserver_token: molecule_hs_token_a4e2b8
 
-        # Deliberately different from the role's defaults, so verify.yml can
-        # tell what the role rendered apart from what the bridge would have
-        # defaulted to on its own.
+        # Different from the role's defaults, so verify.yml can tell what the role rendered
+        # apart from what the bridge would have chosen.
         matrix_bridge_mautrix_discord_appservice_bot_username: molecule-discordbot
         matrix_bridge_mautrix_discord_homeserver_domain: molecule.local
         matrix_bridge_mautrix_discord_bridge_command_prefix: "!molecule-discord"
-        # The role defaults to `warn`; the bridge's own shipped configuration
-        # uses `debug`. `info` is neither.
+        # The role defaults to `warn`, the bridge's own shipped configuration to `debug`.
+        # `info` is neither.
         matrix_bridge_mautrix_discord_logging_level: info
 
-        # Unlike most bridge roles here, mautrix-discord *requires* a public
-        # address: `validate_config.yml` fails without
-        # `matrix_bridge_mautrix_discord_bridge_public_address`, which is
-        # derived from these three. Discord fetches avatars over it in relay
-        # mode; nothing reaches it in this scenario, but it has to be set for
-        # the role to run at all.
+        # Unlike most bridge roles here, mautrix-discord *requires* a public address:
+        # `validate_config.yml` fails without one, and it is derived from these three.
+        # Discord fetches avatars over it in relay mode. Nothing reaches it in this scenario,
+        # but it has to be set for the role to run at all.
         #
-        # A non-`/` path prefix and a non-default scheme are chosen so the
-        # avatar-proxy labels verify.yml reads can only look the way they do if
-        # the role composed them from these values.
+        # A non-`/` path prefix and a non-default scheme are chosen so the avatar-proxy labels
+        # verify.yml reads can only look the way they do if the role composed them.
         matrix_bridge_mautrix_discord_hostname: discord.molecule.local
         matrix_bridge_mautrix_discord_path_prefix: /discord-bridge
         matrix_bridge_mautrix_discord_scheme: http
         matrix_bridge_mautrix_discord_bridge_avatar_proxy_key: molecule_avatar_proxy_key_7c1d
 
-        # verify.yml runs as its own play, where role defaults are out of scope,
-        # so the paths it reads are pinned here as literals matching what the
-        # role derives from matrix_base_data_path.
+        # verify.yml runs as its own play, where the role's defaults are out of scope,
+        # so the paths it reads are pinned here to match what the role derives.
         matrix_bridge_mautrix_discord_base_path: /matrix/mautrix-discord
         matrix_bridge_mautrix_discord_config_path: /matrix/mautrix-discord/config
         matrix_bridge_mautrix_discord_data_path: /matrix/mautrix-discord/data

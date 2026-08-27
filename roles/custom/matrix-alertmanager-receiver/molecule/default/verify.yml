@@ -12,10 +12,9 @@
   gather_facts: false
 
   tasks:
-    # The version is read out of the role's own defaults rather than pinned in
-    # molecule.yml, so that the assertion further down compares the running
-    # image against what defaults/main.yml actually ships. Pinning it here
-    # would make that assertion compare the scenario with itself.
+    # Read from the role's own defaults rather than pinned in molecule.yml, so the version
+    # assertion compares the running image against what defaults/main.yml ships.
+    # Pinning it here would make that assertion compare the scenario with itself.
     - name: Load the role's defaults under a separate name
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
@@ -30,10 +29,9 @@
       delay: 5
       failed_when: false
 
-    # `Restart=always` means a crash-looping container still reports `active`,
-    # so the restart counter is checked alongside it. Asserted as `is defined`
-    # too, because `| int` turns a missing property into 0 and would pass
-    # vacuously on a systemd that does not expose it.
+    # `Restart=always` means a crash-looping container still reports `active`, so the restart
+    # counter is checked too. Asserted `is defined` because `| int` turns a missing property
+    # into 0 and would pass vacuously.
     - name: Assert the service is active and has not been restarting
       ansible.builtin.assert:
         that:
@@ -47,9 +45,9 @@
           automatic restart(s)
         success_msg: "matrix-alertmanager-receiver.service is active and has not restarted"
 
-    # Probed from inside the container network rather than from the host: the
-    # role publishes no host port, exactly as it does in a real deployment,
-    # where Traefik reaches it over the network instead.
+    # Probed from inside the container network rather than the host, because the role
+    # publishes no host port - exactly as in a real deployment, where Traefik reaches it
+    # over the network.
     - name: Wait for matrix-alertmanager-receiver to answer on the port the role configured
       ansible.builtin.command:
         argv:
@@ -70,9 +68,8 @@
       delay: 5
       failed_when: false
 
-    # The port and the metrics path are both non-default in this scenario, so a
-    # 200 here is only reachable if the configuration the role rendered is what
-    # the process is actually running on.
+    # Port and metrics path are both non-default here, so a 200 is only reachable if what
+    # the role rendered is what the process is running on.
     - name: Assert the configured port and metrics path reached the process
       ansible.builtin.assert:
         that:
@@ -93,9 +90,8 @@
           The metrics endpoint answered, but did not return Prometheus metrics
         success_msg: "The metrics endpoint returns Prometheus metrics"
 
-    # A negative control for the assertion above: the role's own default metrics
-    # path must NOT answer, or a 200 on the configured path would prove nothing
-    # about the configuration having been applied.
+    # Negative control for the assertion above: the role's own default metrics path must NOT
+    # answer, or a 200 on the configured path would prove nothing.
     - name: Ask for the role's default metrics path, which this scenario moved away from
       ansible.builtin.command:
         argv:

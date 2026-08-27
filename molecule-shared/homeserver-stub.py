@@ -4,21 +4,18 @@
 
 """A stand-in homeserver for Molecule scenarios.
 
-Most components in this playbook talk to a homeserver while starting up and
-exit if it is unreachable, so a scenario cannot get them running without one.
-Standing up a real Synapse for every role would dominate the run time and drag
-in Postgres, and the scenarios are not testing Synapse - they are testing that
-the role's configuration reaches the component and that it starts.
+Most components talk to a homeserver while starting up and exit if it is unreachable,
+so a scenario cannot get them running without one. A real Synapse for every role would
+dominate the run time and drag in Postgres, and the scenarios are not testing Synapse.
 
-So this answers the handful of endpoints components touch during startup, with
-the blandest plausible response in each case. It is deliberately permissive: an
-unknown path returns `{}` with a 200 rather than a 404, because the goal is to
-get the component past its startup checks, not to model the Matrix spec.
+This answers the handful of endpoints components touch during startup, with the blandest
+plausible response in each case. Deliberately permissive: an unknown path returns `{}` with
+a 200 rather than a 404, because the goal is to get the component past its startup checks.
 
-What it is NOT: an authentication check, a room state machine, or anything a
-scenario should assert *about*. Assert on what the role rendered and on what the
-component reports about itself. If a scenario starts needing this stub to behave
-like a real homeserver, that scenario has outgrown what these tests are for.
+What it is NOT: an authentication check, a room state machine, or anything a scenario should
+assert *about*. Assert on what the role rendered and what the component reports about itself.
+A scenario that needs this stub to behave like a real homeserver has outgrown what these
+tests are for.
 """
 
 import json
@@ -32,18 +29,17 @@ from urllib.parse import parse_qs, urlparse
 SERVER_NAME = os.environ.get("STUB_SERVER_NAME", "molecule.local")
 PORT = int(os.environ.get("STUB_PORT", "8008"))
 
-# Rooms reported as already joined. Components that resolve a room mapping at
-# startup (matrix-alertmanager-receiver, for one) fail if the rooms they were
-# configured with are missing, so a scenario passes its own room IDs in.
+# Rooms reported as already joined. Components that resolve a room mapping at startup
+# (matrix-alertmanager-receiver, for one) fail if the rooms they were configured with
+# are missing, so a scenario passes its own room IDs in.
 JOINED_ROOMS = [r for r in os.environ.get("STUB_JOINED_ROOMS", "").split(",") if r]
 
 USER_ID = os.environ.get("STUB_USER_ID", f"@stub:{SERVER_NAME}")
 
-# Longest a /sync call is held open. Long-polling clients (anything on
-# matrix-sdk: baibot and the other bots) ask for a 30s timeout and immediately
-# ask again when the call returns, so answering instantly would spin them into a
-# hot loop that eats the test machine. Honouring the requested timeout, capped
-# here, keeps an idle bot idle.
+# Longest a /sync call is held open. Long-polling clients ask for a 30s timeout and
+# immediately ask again when the call returns, so answering instantly spins them into a hot
+# loop that eats the test machine. Honouring the requested timeout, capped here, keeps an
+# idle bot idle.
 SYNC_MAX_HOLD_SECONDS = 30
 
 
@@ -109,12 +105,10 @@ class Handler(BaseHTTPRequestHandler):
         if path.endswith("/capabilities"):
             return {"capabilities": {}}
 
-        # Bots that authenticate with a username and password rather than as an
-        # appservice with a token log in here. Matched loosely on purpose:
-        # clients differ on the API version prefix (matrix-nio has shipped both
-        # /_matrix/client/r0/login and /_matrix/client/v3/login over time), and a
-        # login that falls through to the catch-all `{}` below looks to the
-        # client like bad credentials.
+        # Where bots authenticating with a username and password log in, rather than as an
+        # appservice with a token. Matched loosely on purpose, because clients differ on the
+        # API version prefix, and a login falling through to the catch-all `{}` below looks
+        # to the client like bad credentials.
         if path.endswith("/login"):
             return {
                 "user_id": USER_ID,
@@ -155,8 +149,8 @@ class Handler(BaseHTTPRequestHandler):
         if path.endswith("/health") or path.endswith("/_matrix/federation/v1/version"):
             return {"server": {"name": "molecule-stub", "version": "0"}}
 
-        # Anything unrecognised: an empty object, so a component doing a startup
-        # probe of an endpoint not listed here still gets past it.
+        # Anything unrecognised: an empty object, so a component probing an endpoint
+        # not listed here still gets past it.
         return {}
 
     def do_GET(self):
@@ -175,8 +169,8 @@ class Handler(BaseHTTPRequestHandler):
         self._send({})
 
     def log_message(self, fmt, *args):
-        # Quiet by default; STUB_VERBOSE=1 when a scenario will not start and you
-        # need to see what the component is actually asking for.
+        # Quiet by default. STUB_VERBOSE=1 when a scenario will not start and you need
+        # to see what the component is actually asking for.
         if os.environ.get("STUB_VERBOSE"):
             sys.stderr.write("stub: " + (fmt % args) + "\n")
 

@@ -3,29 +3,24 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# What this proves: the bridge starts, reads the configuration and registration
-# the role rendered, opens its appservice port, and is the Messenger-side image
-# at the version the role pins.
+# Proves the bridge starts, reads the configuration and registration the role rendered, opens
+# its appservice port, and is the Messenger-side image at the version the role pins.
 #
-# The extra thing worth proving for this role in particular is that
-# `matrix_bridge_mautrix_meta_messenger_meta_mode` reaches every place it feeds:
-# one upstream codebase serves several Meta networks, and the mode is what picks
-# which one. The scenario runs the bridge in `facebook-tor` mode rather than the
-# role's default `messenger`, so the assertions below can tell the two apart.
+# The extra thing worth proving here is that `..._meta_mode` reaches every place it feeds: one
+# upstream codebase serves several Meta networks, and the mode picks which. The scenario runs
+# `facebook-tor` rather than the role's default, so the assertions can tell the two apart.
 #
-# It does NOT bridge anything - there is no Facebook or Messenger account on the
-# other side and there is deliberately never going to be one. See
-# docs/molecule-testing.md.
+# It does NOT bridge anything: no Facebook or Messenger account is on the other side, and
+# deliberately never will be. See docs/molecule-testing.md.
 - name: Verify mautrix-meta-messenger
   hosts: all
   become: true
   vars_files:
     - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
     - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
-  # Lazily evaluated, so they are only resolved by the tasks that come after the
-  # matching slurp. Deliberately not set_fact: the rendered configuration
-  # contains the bridge's own Go templates (`{{.}}` in `username_template`), and
-  # a stored fact gets templated again on every lookup, which would try to
+  # Lazily evaluated, so they resolve only in the tasks after the matching slurp.
+  # Deliberately not set_fact: the rendered configuration contains the bridge's own Go
+  # templates, and a stored fact gets templated again on every lookup, which would try to
   # evaluate those as Jinja.
   vars:
     mautrix_meta_messenger_config: "{{ mautrix_meta_messenger_config_file.content | b64decode | from_yaml }}"
@@ -34,9 +29,8 @@
   gather_facts: false
 
   tasks:
-    # Read from the role's own defaults rather than pinned in molecule.yml, so
-    # the version assertion below compares the running image against what the
-    # role ships instead of against the scenario itself.
+    # From the role's own defaults rather than pinned in molecule.yml, so the version
+    # assertion compares the running image against what the role ships, not the scenario.
     - name: Load the role's defaults under a separate name
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
@@ -51,10 +45,9 @@
       delay: 5
       failed_when: false
 
-    # `Restart=always` means a bridge crash-looping on a configuration it cannot
-    # read still reports `active`, so the restart counter is checked too. It is
-    # asserted `is defined` because `| int` turns a missing property into 0 and
-    # would pass vacuously.
+    # `Restart=always` means a bridge crash-looping on unreadable config still reports
+    # `active`, so the restart counter is checked too. Asserted `is defined` because
+    # `| int` turns a missing property into 0 and would pass vacuously.
     - name: Assert the service is active and has not been restarting
       ansible.builtin.assert:
         that:
@@ -68,10 +61,9 @@
           automatic restart(s)
         success_msg: "matrix-mautrix-meta-messenger.service is active and has not restarted"
 
-    # The appservice port is the bridge's own listener, the one a homeserver
-    # would push transactions to. It opening at all means the bridge got through
-    # reading its configuration, through its /whoami check against the
-    # homeserver, and through setting itself up.
+    # The appservice listener is where a homeserver would push transactions. It opening at all
+    # means the bridge got through reading its configuration, through its /whoami check, and
+    # through setting itself up.
     - name: Wait for the bridge to open its appservice port
       ansible.builtin.command:
         argv:
@@ -107,9 +99,8 @@
         src: "{{ matrix_bridge_mautrix_meta_messenger_config_path }}/config.yaml"
       register: mautrix_meta_messenger_config_file
 
-    # Each of these differs from what the bridge would use on its own, so their
-    # presence means the role's configuration is what the bridge is running on
-    # rather than something that happened to agree with it.
+    # Each differs from what the bridge would use on its own, so their presence rules out
+    # a coincidence.
     - name: Assert the rendered configuration carries this scenario's values
       ansible.builtin.assert:
         that:
@@ -120,21 +111,19 @@
           - mautrix_meta_messenger_config.appservice.hs_token == matrix_bridge_mautrix_meta_messenger_homeserver_token
           - mautrix_meta_messenger_config.bridge.command_prefix == matrix_bridge_mautrix_meta_messenger_bridge_command_prefix
           - mautrix_meta_messenger_config.logging.min_level == matrix_bridge_mautrix_meta_messenger_logging_min_level
-          # matrix_admin is empty in the shared context, so the only per-domain
-          # permission left is the one the role derives from the homeserver domain.
+          # matrix_admin is empty in the shared context, so the only per-domain permission
+          # left is the one the role derives from the homeserver domain.
           - mautrix_meta_messenger_config.bridge.permissions[matrix_bridge_mautrix_meta_messenger_homeserver_domain] == 'user'
-          # From the shared context rather than from this scenario, but the role
-          # is what has to carry it into the configuration.
+          # From the shared context rather than this scenario, but the role is what has to
+          # carry it into the configuration.
           - mautrix_meta_messenger_config.encryption.allow == matrix_bridges_encryption_enabled
         fail_msg: "The rendered configuration does not carry the scenario's values"
         success_msg: "The rendered configuration carries the scenario's values"
 
-    # The mode is the variable that makes this role family unusual, and it is
-    # not written into the configuration as-is: the role expands it into an
-    # appservice id, a ghost username prefix, a bot displayname and the bridge's
-    # `tor` switch. Each of these holds a different value under the role's
-    # default `messenger` mode, so together they are what proves the choice
-    # propagated rather than being ignored.
+    # The mode is not written into the configuration as-is: the role expands it into an
+    # appservice id, a ghost username prefix, a bot displayname and the bridge's `tor` switch.
+    # Each holds a different value under the role's default mode, so together they prove the
+    # choice propagated rather than being ignored.
     - name: Assert the configuration reflects the Meta mode the scenario selected
       ansible.builtin.assert:
         that:
@@ -173,9 +162,8 @@
           {{ mautrix_meta_messenger_config.appservice.public_address | default('unset') }}
         success_msg: "The rendered configuration carries the public address the exposure settings imply"
 
-    # The registration file is the half of the appservice handshake the
-    # homeserver reads, and it is generated by the role rather than by the
-    # bridge, so it is worth checking on its own.
+    # The role generates the registration; the bridge only consumes it. Worth checking on its
+    # own, as it is the half of the handshake the homeserver reads.
     - name: Read the appservice registration the role rendered
       ansible.builtin.slurp:
         src: "{{ matrix_bridge_mautrix_meta_messenger_config_path }}/registration.yaml"
@@ -192,10 +180,9 @@
         fail_msg: "The appservice registration does not carry the scenario's tokens, id and bot user"
         success_msg: "The appservice registration carries the scenario's tokens, id and bot user"
 
-    # The namespaces are regexes the role assembles, so rather than comparing
-    # them as strings - which would only re-derive the role's own escaping -
-    # they are checked by what they do: cover the bot, cover this mode's ghosts,
-    # and not cover the ghosts of the mode the role would have defaulted to.
+    # The namespaces are regexes the role assembles. Comparing them as strings would only
+    # re-derive the role's own escaping, so they are checked by what they match: the bot,
+    # this mode's ghosts, and not the ghosts of the mode the role would have defaulted to.
     - name: Assert the registration namespaces cover the bot and this mode's ghost users
       ansible.builtin.assert:
         that:
@@ -214,8 +201,8 @@
         mautrix_meta_messenger_messenger_ghost_mxid: "@messenger_1234567890:{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"
         mautrix_meta_messenger_bot_mxid: "@{{ matrix_bridge_mautrix_meta_messenger_appservice_username }}:{{ matrix_bridge_mautrix_meta_messenger_homeserver_domain }}"
 
-    # The cheap proof that the data path reached the process and is writable by
-    # the uid the role runs the container as.
+    # Cheap proof that the data path reached the process and is writable by the uid the role
+    # runs the container as.
     - name: Look for the bridge's sqlite database under the role's data path
       ansible.builtin.stat:
         path: "{{ matrix_bridge_mautrix_meta_messenger_data_path }}/mautrix-meta.db"
@@ -244,10 +231,9 @@
       register: mautrix_meta_messenger_image
       changed_when: false
 
-    # Both Meta bridges are published to the same image repository, with
-    # Instagram's tags carrying an `ig-` prefix, so the tag is compared whole
-    # rather than by substring: an `ig-` prefix would mean this role pulled the
-    # other bridge's image.
+    # Both Meta bridges publish to the same image repository, with Instagram's tags carrying
+    # an `ig-` prefix. Compared whole rather than by substring, so pulling the other bridge's
+    # image would fail here.
     - name: Assert the running container is the Messenger image at the version defaults/main.yml pins
       ansible.builtin.assert:
         that:
@@ -263,11 +249,10 @@
         src: "{{ matrix_bridge_mautrix_meta_messenger_base_path }}/labels"
       register: mautrix_meta_messenger_labels
 
-    # Traefik is not running here, so what is checked is what the role wrote,
-    # not what a reverse-proxy would do with it. The port matters: it is
-    # hardcoded in the role's templates rather than derived from a variable, so
-    # nothing else in this scenario would catch it drifting from the port the
-    # bridge actually listens on.
+    # Traefik is not running here, so this checks what the role wrote, not what a reverse
+    # proxy would do with it. The port matters: it is hardcoded in the role's templates rather
+    # than derived from a variable, so nothing else here would catch it drifting from the port
+    # the bridge actually listens on.
     - name: Assert the labels route the exposure hostname and path prefix to the appservice port
       ansible.builtin.assert:
         that:

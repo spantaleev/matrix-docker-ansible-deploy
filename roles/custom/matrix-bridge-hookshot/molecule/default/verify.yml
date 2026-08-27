@@ -3,15 +3,14 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# What this proves: Hookshot starts, accepts the config.yml and registration.yml
-# the role rendered, and opens exactly the HTTP listeners that configuration
-# described - on the ports the role put there, and not on the ones it did not.
+# Proves Hookshot starts on the config.yml and registration.yml the role rendered,
+# and opens exactly the HTTP listeners that configuration described - on the ports
+# the role put there, and not on the ones it did not.
 #
-# What it deliberately does NOT do: configure GitHub, GitLab, Jira or Figma.
-# Every one of those needs an account and a credential on a third-party service,
-# which is the line where a scenario stops testing this repository and starts
-# testing a fake (see docs/molecule-testing.md). The generic webhooks listener
-# needs no credential from anyone, so it is the one that gets exercised live.
+# Deliberately does NOT configure GitHub, GitLab, Jira or Figma. Each needs an account
+# and a credential on a third-party service, which is where a scenario stops testing this
+# repository and starts testing a fake (see docs/molecule-testing.md). The generic webhooks
+# listener needs no credential from anyone, so it is the one exercised live.
 - name: Verify hookshot
   hosts: all
   become: true
@@ -21,11 +20,10 @@
   gather_facts: false
 
   tasks:
-    # Read from the role's own defaults rather than pinned in molecule.yml, so
-    # the version assertion below compares the running image against what the
-    # role ships instead of against the scenario itself. The default ports come
-    # from here for the same reason: the "these ports stay closed" assertion is
-    # only meaningful against the ports the role would otherwise have used.
+    # From the role's own defaults rather than pinned in molecule.yml, so the version
+    # assertion compares the running image against what the role ships, not against the
+    # scenario. The default ports come from here for the same reason: "these ports stay
+    # closed" is only meaningful against the ports the role would otherwise have used.
     - name: Load the role's defaults under a separate name
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
@@ -40,10 +38,9 @@
       delay: 5
       failed_when: false
 
-    # `Restart=always` means a bridge crash-looping on a configuration it cannot
-    # read still reports `active`, so the restart counter is checked too. It is
-    # asserted `is defined` because `| int` turns a missing property into 0 and
-    # would pass vacuously.
+    # `Restart=always` means a bridge crash-looping on unreadable config still reports
+    # `active`, so the restart counter is checked too. Asserted `is defined` because
+    # `| int` turns a missing property into 0 and would pass vacuously.
     - name: Assert the service is active and has not been restarting
       ansible.builtin.assert:
         that:
@@ -70,9 +67,8 @@
       ansible.builtin.set_fact:
         hookshot_config: "{{ hookshot_config_file.content | b64decode | from_yaml }}"
 
-    # Each of these differs from what Hookshot would use on its own AND from
-    # what the role defaults to, so finding them here means the role's
-    # configuration is what Hookshot is running on rather than a coincidence.
+    # Each differs from what Hookshot would use on its own AND from the role's defaults,
+    # so finding them here rules out a coincidence.
     - name: Assert the rendered configuration carries this scenario's values
       ansible.builtin.assert:
         that:
@@ -86,10 +82,9 @@
         fail_msg: "The rendered configuration does not carry the scenario's values"
         success_msg: "The rendered configuration carries the scenario's values"
 
-    # Hookshot's `listeners` list is the role's own construction: it decides
-    # which resources get a port at all, from a handful of independent switches.
-    # Getting this wrong is invisible in a "did it start" test, which is why it
-    # is asserted as a whole rather than key by key.
+    # The `listeners` list is the role's own construction, assembled from a handful of
+    # independent switches. Getting it wrong is invisible in a "did it start" test,
+    # hence asserting the whole shape rather than key by key.
     - name: Assert the role rendered exactly the listeners the scenario asked for
       ansible.builtin.assert:
         that:
@@ -103,9 +98,8 @@
       vars:
         hookshot_listener_ports: "{{ hookshot_config.listeners | map(attribute='port') | map('int') | list }}"
 
-    # No third-party service is configured here, so none of their sections may
-    # appear. GitLab is the interesting one: the role turns it ON by default, so
-    # its absence is what proves the scenario's switch reached the template.
+    # GitLab is the interesting one: the role turns it ON by default, so its absence
+    # proves the scenario's switch reached the template.
     - name: Assert no third-party service section was rendered
       ansible.builtin.assert:
         that:
@@ -131,9 +125,8 @@
     # The rendered registration
     # ------------------------------------------------------------------
 
-    # The registration file is the half of the appservice handshake the
-    # homeserver reads. The role generates it, Hookshot only consumes it, so it
-    # is worth checking on its own.
+    # The role generates the registration; Hookshot only consumes it. Worth checking
+    # on its own, as it is the half of the handshake the homeserver reads.
     - name: Read the appservice registration the role rendered
       ansible.builtin.slurp:
         src: "{{ matrix_bridge_hookshot_base_path }}/registration.yml"
@@ -143,9 +136,8 @@
       ansible.builtin.set_fact:
         hookshot_registration: "{{ hookshot_registration_file.content | b64decode | from_yaml }}"
 
-    # `url` is where the homeserver would push transactions, and the role builds
-    # it out of the container name and the appservice port. It has to agree with
-    # `bridge.port` in config.yml or the two halves would silently disagree.
+    # `url` is built from the container name and the appservice port. It has to agree
+    # with `bridge.port` in config.yml, or the two halves silently disagree.
     - name: Assert the registration carries the scenario's tokens, bot and callback URL
       ansible.builtin.assert:
         that:
@@ -156,9 +148,9 @@
         fail_msg: "The appservice registration does not carry the scenario's tokens, bot and callback URL"
         success_msg: "The appservice registration carries the scenario's tokens, bot and callback URL"
 
-    # The user namespace is derived from the generic webhook prefix, and the
-    # GitLab namespace is conditional on the service being enabled - so this
-    # checks that the two switches reach the registration, not just config.yml.
+    # The user namespace derives from the generic webhook prefix, and the GitLab namespace
+    # is conditional on that service being enabled. Checks both switches reach the
+    # registration, not just config.yml.
     - name: Assert the registration namespaces follow the enabled services
       ansible.builtin.assert:
         that:
@@ -176,8 +168,8 @@
     # The listeners, live
     # ------------------------------------------------------------------
 
-    # A helper container is used because the role publishes no host port, exactly
-    # as in a real deployment; see docs/molecule-testing.md.
+    # A helper container, because the role publishes no host port - exactly as in a real
+    # deployment. See docs/molecule-testing.md.
     - name: Wait for the webhooks listener to answer on the port the role configured
       ansible.builtin.command:
         argv:
@@ -205,11 +197,10 @@
       delay: 5
       failed_when: false
 
-    # Hookshot answers an unknown webhook id from its generic-webhook handler,
-    # with a JSON body no other component would produce. An Express "Cannot POST"
-    # page here would mean the port is Hookshot's but the generic webhooks
-    # service was never mounted on it; a refused connection would mean the
-    # listener the role described was never opened at all.
+    # An unknown webhook id draws a JSON body from the generic-webhook handler that no
+    # other component would produce. An Express "Cannot POST" page would mean the port is
+    # Hookshot's but the generic webhooks service was never mounted on it; a refused
+    # connection would mean the listener was never opened at all.
     - name: Assert the generic webhooks service is mounted on that listener
       ansible.builtin.assert:
         that:
@@ -222,9 +213,8 @@
           ({{ hookshot_webhooks_probe.stdout | default('no output') }})
         success_msg: "The generic webhooks service answers on the port the role configured"
 
-    # Metrics are OFF in the role's defaults, so this listener exists only
-    # because the scenario asked for it - and /metrics answers in a format
-    # nothing else on that port could have produced.
+    # Metrics are OFF in the role's defaults, so this listener exists only because the
+    # scenario asked for it.
     - name: Probe the metrics listener on the port the role configured
       ansible.builtin.command:
         argv:
@@ -253,8 +243,8 @@
           metrics ({{ hookshot_metrics_probe.stdout | default('no output') | truncate(200) }})
         success_msg: "The metrics listener serves Hookshot's own metrics"
 
-    # The appservice port is not in `listeners` - it comes from `bridge.port` -
-    # so it is a separate socket, opened by a separate part of the config.
+    # The appservice port is not in `listeners`; it comes from `bridge.port`.
+    # A separate socket, opened by a separate part of the config.
     - name: Probe the appservice port the role configured
       ansible.builtin.command:
         argv:
@@ -284,10 +274,10 @@
           ({{ hookshot_appservice_probe.stdout | default('no output') }})
         success_msg: "The appservice API answers on the port the role configured"
 
-    # The other half of the story. Every port above is one the scenario chose;
-    # these are the ones the role and Hookshot would have used if the scenario's
-    # configuration had never reached the process. If any of them answers, then
-    # a passing probe above proves much less than it looks like it does.
+    # The other half of the story. Every port above is one the scenario chose; these are
+    # the ones the role and Hookshot would have used had the scenario's configuration never
+    # reached the process. If any of them answers, the probes above prove much less than
+    # they appear to.
     - name: Probe the ports the role's defaults would have used
       ansible.builtin.command:
         argv:
