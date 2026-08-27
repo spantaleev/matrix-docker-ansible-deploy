@@ -14,10 +14,12 @@ on:  # yamllint disable-line rule:truthy
   push:
     paths:
       - "roles/custom/**"
+      - "molecule-shared/**"
       - ".github/workflows/molecule.yml"
   pull_request:
     paths:
       - "roles/custom/**"
+      - "molecule-shared/**"
       - ".github/workflows/molecule.yml"
   workflow_dispatch:
     inputs:
@@ -90,13 +92,22 @@ jobs:
               ;;
           esac
 
+          # molecule-shared/ is used by every scenario, so a change there means
+          # every role has to run, not just the ones whose own files moved.
+          shared_changed=""
           if [ -n "${base}" ]; then
+            shared_changed="$(git diff --name-only "${base}" HEAD -- 'molecule-shared/*' '.github/workflows/molecule.yml' || true)"
+          fi
+
+          if [ -n "${base}" ] && [ -z "${shared_changed}" ]; then
             changed="$(git diff --name-only "${base}" HEAD -- 'roles/custom/*' || true)"
             candidates="$(printf '%s\n' "${changed}" | awk -F/ 'NF>2 {print $3}' | sort -u)"
             echo "Changed roles: ${candidates:-none}"
           else
+            if [ -n "${shared_changed}" ]; then
+              echo "Shared Molecule files changed; considering every role"
+            fi
             candidates="$(find roles/custom -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)"
-            echo "No usable diff base; considering every role"
           fi
 
           selected=""
