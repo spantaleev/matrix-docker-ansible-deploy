@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-13 05:03+0000\n"
+"POT-Creation-Date: 2026-08-29 06:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -225,357 +225,405 @@ msgid "Meowlnir supports several management rooms per bot, and `encrypted` is se
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-meowlnir.md:111
-msgid "Who can command a bot"
+msgid "Several management rooms for one bot"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-meowlnir.md:113
-msgid "**Management room membership alone is not enough**, which is different from what [Draupnir](configuring-playbook-bot-draupnir.md) does, where everyone in the management room can issue commands."
+msgid "Protected rooms, watched policy lists, protection settings and who may command the bot are properties of **a management room**, not of the bot. A room can be protected from exactly one management room, so moving a room means `!rooms unprotect` in the old room and `!rooms protect` in the new one, with its settings and subscriptions set up again there."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-meowlnir.md:115
-msgid "Meowlnir decides who may drive a bot from power levels in its management room: anyone who can send the `fi.mau.meowlnir.watched_lists` state event (power level 50 by default), plus the room's creators."
+msgid "That is how you hand one room to another moderator without giving them power over everything else the bot moderates: a second management room, the room moved into it, and power level 50 for them there. That last part is revocable, unlike the creator status everyone invited at creation time receives."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-meowlnir.md:117
-msgid "Bots which are no longer declared"
+msgid "Splitting rooms up this way does not split two other things:"
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-meowlnir.md:119
-msgid "The bot list (`matrix_bot_meowlnir_bots_custom`) is authoritative. Removing entries from there will make the playbook unregister them with the Meowlnir instance."
+msgid "The variables which name a single management room (`matrix_bot_meowlnir_synapse_http_antispam_management_room_id`, `matrix_bot_meowlnir_config_meowlnir_report_room`, `matrix_bot_meowlnir_config_meowlnir_room_ban_room`) keep pointing at the room you named there."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:121
-msgid "Removal only adjusts Meowlnir's own records. A removed bot's Matrix user remains activated and stays in the rooms it had joined. A removed management room leaves the room and the bot's membership in it intact - it's just that Meowlnir stops taking commands there."
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:120
+msgid "A policy list can be written to from any management room watching it, and its policies apply in every room those management rooms protect. Give a delegated management room a list of its own with `!lists create`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:123
-msgid "Removal happens under the same `ensure-matrix-users-created` tag that creates bots. It's one Ansible tag for \"synchronizing the bots state\" (creation, changes, and removal)."
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:122
+msgid "Create the room with `meowlnir-create-management-room` (see [Inspecting and driving Meowlnir directly](#inspecting-and-driving-meowlnir-directly)), then add its ID to `management_rooms` and re-run the playbook, which is what registers it with Meowlnir."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:125
-msgid "To turn removal off entirely, set `matrix_bot_meowlnir_bots_pruning_enabled: false`. As a safety measure, the playbook refuses to prune when *no* bots are declared at all; override that with `matrix_bot_meowlnir_bots_pruning_on_empty_roster_enabled: true`."
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:124
+msgid "Switching a bot from an auto-created room to declared ones"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:127
-msgid "Trialling Meowlnir alongside another bot"
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:126
+msgid "Auto-creation makes exactly one room, and since it is not declared anywhere, [pruning](#bots-which-are-no-longer-declared) leaves such a bot's rooms alone. Declaring a second room means taking over the declaration of all of them: list what Meowlnir knows about with `/matrix/meowlnir/bin/meowlnir-bots`, set `management_room_auto_create: false`, put **every** one of those rooms under `management_rooms`, and re-run the playbook."
 msgstr ""
 
 #: ../../../docs/configuring-playbook-bot-meowlnir.md:129
+msgid "A room left out of that list is unregistered on the next run. Nothing is destroyed, but the bot stops taking commands there and stops protecting the rooms attached to it, until you declare the room again."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:131
+msgid "Who can command a bot"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:133
+msgid "**Management room membership alone is not enough**, which is different from what [Draupnir](configuring-playbook-bot-draupnir.md) does, where everyone in the management room can issue commands."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:135
+msgid "Meowlnir decides who may drive a bot from power levels in its management room: anyone who can send the `fi.mau.meowlnir.watched_lists` state event (power level 50 by default), plus the room's creators."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:137
+msgid "Bots which are no longer declared"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:139
+msgid "The bot list (`matrix_bot_meowlnir_bots_custom`) is authoritative. Removing entries from there will make the playbook unregister them with the Meowlnir instance."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:141
+msgid "Removal only adjusts Meowlnir's own records. A removed bot's Matrix user remains activated and stays in the rooms it had joined. A removed management room leaves the room and the bot's membership in it intact - it's just that Meowlnir stops taking commands there."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:143
+msgid "Removal happens under the same `ensure-matrix-users-created` tag that creates bots. It's one Ansible tag for \"synchronizing the bots state\" (creation, changes, and removal)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:145
+msgid "To turn removal off entirely, set `matrix_bot_meowlnir_bots_pruning_enabled: false`. As a safety measure, the playbook refuses to prune when *no* bots are declared at all; override that with `matrix_bot_meowlnir_bots_pruning_on_empty_roster_enabled: true`."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:147
+msgid "Trialling Meowlnir alongside another bot"
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:149
 msgid "Meowlnir has a dry-run mode in which it does everything except take moderation actions:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:136
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:156
 msgid "Dry run does not cover the [synapse-http-antispam](#enabling-synapse-http-antispam-support) integration. It suppresses actions Meowlnir takes itself (bans, server ACLs, rejecting pending invites), but the verdicts it hands back to Synapse still block invites and joins. Leave that integration off while trialling."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:138
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:158
 msgid "Do not expect dry run to preview what Meowlnir would do in rooms another policy-list bot already moderates. Meowlnir only acts on users who are *in* a room, and the other bot has already removed everyone its lists match, so the preview comes out empty. Dry run also skips the power level check described under [Protecting a room](#protecting-a-room), so it will not surface a permissions problem either."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:140
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:160
 msgid "Abuse reports"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:142
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:162
 msgid "Meowlnir can intercept the report endpoints of the client-server API, so that abuse reports are delivered to a management room. This requires integration with the reverse proxy in front of the homeserver, which the playbook sets up for you when using Traefik:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:151
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:171
 msgid "Only the `v3` report endpoints are routed to Meowlnir. Requests to the legacy `r0` endpoints continue to reach the homeserver, because Meowlnir does not serve them."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:153
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:173
 msgid "Enabling synapse-http-antispam support"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:155
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:175
 msgid "Meowlnir can block invites and joins before they happen. This requires the [synapse-http-antispam](https://github.com/maunium/synapse-http-antispam) module, which the playbook can enable for you:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:165
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:185
 msgid "The playbook wires the module up to a single consumer, so this cannot be enabled at the same time as `matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled`. The playbook fails the run if both are enabled."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:167
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:187
 msgid "With the module in place, you can also block invitations to specific users outright, which is useful for accounts that attract spam:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:174
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:194
 msgid "Such an invitation can still be let through case by case with the `!allow-invite` command."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:176
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:196
 msgid "End-to-End Encryption support"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:178
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:198
 msgid "To let Meowlnir's bots participate in encrypted rooms:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:184
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:204
 msgid "When using Synapse, the playbook turns on the experimental features this depends on (`msc2409_to_device_messages_enabled` and `msc3202_transaction_extensions`) for you."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:186
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:206
 msgid "Policy server (MSC4284)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:188
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:208
 msgid "Meowlnir can act as a [policy server](https://github.com/matrix-org/matrix-spec-proposals/pull/4284), letting rooms ask it to vet events before they are accepted:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:194
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:214
 msgid "This exposes `/_matrix/policy` on your Matrix federation endpoint, so that other servers participating in a room can reach it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:196
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:216
 msgid "That only stands the policy server up, though — no room is put behind it until you say so from the management room:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:202
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:222
 msgid "Given no room, `enable` applies to every protected room. Rooms which are not protected are skipped, with `Skipped ... as it is not a protected room`, so [protect a room](#protecting-a-room) before enabling it here. `!policyserver` on its own reports whether the policy server is available and prints its public key, and `!policyserver disable` reverses the change."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:204
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:224
 msgid "The playbook derives a stable signing key for you from `matrix_homeserver_generic_secret_key`. If you would rather use an independently generated one, produce it with the command below and set it as `matrix_bot_meowlnir_config_policy_server_signing_key`:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:210
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:230
 msgid "Synapse admin API access (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:212
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:232
 msgid "A few of Meowlnir's features go through Synapse's admin API, not the client-server API — suspending or deactivating users, and deleting rooms during a takedown. Those calls require the caller to be a Synapse **server admin**, which bots are not by default, so they come back as `M_FORBIDDEN` (\"You are not a server admin\"). Nothing else is affected: bans, server ACLs, protecting rooms and watching policy lists all go through the client-server API, where a sufficient power level is the only requirement."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:214
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:234
 msgid "To grant that access, point each bot at a token belonging to a server admin:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:221
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:241
 msgid "The key is the bot the token is used for; the token itself belongs to an administrator account, not to the bot."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:223
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:243
 msgid "If you have more than one management room, note that room bans are only processed in the one named by `matrix_bot_meowlnir_config_meowlnir_room_ban_room`, and ignored elsewhere."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:225
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:245
 msgid "Where the token comes from depends on how your homeserver authenticates. Ordinarily you [obtain an access token](obtaining-access-tokens.md) for an account which is a Synapse server admin. When [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) is enabled, Synapse no longer decides who is an admin, so the token has to be issued by MAS with admin privileges:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:231
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:251
 msgid "Note that bot users are created by the appservice and are not known to Matrix Authentication Service, so the token cannot be issued for the bot itself — use an administrator account."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:233
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:253
 msgid "Access to the Synapse database (optional)"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:235
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:255
 msgid "Some room takedown features rely on Meowlnir reading room IDs directly from the Synapse database. Upstream expects a user with read-only permissions, which the playbook does not create. Enabling the integration below hands Meowlnir the same credentials Synapse itself uses, which also grant write access:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:241
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:261
 msgid "If you would rather not do that, create a read-only Postgres user yourself and point Meowlnir at it with `matrix_bot_meowlnir_synapse_database_uri`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:243
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:263
 msgid "Adopting an existing Meowlnir installation"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:245
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:265
 msgid "If you already run Meowlnir outside the playbook and want to bring it under this role, two things need attention before the first run."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:247
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:267
 msgid "Your bots exist in Meowlnir's database but not in your `vars.yml` file, and [pruning](#bots-which-are-no-longer-declared) is on by default, so the first run would remove them. Declare them in `matrix_bot_meowlnir_bots_custom` — with `management_room_auto_create: false` and their existing rooms under `management_rooms` — or set `matrix_bot_meowlnir_bots_pruning_enabled: false`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:249
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:269
 msgid "If the installation uses encryption, also copy the `pickle_key` from its old configuration file into `matrix_bot_meowlnir_config_encryption_pickle_key`. The crypto store cannot be read with a different key than it was written with, so leaving the playbook's default in place costs your bots their existing encryption sessions."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:251
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:271
 msgid "Extending the configuration"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:253
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:273
 msgid "There are some additional things you may wish to configure about the bot."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:255
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:275
 msgid "Take a look at:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:257
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:277
 msgid "`roles/custom/matrix-bot-meowlnir/defaults/main.yml` for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `matrix_bot_meowlnir_configuration_extension_yaml` variable"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:260
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:280
 msgid "Do not set any of Meowlnir's secrets to the literal value `generate`. Meowlnir re-runs its configuration upgrader on every start, so a `generate` placeholder would produce a brand new secret on every restart. The playbook derives stable values for you, and fails the run if it finds a `generate` placeholder."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:262
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:282
 msgid "Installing"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:264
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:284
 msgid "After configuring the playbook, run it with [playbook tags](playbook-tags.md) as below:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:270
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:290
 msgid "With `management_room_auto_create`, you then have an invitation waiting for you — accept it and start sending commands. If you supplied the management room yourself, carry on from step 3 of [Supplying your own management room](#supplying-your-own-management-room): invite the bot, then give it power level 50 or more."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:272
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:292
 msgid "**Notes**:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:274
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:294
 msgid "The `ensure-matrix-users-created` tag is what creates the bots declared in `matrix_bot_meowlnir_bots_custom`, registers their management rooms, and removes the ones you no longer declare. It deliberately does not run as part of `setup-all`, so that installing onto a server whose database you are about to restore from a backup does not write anything."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:276
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:296
 msgid "Re-running is safe and idempotent, so adding a bot later is a matter of extending the list and running the same command again."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:278
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:298
+msgid "If the homeserver turns out to be running without Meowlnir's appservice registration (which is the normal state of affairs on the run that first enables Meowlnir), the playbook restarts the homeserver during bot provisioning, so that everything completes in a single run."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:300
 msgid "The shortcut commands with the [`just` program](just.md) are also available: `just install-all` or `just setup-all`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:280
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:302
 msgid "Usage"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:282
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:304
 msgid "You can refer to the upstream [documentation](https://docs.mau.fi/meowlnir/) for a more detailed usage guide."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:284
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:306
 msgid "Below is a **non-exhaustive quick-start guide** for the impatient."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:286
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:308
 msgid "Inspecting and driving Meowlnir directly"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:288
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:310
 msgid "The playbook drives Meowlnir's management API for you based on `matrix_bot_meowlnir_bots_custom`, which is the recommended way. For anything it does not cover, helper scripts are installed under `/matrix/meowlnir/bin`, which find the management secret and reach the API inside the container:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:301
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:327
 msgid "`meowlnir-create-management-room` prints the new room's ID, which you then register with `meowlnir-api PUT /_meowlnir/v1/management_room/<room ID>`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:303
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:329
 msgid "See the upstream [bot creation documentation](https://docs.mau.fi/meowlnir/bot-create.html) for the full set of endpoints. Bear in mind that bots you create this way are not declared in your `vars.yml` file, so the next playbook run will remove them again (see [Bots which are no longer declared](#bots-which-are-no-longer-declared))."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:305
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:331
 msgid "If you have enabled encryption, each bot also needs verifying once. That step is left manual because it returns a recovery key you need to store somewhere safe:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:311
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:337
 msgid "Protecting a room"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:313
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:339
 msgid "Invite the bot to a room, give it a power level high enough to act (see below), and then tell it to protect the room by sending this command to its management room:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:319
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:345
+msgid "If the bot has more than one management room, send this to the one that should own the room: a room can only be protected from a single management room. See [Several management rooms for one bot](#several-management-rooms-for-one-bot)."
+msgstr ""
+
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:347
 msgid "Meowlnir refuses to protect a room unless its power level reaches that room's own `ban` and `redact` levels (50 in a default room). That is only enough for user bans, though: writing `m.room.server_acl` usually requires 100, and without it the server rules in your watched lists have no effect — which is most of what a list like [CME](https://matrix.to/#/%23community-moderation-effort-bl:neko.dev) carries. **Give the bot power level 100** unless you only care about user bans."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:321
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:349
 msgid "Set the power level *before* protecting the room. Meowlnir re-sends server ACLs when it starts and when a watched list changes, but not when its own power level goes up subsequently, so raising it afterwards leaves the room without ACLs until you restart the bot (`systemctl restart matrix-bot-meowlnir` or via the playbook's Ansible `start` tag)."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:323
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:351
 msgid "Subscribing to a policy list"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:325
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:353
 msgid "Policy lists are maintained in Matrix rooms. Popular public ones are:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:327
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:355
 msgid "`#community-moderation-effort-bl:neko.dev`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:328
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:356
 msgid "`#huginn-muninn-active-threats:feline.support`"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:330
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:358
 msgid "Subscribe to one by sending the following command to the management room:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:336
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:364
 msgid "The last argument is a shortcode, which you use to refer to the list in later commands."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:338
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:366
 msgid "Overriding a policy from someone else's list"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:340
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:368
 msgid "This is the main capability Meowlnir has that Draupnir does not."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:342
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:370
 msgid "When several watched lists carry a policy for the same user, **the first match wins**, and \"first\" means the order in which the lists are watched. So to be able to override a community list's ban, your own list has to come before it."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:344
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:372
 msgid "`!lists subscribe` appends, which makes subscription order the precedence order. Subscribe to your own list first, and to community lists afterwards:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:352
-msgid "If you have already subscribed in the wrong order, fixing it means editing the `fi.mau.meowlnir.watched_lists` state event in the management room by hand. Newer Meowlnir releases (than `v0.2606.0`) add `!lists subscribe … --insert-before <shortcode>`, which will make reordering a single command."
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:380
+msgid "To subscribe somewhere other than the end of the list, pass `--insert-before <shortcode>`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:354
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:382
 msgid "You can then publish an unban policy into your own list, which takes precedence over the community list's ban:"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:361
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:389
 msgid "Unlike `!ban`, the `!add-unban` command does not treat its reason as a trailing argument, so a reason containing spaces is discarded. Use a single word (or hyphenate) until that is fixed upstream."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:364
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:392
 msgid "An unban policy stops a ban from being **re-applied**; it does not undo one that is already in place unless Meowlnir applied it itself and still has it on record. A ban placed by a human moderator, or by the Draupnir or Mjolnir you are migrating away from, stays. Unban such a user once by hand — from then on the policy keeps them unbanned, while you remain subscribed to the list that banned them."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:366
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:394
 msgid "Use `!match @alice:example.com` to see which policies currently apply to a user and which list each came from."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:369
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:397
 msgid "Unban policies use a Meowlnir-specific recommendation (`fi.mau.meowlnir.unban`) which is not part of the Matrix specification. If you publish your policy list for other people to subscribe to, subscribers running Draupnir or Mjolnir will ignore your unban policies."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:371
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:399
 msgid "There is also a blunter, server-wide escape hatch for policies that are too wide to tolerate at all — `matrix_bot_meowlnir_config_meowlnir_hacky_rule_filter_custom`, which makes Meowlnir ignore any policy matching the listed entities."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:373
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:401
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:375
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:403
 msgid "As with all other services, you can find the logs in [systemd-journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html) by running a command like `journalctl -fu matrix-bot-meowlnir`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:377
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:405
 msgid "If bots appear to do nothing, check that they have an Administrator power level in the rooms they are meant to protect, and that the room has been added with `!rooms protect`."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:379
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:407
 msgid "If commands in a management room get no reply at all, check the bot's power level *there* too — it needs at least 50 to record its own configuration."
 msgstr ""
 
-#: ../../../docs/configuring-playbook-bot-meowlnir.md:381
+#: ../../../docs/configuring-playbook-bot-meowlnir.md:409
 msgid "A bare `!lists` returns nothing in a management room which has never had a policy list. That is an upstream bug and it clears as soon as you subscribe to one; `!lists subscribe` works from the start."
 msgstr ""

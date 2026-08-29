@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-01 17:14+0000\n"
+"POT-Creation-Date: 2026-08-29 06:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,15 +89,15 @@ msgid "Since Ansible 2.21, forked workers call `setsid()` and thus lose the cont
 msgstr ""
 
 #: ../../../docs/ansible.md:48
-msgid "The simplest fix is to connect to the server once (e.g. `ssh root@matrix.example.com`) and confirm the host key. Ansible runs after that will find it in your `known_hosts` file."
+msgid "To fix host key errors, connect to the server once (e.g. `ssh root@matrix.example.com`) and confirm the host key. Ansible runs after that will find it in your `known_hosts` file."
 msgstr ""
 
 #: ../../../docs/ansible.md:50
-msgid "Alternatively, run Ansible with the `ANSIBLE_WORKER_SESSION_ISOLATION=False` environment variable to get these prompts back (e.g. `ANSIBLE_WORKER_SESSION_ISOLATION=False just install-all`)."
+msgid "If your SSH key is protected by a passphrase, load it into an [ssh-agent](https://man.openbsd.org/ssh-agent) (e.g. `ssh-add ~/.ssh/id_ed25519`), so that SSH does not need to prompt for the passphrase."
 msgstr ""
 
 #: ../../../docs/ansible.md:52
-msgid "**Note**: this does not affect you if you're [using Ansible via Docker](#using-ansible-via-docker), because our Docker image already disables session isolation for you."
+msgid "**Note**: if you're [using Ansible via Docker](#using-ansible-via-docker), host keys of previously unknown hosts are accepted automatically, so only the passphrase advice above applies to you. For the agent to be reachable inside the container, share its socket by adding `--mount type=bind,src=$SSH_AUTH_SOCK,dst=/ssh-agent --env SSH_AUTH_SOCK=/ssh-agent` to `docker run`. If the key is already loaded into the agent, you do not need to mount the SSH key file into the container at all."
 msgstr ""
 
 #: ../../../docs/ansible.md:54

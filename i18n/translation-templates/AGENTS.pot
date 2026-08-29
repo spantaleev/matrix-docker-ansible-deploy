@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: matrix-docker-ansible-deploy \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-18 04:11+0000\n"
+"POT-Creation-Date: 2026-08-29 06:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,53 +57,61 @@ msgid "`docs/`: user-facing documentation, one page per component."
 msgstr ""
 
 #: ../../../AGENTS.md:22
-msgid "`i18n/`: translation infrastructure. Do not edit locale files by hand; they are managed by automation."
+msgid "`molecule-shared/`: files shared by the roles' Molecule scenarios (Python and Ansible dependencies, pinned helper container images)."
 msgstr ""
 
 #: ../../../AGENTS.md:23
+msgid "`i18n/`: translation infrastructure. Do not edit locale files by hand; they are managed by automation."
+msgstr ""
+
+#: ../../../AGENTS.md:24
 msgid "`CHANGELOG.md`: user-facing announcements, newest first."
 msgstr ""
 
-#: ../../../AGENTS.md:25
+#: ../../../AGENTS.md:26
 msgid "Conventions"
 msgstr ""
 
-#: ../../../AGENTS.md:27
+#: ../../../AGENTS.md:28
 msgid "Follow the [style guide for playbook developers](docs/style-guide.md). In particular:"
 msgstr ""
 
-#: ../../../AGENTS.md:29
+#: ../../../AGENTS.md:30
 msgid "Variable prefixes match the role directory name."
 msgstr ""
 
-#: ../../../AGENTS.md:30
+#: ../../../AGENTS.md:31
 msgid "Playbook-extensible list variables use the `_auto` + `_custom` split; `_custom` is reserved for users."
 msgstr ""
 
-#: ../../../AGENTS.md:31
+#: ../../../AGENTS.md:32
 msgid "Renamed or removed variables get a validation entry, so stale user configuration produces an error instead of being silently ignored. Each role deprecates its own variables in its `validate_config.yml`; the `matrix_playbook_migration` role covers eliminated roles and very-early validation, and also gates breaking changes via `matrix_playbook_migration_expected_version` (see the style guide)."
 msgstr ""
 
-#: ../../../AGENTS.md:32
+#: ../../../AGENTS.md:33
 msgid "Every file carries SPDX license headers ([REUSE](https://reuse.software/) specification)."
 msgstr ""
 
-#: ../../../AGENTS.md:33
-msgid "New components must be registered in `setup.yml`, `group_vars/matrix_servers`, `docs/README.md`, `README.md`, `docs/container-images.md`, and get a `CHANGELOG.md` entry."
+#: ../../../AGENTS.md:34
+msgid "Roles may carry a Molecule scenario, proving the component starts and does not choke on the configuration the role rendered. Run one with `just molecule <role>` (no argument lists the roles that have one); CI runs only the scenarios of roles a push touched. See [Molecule testing for roles](docs/molecule-testing.md) before writing one - roles here need context a standalone role does not."
 msgstr ""
 
 #: ../../../AGENTS.md:35
-msgid "Other notes"
+msgid "New components must be registered in `setup.yml`, `group_vars/matrix_servers`, `docs/README.md`, `README.md`, `docs/container-images.md`, and get a `CHANGELOG.md` entry."
 msgstr ""
 
 #: ../../../AGENTS.md:37
-msgid "Documentation examples use `example.com`, `@alice:example.com`, and the other placeholder values listed in the style guide."
-msgstr ""
-
-#: ../../../AGENTS.md:38
-msgid "Write role tasks concurrency-safe: use `ansible.builtin.tempfile` for temporary files (removed in an `always` block), never fixed shared paths."
+msgid "Other notes"
 msgstr ""
 
 #: ../../../AGENTS.md:39
+msgid "Documentation examples use `example.com`, `@alice:example.com`, and the other placeholder values listed in the style guide."
+msgstr ""
+
+#: ../../../AGENTS.md:40
+msgid "Write role tasks concurrency-safe: use `ansible.builtin.tempfile` for temporary files (removed in an `always` block), never fixed shared paths."
+msgstr ""
+
+#: ../../../AGENTS.md:41
 msgid "One logical change per commit."
 msgstr ""
