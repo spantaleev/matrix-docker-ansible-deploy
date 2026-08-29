@@ -1,0 +1,257 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the bridge starts, reads the role-rendered configuration and registration, migrates
+# its Postgres schema, and opens its appservice listener. No Telegram login is attempted.
+- name: Verify mautrix-telegram
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  # These are deliberately lazy rather than set_fact. The bridge configuration contains Go
+  # templates; storing the parsed document as a fact would make Ansible template them again.
+  vars:
+    mautrix_telegram_config: "{{ mautrix_telegram_config_file.content | b64decode | from_yaml }}"
+    mautrix_telegram_registration: "{{ mautrix_telegram_registration_file.content | b64decode | from_yaml }}"
+    mautrix_telegram_labels_rendered: "{{ mautrix_telegram_labels.content | b64decode }}"
+  gather_facts: false
+  tasks:
+    # Load the shipped version instead of pinning it in the scenario, so Renovate bumps are
+    # checked against the new image automatically.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_telegram_role_defaults
+
+    - name: Wait for the mautrix-telegram service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-telegram.service
+      register: mautrix_telegram_service
+      until: mautrix_telegram_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always leaves a crash-looping service active, so both properties matter.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_service.status.ActiveState == 'active'
+          - mautrix_telegram_service.status.NRestarts is defined
+          - mautrix_telegram_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-telegram.service is
+          {{ mautrix_telegram_service.status.ActiveState | default('unknown') }}
+          after {{ mautrix_telegram_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-mautrix-telegram.service is active and has not restarted"
+
+    # /live proves the listener opened; /ready additionally proves startup passed the
+    # homeserver identity check and database initialization.
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_telegram_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-telegram:8080/_matrix/mau/live
+      register: mautrix_telegram_live
+      changed_when: false
+      until: "'HTTP_STATUS=200' in mautrix_telegram_live.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_telegram_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-telegram:8080/_matrix/mau/ready
+      register: mautrix_telegram_ready
+      changed_when: false
+      until: "'HTTP_STATUS=200' in mautrix_telegram_ready.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on its appservice port
+      ansible.builtin.assert:
+        that:
+          - "'HTTP_STATUS=200' in mautrix_telegram_live.stdout"
+          - "'HTTP_STATUS=200' in mautrix_telegram_ready.stdout"
+        fail_msg: >-
+          The appservice health responses were live={{ mautrix_telegram_live.stdout | default('none') }}
+          and ready={{ mautrix_telegram_ready.stdout | default('none') }}
+        success_msg: "The bridge is live and ready on its appservice port"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_telegram_config_path }}/config.yaml"
+      register: mautrix_telegram_config_file
+
+    # All scenario-provided values below differ from the role or component defaults.
+    - name: Assert the parsed configuration carries the scenario's values
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_config.homeserver.address == matrix_bridge_mautrix_telegram_homeserver_address
+          - mautrix_telegram_config.homeserver.domain == matrix_bridge_mautrix_telegram_homeserver_domain
+          - mautrix_telegram_config.network.api_id | int == matrix_bridge_mautrix_telegram_api_id | int
+          - mautrix_telegram_config.network.api_hash == matrix_bridge_mautrix_telegram_api_hash
+          - mautrix_telegram_config.appservice.bot.username == matrix_bridge_mautrix_telegram_appservice_bot_username
+          - mautrix_telegram_config.appservice.as_token == matrix_bridge_mautrix_telegram_appservice_token
+          - mautrix_telegram_config.appservice.hs_token == matrix_bridge_mautrix_telegram_homeserver_token
+          - mautrix_telegram_config.bridge.command_prefix == matrix_bridge_mautrix_telegram_command_prefix
+          - not mautrix_telegram_config.bridge.personal_filtering_spaces
+          - not mautrix_telegram_config.matrix.federate_rooms
+          - not mautrix_telegram_config.backfill.enabled
+          - mautrix_telegram_config.logging.min_level == matrix_bridge_mautrix_telegram_logging_level
+          - "'(Molecule)' in mautrix_telegram_config.network.displayname_template"
+          - mautrix_telegram_config.bridge.permissions[matrix_bridge_mautrix_telegram_homeserver_domain] == 'user'
+        fail_msg: "The parsed configuration does not carry the scenario's values"
+        success_msg: "The parsed configuration carries the scenario's values"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_config.database.type == matrix_bridge_mautrix_telegram_database_engine
+          - matrix_bridge_mautrix_telegram_database_username in mautrix_telegram_config.database.uri
+          - matrix_bridge_mautrix_telegram_database_name in mautrix_telegram_config.database.uri
+          - matrix_bridge_mautrix_telegram_database_hostname in mautrix_telegram_config.database.uri
+        fail_msg: >-
+          database.uri is {{ mautrix_telegram_config.database.uri | default('unset') }},
+          which was not built from the scenario's connection settings
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Assert the exposure settings produce the bridge's public address
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_config.appservice.public_address == 'https://bridges.molecule.local/bridges/telegram'
+        fail_msg: >-
+          appservice.public_address is
+          {{ mautrix_telegram_config.appservice.public_address | default('unset') }}
+        success_msg: "The exposure settings produce the bridge's public address"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_telegram_config_path }}/registration.yaml"
+      register: mautrix_telegram_registration_file
+
+    - name: Assert the parsed registration carries the scenario's identity and tokens
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_registration.id == 'telegram'
+          - mautrix_telegram_registration.as_token == matrix_bridge_mautrix_telegram_appservice_token
+          - mautrix_telegram_registration.hs_token == matrix_bridge_mautrix_telegram_homeserver_token
+          - mautrix_telegram_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_telegram_appservice_bot_username
+          - mautrix_telegram_registration.url == 'http://matrix-mautrix-telegram:8080'
+        fail_msg: "The appservice registration does not carry the scenario's identity and tokens"
+        success_msg: "The appservice registration carries the scenario's identity and tokens"
+
+    # Check the namespace regexes by matching examples rather than reimplementing their escaping.
+    - name: Assert the registration namespaces cover the bot and Telegram ghost users
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_ghost_regex | length > 0
+          - mautrix_telegram_bot_regex | length > 0
+          - mautrix_telegram_ghost_mxid is match(mautrix_telegram_ghost_regex)
+          - mautrix_telegram_non_ghost_mxid is not match(mautrix_telegram_ghost_regex)
+          - mautrix_telegram_bot_mxid is match(mautrix_telegram_bot_regex)
+        fail_msg: "The registration namespaces do not cover the bot and Telegram ghost users"
+        success_msg: "The registration namespaces cover the bot and Telegram ghost users"
+      vars:
+        mautrix_telegram_user_regexes: "{{ mautrix_telegram_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_telegram_ghost_regex: "{{ mautrix_telegram_user_regexes | select('search', 'telegram_') | first | default('') }}"
+        mautrix_telegram_bot_regex: "{{ mautrix_telegram_user_regexes | reject('search', 'telegram_') | first | default('') }}"
+        mautrix_telegram_ghost_mxid: "@telegram_12345678:{{ matrix_bridge_mautrix_telegram_homeserver_domain }}"
+        mautrix_telegram_non_ghost_mxid: "@signal_12345678:{{ matrix_bridge_mautrix_telegram_homeserver_domain }}"
+        mautrix_telegram_bot_mxid: "@{{ matrix_bridge_mautrix_telegram_appservice_bot_username }}:{{ matrix_bridge_mautrix_telegram_homeserver_domain }}"
+
+    # Tables can appear only after hostname resolution, authentication and migrations succeed.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_telegram_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_telegram_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: mautrix_telegram_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_tables.rc == 0
+          - "'version' in mautrix_telegram_table_names"
+          - mautrix_telegram_table_names | length > 5
+        fail_msg: >-
+          The bridge did not migrate its schema into
+          {{ matrix_bridge_mautrix_telegram_database_name }}
+          (found {{ mautrix_telegram_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        mautrix_telegram_table_names: "{{ mautrix_telegram_tables.stdout_lines | select | list }}"
+
+    - name: Read the running container's image and user
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-telegram
+          - --format
+          - "{{ '{{' }} .Config.Image {{ '}}' }} {{ '{{' }} .Config.User {{ '}}' }}"
+      register: mautrix_telegram_container
+      changed_when: false
+
+    - name: Assert the running container uses the exact pinned image
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_container.stdout.split()[0] == 'dock.mau.dev/mautrix/telegram:' + mautrix_telegram_role_defaults.matrix_bridge_mautrix_telegram_version
+        fail_msg: "The running container does not use the exact image the role pins"
+        success_msg: "The running container uses the exact image the role pins"
+
+    - name: Assert the running container uses the playbook-supplied identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_telegram_container.stdout.split()[1] == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+        fail_msg: "The running container does not use the {{ matrix_user_uid }}:{{ matrix_user_gid }} identity"
+        success_msg: "The running container uses the playbook-supplied identity"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_telegram_base_path }}/labels"
+      register: mautrix_telegram_labels
+
+    - name: Assert the labels route the exposure hostname and prefix to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_telegram_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-telegram-exposure.loadbalancer.server.port=8080' in mautrix_telegram_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-telegram-exposure.rule=Host(`bridges.molecule.local`) && PathPrefix(`/bridges/telegram`)' in mautrix_telegram_labels_rendered"
+          - "'traefik.http.middlewares.matrix-mautrix-telegram-exposure-strip-prefix.stripprefix.prefixes=/bridges/telegram' in mautrix_telegram_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_telegram_container_network in mautrix_telegram_labels_rendered"
+        fail_msg: "The labels do not route the exposure hostname and prefix to port 8080"
+        success_msg: "The labels route the exposure hostname and prefix to port 8080"
