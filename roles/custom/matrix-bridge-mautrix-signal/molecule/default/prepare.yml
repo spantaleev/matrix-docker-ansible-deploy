@@ -1,0 +1,91 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Prepare mautrix-signal Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Ensure apt cache is updated
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      when: ansible_os_family == 'Debian'
+
+    - name: Ensure required packages are installed
+      ansible.builtin.package:
+        name:
+          - python3-requests
+          - fuse-overlayfs
+        state: present
+
+    - name: Ensure Docker is installed
+      ansible.builtin.include_role:
+        name: ansible-role-docker
+      vars:
+        docker_daemon_options:
+          storage-driver: fuse-overlayfs
+
+    # The role's file tasks set owner/group by name, which Ansible resolves through the
+    # passwd database. matrix-base creates these in a complete playbook run.
+    - name: Ensure the matrix group exists
+      ansible.builtin.group:
+        name: "{{ matrix_group_name }}"
+        gid: "{{ matrix_user_gid }}"
+        state: present
+
+    - name: Ensure the matrix user exists
+      ansible.builtin.user:
+        name: "{{ matrix_user_name }}"
+        uid: "{{ matrix_user_uid }}"
+        group: "{{ matrix_group_name }}"
+        create_home: false
+        system: true
+        state: present
+
+    - name: Ensure the base data path exists
+      ansible.builtin.file:
+        path: "{{ matrix_base_data_path }}"
+        state: directory
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+        mode: "0750"
+
+    # The role creates this during converge, but both dependencies below must attach to it
+    # first, so prepare creates it early.
+    - name: Ensure the container network the role attaches to exists
+      ansible.builtin.command:
+        argv:
+          - docker
+          - network
+          - create
+          - "{{ matrix_bridge_mautrix_signal_container_network }}"
+      register: mautrix_signal_molecule_network
+      changed_when: mautrix_signal_molecule_network.rc == 0
+      failed_when:
+        - mautrix_signal_molecule_network.rc != 0
+        - "'already exists' not in mautrix_signal_molecule_network.stderr"
+
+    - name: Ensure Postgres is running
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/postgres.yml"
+      vars:
+        molecule_shared_postgres_network: "{{ matrix_bridge_mautrix_signal_container_network }}"
+        molecule_shared_postgres_database: "{{ matrix_bridge_mautrix_signal_database_name }}"
+        molecule_shared_postgres_username: "{{ matrix_bridge_mautrix_signal_database_username }}"
+        molecule_shared_postgres_password: "{{ matrix_bridge_mautrix_signal_database_password }}"
+
+    # The bridge calls /whoami while starting and refuses to run if it does not name its bot.
+    # No Signal login is attempted: an unlinked, idle bridge is the intended test state.
+    - name: Ensure the homeserver stub is running
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/homeserver-stub.yml"
+      vars:
+        molecule_shared_stub_network: "{{ matrix_bridge_mautrix_signal_container_network }}"
+        molecule_shared_stub_server_name: "{{ matrix_bridge_mautrix_signal_homeserver_domain }}"
+        molecule_shared_stub_user_id: "@{{ matrix_bridge_mautrix_signal_appservice_bot_username }}:{{ matrix_bridge_mautrix_signal_homeserver_domain }}"

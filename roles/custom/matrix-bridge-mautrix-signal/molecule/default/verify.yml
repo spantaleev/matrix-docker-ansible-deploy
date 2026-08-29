@@ -1,0 +1,271 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the bridge starts without a Signal account, accepts the configuration and
+# registration the role rendered, becomes ready against the homeserver stub, migrates its
+# Postgres schema, and carries the role's runtime identity and public-exposure wiring.
+- name: Verify mautrix-signal
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  # Lazily evaluated after the corresponding slurp. Keeping these as play vars avoids
+  # repeatedly templating the Go templates embedded in the bridge configuration.
+  vars:
+    mautrix_signal_config: "{{ mautrix_signal_config_file.content | b64decode | from_yaml }}"
+    mautrix_signal_registration: "{{ mautrix_signal_registration_file.content | b64decode | from_yaml }}"
+    mautrix_signal_labels_rendered: "{{ mautrix_signal_labels.content | b64decode }}"
+    mautrix_signal_expected_public_address: http://signal-api.molecule.local/bridges/signal-api
+  gather_facts: false
+
+  tasks:
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_signal_role_defaults
+
+    - name: Wait for the mautrix-signal service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-signal.service
+      register: mautrix_signal_service
+      until: mautrix_signal_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes ActiveState alone insufficient for a crash-looping bridge.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_service.status.ActiveState == 'active'
+          - mautrix_signal_service.status.NRestarts is defined
+          - mautrix_signal_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-signal.service is
+          {{ mautrix_signal_service.status.ActiveState | default('unknown') }}
+          after {{ mautrix_signal_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-mautrix-signal.service is active and has not restarted"
+
+    # /live proves the appservice listener opened; /ready additionally proves startup passed
+    # the homeserver identity check and database initialization.
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_signal_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-signal:8080/_matrix/mau/live
+      register: mautrix_signal_live
+      changed_when: false
+      until: "'HTTP_STATUS=200' in mautrix_signal_live.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_signal_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-signal:8080/_matrix/mau/ready
+      register: mautrix_signal_ready
+      changed_when: false
+      until: "'HTTP_STATUS=200' in mautrix_signal_ready.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on its appservice port
+      ansible.builtin.assert:
+        that:
+          - "'HTTP_STATUS=200' in mautrix_signal_live.stdout"
+          - "'HTTP_STATUS=200' in mautrix_signal_ready.stdout"
+        fail_msg: >-
+          The appservice health responses were live={{ mautrix_signal_live.stdout | default('none') }}
+          and ready={{ mautrix_signal_ready.stdout | default('none') }}
+        success_msg: "The bridge is live and ready on its appservice port"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_signal_config_path }}/config.yaml"
+      register: mautrix_signal_config_file
+
+    - name: Assert the rendered configuration carries this scenario's values
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_config.homeserver.address == matrix_bridge_mautrix_signal_homeserver_address
+          - mautrix_signal_config.homeserver.domain == matrix_bridge_mautrix_signal_homeserver_domain
+          - mautrix_signal_config.appservice.bot.username == matrix_bridge_mautrix_signal_appservice_bot_username
+          - mautrix_signal_config.appservice.as_token == matrix_bridge_mautrix_signal_appservice_token
+          - mautrix_signal_config.appservice.hs_token == matrix_bridge_mautrix_signal_homeserver_token
+          - mautrix_signal_config.appservice.public_address == mautrix_signal_expected_public_address
+          - mautrix_signal_config.bridge.command_prefix == matrix_bridge_mautrix_signal_command_prefix
+          - mautrix_signal_config.bridge.relay.enabled
+          - not mautrix_signal_config.bridge.relay.admin_only
+          - not mautrix_signal_config.matrix.federate_rooms
+          - mautrix_signal_config.network.extev_polls
+          - mautrix_signal_config.backfill.max_initial_messages == 17
+          - mautrix_signal_config.logging.min_level == matrix_bridge_mautrix_signal_logging_level
+        fail_msg: "The rendered configuration does not carry the scenario's non-default values"
+        success_msg: "The rendered configuration carries the scenario's non-default values"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_config.database.type == matrix_bridge_mautrix_signal_database_engine
+          - matrix_bridge_mautrix_signal_database_username in mautrix_signal_config.database.uri
+          - matrix_bridge_mautrix_signal_database_hostname in mautrix_signal_config.database.uri
+          - matrix_bridge_mautrix_signal_database_name in mautrix_signal_config.database.uri
+        fail_msg: >-
+          database.uri is {{ mautrix_signal_config.database.uri | default('unset') }}, which
+          was not composed from the scenario's connection settings
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_signal_config_path }}/registration.yaml"
+      register: mautrix_signal_registration_file
+
+    - name: Assert the registration carries the tokens, identity and address
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_registration.id == 'signal'
+          - mautrix_signal_registration.as_token == matrix_bridge_mautrix_signal_appservice_token
+          - mautrix_signal_registration.hs_token == matrix_bridge_mautrix_signal_homeserver_token
+          - mautrix_signal_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_signal_appservice_bot_username
+          - mautrix_signal_registration.url == 'http://matrix-mautrix-signal:8080'
+        fail_msg: "The appservice registration does not carry the expected identity and tokens"
+        success_msg: "The appservice registration carries the expected identity and tokens"
+
+    - name: Assert the registration namespaces cover the bot and Signal ghosts
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_ghost_regex | length > 0
+          - mautrix_signal_bot_regex | length > 0
+          - mautrix_signal_ghost_mxid is match(mautrix_signal_ghost_regex)
+          - mautrix_signal_wrong_ghost_mxid is not match(mautrix_signal_ghost_regex)
+          - mautrix_signal_bot_mxid is match(mautrix_signal_bot_regex)
+        fail_msg: "The registration namespaces do not cover the bot and Signal ghost identities"
+        success_msg: "The registration namespaces cover the bot and Signal ghost identities"
+      vars:
+        mautrix_signal_user_regexes: "{{ mautrix_signal_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_signal_ghost_regex: "{{ mautrix_signal_user_regexes | select('search', 'signal_') | first | default('') }}"
+        mautrix_signal_bot_regex: "{{ mautrix_signal_user_regexes | reject('search', 'signal_') | first | default('') }}"
+        mautrix_signal_ghost_mxid: "@signal_01234567-89ab-cdef-0123-456789abcdef:{{ matrix_bridge_mautrix_signal_homeserver_domain }}"
+        mautrix_signal_wrong_ghost_mxid: "@telegram_01234567-89ab-cdef-0123-456789abcdef:{{ matrix_bridge_mautrix_signal_homeserver_domain }}"
+        mautrix_signal_bot_mxid: "@{{ matrix_bridge_mautrix_signal_appservice_bot_username }}:{{ matrix_bridge_mautrix_signal_homeserver_domain }}"
+
+    # Tables can only appear after hostname resolution, authentication, and migrations.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_signal_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_signal_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: mautrix_signal_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_tables.rc == 0
+          - "'version' in mautrix_signal_table_names"
+          - mautrix_signal_table_names | length > 5
+        fail_msg: >-
+          The bridge did not create its schema in {{ matrix_bridge_mautrix_signal_database_name }}
+          (found {{ mautrix_signal_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        mautrix_signal_table_names: "{{ mautrix_signal_tables.stdout_lines | select | list }}"
+
+    - name: Read the running container's image and user identity
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-signal
+          - --format
+          - "{{ '{{' }} .Config.Image {{ '}}' }}|{{ '{{' }} .Config.User {{ '}}' }}"
+      register: mautrix_signal_container_identity
+      changed_when: false
+
+    - name: Assert the running container uses the exact pinned image
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_container_image == 'dock.mau.dev/mautrix/signal:' + mautrix_signal_role_defaults.matrix_bridge_mautrix_signal_version
+        fail_msg: "The running container does not use the exact image the role pins"
+        success_msg: "The running container uses the exact image the role pins"
+      vars:
+        mautrix_signal_container_image: "{{ mautrix_signal_container_identity.stdout.split('|')[0] }}"
+
+    - name: Assert the running container uses the playbook-supplied identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_container_user == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+        fail_msg: "The running container does not use the {{ matrix_user_uid }}:{{ matrix_user_gid }} identity"
+        success_msg: "The running container uses the playbook-supplied identity"
+      vars:
+        mautrix_signal_container_user: "{{ mautrix_signal_container_identity.stdout.split('|')[1] }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_signal_base_path }}/labels"
+      register: mautrix_signal_labels
+
+    - name: Assert the labels route the public endpoint to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_signal_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_signal_container_network in mautrix_signal_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-signal-exposure.loadbalancer.server.port=8080' in mautrix_signal_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-signal-exposure.rule=Host(`signal-api.molecule.local`) && PathPrefix(`/bridges/signal-api`)' in mautrix_signal_labels_rendered"
+          - "'traefik.http.middlewares.matrix-mautrix-signal-exposure-strip-prefix.stripprefix.prefixes=/bridges/signal-api' in mautrix_signal_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-signal-exposure.entrypoints=web' in mautrix_signal_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-signal-exposure.tls=false' in mautrix_signal_labels_rendered"
+          - "'molecule.signal.coverage=enabled' in mautrix_signal_labels_rendered"
+        fail_msg: "The rendered labels do not carry the scenario's exposure configuration"
+        success_msg: "The rendered labels carry the scenario's exposure configuration"
+
+    - name: Read the custom label Docker attached to the running container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-signal
+          - --format
+          - "{{ '{{' }} index .Config.Labels \"molecule.signal.coverage\" {{ '}}' }}"
+      register: mautrix_signal_container_label
+      changed_when: false
+
+    - name: Assert Docker accepted the label file the role rendered
+      ansible.builtin.assert:
+        that:
+          - mautrix_signal_container_label.stdout == 'enabled'
+        fail_msg: "Docker did not attach the role's custom Molecule label"
+        success_msg: "Docker accepted the label file the role rendered"

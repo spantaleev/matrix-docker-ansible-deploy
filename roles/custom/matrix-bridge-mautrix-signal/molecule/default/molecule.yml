@@ -1,0 +1,94 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: mautrix-signal-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_mautrix_signal_container_network: mautrix-signal-molecule
+
+        # The stub prepare.yml stands up. It is not a real homeserver and the scenario
+        # deliberately carries no Signal credentials or linked Signal account.
+        matrix_bridge_mautrix_signal_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bridge_mautrix_signal_homeserver_domain: molecule.local
+
+        # Postgres is what group_vars/matrix_servers selects whenever Postgres is enabled,
+        # which is the default deployment path. The non-default database and user names make
+        # schema creation evidence that the role composed and supplied this connection string.
+        matrix_bridge_mautrix_signal_database_engine: postgres
+        matrix_bridge_mautrix_signal_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_signal_database_name: molecule_signal
+        matrix_bridge_mautrix_signal_database_username: molecule_signal
+        matrix_bridge_mautrix_signal_database_password: molecule_pg_password_b723e1
+
+        # These are only Molecule fixtures which must reach both the configuration and the
+        # registration. They do not authenticate against a real homeserver.
+        matrix_bridge_mautrix_signal_appservice_token: molecule_signal_as_token_0c981a
+        matrix_bridge_mautrix_signal_homeserver_token: molecule_signal_hs_token_45de72
+
+        # Each differs from the role's default, so structural checks can distinguish the
+        # role's rendered values from values the bridge would have chosen on its own.
+        matrix_bridge_mautrix_signal_appservice_bot_username: molecule-signalbot
+        matrix_bridge_mautrix_signal_command_prefix: "!molecule-signal"
+        matrix_bridge_mautrix_signal_logging_level: info
+        matrix_bridge_mautrix_signal_federate_rooms: false
+        matrix_bridge_mautrix_signal_extev_polls: true
+        matrix_bridge_mautrix_signal_bridge_relay_enabled: true
+        matrix_bridge_mautrix_signal_bridge_relay_admin_only: false
+        matrix_bridge_mautrix_signal_backfill_max_initial_messages: 17
+
+        # Traefik is not started. These values exercise the role's composition of both the
+        # public address the bridge reads and the exposure labels Docker consumes.
+        matrix_bridge_mautrix_signal_exposure_enabled: true
+        matrix_bridge_mautrix_signal_exposure_hostname: signal-api.molecule.local
+        matrix_bridge_mautrix_signal_exposure_path_prefix: /bridges/signal-api
+        matrix_bridge_mautrix_signal_scheme: http
+        matrix_bridge_mautrix_signal_container_labels_traefik_entrypoints: web
+        matrix_bridge_mautrix_signal_container_labels_additional_labels: |
+          molecule.signal.coverage=enabled
+
+        # verify.yml is a separate play, where role defaults are out of scope, so paths it
+        # reads are pinned here to the values the role derives during converge.
+        matrix_bridge_mautrix_signal_base_path: /matrix/mautrix-signal
+        matrix_bridge_mautrix_signal_config_path: /matrix/mautrix-signal/config
+        matrix_bridge_mautrix_signal_data_path: /matrix/mautrix-signal/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
