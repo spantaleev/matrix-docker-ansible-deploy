@@ -1,0 +1,349 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the separate Instagram bridge image starts, reads the role's configuration and
+# registration, reaches real Postgres, migrates it and exposes a ready appservice listener.
+# No Instagram credentials are present and no traffic is sent to Instagram.
+- name: Verify mautrix-meta-instagram
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  # Keep these lazy. config.yaml contains upstream Go templates whose braces would otherwise
+  # be evaluated as Jinja again when a stored fact was referenced.
+  vars:
+    mautrix_meta_instagram_config: "{{ mautrix_meta_instagram_config_file.content | b64decode | from_yaml }}"
+    mautrix_meta_instagram_registration: "{{ mautrix_meta_instagram_registration_file.content | b64decode | from_yaml }}"
+    mautrix_meta_instagram_labels_rendered: "{{ mautrix_meta_instagram_labels_file.content | b64decode }}"
+  gather_facts: false
+
+  tasks:
+    # Read the shipped version from the role itself rather than pinning a duplicate in the
+    # scenario. A Renovate version bump must change what this assertion expects.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_meta_instagram_role_defaults
+
+    - name: Wait for the mautrix-meta-instagram service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-meta-instagram.service
+      register: mautrix_meta_instagram_service
+      until: mautrix_meta_instagram_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always leaves a crash-looping service active, hence the independent restart
+    # counter condition. `is defined` prevents a missing property being coerced to zero.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_service.status.ActiveState == 'active'
+          - mautrix_meta_instagram_service.status.NRestarts is defined
+          - mautrix_meta_instagram_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-meta-instagram.service is
+          {{ mautrix_meta_instagram_service.status.ActiveState | default('unknown') }}
+          after {{ mautrix_meta_instagram_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-mautrix-meta-instagram.service is active and has not restarted"
+
+    # A 200 from the bridge's own liveness endpoint means it finished configuration parsing,
+    # the homeserver /whoami handshake and database initialization, then opened its listener.
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_meta_instagram_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - "http://matrix-mautrix-meta-instagram:29319/_matrix/mau/live"
+      register: mautrix_meta_instagram_live
+      changed_when: false
+      until: mautrix_meta_instagram_live.rc == 0 and mautrix_meta_instagram_live.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge liveness endpoint is ready
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_live.rc == 0
+          - mautrix_meta_instagram_live.stdout == 'HTTP_STATUS=200'
+        fail_msg: >-
+          The bridge liveness endpoint did not return HTTP 200
+          (rc={{ mautrix_meta_instagram_live.rc | default('?') }},
+          output={{ mautrix_meta_instagram_live.stdout | default('none') }})
+        success_msg: "The bridge liveness endpoint returns HTTP 200"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_meta_instagram_config_path }}/config.yaml"
+      register: mautrix_meta_instagram_config_file
+
+    - name: Assert the rendered configuration carries the homeserver and appservice identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_config.homeserver.address == matrix_bridge_mautrix_meta_instagram_homeserver_address
+          - mautrix_meta_instagram_config.homeserver.domain == matrix_bridge_mautrix_meta_instagram_homeserver_domain
+          - mautrix_meta_instagram_config.appservice.id == matrix_bridge_mautrix_meta_instagram_appservice_id
+          - mautrix_meta_instagram_config.appservice.bot.username == matrix_bridge_mautrix_meta_instagram_appservice_username
+          - mautrix_meta_instagram_config.appservice.as_token == matrix_bridge_mautrix_meta_instagram_appservice_token
+          - mautrix_meta_instagram_config.appservice.hs_token == matrix_bridge_mautrix_meta_instagram_homeserver_token
+        fail_msg: "The rendered configuration does not carry the scenario's homeserver and appservice identity"
+        success_msg: "The rendered configuration carries the scenario's homeserver and appservice identity"
+
+    # These values exercise the standalone Instagram bridge's own schema and all differ
+    # from the defaults shipped by either the role or the component.
+    - name: Assert the rendered configuration carries the bridge and Matrix behavior
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_config.bridge.command_prefix == matrix_bridge_mautrix_meta_instagram_bridge_command_prefix
+          - mautrix_meta_instagram_config.bridge.personal_filtering_spaces == matrix_bridge_mautrix_meta_instagram_bridge_personal_filtering_spaces
+          - mautrix_meta_instagram_config.matrix.federate_rooms == matrix_bridge_mautrix_meta_instagram_bridge_federate_rooms
+          - matrix_bridge_mautrix_meta_instagram_bridge_displayname_suffix in mautrix_meta_instagram_config.network.displayname_template
+        fail_msg: "The rendered configuration does not carry the scenario's bridge and Matrix behavior"
+        success_msg: "The rendered configuration carries the scenario's bridge and Matrix behavior"
+
+    - name: Assert the rendered configuration carries the configured backfill policy
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_config.backfill.enabled == matrix_bridge_mautrix_meta_instagram_backfill_enabled
+          - mautrix_meta_instagram_config.backfill.max_initial_messages == matrix_bridge_mautrix_meta_instagram_backfill_max_initial_messages
+        fail_msg: "The rendered configuration does not carry the configured backfill policy"
+        success_msg: "The rendered configuration carries the configured backfill policy"
+
+    - name: Assert the rendered configuration carries the provisioning secret
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_config.provisioning.shared_secret == matrix_bridge_mautrix_meta_instagram_provisioning_shared_secret
+        fail_msg: "The rendered configuration does not carry the provisioning secret"
+        success_msg: "The rendered configuration carries the provisioning secret"
+
+    - name: Assert the rendered configuration carries the configured log level
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_config.logging.min_level == matrix_bridge_mautrix_meta_instagram_logging_min_level
+        fail_msg: "The rendered configuration does not carry the configured log level"
+        success_msg: "The rendered configuration carries the configured log level"
+
+    # The new standalone Instagram bridge no longer has the old shared Meta `mode` switch.
+    - name: Assert the rendered configuration does not resurrect the legacy Meta mode
+      ansible.builtin.assert:
+        that:
+          - "'mode' not in mautrix_meta_instagram_config.network"
+        fail_msg: "The rendered configuration unexpectedly contains legacy network.mode"
+        success_msg: "The rendered configuration does not contain legacy network.mode"
+
+    - name: Assert the configuration points at the database the role derived
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_config.database.type == matrix_bridge_mautrix_meta_instagram_database_engine
+          - matrix_bridge_mautrix_meta_instagram_database_username in mautrix_meta_instagram_config.database.uri
+          - matrix_bridge_mautrix_meta_instagram_database_name in mautrix_meta_instagram_config.database.uri
+          - matrix_bridge_mautrix_meta_instagram_database_hostname in mautrix_meta_instagram_config.database.uri
+        fail_msg: >-
+          database.uri is {{ mautrix_meta_instagram_config.database.uri | default('unset') }},
+          which was not built from the scenario's connection settings
+        success_msg: "The configuration points at the database the role derived"
+
+    - name: Assert the configuration carries the public address implied by exposure settings
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_config.appservice.public_address == matrix_bridge_mautrix_meta_instagram_scheme + '://' + matrix_bridge_mautrix_meta_instagram_exposure_hostname + matrix_bridge_mautrix_meta_instagram_exposure_path_prefix
+        fail_msg: >-
+          appservice.public_address is
+          {{ mautrix_meta_instagram_config.appservice.public_address | default('unset') }}
+        success_msg: "The configuration carries the public address implied by exposure settings"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_meta_instagram_config_path }}/registration.yaml"
+      register: mautrix_meta_instagram_registration_file
+
+    - name: Assert the registration carries the configured handshake values
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_registration.id == matrix_bridge_mautrix_meta_instagram_appservice_id
+          - mautrix_meta_instagram_registration.as_token == matrix_bridge_mautrix_meta_instagram_appservice_token
+          - mautrix_meta_instagram_registration.hs_token == matrix_bridge_mautrix_meta_instagram_homeserver_token
+          - mautrix_meta_instagram_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_meta_instagram_appservice_username
+          - mautrix_meta_instagram_registration.url == 'http://matrix-mautrix-meta-instagram:29319'
+        fail_msg: "The appservice registration does not carry the configured handshake values"
+        success_msg: "The appservice registration carries the configured handshake values"
+
+    # Exercise the generated regexes by matching representative MXIDs instead of repeating
+    # their implementation as expected strings.
+    - name: Assert the registration namespaces cover only Instagram ghosts and the bridge bot
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_ghost_regex | length > 0
+          - mautrix_meta_instagram_bot_regex | length > 0
+          - mautrix_meta_instagram_ghost_mxid is match(mautrix_meta_instagram_ghost_regex)
+          - mautrix_meta_instagram_messenger_mxid is not match(mautrix_meta_instagram_ghost_regex)
+          - mautrix_meta_instagram_bot_mxid is match(mautrix_meta_instagram_bot_regex)
+        fail_msg: "The registration namespaces do not cover only Instagram ghosts and the bridge bot"
+        success_msg: "The registration namespaces cover only Instagram ghosts and the bridge bot"
+      vars:
+        mautrix_meta_instagram_user_regexes: "{{ mautrix_meta_instagram_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_meta_instagram_ghost_regex: "{{ mautrix_meta_instagram_user_regexes | select('search', 'molecule_ig_') | first | default('') }}"
+        mautrix_meta_instagram_bot_regex: "{{ mautrix_meta_instagram_user_regexes | reject('search', 'molecule_ig_') | first | default('') }}"
+        mautrix_meta_instagram_ghost_mxid: "@molecule_ig_1234567890:{{ matrix_bridge_mautrix_meta_instagram_homeserver_domain }}"
+        mautrix_meta_instagram_messenger_mxid: "@messenger_1234567890:{{ matrix_bridge_mautrix_meta_instagram_homeserver_domain }}"
+        mautrix_meta_instagram_bot_mxid: "@{{ matrix_bridge_mautrix_meta_instagram_appservice_username }}:{{ matrix_bridge_mautrix_meta_instagram_homeserver_domain }}"
+
+    # Tables can exist only after DNS resolution, authentication and genuine migrations.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_meta_instagram_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_meta_instagram_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: mautrix_meta_instagram_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_tables.rc == 0
+          - "'version' in mautrix_meta_instagram_table_names"
+          - "'portal' in mautrix_meta_instagram_table_names"
+          - "'user_login' in mautrix_meta_instagram_table_names"
+          - "'meta_thread' in mautrix_meta_instagram_table_names"
+          - "'meta_instagram_user_id' in mautrix_meta_instagram_table_names"
+          - mautrix_meta_instagram_table_names | length > 20
+        fail_msg: >-
+          The bridge did not migrate its schema into
+          {{ matrix_bridge_mautrix_meta_instagram_database_name }}
+          (found {{ mautrix_meta_instagram_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        mautrix_meta_instagram_table_names: "{{ mautrix_meta_instagram_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_meta_instagram_base_path }}/labels"
+      register: mautrix_meta_instagram_labels_file
+
+    - name: Assert the rendered labels route the exposure endpoint to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_meta_instagram_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_meta_instagram_container_network in mautrix_meta_instagram_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-meta-instagram-appservice.loadbalancer.server.port=29319' in mautrix_meta_instagram_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-meta-instagram-exposure.rule=Host(`bridges.molecule.local`) && PathPrefix(`/bridges/meta-instagram`)' in mautrix_meta_instagram_labels_rendered"
+          - "'traefik.http.middlewares.matrix-mautrix-meta-instagram-exposure-strip-prefix.stripprefix.prefixes=/bridges/meta-instagram' in mautrix_meta_instagram_labels_rendered"
+          - "'molecule.scenario=matrix-bridge-mautrix-meta-instagram' in mautrix_meta_instagram_labels_rendered"
+        fail_msg: "The rendered labels do not route the exposure endpoint to the appservice port"
+        success_msg: "The rendered labels route the exposure endpoint to the appservice port"
+
+    - name: Inspect the running bridge container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-meta-instagram
+      register: mautrix_meta_instagram_container_inspect
+      changed_when: false
+
+    - name: Parse the running bridge container inspection
+      ansible.builtin.set_fact:
+        mautrix_meta_instagram_container: "{{ (mautrix_meta_instagram_container_inspect.stdout | from_json) | first }}"
+
+    - name: Assert the running container uses the exact pinned Instagram image
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_container.Config.Image == mautrix_meta_instagram_expected_image
+        fail_msg: >-
+          The running container uses {{ mautrix_meta_instagram_container.Config.Image }},
+          expected {{ mautrix_meta_instagram_expected_image }}
+        success_msg: "The running container uses the exact ig-prefixed image defaults/main.yml pins"
+      vars:
+        mautrix_meta_instagram_expected_image: >-
+          {{ mautrix_meta_instagram_role_defaults.matrix_bridge_mautrix_meta_instagram_container_image_registry_prefix_upstream_default }}mautrix/meta:ig-{{ mautrix_meta_instagram_role_defaults.matrix_bridge_mautrix_meta_instagram_version }}
+
+    - name: Assert the running container uses the playbook-supplied identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+        fail_msg: "The running container does not use the {{ matrix_user_uid }}:{{ matrix_user_gid }} identity"
+        success_msg: "The running container uses the playbook-supplied identity"
+
+    - name: Assert the running container drops all capabilities and is unprivileged
+      ansible.builtin.assert:
+        that:
+          - "'ALL' in mautrix_meta_instagram_container.HostConfig.CapDrop"
+          - not mautrix_meta_instagram_container.HostConfig.Privileged
+        fail_msg: "The running container does not have the intended capability isolation"
+        success_msg: "The running container has the intended capability isolation"
+
+    - name: Assert the running container mounts its configuration read-only
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_config_mount | length > 0
+          - mautrix_meta_instagram_config_mount.Source == matrix_bridge_mautrix_meta_instagram_config_path
+          - not mautrix_meta_instagram_config_mount.RW | default(true)
+        fail_msg: "The running container does not mount the rendered configuration read-only"
+        success_msg: "The running container mounts the rendered configuration read-only"
+      vars:
+        mautrix_meta_instagram_config_mount: >-
+          {{ mautrix_meta_instagram_container.Mounts
+             | selectattr('Destination', 'equalto', '/config')
+             | first | default({}) }}
+
+    - name: Assert the running container mounts its data directory writable
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_data_mount | length > 0
+          - mautrix_meta_instagram_data_mount.Source == matrix_bridge_mautrix_meta_instagram_data_path
+          - mautrix_meta_instagram_data_mount.RW | default(false)
+        fail_msg: "The running container does not mount its data directory writable"
+        success_msg: "The running container mounts its data directory writable"
+      vars:
+        mautrix_meta_instagram_data_mount: >-
+          {{ mautrix_meta_instagram_container.Mounts
+             | selectattr('Destination', 'equalto', '/data')
+             | first | default({}) }}
+
+    - name: Assert the rendered labels are attached to the running container
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_container.Config.Labels['traefik.enable'] == 'true'
+          - mautrix_meta_instagram_container.Config.Labels['traefik.docker.network'] == matrix_bridge_mautrix_meta_instagram_container_network
+          - mautrix_meta_instagram_container.Config.Labels['traefik.http.services.matrix-mautrix-meta-instagram-appservice.loadbalancer.server.port'] == '29319'
+          - mautrix_meta_instagram_container.Config.Labels['molecule.scenario'] == 'matrix-bridge-mautrix-meta-instagram'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The running container carries the labels the role rendered"
+
+    - name: Assert the running container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_mautrix_meta_instagram_container_network in mautrix_meta_instagram_container.NetworkSettings.Networks
+          - mautrix_meta_instagram_container.NetworkSettings.Networks | length == 1
+        fail_msg: >-
+          The running container has unexpected network attachments:
+          {{ mautrix_meta_instagram_container.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The running container is attached only to its dedicated network"
+
+    - name: Assert the running container publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - mautrix_meta_instagram_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: "The running container unexpectedly publishes a host port"
+        success_msg: "The running container publishes no host ports"

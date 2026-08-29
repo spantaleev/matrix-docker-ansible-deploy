@@ -1,0 +1,94 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: mautrix-meta-instagram-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_mautrix_meta_instagram_container_network: mautrix-meta-instagram-molecule
+
+        # The stub in prepare.yml. The scenario exercises startup and appservice readiness,
+        # but deliberately never supplies an Instagram account or contacts Instagram.
+        matrix_bridge_mautrix_meta_instagram_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bridge_mautrix_meta_instagram_homeserver_domain: molecule.local
+
+        # Postgres is the normal deployment path selected by group_vars/matrix_servers.
+        # The non-default database and user names make a migrated schema evidence that the
+        # bridge used the connection string this role composed, rather than an image default.
+        matrix_bridge_mautrix_meta_instagram_database_engine: postgres
+        matrix_bridge_mautrix_meta_instagram_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_meta_instagram_database_name: molecule_meta_instagram
+        matrix_bridge_mautrix_meta_instagram_database_username: molecule_meta_instagram
+        matrix_bridge_mautrix_meta_instagram_database_password: molecule_pg_password_82bd17
+
+        # Test-only placeholders that have to reach both config.yaml and registration.yaml.
+        matrix_bridge_mautrix_meta_instagram_appservice_token: molecule_instagram_as_token_f51aa8
+        matrix_bridge_mautrix_meta_instagram_homeserver_token: molecule_instagram_hs_token_0f92c7
+
+        # These differ from the role and component defaults. They cover Instagram's separate
+        # post-v26.07 configuration schema rather than relying on the old shared Meta mode.
+        matrix_bridge_mautrix_meta_instagram_appservice_id: molecule-instagram
+        matrix_bridge_mautrix_meta_instagram_appservice_username: molecule-instagrambot
+        matrix_bridge_mautrix_meta_instagram_bridge_username_prefix: molecule_ig_
+        matrix_bridge_mautrix_meta_instagram_bridge_command_prefix: "!molecule-ig"
+        matrix_bridge_mautrix_meta_instagram_bridge_displayname_suffix: "(Molecule IG)"
+        matrix_bridge_mautrix_meta_instagram_bridge_personal_filtering_spaces: false
+        matrix_bridge_mautrix_meta_instagram_bridge_federate_rooms: false
+        matrix_bridge_mautrix_meta_instagram_backfill_enabled: false
+        matrix_bridge_mautrix_meta_instagram_backfill_max_initial_messages: 23
+        matrix_bridge_mautrix_meta_instagram_provisioning_shared_secret: molecule_instagram_provisioning_57f2ca
+        matrix_bridge_mautrix_meta_instagram_logging_min_level: debug
+
+        # Traefik is not deployed. The scenario verifies both the public address the bridge
+        # reads and the labels the role attaches to the container.
+        matrix_bridge_mautrix_meta_instagram_exposure_enabled: true
+        matrix_bridge_mautrix_meta_instagram_exposure_hostname: bridges.molecule.local
+        matrix_bridge_mautrix_meta_instagram_exposure_path_prefix: /bridges/meta-instagram
+        matrix_bridge_mautrix_meta_instagram_scheme: https
+        matrix_bridge_mautrix_meta_instagram_container_labels_additional_labels: |
+          molecule.scenario=matrix-bridge-mautrix-meta-instagram
+
+        # verify.yml is a separate play, so pin the paths that it reads there.
+        matrix_bridge_mautrix_meta_instagram_base_path: /matrix/mautrix-meta-instagram
+        matrix_bridge_mautrix_meta_instagram_config_path: /matrix/mautrix-meta-instagram/config
+        matrix_bridge_mautrix_meta_instagram_data_path: /matrix/mautrix-meta-instagram/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
