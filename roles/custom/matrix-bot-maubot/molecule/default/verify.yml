@@ -1,0 +1,406 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Maubot starts without a Matrix client configured. Its real management API and Postgres
+# migrations are the weight-bearing evidence, so this needs no homeserver or credentials.
+- name: Verify matrix-bot-maubot
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_bot_maubot_config: "{{ matrix_bot_maubot_config_file.content | b64decode | from_yaml }}"
+    matrix_bot_maubot_ui_body: "{{ matrix_bot_maubot_ui_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_bot_maubot_paths_body: "{{ matrix_bot_maubot_paths_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_bot_maubot_paths: "{{ matrix_bot_maubot_paths_body | from_json }}"
+    matrix_bot_maubot_login_body: "{{ matrix_bot_maubot_login_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_bot_maubot_login_response: "{{ matrix_bot_maubot_login_body | from_json }}"
+    matrix_bot_maubot_expected_database_uri: >-
+      postgres://{{ matrix_bot_maubot_database_username }}:{{ matrix_bot_maubot_database_password }}@{{ matrix_bot_maubot_database_hostname }}:5432/{{ matrix_bot_maubot_database_name }}?sslmode={{ matrix_bot_maubot_database_sslmode }}
+    matrix_bot_maubot_labels_lines: "{{ (matrix_bot_maubot_labels_file.content | b64decode).splitlines() }}"
+    matrix_bot_maubot_runtime: "{{ (matrix_bot_maubot_container_inspect.stdout | from_json) | first }}"
+    matrix_bot_maubot_config_mounts: "{{ matrix_bot_maubot_runtime.Mounts | selectattr('Destination', 'equalto', '/config') | list }}"
+    matrix_bot_maubot_data_mounts: "{{ matrix_bot_maubot_runtime.Mounts | selectattr('Destination', 'equalto', '/data') | list }}"
+  gather_facts: false
+  tasks:
+    # Read the version from the role itself, so a role pin bump changes what is expected.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_bot_maubot_role_defaults
+
+    - name: Wait for the matrix-bot-maubot service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-bot-maubot.service
+      register: matrix_bot_maubot_service
+      until: matrix_bot_maubot_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always can hide a crash loop behind ActiveState=active.
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_service.status.ActiveState == 'active'
+          - matrix_bot_maubot_service.status.NRestarts is defined
+          - matrix_bot_maubot_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-bot-maubot.service is
+          {{ matrix_bot_maubot_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_bot_maubot_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-bot-maubot.service is active and has not restarted"
+
+    - name: Read the configuration file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_maubot_config_path }}/config.yaml"
+      register: matrix_bot_maubot_config_file
+
+    - name: Assert the parsed server configuration carries the scenario's values
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_config.server.hostname == '0.0.0.0'
+          - matrix_bot_maubot_config.server.port == matrix_bot_maubot_server_port
+          - matrix_bot_maubot_config.server.public_url == 'https://maubot.molecule.local/molecule-maubot'
+          - matrix_bot_maubot_config.server.ui_base_path == '/'
+          - matrix_bot_maubot_config.server.plugin_base_path == '/_matrix/maubot/plugin/'
+          - "'base_path' not in matrix_bot_maubot_config.server"
+          - "'appservice_base_path' not in matrix_bot_maubot_config.server"
+          - matrix_bot_maubot_config.server.unshared_secret == matrix_bot_maubot_unshared_secret
+        fail_msg: "The parsed server block does not carry the scenario's non-default values"
+        success_msg: "The parsed server block carries the scenario's non-default values"
+
+    - name: Assert the parsed database configuration carries the scenario's Postgres URI
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_config.database == matrix_bot_maubot_expected_database_uri
+          - matrix_bot_maubot_config.database.startswith('postgres://')
+          - matrix_bot_maubot_database_username in matrix_bot_maubot_config.database
+          - matrix_bot_maubot_database_password in matrix_bot_maubot_config.database
+          - matrix_bot_maubot_database_hostname in matrix_bot_maubot_config.database
+          - matrix_bot_maubot_database_name in matrix_bot_maubot_config.database
+        fail_msg: "The parsed configuration does not point at the scenario's Postgres database"
+        success_msg: "The parsed configuration points at the scenario's Postgres database"
+
+    - name: Assert the parsed homeserver preset carries the scenario's values
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_homeserver_name in matrix_bot_maubot_config.homeservers
+          - matrix_bot_maubot_config.homeservers[matrix_bot_maubot_homeserver_name].url == matrix_bot_maubot_homeserver_url
+          - matrix_bot_maubot_config.homeservers[matrix_bot_maubot_homeserver_name].secret == matrix_bot_maubot_homeserver_secret
+        fail_msg: "The parsed homeserver preset does not carry the scenario's values"
+        success_msg: "The parsed homeserver preset carries the scenario's values"
+
+    - name: Assert the parsed management configuration carries scenario values
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_config.admins['molecule-admin'] == 'molecule_admin_password_61bd93'
+          - matrix_bot_maubot_config.admins.root == ''
+          - matrix_bot_maubot_config.api_features.values() | select('equalto', true) | list | length == matrix_bot_maubot_config.api_features | length
+        fail_msg: "The parsed management configuration lost the admin or API features"
+        success_msg: "The parsed management configuration carries the admin and API features"
+
+    - name: Assert the parsed logging configuration carries the scenario's level
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_config.logging.loggers.maubot.level == matrix_bot_maubot_logging_level
+          - matrix_bot_maubot_config.logging.loggers.mau.level == matrix_bot_maubot_logging_level
+          - matrix_bot_maubot_config.logging.loggers.aiohttp.level == matrix_bot_maubot_logging_level
+          - matrix_bot_maubot_config.logging.root.level == matrix_bot_maubot_logging_level
+        fail_msg: "The parsed logging configuration does not carry the scenario's level"
+        success_msg: "The parsed logging configuration carries the scenario's level"
+
+    # Traefik strips the configured public prefix before proxying, so the role deliberately
+    # configures the process UI at /. Probe that exact internal contract over the network.
+    - name: Wait for Maubot's management UI on the configured internal port and path
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_maubot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - "http://matrix-bot-maubot:{{ matrix_bot_maubot_server_port }}/"
+      register: matrix_bot_maubot_ui_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_bot_maubot_ui_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert Maubot serves its real management UI at the configured internal address
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_ui_http.rc == 0
+          - matrix_bot_maubot_ui_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_bot_maubot_ui_body | trim | length > 100
+          - "'<!doctype html' in matrix_bot_maubot_ui_body | lower"
+          - "'maubot' in matrix_bot_maubot_ui_body | lower"
+        fail_msg: "Maubot did not serve its management UI on the configured port at /"
+        success_msg: "Maubot serves its real management UI on the configured port at /"
+
+    # Maubot derives this browser-facing API location from server.public_url. It is live
+    # process evidence that the public prefix reached Maubot and that the frontend will send
+    # requests through the Traefik prefix which the role's labels strip below.
+    - name: Fetch Maubot's live frontend path metadata
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_maubot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - "http://matrix-bot-maubot:{{ matrix_bot_maubot_server_port }}/paths.json"
+      register: matrix_bot_maubot_paths_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert Maubot advertises the API under the configured public prefix
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_paths_http.rc == 0
+          - matrix_bot_maubot_paths_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_bot_maubot_paths is mapping
+          - matrix_bot_maubot_paths.api_path == '/molecule-maubot/_matrix/maubot/v1'
+        fail_msg: >-
+          Maubot did not derive the prefixed browser API path from server.public_url
+          ({{ matrix_bot_maubot_paths_http.stdout | default('no output') }})
+        success_msg: "Maubot advertises its browser API under the configured public prefix"
+
+    # This authenticates against the live management API with the non-default admin from
+    # the rendered YAML. It proves both the API base path and account reached the process.
+    - name: Log in to Maubot's management API
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_maubot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - 'Content-Type: application/json'
+          - --data
+          - '{"username":"molecule-admin","password":"molecule_admin_password_61bd93"}'
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - "http://matrix-bot-maubot:{{ matrix_bot_maubot_server_port }}/_matrix/maubot/v1/auth/login"
+      register: matrix_bot_maubot_login_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the management API authenticated the configured admin
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_login_http.rc == 0
+          - matrix_bot_maubot_login_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_bot_maubot_login_response is mapping
+          - matrix_bot_maubot_login_response.token is string
+          - matrix_bot_maubot_login_response.token | length > 20
+        fail_msg: >-
+          Maubot's live management API rejected the admin the role configured
+          ({{ matrix_bot_maubot_login_http.stdout | default('no output') }})
+        success_msg: "Maubot's live management API authenticated the configured admin"
+
+    # The role's default port must not answer. Otherwise reaching the custom port would not
+    # prove that the configured value made it into the running process.
+    - name: Probe the role's default Maubot port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_maubot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --max-time
+          - '3'
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-bot-maubot:29316/
+      register: matrix_bot_maubot_default_port_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert Maubot is not listening on the role's default port
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_default_port_http.rc != 0
+          - "'HTTP_STATUS=200' not in matrix_bot_maubot_default_port_http.stdout"
+        fail_msg: "Maubot still answers on 29316, so the configured port is not proven"
+        success_msg: "Maubot does not listen on the role's default port"
+
+    # Tables can only appear after hostname resolution, authentication and migrations.
+    - name: List the tables Maubot created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bot_maubot_database_username }}
+          - --dbname={{ matrix_bot_maubot_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: matrix_bot_maubot_tables
+      changed_when: false
+
+    - name: Assert Maubot migrated its schema into the configured Postgres database
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_tables.rc == 0
+          - "'version' in matrix_bot_maubot_table_names"
+          - "'client' in matrix_bot_maubot_table_names"
+          - "'instance' in matrix_bot_maubot_table_names"
+          - "'database_owner' in matrix_bot_maubot_table_names"
+          - matrix_bot_maubot_table_names | length > 5
+        fail_msg: >-
+          Maubot did not create its schema in {{ matrix_bot_maubot_database_name }}
+          (found {{ matrix_bot_maubot_table_names | length }} table(s))
+        success_msg: "Maubot migrated its schema into the configured Postgres database"
+      vars:
+        matrix_bot_maubot_table_names: "{{ matrix_bot_maubot_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_maubot_base_path }}/labels"
+      register: matrix_bot_maubot_labels_file
+
+    - name: Assert the labels carry the configured management exposure
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in matrix_bot_maubot_labels_lines"
+          - "'traefik.docker.network=matrix-bot-maubot-molecule' in matrix_bot_maubot_labels_lines"
+          - "'traefik.http.services.matrix-bot-maubot.loadbalancer.server.port=29427' in matrix_bot_maubot_labels_lines"
+          - "'traefik.http.routers.matrix-bot-maubot-management.rule=Host(`maubot.molecule.local`) && PathPrefix(`/molecule-maubot`)' in matrix_bot_maubot_labels_lines"
+          - "'traefik.http.routers.matrix-bot-maubot-management.priority=719' in matrix_bot_maubot_labels_lines"
+          - "'traefik.http.middlewares.matrix-bot-maubot-management-strip-prefix.stripprefix.prefixes=/molecule-maubot' in matrix_bot_maubot_labels_lines"
+          - "'traefik.http.routers.matrix-bot-maubot-management.middlewares=matrix-bot-maubot-management-strip-prefix' in matrix_bot_maubot_labels_lines"
+          - "'traefik.http.routers.matrix-bot-maubot-management.entrypoints=web' in matrix_bot_maubot_labels_lines"
+          - "'traefik.http.routers.matrix-bot-maubot-management.tls=false' in matrix_bot_maubot_labels_lines"
+          - "'molecule.maubot.coverage=enabled' in matrix_bot_maubot_labels_lines"
+        fail_msg: "The role's labels do not carry the scenario's public management wiring"
+        success_msg: "The role's labels carry the scenario's public management wiring"
+
+    - name: Inspect the running Maubot container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-bot-maubot
+      register: matrix_bot_maubot_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_runtime.Config.Image == 'dock.mau.dev/maubot/maubot:' + matrix_bot_maubot_role_defaults.matrix_bot_maubot_version
+        fail_msg: >-
+          The running image {{ matrix_bot_maubot_runtime.Config.Image }} is not the exact
+          dock.mau.dev/maubot/maubot:{{ matrix_bot_maubot_role_defaults.matrix_bot_maubot_version }} pin
+        success_msg: "The running container uses the exact image pinned by the role"
+
+    - name: Assert the running container uses the playbook's matrix identity
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_runtime.Config.User.split(':')[0] == matrix_user_uid | string
+          - matrix_bot_maubot_runtime.Config.User.split(':')[1] == matrix_user_gid | string
+        fail_msg: >-
+          Maubot runs as {{ matrix_bot_maubot_runtime.Config.User }} instead of
+          {{ matrix_user_uid }}:{{ matrix_user_gid }}
+        success_msg: "The running container uses the playbook's matrix UID and GID"
+
+    - name: Assert the container root filesystem is read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_runtime.HostConfig.ReadonlyRootfs is sameas true
+        fail_msg: "The Maubot container root filesystem is writable"
+        success_msg: "The Maubot container root filesystem is read-only"
+
+    - name: Assert all Linux capabilities are dropped
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_runtime.HostConfig.CapDrop == ['ALL']
+        fail_msg: "The Maubot container does not drop all Linux capabilities"
+        success_msg: "The Maubot container drops all Linux capabilities"
+
+    - name: Assert the container has the role's writable temporary filesystem
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_runtime.HostConfig.Tmpfs['/tmp'] == 'rw,noexec,nosuid,size=1024m'
+        fail_msg: "The Maubot container is missing its constrained /tmp tmpfs"
+        success_msg: "The Maubot container has its constrained writable /tmp tmpfs"
+
+    - name: Assert the configuration bind mount is read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_config_mounts | length == 1
+          - matrix_bot_maubot_config_mounts[0].RW is sameas false
+        fail_msg: "The Maubot configuration bind mount is missing or writable"
+        success_msg: "The Maubot configuration bind mount is present and read-only"
+
+    - name: Assert the data bind mount is writable
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_data_mounts | length == 1
+          - matrix_bot_maubot_data_mounts[0].RW is sameas true
+        fail_msg: "The Maubot data bind mount is missing or read-only"
+        success_msg: "The Maubot data bind mount is present and writable"
+
+    - name: Assert the container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_runtime.NetworkSettings.Networks is mapping
+          - matrix_bot_maubot_runtime.NetworkSettings.Networks | length == 1
+          - matrix_bot_maubot_container_network in matrix_bot_maubot_runtime.NetworkSettings.Networks
+        fail_msg: >-
+          Maubot has unexpected networks:
+          {{ matrix_bot_maubot_runtime.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The Maubot container is attached only to its dedicated network"
+
+    - name: Ask Docker for Maubot's published ports
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - port
+          - matrix-bot-maubot
+      register: matrix_bot_maubot_published_ports
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the role did not publish a host port
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_bot_maubot_published_ports.rc == 0
+          - matrix_bot_maubot_published_ports.stdout | trim | length == 0
+        fail_msg: >-
+          Maubot unexpectedly publishes a host port:
+          {{ matrix_bot_maubot_published_ports.stdout | default('unknown') }}
+        success_msg: "The role leaves Maubot's management port unpublished"
+
+    - name: Assert Docker accepted the role's custom label
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_runtime.Config.Labels is mapping
+          - matrix_bot_maubot_runtime.Config.Labels['molecule.maubot.coverage'] == 'enabled'
+        fail_msg: "Docker did not attach the custom label from the role's label file"
+        success_msg: "Docker accepted the custom label from the role's label file"

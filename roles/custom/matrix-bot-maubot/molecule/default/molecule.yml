@@ -1,0 +1,100 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-bot-maubot-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bot_maubot_container_network: matrix-bot-maubot-molecule
+
+        # verify.yml runs as a separate play, where role defaults are out of scope. Pin
+        # paths it reads to the values the role derives during converge.
+        matrix_bot_maubot_base_path: /matrix/maubot
+        matrix_bot_maubot_config_path: /matrix/maubot/config
+        matrix_bot_maubot_data_path: /matrix/maubot/data
+
+        # Postgres is the normal playbook path. The non-default database and user mean
+        # successful migrations prove that the role assembled and Maubot consumed this URI.
+        matrix_bot_maubot_database_engine: postgres
+        matrix_bot_maubot_database_hostname: matrix-postgres-molecule
+        matrix_bot_maubot_database_name: molecule_maubot
+        matrix_bot_maubot_database_username: molecule_maubot
+        matrix_bot_maubot_database_password: molecule_pg_password_27c541
+        matrix_bot_maubot_database_sslmode: disable
+
+        # Both the port and public path differ from the role and Maubot defaults. The scenario
+        # proves the internal endpoints and the public-prefix/StripPrefix mapping separately.
+        matrix_bot_maubot_server_port: 29427
+        matrix_bot_maubot_scheme: https
+        matrix_bot_maubot_hostname: maubot.molecule.local
+        matrix_bot_maubot_path_prefix: /molecule-maubot
+        matrix_bot_maubot_unshared_secret: molecule_unshared_secret_b9317a
+
+        # The homeserver is only recorded as a convenient management-interface preset.
+        # Maubot has no clients or instances yet, so it does not contact this deliberately
+        # nonexistent service during startup and no external Matrix credentials are needed.
+        matrix_bot_maubot_homeserver_name: molecule-homeserver
+        matrix_bot_maubot_homeserver_url: https://matrix-no-such-service.invalid
+        matrix_bot_maubot_homeserver_secret: molecule_registration_secret_98e127
+        matrix_bot_maubot_initial_password: molecule_matrix_password_unused_62aa11
+
+        # This account belongs only to Maubot's management API. Logging in below proves the
+        # running process loaded it, rather than merely proving that a YAML file exists.
+        matrix_bot_maubot_admins:
+          molecule-admin: molecule_admin_password_61bd93
+        matrix_bot_maubot_logging_level: DEBUG
+
+        # No Traefik is deployed. Non-default values still let the scenario verify the role's
+        # public-routing contract in both the label file and Docker's accepted labels.
+        matrix_bot_maubot_container_labels_traefik_enabled: true
+        matrix_bot_maubot_container_labels_traefik_docker_network: matrix-bot-maubot-molecule
+        matrix_bot_maubot_container_labels_management_enabled: true
+        matrix_bot_maubot_container_labels_management_hostname: maubot.molecule.local
+        matrix_bot_maubot_container_labels_management_traefik_priority: 719
+        matrix_bot_maubot_container_labels_management_traefik_entrypoints: web
+        matrix_bot_maubot_container_labels_management_traefik_tls: false
+        matrix_bot_maubot_container_labels_additional_labels: |
+          molecule.maubot.coverage=enabled
+
+        # Keep the production-like no-host-port path: probes join the container network.
+        matrix_bot_maubot_container_management_interface_http_bind_port: ''
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
