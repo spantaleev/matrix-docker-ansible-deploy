@@ -86,6 +86,29 @@ emitted no DEBUG records from a particular module, and it passed just as happily
 set to `debug`, because the module emits none on a first run either way. It was green for the wrong
 reason, and only breaking it deliberately exposed that.
 
+### Make a failure identify the broken control
+
+Write each independently falsifiable condition as its own item under `that`. Ansible evaluates the
+items in order and reports the first false expression in its `assertion` result field. When several
+conditions are folded into one expression with `and`, it can only report that whole expression:
+
+```yaml
+that:
+  - service.status.ActiveState == 'active'
+  - service.status.NRestarts is defined
+  - service.status.NRestarts | int == 0
+```
+
+Keeping related conditions in one assertion task is fine. Split them into separately named tasks
+when they describe different operational claims or remedies — for example, the container image,
+runtime identity, network attachment and published ports. `ansible.builtin.assert` runs on the
+controller without connecting to the target, so the extra tasks add negligible runtime compared to
+the probes that gathered the values.
+
+Falsify the real control by changing an observed input or an expected value. Adding a literal
+`false` condition only proves that `ansible.builtin.assert` itself can fail; it does not prove that
+the scenario detects the defect it claims to detect.
+
 Two traps make a falsification pass when it should fail:
 
 - `molecule converge` against an already-running instance rewrites the configuration but only does
