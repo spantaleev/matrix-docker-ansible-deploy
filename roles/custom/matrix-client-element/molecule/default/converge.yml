@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Include roles for matrix-client-element Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Include base roles for matrix-client-element Molecule tests
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"
+        public: true
+      loop:
+        - com.devture.ansible.role.playbook_help
+        - com.devture.ansible.role.systemd_docker_base
+      loop_control:
+        loop_var: role_name
+
+    # The role's main task file also carries the separately-invoked `self-check`
+    # action. A tagless include would run it before systemd_service_manager has
+    # started the component. Include the same setup task files selected by the
+    # playbook's setup-client-element tag, then start the unit below.
+    - name: Include matrix-client-element setup task files
+      ansible.builtin.include_role:
+        name: "custom/{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+        public: true
+        tasks_from: "{{ role_task_file }}"
+      loop:
+        - validate_config.yml
+        - prepare_themes.yml
+        - setup_install.yml
+      loop_control:
+        loop_var: role_task_file
+
+# The component role installs its unit; systemd_service_manager starts it in the
+# full playbook. Start it directly here so the scenario remains role-scoped.
+- name: Ensure matrix-client-element is started
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Ensure systemd daemon is reloaded
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: Ensure matrix-client-element systemd service is started
+      ansible.builtin.systemd_service:
+        name: matrix-client-element.service
+        state: started

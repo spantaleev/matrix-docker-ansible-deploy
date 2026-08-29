@@ -1,0 +1,133 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-client-element-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        # verify.yml runs as its own play, where the role's defaults are out of scope,
+        # so paths and runtime settings read there are pinned explicitly.
+        matrix_client_element_data_path: /matrix/client-element
+        matrix_client_element_container_network: matrix-client-element-molecule
+        matrix_client_element_container_port: 18081
+        matrix_client_element_container_http_host_bind_port: ''
+
+        # Keep the scenario on the prebuilt image and avoid all optional downloads.
+        matrix_client_element_container_image_self_build: false
+        matrix_client_element_themes_enabled: false
+        matrix_client_element_location_sharing_enabled: false
+
+        # Exercise the labels with a non-root route, compression, plain HTTP and a
+        # scenario marker. No Traefik instance is needed to inspect attached labels.
+        matrix_client_element_hostname: element-web.molecule.local
+        matrix_client_element_path_prefix: /molecule-element
+        matrix_client_element_container_labels_traefik_enabled: true
+        matrix_client_element_container_labels_traefik_entrypoints: web
+        matrix_client_element_container_labels_traefik_compression_middleware_enabled: true
+        matrix_client_element_container_labels_traefik_compression_middleware_name: molecule-compress@file
+        matrix_client_element_container_labels_traefik_priority: 73
+        matrix_client_element_container_labels_traefik_additional_response_headers_custom:
+          X-Molecule-Element: rendered
+        matrix_client_element_container_labels_additional_labels: |
+          molecule.scenario=matrix-client-element
+
+        # These values differ from both role and Element defaults. Element Web is a
+        # static client and does not contact any of these endpoints during startup.
+        matrix_client_element_default_hs_url: https://homeserver.molecule.invalid
+        matrix_client_element_default_server_name: alternate.molecule.local
+        matrix_client_element_default_is_url: https://identity.molecule.invalid
+        matrix_client_element_disable_custom_urls: false
+        matrix_client_element_disable_guests: false
+        matrix_client_element_mobile_guide_app_variant: molecule-element
+        matrix_client_element_default_theme: dark
+        matrix_client_element_default_country_code: DE
+        matrix_client_element_permalink_prefix: https://links.molecule.invalid
+        matrix_client_element_bug_report_endpoint_url: https://bugs.molecule.invalid/report
+        matrix_client_element_room_directory_servers:
+          - directory-one.molecule.local
+          - directory-two.molecule.local
+        matrix_client_element_brand: Molecule Element
+        matrix_client_element_branding_auth_footer_links:
+          - text: Molecule help
+            url: https://help.molecule.invalid
+        matrix_client_element_branding_auth_header_logo_url: https://assets.molecule.invalid/logo.svg
+        matrix_client_element_branding_welcome_background_url: https://assets.molecule.invalid/background.svg
+
+        matrix_client_element_integrations_ui_url: https://integrations.molecule.invalid/ui
+        matrix_client_element_integrations_rest_url: https://integrations.molecule.invalid/api
+        matrix_client_element_integrations_widgets_urls:
+          - https://integrations.molecule.invalid/widgets
+        matrix_client_element_integrations_jitsi_widget_url: https://integrations.molecule.invalid/jitsi
+
+        matrix_client_element_features_feature_group_calls: true
+        matrix_client_element_features_feature_oidc_native_flow: true
+        matrix_client_element_features_custom:
+          feature_molecule_scenario: labs
+
+        matrix_client_element_element_call_enabled: true
+        matrix_client_element_element_call_url: https://call.molecule.invalid
+        matrix_client_element_element_call_participant_limit: 23
+        matrix_client_element_element_call_brand: Molecule Call
+        matrix_client_element_element_call_use_exclusively: false
+
+        # This custom theme is data embedded in config.json; themes_enabled remains false,
+        # so the role does not clone the external theme repository.
+        matrix_client_element_setting_defaults_custom_themes:
+          - name: Molecule Midnight
+            is_dark: true
+            colors:
+              accent-color: '#123456'
+
+        matrix_client_element_configuration_extension_json: |
+          {
+            "disable_3pid_login": true,
+            "disable_login_language_selector": true,
+            "molecule_extension": {
+              "enabled": true,
+              "marker": "element-config-extension",
+              "sequence": 42
+            }
+          }
+
+        matrix_client_element_environment_variables_extension: |
+          MOLECULE_ELEMENT_MARKER=environment-reached
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

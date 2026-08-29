@@ -1,0 +1,323 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify matrix-client-element
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+
+  tasks:
+    # Load the shipped version independently of the scenario. The expected image
+    # below is therefore advanced by the role's own version bump, not a test pin.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_client_element_role_defaults
+
+    - name: Wait for the matrix-client-element service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-client-element.service
+      register: matrix_client_element_service
+      until: matrix_client_element_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_service.status.ActiveState == 'active'
+          - matrix_client_element_service.status.NRestarts is defined
+          - matrix_client_element_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-client-element.service is
+          {{ matrix_client_element_service.status.ActiveState | default('unknown') }}
+          after {{ matrix_client_element_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-client-element.service is active and has not restarted"
+
+    # Probe over the private container network. The role intentionally publishes
+    # no host port, matching the path Traefik uses in a real deployment.
+    - name: Fetch Element Web's root document
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_client_element_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - "http://matrix-client-element:{{ matrix_client_element_container_port }}/"
+      register: matrix_client_element_root_response
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_client_element_root_response.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the root endpoint serves the Element application
+      ansible.builtin.assert:
+        that:
+          - "'HTTP_STATUS=200' in matrix_client_element_root_response.stdout"
+          - "'<title>Element' in matrix_client_element_root_response.stdout"
+        fail_msg: >-
+          Element Web did not serve its application root on the configured internal
+          port ({{ matrix_client_element_root_response.stdout | default('no output') }})
+        success_msg: "Element Web serves its application root on the configured internal port"
+
+    - name: Fetch Element Web's served configuration
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_client_element_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - "http://matrix-client-element:{{ matrix_client_element_container_port }}/config.json"
+      register: matrix_client_element_served_config_response
+      changed_when: false
+      failed_when: false
+
+    - name: Assert config.json is served successfully
+      ansible.builtin.assert:
+        that:
+          - "'HTTP_STATUS=200' in matrix_client_element_served_config_response.stdout"
+        fail_msg: >-
+          Element Web did not serve config.json on the configured internal port
+          ({{ matrix_client_element_served_config_response.stdout | default('no output') }})
+        success_msg: "Element Web serves config.json on the configured internal port"
+
+    - name: Read the rendered configuration
+      ansible.builtin.slurp:
+        src: "{{ matrix_client_element_data_path }}/config.json"
+      register: matrix_client_element_rendered_config_file
+
+    - name: Parse the served and rendered configurations
+      ansible.builtin.set_fact:
+        matrix_client_element_served_config: >-
+          {{ matrix_client_element_served_config_response.stdout | regex_replace('HTTP_STATUS=[0-9]+$', '') | trim | from_json }}
+        matrix_client_element_rendered_config: >-
+          {{ matrix_client_element_rendered_config_file.content | b64decode | from_json }}
+
+    - name: Assert the served configuration is the file the role rendered
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_served_config == matrix_client_element_rendered_config
+        fail_msg: "The config.json served by Element differs from the file the role rendered"
+        success_msg: "Element serves the exact configuration the role rendered"
+
+    - name: Assert the rendered configuration carries the homeserver identity
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_rendered_config.default_server_config['m.homeserver'].base_url == matrix_client_element_default_hs_url
+          - matrix_client_element_rendered_config.default_server_config['m.homeserver'].server_name == matrix_client_element_default_server_name
+          - matrix_client_element_rendered_config.default_server_config['m.identity_server'].base_url == matrix_client_element_default_is_url
+        fail_msg: "The rendered configuration does not carry the scenario's homeserver identity"
+        success_msg: "The rendered configuration carries the scenario's homeserver identity"
+
+    - name: Assert the rendered configuration carries the appearance and client behavior
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_rendered_config.brand == matrix_client_element_brand
+          - matrix_client_element_rendered_config.default_theme == matrix_client_element_default_theme
+          - matrix_client_element_rendered_config.disable_custom_urls == matrix_client_element_disable_custom_urls
+          - matrix_client_element_rendered_config.disable_guests == matrix_client_element_disable_guests
+          - matrix_client_element_rendered_config.default_country_code == matrix_client_element_default_country_code
+          - matrix_client_element_rendered_config.setting_defaults.custom_themes[0].name == 'Molecule Midnight'
+          - matrix_client_element_rendered_config.branding.auth_footer_links[0].text == 'Molecule help'
+          - matrix_client_element_rendered_config.branding.auth_header_logo_url == matrix_client_element_branding_auth_header_logo_url
+        fail_msg: "The rendered configuration does not carry the scenario's appearance and client behavior"
+        success_msg: "The rendered configuration carries the scenario's appearance and client behavior"
+
+    - name: Assert the rendered configuration carries the integration endpoints
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_rendered_config.integrations_ui_url == matrix_client_element_integrations_ui_url
+          - matrix_client_element_rendered_config.integrations_rest_url == matrix_client_element_integrations_rest_url
+          - matrix_client_element_rendered_config.integrations_widgets_urls == matrix_client_element_integrations_widgets_urls
+          - matrix_client_element_rendered_config.integrations_jitsi_widget_url == matrix_client_element_integrations_jitsi_widget_url
+        fail_msg: "The rendered configuration does not carry the scenario's integration endpoints"
+        success_msg: "The rendered configuration carries the scenario's integration endpoints"
+
+    - name: Assert the rendered configuration carries the feature and Element Call settings
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_rendered_config.features.feature_group_calls == true
+          - matrix_client_element_rendered_config.features.feature_oidc_native_flow == true
+          - matrix_client_element_rendered_config.features.feature_molecule_scenario == 'labs'
+          - matrix_client_element_rendered_config.element_call.url == matrix_client_element_element_call_url
+          - matrix_client_element_rendered_config.element_call.participant_limit == matrix_client_element_element_call_participant_limit
+          - matrix_client_element_rendered_config.element_call.brand == matrix_client_element_element_call_brand
+          # Element Web documents the omitted use_exclusively setting as false;
+          # the role deliberately leaves this default-valued key out of lean JSON.
+          - "'use_exclusively' not in matrix_client_element_rendered_config.element_call"
+        fail_msg: "The rendered configuration does not carry the scenario's feature and Element Call settings"
+        success_msg: "The rendered configuration carries the scenario's feature and Element Call settings"
+
+    - name: Assert the configuration extension was merged structurally
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_rendered_config.disable_3pid_login == true
+          - matrix_client_element_rendered_config.disable_login_language_selector == true
+          - matrix_client_element_rendered_config.molecule_extension.enabled == true
+          - matrix_client_element_rendered_config.molecule_extension.marker == 'element-config-extension'
+          - matrix_client_element_rendered_config.molecule_extension.sequence == 42
+        fail_msg: "The configuration extension was not merged under the expected keys"
+        success_msg: "The configuration extension was merged structurally"
+
+    - name: Read the environment file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_client_element_data_path }}/env"
+      register: matrix_client_element_env_file
+
+    - name: Initialize the parsed environment
+      ansible.builtin.set_fact:
+        matrix_client_element_env_parsed: {}
+
+    - name: Parse the rendered environment
+      ansible.builtin.set_fact:
+        matrix_client_element_env_parsed: >-
+          {{ matrix_client_element_env_parsed | combine({item.split('=', 1)[0]: item.split('=', 1)[1]}) }}
+      loop: "{{ (matrix_client_element_env_file.content | b64decode).splitlines() | reject('equalto', '') }}"
+      when: "'=' in item"
+      no_log: true
+
+    - name: Inspect the running Element container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-client-element
+      register: matrix_client_element_container_inspect_command
+      changed_when: false
+
+    - name: Parse the running container inspection
+      ansible.builtin.set_fact:
+        matrix_client_element_container: "{{ (matrix_client_element_container_inspect_command.stdout | from_json)[0] }}"
+
+    - name: Assert the rendered environment file carries the scenario values
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_env_parsed.ELEMENT_WEB_PORT == matrix_client_element_container_port | string
+          - matrix_client_element_env_parsed.MOLECULE_ELEMENT_MARKER == 'environment-reached'
+        fail_msg: "The parsed environment file does not carry the scenario's values"
+        success_msg: "The parsed environment file carries the scenario's values"
+
+    - name: Assert the configured environment reached the running container
+      ansible.builtin.assert:
+        that:
+          - "('ELEMENT_WEB_PORT=' ~ (matrix_client_element_container_port | string)) in matrix_client_element_container.Config.Env"
+          - "'MOLECULE_ELEMENT_MARKER=environment-reached' in matrix_client_element_container.Config.Env"
+        fail_msg: "The running container environment does not carry the scenario's values"
+        success_msg: "The configured environment reached the running container"
+
+    - name: Read the labels file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_client_element_data_path }}/labels"
+      register: matrix_client_element_labels_file
+
+    - name: Initialize the parsed labels
+      ansible.builtin.set_fact:
+        matrix_client_element_labels_parsed: {}
+
+    - name: Parse the rendered labels
+      ansible.builtin.set_fact:
+        matrix_client_element_labels_parsed: >-
+          {{ matrix_client_element_labels_parsed | combine({item.split('=', 1)[0]: item.split('=', 1)[1]}) }}
+      loop: "{{ (matrix_client_element_labels_file.content | b64decode).splitlines() | reject('equalto', '') }}"
+      when: "'=' in item"
+      no_log: true
+
+    - name: Assert the rendered labels carry the routing configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_labels_parsed['traefik.enable'] == 'true'
+          - matrix_client_element_labels_parsed['traefik.docker.network'] == matrix_client_element_container_network
+          - matrix_client_element_labels_parsed['traefik.http.services.matrix-client-element.loadbalancer.server.port'] == matrix_client_element_container_port | string
+          - "('Host(`' ~ matrix_client_element_hostname ~ '`)') in matrix_client_element_labels_parsed['traefik.http.routers.matrix-client-element.rule']"
+          - "('PathPrefix(`' ~ matrix_client_element_path_prefix ~ '`)') in matrix_client_element_labels_parsed['traefik.http.routers.matrix-client-element.rule']"
+          - matrix_client_element_labels_parsed['traefik.http.routers.matrix-client-element.priority'] == '73'
+          - matrix_client_element_labels_parsed['traefik.http.routers.matrix-client-element.tls'] == 'false'
+          - "matrix_client_element_container_labels_traefik_compression_middleware_name in matrix_client_element_labels_parsed['traefik.http.routers.matrix-client-element.middlewares']"
+          - matrix_client_element_labels_parsed['traefik.http.middlewares.matrix-client-element-add-headers.headers.customresponseheaders.X-Molecule-Element'] == 'rendered'
+          - matrix_client_element_labels_parsed['molecule.scenario'] == 'matrix-client-element'
+        fail_msg: "The rendered labels do not carry the scenario's routing configuration"
+        success_msg: "The rendered labels carry the scenario's routing configuration"
+
+    - name: Assert the rendered labels are attached to the running container
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_container.Config.Labels['traefik.enable'] == 'true'
+          - matrix_client_element_container.Config.Labels['traefik.docker.network'] == matrix_client_element_container_network
+          - matrix_client_element_container.Config.Labels['traefik.http.services.matrix-client-element.loadbalancer.server.port'] == matrix_client_element_container_port | string
+          - matrix_client_element_container.Config.Labels['molecule.scenario'] == 'matrix-client-element'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The running container carries the labels the role rendered"
+
+    - name: Assert the running container uses the exact image and version the role pins
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_container.Config.Image == matrix_client_element_expected_image
+        fail_msg: >-
+          The running container uses {{ matrix_client_element_container.Config.Image }},
+          expected {{ matrix_client_element_expected_image }}
+        success_msg: "The running container uses the exact image and version defaults/main.yml pins"
+      vars:
+        matrix_client_element_expected_image: >-
+          {{ matrix_client_element_role_defaults.matrix_client_element_container_image_registry_prefix_upstream_default }}element-hq/element-web:{{ matrix_client_element_role_defaults.matrix_client_element_version }}
+
+    - name: Assert the running container uses the configured UID and GID
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_container.Config.User == (matrix_user_uid | string) ~ ':' ~ (matrix_user_gid | string)
+        fail_msg: >-
+          The running container uses {{ matrix_client_element_container.Config.User }},
+          expected {{ matrix_user_uid }}:{{ matrix_user_gid }}
+        success_msg: "The running container uses the configured UID and GID"
+
+    - name: Assert the running container has a read-only root filesystem
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_container.HostConfig.ReadonlyRootfs == true
+        fail_msg: "The running container's root filesystem is writable"
+        success_msg: "The running container has a read-only root filesystem"
+
+    - name: Assert all intended writable paths are tmpfs mounts
+      ansible.builtin.assert:
+        that:
+          - "'/tmp' in matrix_client_element_container.HostConfig.Tmpfs"
+          - "'/var/cache/nginx' in matrix_client_element_container.HostConfig.Tmpfs"
+          - "'/var/run' in matrix_client_element_container.HostConfig.Tmpfs"
+          - "'/tmp/element-web-config' in matrix_client_element_container.HostConfig.Tmpfs"
+          - "'/etc/nginx/conf.d' in matrix_client_element_container.HostConfig.Tmpfs"
+        fail_msg: "The running container is missing one or more intended tmpfs mounts"
+        success_msg: "All intended writable paths are tmpfs mounts"
+
+    - name: Assert the running container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_container.NetworkSettings.Networks.keys() | list | length == 1
+          - matrix_client_element_container_network in matrix_client_element_container.NetworkSettings.Networks
+        fail_msg: >-
+          The running container is attached to unexpected networks:
+          {{ matrix_client_element_container.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The running container is attached only to its dedicated network"
+
+    - name: Assert the running container publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - matrix_client_element_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: "The running container unexpectedly publishes a host port"
+        success_msg: "The running container publishes no host ports"
