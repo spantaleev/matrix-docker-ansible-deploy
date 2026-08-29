@@ -1,0 +1,249 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Ketesa is a static client. The weight-bearing checks are its real HTTP root and the
+# config.json served from the bind mount; no live Synapse or credentials are involved.
+- name: Verify matrix-ketesa
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_ketesa_rendered_config: "{{ matrix_ketesa_config_file.content | b64decode | from_json }}"
+    matrix_ketesa_root_body: "{{ matrix_ketesa_root_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_ketesa_served_config_body: "{{ matrix_ketesa_config_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_ketesa_served_config: "{{ matrix_ketesa_served_config_body | from_json }}"
+    matrix_ketesa_labels_lines: "{{ (matrix_ketesa_labels_file.content | b64decode).splitlines() }}"
+    matrix_ketesa_runtime: "{{ (matrix_ketesa_container_inspect.stdout | from_json) | first }}"
+    matrix_ketesa_config_mounts: "{{ matrix_ketesa_runtime.Mounts | selectattr('Destination', 'equalto', '/var/public/config.json') | list }}"
+  gather_facts: false
+
+  tasks:
+    # Read the pin from the role rather than defining it in the scenario, so an image bump
+    # changes the expected value and tests the image that the role actually ships.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_ketesa_role_defaults
+
+    - name: Wait for the matrix-ketesa service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-ketesa.service
+      register: matrix_ketesa_service
+      until: matrix_ketesa_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes ActiveState alone insufficient: a container can crash-loop while
+    # systemd continues to report its unit as active.
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_service.status.ActiveState == 'active'
+          - matrix_ketesa_service.status.NRestarts is defined
+          - matrix_ketesa_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-ketesa.service is
+          {{ matrix_ketesa_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_ketesa_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-ketesa.service is active and has not restarted"
+
+    - name: Read the configuration file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_ketesa_config_path }}/config.json"
+      register: matrix_ketesa_config_file
+
+    - name: Assert the rendered JSON carries the scenario's Ketesa configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_rendered_config.keys() | sort == ['asManagedUsers', 'corsCredentials', 'externalAuthProvider', 'menu', 'restrictBaseUrl', 'wellKnownDiscovery'] | sort
+          - matrix_ketesa_rendered_config.restrictBaseUrl == matrix_ketesa_config_restrictBaseUrl
+          - matrix_ketesa_rendered_config.externalAuthProvider is sameas true
+          - matrix_ketesa_rendered_config.wellKnownDiscovery is sameas false
+          - matrix_ketesa_rendered_config.corsCredentials == matrix_ketesa_config_corsCredentials
+          - matrix_ketesa_rendered_config.asManagedUsers == matrix_ketesa_config_asManagedUsers_custom
+          - matrix_ketesa_rendered_config.menu | length == 1
+          - matrix_ketesa_rendered_config.menu[0].label == 'Molecule support'
+          - matrix_ketesa_rendered_config.menu[0].i18n.de == 'Molekül-Support'
+          - matrix_ketesa_rendered_config.menu[0].i18n.fr == 'Assistance Molécule'
+          - matrix_ketesa_rendered_config.menu[0].icon == 'SupportAgent'
+          - matrix_ketesa_rendered_config.menu[0].url == 'https://support.molecule.local/ketesa'
+        fail_msg: "The rendered JSON does not carry the scenario's non-default Ketesa settings"
+        success_msg: "The rendered JSON carries the scenario's non-default Ketesa settings"
+
+    # Probe over the role's own network. Publishing a test-only host port would diverge from
+    # the deployment path and would collide when scenarios run concurrently.
+    - name: Wait for Ketesa to serve its application root
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_ketesa_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-ketesa:8080/
+      register: matrix_ketesa_root_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_ketesa_root_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the application root is real Ketesa HTML
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_root_http.rc == 0
+          - matrix_ketesa_root_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_ketesa_root_body | trim | length > 100
+          - "'<!doctype html' in matrix_ketesa_root_body | lower"
+          - "'ketesa' in matrix_ketesa_root_body | lower"
+        fail_msg: >-
+          Ketesa did not return its application HTML from the container network
+          (rc={{ matrix_ketesa_root_http.rc }}, status={{ matrix_ketesa_root_http.stdout_lines[-1] | default('missing') }})
+        success_msg: "Ketesa serves its application root over HTTP"
+
+    - name: Fetch the config.json that Ketesa serves
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_ketesa_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-ketesa:8080/config.json
+      register: matrix_ketesa_config_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_ketesa_config_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert Ketesa serves the parsed JSON that the role rendered
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_config_http.rc == 0
+          - matrix_ketesa_config_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_ketesa_served_config is mapping
+          - matrix_ketesa_served_config == matrix_ketesa_rendered_config
+        fail_msg: "The config.json served by Ketesa does not match the role's rendered JSON"
+        success_msg: "Ketesa serves the exact parsed JSON that the role rendered"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_ketesa_base_path }}/labels"
+      register: matrix_ketesa_labels_file
+
+    - name: Assert the labels carry the configured public exposure
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in matrix_ketesa_labels_lines"
+          - "'traefik.docker.network=matrix-ketesa-molecule' in matrix_ketesa_labels_lines"
+          - "'traefik.http.services.matrix-ketesa.loadbalancer.server.port=8080' in matrix_ketesa_labels_lines"
+          - "'traefik.http.middlewares.matrix-ketesa-ipallowlist.ipallowlist.sourcerange=192.0.2.0/24,2001:db8::/32' in matrix_ketesa_labels_lines"
+          - "'traefik.http.middlewares.matrix-ketesa-strip-prefix.stripprefix.prefixes=/molecule-ketesa' in matrix_ketesa_labels_lines"
+          - "'traefik.http.middlewares.matrix-ketesa-add-headers.headers.customresponseheaders.X-Molecule-Ketesa=role-scenario' in matrix_ketesa_labels_lines"
+          - "'traefik.http.routers.matrix-ketesa.rule=Host(`ketesa-admin.molecule.local`) && PathPrefix(`/molecule-ketesa`)' in matrix_ketesa_labels_lines"
+          - "'traefik.http.routers.matrix-ketesa.priority=731' in matrix_ketesa_labels_lines"
+          - "'traefik.http.routers.matrix-ketesa.middlewares=matrix-ketesa-ipallowlist,matrix-ketesa-slashless-redirect,matrix-ketesa-strip-prefix,matrix-ketesa-add-headers' in matrix_ketesa_labels_lines"
+          - "'traefik.http.routers.matrix-ketesa.entrypoints=web' in matrix_ketesa_labels_lines"
+          - "'traefik.http.routers.matrix-ketesa.tls=false' in matrix_ketesa_labels_lines"
+          - "'molecule.ketesa.coverage=enabled' in matrix_ketesa_labels_lines"
+        fail_msg: "The role's label file does not carry the scenario's exposure settings"
+        success_msg: "The role's label file carries the scenario's exposure settings"
+
+    - name: Inspect the running Ketesa container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-ketesa
+      register: matrix_ketesa_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_runtime.Config.Image == 'ghcr.io/etkecc/ketesa:' + matrix_ketesa_role_defaults.matrix_ketesa_version
+        fail_msg: >-
+          The running image {{ matrix_ketesa_runtime.Config.Image }} is not the exact
+          ghcr.io/etkecc/ketesa:{{ matrix_ketesa_role_defaults.matrix_ketesa_version }} pin
+        success_msg: "The running container uses the exact image pinned by the role"
+
+    - name: Assert the running container uses the dedicated Ketesa identity
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_runtime.Config.User.split(':')[0] == matrix_ketesa_container_uid | string
+          - matrix_ketesa_runtime.Config.User.split(':')[1] == matrix_ketesa_container_gid | string
+        fail_msg: >-
+          The running container uses {{ matrix_ketesa_runtime.Config.User }} instead of
+          {{ matrix_ketesa_container_uid }}:{{ matrix_ketesa_container_gid }}
+        success_msg: "The running container uses the dedicated Ketesa UID and GID"
+
+    - name: Assert the container root filesystem is read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_runtime.HostConfig.ReadonlyRootfs is sameas true
+        fail_msg: "The Ketesa container root filesystem is writable"
+        success_msg: "The Ketesa container root filesystem is read-only"
+
+    - name: Assert the configuration bind mount is read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_config_mounts | length == 1
+          - matrix_ketesa_config_mounts[0].RW is sameas false
+        fail_msg: "The Ketesa configuration bind mount is missing or writable"
+        success_msg: "The Ketesa configuration bind mount is present and read-only"
+
+    - name: Assert the container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_runtime.NetworkSettings.Networks is mapping
+          - matrix_ketesa_runtime.NetworkSettings.Networks | length == 1
+          - matrix_ketesa_container_network in matrix_ketesa_runtime.NetworkSettings.Networks
+        fail_msg: >-
+          Ketesa has unexpected network attachments:
+          {{ matrix_ketesa_runtime.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The container is attached only to its dedicated network"
+
+    - name: Ask Docker for Ketesa's published ports
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - port
+          - matrix-ketesa
+      register: matrix_ketesa_published_ports
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the role did not publish a host port
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_ketesa_published_ports.rc == 0
+          - matrix_ketesa_published_ports.stdout | trim | length == 0
+        fail_msg: >-
+          Ketesa unexpectedly publishes a host port:
+          {{ matrix_ketesa_published_ports.stdout | default('unknown') }}
+        success_msg: "The role leaves Ketesa's HTTP port unpublished"
+
+    - name: Assert Docker accepted the role's custom label
+      ansible.builtin.assert:
+        that:
+          - matrix_ketesa_runtime.Config.Labels is mapping
+          - matrix_ketesa_runtime.Config.Labels['molecule.ketesa.coverage'] == 'enabled'
+        fail_msg: "Docker did not attach the custom label from the role's label file"
+        success_msg: "Docker accepted the custom label from the role's label file"
