@@ -1,0 +1,93 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: postmoogle-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_postmoogle_container_network: postmoogle-molecule
+
+        # The shared stub prepare.yml stands up. It accepts the password login and returns
+        # the full MXID corresponding to this deliberately non-default localpart.
+        matrix_bridge_postmoogle_homeserver: http://matrix.molecule.local:8008
+        matrix_bridge_postmoogle_login: molecule-postmoogle
+        matrix_bridge_postmoogle_password: molecule_matrix_password_d8a314
+
+        # Postgres is what group_vars/matrix_servers selects whenever the playbook-managed
+        # Postgres is enabled. The name, user and password differ from the role's defaults,
+        # so a migrated schema proves that the role composed and the process used this DSN.
+        matrix_bridge_postmoogle_database_engine: postgres
+        matrix_bridge_postmoogle_database_hostname: matrix-postgres-molecule
+        matrix_bridge_postmoogle_database_name: molecule_postmoogle
+        matrix_bridge_postmoogle_database_username: molecule_postmoogle
+        matrix_bridge_postmoogle_database_password: molecule_pg_password_7e9c42
+
+        # These differ from the role's defaults and are asserted against the parsed env file.
+        matrix_bridge_postmoogle_domains:
+          - mail.molecule.local
+          - inbound.molecule.local
+        matrix_bridge_postmoogle_prefix: "!molecule-mail"
+        matrix_bridge_postmoogle_maxsize: "73"
+        matrix_bridge_postmoogle_loglevel: DEBUG
+        matrix_bridge_postmoogle_admins:
+          - "@molecule-admin:molecule.local"
+          - "@mail-.*:molecule.local"
+        # A valid 32-byte AES key, deliberately not empty like the role default.
+        matrix_bridge_postmoogle_data_secret: 0123456789abcdef0123456789abcdef
+        matrix_bridge_postmoogle_proxies:
+          - 192.0.2.44
+        matrix_bridge_postmoogle_mailboxes_forwarded:
+          - forwarded
+        matrix_bridge_postmoogle_mailboxes_reserved:
+          - reserved
+
+        # Port 25 is inappropriate for a test and can already be occupied. Both the
+        # in-container port and the high host port are non-default, so an SMTP exchange on
+        # the former plus Docker's accepted binding for the latter proves the wiring.
+        matrix_bridge_postmoogle_port: "2626"
+        matrix_bridge_postmoogle_smtp_host_bind_port: "25252"
+
+        # verify.yml is a separate play, where the role's defaults are out of scope.
+        matrix_bridge_postmoogle_base_path: /matrix/postmoogle
+        matrix_bridge_postmoogle_config_path: /matrix/postmoogle/config
+        matrix_bridge_postmoogle_data_path: /matrix/postmoogle/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

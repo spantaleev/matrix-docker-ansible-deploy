@@ -1,0 +1,265 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves Postmoogle logs in as the bot the role configured, migrates the Postgres database
+# the role pointed it at, and serves SMTP on the non-default port the role rendered. The SMTP
+# probe stops after EHLO: this scenario deliberately never bridges real mail.
+- name: Verify Postmoogle
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+
+  vars:
+    matrix_bridge_postmoogle_molecule_user_id: "@{{ matrix_bridge_postmoogle_login }}:molecule.local"
+    matrix_bridge_postmoogle_molecule_database_dsn: >-
+      postgres://{{ matrix_bridge_postmoogle_database_username }}:{{ matrix_bridge_postmoogle_database_password }}@{{ matrix_bridge_postmoogle_database_hostname }}:5432/{{ matrix_bridge_postmoogle_database_name }}?sslmode=disable
+    matrix_bridge_postmoogle_container: "{{ (matrix_bridge_postmoogle_container_inspect.stdout | from_json) | first }}"
+
+  tasks:
+    # From the role's defaults rather than pinned in molecule.yml, so the image assertion
+    # compares the running image against what the role ships, not the scenario itself.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_bridge_postmoogle_role_defaults
+
+    - name: Wait for the Postmoogle service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-postmoogle.service
+      register: matrix_bridge_postmoogle_service
+      until: matrix_bridge_postmoogle_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes a crash-looping container appear active. The counter is therefore
+    # part of the same assertion, and `is defined` prevents a missing counter becoming 0.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_service.status.ActiveState == 'active'
+          - matrix_bridge_postmoogle_service.status.NRestarts is defined
+          - matrix_bridge_postmoogle_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-postmoogle.service is
+          {{ matrix_bridge_postmoogle_service.status.ActiveState | default('unknown') }}
+          after {{ matrix_bridge_postmoogle_service.status.NRestarts | default('?') }}
+          automatic restart(s)
+        success_msg: "matrix-postmoogle.service is active and has not restarted"
+
+    # The unit attaches the container output to journald. Strip its ANSI colours and filter
+    # the whole journal: the login line is among the oldest and would disappear from a tail.
+    - name: Wait for Postmoogle to report Matrix login and SMTP startup
+      ansible.builtin.shell:
+        cmd: >-
+          set -o pipefail;
+          journalctl --unit=matrix-postmoogle.service --no-pager --output=cat --lines=all
+          | sed -r 's/\x1B\[[0-9;]*[mK]//g'
+          | grep -E 'Stored credentials after login|Starting SMTP server|cannot initialize matrix bot'
+          | head -n 30 || true
+        executable: /bin/bash
+      register: matrix_bridge_postmoogle_journal
+      changed_when: false
+      until:
+        - "'Stored credentials after login' in matrix_bridge_postmoogle_journal.stdout"
+        - "'Starting SMTP server' in matrix_bridge_postmoogle_journal.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    # "Stored credentials after login" is emitted after the Matrix /login response has been
+    # accepted. Requiring the returned MXID proves the URL, localpart and password were good
+    # enough for a login round-trip, rather than only appearing in a file on disk.
+    - name: Assert Postmoogle logged in as the configured bot
+      ansible.builtin.assert:
+        that:
+          - "'Stored credentials after login' in matrix_bridge_postmoogle_journal.stdout"
+          - "'user_id=' ~ matrix_bridge_postmoogle_molecule_user_id in matrix_bridge_postmoogle_journal.stdout"
+          - "'cannot initialize matrix bot' not in matrix_bridge_postmoogle_journal.stdout"
+        fail_msg: >-
+          Postmoogle did not log in as {{ matrix_bridge_postmoogle_molecule_user_id }}
+        success_msg: "Postmoogle completed Matrix login as the configured bot"
+
+    - name: Assert Postmoogle opened its configured SMTP port
+      ansible.builtin.assert:
+        that:
+          - "'Starting SMTP server port=' ~ matrix_bridge_postmoogle_port in matrix_bridge_postmoogle_journal.stdout"
+        fail_msg: "Postmoogle did not start SMTP on port {{ matrix_bridge_postmoogle_port }}"
+        success_msg: "Postmoogle started its configured SMTP listener"
+
+    # This is an actual SMTP readiness exchange over the container network, not only a TCP
+    # connect. It sends EHLO and stops there, without supplying an envelope or message body.
+    - name: Exchange an SMTP banner and EHLO with Postmoogle
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_postmoogle_container_network }}
+          - "{{ molecule_shared_image_python }}"
+          - python3
+          - -c
+          - >-
+            import socket;
+            s=socket.create_connection(("matrix-postmoogle", {{ matrix_bridge_postmoogle_port | int }}), 5);
+            s.settimeout(5);
+            banner=s.recv(4096).decode();
+            s.sendall(b"EHLO molecule.local\r\n");
+            reply=s.recv(4096).decode();
+            print("BANNER=" + repr(banner));
+            print("EHLO=" + repr(reply));
+            s.close()
+      register: matrix_bridge_postmoogle_smtp
+      changed_when: false
+      retries: 24
+      delay: 5
+      until: matrix_bridge_postmoogle_smtp.rc == 0
+      failed_when: false
+
+    - name: Assert Postmoogle completed the SMTP readiness exchange
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_smtp.rc == 0
+          - "\"BANNER='220\" in matrix_bridge_postmoogle_smtp.stdout"
+          - "\"EHLO='250\" in matrix_bridge_postmoogle_smtp.stdout"
+        fail_msg: >-
+          Postmoogle did not return a 220 banner and 250 EHLO response on port
+          {{ matrix_bridge_postmoogle_port }}
+          ({{ matrix_bridge_postmoogle_smtp.stdout | default('no output') }})
+        success_msg: "Postmoogle completes an SMTP banner and EHLO exchange"
+
+    - name: Read the environment file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_postmoogle_config_path }}/env"
+      register: matrix_bridge_postmoogle_env_file
+
+    - name: Read the environment file's ownership and mode
+      ansible.builtin.stat:
+        path: "{{ matrix_bridge_postmoogle_config_path }}/env"
+      register: matrix_bridge_postmoogle_env_stat
+
+    # Parse the key=value document instead of substring-matching it, including the DSN's own
+    # equals sign by splitting each line only once.
+    - name: Parse the rendered Postmoogle environment
+      ansible.builtin.set_fact:
+        matrix_bridge_postmoogle_env: >-
+          {{ matrix_bridge_postmoogle_env | default({}) | combine(dict([item.split('=', 1)])) }}
+      loop: "{{ (matrix_bridge_postmoogle_env_file.content | b64decode).splitlines() }}"
+      when: item is search('=')
+      no_log: true
+
+    - name: Assert the parsed environment carries this scenario's configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_actual_env == matrix_bridge_postmoogle_expected_env
+        fail_msg: "The rendered environment does not carry the scenario's values"
+        success_msg: "The parsed environment carries the scenario's values"
+      vars:
+        matrix_bridge_postmoogle_expected_env:
+          POSTMOOGLE_LOGIN: "{{ matrix_bridge_postmoogle_login }}"
+          POSTMOOGLE_PASSWORD: "{{ matrix_bridge_postmoogle_password }}"
+          POSTMOOGLE_HOMESERVER: "{{ matrix_bridge_postmoogle_homeserver }}"
+          POSTMOOGLE_DOMAINS: "{{ matrix_bridge_postmoogle_domains | join(' ') }}"
+          POSTMOOGLE_PORT: "{{ matrix_bridge_postmoogle_port }}"
+          POSTMOOGLE_DB_DSN: "{{ matrix_bridge_postmoogle_molecule_database_dsn | trim }}"
+          POSTMOOGLE_DB_DIALECT: postgres
+          POSTMOOGLE_PREFIX: "{{ matrix_bridge_postmoogle_prefix }}"
+          POSTMOOGLE_MAXSIZE: "{{ matrix_bridge_postmoogle_maxsize }}"
+          POSTMOOGLE_LOGLEVEL: "{{ matrix_bridge_postmoogle_loglevel }}"
+          POSTMOOGLE_ADMINS: "{{ matrix_bridge_postmoogle_admins | join(' ') }}"
+          POSTMOOGLE_DATA_SECRET: "{{ matrix_bridge_postmoogle_data_secret }}"
+          POSTMOOGLE_PROXIES: "{{ matrix_bridge_postmoogle_proxies | join(' ') }}"
+          POSTMOOGLE_MAILBOXES_FORWARDED: "{{ matrix_bridge_postmoogle_mailboxes_forwarded | join(' ') }}"
+          POSTMOOGLE_MAILBOXES_RESERVED: "{{ matrix_bridge_postmoogle_mailboxes_reserved | join(' ') }}"
+        matrix_bridge_postmoogle_actual_env: >-
+          {{ matrix_bridge_postmoogle_env | dict2items
+             | selectattr('key', 'in', matrix_bridge_postmoogle_expected_env.keys())
+             | items2dict }}
+
+    - name: Assert the environment file has the playbook-supplied identity and private mode
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_env_stat.stat.uid | int == matrix_user_uid | int
+          - matrix_bridge_postmoogle_env_stat.stat.gid | int == matrix_user_gid | int
+          - matrix_bridge_postmoogle_env_stat.stat.mode == '0640'
+        fail_msg: "The environment file does not have the expected identity or mode"
+        success_msg: "The environment file has the playbook-supplied identity and private mode"
+
+    # These tables can only exist after Postmoogle has resolved the non-default hostname,
+    # authenticated with the non-default credentials and run its Matrix/crypto migrations.
+    - name: List the tables Postmoogle created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_postmoogle_database_username }}
+          - --dbname={{ matrix_bridge_postmoogle_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: matrix_bridge_postmoogle_tables
+      changed_when: false
+
+    - name: Assert Postmoogle migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_tables.rc == 0
+          - "'mx_version' in matrix_bridge_postmoogle_table_names"
+          - "'crypto_version' in matrix_bridge_postmoogle_table_names"
+          - matrix_bridge_postmoogle_table_names | length > 10
+        fail_msg: >-
+          Postmoogle did not create its Matrix and crypto schema in
+          {{ matrix_bridge_postmoogle_database_name }}
+        success_msg: "Postmoogle migrated its schema into the configured Postgres database"
+      vars:
+        matrix_bridge_postmoogle_table_names: "{{ matrix_bridge_postmoogle_tables.stdout_lines | select | list }}"
+
+    - name: Inspect the running Postmoogle container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-postmoogle
+      register: matrix_bridge_postmoogle_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact pinned image
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_container.Config.Image == 'ghcr.io/etkecc/postmoogle:' ~ matrix_bridge_postmoogle_role_defaults.matrix_bridge_postmoogle_version
+        fail_msg: "The running container does not use the exact image the role pins"
+        success_msg: "The running container uses the exact image the role pins"
+
+    - name: Assert the running container uses the playbook identity and a read-only root filesystem
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_container.Config.User == matrix_user_uid ~ ':' ~ matrix_user_gid
+          - matrix_bridge_postmoogle_container.HostConfig.ReadonlyRootfs
+        fail_msg: "The running container does not use the expected identity or read-only root filesystem"
+        success_msg: "The running container uses the playbook identity and a read-only root filesystem"
+
+    - name: Assert the running container is attached to the configured network
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_container_network in matrix_bridge_postmoogle_container.NetworkSettings.Networks
+        fail_msg: "The running container is not attached to {{ matrix_bridge_postmoogle_container_network }}"
+        success_msg: "The running container is attached to the configured network"
+
+    # The high host binding is read back from Docker rather than merely from the unit file.
+    # Docker could not have started the container if that binding were invalid.
+    - name: Assert Docker published only the configured SMTP port
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_postmoogle_port ~ '/tcp' in matrix_bridge_postmoogle_container.HostConfig.PortBindings
+          - matrix_bridge_postmoogle_container.HostConfig.PortBindings[matrix_bridge_postmoogle_port ~ '/tcp'][0].HostPort == matrix_bridge_postmoogle_smtp_host_bind_port
+          - "'25/tcp' not in matrix_bridge_postmoogle_container.HostConfig.PortBindings"
+        fail_msg: "Docker does not carry the configured high SMTP binding, or also publishes port 25"
+        success_msg: "Docker published only the configured high SMTP binding"
