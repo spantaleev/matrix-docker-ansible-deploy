@@ -14,8 +14,8 @@ a 200 rather than a 404, because the goal is to get the component past its start
 
 What it is NOT: an authentication check, a room state machine, or anything a scenario should
 assert *about*. Assert on what the role rendered and what the component reports about itself.
-A scenario that needs this stub to behave like a real homeserver has outgrown what these
-tests are for.
+Scenarios may supply a small static room-state fixture when startup requires it, but the stub
+does not model state changes.
 """
 
 import json
@@ -24,7 +24,7 @@ import re
 import sys
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 SERVER_NAME = os.environ.get("STUB_SERVER_NAME", "molecule.local")
 PORT = int(os.environ.get("STUB_PORT", "8008"))
@@ -35,6 +35,7 @@ PORT = int(os.environ.get("STUB_PORT", "8008"))
 JOINED_ROOMS = [r for r in os.environ.get("STUB_JOINED_ROOMS", "").split(",") if r]
 
 USER_ID = os.environ.get("STUB_USER_ID", f"@stub:{SERVER_NAME}")
+ROOM_STATE = json.loads(os.environ.get("STUB_ROOM_STATE", "[]"))
 
 # Longest a /sync call is held open. Long-polling clients ask for a 30s timeout and
 # immediately ask again when the call returns, so answering instantly spins them into a hot
@@ -120,6 +121,10 @@ class Handler(BaseHTTPRequestHandler):
         if path.endswith("/createRoom"):
             return {"room_id": f"!stub-room:{SERVER_NAME}"}
 
+        join_match = re.search(r"/join/([^/]+)$", path)
+        if join_match:
+            return {"room_id": unquote(join_match.group(1))}
+
         if re.search(r"/rooms/[^/]+/join$", path) or path.endswith("/join"):
             return {"room_id": f"!stub-room:{SERVER_NAME}"}
 
@@ -154,6 +159,25 @@ class Handler(BaseHTTPRequestHandler):
         return {}
 
     def do_GET(self):
+        path = urlparse(self.path).path
+
+        if ROOM_STATE:
+            if re.search(r"/rooms/[^/]+/state$", path):
+                self._send(ROOM_STATE)
+                return
+
+            if "/account_data/" in path or re.search(
+                r"/rooms/[^/]+/state/[^/]+(?:/[^/]+)?$", path
+            ):
+                self._send(
+                    {
+                        "errcode": "M_NOT_FOUND",
+                        "error": "Molecule stub state not found",
+                    },
+                    status=404,
+                )
+                return
+
         self._send(self._route())
 
     def do_POST(self):

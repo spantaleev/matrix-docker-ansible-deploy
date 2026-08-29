@@ -53,6 +53,9 @@
       # the bot user they were configured as, so a scenario bridging anything has to tell
       # the stub who it should claim to be.
       - --env=STUB_USER_ID={{ molecule_shared_stub_user_id | default('@stub:' + (molecule_shared_stub_server_name | default('molecule.local'))) }}
+      # Some components need to inspect an existing management room before they can start.
+      # This optional static fixture does not attempt to model subsequent state changes.
+      - --env=STUB_ROOM_STATE={{ (molecule_shared_stub_room_state | default([])) | to_json }}
       # Set molecule_shared_stub_verbose to "1" to log every request the stub is asked for.
       # How you find out why a component will not start, and for a component with no port of
       # its own, the only place to observe it acting on what the role configured.

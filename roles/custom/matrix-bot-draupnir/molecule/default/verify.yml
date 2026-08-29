@@ -1,0 +1,298 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Health with safe mode disabled is the main readiness gate. Stub request evidence closes
+# Draupnir's remaining blind spot: its health turns green after launching, but not awaiting,
+# the SDK's first sync request.
+- name: Verify matrix-bot-draupnir
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_bot_draupnir_rendered_config: "{{ matrix_bot_draupnir_config_file.content | b64decode | from_yaml }}"
+    matrix_bot_draupnir_labels_lines: "{{ (matrix_bot_draupnir_labels_file.content | b64decode).splitlines() }}"
+    matrix_bot_draupnir_runtime: "{{ (matrix_bot_draupnir_container_inspect.stdout | from_json) | first }}"
+    matrix_bot_draupnir_config_mounts: "{{ matrix_bot_draupnir_runtime.Mounts | selectattr('Destination', 'equalto', '/data/config') | list }}"
+    matrix_bot_draupnir_data_mounts: "{{ matrix_bot_draupnir_runtime.Mounts | selectattr('Destination', 'equalto', '/data') | list }}"
+  gather_facts: false
+
+  tasks:
+    # Read the pin from the role rather than defining it in the scenario, so an image bump
+    # changes the expected value and exercises the newly shipped image.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_bot_draupnir_role_defaults
+
+    - name: Wait for the matrix-bot-draupnir service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-bot-draupnir.service
+      register: matrix_bot_draupnir_service
+      until: matrix_bot_draupnir_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes ActiveState alone insufficient for a crash-looping bot.
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_service.status.ActiveState == 'active'
+          - matrix_bot_draupnir_service.status.NRestarts is defined
+          - matrix_bot_draupnir_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-bot-draupnir.service is
+          {{ matrix_bot_draupnir_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_bot_draupnir_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-bot-draupnir.service is active and has not restarted"
+
+    # Probe over the role's own network. The non-default port and status are only reachable
+    # after normal-mode bootstrap because the scenario explicitly disables recovery safe mode.
+    - name: Wait for Draupnir to report healthy on the configured port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_draupnir_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-bot-draupnir:18081/molecule-ready
+      register: matrix_bot_draupnir_health
+      changed_when: false
+      until: matrix_bot_draupnir_health.stdout == 'HTTP_STATUS=201'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert Draupnir reached its normal-mode health gate
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_health.rc == 0
+          - matrix_bot_draupnir_health.stdout == 'HTTP_STATUS=201'
+        fail_msg: >-
+          Draupnir did not report the configured healthy status on port 18081
+          (rc={{ matrix_bot_draupnir_health.rc }}, response={{ matrix_bot_draupnir_health.stdout | default('none') }})
+        success_msg: "Draupnir reports healthy with the scenario's non-default status"
+
+    - name: Wait for Draupnir to request an initial sync from the homeserver stub
+      ansible.builtin.command:
+        argv:
+          - docker
+          - logs
+          - matrix-homeserver-stub
+      register: matrix_bot_draupnir_stub_logs
+      changed_when: false
+      until: "'/sync?' in matrix_bot_draupnir_stub_logs.stderr or '/sync?' in matrix_bot_draupnir_stub_logs.stdout"
+      retries: 12
+      delay: 5
+      failed_when: false
+
+    # These are observations of Draupnir's outbound bootstrap, not claims about the stub.
+    - name: Assert Draupnir completed its Matrix identity and management-room bootstrap
+      ansible.builtin.assert:
+        that:
+          - "'/account/whoami' in matrix_bot_draupnir_stub_request_log"
+          - "'/joined_rooms' in matrix_bot_draupnir_stub_request_log"
+          - "'/rooms/!draupnir-control%3Amolecule.local/state' in matrix_bot_draupnir_stub_request_log"
+        fail_msg: "Draupnir did not perform all expected Matrix bootstrap requests"
+        success_msg: "Draupnir performed its identity and management-room bootstrap"
+      vars:
+        matrix_bot_draupnir_stub_request_log: "{{ matrix_bot_draupnir_stub_logs.stdout + matrix_bot_draupnir_stub_logs.stderr }}"
+
+    - name: Assert Draupnir entered the Matrix sync loop
+      ansible.builtin.assert:
+        that:
+          - "'/sync?' in matrix_bot_draupnir_stub_request_log"
+        fail_msg: "Draupnir became healthy without requesting an initial Matrix sync"
+        success_msg: "Draupnir requested its initial Matrix sync"
+      vars:
+        matrix_bot_draupnir_stub_request_log: "{{ matrix_bot_draupnir_stub_logs.stdout + matrix_bot_draupnir_stub_logs.stderr }}"
+
+    - name: Read the configuration file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_draupnir_config_path }}/production.yaml"
+      register: matrix_bot_draupnir_config_file
+
+    - name: Assert the rendered Matrix connection and management-room configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_rendered_config.homeserverUrl == matrix_bot_draupnir_config_homeserverUrl
+          - matrix_bot_draupnir_rendered_config.rawHomeserverUrl == matrix_bot_draupnir_config_rawHomeserverUrl
+          - matrix_bot_draupnir_rendered_config.accessToken == matrix_bot_draupnir_config_accessToken
+          - matrix_bot_draupnir_rendered_config.managementRoom == matrix_bot_draupnir_config_managementRoom
+          - matrix_bot_draupnir_rendered_config.experimentalRustCrypto is sameas false
+          - matrix_bot_draupnir_rendered_config.pantalaimon is not defined
+        fail_msg: "The rendered configuration does not carry the scenario's Matrix connection"
+        success_msg: "The rendered configuration carries the scenario's Matrix connection"
+
+    - name: Assert the rendered bootstrap and moderation behavior
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_rendered_config.logLevel == 'DEBUG'
+          - matrix_bot_draupnir_rendered_config.verifyPermissionsOnStartup is sameas false
+          - matrix_bot_draupnir_rendered_config.noop is sameas true
+          - matrix_bot_draupnir_rendered_config.disableServerACL is sameas true
+          - matrix_bot_draupnir_rendered_config.backgroundDelayMS == 137
+          - matrix_bot_draupnir_rendered_config.commands.allowNoPrefix is sameas true
+          - matrix_bot_draupnir_rendered_config.roomStateBackingStore.enabled is sameas false
+        fail_msg: "The rendered configuration does not carry the non-default Draupnir behavior"
+        success_msg: "The rendered configuration carries the non-default Draupnir behavior"
+
+    - name: Assert recovery safe mode is disabled in the rendered configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_rendered_config.safeMode.bootOption == 'Never'
+        fail_msg: "Recovery safe mode could mask a failed normal Draupnir bootstrap"
+        success_msg: "Recovery safe mode cannot mask the scenario's readiness gate"
+
+    - name: Assert the rendered health listener configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_rendered_config.health.healthz.enabled is sameas true
+          - matrix_bot_draupnir_rendered_config.health.healthz.port == 18081
+          - matrix_bot_draupnir_rendered_config.health.healthz.address == '0.0.0.0'
+          - matrix_bot_draupnir_rendered_config.health.healthz.endpoint == '/molecule-ready'
+          - matrix_bot_draupnir_rendered_config.health.healthz.healthyStatus == 201
+          - matrix_bot_draupnir_rendered_config.health.healthz.unhealthyStatus == 503
+        fail_msg: "The rendered health listener does not carry the scenario's settings"
+        success_msg: "The rendered health listener carries the scenario's settings"
+
+    - name: Assert the rendered abuse-reporting web listener configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_rendered_config.web.enabled is sameas true
+          - matrix_bot_draupnir_rendered_config.web.port == matrix_bot_draupnir_config_web_port
+          - matrix_bot_draupnir_rendered_config.web.address == '0.0.0.0'
+          - matrix_bot_draupnir_rendered_config.web.abuseReporting.enabled is sameas true
+          - matrix_bot_draupnir_rendered_config.web.synapseHTTPAntispam.enabled is sameas false
+          - matrix_bot_draupnir_rendered_config.displayReports is sameas false
+        fail_msg: "The rendered web configuration does not carry the abuse-reporting settings"
+        success_msg: "The rendered web listener carries the abuse-reporting settings"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_draupnir_base_path }}/labels"
+      register: matrix_bot_draupnir_labels_file
+
+    - name: Assert the labels carry the configured public report routing
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in matrix_bot_draupnir_labels_lines"
+          - "'traefik.docker.network=' + matrix_bot_draupnir_container_network in matrix_bot_draupnir_labels_lines"
+          - "'traefik.http.services.matrix-bot-draupnir.loadbalancer.server.port=18082' in matrix_bot_draupnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.rule=Host(`draupnir-reports.molecule.local`) && PathRegexp(`^/molecule-report/(v1)/rooms/([^/]*)/event/(.*)$`)' in matrix_bot_draupnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.priority=743' in matrix_bot_draupnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.entrypoints=web' in matrix_bot_draupnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-draupnir-web-abuseReporting.tls=false' in matrix_bot_draupnir_labels_lines"
+          - "'molecule.draupnir.coverage=enabled' in matrix_bot_draupnir_labels_lines"
+        fail_msg: "The role's label file does not carry the scenario's public report routing"
+        success_msg: "The role's label file carries the scenario's public report routing"
+
+    - name: Inspect the running Draupnir container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-bot-draupnir
+      register: matrix_bot_draupnir_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_runtime.Config.Image == 'ghcr.io/the-draupnir-project/draupnir:' + matrix_bot_draupnir_role_defaults.matrix_bot_draupnir_version
+        fail_msg: "The running Draupnir container does not use the role's exact image pin"
+        success_msg: "The running Draupnir container uses the role's exact image pin"
+
+    - name: Assert the running container uses the playbook-supplied identity
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_runtime.Config.User.split(':')[0] == matrix_user_uid | string
+          - matrix_bot_draupnir_runtime.Config.User.split(':')[1] == matrix_user_gid | string
+        fail_msg: >-
+          Draupnir runs as {{ matrix_bot_draupnir_runtime.Config.User }} instead of
+          {{ matrix_user_uid }}:{{ matrix_user_gid }}
+        success_msg: "The running container uses the playbook-supplied UID and GID"
+
+    - name: Assert the container drops all Linux capabilities
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_runtime.HostConfig.CapDrop is sequence
+          - "'ALL' in matrix_bot_draupnir_runtime.HostConfig.CapDrop"
+        fail_msg: "The Draupnir container does not drop all Linux capabilities"
+        success_msg: "The Draupnir container drops all Linux capabilities"
+
+    - name: Assert the container root filesystem is read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_runtime.HostConfig.ReadonlyRootfs is sameas true
+        fail_msg: "The Draupnir container root filesystem is writable"
+        success_msg: "The Draupnir container root filesystem is read-only"
+
+    - name: Assert the configuration bind mount is read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_config_mounts | length == 1
+          - matrix_bot_draupnir_config_mounts[0].RW is sameas false
+        fail_msg: "The Draupnir configuration bind mount is missing or writable"
+        success_msg: "The Draupnir configuration bind mount is present and read-only"
+
+    - name: Assert the data bind mount is writable
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_data_mounts | length == 1
+          - matrix_bot_draupnir_data_mounts[0].RW is sameas true
+        fail_msg: "The Draupnir data bind mount is missing or read-only"
+        success_msg: "The Draupnir data bind mount is present and writable"
+
+    - name: Assert the container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_runtime.NetworkSettings.Networks is mapping
+          - matrix_bot_draupnir_runtime.NetworkSettings.Networks | length == 1
+          - matrix_bot_draupnir_container_network in matrix_bot_draupnir_runtime.NetworkSettings.Networks
+        fail_msg: >-
+          Draupnir has unexpected networks:
+          {{ matrix_bot_draupnir_runtime.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The Draupnir container is attached only to its dedicated network"
+
+    - name: Ask Docker for Draupnir's published ports
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - port
+          - matrix-bot-draupnir
+      register: matrix_bot_draupnir_published_ports
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the role did not publish a host port
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_bot_draupnir_published_ports.rc == 0
+          - matrix_bot_draupnir_published_ports.stdout | trim | length == 0
+        fail_msg: >-
+          Draupnir unexpectedly publishes a host port:
+          {{ matrix_bot_draupnir_published_ports.stdout | default('unknown') }}
+        success_msg: "The role leaves Draupnir's HTTP ports unpublished"
+
+    - name: Assert Docker accepted the role's custom label
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_draupnir_runtime.Config.Labels is mapping
+          - matrix_bot_draupnir_runtime.Config.Labels['molecule.draupnir.coverage'] == 'enabled'
+        fail_msg: "Docker did not attach the custom label from the role's label file"
+        success_msg: "Docker accepted the custom label from the role's label file"

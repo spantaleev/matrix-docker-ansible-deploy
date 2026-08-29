@@ -1,0 +1,110 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-bot-draupnir-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bot_draupnir_container_network: matrix-bot-draupnir-molecule
+
+        # verify.yml is a separate play where the role's defaults are out of scope. Pin
+        # only paths it reads; the component version is loaded from defaults/main.yml.
+        matrix_bot_draupnir_base_path: /matrix/draupnir
+        matrix_bot_draupnir_config_path: /matrix/draupnir/config
+        matrix_bot_draupnir_data_path: /matrix/draupnir/data
+
+        # Full-playbook context supplies the companion role's switch. It is deliberately
+        # absent here: this scenario tests the standalone bot, not the appservice variant.
+        matrix_appservice_draupnir_for_all_enabled: false
+
+        # A local homeserver stub accepts this fake token. No real Matrix or third-party
+        # account is involved. The pre-existing room avoids zero-touch room creation.
+        matrix_bot_draupnir_config_accessToken: molecule_draupnir_access_token_48c1e7
+        matrix_bot_draupnir_config_homeserverUrl: http://matrix.molecule.local:8008
+        matrix_bot_draupnir_config_rawHomeserverUrl: http://matrix.molecule.local:8008
+        matrix_bot_draupnir_config_managementRoom: "!draupnir-control:molecule.local"
+        matrix_bot_draupnir_zero_touch_deploy: false
+        matrix_bot_draupnir_pantalaimon_use: false
+        matrix_bot_draupnir_login_native: false
+        matrix_bot_draupnir_config_experimentalRustCrypto: false
+
+        # Values differ from both role and upstream defaults. The extension also disables
+        # recovery safe mode: otherwise Draupnir can become healthy after a recoverable
+        # bootstrap failure without entering its normal moderation mode.
+        matrix_bot_draupnir_config_disableServerACL: true
+        matrix_bot_draupnir_config_roomStateBackingStore_enabled: false
+        matrix_bot_draupnir_config_web_abuseReporting: true
+        matrix_bot_draupnir_config_web_synapseHTTPAntispam_enabled: false
+        matrix_bot_draupnir_config_web_port: 18082
+        matrix_bot_draupnir_config_displayReports: false
+        matrix_bot_draupnir_configuration_extension_yaml: |
+          logLevel: DEBUG
+          verifyPermissionsOnStartup: false
+          noop: true
+          backgroundDelayMS: 137
+          commands:
+            allowNoPrefix: true
+          safeMode:
+            bootOption: Never
+          health:
+            healthz:
+              enabled: true
+              port: 18081
+              address: 0.0.0.0
+              endpoint: /molecule-ready
+              healthyStatus: 201
+              unhealthyStatus: 503
+
+        # Traefik itself is not deployed. The role still renders these labels and Docker
+        # consumes them, proving the public-report routing contract and the derived network.
+        matrix_bot_draupnir_container_labels_traefik_enabled: true
+        matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_hostname: draupnir-reports.molecule.local
+        matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_path_regexp: ^/molecule-report/(v1)/rooms/([^/]*)/event/(.*)$$
+        matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_priority: 743
+        matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_entrypoints: web
+        matrix_bot_draupnir_container_labels_web_abuseReporting_traefik_tls: false
+        matrix_bot_draupnir_container_labels_traefik_labels_additional_labels: |
+          molecule.draupnir.coverage=enabled
+
+        # Match the production-like no-host-port path; probes join the Docker network.
+        matrix_bot_draupnir_container_http_host_bind_port: ''
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
