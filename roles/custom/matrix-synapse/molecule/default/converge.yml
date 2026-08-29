@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Include roles for Synapse Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Include base roles for Synapse Molecule tests
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"
+        public: true
+      loop:
+        - com.devture.ansible.role.playbook_help
+        - com.devture.ansible.role.systemd_docker_base
+      loop_control:
+        loop_var: role_name
+
+    # The role's main task file also carries separately invoked maintenance actions
+    # (media/database imports, user management, and self-checks). Include the same
+    # initialization, validation, and installation files selected by setup-synapse.
+    - name: Include Synapse setup task files
+      ansible.builtin.include_role:
+        name: "custom/{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+        public: true
+        tasks_from: "{{ role_task_file }}"
+      loop:
+        - init.yml
+        - validate_config.yml
+        - setup_install.yml
+      loop_control:
+        loop_var: role_task_file
+
+- name: Ensure Synapse is started
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Ensure systemd daemon is reloaded
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: Ensure the Synapse systemd service is started
+      ansible.builtin.systemd_service:
+        name: matrix-synapse.service
+        state: started

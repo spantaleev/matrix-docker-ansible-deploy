@@ -1,0 +1,360 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves a single main Synapse process starts on the non-default listener the role
+# rendered, serves real Matrix APIs, migrates the configured Postgres database, and
+# carries no worker, Redis, S3, MAS, email, or other optional-integration topology.
+- name: Verify Synapse
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+  vars:
+    matrix_synapse_config: "{{ matrix_synapse_config_file.content | b64decode | from_yaml }}"
+    matrix_synapse_http_listeners: >-
+      {{ matrix_synapse_config.listeners | selectattr('type', 'equalto', 'http') | list }}
+    matrix_synapse_http_listener: "{{ matrix_synapse_http_listeners | first | default({}) }}"
+
+  tasks:
+    # The image version comes from the role, not from the scenario, so an assertion cannot
+    # remain green merely because both the scenario and runtime are pinned to the same typo.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_synapse_role_defaults
+
+    - name: Wait for the Synapse service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-synapse.service
+      register: matrix_synapse_service
+      until: matrix_synapse_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Assert the Synapse service is stable
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_service.status.ActiveState == 'active'
+          - matrix_synapse_service.status.NRestarts is defined
+          - matrix_synapse_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-synapse.service is
+          {{ matrix_synapse_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_synapse_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-synapse.service is active and has not restarted"
+
+    # Probe over the role's own network. No host port is published, matching deployment.
+    - name: Request the Synapse health endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}/health
+      register: matrix_synapse_health
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_synapse_health.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Request the Synapse Matrix versions endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}/_matrix/client/versions
+      register: matrix_synapse_versions_response
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_synapse_versions_response.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert Synapse serves its health endpoint
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_health.rc == 0
+          - "'HTTP_STATUS=200' in matrix_synapse_health.stdout"
+          - matrix_synapse_health.stdout.startswith('OK')
+        fail_msg: >-
+          Synapse did not serve /health on port
+          {{ matrix_synapse_container_client_api_port }}
+        success_msg: "Synapse serves /health"
+
+    - name: Assert Synapse serves its Matrix versions endpoint
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_versions_response.rc == 0
+          - "'HTTP_STATUS=200' in matrix_synapse_versions_response.stdout"
+        fail_msg: >-
+          Synapse did not serve /_matrix/client/versions on port
+          {{ matrix_synapse_container_client_api_port }}
+        success_msg: "Synapse serves /_matrix/client/versions"
+
+    - name: Parse the Matrix versions response
+      ansible.builtin.set_fact:
+        matrix_synapse_versions: >-
+          {{ matrix_synapse_versions_response.stdout
+             | regex_replace('\nHTTP_STATUS=200$', '')
+             | from_json }}
+
+    - name: Assert the versions response is a real Matrix API document
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_versions.versions is sequence
+          - matrix_synapse_versions.versions | length > 0
+          - "'v1.1' in matrix_synapse_versions.versions"
+          - matrix_synapse_versions.unstable_features is mapping
+        fail_msg: "The versions endpoint did not return a Matrix versions document"
+        success_msg: "The versions endpoint returns a Matrix versions document"
+
+    # The role moved the listener away from 8008. Refusing the upstream default port proves
+    # the successful requests above did not accidentally hit an unchanged default listener.
+    - name: Request the upstream-default Synapse port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --connect-timeout
+          - '2'
+          - --max-time
+          - '3'
+          - http://matrix-synapse:8008/health
+      register: matrix_synapse_default_listener
+      changed_when: false
+      failed_when: false
+
+    - name: Assert Synapse does not listen on the upstream-default port
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_default_listener.rc != 0
+        fail_msg: "Synapse still answers on port 8008, so the non-default listener is not proven"
+        success_msg: "Only the role-configured client listener answers"
+
+    - name: Read the homeserver configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
+      register: matrix_synapse_config_file
+
+    - name: Read the homeserver configuration identity
+      ansible.builtin.stat:
+        path: "{{ matrix_synapse_config_dir_path }}/homeserver.yaml"
+      register: matrix_synapse_config_stat
+
+    - name: Assert the parsed homeserver identity and behavior
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_config.server_name == matrix_domain
+          - matrix_synapse_config.public_baseurl == matrix_synapse_public_baseurl
+          - matrix_synapse_config.max_upload_size == (matrix_synapse_max_upload_size_mb | string) + 'M'
+          - not matrix_synapse_config.presence.enabled
+          - not matrix_synapse_config.url_preview_enabled
+          - not matrix_synapse_config.allow_public_rooms_over_federation
+          - matrix_synapse_config.user_directory.search_all_users
+          - matrix_synapse_config.user_directory.prefer_local_users
+          - matrix_synapse_config.trusted_key_servers == []
+        fail_msg: "The parsed homeserver configuration does not carry the scenario's values"
+        success_msg: "The parsed homeserver configuration carries the scenario's values"
+
+    - name: Assert the parsed homeserver secrets
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_config.macaroon_secret_key == matrix_synapse_macaroon_secret_key
+          - matrix_synapse_config.registration_shared_secret == matrix_synapse_registration_shared_secret
+          - matrix_synapse_config.form_secret == matrix_synapse_form_secret
+          - matrix_synapse_config.password_config.pepper == matrix_synapse_password_config_pepper
+        fail_msg: "The parsed homeserver configuration does not carry the scenario's secrets"
+        success_msg: "The parsed homeserver configuration carries the scenario's secrets"
+      no_log: true
+
+    - name: Assert the parsed client listener topology
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_config.listeners | length == 1
+          - matrix_synapse_http_listeners | length == 1
+          - matrix_synapse_http_listener.port == matrix_synapse_container_client_api_port
+          - not matrix_synapse_http_listener.tls
+          - matrix_synapse_http_listener.bind_addresses == ['::']
+          - matrix_synapse_http_listener.resources | length == 1
+          - matrix_synapse_http_listener.resources[0].names == ['client']
+        fail_msg: "The parsed homeserver configuration has an unexpected listener topology"
+        success_msg: "The parsed homeserver configuration has one non-default client listener"
+
+    - name: Assert the parsed Postgres configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_config.database.name == 'psycopg2'
+          - matrix_synapse_config.database.args.host == matrix_synapse_database_host
+          - matrix_synapse_config.database.args.port == matrix_synapse_database_port
+          - matrix_synapse_config.database.args.user == matrix_synapse_database_user
+          - matrix_synapse_config.database.args.password == matrix_synapse_database_password
+          - matrix_synapse_config.database.args.database == matrix_synapse_database_database
+          - matrix_synapse_config.database.args.cp_min == matrix_synapse_database_cp_min
+          - matrix_synapse_config.database.args.cp_max == matrix_synapse_database_cp_max
+        fail_msg: "The parsed homeserver configuration does not point at scenario Postgres"
+        success_msg: "The parsed homeserver configuration points at scenario Postgres"
+      no_log: true
+
+    - name: Assert optional Synapse topology is absent
+      ansible.builtin.assert:
+        that:
+          - not matrix_synapse_config.redis.enabled
+          - matrix_synapse_config.media_storage_providers == []
+          - matrix_synapse_config.modules == []
+          - "'matrix_authentication_service' not in matrix_synapse_config"
+          - "'email' not in matrix_synapse_config"
+          - "'worker_app' not in matrix_synapse_config"
+        fail_msg: "An excluded worker, Redis, S3, MAS, email, or module integration is configured"
+        success_msg: "The configuration contains only the intended main-process topology"
+
+    - name: Assert the homeserver configuration file identity
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_config_stat.stat.uid | int == matrix_user_uid | int
+          - matrix_synapse_config_stat.stat.gid | int == matrix_user_gid | int
+          - matrix_synapse_config_stat.stat.mode == '0644'
+        fail_msg: "homeserver.yaml has the wrong ownership or mode"
+        success_msg: "homeserver.yaml has the playbook identity and expected mode"
+
+    # These tables appear only after hostname resolution, authentication, and genuine Synapse
+    # migrations against the exact non-default database prepared for the scenario.
+    - name: List the tables Synapse created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_synapse_database_user }}
+          - --dbname={{ matrix_synapse_database_database }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: matrix_synapse_tables
+      changed_when: false
+
+    - name: Assert Synapse migrated its Postgres schema
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_tables.rc == 0
+          - "'schema_version' in matrix_synapse_table_names"
+          - "'users' in matrix_synapse_table_names"
+          - "'rooms' in matrix_synapse_table_names"
+          - "'events' in matrix_synapse_table_names"
+          - "'state_groups' in matrix_synapse_table_names"
+          - matrix_synapse_table_names | length > 50
+        fail_msg: >-
+          Synapse did not migrate its schema in {{ matrix_synapse_database_database }}
+          (found {{ matrix_synapse_table_names | length }} table(s))
+        success_msg: "Synapse genuinely migrated the configured Postgres database"
+      vars:
+        matrix_synapse_table_names: "{{ matrix_synapse_tables.stdout_lines | select | list }}"
+
+    - name: Inspect the running Synapse container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-synapse
+      register: matrix_synapse_container_inspect
+      changed_when: false
+
+    - name: Parse the running Synapse container inspection
+      ansible.builtin.set_fact:
+        matrix_synapse_container: "{{ (matrix_synapse_container_inspect.stdout | from_json) | first }}"
+
+    - name: Assert the running container uses the exact pinned image
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_container.Config.Image == 'ghcr.io/element-hq/synapse:' + matrix_synapse_role_defaults.matrix_synapse_version
+        fail_msg: "The running container does not use the exact image defaults/main.yml pins"
+        success_msg: "The running container uses the exact image defaults/main.yml pins"
+
+    - name: Assert the running container uses the scenario identity
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+        fail_msg: "The running container does not use the playbook-supplied identity"
+        success_msg: "The running container uses the playbook-supplied identity"
+
+    - name: Assert the running container security isolation
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_container.HostConfig.ReadonlyRootfs
+          - "'ALL' in matrix_synapse_container.HostConfig.CapDrop"
+        fail_msg: "The running container does not have read-only, capability-dropped isolation"
+        success_msg: "The running container has read-only, capability-dropped isolation"
+
+    - name: Assert the running container has a read-only config mount
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_config_mount | length > 0
+          - not matrix_synapse_config_mount.RW | default(true)
+        fail_msg: "The running container does not mount its configuration read-only"
+        success_msg: "The running container mounts its configuration read-only"
+      vars:
+        matrix_synapse_config_mount: >-
+          {{ matrix_synapse_container.Mounts
+             | selectattr('Destination', 'equalto', '/data')
+             | first | default({}) }}
+
+    - name: Assert the running container has a writable storage mount
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_storage_mount | length > 0
+          - matrix_synapse_storage_mount.RW | default(false)
+        fail_msg: "The running container does not mount its media storage writable"
+        success_msg: "The running container mounts its media storage writable"
+      vars:
+        matrix_synapse_storage_mount: >-
+          {{ matrix_synapse_container.Mounts
+             | selectattr('Destination', 'equalto', '/matrix-media-store-parent')
+             | first | default({}) }}
+
+    - name: Assert the running container is healthy
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_container.State.Health.Status == 'healthy'
+        fail_msg: "The running container is not healthy"
+        success_msg: "The running container is healthy"
+
+    - name: Assert the running container has only its private network
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_container_network in matrix_synapse_container.NetworkSettings.Networks
+          - matrix_synapse_container.NetworkSettings.Networks | length == 1
+        fail_msg: "The running container has unexpected network attachments"
+        success_msg: "The running container has only its private network"
+
+    - name: Assert the running container publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: "The running container unexpectedly publishes a host port"
+        success_msg: "The running container publishes no host ports"

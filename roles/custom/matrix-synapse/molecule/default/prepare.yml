@@ -1,0 +1,117 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Prepare Synapse Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Ensure apt cache is updated
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Ensure required packages are installed
+      ansible.builtin.package:
+        name:
+          - python3-requests
+          - fuse-overlayfs
+        state: present
+
+    # The production Synapse unit uses slave bind propagation for its media store. The
+    # privileged Molecule host must expose a shared parent mount to its nested Docker daemon.
+    - name: Ensure nested Docker can use Synapse media-store bind propagation
+      ansible.builtin.command:
+        argv:
+          - mount
+          - --make-rshared
+          - /
+      changed_when: false
+
+    - name: Ensure Docker is installed
+      ansible.builtin.include_role:
+        name: ansible-role-docker
+      vars:
+        docker_daemon_options:
+          storage-driver: fuse-overlayfs
+
+    - name: Ensure the matrix group exists
+      ansible.builtin.group:
+        name: "{{ matrix_group_name }}"
+        gid: "{{ matrix_user_gid }}"
+        state: present
+
+    - name: Ensure the matrix user exists
+      ansible.builtin.user:
+        name: "{{ matrix_user_name }}"
+        uid: "{{ matrix_user_uid }}"
+        group: "{{ matrix_group_name }}"
+        create_home: false
+        system: true
+        state: present
+
+    - name: Ensure the base data path exists
+      ansible.builtin.file:
+        path: "{{ matrix_base_data_path }}"
+        state: directory
+        owner: "{{ matrix_user_name }}"
+        group: "{{ matrix_group_name }}"
+        mode: '0750'
+
+    # Postgres must attach before the role creates this network during converge.
+    - name: Ensure the Synapse container network exists
+      ansible.builtin.command:
+        argv:
+          - docker
+          - network
+          - create
+          - "{{ matrix_synapse_container_network }}"
+      register: matrix_synapse_molecule_network
+      changed_when: matrix_synapse_molecule_network.rc == 0
+      failed_when:
+        - matrix_synapse_molecule_network.rc != 0
+        - "'already exists' not in matrix_synapse_molecule_network.stderr"
+
+    - name: Ensure Postgres is running
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/tasks/postgres.yml"
+      vars:
+        molecule_shared_postgres_network: "{{ matrix_synapse_container_network }}"
+        molecule_shared_postgres_database: "{{ matrix_synapse_database_database }}"
+        molecule_shared_postgres_username: "{{ matrix_synapse_database_user }}"
+        molecule_shared_postgres_password: "{{ matrix_synapse_database_password }}"
+
+    # Synapse intentionally refuses databases with locale-dependent collation. Recreate the
+    # helper's empty scenario database with the production-required C locale before startup.
+    - name: Remove the locale-dependent empty Synapse database
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_synapse_database_user }}
+          - --dbname=postgres
+          - --command=DROP DATABASE IF EXISTS "{{ matrix_synapse_database_database }}"
+      changed_when: true
+
+    - name: Create the empty Synapse database with C collation
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_synapse_database_user }}
+          - --dbname=postgres
+          - >-
+            --command=CREATE DATABASE "{{ matrix_synapse_database_database }}"
+            OWNER "{{ matrix_synapse_database_user }}" TEMPLATE template0
+            LC_COLLATE 'C' LC_CTYPE 'C'
+      changed_when: true

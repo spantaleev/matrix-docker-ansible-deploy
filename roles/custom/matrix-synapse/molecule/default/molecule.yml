@@ -1,0 +1,114 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: synapse-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        # This first scenario deliberately exercises one main Synapse process. Workers and
+        # everything they bring with them belong in a separate topology-focused scenario.
+        matrix_synapse_workers_enabled: false
+        matrix_synapse_redis_enabled: false
+        matrix_synapse_reverse_proxy_companion_enabled: false
+
+        matrix_synapse_username: matrix
+        matrix_synapse_uid: 1234
+        matrix_synapse_gid: 1234
+        matrix_synapse_container_network: synapse-molecule
+
+        # The non-default listener is reached only over the container network. Override the
+        # upstream image's health command as well, because its default assumes port 8008.
+        matrix_synapse_container_client_api_port: 18008
+        matrix_synapse_container_client_api_host_bind_port: ''
+        matrix_synapse_container_master_extra_arguments:
+          - "--health-cmd='curl -fSs http://localhost:18008/health'"
+        matrix_synapse_container_labels_traefik_enabled: false
+        matrix_synapse_container_labels_traefik_hostname: matrix.molecule.local
+        matrix_synapse_systemd_service_post_start_delay_seconds: 0
+
+        # Postgres is the normal deployment path. Distinct database and user names make the
+        # resulting Synapse schema evidence that these exact connection settings were used.
+        matrix_synapse_database_host: matrix-postgres-molecule
+        matrix_synapse_database_port: 5432
+        matrix_synapse_database_user: molecule_synapse
+        matrix_synapse_database_password: molecule_synapse_pg_password_9b742d
+        matrix_synapse_database_database: molecule_synapse
+        matrix_synapse_database_cp_min: 2
+        matrix_synapse_database_cp_max: 4
+
+        # Local scenario secrets only. They never authenticate to an external service.
+        matrix_synapse_macaroon_secret_key: molecule_synapse_macaroon_4b3f891d
+        matrix_synapse_registration_shared_secret: molecule_synapse_registration_27ed51a8
+        matrix_synapse_form_secret: molecule_synapse_form_96a04c7b
+        matrix_synapse_password_config_pepper: molecule_synapse_pepper_c0f371e6
+
+        # These values differ from both role and upstream defaults and are safe to exercise
+        # without introducing any external dependency.
+        matrix_synapse_public_baseurl: http://matrix.molecule.local:18008/
+        matrix_synapse_presence_enabled: false
+        matrix_synapse_max_upload_size_mb: 37
+        matrix_synapse_url_preview_enabled: false
+        matrix_synapse_allow_public_rooms_over_federation: false
+        matrix_synapse_user_directory_search_all_users: true
+        matrix_synapse_user_directory_prefer_local_users: true
+        matrix_synapse_trusted_key_servers: []
+        matrix_synapse_suppress_key_server_warning: true
+
+        # Keep the scenario fully local and intentionally exclude optional integrations.
+        matrix_synapse_federation_enabled: false
+        matrix_synapse_federation_port_openid_resource_required: false
+        matrix_synapse_tls_federation_listener_enabled: false
+        matrix_synapse_metrics_enabled: false
+        matrix_synapse_email_enabled: false
+        matrix_synapse_matrix_authentication_service_enabled: false
+        matrix_authentication_service_migration_in_progress: false
+        matrix_synapse_ext_synapse_s3_storage_provider_enabled: false
+        matrix_s3_media_store_enabled: false
+        matrix_playbook_ssl_enabled: false
+
+        # verify.yml is a separate play, so pin paths that otherwise come from role defaults.
+        # The component version is deliberately loaded from defaults/main.yml instead.
+        matrix_synapse_base_path: /matrix/synapse
+        matrix_synapse_config_dir_path: /matrix/synapse/config
+        matrix_synapse_storage_path: /matrix/synapse/storage
+        matrix_synapse_media_store_path: /matrix/synapse/storage/media-store
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
