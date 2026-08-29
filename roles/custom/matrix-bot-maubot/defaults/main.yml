@@ -60,11 +60,9 @@ matrix_bot_maubot_config_path: "{{ matrix_bot_maubot_base_path }}/config"
 matrix_bot_maubot_container_src_files_path: "{{ matrix_bot_maubot_base_path }}/docker-src"
 matrix_bot_maubot_customized_container_src_files_path: "{{ matrix_bot_maubot_base_path }}/customized-docker-src"
 
-matrix_bot_maubot_bot_server_public_url: "{{ matrix_bot_maubot_scheme }}://{{ matrix_bot_maubot_hostname }}"
-matrix_bot_maubot_bot_server_base_path: "{{ '' if matrix_bot_maubot_path_prefix == '/' else matrix_bot_maubot_path_prefix }}/v1"
-matrix_bot_maubot_bot_server_ui_base_path: "{{ matrix_bot_maubot_path_prefix }}"
-matrix_bot_maubot_bot_server_plugin_base_path: "{{ '' if matrix_bot_maubot_path_prefix == '/' else matrix_bot_maubot_path_prefix }}/plugin/"
-matrix_bot_maubot_bot_server_appservice_base_path: "{{ matrix_bot_maubot_bot_server_base_path }}"
+matrix_bot_maubot_bot_server_public_url: "{{ matrix_bot_maubot_scheme }}://{{ matrix_bot_maubot_hostname }}{{ '' if matrix_bot_maubot_path_prefix == '/' else matrix_bot_maubot_path_prefix }}"
+matrix_bot_maubot_bot_server_ui_base_path: /
+matrix_bot_maubot_bot_server_plugin_base_path: /_matrix/maubot/plugin/
 
 matrix_bot_maubot_proxy_management_interface: true
 
@@ -154,7 +152,7 @@ matrix_bot_maubot_container_labels_traefik_tls_certResolver: default  # noqa var
 matrix_bot_maubot_container_labels_management_enabled: true
 matrix_bot_maubot_container_labels_management_hostname: "{{ matrix_bot_maubot_hostname }}"
 matrix_bot_maubot_container_labels_management_prefix: "{{ matrix_bot_maubot_path_prefix }}"
-matrix_bot_maubot_container_labels_management_traefik_rule: "Host(`{{ matrix_bot_maubot_container_labels_management_hostname }}`) && PathPrefix(`{{ matrix_bot_maubot_path_prefix }}`)"
+matrix_bot_maubot_container_labels_management_traefik_rule: "Host(`{{ matrix_bot_maubot_container_labels_management_hostname }}`) && PathPrefix(`{{ matrix_bot_maubot_container_labels_management_prefix }}`)"
 matrix_bot_maubot_container_labels_management_traefik_priority: 0
 matrix_bot_maubot_container_labels_management_traefik_entrypoints: "{{ matrix_bot_maubot_container_labels_traefik_entrypoints }}"
 matrix_bot_maubot_container_labels_management_traefik_tls: "{{ matrix_bot_maubot_container_labels_management_traefik_entrypoints != 'web' }}"

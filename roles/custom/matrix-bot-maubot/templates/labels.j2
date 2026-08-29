@@ -27,6 +27,10 @@ traefik.http.routers.matrix-bot-maubot-management.priority={{ matrix_bot_maubot_
 {% endif %}
 
 traefik.http.routers.matrix-bot-maubot-management.service=matrix-bot-maubot
+{% if matrix_bot_maubot_container_labels_management_prefix != '/' %}
+traefik.http.middlewares.matrix-bot-maubot-management-strip-prefix.stripprefix.prefixes={{ matrix_bot_maubot_container_labels_management_prefix }}
+traefik.http.routers.matrix-bot-maubot-management.middlewares=matrix-bot-maubot-management-strip-prefix
+{% endif %}
 traefik.http.routers.matrix-bot-maubot-management.entrypoints={{ matrix_bot_maubot_container_labels_management_traefik_entrypoints }}
 
 traefik.http.routers.matrix-bot-maubot-management.tls={{ matrix_bot_maubot_container_labels_management_traefik_tls | to_json }}
