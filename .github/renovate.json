@@ -119,7 +119,7 @@
       "automergeType": "branch"
     },
     {
-      "description": "Automerge patch bumps of components whose role has a Molecule scenario (via branch push - no PR). A bump touches that role's defaults/main.yml, which makes the Molecule workflow run that role's scenario, so the update only merges once the component has been started on the configuration the role renders. Patch only: a minor carries behaviour changes no static rule can judge, and reading the release notes to decide is a job for a human or an agent. Keep this list in step with the roles that have a scenario - bin/check-molecule-automerge-list.py enforces that.",
+      "description": "Automerge patch bumps of components whose role has a Molecule scenario (via branch push - no PR). A bump touches that role's defaults/main.yml, which makes the Molecule workflow run that role's scenario, so the update only merges once the component has been started on the configuration the role renders. Patch is the baseline for every covered role; explicitly approved roles may also appear in the narrower minor rule below. Keep this list in step with the roles that have a scenario - bin/check-molecule-automerge-list.py (patch rule) enforces that.",
       "matchFileNames": [
         "roles/custom/matrix-alertmanager-receiver/defaults/main.yml",
         "roles/custom/matrix-authentication-service/defaults/main.yml",
@@ -144,6 +144,19 @@
       ],
       "matchUpdateTypes": [
         "patch"
+      ],
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "description": "Automerge minor bumps of explicitly approved components with a weight-bearing Molecule scenario (via branch push - no PR). This list is intentionally narrower than the patch rule: the scenario must exercise enough real behavior to be a useful compatibility gate across a minor release. A failure surfaces as a PR instead. Keep every entry backed by a scenario and the patch rule - bin/check-molecule-automerge-list.py (minor rule) enforces that.",
+      "matchFileNames": [
+        "roles/custom/matrix-authentication-service/defaults/main.yml",
+        "roles/custom/matrix-static-files/defaults/main.yml",
+        "roles/custom/matrix-synapse-auto-compressor/defaults/main.yml"
+      ],
+      "matchUpdateTypes": [
+        "minor"
       ],
       "automerge": true,
       "automergeType": "branch"

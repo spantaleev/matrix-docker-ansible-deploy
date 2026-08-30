@@ -32,13 +32,11 @@ When the diff base cannot be determined (a new branch, a force push), it falls b
 
 ## Automerge
 
-A role that has a scenario is listed in the Molecule automerge rule in `.github/renovate.json`, so
-patch bumps of its component merge on their own once the scenario has passed on them.
+A role that has a scenario is listed in the Molecule patch-automerge rule in `.github/renovate.json`, so patch bumps of its component merge on their own once the scenario has passed on them. Some roles with a sufficiently weight-bearing compatibility gate are explicitly approved in a narrower minor-automerge rule too. Major updates are never included in these rules.
 
-**Add your role to that list when you add its scenario.** `bin/check-molecule-automerge-list.py`
-runs from prek and fails the commit if the list and the scenarios have drifted apart. The direction
-that matters is a role staying in the list after losing its scenario, since its bumps would then
-merge with nothing exercising them.
+Both rules use branch automerge: an update that passes its scenario merges without opening a pull request, while a failure surfaces as a pull request instead.
+
+**Add your role to the patch list when you add its scenario.** Add it to the minor list only when that broader policy has been explicitly approved and the scenario exercises enough real behavior to serve as a minor-release compatibility gate. `bin/check-molecule-automerge-list.py` runs from prek and fails the commit if the patch list and scenarios drift apart, or if a minor-automerge entry is not backed by both a scenario and the patch rule.
 
 ## Writing a scenario
 
