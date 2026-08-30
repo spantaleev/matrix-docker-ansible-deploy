@@ -1,0 +1,307 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Element Admin is a static browser client. Its real application root and the live
+# configuration embedded from the role's env file are the weight-bearing checks; no
+# homeserver or third-party credentials are needed for the process to start.
+- name: Verify matrix-element-admin
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_element_admin_root_body: "{{ matrix_element_admin_root_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_element_admin_runtime: "{{ (matrix_element_admin_container_inspect.stdout | from_json) | first }}"
+  gather_facts: false
+
+  tasks:
+    # Loading the pin from the role keeps this scenario coupled to the shipped image
+    # without duplicating a version which could silently drift.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_element_admin_role_defaults
+
+    - name: Wait for the matrix-element-admin service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-element-admin.service
+      register: matrix_element_admin_service
+      until: matrix_element_admin_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always means ActiveState alone can be green while the container crash-loops.
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_service.status.ActiveState == 'active'
+          - matrix_element_admin_service.status.NRestarts is defined
+          - matrix_element_admin_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-element-admin.service is
+          {{ matrix_element_admin_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_element_admin_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-element-admin.service is active and has not restarted"
+
+    # Probe over the dedicated container network. Publishing a host port only for the
+    # test would diverge from how Traefik reaches the service in real installations.
+    - name: Wait for Element Admin to serve its application root
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_element_admin_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-element-admin:8080/
+      register: matrix_element_admin_root_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_element_admin_root_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the application root is real Element Admin HTML
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_root_http.rc == 0
+          - matrix_element_admin_root_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_element_admin_root_body | trim | length > 100
+          - "'<!doctype html' in matrix_element_admin_root_body | lower"
+          - "'element admin' in matrix_element_admin_root_body | lower"
+        fail_msg: >-
+          Element Admin did not return its application HTML from the container network
+          (rc={{ matrix_element_admin_root_http.rc }}, status={{ matrix_element_admin_root_http.stdout_lines[-1] | default('missing') }})
+        success_msg: "Element Admin serves its real application root over HTTP"
+
+    # The image entrypoint base64-embeds JSON in index.html from SERVER_NAME. Decode
+    # that exact live value instead of trusting that the environment merely exists.
+    - name: Extract the live configuration and application asset path
+      ansible.builtin.set_fact:
+        matrix_element_admin_embedded_config_base64: >-
+          {{ matrix_element_admin_root_body | regex_search('(?<=window.APP_CONFIG_BASE64 = ")[^"]+(?=";)') }}
+        matrix_element_admin_application_asset_path: >-
+          {{ matrix_element_admin_root_body | regex_search('(?<=src=")[/]assets[/][^"]+(?=")') }}
+
+    - name: Decode the live Element Admin configuration
+      ansible.builtin.set_fact:
+        matrix_element_admin_embedded_config: >-
+          {{ matrix_element_admin_embedded_config_base64 | b64decode | from_json }}
+
+    - name: Assert the live configuration carries the configured homeserver name
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_embedded_config is mapping
+          - matrix_element_admin_embedded_config.keys() | list == ['serverName']
+          - matrix_element_admin_embedded_config.serverName == matrix_element_admin_environment_variable_server_name
+        fail_msg: >-
+          Element Admin's live embedded configuration does not carry the SERVER_NAME value rendered by the role
+        success_msg: "The live application configuration carries the configured homeserver name"
+
+    # Fetch a hashed application bundle referenced by the live HTML. This exercises a
+    # real non-root HTTP path without claiming support for an invalid public subpath.
+    - name: Fetch a live Element Admin application asset
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_element_admin_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}\nCONTENT_TYPE=%{content_type}\nSIZE=%{size_download}"
+          - "http://matrix-element-admin:8080{{ matrix_element_admin_application_asset_path }}"
+      register: matrix_element_admin_asset_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the non-root application asset is served
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_asset_http.rc == 0
+          - "'HTTP_STATUS=200' in matrix_element_admin_asset_http.stdout_lines"
+          - matrix_element_admin_asset_http.stdout | regex_search('(?m)^CONTENT_TYPE=application/javascript(?:;|$)') is not none
+          - matrix_element_admin_asset_http.stdout | regex_search('SIZE=([1-9][0-9]{2,})') is not none
+        fail_msg: "Element Admin did not serve the application bundle referenced by its live HTML"
+        success_msg: "Element Admin serves a real non-root application asset"
+
+    - name: Read the environment file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_element_admin_base_path }}/env"
+      register: matrix_element_admin_env_file
+
+    - name: Initialize the parsed environment
+      ansible.builtin.set_fact:
+        matrix_element_admin_env_parsed: {}
+
+    - name: Parse the rendered environment
+      ansible.builtin.set_fact:
+        matrix_element_admin_env_parsed: >-
+          {{ matrix_element_admin_env_parsed | combine({item.split('=', 1)[0]: item.split('=', 1)[1]}) }}
+      loop: "{{ (matrix_element_admin_env_file.content | b64decode).splitlines() | reject('equalto', '') }}"
+      when: "'=' in item"
+      no_log: true
+
+    - name: Assert the rendered environment carries the scenario settings
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_env_parsed.SERVER_NAME == matrix_element_admin_environment_variable_server_name
+          - matrix_element_admin_env_parsed.MOLECULE_ELEMENT_ADMIN_MARKER == 'environment-reached'
+        fail_msg: "The parsed environment does not carry the scenario's values"
+        success_msg: "The parsed environment carries the scenario's values"
+
+    - name: Read the labels file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_element_admin_base_path }}/labels"
+      register: matrix_element_admin_labels_file
+
+    - name: Initialize the parsed labels
+      ansible.builtin.set_fact:
+        matrix_element_admin_labels_parsed: {}
+
+    - name: Parse the rendered labels
+      ansible.builtin.set_fact:
+        matrix_element_admin_labels_parsed: >-
+          {{ matrix_element_admin_labels_parsed | combine({item.split('=', 1)[0]: item.split('=', 1)[1]}) }}
+      loop: "{{ (matrix_element_admin_labels_file.content | b64decode).splitlines() | reject('equalto', '') }}"
+      when: "'=' in item"
+      no_log: true
+
+    - name: Assert the rendered labels carry the public routing contract
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_labels_parsed['traefik.enable'] == 'true'
+          - matrix_element_admin_labels_parsed['traefik.docker.network'] == matrix_element_admin_container_network
+          - matrix_element_admin_labels_parsed['traefik.http.services.matrix-element-admin.loadbalancer.server.port'] == '8080'
+          - matrix_element_admin_labels_parsed['traefik.http.routers.matrix-element-admin.rule'] == 'Host(`element-admin-console.molecule.local`)'
+          - matrix_element_admin_labels_parsed['traefik.http.routers.matrix-element-admin.priority'] == '619'
+          - matrix_element_admin_labels_parsed['traefik.http.routers.matrix-element-admin.entrypoints'] == 'web'
+          - matrix_element_admin_labels_parsed['traefik.http.routers.matrix-element-admin.tls'] == 'false'
+          - matrix_element_admin_labels_parsed['molecule.element-admin.coverage'] == 'enabled'
+        fail_msg: "The rendered labels do not carry the scenario's routing values"
+        success_msg: "The rendered labels carry the scenario's routing values"
+
+    - name: Inspect the running Element Admin container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-element-admin
+      register: matrix_element_admin_container_inspect
+      changed_when: false
+
+    - name: Assert the configured environment reached the running container
+      ansible.builtin.assert:
+        that:
+          - "('SERVER_NAME=' ~ matrix_element_admin_environment_variable_server_name) in matrix_element_admin_runtime.Config.Env"
+          - "'MOLECULE_ELEMENT_ADMIN_MARKER=environment-reached' in matrix_element_admin_runtime.Config.Env"
+        fail_msg: "The running container environment does not carry the scenario's settings"
+        success_msg: "The configured environment reached the running container"
+
+    - name: Assert the rendered labels reached the running container
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_runtime.Config.Labels['traefik.enable'] == 'true'
+          - matrix_element_admin_runtime.Config.Labels['traefik.docker.network'] == matrix_element_admin_container_network
+          - matrix_element_admin_runtime.Config.Labels['traefik.http.routers.matrix-element-admin.priority'] == '619'
+          - matrix_element_admin_runtime.Config.Labels['molecule.element-admin.coverage'] == 'enabled'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The rendered labels reached the running container"
+
+    - name: Assert the running container uses the exact image and version the role pins
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_runtime.Config.Image == matrix_element_admin_expected_image
+        fail_msg: >-
+          The running container uses {{ matrix_element_admin_runtime.Config.Image }},
+          expected {{ matrix_element_admin_expected_image }}
+        success_msg: "The running container uses the exact image and version defaults/main.yml pins"
+      vars:
+        matrix_element_admin_expected_image: >-
+          {{ matrix_element_admin_role_defaults.matrix_element_admin_container_image_registry_prefix_upstream_default }}element-admin:{{ matrix_element_admin_role_defaults.matrix_element_admin_version }}
+
+    - name: Assert the running container uses the configured UID and GID
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_runtime.Config.User == (matrix_user_uid | string) ~ ':' ~ (matrix_user_gid | string)
+        fail_msg: >-
+          The running container uses {{ matrix_element_admin_runtime.Config.User }},
+          expected {{ matrix_user_uid }}:{{ matrix_user_gid }}
+        success_msg: "The running container uses the configured UID and GID"
+
+    - name: Assert the running container command contract
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_runtime.Config.Entrypoint == ['/docker-entrypoint.sh']
+          - matrix_element_admin_runtime.Config.Cmd == ['nginx', '-g', 'daemon off;']
+        fail_msg: >-
+          The running container has unexpected entrypoint/command values:
+          {{ matrix_element_admin_runtime.Config.Entrypoint }} {{ matrix_element_admin_runtime.Config.Cmd }}
+        success_msg: "The role preserves the image's Element Admin entrypoint and command"
+
+    - name: Assert the running container security contract
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_runtime.HostConfig.ReadonlyRootfs is sameas true
+          - matrix_element_admin_runtime.HostConfig.Privileged is sameas false
+          - matrix_element_admin_runtime.HostConfig.CapAdd | default([], true) | length == 0
+          - matrix_element_admin_runtime.HostConfig.CapDrop == ['ALL']
+        fail_msg: "The Element Admin container is missing its read-only root or dropped capabilities"
+        success_msg: "The Element Admin container has a read-only root and all capabilities dropped"
+
+    - name: Assert the intended writable path is a constrained tmpfs mount
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_runtime.Mounts | length == 0
+          - matrix_element_admin_runtime.HostConfig.Binds | default([], true) | length == 0
+          - matrix_element_admin_runtime.HostConfig.Tmpfs.keys() | list == ['/tmp']
+          - matrix_element_admin_runtime.HostConfig.Tmpfs['/tmp'] == 'rw,noexec,nosuid,size=1024m'
+        fail_msg: "The running container does not have the role's exact /tmp tmpfs contract"
+        success_msg: "The running container has the exact constrained /tmp tmpfs mount"
+
+    - name: Assert the running container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_runtime.NetworkSettings.Networks is mapping
+          - matrix_element_admin_runtime.NetworkSettings.Networks | length == 1
+          - matrix_element_admin_container_network in matrix_element_admin_runtime.NetworkSettings.Networks
+        fail_msg: >-
+          Element Admin has unexpected network attachments:
+          {{ matrix_element_admin_runtime.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The running container is attached only to its dedicated network"
+
+    - name: Ask Docker for Element Admin's published ports
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - port
+          - matrix-element-admin
+      register: matrix_element_admin_published_ports
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the role publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - matrix_element_admin_runtime.Config.ExposedPorts.keys() | list == ['8080/tcp']
+          - matrix_element_admin_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_element_admin_published_ports.rc == 0
+          - matrix_element_admin_published_ports.stdout | trim | length == 0
+        fail_msg: >-
+          Element Admin unexpectedly publishes a host port:
+          {{ matrix_element_admin_published_ports.stdout | default('unknown') }}
+        success_msg: "The role leaves Element Admin's HTTP port unpublished"

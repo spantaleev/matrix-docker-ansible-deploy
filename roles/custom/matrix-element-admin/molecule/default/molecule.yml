@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-element-admin-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        # verify.yml is a separate play where the role's defaults are out of scope.
+        # Use a deliberately non-default storage path, not merely the value the role
+        # derives from matrix_base_data_path, so its rendered support-file locations
+        # and the systemd unit's --env-file/--label-file contract are exercised.
+        matrix_element_admin_base_path: /matrix/molecule-element-admin
+
+        matrix_element_admin_container_network: matrix-element-admin-molecule
+
+        # Element Admin currently hardcodes browser asset paths to `/`, so the role
+        # correctly rejects a non-root public prefix. Exercise non-default public
+        # routing through the hostname, priority and plain-HTTP entrypoint instead.
+        matrix_element_admin_hostname: element-admin-console.molecule.local
+        matrix_element_admin_path_prefix: /
+        matrix_element_admin_container_labels_traefik_enabled: true
+        matrix_element_admin_container_labels_traefik_priority: 619
+        matrix_element_admin_container_labels_traefik_entrypoints: web
+        matrix_element_admin_container_labels_traefik_tls: false
+        matrix_element_admin_container_labels_additional_labels: |
+          molecule.element-admin.coverage=enabled
+
+        # The image's entrypoint embeds its browser configuration into index.html
+        # from SERVER_NAME.
+        # This differs from the role and application's defaults, making the live HTTP
+        # response evidence that the rendered env file reached the process.
+        matrix_element_admin_environment_variable_server_name: matrix-backend.molecule.local
+        matrix_element_admin_environment_variables_additional_variables: |
+          MOLECULE_ELEMENT_ADMIN_MARKER=environment-reached
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
