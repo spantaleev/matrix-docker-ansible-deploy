@@ -1,0 +1,148 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-static-files-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        # verify.yml is a separate play, so paths and runtime settings it reads are
+        # pinned here rather than relying on role defaults remaining in scope.
+        matrix_static_files_base_path: /matrix/static-files
+        matrix_static_files_config_path: /matrix/static-files/config
+        matrix_static_files_public_path: /matrix/static-files/public
+        matrix_static_files_container_network: matrix-static-files-molecule
+        matrix_static_files_container_http_host_bind_port: ''
+
+        # Exercise the generated environment and prove the server listens on what
+        # the role rendered rather than static-web-server's own port default.
+        matrix_static_files_environment_variable_server_port: 18082
+        matrix_static_files_environment_variable_server_log_level: debug
+        matrix_static_files_environment_variable_server_log_remote_address: true
+        matrix_static_files_environment_variable_server_ignore_hidden_files: false
+        matrix_static_files_environment_variables_additional_variables: |
+          MOLECULE_STATIC_FILES_MARKER=environment-reached
+        matrix_static_files_files_cache_time_hours: 7
+
+        # Render both router families with non-default routing knobs. Traefik does
+        # not need to run: the file and the attached container labels are inspected.
+        matrix_static_files_container_labels_traefik_entrypoints: web
+        matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_hostname: matrix-well-known.molecule.local
+        matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_path_prefix: /molecule-well-known
+        matrix_static_files_container_labels_well_known_matrix_endpoint_traefik_priority: 67
+        matrix_static_files_container_labels_well_known_matrix_endpoint_middleware_compress_minResponseBodyBytes: 321
+        matrix_static_files_container_labels_base_domain_enabled: true
+        matrix_static_files_container_labels_base_domain_traefik_hostname: base.molecule.local
+        matrix_static_files_container_labels_base_domain_traefik_path_prefix: /molecule-base
+        matrix_static_files_container_labels_base_domain_traefik_priority: 43
+        matrix_static_files_container_labels_base_domain_root_path_redirection_enabled: false
+        matrix_static_files_container_labels_additional_labels: |
+          molecule.scenario=matrix-static-files
+
+        matrix_static_files_file_index_html_template: |-
+          <!doctype html>
+          <html>
+            <body>Molecule static-files index marker</body>
+          </html>
+
+        # All URLs are inert data: the static server never contacts them. The mix
+        # exercises optional sections, recursive extensions, lists and mappings.
+        matrix_static_files_file_matrix_client_property_m_homeserver_base_url: https://homeserver.molecule.invalid
+        matrix_static_files_file_matrix_client_property_m_identity_server_base_url: ''
+        matrix_static_files_file_matrix_client_property_m_integrations_managers_api_url: https://integrations.molecule.invalid/api
+        matrix_static_files_file_matrix_client_property_m_integrations_managers_ui_url: https://integrations.molecule.invalid/ui
+        matrix_static_files_file_matrix_client_property_io_element_jitsi_preferred_domain: jitsi.molecule.local
+        matrix_static_files_file_matrix_client_property_org_matrix_msc2965_authentication_enabled: true
+        matrix_static_files_file_matrix_client_property_org_matrix_msc2965_authentication_issuer: https://auth.molecule.invalid/
+        matrix_static_files_file_matrix_client_property_org_matrix_msc2965_authentication_account: https://auth.molecule.invalid/account
+        matrix_static_files_file_matrix_client_property_org_matrix_msc3575_proxy_url: https://sync.molecule.invalid
+        matrix_static_files_file_matrix_client_property_m_tile_server_entries_enabled: true
+        matrix_static_files_file_matrix_client_property_m_tile_server_map_style_url: https://maps.molecule.invalid/style.json
+        matrix_static_files_file_matrix_client_property_io_element_e2ee_default: false
+        matrix_static_files_file_matrix_client_property_io_element_e2ee_force_disable: true
+        matrix_static_files_file_matrix_client_property_cc_etke_ketesa_custom:
+          allow:
+            - molecule-client
+          marker: ketesa-custom
+        matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_custom:
+          - type: livekit
+            livekit_service_url: https://livekit.molecule.invalid
+        matrix_static_files_file_matrix_client_configuration_extension_json: |
+          {
+            "m.homeserver": {
+              "molecule_extension_marker": "recursive-merge-reached"
+            },
+            "org.example.molecule": {
+              "enabled": true,
+              "sequence": 42
+            }
+          }
+
+        matrix_static_files_file_matrix_server_property_m_server: federation.molecule.local:9448
+        matrix_static_files_file_matrix_server_configuration_extension_json: |
+          {
+            "org.example.molecule": "server-extension-reached"
+          }
+
+        matrix_static_files_file_matrix_support_enabled: true
+        matrix_static_files_file_matrix_support_property_m_contacts:
+          - matrix_id: "@support:molecule.local"
+            email_address: support@molecule.invalid
+            role: m.role.admin
+        matrix_static_files_file_matrix_support_property_m_support_page: https://support.molecule.invalid
+        matrix_static_files_file_matrix_support_configuration_extension_json: |
+          {
+            "org.example.molecule": {
+              "channel": "support-extension-reached"
+            }
+          }
+
+        matrix_static_files_file_matrix_mautrix_property_fi_mau_bridges_custom:
+          - https://telegram.molecule.invalid
+          - https://signal.molecule.invalid
+        matrix_static_files_file_matrix_mautrix_configuration_extension_json: |
+          {
+            "fi.mau.external_bridge_servers": [
+              "https://external-bridges.molecule.invalid"
+            ],
+            "org.example.molecule": "mautrix-extension-reached"
+          }
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
