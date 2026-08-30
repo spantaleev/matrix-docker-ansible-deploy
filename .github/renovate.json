@@ -7,6 +7,7 @@
   "labels": [
     "dependencies"
   ],
+  "branchConcurrentLimit": 3,
   "hostRules": [
     {
       "matchHost": "https://mau.dev",
@@ -37,6 +38,16 @@
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)\\s+[A-Za-z0-9_]+?\\s*:\\s*[\"'][^:]+:(?<currentValue>[^\"']+)[\"']"
+      ]
+    },
+    {
+      "customType": "regex",
+      "description": "Update the self-hosted Renovate runner version",
+      "managerFilePatterns": [
+        "/^\\.github\\/workflows\\/renovate\\.yml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) packageName=(?<packageName>\\S+)\\s+MATRIX_RENOVATE_VERSION: '(?<currentValue>[^']+)'"
       ]
     }
   ],
@@ -75,10 +86,22 @@
         ".github/workflows/i18n.yml",
         ".github/workflows/lock-threads.yml",
         ".github/workflows/matrix.yml",
+        ".github/workflows/renovate.yml",
         ".github/workflows/update-translations.yml",
         "flake.lock",
         "i18n/requirements.txt",
         "mise.toml"
+      ],
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "description": "Automerge updates of the self-hosted Renovate runner (via branch push - no PR)",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDepNames": [
+        "matrix-renovate-runner"
       ],
       "automerge": true,
       "automergeType": "branch"

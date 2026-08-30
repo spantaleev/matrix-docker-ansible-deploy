@@ -1,0 +1,155 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+name: Renovate
+
+on:  # yamllint disable-line rule:truthy
+  schedule:
+    # Discover new updates hourly. Reactive runs below drain active updates.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run without making changes'
+        required: false
+        default: true
+        type: boolean
+      log_level:
+        description: 'Renovate log level'
+        required: false
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - debug
+          - trace
+  push:
+    branches: ['master']
+  workflow_run:
+    workflows: ['Matrix CI', 'Matrix i18n', 'Molecule']
+    types: [completed]
+    branches: ['renovate/**']
+  issues:
+    types: [edited]
+
+permissions:
+  contents: read
+
+env:
+  # Mend-hosted Renovate must remain disabled while this automation is enabled.
+  # A manual dry-run remains available if this switch is disabled during migration.
+  MATRIX_RENOVATE_AUTOMATION_ENABLED: 'true'
+
+  # renovate: datasource=docker depName=matrix-renovate-runner packageName=ghcr.io/renovatebot/renovate
+  MATRIX_RENOVATE_VERSION: '44.51.2'
+
+jobs:
+  preflight:
+    name: Decide whether to run Renovate
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.decision.outputs.should_run }}
+
+    steps:
+      - name: Evaluate trigger
+        id: decision
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_REF: ${{ github.ref }}
+          MANUAL_DRY_RUN: ${{ inputs.dry_run }}
+          WORKFLOW_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WORKFLOW_RUN_EVENT: ${{ github.event.workflow_run.event }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          SENDER_TYPE: ${{ github.event.sender.type }}
+        run: |
+          set -euo pipefail
+
+          should_run=false
+          reason='Automatic Renovate processing is disabled during migration'
+
+          if [[ "$EVENT_NAME" == 'workflow_dispatch' ]]; then
+            if [[ "$EVENT_REF" != 'refs/heads/master' ]]; then
+              reason='Manual runs must use the master branch'
+            elif [[ "$MANUAL_DRY_RUN" == 'true' || "$MATRIX_RENOVATE_AUTOMATION_ENABLED" == 'true' ]]; then
+              should_run=true
+              reason='Running manually requested Renovate job'
+            else
+              reason='Enable automatic processing before requesting a write run'
+            fi
+          elif [[ "$MATRIX_RENOVATE_AUTOMATION_ENABLED" == 'true' ]]; then
+            case "$EVENT_NAME" in
+              schedule)
+                should_run=true
+                reason='Running scheduled update discovery'
+                ;;
+              workflow_run)
+                if [[ "$WORKFLOW_RUN_CONCLUSION" == 'success' && "$WORKFLOW_RUN_EVENT" == 'push' ]]; then
+                  should_run=true
+                  reason='A Renovate branch passed one of its status-check workflows'
+                else
+                  reason='The completed check was not a successful Renovate branch push'
+                fi
+                ;;
+              issues)
+                if [[ "$ISSUE_TITLE" == 'Dependency Dashboard' && "$SENDER_TYPE" == 'User' ]]; then
+                  should_run=true
+                  reason='A user edited the Dependency Dashboard'
+                else
+                  reason='The issue edit was not a user editing the Dependency Dashboard'
+                fi
+                ;;
+              push)
+                renovate_branch_count="$(
+                  gh api \
+                    "repos/$GITHUB_REPOSITORY/git/matching-refs/heads/renovate" \
+                    --jq 'length'
+                )"
+                if (( renovate_branch_count > 0 )); then
+                  should_run=true
+                  reason="master changed while ${renovate_branch_count} Renovate branch(es) exist"
+                else
+                  reason='master changed, but there are no Renovate branches to process'
+                fi
+                ;;
+            esac
+          fi
+
+          echo "should_run=$should_run" >> "$GITHUB_OUTPUT"
+          echo "$reason"
+
+  renovate:
+    name: Renovate
+    needs: preflight
+    if: needs.preflight.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    environment: main
+    concurrency:
+      group: renovate
+      cancel-in-progress: false
+
+    steps:
+      - name: Create Renovate App token
+        id: renovate_token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.GH_APP_RENOVATE_CLIENT_ID }}
+          private-key: ${{ secrets.GH_APP_RENOVATE_PRIVATE_KEY }}
+
+      - name: Run Renovate
+        uses: renovatebot/github-action@5402b206248e5a8c8427a15102702eb9c1793efc # v46.2.4
+        with:
+          token: ${{ steps.renovate_token.outputs.token }}
+          renovate-version: ${{ env.MATRIX_RENOVATE_VERSION }}
+        env:
+          LOG_LEVEL: ${{ inputs.log_level || 'info' }}
+          RENOVATE_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'full' || '' }}
+          # Permit the self-hosted App to adopt branches created by the Mend-hosted App.
+          RENOVATE_GIT_IGNORED_AUTHORS: '["29139614+renovate[bot]@users.noreply.github.com"]'
+          RENOVATE_IGNORE_PR_AUTHOR: 'true'
+          RENOVATE_PLATFORM: github
+          RENOVATE_PLATFORM_COMMIT: enabled
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
