@@ -1,0 +1,155 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-bot-meowlnir-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bot_meowlnir_container_network: matrix-bot-meowlnir-molecule
+
+        # verify.yml is a separate play where role defaults are out of scope. Pin only
+        # paths it reads; the component version comes from the role's defaults directly.
+        matrix_bot_meowlnir_base_path: /matrix/meowlnir
+        matrix_bot_meowlnir_config_path: /matrix/meowlnir/config
+        matrix_bot_meowlnir_data_path: /matrix/meowlnir/data
+
+        # A local stub is available for bounded Matrix API calls. The empty-roster
+        # startup used here currently makes no outbound homeserver request, so the
+        # weight-bearing appservice gate is the authenticated inbound transaction in
+        # verify.yml. No real Matrix or third-party account is involved.
+        matrix_bot_meowlnir_config_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bot_meowlnir_config_homeserver_domain: molecule.local
+        matrix_bot_meowlnir_appservice_id: molecule-meowlnir
+        matrix_bot_meowlnir_appservice_sender_localpart: molecule_meowlnir_as
+        matrix_bot_meowlnir_user_prefix: molecule_meowlnir_bot_
+        matrix_bot_meowlnir_appservice_token: molecule_as_token_2cf519
+        matrix_bot_meowlnir_homeserver_token: molecule_hs_token_c20dc3
+
+        # Real Postgres is the normal playbook path. The non-default credentials make its
+        # migrated schema evidence that Meowlnir consumed the URI assembled by the role.
+        matrix_bot_meowlnir_database_engine: postgres
+        matrix_bot_meowlnir_database_hostname: matrix-postgres-molecule
+        matrix_bot_meowlnir_database_name: molecule_meowlnir
+        matrix_bot_meowlnir_database_username: molecule_meowlnir
+        matrix_bot_meowlnir_database_password: molecule_pg_password_da31bc
+        matrix_bot_meowlnir_database_sslmode: disable
+        matrix_bot_meowlnir_config_database_max_open_conns: 13
+        matrix_bot_meowlnir_config_database_max_idle_conns: 3
+        matrix_bot_meowlnir_config_database_max_conn_idle_time: 47s
+        matrix_bot_meowlnir_config_database_max_conn_lifetime: 11m
+
+        # These differ from both role and upstream defaults. The authenticated management
+        # API below proves that the running process accepted the listener and secret.
+        matrix_bot_meowlnir_config_meowlnir_port: 29439
+        matrix_bot_meowlnir_appservice_url: http://matrix-bot-meowlnir:29439
+        matrix_bot_meowlnir_config_meowlnir_management_secret: molecule_management_secret_a64528
+        matrix_bot_meowlnir_config_meowlnir_data_secret: molecule_data_secret_e8c7b4
+        matrix_bot_meowlnir_config_meowlnir_federation_auth: true
+        matrix_bot_meowlnir_config_meowlnir_dry_run: true
+        matrix_bot_meowlnir_config_meowlnir_untrusted: true
+        matrix_bot_meowlnir_config_meowlnir_report_room: "!molecule-reports:molecule.local"
+        matrix_bot_meowlnir_config_meowlnir_room_ban_room: "!molecule-bans:molecule.local"
+        matrix_bot_meowlnir_config_meowlnir_hacky_rule_filter_custom:
+          - '@trusted:molecule.local'
+          - trusted.invalid
+        matrix_bot_meowlnir_config_meowlnir_hacky_redact_patterns_custom:
+          - molecule-abuse-*
+        matrix_bot_meowlnir_config_meowlnir_admin_tokens:
+          '@molecule-admin:molecule.local': molecule_admin_token_7e6ce0
+
+        matrix_bot_meowlnir_config_meowlnir4all_admin_room: "!molecule-provisioning:molecule.local"
+        matrix_bot_meowlnir_config_meowlnir4all_displayname: Molecule Provisioned Meowlnir
+        matrix_bot_meowlnir_config_meowlnir4all_avatar_url: mxc://molecule.local/meowlnir-avatar
+        matrix_bot_meowlnir_config_meowlnir4all_room_name: Molecule Meowlnir Control
+        matrix_bot_meowlnir_config_meowlnir4all_default_watched_lists_custom:
+          - name: Molecule policy list
+            room_id: "!molecule-policy:molecule.local"
+            shortcode: molecule
+            auto_unban: false
+
+        matrix_bot_meowlnir_config_antispam_secret: molecule_antispam_secret_59d553
+        matrix_bot_meowlnir_config_antispam_filter_local_invites: true
+        matrix_bot_meowlnir_config_antispam_auto_reject_invites_token: molecule_reject_token_a9812f
+        matrix_bot_meowlnir_config_antispam_notify_management_room: true
+        matrix_bot_meowlnir_config_antispam_block_invites_to_custom:
+          - '@blocked:molecule.local'
+
+        # Both integrations render public routing labels. Their real handlers are not the
+        # readiness gate; the management API and database provide stronger process evidence.
+        matrix_bot_meowlnir_policy_server_enabled: true
+        matrix_bot_meowlnir_config_policy_server_always_redact: false
+        matrix_bot_meowlnir_config_policy_server_signing_key: >-
+          ed25519 policy_server MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY
+        matrix_bot_meowlnir_config_reporting_enabled: true
+
+        matrix_bot_meowlnir_config_encryption_enable: false
+        matrix_bot_meowlnir_config_encryption_pickle_key: molecule_pickle_key_6f370e
+        matrix_bot_meowlnir_config_logging_min_level: debug
+        matrix_bot_meowlnir_config_logging_writers:
+          - type: stdout
+            format: json
+
+        # No bot is declared: this avoids accepting provisioning behavior which is green only
+        # because a deliberately permissive homeserver stub papered over it.
+        matrix_bot_meowlnir_bots_custom: []
+        matrix_bot_meowlnir_bots_pruning_enabled: false
+
+        # Traefik is not deployed. Distinct non-default routes still prove the role's label
+        # contract both on disk and in Docker's accepted container labels.
+        matrix_bot_meowlnir_container_labels_traefik_enabled: true
+        matrix_bot_meowlnir_container_labels_traefik_docker_network: matrix-bot-meowlnir-molecule
+        matrix_bot_meowlnir_container_labels_reporting_traefik_hostname: reports.molecule.local
+        matrix_bot_meowlnir_container_labels_reporting_traefik_path_regexp: ^/molecule-report/(rooms|users)/[^/]+$$
+        matrix_bot_meowlnir_container_labels_reporting_traefik_priority: 731
+        matrix_bot_meowlnir_container_labels_reporting_traefik_entrypoints: web
+        matrix_bot_meowlnir_container_labels_reporting_traefik_tls: false
+        matrix_bot_meowlnir_container_labels_policy_server_traefik_hostname: federation.molecule.local
+        matrix_bot_meowlnir_container_labels_policy_server_traefik_path_prefix: /molecule-policy
+        matrix_bot_meowlnir_container_labels_policy_server_traefik_priority: 733
+        matrix_bot_meowlnir_container_labels_policy_server_traefik_entrypoints: web
+        matrix_bot_meowlnir_container_labels_policy_server_traefik_tls: false
+        matrix_bot_meowlnir_container_labels_traefik_labels_additional_labels: |
+          molecule.meowlnir.coverage=enabled
+
+        # Preserve the production-like no-host-port path; probes join its Docker network.
+        matrix_bot_meowlnir_container_http_host_bind_port: ''
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

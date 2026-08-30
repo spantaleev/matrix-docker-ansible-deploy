@@ -1,0 +1,504 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Meowlnir's authenticated management API and Postgres schema are the readiness evidence.
+# The homeserver is a deliberately limited local stub, so no claim is made about moderation.
+- name: Verify matrix-bot-meowlnir
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_bot_meowlnir_rendered_config: "{{ matrix_bot_meowlnir_config_file.content | b64decode | from_yaml }}"
+    matrix_bot_meowlnir_rendered_registration: "{{ matrix_bot_meowlnir_registration_file.content | b64decode | from_yaml }}"
+    matrix_bot_meowlnir_api_body: "{{ matrix_bot_meowlnir_api_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_bot_meowlnir_api_response: "{{ matrix_bot_meowlnir_api_body | from_json }}"
+    matrix_bot_meowlnir_expected_database_uri: >-
+      postgresql://{{ matrix_bot_meowlnir_database_username }}:{{ matrix_bot_meowlnir_database_password }}@{{ matrix_bot_meowlnir_database_hostname }}:5432/{{ matrix_bot_meowlnir_database_name }}?sslmode={{ matrix_bot_meowlnir_database_sslmode }}
+    matrix_bot_meowlnir_labels_lines: "{{ (matrix_bot_meowlnir_labels_file.content | b64decode).splitlines() }}"
+    matrix_bot_meowlnir_runtime: "{{ (matrix_bot_meowlnir_container_inspect.stdout | from_json) | first }}"
+    matrix_bot_meowlnir_config_mounts: "{{ matrix_bot_meowlnir_runtime.Mounts | selectattr('Destination', 'equalto', '/data/config') | list }}"
+    matrix_bot_meowlnir_data_mounts: "{{ matrix_bot_meowlnir_runtime.Mounts | selectattr('Destination', 'equalto', '/data') | list }}"
+  gather_facts: false
+  tasks:
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_bot_meowlnir_role_defaults
+
+    - name: Wait for the matrix-bot-meowlnir service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-bot-meowlnir.service
+      register: matrix_bot_meowlnir_service
+      until: matrix_bot_meowlnir_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_service.status.ActiveState == 'active'
+          - matrix_bot_meowlnir_service.status.NRestarts is defined
+          - matrix_bot_meowlnir_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-bot-meowlnir.service is
+          {{ matrix_bot_meowlnir_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_bot_meowlnir_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-bot-meowlnir.service is active and has not restarted"
+
+    - name: Wait for Meowlnir's authenticated management API
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_meowlnir_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - 'Authorization: Bearer molecule_management_secret_a64528'
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-bot-meowlnir:29439/_meowlnir/v1/bots
+      register: matrix_bot_meowlnir_api_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_bot_meowlnir_api_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the management API authenticated the configured secret
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_api_http.rc == 0
+          - matrix_bot_meowlnir_api_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_bot_meowlnir_api_response is mapping
+          - matrix_bot_meowlnir_api_response.bots is sequence
+          - matrix_bot_meowlnir_api_response.bots | length == 0
+        fail_msg: >-
+          Meowlnir's management API did not authenticate or return its empty bot roster
+          ({{ matrix_bot_meowlnir_api_http.stdout | default('no output') }})
+        success_msg: "Meowlnir's live management API authenticated the configured secret"
+
+    - name: Ask the management API with a wrong secret
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_meowlnir_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - 'Authorization: Bearer molecule_wrong_secret'
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-bot-meowlnir:29439/_meowlnir/v1/bots
+      register: matrix_bot_meowlnir_wrong_secret_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the management API rejects a wrong secret
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_wrong_secret_http.rc == 0
+          - matrix_bot_meowlnir_wrong_secret_http.stdout in ['HTTP_STATUS=401', 'HTTP_STATUS=403']
+        fail_msg: "Meowlnir's management API accepted the wrong bearer secret"
+        success_msg: "Meowlnir's management API rejects a wrong bearer secret"
+
+    # This is the appservice half of the live homeserver handshake. A valid empty
+    # transaction can only reach the dispatcher if the process loaded its hs_token.
+    - name: Send a homeserver transaction to Meowlnir's appservice API
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_meowlnir_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --request
+          - PUT
+          - --header
+          - 'Authorization: Bearer molecule_hs_token_c20dc3'
+          - --header
+          - 'Content-Type: application/json'
+          - --data
+          - '{"events":[],"ephemeral":[],"to_device":[]}'
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-bot-meowlnir:29439/_matrix/app/v1/transactions/molecule-transaction
+      register: matrix_bot_meowlnir_transaction_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert Meowlnir accepts a transaction authenticated with the configured homeserver token
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_transaction_http.rc == 0
+          - matrix_bot_meowlnir_transaction_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_bot_meowlnir_transaction_http.stdout_lines[:-1] | join('\n') | from_json == {}
+        fail_msg: >-
+          Meowlnir rejected an empty appservice transaction carrying the configured hs_token
+          ({{ matrix_bot_meowlnir_transaction_http.stdout | default('no output') }})
+        success_msg: "Meowlnir accepts transactions carrying the configured homeserver token"
+
+    - name: Send an appservice transaction with a wrong homeserver token
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_meowlnir_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --request
+          - PUT
+          - --header
+          - 'Authorization: Bearer molecule_wrong_hs_token'
+          - --header
+          - 'Content-Type: application/json'
+          - --data
+          - '{"events":[]}'
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-bot-meowlnir:29439/_matrix/app/v1/transactions/molecule-wrong-token
+      register: matrix_bot_meowlnir_wrong_transaction_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert Meowlnir rejects a transaction with the wrong homeserver token
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_wrong_transaction_http.rc == 0
+          - matrix_bot_meowlnir_wrong_transaction_http.stdout == 'HTTP_STATUS=401'
+        fail_msg: "Meowlnir accepted an appservice transaction carrying a wrong hs_token"
+        success_msg: "Meowlnir rejects transactions carrying a wrong homeserver token"
+
+    - name: Probe the role's default Meowlnir port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_meowlnir_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --max-time
+          - '3'
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-bot-meowlnir:29339/_meowlnir/v1/bots
+      register: matrix_bot_meowlnir_default_port_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert Meowlnir is not listening on the role's default port
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_default_port_http.rc != 0
+          - matrix_bot_meowlnir_default_port_http.stdout == 'HTTP_STATUS=000'
+        fail_msg: "Meowlnir still answers on 29339, so the configured port is not proven"
+        success_msg: "Meowlnir does not listen on the role's default port"
+
+    - name: Read the configuration file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_meowlnir_config_path }}/config.yaml"
+      register: matrix_bot_meowlnir_config_file
+
+    - name: Assert the parsed homeserver and appservice configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_rendered_config.homeserver.address == matrix_bot_meowlnir_config_homeserver_address
+          - matrix_bot_meowlnir_rendered_config.homeserver.domain == matrix_bot_meowlnir_config_homeserver_domain
+          - matrix_bot_meowlnir_rendered_config.meowlnir.id == matrix_bot_meowlnir_appservice_id
+          - matrix_bot_meowlnir_rendered_config.meowlnir.as_token == matrix_bot_meowlnir_appservice_token
+          - matrix_bot_meowlnir_rendered_config.meowlnir.hs_token == matrix_bot_meowlnir_homeserver_token
+          - matrix_bot_meowlnir_rendered_config.meowlnir.address == matrix_bot_meowlnir_appservice_url
+          - matrix_bot_meowlnir_rendered_config.meowlnir.hostname == '0.0.0.0'
+          - matrix_bot_meowlnir_rendered_config.meowlnir.port == matrix_bot_meowlnir_config_meowlnir_port
+        fail_msg: "The parsed configuration lost the scenario's Matrix/appservice wiring"
+        success_msg: "The parsed configuration carries the scenario's Matrix/appservice wiring"
+
+    - name: Assert the parsed Meowlnir behavior and secrets
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_rendered_config.meowlnir.management_secret == matrix_bot_meowlnir_config_meowlnir_management_secret
+          - matrix_bot_meowlnir_rendered_config.meowlnir.data_secret == matrix_bot_meowlnir_config_meowlnir_data_secret
+          - matrix_bot_meowlnir_rendered_config.meowlnir.federation_auth is sameas true
+          - matrix_bot_meowlnir_rendered_config.meowlnir.dry_run is sameas true
+          - matrix_bot_meowlnir_rendered_config.meowlnir.untrusted is sameas true
+          - matrix_bot_meowlnir_rendered_config.meowlnir.report_room == '!molecule-reports:molecule.local'
+          - matrix_bot_meowlnir_rendered_config.meowlnir.room_ban_room == '!molecule-bans:molecule.local'
+          - matrix_bot_meowlnir_rendered_config.meowlnir.hacky_rule_filter == ['@trusted:molecule.local', 'trusted.invalid']
+          - matrix_bot_meowlnir_rendered_config.meowlnir.hacky_redact_patterns == ['spam', 'molecule-abuse-*']
+          - matrix_bot_meowlnir_rendered_config.meowlnir.admin_tokens['@molecule-admin:molecule.local'] == 'molecule_admin_token_7e6ce0'
+        fail_msg: "The parsed configuration lost the non-default Meowlnir behavior"
+        success_msg: "The parsed configuration carries the non-default Meowlnir behavior"
+
+    - name: Assert the parsed provisioning, antispam and policy configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.admin_room == '!molecule-provisioning:molecule.local'
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.localpart_template == matrix_bot_meowlnir_user_prefix + ('{' + '{ uuidgen }' + '}')
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.displayname == 'Molecule Provisioned Meowlnir'
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.avatar_url == 'mxc://molecule.local/meowlnir-avatar'
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.room_name == 'Molecule Meowlnir Control'
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.default_watched_lists | length == 1
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.default_watched_lists[0].name == 'Molecule policy list'
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.default_watched_lists[0].room_id == '!molecule-policy:molecule.local'
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.default_watched_lists[0].shortcode == 'molecule'
+          - matrix_bot_meowlnir_rendered_config.meowlnir4all.default_watched_lists[0].auto_unban is sameas false
+          - matrix_bot_meowlnir_rendered_config.antispam.secret == matrix_bot_meowlnir_config_antispam_secret
+          - matrix_bot_meowlnir_rendered_config.antispam.filter_local_invites is sameas true
+          - matrix_bot_meowlnir_rendered_config.antispam.auto_reject_invites_token == 'molecule_reject_token_a9812f'
+          - matrix_bot_meowlnir_rendered_config.antispam.notify_management_room is sameas true
+          - matrix_bot_meowlnir_rendered_config.antispam.block_invites_to == ['@blocked:molecule.local']
+          - matrix_bot_meowlnir_rendered_config.policy_server.always_redact is sameas false
+          - matrix_bot_meowlnir_rendered_config.policy_server.signing_key.startswith('ed25519 policy_server ')
+        fail_msg: "The parsed provisioning/antispam/policy blocks lost scenario values"
+        success_msg: "The parsed provisioning/antispam/policy blocks carry scenario values"
+
+    - name: Assert the parsed Postgres and logging configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_rendered_config.database.type == 'postgres'
+          - matrix_bot_meowlnir_rendered_config.database.uri == matrix_bot_meowlnir_expected_database_uri
+          - matrix_bot_meowlnir_rendered_config.database.max_open_conns == 13
+          - matrix_bot_meowlnir_rendered_config.database.max_idle_conns == 3
+          - matrix_bot_meowlnir_rendered_config.database.max_conn_idle_time == '47s'
+          - matrix_bot_meowlnir_rendered_config.database.max_conn_lifetime == '11m'
+          - matrix_bot_meowlnir_rendered_config.synapse_db.type == 'postgres'
+          - matrix_bot_meowlnir_rendered_config.synapse_db.uri == ''
+          - matrix_bot_meowlnir_rendered_config.logging.min_level == 'debug'
+          - "matrix_bot_meowlnir_rendered_config.logging.writers == [{'type': 'stdout', 'format': 'json'}]"
+        fail_msg: "The parsed database/logging blocks lost scenario values"
+        success_msg: "The parsed database/logging blocks carry scenario values"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_meowlnir_config_path }}/registration.yaml"
+      register: matrix_bot_meowlnir_registration_file
+
+    - name: Assert the parsed appservice registration contract
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_rendered_registration.id == matrix_bot_meowlnir_appservice_id
+          - matrix_bot_meowlnir_rendered_registration.as_token == matrix_bot_meowlnir_appservice_token
+          - matrix_bot_meowlnir_rendered_registration.hs_token == matrix_bot_meowlnir_homeserver_token
+          - matrix_bot_meowlnir_rendered_registration.url == matrix_bot_meowlnir_appservice_url
+          - matrix_bot_meowlnir_rendered_registration.sender_localpart == matrix_bot_meowlnir_appservice_sender_localpart
+          - matrix_bot_meowlnir_rendered_registration.rate_limited is sameas false
+          - matrix_bot_meowlnir_rendered_registration.namespaces.users | length == 2
+          - matrix_bot_meowlnir_rendered_registration.namespaces.users[0].exclusive is sameas true
+          - matrix_bot_meowlnir_rendered_registration.namespaces.users[0].regex == '^@molecule_meowlnir_bot_[a-zA-Z0-9._=/+-]+:molecule\\.local$'
+          - matrix_bot_meowlnir_rendered_registration.namespaces.users[1].regex == '^@molecule_meowlnir_as:molecule\\.local$'
+          - matrix_bot_meowlnir_rendered_registration['de.sorunome.msc2409.push_ephemeral'] is not defined
+        fail_msg: "The appservice registration lost its tokens, address or namespaces"
+        success_msg: "The appservice registration carries its tokens, address and namespaces"
+
+    - name: List the tables Meowlnir created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bot_meowlnir_database_username }}
+          - --dbname={{ matrix_bot_meowlnir_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: matrix_bot_meowlnir_tables
+      changed_when: false
+
+    - name: Assert Meowlnir migrated its schema into the configured Postgres database
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_tables.rc == 0
+          - "'version' in matrix_bot_meowlnir_table_names"
+          - "'bot' in matrix_bot_meowlnir_table_names"
+          - "'management_room' in matrix_bot_meowlnir_table_names"
+          - "'mx_version' in matrix_bot_meowlnir_table_names"
+          - "'mx_room_state' in matrix_bot_meowlnir_table_names"
+          - "'policy_server_signature' in matrix_bot_meowlnir_table_names"
+          - matrix_bot_meowlnir_table_names | length == 10
+        fail_msg: >-
+          Meowlnir did not create a substantial schema in {{ matrix_bot_meowlnir_database_name }}
+          (found {{ matrix_bot_meowlnir_table_names | length }} table(s))
+        success_msg: "Meowlnir migrated its schema into the configured Postgres database"
+      vars:
+        matrix_bot_meowlnir_table_names: "{{ matrix_bot_meowlnir_tables.stdout_lines | select | list }}"
+
+    - name: Read Meowlnir's two database migration markers
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bot_meowlnir_database_username }}
+          - --dbname={{ matrix_bot_meowlnir_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT 'main:' || version || ':' || compat FROM version UNION ALL SELECT 'matrix_state:' || version || ':' || compat FROM mx_version ORDER BY 1
+      register: matrix_bot_meowlnir_migration_versions
+      changed_when: false
+
+    - name: Assert both Meowlnir schema sections reached their expected versions
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_migration_versions.rc == 0
+          - matrix_bot_meowlnir_migration_versions.stdout_lines | select | list == ['main:3:1', 'matrix_state:11:3']
+        fail_msg: >-
+          Meowlnir's main and Matrix-state migrations did not reach versions 3 and 11
+          ({{ matrix_bot_meowlnir_migration_versions.stdout_lines | select | list }})
+        success_msg: "Both Meowlnir database schema sections reached their expected versions"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_meowlnir_base_path }}/labels"
+      register: matrix_bot_meowlnir_labels_file
+
+    - name: Assert the labels carry the configured reporting and policy routes
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.docker.network=matrix-bot-meowlnir-molecule' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.services.matrix-bot-meowlnir.loadbalancer.server.port=29439' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-meowlnir-reporting.rule=Host(`reports.molecule.local`) && PathRegexp(`^/molecule-report/(rooms|users)/[^/]+$`)' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-meowlnir-reporting.priority=731' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-meowlnir-reporting.entrypoints=web' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-meowlnir-reporting.tls=false' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-meowlnir-policy-server.rule=Host(`federation.molecule.local`) && PathPrefix(`/molecule-policy`)' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-meowlnir-policy-server.priority=733' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-meowlnir-policy-server.entrypoints=web' in matrix_bot_meowlnir_labels_lines"
+          - "'traefik.http.routers.matrix-bot-meowlnir-policy-server.tls=false' in matrix_bot_meowlnir_labels_lines"
+          - "'molecule.meowlnir.coverage=enabled' in matrix_bot_meowlnir_labels_lines"
+        fail_msg: "The role's labels lost the non-default public routing contract"
+        success_msg: "The role's labels carry the non-default public routing contract"
+
+    - name: Inspect the running Meowlnir container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-bot-meowlnir
+      register: matrix_bot_meowlnir_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_runtime.Config.Image == matrix_bot_meowlnir_expected_image
+        fail_msg: "The running Meowlnir container does not use the role's exact image pin"
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        matrix_bot_meowlnir_expected_image: >-
+          {{ matrix_bot_meowlnir_role_defaults.matrix_bot_meowlnir_container_image_registry_prefix_upstream_default }}{{ matrix_bot_meowlnir_role_defaults.matrix_bot_meowlnir_container_image_registry_namespace_identifier }}:{{ matrix_bot_meowlnir_role_defaults.matrix_bot_meowlnir_version }}
+
+    - name: Assert the running container uses the playbook's matrix identity
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_runtime.Config.User.split(':')[0] == matrix_user_uid | string
+          - matrix_bot_meowlnir_runtime.Config.User.split(':')[1] == matrix_user_gid | string
+        fail_msg: >-
+          Meowlnir runs as {{ matrix_bot_meowlnir_runtime.Config.User }} instead of
+          {{ matrix_user_uid }}:{{ matrix_user_gid }}
+        success_msg: "The running container uses the playbook's matrix UID and GID"
+
+    - name: Assert the running container has the role's exact command
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_runtime.Config.Cmd == ['/usr/bin/meowlnir', '--config=/data/config/config.yaml', '--no-update']
+        fail_msg: "The running Meowlnir container command differs from the role contract"
+        success_msg: "The running container has the role's exact command"
+
+    - name: Assert the container root filesystem is read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_runtime.HostConfig.ReadonlyRootfs is sameas true
+        fail_msg: "The Meowlnir container root filesystem is writable"
+        success_msg: "The Meowlnir container root filesystem is read-only"
+
+    - name: Assert all Linux capabilities are dropped
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_runtime.HostConfig.CapDrop == ['ALL']
+        fail_msg: "The Meowlnir container does not drop all Linux capabilities"
+        success_msg: "The Meowlnir container drops all Linux capabilities"
+
+    - name: Assert the configuration bind mount is read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_config_mounts | length == 1
+          - matrix_bot_meowlnir_config_mounts[0].RW is sameas false
+          - matrix_bot_meowlnir_config_mounts[0].Source == matrix_bot_meowlnir_config_path
+        fail_msg: "The Meowlnir configuration bind mount is missing, misplaced or writable"
+        success_msg: "The configuration bind mount is present and read-only"
+
+    - name: Assert the data bind mount is writable
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_data_mounts | length == 1
+          - matrix_bot_meowlnir_data_mounts[0].RW is sameas true
+          - matrix_bot_meowlnir_data_mounts[0].Source == matrix_bot_meowlnir_data_path
+        fail_msg: "The Meowlnir data bind mount is missing, misplaced or read-only"
+        success_msg: "The data bind mount is present and writable"
+
+    - name: Assert the container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_runtime.NetworkSettings.Networks is mapping
+          - matrix_bot_meowlnir_runtime.NetworkSettings.Networks | length == 1
+          - matrix_bot_meowlnir_container_network in matrix_bot_meowlnir_runtime.NetworkSettings.Networks
+        fail_msg: >-
+          Meowlnir has unexpected networks:
+          {{ matrix_bot_meowlnir_runtime.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The container is attached only to its dedicated network"
+
+    - name: Ask Docker for Meowlnir's published ports
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - port
+          - matrix-bot-meowlnir
+      register: matrix_bot_meowlnir_published_ports
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the role did not publish a host port
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_bot_meowlnir_published_ports.rc == 0
+          - matrix_bot_meowlnir_published_ports.stdout | trim | length == 0
+        fail_msg: >-
+          Meowlnir unexpectedly publishes a host port:
+          {{ matrix_bot_meowlnir_published_ports.stdout | default('unknown') }}
+        success_msg: "The role leaves Meowlnir's HTTP port unpublished"
+
+    - name: Assert Docker accepted the role's custom label
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_meowlnir_runtime.Config.Labels is mapping
+          - matrix_bot_meowlnir_runtime.Config.Labels['molecule.meowlnir.coverage'] == 'enabled'
+        fail_msg: "Docker did not attach the custom label from the role's label file"
+        success_msg: "Docker accepted the role's custom label"
