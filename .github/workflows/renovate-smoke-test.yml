@@ -1,0 +1,65 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+name: Renovate smoke test
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    paths:
+      - '.github/renovate.json'
+      - '.github/workflows/renovate-smoke-test.yml'
+      - '.github/workflows/renovate.yml'
+  pull_request:
+    paths:
+      - '.github/renovate.json'
+      - '.github/workflows/renovate-smoke-test.yml'
+      - '.github/workflows/renovate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate config with the pinned Renovate image
+    runs-on: ubuntu-latest
+
+    # Same-repository pull requests already run via the push event;
+    # run pull_request jobs only for pull requests from forks.
+    if: >-
+      github.event_name != 'pull_request'
+      || github.event.pull_request.head.repo.full_name != github.repository
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Resolve the pinned Renovate version
+        id: renovate_version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -t versions < <(
+            sed -n "s/^  MATRIX_RENOVATE_VERSION: '\([^']*\)'$/\1/p" \
+              .github/workflows/renovate.yml
+          )
+
+          if (( ${#versions[@]} != 1 )) || [[ -z "${versions[0]}" ]]; then
+            echo 'Could not resolve exactly one pinned Renovate version' >&2
+            exit 1
+          fi
+
+          echo "version=${versions[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate the Renovate configuration
+        env:
+          RENOVATE_VERSION: ${{ steps.renovate_version.outputs.version }}
+        run: |
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:/workspace:ro" \
+            --workdir /workspace \
+            --entrypoint renovate-config-validator \
+            "ghcr.io/renovatebot/renovate:$RENOVATE_VERSION" \
+            --strict
