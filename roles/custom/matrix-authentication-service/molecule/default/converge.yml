@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Include roles for Matrix Authentication Service Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Include base roles for Matrix Authentication Service Molecule tests
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"
+        public: true
+      loop:
+        - com.devture.ansible.role.playbook_help
+        - com.devture.ansible.role.systemd_docker_base
+      loop_control:
+        loop_var: role_name
+
+    # The role's main task file also carries separately invoked CLI actions. Include the
+    # validation and installation selected by the normal setup tags, without invoking them.
+    - name: Include Matrix Authentication Service setup task files
+      ansible.builtin.include_role:
+        name: "custom/{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+        public: true
+        tasks_from: "{{ role_task_file }}"
+      loop:
+        - validate_config.yml
+        - install.yml
+      loop_control:
+        loop_var: role_task_file
+
+# Component roles install their unit; the complete playbook's service manager starts it.
+- name: Ensure Matrix Authentication Service is started
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Ensure systemd daemon is reloaded
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: Ensure Matrix Authentication Service systemd service is started
+      ansible.builtin.systemd_service:
+        name: matrix-authentication-service.service
+        state: started

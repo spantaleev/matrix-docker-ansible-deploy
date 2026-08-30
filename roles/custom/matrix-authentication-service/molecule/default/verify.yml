@@ -1,0 +1,538 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# MAS exits on a bad startup configuration rather than retrying in-process. The restart
+# counter guards that failure mode; live health, OIDC, JWKS, and schema checks carry the
+# stronger proof that the stable process is actually using what this role rendered.
+- name: Verify Matrix Authentication Service
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+  vars:
+    matrix_authentication_service_config: >-
+      {{ matrix_authentication_service_config_file.content | b64decode | from_yaml }}
+    matrix_authentication_service_web_listener: >-
+      {{ matrix_authentication_service_config.http.listeners
+         | selectattr('name', 'equalto', 'web') | first | default({}) }}
+    matrix_authentication_service_internal_listener: >-
+      {{ matrix_authentication_service_config.http.listeners
+         | selectattr('name', 'equalto', 'internal') | first | default({}) }}
+    matrix_authentication_service_discovery_body: >-
+      {{ matrix_authentication_service_discovery_http.stdout_lines[:-1] | join('\n') }}
+    matrix_authentication_service_discovery: >-
+      {{ matrix_authentication_service_discovery_body | from_json }}
+    matrix_authentication_service_jwks_body: >-
+      {{ matrix_authentication_service_jwks_http.stdout_lines[:-1] | join('\n') }}
+    matrix_authentication_service_jwks: >-
+      {{ matrix_authentication_service_jwks_body | from_json }}
+    matrix_authentication_service_jwks_kids: >-
+      {{ matrix_authentication_service_jwks['keys'] | map(attribute='kid') | list }}
+    matrix_authentication_service_labels_lines: >-
+      {{ (matrix_authentication_service_labels_file.content | b64decode).splitlines() }}
+    matrix_authentication_service_runtime: >-
+      {{ (matrix_authentication_service_container_inspect.stdout | from_json) | first }}
+    matrix_authentication_service_config_mounts: >-
+      {{ matrix_authentication_service_runtime.Mounts
+         | selectattr('Destination', 'equalto', '/config.yaml') | list }}
+    matrix_authentication_service_keys_mounts: >-
+      {{ matrix_authentication_service_runtime.Mounts
+         | selectattr('Destination', 'equalto', '/keys') | list }}
+
+  tasks:
+    # Read the pin from the role itself so Renovate changes what this assertion expects.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_authentication_service_role_defaults
+
+    - name: Wait for the Matrix Authentication Service unit to become active
+      ansible.builtin.systemd_service:
+        name: matrix-authentication-service.service
+      register: matrix_authentication_service_service
+      until: matrix_authentication_service_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Assert the Matrix Authentication Service process is stable
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_service.status.ActiveState == 'active'
+          - matrix_authentication_service_service.status.NRestarts is defined
+          - matrix_authentication_service_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-authentication-service.service is
+          {{ matrix_authentication_service_service.status.ActiveState | default('unknown') }}
+          after {{ matrix_authentication_service_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "Matrix Authentication Service is active and has not restarted"
+
+    # The internal listener binds loopback inside the MAS container. Sharing its network
+    # namespace is the only way to probe it without changing the deployment contract.
+    - name: Request the prefixed internal health endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network=container:matrix-authentication-service
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://[::1]:8081/molecule-auth/health
+      register: matrix_authentication_service_health_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_authentication_service_health_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the internal listener reports healthy
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_health_http.rc == 0
+          - matrix_authentication_service_health_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_authentication_service_health_http.stdout_lines[0] == 'ok'
+        fail_msg: >-
+          MAS did not report healthy on its prefixed, loopback-only internal listener
+          ({{ matrix_authentication_service_health_http.stdout | default('no output') }})
+        success_msg: "MAS reports healthy on the prefixed internal listener"
+
+    - name: Request the unprefixed internal health path
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network=container:matrix-authentication-service
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://[::1]:8081/health
+      register: matrix_authentication_service_unprefixed_health_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the internal health resource exists only below the configured prefix
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_unprefixed_health_http.rc == 0
+          - matrix_authentication_service_unprefixed_health_http.stdout == 'HTTP_STATUS=404'
+        fail_msg: "The unprefixed health path answered, so the configured prefix is not proven"
+        success_msg: "The internal listener rejects the unprefixed health path"
+
+    # Probed through the private network because the role deliberately publishes no host port.
+    - name: Request the prefixed OpenID Provider discovery document
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_authentication_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-authentication-service:8080/molecule-auth/.well-known/openid-configuration
+      register: matrix_authentication_service_discovery_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_authentication_service_discovery_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert MAS serves a real OpenID Provider discovery document
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_discovery_http.rc == 0
+          - matrix_authentication_service_discovery_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_authentication_service_discovery is mapping
+          - matrix_authentication_service_discovery.issuer == 'https://mas.molecule.local/molecule-auth/'
+          - matrix_authentication_service_discovery.authorization_endpoint == 'https://mas.molecule.local/molecule-auth/authorize'
+          - matrix_authentication_service_discovery.token_endpoint == 'https://mas.molecule.local/molecule-auth/oauth2/token'
+          - matrix_authentication_service_discovery.jwks_uri == 'https://mas.molecule.local/molecule-auth/oauth2/keys.json'
+          - matrix_authentication_service_discovery.userinfo_endpoint == 'https://mas.molecule.local/molecule-auth/oauth2/userinfo'
+          - "'openid' in matrix_authentication_service_discovery.scopes_supported"
+          - "'authorization_code' in matrix_authentication_service_discovery.grant_types_supported"
+          - "'S256' in matrix_authentication_service_discovery.code_challenge_methods_supported"
+        fail_msg: >-
+          MAS did not return the configured, prefixed OIDC discovery contract
+          ({{ matrix_authentication_service_discovery_http.stdout | default('no output') }})
+        success_msg: "MAS advertises its configured prefixed OpenID Provider contract"
+
+    - name: Request the unprefixed discovery path
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_authentication_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-authentication-service:8080/.well-known/openid-configuration
+      register: matrix_authentication_service_unprefixed_discovery_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert discovery exists only below the configured prefix
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_unprefixed_discovery_http.rc == 0
+          - matrix_authentication_service_unprefixed_discovery_http.stdout == 'HTTP_STATUS=404'
+        fail_msg: "The unprefixed discovery path answered, so the configured prefix is not proven"
+        success_msg: "The public listener rejects the unprefixed discovery path"
+
+    - name: Request the JWKS advertised by discovery
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_authentication_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-authentication-service:8080/molecule-auth/oauth2/keys.json
+      register: matrix_authentication_service_jwks_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert JWKS exposes all role-managed signing keys
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_jwks_http.rc == 0
+          - matrix_authentication_service_jwks_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_authentication_service_jwks is mapping
+          - matrix_authentication_service_jwks['keys'] is sequence
+          - matrix_authentication_service_jwks['keys'] | length == 4
+          - "'default-rsa' in matrix_authentication_service_jwks_kids"
+          - "'default-ecdsa-p256' in matrix_authentication_service_jwks_kids"
+          - "'default-ecdsa-p384' in matrix_authentication_service_jwks_kids"
+          - "'default-ecdsa-k256' in matrix_authentication_service_jwks_kids"
+          - (matrix_authentication_service_jwks['keys'] | selectattr('kid', 'equalto', 'default-rsa') | first).kty == 'RSA'
+          - (matrix_authentication_service_jwks['keys'] | selectattr('kid', 'equalto', 'default-rsa') | first).n | length > 100
+          - (matrix_authentication_service_jwks['keys'] | selectattr('kid', 'equalto', 'default-ecdsa-p256') | first).crv == 'P-256'
+          - (matrix_authentication_service_jwks['keys'] | selectattr('kid', 'equalto', 'default-ecdsa-p384') | first).crv == 'P-384'
+          - (matrix_authentication_service_jwks['keys'] | selectattr('kid', 'equalto', 'default-ecdsa-k256') | first).crv == 'secp256k1'
+        fail_msg: "MAS did not derive the expected public JWKS from all four managed keys"
+        success_msg: "MAS exposes all four role-managed signing keys in its public JWKS"
+
+    - name: Read the rendered MAS configuration
+      ansible.builtin.slurp:
+        src: "{{ matrix_authentication_service_config_path }}/config.yaml"
+      register: matrix_authentication_service_config_file
+
+    - name: Read the rendered MAS configuration identity
+      ansible.builtin.stat:
+        path: "{{ matrix_authentication_service_config_path }}/config.yaml"
+      register: matrix_authentication_service_config_stat
+
+    - name: Assert the parsed listener and public URL configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_config.http.listeners | length == 2
+          - matrix_authentication_service_web_listener.resources | map(attribute='name') | list == ['discovery', 'human', 'oauth', 'compat', 'graphql', 'assets']
+          - "matrix_authentication_service_web_listener.binds == [{'address': '[::]:8080'}]"
+          - matrix_authentication_service_web_listener.prefix == '/molecule-auth'
+          - not matrix_authentication_service_web_listener.proxy_protocol
+          - "matrix_authentication_service_internal_listener.resources == [{'name': 'health'}]"
+          - "matrix_authentication_service_internal_listener.binds == [{'host': 'localhost', 'port': 8081}]"
+          - matrix_authentication_service_internal_listener.prefix == '/molecule-auth'
+          - matrix_authentication_service_config.http.public_base == 'https://mas.molecule.local/molecule-auth/'
+          - matrix_authentication_service_config.http.issuer == 'https://mas.molecule.local/molecule-auth/'
+          - matrix_authentication_service_config.http.trusted_proxies == ['198.51.100.0/24', '2001:db8:1234::/48']
+        fail_msg: "The parsed MAS listener or public URL configuration is incorrect"
+        success_msg: "The parsed MAS configuration carries the non-default listener contract"
+
+    - name: Assert the parsed Postgres pool configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_config.database.host == matrix_authentication_service_config_database_host
+          - matrix_authentication_service_config.database.port == matrix_authentication_service_config_database_port
+          - matrix_authentication_service_config.database.username == matrix_authentication_service_config_database_username
+          - matrix_authentication_service_config.database.password == matrix_authentication_service_config_database_password
+          - matrix_authentication_service_config.database.database == matrix_authentication_service_config_database_database
+          - matrix_authentication_service_config.database.ssl_mode == 'disable'
+          - matrix_authentication_service_config.database.max_connections == 7
+          - matrix_authentication_service_config.database.min_connections == 2
+          - matrix_authentication_service_config.database.connect_timeout == 17
+        fail_msg: "The parsed MAS configuration does not point at scenario Postgres"
+        success_msg: "The parsed MAS configuration points at scenario Postgres"
+      no_log: true
+
+    - name: Assert the parsed Matrix and cryptographic configuration
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_config.matrix.homeserver == 'molecule.local'
+          - matrix_authentication_service_config.matrix.endpoint == 'http://matrix.molecule.local:8008'
+          - matrix_authentication_service_config.matrix.secret == matrix_authentication_service_config_matrix_secret
+          - matrix_authentication_service_config.secrets.encryption == matrix_authentication_service_config_secrets_encryption
+          - matrix_authentication_service_config.secrets['keys'] | map(attribute='kid') | list == ['default-rsa', 'default-ecdsa-p256', 'default-ecdsa-p384', 'default-ecdsa-k256']
+          - matrix_authentication_service_config.secrets['keys'] | map(attribute='key_file') | list == ['/keys/rsa-2048.priv.pem', '/keys/ecdsa-p256.priv.pem', '/keys/ecdsa-p384.priv.pem', '/keys/ecdsa-k256.priv.pem']
+        fail_msg: "The parsed MAS Matrix or signing-key configuration is incorrect"
+        success_msg: "The parsed MAS configuration carries its Matrix secrets and managed keys"
+      no_log: true
+
+    - name: Assert the parsed non-default account behavior
+      ansible.builtin.assert:
+        that:
+          - not matrix_authentication_service_config.account.displayname_change_allowed
+          - matrix_authentication_service_config.account.password_registration_enabled
+          - not matrix_authentication_service_config.account.password_registration_email_required
+          - matrix_authentication_service_config.account.password_recovery_enabled
+          - matrix_authentication_service_config.account.login_with_email_allowed
+          - matrix_authentication_service_config.passwords.minimum_complexity == 2
+          - matrix_authentication_service_config.email.from == '"Molecule MAS" <auth@molecule.local>'
+          - matrix_authentication_service_config.email.transport == 'blackhole'
+          - matrix_authentication_service_config.clients == []
+          - "'upstream_oauth2' not in matrix_authentication_service_config"
+          - "'captcha' not in matrix_authentication_service_config"
+        fail_msg: "The parsed MAS configuration does not carry the scenario account behavior"
+        success_msg: "The parsed MAS configuration carries the non-default account behavior"
+
+    - name: Assert the rendered configuration file identity
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_config_stat.stat.uid | int == matrix_user_uid | int
+          - matrix_authentication_service_config_stat.stat.gid | int == matrix_user_gid | int
+          - matrix_authentication_service_config_stat.stat.mode == '0644'
+        fail_msg: "config.yaml has the wrong ownership or mode"
+        success_msg: "config.yaml has the playbook identity and expected mode"
+
+    - name: Read the managed signing-key identities
+      ansible.builtin.stat:
+        path: "{{ matrix_authentication_service_data_keys_path }}/{{ key_file }}"
+      loop:
+        - rsa-2048.priv.pem
+        - ecdsa-p256.priv.pem
+        - ecdsa-p384.priv.pem
+        - ecdsa-k256.priv.pem
+      loop_control:
+        loop_var: key_file
+      register: matrix_authentication_service_key_stats
+
+    - name: Assert every managed signing key is non-empty and private
+      ansible.builtin.assert:
+        that:
+          - key_stat.stat.exists
+          - key_stat.stat.isreg
+          - key_stat.stat.size | int > 200
+          - key_stat.stat.uid | int == matrix_user_uid | int
+          - key_stat.stat.gid | int == matrix_user_gid | int
+          - key_stat.stat.mode == '0600'
+        fail_msg: "A managed MAS signing key is missing, empty, exposed, or misowned"
+        success_msg: "The managed MAS signing key is present and private"
+      loop: "{{ matrix_authentication_service_key_stats.results }}"
+      loop_control:
+        loop_var: key_stat
+        label: "{{ key_stat.key_file }}"
+
+    - name: Validate every managed signing key with OpenSSL
+      ansible.builtin.command:
+        argv:
+          - openssl
+          - pkey
+          - -in
+          - "{{ matrix_authentication_service_data_keys_path }}/{{ key_file }}"
+          - -check
+          - -noout
+      loop:
+        - rsa-2048.priv.pem
+        - ecdsa-p256.priv.pem
+        - ecdsa-p384.priv.pem
+        - ecdsa-k256.priv.pem
+      loop_control:
+        loop_var: key_file
+      register: matrix_authentication_service_key_validation
+      changed_when: false
+
+    - name: Assert OpenSSL accepts every managed signing key
+      ansible.builtin.assert:
+        that:
+          - key_validation.rc == 0
+        fail_msg: "OpenSSL rejected a role-managed MAS signing key"
+        success_msg: "OpenSSL accepts the role-managed MAS signing key"
+      loop: "{{ matrix_authentication_service_key_validation.results }}"
+      loop_control:
+        loop_var: key_validation
+        label: "{{ key_validation.key_file }}"
+
+    # These tables can only exist after MAS has reached the named host, authenticated as
+    # the non-default role, selected the non-default database, and run genuine migrations.
+    - name: List the tables MAS created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_authentication_service_config_database_username }}
+          - --dbname={{ matrix_authentication_service_config_database_database }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: matrix_authentication_service_tables
+      changed_when: false
+
+    - name: Count successful MAS migrations in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_authentication_service_config_database_username }}
+          - --dbname={{ matrix_authentication_service_config_database_database }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT count(*) FROM _sqlx_migrations WHERE success
+      register: matrix_authentication_service_migrations
+      changed_when: false
+
+    - name: Assert MAS genuinely migrated the configured Postgres database
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_tables.rc == 0
+          - "'_sqlx_migrations' in matrix_authentication_service_table_names"
+          - "'users' in matrix_authentication_service_table_names"
+          - "'user_sessions' in matrix_authentication_service_table_names"
+          - "'oauth2_clients' in matrix_authentication_service_table_names"
+          - "'oauth2_access_tokens' in matrix_authentication_service_table_names"
+          - "'upstream_oauth_providers' in matrix_authentication_service_table_names"
+          - matrix_authentication_service_table_names | length > 30
+          - matrix_authentication_service_migrations.rc == 0
+          - matrix_authentication_service_migrations.stdout | trim | int > 100
+        fail_msg: >-
+          MAS did not genuinely migrate {{ matrix_authentication_service_config_database_database }}
+          ({{ matrix_authentication_service_table_names | length }} tables,
+          {{ matrix_authentication_service_migrations.stdout | trim | default('?') }} migrations)
+        success_msg: "MAS genuinely migrated the configured Postgres database"
+      vars:
+        matrix_authentication_service_table_names: >-
+          {{ matrix_authentication_service_tables.stdout_lines | select | list }}
+
+    - name: Read the Traefik labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_authentication_service_config_path }}/labels"
+      register: matrix_authentication_service_labels_file
+
+    - name: Assert the rendered labels carry the non-default public routing contract
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in matrix_authentication_service_labels_lines"
+          - "'traefik.docker.network=matrix-authentication-service-molecule' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.services.matrix-authentication-service.loadbalancer.server.port=8080' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers.matrix-authentication-service.rule=Host(`mas.molecule.local`) && PathPrefix(`/molecule-auth`)' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers.matrix-authentication-service.priority=742' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.middlewares.matrix-authentication-service-slashless-redirect.redirectregex.regex=(/molecule-auth)$' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.middlewares.matrix-authentication-service-add-headers.headers.customresponseheaders.X-Molecule-MAS=covered' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers.matrix-authentication-service.middlewares=matrix-authentication-service-slashless-redirect,matrix-authentication-service-add-headers' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers.matrix-authentication-service.entrypoints=web' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers.matrix-authentication-service.tls=false' in matrix_authentication_service_labels_lines"
+          - "'molecule.mas.coverage=enabled' in matrix_authentication_service_labels_lines"
+        fail_msg: "The rendered labels do not carry the configured public MAS route"
+        success_msg: "The rendered labels carry the configured public MAS route"
+
+    - name: Assert the rendered labels carry the compatibility-layer route
+      ansible.builtin.assert:
+        that:
+          - "'traefik.http.middlewares.matrix-authentication-service-add-prefix.addprefix.prefix=/molecule-auth' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.rule=Host(`matrix.molecule.local`) && PathRegexp(`^/_matrix/client/(?P<version>([^/]+))/(?P<endpoint>(login|logout|refresh))`)' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.priority=743' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.middlewares=matrix-authentication-service-add-prefix' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.entrypoints=web' in matrix_authentication_service_labels_lines"
+          - "'traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.tls=false' in matrix_authentication_service_labels_lines"
+        fail_msg: "The rendered labels do not carry the configured compatibility route"
+        success_msg: "The rendered labels carry the configured compatibility-layer route"
+
+    - name: Inspect the running MAS container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-authentication-service
+      register: matrix_authentication_service_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_runtime.Config.Image == 'ghcr.io/element-hq/matrix-authentication-service:' + matrix_authentication_service_role_defaults.matrix_authentication_service_version
+        fail_msg: "The running MAS container does not use the exact role-pinned image"
+        success_msg: "The running MAS container uses the exact role-pinned image"
+
+    - name: Assert the running container uses the playbook identity
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_runtime.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+        fail_msg: "The running MAS container does not use the playbook UID and GID"
+        success_msg: "The running MAS container uses the playbook UID and GID"
+
+    - name: Assert the running container security isolation
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_runtime.HostConfig.ReadonlyRootfs is sameas true
+          - matrix_authentication_service_runtime.HostConfig.CapDrop == ['ALL']
+          - not matrix_authentication_service_runtime.HostConfig.Privileged
+        fail_msg: "The running MAS container lacks read-only, capability-dropped isolation"
+        success_msg: "The running MAS container has read-only, capability-dropped isolation"
+
+    - name: Assert the running container mounts only configuration and keys read-only
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_runtime.Mounts | length == 2
+          - matrix_authentication_service_config_mounts | length == 1
+          - matrix_authentication_service_config_mounts[0].RW is sameas false
+          - matrix_authentication_service_keys_mounts | length == 1
+          - matrix_authentication_service_keys_mounts[0].RW is sameas false
+        fail_msg: "The running MAS container's config or key mount contract is incorrect"
+        success_msg: "The running MAS container mounts only configuration and keys read-only"
+
+    - name: Assert the running container has only its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_runtime.NetworkSettings.Networks is mapping
+          - matrix_authentication_service_runtime.NetworkSettings.Networks | length == 1
+          - matrix_authentication_service_container_network in matrix_authentication_service_runtime.NetworkSettings.Networks
+        fail_msg: "The running MAS container has unexpected network attachments"
+        success_msg: "The running MAS container has only its dedicated network"
+
+    - name: Assert the running container publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_authentication_service_runtime.NetworkSettings.Ports | default({}, true) | length == 0
+          - not matrix_authentication_service_runtime.HostConfig.PublishAllPorts
+        fail_msg: "The running MAS container unexpectedly publishes a host port"
+        success_msg: "The running MAS container publishes no host ports"
+
+    - name: Assert Docker accepted the role's exact routing labels
+      ansible.builtin.assert:
+        that:
+          - matrix_authentication_service_runtime.Config.Labels is mapping
+          - matrix_authentication_service_runtime.Config.Labels['molecule.mas.coverage'] == 'enabled'
+          - matrix_authentication_service_runtime.Config.Labels['traefik.docker.network'] == 'matrix-authentication-service-molecule'
+          - matrix_authentication_service_runtime.Config.Labels['traefik.http.services.matrix-authentication-service.loadbalancer.server.port'] == '8080'
+          - matrix_authentication_service_runtime.Config.Labels['traefik.http.routers.matrix-authentication-service.rule'] == 'Host(`mas.molecule.local`) && PathPrefix(`/molecule-auth`)'
+          - matrix_authentication_service_runtime.Config.Labels['traefik.http.routers.matrix-authentication-service.priority'] == '742'
+          - matrix_authentication_service_runtime.Config.Labels['traefik.http.routers._internalmatrix-authentication-service-public-compatibility-layer.priority'] == '743'
+          - matrix_authentication_service_runtime.Config.Labels['traefik.http.middlewares.matrix-authentication-service-add-headers.headers.customresponseheaders.X-Molecule-MAS'] == 'covered'
+        fail_msg: "Docker did not attach the exact labels rendered by the role"
+        success_msg: "Docker attached the exact routing labels rendered by the role"

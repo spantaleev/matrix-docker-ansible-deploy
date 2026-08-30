@@ -1,0 +1,100 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-authentication-service-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_authentication_service_hostname: mas.molecule.local
+        matrix_authentication_service_path_prefix: /molecule-auth
+        matrix_authentication_service_container_network: matrix-authentication-service-molecule
+
+        # verify.yml is a separate play where role defaults are out of scope. These are
+        # pinned to the paths the role derives from matrix_base_data_path.
+        matrix_authentication_service_base_path: /matrix/matrix-authentication-service
+        matrix_authentication_service_config_path: /matrix/matrix-authentication-service/config
+        matrix_authentication_service_data_path: /matrix/matrix-authentication-service/data
+        matrix_authentication_service_data_keys_path: /matrix/matrix-authentication-service/data/keys
+
+        # Real Postgres, with a database and role which differ from the component defaults.
+        # A migrated schema therefore proves hostname resolution and authentication too.
+        matrix_authentication_service_config_database_host: matrix-postgres-molecule
+        matrix_authentication_service_config_database_port: 5432
+        matrix_authentication_service_config_database_username: molecule_mas_user
+        matrix_authentication_service_config_database_password: molecule_pg_password_97af31
+        matrix_authentication_service_config_database_database: molecule_mas_database
+        matrix_authentication_service_config_database_max_connections: 7
+        matrix_authentication_service_config_database_min_connections: 2
+        matrix_authentication_service_config_database_connect_timeout: 17
+
+        matrix_authentication_service_config_secrets_encryption: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+        matrix_authentication_service_config_matrix_homeserver: molecule.local
+        matrix_authentication_service_config_matrix_secret: molecule_homeserver_secret_d3a58f
+        matrix_authentication_service_config_matrix_endpoint: http://matrix.molecule.local:8008
+
+        # Values unlike both the role and MAS defaults, so parsed configuration assertions
+        # can tell whether this scenario reached the rendered file.
+        matrix_authentication_service_config_http_trusted_proxies:
+          - 198.51.100.0/24
+          - 2001:db8:1234::/48
+        matrix_authentication_service_config_email_from_name: Molecule MAS
+        matrix_authentication_service_config_email_from_address: auth@molecule.local
+        matrix_authentication_service_config_account_displayname_change_allowed: false
+        matrix_authentication_service_config_account_password_registration_enabled: true
+        matrix_authentication_service_config_account_password_registration_email_required: false
+        matrix_authentication_service_config_account_password_recovery_enabled: true
+        matrix_authentication_service_config_account_login_with_email_allowed: true
+        matrix_authentication_service_config_passwords_minimum_complexity: 2
+
+        # Traefik itself is intentionally absent. The rendered label file and Docker's live
+        # labels prove the role composed the non-default routing contract correctly.
+        matrix_authentication_service_container_labels_traefik_entrypoints: web
+        matrix_authentication_service_container_labels_traefik_tls_certResolver: molecule-resolver
+        matrix_authentication_service_container_labels_public_main_priority: 742
+        matrix_authentication_service_container_labels_public_compatibility_layer_enabled: true
+        matrix_authentication_service_container_labels_public_compatibility_layer_hostname: matrix.molecule.local
+        matrix_authentication_service_container_labels_public_compatibility_layer_priority: 743
+        matrix_authentication_service_container_labels_traefik_additional_response_headers_custom:
+          X-Molecule-MAS: covered
+        matrix_authentication_service_container_labels_additional_labels: |
+          molecule.mas.coverage=enabled
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
