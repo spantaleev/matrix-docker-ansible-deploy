@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Include roles for matrix-synapse-auto-compressor Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Include base roles for matrix-synapse-auto-compressor Molecule tests
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"
+        public: true
+      loop:
+        - com.devture.ansible.role.playbook_help
+        - com.devture.ansible.role.systemd_docker_base
+      loop_control:
+        loop_var: role_name
+
+    # A genuine Synapse installation and migration is part of the fixture; hand-made subsets
+    # of the schema cannot establish compatibility with what Synapse actually deploys.
+    - name: Include Synapse setup task files
+      ansible.builtin.include_role:
+        name: custom/matrix-synapse
+        public: true
+        tasks_from: "{{ role_task_file }}"
+      loop:
+        - init.yml
+        - validate_config.yml
+        - setup_install.yml
+      loop_control:
+        loop_var: role_task_file
+
+    - name: Include matrix-synapse-auto-compressor
+      ansible.builtin.include_role:
+        name: "custom/{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+        public: true
+      vars:
+        matrix_synapse_auto_compressor_postgres_image: "{{ molecule_shared_image_postgres }}"
+
+- name: Start the Synapse fixture and compressor timer
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Ensure systemd daemon is reloaded
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: Ensure the Synapse systemd service is started
+      ansible.builtin.systemd_service:
+        name: matrix-synapse.service
+        state: started
+
+    - name: Ensure the compressor timer is enabled and started
+      ansible.builtin.systemd_service:
+        name: matrix-synapse-auto-compressor.timer
+        enabled: true
+        state: started

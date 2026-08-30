@@ -1,0 +1,591 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the role drives the real compressor against a genuinely migrated Synapse
+# Postgres database, and observes the otherwise-transient container while it runs.
+- name: Verify matrix-synapse-auto-compressor
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+  vars:
+    matrix_synapse_auto_compressor_expected_postgres_location: >-
+      postgres://molecule_compressor:molecule_compressor_pg_password_9b742d@matrix-postgres-molecule:5432/molecule_compressor
+    matrix_synapse_auto_compressor_expected_command: >-
+      synapse_auto_compressor -p $POSTGRES_LOCATION -c 128 -n 2 && sleep 45
+    matrix_synapse_auto_compressor_seed_username: compressor-admin
+    matrix_synapse_auto_compressor_seed_password: molecule_compressor_admin_password_1d3b
+
+  tasks:
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_synapse_auto_compressor_role_defaults
+
+    - name: Wait for the Synapse fixture to become active
+      ansible.builtin.systemd_service:
+        name: matrix-synapse.service
+      register: matrix_synapse_auto_compressor_synapse_service
+      until: matrix_synapse_auto_compressor_synapse_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Request the real Synapse health endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_auto_compressor_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}/health
+      register: matrix_synapse_auto_compressor_synapse_health
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_synapse_auto_compressor_synapse_health.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the real Synapse fixture is healthy and stable
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_synapse_service.status.ActiveState == 'active'
+          - matrix_synapse_auto_compressor_synapse_service.status.NRestarts is defined
+          - matrix_synapse_auto_compressor_synapse_service.status.NRestarts | int == 0
+          - matrix_synapse_auto_compressor_synapse_health.rc == 0
+          - "'HTTP_STATUS=200' in matrix_synapse_auto_compressor_synapse_health.stdout"
+          - matrix_synapse_auto_compressor_synapse_health.stdout.startswith('OK')
+        fail_msg: "The real Synapse fixture is not healthy and stable"
+        success_msg: "The real Synapse fixture is healthy and stable"
+
+    # These tables can only be present after Synapse resolved the configured hostname,
+    # authenticated to Postgres, and performed its own migrations.
+    - name: List the tables Synapse created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_synapse_database_user }}
+          - --dbname={{ matrix_synapse_database_database }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+      register: matrix_synapse_auto_compressor_synapse_tables
+      changed_when: false
+
+    - name: Assert Synapse genuinely migrated the compressor database
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_synapse_tables.rc == 0
+          - "'schema_version' in matrix_synapse_auto_compressor_synapse_table_names"
+          - "'rooms' in matrix_synapse_auto_compressor_synapse_table_names"
+          - "'events' in matrix_synapse_auto_compressor_synapse_table_names"
+          - "'state_groups' in matrix_synapse_auto_compressor_synapse_table_names"
+          - "'state_groups_state' in matrix_synapse_auto_compressor_synapse_table_names"
+          - matrix_synapse_auto_compressor_synapse_table_names | length > 50
+        fail_msg: "Synapse did not genuinely migrate the configured Postgres database"
+        success_msg: "Synapse genuinely migrated the configured Postgres database"
+      vars:
+        matrix_synapse_auto_compressor_synapse_table_names: >-
+          {{ matrix_synapse_auto_compressor_synapse_tables.stdout_lines | select | list }}
+
+    - name: Register the local compressor fixture administrator
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-synapse
+          - register_new_matrix_user
+          - --config
+          - /data/homeserver.yaml
+          - --user
+          - "{{ matrix_synapse_auto_compressor_seed_username }}"
+          - --password
+          - "{{ matrix_synapse_auto_compressor_seed_password }}"
+          - --admin
+          - http://localhost:{{ matrix_synapse_container_client_api_port }}
+      register: matrix_synapse_auto_compressor_registration
+      changed_when: matrix_synapse_auto_compressor_registration.rc == 0
+      failed_when:
+        - matrix_synapse_auto_compressor_registration.rc != 0
+        - "'User ID already taken' not in matrix_synapse_auto_compressor_registration.stdout"
+      no_log: true
+
+    - name: Log the local fixture administrator in to Synapse
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_auto_compressor_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --fail-with-body
+          - --silent
+          - --show-error
+          - --request
+          - POST
+          - --header
+          - 'Content-Type: application/json'
+          - --data
+          - >-
+            {"type":"m.login.password","identifier":{"type":"m.id.user","user":"{{ matrix_synapse_auto_compressor_seed_username }}"},"password":"{{ matrix_synapse_auto_compressor_seed_password }}"}
+          - http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}/_matrix/client/v3/login
+      register: matrix_synapse_auto_compressor_login_response
+      changed_when: false
+      no_log: true
+
+    - name: Parse the local fixture login response
+      ansible.builtin.set_fact:
+        matrix_synapse_auto_compressor_login: "{{ matrix_synapse_auto_compressor_login_response.stdout | from_json }}"
+      no_log: true
+
+    - name: Assert Synapse authenticated the local fixture administrator
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_login.access_token is string
+          - matrix_synapse_auto_compressor_login.access_token | length > 20
+          - matrix_synapse_auto_compressor_login.user_id == '@' + matrix_synapse_auto_compressor_seed_username + ':' + matrix_domain
+        fail_msg: "Synapse did not authenticate the local compressor fixture administrator"
+        success_msg: "Synapse authenticated the local compressor fixture administrator"
+      no_log: true
+
+    - name: Create a real Matrix room for compressor state
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_auto_compressor_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --fail-with-body
+          - --silent
+          - --show-error
+          - --request
+          - POST
+          - --header
+          - 'Content-Type: application/json'
+          - --header
+          - 'Authorization: Bearer {{ matrix_synapse_auto_compressor_login.access_token }}'
+          - --data
+          - '{"preset":"private_chat","name":"Compressor Molecule State"}'
+          - http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}/_matrix/client/v3/createRoom
+      register: matrix_synapse_auto_compressor_room_response
+      changed_when: true
+      no_log: true
+
+    - name: Parse the real Matrix room response
+      ansible.builtin.set_fact:
+        matrix_synapse_auto_compressor_room: "{{ matrix_synapse_auto_compressor_room_response.stdout | from_json }}"
+      no_log: true
+
+    # A unique state key per request creates enough genuine Synapse state groups for the
+    # non-default chunk size to consume a complete chunk, without manufacturing database rows.
+    - name: Populate the room with genuine state transitions through Synapse
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_auto_compressor_container_network }}
+          - --env=ACCESS_TOKEN={{ matrix_synapse_auto_compressor_login.access_token }}
+          - --env=ROOM_ID={{ matrix_synapse_auto_compressor_room.room_id }}
+          - --entrypoint=/bin/sh
+          - "{{ molecule_shared_image_curl }}"
+          - -c
+          - |-
+            set -eu;
+            i=1;
+            while [ "$i" -le 140 ]; do
+              curl --fail-with-body --silent --show-error \
+              --request PUT \
+              --header "Authorization: Bearer $ACCESS_TOKEN" \
+              --header 'Content-Type: application/json' \
+              --data "{\"sequence\":$i}" \
+              "http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}/_matrix/client/v3/rooms/$ROOM_ID/state/com.example.molecule/$i" \
+              >/dev/null;
+              i=$((i + 1));
+            done
+      register: matrix_synapse_auto_compressor_seed_result
+      changed_when: matrix_synapse_auto_compressor_seed_result.rc == 0
+      failed_when: false
+      no_log: true
+
+    - name: Report a sanitized state-seeding failure
+      ansible.builtin.debug:
+        msg: "{{ matrix_synapse_auto_compressor_seed_result.stderr }}"
+      when: matrix_synapse_auto_compressor_seed_result.rc != 0
+
+    - name: Assert Synapse accepted every real state transition
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_seed_result.rc == 0
+        fail_msg: "Synapse rejected one of the real Matrix state transitions"
+        success_msg: "Synapse accepted every real Matrix state transition"
+
+    - name: Count genuine state groups for the Matrix room
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_synapse_database_user }}
+          - --dbname={{ matrix_synapse_database_database }}
+          - --tuples-only
+          - --no-align
+          - >-
+            --command=SELECT COUNT(*) FROM state_groups
+            WHERE room_id = '{{ matrix_synapse_auto_compressor_room.room_id }}'
+      register: matrix_synapse_auto_compressor_state_group_count
+      changed_when: false
+
+    - name: Assert Synapse created enough genuine state groups for a complete chunk
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_state_group_count.rc == 0
+          - matrix_synapse_auto_compressor_state_group_count.stdout | trim | int >= matrix_synapse_auto_compressor_chunk_size | int
+        fail_msg: "The Matrix API fixture did not create a complete real compressor chunk"
+        success_msg: "The Matrix API fixture created a complete real compressor chunk"
+
+    - name: Read the rendered compressor files
+      ansible.builtin.slurp:
+        src: "{{ item }}"
+      loop:
+        - "{{ matrix_synapse_auto_compressor_base_path }}/env"
+        - "{{ matrix_synapse_auto_compressor_base_path }}/matrix-synapse-auto-compressor-fix.sh"
+        - /etc/systemd/system/matrix-synapse-auto-compressor.service
+        - /etc/systemd/system/matrix-synapse-auto-compressor.timer
+      register: matrix_synapse_auto_compressor_rendered_files
+
+    - name: Inspect the rendered compressor file identities
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop:
+        - "{{ matrix_synapse_auto_compressor_base_path }}"
+        - "{{ matrix_synapse_auto_compressor_base_path }}/env"
+        - "{{ matrix_synapse_auto_compressor_base_path }}/matrix-synapse-auto-compressor-fix.sh"
+        - /etc/systemd/system/matrix-synapse-auto-compressor.service
+        - /etc/systemd/system/matrix-synapse-auto-compressor.timer
+      register: matrix_synapse_auto_compressor_rendered_stats
+
+    - name: Parse the rendered compressor files
+      ansible.builtin.set_fact:
+        matrix_synapse_auto_compressor_rendered_env: "{{ matrix_synapse_auto_compressor_rendered_files.results[0].content | b64decode }}"
+        matrix_synapse_auto_compressor_rendered_script: "{{ matrix_synapse_auto_compressor_rendered_files.results[1].content | b64decode }}"
+        matrix_synapse_auto_compressor_rendered_service: "{{ matrix_synapse_auto_compressor_rendered_files.results[2].content | b64decode }}"
+        matrix_synapse_auto_compressor_rendered_timer: "{{ matrix_synapse_auto_compressor_rendered_files.results[3].content | b64decode }}"
+
+    - name: Check the workaround script syntax
+      ansible.builtin.command:
+        argv:
+          - bash
+          - -n
+          - "{{ matrix_synapse_auto_compressor_base_path }}/matrix-synapse-auto-compressor-fix.sh"
+      register: matrix_synapse_auto_compressor_script_syntax
+      changed_when: false
+
+    - name: Verify systemd parsed the rendered units
+      ansible.builtin.command:
+        argv:
+          - systemd-analyze
+          - verify
+          - matrix-synapse-auto-compressor.service
+          - matrix-synapse-auto-compressor.timer
+      register: matrix_synapse_auto_compressor_unit_syntax
+      changed_when: false
+
+    - name: Verify systemd parsed the non-default calendar
+      ansible.builtin.command:
+        argv:
+          - systemd-analyze
+          - calendar
+          - "{{ matrix_synapse_auto_compressor_schedule }}"
+      register: matrix_synapse_auto_compressor_calendar_syntax
+      changed_when: false
+
+    - name: Assert the rendered environment carries the exact Postgres connection
+      ansible.builtin.assert:
+        that:
+          - "'POSTGRES_LOCATION=' + matrix_synapse_auto_compressor_expected_postgres_location in matrix_synapse_auto_compressor_rendered_env.splitlines()"
+          - "'PGHOST=' + matrix_synapse_auto_compressor_database_hostname in matrix_synapse_auto_compressor_rendered_env.splitlines()"
+          - "'PGDATABASE=' + matrix_synapse_auto_compressor_database_name in matrix_synapse_auto_compressor_rendered_env.splitlines()"
+          - "'PGUSER=' + matrix_synapse_auto_compressor_database_username in matrix_synapse_auto_compressor_rendered_env.splitlines()"
+          - "'PGPASSWORD=' + matrix_synapse_auto_compressor_database_password in matrix_synapse_auto_compressor_rendered_env.splitlines()"
+        fail_msg: "The rendered environment does not carry the exact scenario Postgres connection"
+        success_msg: "The rendered environment carries the exact scenario Postgres connection"
+      no_log: true
+
+    - name: Assert the rendered workaround script contract
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_script_syntax.rc == 0
+          - "'--user=1234:1234' in matrix_synapse_auto_compressor_rendered_script"
+          - "'--cap-drop=ALL' in matrix_synapse_auto_compressor_rendered_script"
+          - "'--network=' + matrix_synapse_auto_compressor_container_network in matrix_synapse_auto_compressor_rendered_script"
+          - molecule_shared_image_postgres in matrix_synapse_auto_compressor_rendered_script
+          - "'psql -h ' + matrix_synapse_auto_compressor_database_hostname in matrix_synapse_auto_compressor_rendered_script"
+          - "'DELETE\nFROM state_compressor_state' in matrix_synapse_auto_compressor_rendered_script"
+          - "'DELETE\nFROM state_compressor_progress' in matrix_synapse_auto_compressor_rendered_script"
+        fail_msg: "The rendered workaround script does not carry its runtime and cleanup contract"
+        success_msg: "The rendered workaround script carries its runtime and cleanup contract"
+
+    - name: Assert the rendered oneshot service contract
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_unit_syntax.rc == 0
+          - "'Type=oneshot' in matrix_synapse_auto_compressor_rendered_service"
+          - "'--rm' in matrix_synapse_auto_compressor_rendered_service"
+          - "'--log-driver=none' in matrix_synapse_auto_compressor_rendered_service"
+          - "'--cap-drop=ALL' in matrix_synapse_auto_compressor_rendered_service"
+          - "'--read-only' in matrix_synapse_auto_compressor_rendered_service"
+          - "'--user=1234:1234' in matrix_synapse_auto_compressor_rendered_service"
+          - "'--network=' + matrix_synapse_auto_compressor_container_network in matrix_synapse_auto_compressor_rendered_service"
+          - "'--label=molecule.contract=synapse-auto-compressor' in matrix_synapse_auto_compressor_rendered_service"
+          - matrix_synapse_auto_compressor_expected_command in matrix_synapse_auto_compressor_rendered_service
+          - "'network connect synapse-auto-compressor-extra-molecule matrix-synapse-auto-compressor' in matrix_synapse_auto_compressor_rendered_service"
+        fail_msg: "The rendered service does not carry the exact oneshot runtime contract"
+        success_msg: "The rendered service carries the exact oneshot runtime contract"
+
+    - name: Assert the rendered non-default timer contract
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_calendar_syntax.rc == 0
+          - "'Unit=matrix-synapse-auto-compressor.service' in matrix_synapse_auto_compressor_rendered_timer"
+          - "'OnCalendar=Mon..Fri *-*-* 03:17:00' in matrix_synapse_auto_compressor_rendered_timer"
+          - "'RandomizedDelaySec=47min' in matrix_synapse_auto_compressor_rendered_timer"
+        fail_msg: "The rendered timer does not carry the non-default schedule"
+        success_msg: "The rendered timer carries the non-default schedule"
+
+    - name: Assert the rendered file identities
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_rendered_stats.results[0].stat.uid | int == matrix_user_uid | int
+          - matrix_synapse_auto_compressor_rendered_stats.results[0].stat.gid | int == matrix_user_gid | int
+          - matrix_synapse_auto_compressor_rendered_stats.results[0].stat.mode == '0750'
+          - matrix_synapse_auto_compressor_rendered_stats.results[1].stat.uid | int == matrix_user_uid | int
+          - matrix_synapse_auto_compressor_rendered_stats.results[1].stat.gid | int == matrix_user_gid | int
+          - matrix_synapse_auto_compressor_rendered_stats.results[1].stat.mode == '0640'
+          - matrix_synapse_auto_compressor_rendered_stats.results[2].stat.uid | int == matrix_user_uid | int
+          - matrix_synapse_auto_compressor_rendered_stats.results[2].stat.gid | int == matrix_user_gid | int
+          - matrix_synapse_auto_compressor_rendered_stats.results[2].stat.mode == '0750'
+          - matrix_synapse_auto_compressor_rendered_stats.results[3].stat.uid | int == 0
+          - matrix_synapse_auto_compressor_rendered_stats.results[3].stat.gid | int == 0
+          - matrix_synapse_auto_compressor_rendered_stats.results[3].stat.mode == '0644'
+          - matrix_synapse_auto_compressor_rendered_stats.results[4].stat.uid | int == 0
+          - matrix_synapse_auto_compressor_rendered_stats.results[4].stat.gid | int == 0
+          - matrix_synapse_auto_compressor_rendered_stats.results[4].stat.mode == '0644'
+        fail_msg: "The compressor paths and rendered files have the wrong identity or mode"
+        success_msg: "The compressor paths and rendered files have the expected identities and modes"
+
+    - name: Inspect the enabled compressor timer
+      ansible.builtin.systemd_service:
+        name: matrix-synapse-auto-compressor.timer
+      register: matrix_synapse_auto_compressor_timer
+
+    - name: Assert the compressor timer is enabled and active
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_timer.status.ActiveState == 'active'
+          - matrix_synapse_auto_compressor_timer.status.SubState == 'waiting'
+          - matrix_synapse_auto_compressor_timer.status.UnitFileState == 'enabled'
+          - matrix_synapse_auto_compressor_timer.status.NextElapseUSecRealtime is defined
+          - matrix_synapse_auto_compressor_timer.status.NextElapseUSecRealtime != 'infinity'
+        fail_msg: "The compressor timer is not enabled and waiting on its parsed schedule"
+        success_msg: "The compressor timer is enabled and waiting on its parsed schedule"
+
+    # no_block gives the test a window to inspect this otherwise-transient container. The
+    # command has already performed genuine compression before its final short sleep.
+    - name: Start the real compressor asynchronously
+      ansible.builtin.systemd_service:
+        name: matrix-synapse-auto-compressor.service
+        state: started
+        no_block: true
+      changed_when: true
+
+    - name: Wait for the transient compressor container to become inspectable
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-synapse-auto-compressor
+      register: matrix_synapse_auto_compressor_container_inspect
+      changed_when: false
+      until: matrix_synapse_auto_compressor_container_inspect.rc == 0
+      retries: 30
+      delay: 1
+      failed_when: false
+
+    - name: Parse the transient compressor container inspection
+      ansible.builtin.set_fact:
+        matrix_synapse_auto_compressor_container: >-
+          {{ (matrix_synapse_auto_compressor_container_inspect.stdout | from_json) | first }}
+
+    - name: Assert the live container uses the exact pinned image
+      ansible.builtin.assert:
+        that:
+          - >-
+            matrix_synapse_auto_compressor_container.Config.Image ==
+            'registry.gitlab.com/mb-saces/rust-synapse-tools:' + matrix_synapse_auto_compressor_role_defaults.matrix_synapse_auto_compressor_version
+        fail_msg: "The live compressor container does not use the image defaults/main.yml pins"
+        success_msg: "The live compressor container uses the image defaults/main.yml pins"
+
+    - name: Assert the live container process and environment contract
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_container.Config.User == '1234:1234'
+          - matrix_synapse_auto_compressor_container.Config.Entrypoint == ['/bin/sh']
+          - matrix_synapse_auto_compressor_container.Config.Cmd == ['-c', matrix_synapse_auto_compressor_expected_command]
+          - "'POSTGRES_LOCATION=' + matrix_synapse_auto_compressor_expected_postgres_location in matrix_synapse_auto_compressor_container.Config.Env"
+          - "'PGHOST=' + matrix_synapse_auto_compressor_database_hostname in matrix_synapse_auto_compressor_container.Config.Env"
+          - "'PGDATABASE=' + matrix_synapse_auto_compressor_database_name in matrix_synapse_auto_compressor_container.Config.Env"
+          - "'PGUSER=' + matrix_synapse_auto_compressor_database_username in matrix_synapse_auto_compressor_container.Config.Env"
+          - "'PGPASSWORD=' + matrix_synapse_auto_compressor_database_password in matrix_synapse_auto_compressor_container.Config.Env"
+        fail_msg: "The live compressor process does not carry the exact identity, command, and environment"
+        success_msg: "The live compressor process carries the exact identity, command, and environment"
+      no_log: true
+
+    - name: Assert the live container security contract
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_container.HostConfig.AutoRemove
+          - matrix_synapse_auto_compressor_container.HostConfig.ReadonlyRootfs
+          - "'ALL' in matrix_synapse_auto_compressor_container.HostConfig.CapDrop"
+          - matrix_synapse_auto_compressor_container.HostConfig.LogConfig.Type == 'none'
+          - matrix_synapse_auto_compressor_container.Mounts | length == 0
+        fail_msg: "The live compressor container does not carry its ephemeral security isolation"
+        success_msg: "The live compressor container carries its ephemeral security isolation"
+
+    - name: Assert the live container network contract
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_container_network in matrix_synapse_auto_compressor_container.NetworkSettings.Networks
+          - "'synapse-auto-compressor-extra-molecule' in matrix_synapse_auto_compressor_container.NetworkSettings.Networks"
+          - matrix_synapse_auto_compressor_container.NetworkSettings.Networks | length == 2
+        fail_msg: "The live compressor container does not have exactly its two configured networks"
+        success_msg: "The live compressor container has exactly its two configured networks"
+
+    - name: Assert the live container publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_container.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_synapse_auto_compressor_container.Config.ExposedPorts | default({}, true) | length == 0
+        fail_msg: "The live compressor container unexpectedly publishes a host port"
+        success_msg: "The live compressor container publishes no host ports"
+
+    - name: Assert the live container carries the scenario label
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_container.Config.Labels['molecule.contract'] == 'synapse-auto-compressor'
+        fail_msg: "The live compressor container does not carry its configured label"
+        success_msg: "The live compressor container carries its configured label"
+
+    - name: Wait for the oneshot compressor to finish
+      ansible.builtin.systemd_service:
+        name: matrix-synapse-auto-compressor.service
+      register: matrix_synapse_auto_compressor_service
+      until: matrix_synapse_auto_compressor_service.status.ActiveState in ['inactive', 'failed']
+      retries: 60
+      delay: 1
+      failed_when: false
+
+    - name: Assert the real compressor oneshot completed cleanly
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_service.status.ActiveState == 'inactive'
+          - matrix_synapse_auto_compressor_service.status.Result == 'success'
+          - matrix_synapse_auto_compressor_service.status.ExecMainCode == '1'
+          - matrix_synapse_auto_compressor_service.status.ExecMainStatus | int == 0
+          - matrix_synapse_auto_compressor_service.status.NRestarts is defined
+          - matrix_synapse_auto_compressor_service.status.NRestarts | int == 0
+        fail_msg: "The real compressor oneshot did not complete cleanly"
+        success_msg: "The real compressor oneshot completed cleanly"
+
+    - name: List the compressor-owned Postgres tables
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_synapse_database_user }}
+          - --dbname={{ matrix_synapse_database_database }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename LIKE 'state_compressor_%'
+      register: matrix_synapse_auto_compressor_owned_tables
+      changed_when: false
+
+    - name: Count rows in the compressor-owned progress tables
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_synapse_database_user }}
+          - --dbname={{ matrix_synapse_database_database }}
+          - --tuples-only
+          - --no-align
+          - >-
+            --command=SELECT
+            (SELECT COUNT(*) FROM state_compressor_state) || '|' ||
+            (SELECT COUNT(*) FROM state_compressor_progress) || '|' ||
+            (SELECT COUNT(*) FROM state_compressor_total_progress) || '|' ||
+            (SELECT COUNT(*) FROM state_compressor_state
+             WHERE room_id = '{{ matrix_synapse_auto_compressor_room.room_id }}') || '|' ||
+            (SELECT COUNT(*) FROM state_compressor_progress
+             WHERE room_id = '{{ matrix_synapse_auto_compressor_room.room_id }}')
+      register: matrix_synapse_auto_compressor_progress_counts
+      changed_when: false
+
+    - name: Assert the real compressor created durable database-side progress
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_owned_tables.rc == 0
+          - "'state_compressor_state' in matrix_synapse_auto_compressor_owned_table_names"
+          - "'state_compressor_progress' in matrix_synapse_auto_compressor_owned_table_names"
+          - "'state_compressor_total_progress' in matrix_synapse_auto_compressor_owned_table_names"
+          - matrix_synapse_auto_compressor_progress_counts.rc == 0
+          - matrix_synapse_auto_compressor_progress_count_values | length == 5
+          - matrix_synapse_auto_compressor_progress_count_values[0] | int > 0
+          - matrix_synapse_auto_compressor_progress_count_values[1] | int > 0
+          - matrix_synapse_auto_compressor_progress_count_values[2] | int > 0
+          - matrix_synapse_auto_compressor_progress_count_values[3] | int > 0
+          - matrix_synapse_auto_compressor_progress_count_values[4] | int > 0
+        fail_msg: "The real compressor did not leave durable progress for the API-created room"
+        success_msg: "The real compressor left durable progress for the API-created room and globally"
+      vars:
+        matrix_synapse_auto_compressor_owned_table_names: >-
+          {{ matrix_synapse_auto_compressor_owned_tables.stdout_lines | select | list }}
+        matrix_synapse_auto_compressor_progress_count_values: >-
+          {{ matrix_synapse_auto_compressor_progress_counts.stdout | trim | split('|') }}
+
+    - name: Confirm the ephemeral compressor container was removed
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-synapse-auto-compressor
+      register: matrix_synapse_auto_compressor_removed_container
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the completed compressor container was removed
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_auto_compressor_removed_container.rc != 0
+        fail_msg: "The completed ephemeral compressor container was not removed"
+        success_msg: "The completed ephemeral compressor container was removed"
