@@ -165,7 +165,10 @@ matrix_bridge_beeper_line_bridge_encryption_appservice: false
 matrix_bridge_beeper_line_bridge_encryption_key_sharing_allow: "{{ matrix_bridge_beeper_line_bridge_encryption_allow }}"
 matrix_bridge_beeper_line_bridge_encryption_pickle_key: mautrix.bridge.e2ee
 
-matrix_bridge_beeper_line_appservice_username_template: "{% raw %}line_{{.}}{% endraw %}"
+# Prefix of the localparts generated for LINE ghost users.
+# The bridge username template, appservice registration namespace, and Ketesa managed-user
+# allowlist are all derived from this value.
+matrix_bridge_beeper_line_appservice_username_prefix: line_
 
 # Shared secret for authentication of provisioning API requests.
 # If set to "disable", the provisioning API will be disabled.
@@ -210,7 +213,7 @@ matrix_bridge_beeper_line_registration_yaml: |
   rate_limited: false
   namespaces:
       users:
-      - regex: '^@line_.+:{{ matrix_bridge_beeper_line_homeserver_domain | regex_escape }}$'
+      - regex: '^@{{ matrix_bridge_beeper_line_appservice_username_prefix | regex_escape }}.+:{{ matrix_bridge_beeper_line_homeserver_domain | regex_escape }}$'
         exclusive: true
       - exclusive: true
         regex: '^@{{ matrix_bridge_beeper_line_appservice_bot_username | regex_escape }}:{{ matrix_bridge_beeper_line_homeserver_domain | regex_escape }}$'

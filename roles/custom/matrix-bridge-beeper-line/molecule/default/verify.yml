@@ -179,6 +179,7 @@
           - beeper_line_config.appservice.bot.avatar == matrix_bridge_beeper_line_appservice_bot_avatar
           - beeper_line_config.appservice.as_token == matrix_bridge_beeper_line_appservice_token
           - beeper_line_config.appservice.hs_token == matrix_bridge_beeper_line_homeserver_token
+          - beeper_line_config.appservice.username_template == matrix_bridge_beeper_line_appservice_username_prefix + '{' + '{.}' + '}'
         fail_msg: "The rendered configuration does not carry the scenario's appservice identity"
         success_msg: "The rendered configuration carries the scenario's appservice identity"
 
@@ -233,21 +234,23 @@
         fail_msg: "The registration does not carry the configured handshake values"
         success_msg: "The registration carries the configured handshake values"
 
-    - name: Assert the registration namespaces cover only LINE ghosts and the bridge bot
+    - name: Assert the registration namespaces use the shared LINE ghost prefix and cover the bridge bot
       ansible.builtin.assert:
         that:
-          - beeper_line_ghost_regex | length > 0
-          - beeper_line_bot_regex | length > 0
+          - beeper_line_registration.namespaces.users | length == 2
+          - beeper_line_ghost_regex == beeper_line_expected_ghost_regex
+          - beeper_line_bot_regex == beeper_line_expected_bot_regex
           - beeper_line_ghost_mxid is match(beeper_line_ghost_regex)
           - beeper_line_wrong_ghost_mxid is not match(beeper_line_ghost_regex)
           - beeper_line_bot_mxid is match(beeper_line_bot_regex)
-        fail_msg: "The registration namespaces do not cover only LINE ghosts and the bot"
-        success_msg: "The registration namespaces cover only LINE ghosts and the bot"
+        fail_msg: "The registration namespaces do not use the shared LINE ghost prefix or cover the bot"
+        success_msg: "The registration namespaces use the shared LINE ghost prefix and cover the bot"
       vars:
-        beeper_line_user_regexes: "{{ beeper_line_registration.namespaces.users | map(attribute='regex') | list }}"
-        beeper_line_ghost_regex: "{{ beeper_line_user_regexes | select('search', 'line_') | first | default('') }}"
-        beeper_line_bot_regex: "{{ beeper_line_user_regexes | reject('search', 'line_') | first | default('') }}"
-        beeper_line_ghost_mxid: "@line_moleculefixture:{{ matrix_bridge_beeper_line_homeserver_domain }}"
+        beeper_line_ghost_regex: "{{ beeper_line_registration.namespaces.users[0].regex }}"
+        beeper_line_bot_regex: "{{ beeper_line_registration.namespaces.users[1].regex }}"
+        beeper_line_expected_ghost_regex: '^@{{ matrix_bridge_beeper_line_appservice_username_prefix | regex_escape }}.+:{{ matrix_bridge_beeper_line_homeserver_domain | regex_escape }}$'
+        beeper_line_expected_bot_regex: '^@{{ matrix_bridge_beeper_line_appservice_bot_username | regex_escape }}:{{ matrix_bridge_beeper_line_homeserver_domain | regex_escape }}$'
+        beeper_line_ghost_mxid: "@{{ matrix_bridge_beeper_line_appservice_username_prefix }}moleculefixture:{{ matrix_bridge_beeper_line_homeserver_domain }}"
         beeper_line_wrong_ghost_mxid: "@twitter_moleculefixture:{{ matrix_bridge_beeper_line_homeserver_domain }}"
         beeper_line_bot_mxid: "@{{ matrix_bridge_beeper_line_appservice_bot_username }}:{{ matrix_bridge_beeper_line_homeserver_domain }}"
 

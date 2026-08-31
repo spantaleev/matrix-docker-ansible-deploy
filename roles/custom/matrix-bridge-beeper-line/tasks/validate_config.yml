@@ -11,7 +11,8 @@
       Your configuration contains a variable, which now has a different name.
       Please rename the variable (`{{ item.old }}` -> `{{ item.new }}`) on your configuration file (vars.yml).
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
-  with_items: []
+  with_items:
+    - {'old': 'matrix_bridge_beeper_line_appservice_username_template', 'new': 'matrix_bridge_beeper_line_appservice_username_prefix'}
 
 - name: Fail if required beeper-line settings not defined
   ansible.builtin.fail:
@@ -22,5 +23,6 @@
     - {'name': 'matrix_bridge_beeper_line_appservice_token', when: true}
     - {'name': 'matrix_bridge_beeper_line_homeserver_address', when: true}
     - {'name': 'matrix_bridge_beeper_line_homeserver_token', when: true}
+    - {'name': 'matrix_bridge_beeper_line_appservice_username_prefix', when: true}
     - {'name': 'matrix_bridge_beeper_line_database_hostname', when: "{{ matrix_bridge_beeper_line_database_engine == 'postgres' }}"}
     - {'name': 'matrix_bridge_beeper_line_container_network', when: true}
