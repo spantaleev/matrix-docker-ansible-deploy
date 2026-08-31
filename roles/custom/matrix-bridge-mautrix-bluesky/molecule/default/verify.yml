@@ -179,6 +179,7 @@
     - name: Assert the rendered configuration carries non-default bridge behavior
       ansible.builtin.assert:
         that:
+          - mautrix_bluesky_config.network.displayname_template == matrix_bridge_mautrix_bluesky_network_displayname_template
           - mautrix_bluesky_config.bridge.command_prefix == matrix_bridge_mautrix_bluesky_bridge_command_prefix
           - mautrix_bluesky_config.bridge.permissions['*'] == 'relay'
           - mautrix_bluesky_config.bridge.permissions[matrix_bridge_mautrix_bluesky_homeserver_domain] == 'admin'
