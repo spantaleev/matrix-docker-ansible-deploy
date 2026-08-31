@@ -1,0 +1,76 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-client-fluffychat-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        # Keep all support files outside the path derived from matrix_base_data_path,
+        # proving that the role consistently uses its configured storage contract.
+        matrix_client_fluffychat_base_path: /matrix/molecule-client-fluffychat
+        matrix_client_fluffychat_config_path: /matrix/molecule-client-fluffychat/browser-config
+
+        matrix_client_fluffychat_container_network: matrix-client-fluffychat-molecule
+
+        # The live /config.json response is the weight-bearing proof that this
+        # non-default setting reached the browser client through the role's mount.
+        matrix_client_fluffychat_config_defaultHomeserver: homeserver.fluffy.molecule.local
+
+        # Exercise non-default public routing and generated response-header labels.
+        matrix_client_fluffychat_hostname: chat.fluffy.molecule.local
+        matrix_client_fluffychat_path_prefix: /fluffy
+        matrix_client_fluffychat_container_labels_traefik_enabled: true
+        matrix_client_fluffychat_container_labels_traefik_priority: 731
+        matrix_client_fluffychat_container_labels_traefik_entrypoints: web
+        matrix_client_fluffychat_container_labels_traefik_tls: false
+        matrix_client_fluffychat_http_header_xss_protection: "0"
+        matrix_client_fluffychat_http_header_content_type_options: molecule-nosniff
+        matrix_client_fluffychat_http_header_content_security_policy: "frame-ancestors https://embed.molecule.local"
+        matrix_client_fluffychat_http_header_content_permission_policy: "camera=(self)"
+        matrix_client_fluffychat_container_labels_additional_labels: |
+          molecule.fluffychat.coverage=enabled
+
+        # Make the generic escape hatch observable in the running container.
+        matrix_client_fluffychat_container_extra_arguments:
+          - --hostname=fluffychat-molecule-runtime
+          - --label=molecule.fluffychat.extra-argument=reached
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

@@ -1,0 +1,343 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# FluffyChat Web is a static browser client. The live JSON configuration and a real
+# application asset are the weight-bearing probes; no homeserver account is needed.
+- name: Verify matrix-client-fluffychat
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_client_fluffychat_root_body: "{{ matrix_client_fluffychat_root_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_client_fluffychat_runtime: "{{ (matrix_client_fluffychat_container_inspect.stdout | from_json) | first }}"
+  gather_facts: false
+
+  tasks:
+    # Load the pin independently of the scenario so a role version bump advances
+    # the expected image instead of comparing two duplicated test values.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_client_fluffychat_role_defaults
+
+    - name: Wait for the matrix-client-fluffychat service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-client-fluffychat.service
+      register: matrix_client_fluffychat_service
+      until: matrix_client_fluffychat_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes ActiveState alone green even during a crash loop.
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_service.status.ActiveState == 'active'
+          - matrix_client_fluffychat_service.status.NRestarts is defined
+          - matrix_client_fluffychat_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-client-fluffychat.service is
+          {{ matrix_client_fluffychat_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_client_fluffychat_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-client-fluffychat.service is active and has not restarted"
+
+    # Probe through the private container network, matching how Traefik reaches the
+    # service in a deployment without publishing an artificial host port.
+    - name: Wait for FluffyChat to serve its application root
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_client_fluffychat_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-client-fluffychat:8080/
+      register: matrix_client_fluffychat_root_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_client_fluffychat_root_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the application root is real FluffyChat HTML
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_root_http.rc == 0
+          - matrix_client_fluffychat_root_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_client_fluffychat_root_body | trim | length > 500
+          - "'<!doctype html' in matrix_client_fluffychat_root_body | lower"
+          - "'fluffychat' in matrix_client_fluffychat_root_body | lower"
+        fail_msg: "FluffyChat did not return its real application HTML over the container network"
+        success_msg: "FluffyChat serves its real application root over HTTP"
+
+    - name: Fetch FluffyChat's live browser configuration
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_client_fluffychat_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}\nCONTENT_TYPE=%{content_type}"
+          - http://matrix-client-fluffychat:8080/config.json
+      register: matrix_client_fluffychat_config_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live browser configuration is served as JSON
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_config_http.rc == 0
+          - "'HTTP_STATUS=200' in matrix_client_fluffychat_config_http.stdout_lines"
+          - matrix_client_fluffychat_config_http.stdout | regex_search('(?m)^CONTENT_TYPE=application/json(?:;|$)') is not none
+        fail_msg: "FluffyChat did not serve its live browser configuration as JSON"
+        success_msg: "FluffyChat serves its live browser configuration as JSON"
+
+    - name: Parse the live browser configuration
+      ansible.builtin.set_fact:
+        matrix_client_fluffychat_live_config: >-
+          {{ matrix_client_fluffychat_config_http.stdout | regex_replace('\nHTTP_STATUS=[0-9]+\nCONTENT_TYPE=.*$', '') | from_json }}
+
+    - name: Assert the live configuration carries the configured homeserver
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_live_config is mapping
+          - matrix_client_fluffychat_live_config.keys() | list == ['defaultHomeserver']
+          - matrix_client_fluffychat_live_config.defaultHomeserver == matrix_client_fluffychat_config_defaultHomeserver
+        fail_msg: "The live config.json does not carry the non-default homeserver rendered by the role"
+        success_msg: "The live config.json carries the configured homeserver"
+
+    # Fetch a browser bundle referenced by the live HTML rather than assuming the
+    # container is useful just because nginx answered at its root.
+    - name: Extract a live FluffyChat application asset path
+      ansible.builtin.set_fact:
+        matrix_client_fluffychat_application_asset_path: >-
+          {{ matrix_client_fluffychat_root_body | regex_search('(?<=src=")[^"]+[.]js(?=")') }}
+
+    - name: Fetch the live FluffyChat application asset
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_client_fluffychat_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}\nCONTENT_TYPE=%{content_type}\nSIZE=%{size_download}"
+          - "http://matrix-client-fluffychat:8080/{{ matrix_client_fluffychat_application_asset_path }}"
+      register: matrix_client_fluffychat_asset_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert a real FluffyChat application asset is served
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_asset_http.rc == 0
+          - "'HTTP_STATUS=200' in matrix_client_fluffychat_asset_http.stdout_lines"
+          - matrix_client_fluffychat_asset_http.stdout | regex_search('(?m)^CONTENT_TYPE=(?:application|text)/javascript(?:;|$)') is not none
+          - matrix_client_fluffychat_asset_http.stdout | regex_search('(?m)^SIZE=([1-9][0-9]{3,})$') is not none
+        fail_msg: "FluffyChat did not serve the JavaScript asset referenced by its live HTML"
+        success_msg: "FluffyChat serves a substantial live application asset"
+
+    - name: Read the configuration file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_client_fluffychat_config_path }}/config.json"
+      register: matrix_client_fluffychat_rendered_config_file
+
+    - name: Assert the served and rendered structured configurations are identical
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_rendered_config == matrix_client_fluffychat_live_config
+        fail_msg: "The live configuration differs from the parsed file the role rendered"
+        success_msg: "The running service exposes the exact structured configuration the role rendered"
+      vars:
+        matrix_client_fluffychat_rendered_config: >-
+          {{ matrix_client_fluffychat_rendered_config_file.content | b64decode | from_json }}
+
+    - name: Read the labels file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_client_fluffychat_base_path }}/labels"
+      register: matrix_client_fluffychat_labels_file
+
+    - name: Initialize the parsed labels
+      ansible.builtin.set_fact:
+        matrix_client_fluffychat_labels_parsed: {}
+
+    - name: Parse the rendered labels
+      ansible.builtin.set_fact:
+        matrix_client_fluffychat_labels_parsed: >-
+          {{ matrix_client_fluffychat_labels_parsed | combine({item.split('=', 1)[0]: item.split('=', 1)[1]}) }}
+      loop: "{{ (matrix_client_fluffychat_labels_file.content | b64decode).splitlines() | reject('equalto', '') }}"
+      when: "'=' in item"
+      no_log: true
+
+    - name: Assert the rendered labels carry the public routing contract
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_labels_parsed['traefik.enable'] == 'true'
+          - matrix_client_fluffychat_labels_parsed['traefik.docker.network'] == matrix_client_fluffychat_container_network
+          - matrix_client_fluffychat_labels_parsed['traefik.http.services.matrix-client-fluffychat.loadbalancer.server.port'] == '8080'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.routers.matrix-client-fluffychat.rule'] == 'Host(`chat.fluffy.molecule.local`) && PathPrefix(`/fluffy`)'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.routers.matrix-client-fluffychat.priority'] == '731'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.routers.matrix-client-fluffychat.entrypoints'] == 'web'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.routers.matrix-client-fluffychat.tls'] == 'false'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.routers.matrix-client-fluffychat.middlewares'] == 'matrix-client-fluffychat-slashless-redirect,matrix-client-fluffychat-strip-prefix,matrix-client-fluffychat-add-headers'
+          - matrix_client_fluffychat_labels_parsed['molecule.fluffychat.coverage'] == 'enabled'
+        fail_msg: "The parsed labels do not carry the scenario's routing contract"
+        success_msg: "The parsed labels carry the scenario's routing contract"
+
+    - name: Assert the rendered labels carry the configured response headers
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_labels_parsed['traefik.http.middlewares.matrix-client-fluffychat-add-headers.headers.customresponseheaders.X-XSS-Protection'] == '0'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.middlewares.matrix-client-fluffychat-add-headers.headers.customresponseheaders.X-Content-Type-Options'] == 'molecule-nosniff'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.middlewares.matrix-client-fluffychat-add-headers.headers.customresponseheaders.Content-Security-Policy'] == 'frame-ancestors https://embed.molecule.local'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.middlewares.matrix-client-fluffychat-add-headers.headers.customresponseheaders.Permission-Policy'] == 'camera=(self)'
+          - "'traefik.http.middlewares.matrix-client-fluffychat-add-headers.headers.customresponseheaders.Strict-Transport-Security' not in matrix_client_fluffychat_labels_parsed"
+        fail_msg: "The parsed labels lost response headers or incorrectly enable HSTS without TLS"
+        success_msg: "The parsed labels carry the configured response-header contract"
+
+    - name: Inspect the running FluffyChat container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-client-fluffychat
+      register: matrix_client_fluffychat_container_inspect
+      changed_when: false
+
+    - name: Assert the rendered labels reached the running container
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.Config.Labels['traefik.enable'] == 'true'
+          - matrix_client_fluffychat_runtime.Config.Labels['traefik.docker.network'] == matrix_client_fluffychat_container_network
+          - matrix_client_fluffychat_runtime.Config.Labels['traefik.http.routers.matrix-client-fluffychat.priority'] == '731'
+          - matrix_client_fluffychat_runtime.Config.Labels['molecule.fluffychat.coverage'] == 'enabled'
+          - matrix_client_fluffychat_runtime.Config.Labels['molecule.fluffychat.extra-argument'] == 'reached'
+        fail_msg: "The running container does not carry the labels the role rendered and passed"
+        success_msg: "The configured labels reached the running container"
+
+    - name: Assert the running container uses the exact image and version the role pins
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.Config.Image == matrix_client_fluffychat_expected_image
+        fail_msg: >-
+          The running container uses {{ matrix_client_fluffychat_runtime.Config.Image }},
+          expected {{ matrix_client_fluffychat_expected_image }}
+        success_msg: "The running container uses the exact image and version defaults/main.yml pins"
+      vars:
+        matrix_client_fluffychat_expected_image: >-
+          {{ matrix_client_fluffychat_role_defaults.matrix_client_fluffychat_container_image_registry_prefix_upstream_default }}etkecc/fluffychat-web:{{ matrix_client_fluffychat_role_defaults.matrix_client_fluffychat_version }}
+
+    - name: Assert the running container uses the configured UID and GID
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.Config.User == (matrix_user_uid | string) ~ ':' ~ (matrix_user_gid | string)
+        fail_msg: >-
+          The running container uses {{ matrix_client_fluffychat_runtime.Config.User }},
+          expected {{ matrix_user_uid }}:{{ matrix_user_gid }}
+        success_msg: "The running container uses the configured UID and GID"
+
+    - name: Assert the running container keeps the image command contract
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.Config.Entrypoint == ['/usr/local/bin/entrypoint.sh']
+          - matrix_client_fluffychat_runtime.Config.Cmd == ['static-web-server']
+          - matrix_client_fluffychat_runtime.HostConfig.RestartPolicy.Name == 'no'
+          - matrix_client_fluffychat_runtime.HostConfig.AutoRemove is sameas true
+          - matrix_client_fluffychat_runtime.HostConfig.LogConfig.Type == 'none'
+        fail_msg: >-
+          FluffyChat has unexpected command or Docker lifecycle values:
+          entrypoint={{ matrix_client_fluffychat_runtime.Config.Entrypoint }},
+          command={{ matrix_client_fluffychat_runtime.Config.Cmd }},
+          restart={{ matrix_client_fluffychat_runtime.HostConfig.RestartPolicy.Name }},
+          auto-remove={{ matrix_client_fluffychat_runtime.HostConfig.AutoRemove }},
+          log-driver={{ matrix_client_fluffychat_runtime.HostConfig.LogConfig.Type }}
+        success_msg: "The role preserves the image command and exact Docker lifecycle contract"
+
+    - name: Assert the running container security contract
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.HostConfig.ReadonlyRootfs is sameas true
+          - matrix_client_fluffychat_runtime.HostConfig.Privileged is sameas false
+          - matrix_client_fluffychat_runtime.HostConfig.CapAdd | default([], true) | length == 0
+          - matrix_client_fluffychat_runtime.HostConfig.CapDrop == ['ALL']
+        fail_msg: "The FluffyChat container is missing its read-only root or dropped capabilities"
+        success_msg: "The FluffyChat container has a read-only root and all capabilities dropped"
+
+    - name: Assert the intended writable path is a constrained tmpfs mount
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.HostConfig.Tmpfs.keys() | list == ['/tmp']
+          - matrix_client_fluffychat_runtime.HostConfig.Tmpfs['/tmp'] == 'rw,noexec,nosuid,size=10m'
+        fail_msg: "The running container does not have the role's exact /tmp tmpfs contract"
+        success_msg: "The running container has the exact constrained /tmp tmpfs mount"
+
+    - name: Assert the role's configuration is mounted read-only at the image path
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.Mounts | length == 1
+          - matrix_client_fluffychat_runtime.Mounts[0].Type == 'bind'
+          - matrix_client_fluffychat_runtime.Mounts[0].Source == matrix_client_fluffychat_config_path ~ '/config.json'
+          - matrix_client_fluffychat_runtime.Mounts[0].Destination == '/var/public/config.json'
+          - matrix_client_fluffychat_runtime.Mounts[0].RW is sameas false
+        fail_msg: "The role-rendered config.json is not the container's sole read-only bind mount"
+        success_msg: "The role-rendered config.json is mounted read-only at the image's live path"
+
+    - name: Assert the running container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.HostConfig.NetworkMode == matrix_client_fluffychat_container_network
+          - matrix_client_fluffychat_runtime.NetworkSettings.Networks is mapping
+          - matrix_client_fluffychat_runtime.NetworkSettings.Networks | length == 1
+          - matrix_client_fluffychat_container_network in matrix_client_fluffychat_runtime.NetworkSettings.Networks
+        fail_msg: >-
+          FluffyChat has unexpected network attachments:
+          {{ matrix_client_fluffychat_runtime.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The running container is attached only to its dedicated network"
+
+    - name: Assert the observable extra runtime argument reached Docker
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.Config.Hostname == 'fluffychat-molecule-runtime'
+        fail_msg: "The configured container hostname extra argument did not reach Docker"
+        success_msg: "The configured container extra argument reached Docker"
+
+    - name: Ask Docker for FluffyChat's published ports
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - port
+          - matrix-client-fluffychat
+      register: matrix_client_fluffychat_published_ports
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the role publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_client_fluffychat_published_ports.rc == 0
+          - matrix_client_fluffychat_published_ports.stdout | trim | length == 0
+        fail_msg: >-
+          FluffyChat unexpectedly publishes a host port:
+          {{ matrix_client_fluffychat_published_ports.stdout | default('unknown') }}
+        success_msg: "The role leaves FluffyChat's HTTP port unpublished"

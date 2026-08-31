@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Include roles for matrix-client-fluffychat Molecule tests
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: true
+  tasks:
+    - name: Include base roles for matrix-client-fluffychat Molecule tests
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"
+        public: true
+      loop:
+        - com.devture.ansible.role.playbook_help
+        - com.devture.ansible.role.systemd_docker_base
+      loop_control:
+        loop_var: role_name
+
+    # main.yml also invokes the separately-tagged public self-check. In the full
+    # playbook that runs only after systemd_service_manager has started services.
+    - name: Include matrix-client-fluffychat setup task files
+      ansible.builtin.include_role:
+        name: "custom/{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+        public: true
+        tasks_from: "{{ role_task_file }}"
+      loop:
+        - validate_config.yml
+        - setup_install.yml
+      loop_control:
+        loop_var: role_task_file
+
+# The component role installs the unit; the full playbook's systemd service manager
+# starts it. Keep the role-scoped scenario at the same boundary and start it directly.
+- name: Ensure matrix-client-fluffychat is started
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Ensure systemd daemon is reloaded
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: Ensure the matrix-client-fluffychat systemd service is started
+      ansible.builtin.systemd_service:
+        name: matrix-client-fluffychat.service
+        state: started
