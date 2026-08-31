@@ -1,0 +1,381 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the bridge accepts role-rendered config and registration, starts without a
+# Google account, initializes real Postgres, and exposes its authenticated login API.
+- name: Verify mautrix-gvoice
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    mautrix_gvoice_config: "{{ mautrix_gvoice_config_file.content | b64decode | from_yaml }}"
+    mautrix_gvoice_registration: "{{ mautrix_gvoice_registration_file.content | b64decode | from_yaml }}"
+    mautrix_gvoice_labels_rendered: "{{ mautrix_gvoice_labels_file.content | b64decode }}"
+    mautrix_gvoice_expected_public_address: http://gvoice-api.molecule.local/bridges/gvoice-api
+  gather_facts: false
+  tasks:
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_gvoice_role_defaults
+
+    - name: Wait for the mautrix-gvoice service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-gvoice.service
+      register: mautrix_gvoice_service
+      until: mautrix_gvoice_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_service.status.ActiveState == 'active'
+          - mautrix_gvoice_service.status.NRestarts is defined
+          - mautrix_gvoice_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-gvoice.service is {{ mautrix_gvoice_service.status.ActiveState | default('unknown') }}
+          after {{ mautrix_gvoice_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-mautrix-gvoice.service is active and has not restarted"
+
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_gvoice_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-gvoice:8080/_matrix/mau/live
+      register: mautrix_gvoice_live
+      changed_when: false
+      until: mautrix_gvoice_live.rc == 0 and mautrix_gvoice_live.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_gvoice_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-gvoice:8080/_matrix/mau/ready
+      register: mautrix_gvoice_ready
+      changed_when: false
+      until: mautrix_gvoice_ready.rc == 0 and mautrix_gvoice_ready.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on the configured appservice port
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_live.rc == 0
+          - mautrix_gvoice_live.stdout == 'HTTP_STATUS=200'
+          - mautrix_gvoice_ready.rc == 0
+          - mautrix_gvoice_ready.stdout == 'HTTP_STATUS=200'
+        fail_msg: >-
+          Health probes returned live={{ mautrix_gvoice_live.stdout | default('none') }} and
+          ready={{ mautrix_gvoice_ready.stdout | default('none') }}
+        success_msg: "The bridge is live and ready on the configured appservice port"
+
+    # This reaches the network connector's login-flow handler but supplies no Google
+    # credentials and starts no third-party login.
+    - name: Query the authenticated provisioning login flows
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_gvoice_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail-with-body
+          - --header
+          - "Authorization: Bearer {{ matrix_bridge_mautrix_gvoice_provisioning_shared_secret }}"
+          - "http://matrix-mautrix-gvoice:8080/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: mautrix_gvoice_login_flows
+      changed_when: false
+
+    - name: Query the provisioning API with an invalid secret
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_gvoice_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - --header
+          - "Authorization: Bearer definitely-wrong-molecule-secret"
+          - "http://matrix-mautrix-gvoice:8080/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: mautrix_gvoice_login_flows_unauthorized
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live provisioning API enforces auth and advertises cookie login
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_login_flows.rc == 0
+          - (mautrix_gvoice_login_flows.stdout | from_json).flows is sequence
+          - (mautrix_gvoice_login_flows.stdout | from_json).flows | length == 1
+          - (mautrix_gvoice_login_flows.stdout | from_json)['flows'][0]['id'] == 'cookies'
+          - mautrix_gvoice_login_flows_unauthorized.rc == 0
+          - mautrix_gvoice_login_flows_unauthorized.stdout == 'HTTP_STATUS=401'
+        fail_msg: "The provisioning API did not enforce its secret or advertise cookie login"
+        success_msg: "The provisioning API enforces its secret and advertises cookie login"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_gvoice_config_path }}/config.yaml"
+      register: mautrix_gvoice_config_file
+
+    - name: Assert the rendered configuration carries the appservice identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_config.homeserver.address == matrix_bridge_mautrix_gvoice_homeserver_address
+          - mautrix_gvoice_config.homeserver.domain == matrix_bridge_mautrix_gvoice_homeserver_domain
+          - mautrix_gvoice_config.appservice.id == 'gvoice'
+          - mautrix_gvoice_config.appservice.address == 'http://matrix-mautrix-gvoice:8080'
+          - mautrix_gvoice_config.appservice.public_address == mautrix_gvoice_expected_public_address
+          - mautrix_gvoice_config.appservice.bot.username == matrix_bridge_mautrix_gvoice_appservice_bot_username
+          - mautrix_gvoice_config.appservice.as_token == matrix_bridge_mautrix_gvoice_appservice_token
+          - mautrix_gvoice_config.appservice.hs_token == matrix_bridge_mautrix_gvoice_homeserver_token
+          - mautrix_gvoice_config.appservice.username_template == matrix_bridge_mautrix_gvoice_appservice_username_template
+        fail_msg: "The rendered configuration does not carry the scenario's appservice identity"
+        success_msg: "The rendered configuration carries the scenario's appservice identity"
+
+    - name: Assert the rendered configuration carries non-default bridge behavior
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_config.bridge.command_prefix == matrix_bridge_mautrix_gvoice_command_prefix
+          - not mautrix_gvoice_config.bridge.personal_filtering_spaces
+          - not mautrix_gvoice_config.matrix.federate_rooms
+          - mautrix_gvoice_config.network.displayname_template == matrix_bridge_mautrix_gvoice_network_displayname_template
+          - mautrix_gvoice_config.provisioning.shared_secret == matrix_bridge_mautrix_gvoice_provisioning_shared_secret
+          - mautrix_gvoice_config.logging.min_level == matrix_bridge_mautrix_gvoice_logging_level
+        fail_msg: "The rendered configuration does not carry the scenario's bridge behavior"
+        success_msg: "The rendered configuration carries the scenario's bridge behavior"
+
+    - name: Assert the rendered configuration carries the non-default backfill policy
+      ansible.builtin.assert:
+        that:
+          - not mautrix_gvoice_config.backfill.enabled
+          - mautrix_gvoice_config.backfill.max_initial_messages == 19
+          - mautrix_gvoice_config.backfill.max_catchup_messages == 31
+          - mautrix_gvoice_config.backfill.unread_hours_threshold == 67
+          - mautrix_gvoice_config.backfill.threads.max_initial_messages == 11
+        fail_msg: "The rendered configuration does not carry the scenario's backfill policy"
+        success_msg: "The rendered configuration carries the scenario's backfill policy"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_config.database.type == matrix_bridge_mautrix_gvoice_database_engine
+          - matrix_bridge_mautrix_gvoice_database_username in mautrix_gvoice_config.database.uri
+          - matrix_bridge_mautrix_gvoice_database_hostname in mautrix_gvoice_config.database.uri
+          - matrix_bridge_mautrix_gvoice_database_name in mautrix_gvoice_config.database.uri
+        fail_msg: >-
+          database.uri is {{ mautrix_gvoice_config.database.uri | default('unset') }}, which
+          was not composed from the scenario's connection settings
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_gvoice_config_path }}/registration.yaml"
+      register: mautrix_gvoice_registration_file
+
+    - name: Assert the registration carries the configured handshake values
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_registration.id == 'gvoice'
+          - mautrix_gvoice_registration.as_token == matrix_bridge_mautrix_gvoice_appservice_token
+          - mautrix_gvoice_registration.hs_token == matrix_bridge_mautrix_gvoice_homeserver_token
+          - mautrix_gvoice_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_gvoice_appservice_bot_username
+          - mautrix_gvoice_registration.url == 'http://matrix-mautrix-gvoice:8080'
+        fail_msg: "The registration does not carry the configured handshake values"
+        success_msg: "The registration carries the configured handshake values"
+
+    - name: Assert the registration namespaces cover only GVoice ghosts and the bridge bot
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_ghost_regex | length > 0
+          - mautrix_gvoice_bot_regex | length > 0
+          - mautrix_gvoice_ghost_mxid is match(mautrix_gvoice_ghost_regex)
+          - mautrix_gvoice_wrong_ghost_mxid is not match(mautrix_gvoice_ghost_regex)
+          - mautrix_gvoice_bot_mxid is match(mautrix_gvoice_bot_regex)
+        fail_msg: "The registration namespaces do not cover only GVoice ghosts and the bot"
+        success_msg: "The registration namespaces cover only GVoice ghosts and the bot"
+      vars:
+        mautrix_gvoice_user_regexes: "{{ mautrix_gvoice_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_gvoice_ghost_regex: "{{ mautrix_gvoice_user_regexes | select('search', 'gvoice_') | first | default('') }}"
+        mautrix_gvoice_bot_regex: "{{ mautrix_gvoice_user_regexes | reject('search', 'gvoice_') | first | default('') }}"
+        mautrix_gvoice_ghost_mxid: "@gvoice_15551234567:{{ matrix_bridge_mautrix_gvoice_homeserver_domain }}"
+        mautrix_gvoice_wrong_ghost_mxid: "@googlechat_15551234567:{{ matrix_bridge_mautrix_gvoice_homeserver_domain }}"
+        mautrix_gvoice_bot_mxid: "@{{ matrix_bridge_mautrix_gvoice_appservice_bot_username }}:{{ matrix_bridge_mautrix_gvoice_homeserver_domain }}"
+
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_gvoice_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_gvoice_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: mautrix_gvoice_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_tables.rc == 0
+          - "'version' in mautrix_gvoice_table_names"
+          - "'portal' in mautrix_gvoice_table_names"
+          - "'user_login' in mautrix_gvoice_table_names"
+          - "'message' in mautrix_gvoice_table_names"
+          - "'gvoice_version' in mautrix_gvoice_table_names"
+          - "'gvoice_login_prefix' in mautrix_gvoice_table_names"
+          - mautrix_gvoice_table_names | length >= 19
+        fail_msg: >-
+          The bridge did not migrate its schema into {{ matrix_bridge_mautrix_gvoice_database_name }}
+          (found {{ mautrix_gvoice_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        mautrix_gvoice_table_names: "{{ mautrix_gvoice_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_gvoice_base_path }}/labels"
+      register: mautrix_gvoice_labels_file
+
+    - name: Assert the labels route the public endpoint to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_gvoice_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_gvoice_container_network in mautrix_gvoice_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-gvoice-exposure.loadbalancer.server.port=8080' in mautrix_gvoice_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-gvoice-exposure.rule=Host(`gvoice-api.molecule.local`) && PathPrefix(`/bridges/gvoice-api`)' in mautrix_gvoice_labels_rendered"
+          - "'traefik.http.middlewares.matrix-mautrix-gvoice-exposure-strip-prefix.stripprefix.prefixes=/bridges/gvoice-api' in mautrix_gvoice_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-gvoice-exposure.entrypoints=web' in mautrix_gvoice_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-gvoice-exposure.tls=false' in mautrix_gvoice_labels_rendered"
+          - "'molecule.gvoice.coverage=enabled' in mautrix_gvoice_labels_rendered"
+        fail_msg: "The rendered labels do not carry the scenario's exposure configuration"
+        success_msg: "The rendered labels carry the scenario's exposure configuration"
+
+    - name: Inspect the running bridge container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-gvoice
+      register: mautrix_gvoice_container_inspect
+      changed_when: false
+
+    - name: Parse the running bridge container inspection
+      ansible.builtin.set_fact:
+        mautrix_gvoice_container: "{{ (mautrix_gvoice_container_inspect.stdout | from_json) | first }}"
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_container.Config.Image == mautrix_gvoice_expected_image
+        fail_msg: >-
+          The running container uses {{ mautrix_gvoice_container.Config.Image }}, expected
+          {{ mautrix_gvoice_expected_image }}
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        mautrix_gvoice_expected_image: >-
+          {{ mautrix_gvoice_role_defaults.matrix_bridge_mautrix_gvoice_container_image_registry_prefix_upstream_default }}mautrix/gvoice:{{ mautrix_gvoice_role_defaults.matrix_bridge_mautrix_gvoice_version }}
+
+    - name: Assert the running container uses the playbook-supplied runtime
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+          - mautrix_gvoice_container.Config.WorkingDir == '/data'
+          - mautrix_gvoice_container.Config.Cmd == ['/usr/bin/mautrix-gvoice', '-c', '/config/config.yaml', '-r', '/config/registration.yaml', '--no-update']
+          - mautrix_gvoice_container.HostConfig.RestartPolicy.Name == 'no'
+          - mautrix_gvoice_container.HostConfig.AutoRemove
+          - mautrix_gvoice_container.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container does not use the role's exact identity, command and workdir"
+        success_msg: "The running container uses the role's exact identity, command and workdir"
+
+    - name: Assert the running container has the intended privilege isolation
+      ansible.builtin.assert:
+        that:
+          - "'ALL' in mautrix_gvoice_container.HostConfig.CapDrop"
+          - not mautrix_gvoice_container.HostConfig.Privileged
+        fail_msg: "The running container does not have the intended privilege isolation"
+        success_msg: "The running container drops all capabilities and is unprivileged"
+
+    - name: Assert the running container carries the role's two bind mounts
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_config_mount | length > 0
+          - mautrix_gvoice_config_mount.Source == matrix_bridge_mautrix_gvoice_config_path
+          - not mautrix_gvoice_config_mount.RW
+          - mautrix_gvoice_data_mount | length > 0
+          - mautrix_gvoice_data_mount.Source == matrix_bridge_mautrix_gvoice_data_path
+          - mautrix_gvoice_data_mount.RW
+          - mautrix_gvoice_container.Mounts | length == 2
+        fail_msg: "The running container does not carry the role's exact config and data mounts"
+        success_msg: "The running container carries its read-only config and writable data mounts"
+      vars:
+        mautrix_gvoice_config_mount: >-
+          {{ mautrix_gvoice_container.Mounts
+             | selectattr('Destination', 'equalto', '/config')
+             | first | default({}) }}
+        mautrix_gvoice_data_mount: >-
+          {{ mautrix_gvoice_container.Mounts
+             | selectattr('Destination', 'equalto', '/data')
+             | first | default({}) }}
+
+    - name: Assert the rendered labels are attached to the running container
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_container.Config.Labels['traefik.enable'] == 'true'
+          - mautrix_gvoice_container.Config.Labels['traefik.docker.network'] == matrix_bridge_mautrix_gvoice_container_network
+          - mautrix_gvoice_container.Config.Labels['traefik.http.services.matrix-mautrix-gvoice-exposure.loadbalancer.server.port'] == '8080'
+          - mautrix_gvoice_container.Config.Labels['molecule.gvoice.coverage'] == 'enabled'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The running container carries the labels the role rendered"
+
+    - name: Assert the running container has the exact network and port exposure
+      ansible.builtin.assert:
+        that:
+          - mautrix_gvoice_container.HostConfig.NetworkMode == matrix_bridge_mautrix_gvoice_container_network
+          - matrix_bridge_mautrix_gvoice_container_network in mautrix_gvoice_container.NetworkSettings.Networks
+          - mautrix_gvoice_container.NetworkSettings.Networks | length == 1
+          - mautrix_gvoice_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: >-
+          The container has unexpected networks or host ports:
+          networks={{ mautrix_gvoice_container.NetworkSettings.Networks.keys() | list }},
+          ports={{ mautrix_gvoice_container.HostConfig.PortBindings | default({}) }}
+        success_msg: "The container uses only its dedicated network and publishes no host ports"
