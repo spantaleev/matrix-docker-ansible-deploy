@@ -99,23 +99,29 @@
         - matrix_livekit_jwt_service_molecule_network.rc != 0
         - "'already exists' not in matrix_livekit_jwt_service_molecule_network.stderr"
 
+    - name: Ensure a previous HTTPS OpenID fixture is gone
+      ansible.builtin.command:
+        argv:
+          - docker
+          - rm
+          - --force
+          - matrix-livekit-jwt-openid-fixture
+      register: matrix_livekit_jwt_service_openid_fixture_removal
+      changed_when: matrix_livekit_jwt_service_openid_fixture_removal.rc == 0
+      failed_when: false
+
     - name: Ensure the HTTPS OpenID fixture is running
-      community.docker.docker_container:
-        name: matrix-livekit-jwt-openid-fixture
-        image: "{{ molecule_shared_image_python }}"
-        pull: always
-        command:
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --detach
+          - --name=matrix-livekit-jwt-openid-fixture
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - --network-alias=matrix-openid-fixture
+          - --mount=type=bind,src=/matrix/molecule-livekit-openid-fixture,dst=/fixture,readonly
+          - "{{ molecule_shared_image_python }}"
           - python3
           - /fixture/openid-fixture.py
-        mounts:
-          - source: /matrix/molecule-livekit-openid-fixture
-            target: /fixture
-            type: bind
-            read_only: true
-        networks:
-          - name: "{{ matrix_livekit_jwt_service_container_network }}"
-            aliases:
-              - matrix-openid-fixture
-        comparisons:
-          networks: strict
-        state: started
+      register: matrix_livekit_jwt_service_openid_fixture_start
+      changed_when: matrix_livekit_jwt_service_openid_fixture_start.rc == 0
