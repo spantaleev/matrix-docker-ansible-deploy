@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: mautrix-googlechat-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_mautrix_googlechat_container_network: mautrix-googlechat-molecule
+
+        # The stub is the Matrix-side boundary. The scenario carries no Google account
+        # and does not attempt to log in to Google Chat.
+        matrix_bridge_mautrix_googlechat_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bridge_mautrix_googlechat_homeserver_domain: molecule.local
+        matrix_homeserver_url: http://matrix.molecule.local:8008
+
+        # Postgres is the normal deployment path. Non-default identifiers make its schema
+        # evidence that the role composed and supplied this exact connection string.
+        matrix_bridge_mautrix_googlechat_database_engine: postgres
+        matrix_bridge_mautrix_googlechat_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_googlechat_database_name: molecule_googlechat
+        matrix_bridge_mautrix_googlechat_database_username: molecule_googlechat
+        matrix_bridge_mautrix_googlechat_database_password: molecule_pg_password_7c1d43
+
+        matrix_bridge_mautrix_googlechat_appservice_token: molecule_googlechat_as_token_96c74e
+        matrix_bridge_mautrix_googlechat_homeserver_token: molecule_googlechat_hs_token_51a2d8
+
+        # These differ from role/component defaults so parsed assertions prove rendering.
+        matrix_bridge_mautrix_googlechat_appservice_bot_username: molecule-googlechatbot
+        matrix_bridge_mautrix_googlechat_command_prefix: "!molecule-googlechat"
+        matrix_bridge_mautrix_googlechat_logging_level: INFO
+        matrix_bridge_mautrix_googlechat_federate_rooms: false
+        matrix_bridge_mautrix_googlechat_login_shared_secret: molecule_googlechat_login_secret_6832f1
+        matrix_bridge_mautrix_googlechat_metrics_enabled: true
+
+        # Traefik is not started; these values exercise role-rendered routing labels.
+        matrix_bridge_mautrix_googlechat_public_endpoint: /molecule-googlechat
+        matrix_bridge_mautrix_googlechat_container_labels_public_endpoint_hostname: googlechat.molecule.local
+        matrix_bridge_mautrix_googlechat_container_labels_public_endpoint_path_prefix: /molecule-googlechat
+        matrix_bridge_mautrix_googlechat_container_labels_public_endpoint_traefik_entrypoints: web
+        matrix_bridge_mautrix_googlechat_container_labels_metrics_enabled: true
+        matrix_bridge_mautrix_googlechat_metrics_proxying_hostname: metrics.molecule.local
+        matrix_bridge_mautrix_googlechat_metrics_proxying_path_prefix: /metrics/googlechat
+        matrix_bridge_mautrix_googlechat_container_labels_metrics_traefik_entrypoints: web
+        matrix_bridge_mautrix_googlechat_container_labels_additional_labels: |
+          molecule.googlechat.coverage=enabled
+
+        # verify.yml is a separate play, where role defaults are out of scope.
+        matrix_bridge_mautrix_googlechat_base_path: /matrix/mautrix-googlechat
+        matrix_bridge_mautrix_googlechat_config_path: /matrix/mautrix-googlechat/config
+        matrix_bridge_mautrix_googlechat_data_path: /matrix/mautrix-googlechat/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

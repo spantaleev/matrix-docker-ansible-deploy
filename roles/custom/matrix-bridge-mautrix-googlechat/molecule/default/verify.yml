@@ -1,0 +1,344 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the old Python bridge accepts the role-rendered configuration, completes its
+# Matrix-side startup, migrates real Postgres and exposes its appservice and metrics.
+- name: Verify mautrix-googlechat
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    mautrix_googlechat_config: "{{ mautrix_googlechat_config_file.content | b64decode | from_yaml }}"
+    mautrix_googlechat_registration: "{{ mautrix_googlechat_registration_file.content | b64decode | from_yaml }}"
+    mautrix_googlechat_labels_rendered: "{{ mautrix_googlechat_labels_file.content | b64decode }}"
+  gather_facts: false
+  tasks:
+    # Read the version from the role so a Renovate bump changes the expected image.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_googlechat_role_defaults
+
+    - name: Wait for the mautrix-googlechat service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-googlechat.service
+      register: mautrix_googlechat_service
+      until: mautrix_googlechat_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_service.status.ActiveState == 'active'
+          - mautrix_googlechat_service.status.NRestarts is defined
+          - mautrix_googlechat_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-googlechat.service is
+          {{ mautrix_googlechat_service.status.ActiveState | default('unknown') }} after
+          {{ mautrix_googlechat_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-mautrix-googlechat.service is active and has not restarted"
+
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_googlechat_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-googlechat:8080/_matrix/mau/live
+      register: mautrix_googlechat_live
+      changed_when: false
+      until: mautrix_googlechat_live.rc == 0 and mautrix_googlechat_live.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_googlechat_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-googlechat:8080/_matrix/mau/ready
+      register: mautrix_googlechat_ready
+      changed_when: false
+      until: mautrix_googlechat_ready.rc == 0 and mautrix_googlechat_ready.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on its appservice listener
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_live.rc == 0
+          - mautrix_googlechat_live.stdout == 'HTTP_STATUS=200'
+          - mautrix_googlechat_ready.rc == 0
+          - mautrix_googlechat_ready.stdout == 'HTTP_STATUS=200'
+        fail_msg: >-
+          Health probes returned live={{ mautrix_googlechat_live.stdout | default('none') }} and
+          ready={{ mautrix_googlechat_ready.stdout | default('none') }}
+        success_msg: "The bridge is live and ready on its appservice listener"
+
+    - name: Query the enabled metrics listener
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_googlechat_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail
+          - http://matrix-mautrix-googlechat:8000/metrics
+      register: mautrix_googlechat_metrics
+      changed_when: false
+
+    - name: Assert the live metrics surface comes from the running Python bridge
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_metrics.rc == 0
+          - "'# HELP python_gc_objects_collected_total' in mautrix_googlechat_metrics.stdout"
+          - "'# HELP process_start_time_seconds' in mautrix_googlechat_metrics.stdout"
+          - "'# HELP python_info' in mautrix_googlechat_metrics.stdout"
+        fail_msg: "The enabled metrics listener did not expose the Python process metrics"
+        success_msg: "The enabled metrics listener exposes the Python process metrics"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_googlechat_config_path }}/config.yaml"
+      register: mautrix_googlechat_config_file
+
+    - name: Assert the rendered configuration carries the appservice identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_config.homeserver.address == matrix_bridge_mautrix_googlechat_homeserver_address
+          - mautrix_googlechat_config.homeserver.domain == matrix_bridge_mautrix_googlechat_homeserver_domain
+          - mautrix_googlechat_config.appservice.id == 'googlechat'
+          - mautrix_googlechat_config.appservice.address == 'http://matrix-mautrix-googlechat:8080'
+          - mautrix_googlechat_config.appservice.bot_username == matrix_bridge_mautrix_googlechat_appservice_bot_username
+          - mautrix_googlechat_config.appservice.as_token == matrix_bridge_mautrix_googlechat_appservice_token
+          - mautrix_googlechat_config.appservice.hs_token == matrix_bridge_mautrix_googlechat_homeserver_token
+        fail_msg: "The rendered configuration does not carry the scenario's appservice identity"
+        success_msg: "The rendered configuration carries the scenario's appservice identity"
+
+    - name: Assert the rendered configuration carries non-default bridge behavior
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_config.bridge.command_prefix == matrix_bridge_mautrix_googlechat_command_prefix
+          - not mautrix_googlechat_config.bridge.federate_rooms
+          - mautrix_googlechat_config.bridge.login_shared_secret == matrix_bridge_mautrix_googlechat_login_shared_secret
+          - mautrix_googlechat_config.bridge.web.auth.public == 'http://matrix.molecule.local:8008/molecule-googlechat/login'
+          - mautrix_googlechat_config.bridge.web.auth.prefix == '/molecule-googlechat/login'
+          - mautrix_googlechat_config.metrics.enabled
+          - mautrix_googlechat_config.logging.root.level == matrix_bridge_mautrix_googlechat_logging_level
+        fail_msg: "The rendered configuration does not carry the scenario's bridge behavior"
+        success_msg: "The rendered configuration carries the scenario's bridge behavior"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_config.appservice.database is string
+          - mautrix_googlechat_config.appservice.database is match('^postgres://')
+          - matrix_bridge_mautrix_googlechat_database_username in mautrix_googlechat_config.appservice.database
+          - matrix_bridge_mautrix_googlechat_database_hostname in mautrix_googlechat_config.appservice.database
+          - matrix_bridge_mautrix_googlechat_database_name in mautrix_googlechat_config.appservice.database
+        fail_msg: >-
+          appservice.database is {{ mautrix_googlechat_config.appservice.database | default('unset') }},
+          which was not composed from the scenario's Postgres settings
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_googlechat_config_path }}/registration.yaml"
+      register: mautrix_googlechat_registration_file
+
+    - name: Assert the registration carries the configured handshake values
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_registration.id == 'googlechat'
+          - mautrix_googlechat_registration.as_token == matrix_bridge_mautrix_googlechat_appservice_token
+          - mautrix_googlechat_registration.hs_token == matrix_bridge_mautrix_googlechat_homeserver_token
+          - mautrix_googlechat_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_googlechat_appservice_bot_username
+          - mautrix_googlechat_registration.url == 'http://matrix-mautrix-googlechat:8080'
+        fail_msg: "The registration does not carry the configured handshake values"
+        success_msg: "The registration carries the configured handshake values"
+
+    - name: Assert the registration namespaces cover only Google Chat ghosts and the bot
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_ghost_regex | length > 0
+          - mautrix_googlechat_bot_regex | length > 0
+          - mautrix_googlechat_ghost_mxid is match(mautrix_googlechat_ghost_regex)
+          - mautrix_googlechat_wrong_ghost_mxid is not match(mautrix_googlechat_ghost_regex)
+          - mautrix_googlechat_bot_mxid is match(mautrix_googlechat_bot_regex)
+        fail_msg: "The registration namespaces do not cover only Google Chat ghosts and the bot"
+        success_msg: "The registration namespaces cover only Google Chat ghosts and the bot"
+      vars:
+        mautrix_googlechat_user_regexes: "{{ mautrix_googlechat_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_googlechat_ghost_regex: "{{ mautrix_googlechat_user_regexes | select('search', 'googlechat_') | first | default('') }}"
+        mautrix_googlechat_bot_regex: "{{ mautrix_googlechat_user_regexes | reject('search', 'googlechat_') | first | default('') }}"
+        mautrix_googlechat_ghost_mxid: "@googlechat_123456:{{ matrix_bridge_mautrix_googlechat_homeserver_domain }}"
+        mautrix_googlechat_wrong_ghost_mxid: "@gvoice_123456:{{ matrix_bridge_mautrix_googlechat_homeserver_domain }}"
+        mautrix_googlechat_bot_mxid: "@{{ matrix_bridge_mautrix_googlechat_appservice_bot_username }}:{{ matrix_bridge_mautrix_googlechat_homeserver_domain }}"
+
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_googlechat_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_googlechat_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: mautrix_googlechat_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_tables.rc == 0
+          - "'version' in mautrix_googlechat_table_names"
+          - "'portal' in mautrix_googlechat_table_names"
+          - "'puppet' in mautrix_googlechat_table_names"
+          - "'message' in mautrix_googlechat_table_names"
+          - "'mx_version' in mautrix_googlechat_table_names"
+          - mautrix_googlechat_table_names | length >= 10
+        fail_msg: >-
+          The bridge did not migrate its schema into {{ matrix_bridge_mautrix_googlechat_database_name }}
+          (found {{ mautrix_googlechat_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        mautrix_googlechat_table_names: "{{ mautrix_googlechat_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_googlechat_base_path }}/labels"
+      register: mautrix_googlechat_labels_file
+
+    - name: Assert the labels route both HTTP surfaces to their configured ports
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_googlechat_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_googlechat_container_network in mautrix_googlechat_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-googlechat-public.loadbalancer.server.port=8080' in mautrix_googlechat_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-googlechat-public.rule=Host(`googlechat.molecule.local`) && PathPrefix(`/molecule-googlechat`)' in mautrix_googlechat_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-googlechat-metrics.loadbalancer.server.port=8000' in mautrix_googlechat_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-googlechat-metrics.rule=Host(`metrics.molecule.local`) && PathPrefix(`/metrics/googlechat`)' in mautrix_googlechat_labels_rendered"
+          - "'molecule.googlechat.coverage=enabled' in mautrix_googlechat_labels_rendered"
+        fail_msg: "The rendered labels do not carry both HTTP routing contracts"
+        success_msg: "The rendered labels carry both HTTP routing contracts"
+
+    - name: Inspect the running bridge container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-googlechat
+      register: mautrix_googlechat_container_inspect
+      changed_when: false
+
+    - name: Parse the running bridge container inspection
+      ansible.builtin.set_fact:
+        mautrix_googlechat_container: "{{ (mautrix_googlechat_container_inspect.stdout | from_json) | first }}"
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_container.Config.Image == mautrix_googlechat_expected_image
+        fail_msg: >-
+          The running container uses {{ mautrix_googlechat_container.Config.Image }}, expected
+          {{ mautrix_googlechat_expected_image }}
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        mautrix_googlechat_expected_image: >-
+          {{ mautrix_googlechat_role_defaults.matrix_bridge_mautrix_googlechat_container_image_registry_prefix_upstream_default }}mautrix/googlechat:{{ mautrix_googlechat_role_defaults.matrix_bridge_mautrix_googlechat_version }}
+
+    - name: Assert the running container uses the playbook-supplied runtime
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+          - mautrix_googlechat_container.Config.WorkingDir == '/opt/mautrix-googlechat'
+          - mautrix_googlechat_container.Config.Cmd == ['python3', '-m', 'mautrix_googlechat', '-c', '/config/config.yaml', '--no-update']
+          - mautrix_googlechat_container.HostConfig.RestartPolicy.Name == 'no'
+          - mautrix_googlechat_container.HostConfig.AutoRemove
+          - mautrix_googlechat_container.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container does not use the role's exact identity, command and workdir"
+        success_msg: "The running container uses the role's exact identity, command and workdir"
+
+    - name: Assert the running container has the intended privilege isolation
+      ansible.builtin.assert:
+        that:
+          - "'ALL' in mautrix_googlechat_container.HostConfig.CapDrop"
+          - not mautrix_googlechat_container.HostConfig.Privileged
+        fail_msg: "The running container does not have the intended privilege isolation"
+        success_msg: "The running container drops all capabilities and is unprivileged"
+
+    - name: Assert the running container carries the role's two bind mounts
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_config_mount | length > 0
+          - mautrix_googlechat_config_mount.Source == matrix_bridge_mautrix_googlechat_config_path
+          - not mautrix_googlechat_config_mount.RW
+          - mautrix_googlechat_data_mount | length > 0
+          - mautrix_googlechat_data_mount.Source == matrix_bridge_mautrix_googlechat_data_path
+          - mautrix_googlechat_data_mount.RW
+          - mautrix_googlechat_container.Mounts | length == 2
+        fail_msg: "The running container does not carry the role's exact config and data mounts"
+        success_msg: "The running container carries its read-only config and writable data mounts"
+      vars:
+        mautrix_googlechat_config_mount: >-
+          {{ mautrix_googlechat_container.Mounts
+             | selectattr('Destination', 'equalto', '/config')
+             | first | default({}) }}
+        mautrix_googlechat_data_mount: >-
+          {{ mautrix_googlechat_container.Mounts
+             | selectattr('Destination', 'equalto', '/data')
+             | first | default({}) }}
+
+    - name: Assert the rendered labels are attached to the running container
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_container.Config.Labels['traefik.enable'] == 'true'
+          - mautrix_googlechat_container.Config.Labels['traefik.docker.network'] == matrix_bridge_mautrix_googlechat_container_network
+          - mautrix_googlechat_container.Config.Labels['traefik.http.services.matrix-mautrix-googlechat-public.loadbalancer.server.port'] == '8080'
+          - mautrix_googlechat_container.Config.Labels['traefik.http.services.matrix-mautrix-googlechat-metrics.loadbalancer.server.port'] == '8000'
+          - mautrix_googlechat_container.Config.Labels['molecule.googlechat.coverage'] == 'enabled'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The running container carries the labels the role rendered"
+
+    - name: Assert the running container has the exact network and port exposure
+      ansible.builtin.assert:
+        that:
+          - mautrix_googlechat_container.HostConfig.NetworkMode == matrix_bridge_mautrix_googlechat_container_network
+          - matrix_bridge_mautrix_googlechat_container_network in mautrix_googlechat_container.NetworkSettings.Networks
+          - mautrix_googlechat_container.NetworkSettings.Networks | length == 1
+          - mautrix_googlechat_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: >-
+          The container has unexpected networks or host ports:
+          networks={{ mautrix_googlechat_container.NetworkSettings.Networks.keys() | list }},
+          ports={{ mautrix_googlechat_container.HostConfig.PortBindings | default({}) }}
+        success_msg: "The container uses only its dedicated network and publishes no host ports"
