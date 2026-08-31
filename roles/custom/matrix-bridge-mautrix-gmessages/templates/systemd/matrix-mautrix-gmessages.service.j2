@@ -23,7 +23,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
 			--cap-drop=ALL \
 			--network={{ matrix_bridge_mautrix_gmessages_container_network }} \
-			--mount type=bind,src={{ matrix_bridge_mautrix_gmessages_config_path }},dst=/config \
+			--mount type=bind,src={{ matrix_bridge_mautrix_gmessages_config_path }},dst=/config,ro \
 			--mount type=bind,src={{ matrix_bridge_mautrix_gmessages_data_path }},dst=/data \
 			--label-file={{ matrix_bridge_mautrix_gmessages_base_path }}/labels \
 			--workdir=/data \

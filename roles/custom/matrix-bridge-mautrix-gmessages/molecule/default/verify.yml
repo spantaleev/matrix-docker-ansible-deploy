@@ -346,13 +346,13 @@
         that:
           - mautrix_gmessages_config_mount | length > 0
           - mautrix_gmessages_config_mount.Source == matrix_bridge_mautrix_gmessages_config_path
-          - mautrix_gmessages_config_mount.RW
+          - not mautrix_gmessages_config_mount.RW
           - mautrix_gmessages_data_mount | length > 0
           - mautrix_gmessages_data_mount.Source == matrix_bridge_mautrix_gmessages_data_path
           - mautrix_gmessages_data_mount.RW
           - mautrix_gmessages_container.Mounts | length == 2
         fail_msg: "The running container does not carry the role's exact config and data mounts"
-        success_msg: "The running container carries the role's exact config and data mounts"
+        success_msg: "The running container carries read-only config and writable data mounts"
       vars:
         mautrix_gmessages_config_mount: >-
           {{ mautrix_gmessages_container.Mounts
