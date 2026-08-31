@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: mautrix-twitter-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_mautrix_twitter_container_network: mautrix-twitter-molecule
+
+        # The stub prepare.yml starts is not a real homeserver, and the scenario carries
+        # no Twitter credentials. Logged out is the intended test boundary.
+        matrix_bridge_mautrix_twitter_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bridge_mautrix_twitter_homeserver_domain: molecule.local
+        matrix_bridge_mautrix_twitter_homeserver_async_media: true
+
+        # Postgres is the normal deployment path. Non-default names make the resulting
+        # schema evidence that the role composed and supplied this connection.
+        matrix_bridge_mautrix_twitter_database_engine: postgres
+        matrix_bridge_mautrix_twitter_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_twitter_database_name: molecule_twitter
+        matrix_bridge_mautrix_twitter_database_username: molecule_twitter
+        matrix_bridge_mautrix_twitter_database_password: molecule_pg_password_a6d239
+
+        # Test-only fixtures which must reach both config.yaml and registration.yaml.
+        matrix_bridge_mautrix_twitter_appservice_token: molecule_twitter_as_token_36c8b1
+        matrix_bridge_mautrix_twitter_homeserver_token: molecule_twitter_hs_token_f6a142
+
+        # All differ from role defaults, allowing parsed checks to prove role rendering.
+        matrix_bridge_mautrix_twitter_appservice_bot_username: molecule-twitterbot
+        matrix_bridge_mautrix_twitter_appservice_bot_displayname: Molecule Twitter bridge
+        matrix_bridge_mautrix_twitter_appservice_bot_avatar: mxc://molecule.local/twitter-bot-avatar
+        matrix_bridge_mautrix_twitter_network_displayname_template: "{% raw %}{{ .Username }} / {{ .DisplayName }} (Molecule){% endraw %}"
+        matrix_bridge_mautrix_twitter_bridge_command_prefix: "!molecule-twitter"
+        matrix_bridge_mautrix_twitter_bridge_permissions:
+          "*": commands
+          molecule.local: admin
+        matrix_bridge_mautrix_twitter_matrix_federate_rooms: false
+        matrix_bridge_mautrix_twitter_backfill_enabled: false
+        matrix_bridge_mautrix_twitter_backfill_max_initial_messages: 23
+        matrix_bridge_mautrix_twitter_backfill_max_catchup_messages: 37
+        matrix_bridge_mautrix_twitter_provisioning_shared_secret: molecule_provisioning_secret_725ac8
+        matrix_bridge_mautrix_twitter_double_puppet_secrets_custom:
+          molecule.remote: molecule_double_puppet_secret_e5c0a1
+        matrix_bridge_mautrix_twitter_logging_level: info
+
+        # Traefik is not started. These values exercise both the public address the bridge
+        # consumes and the exposure labels Docker consumes.
+        matrix_bridge_mautrix_twitter_exposure_enabled: true
+        matrix_bridge_mautrix_twitter_exposure_hostname: twitter-api.molecule.local
+        matrix_bridge_mautrix_twitter_exposure_path_prefix: /bridges/twitter-api
+        matrix_bridge_mautrix_twitter_scheme: http
+        matrix_bridge_mautrix_twitter_container_labels_traefik_entrypoints: web
+        matrix_bridge_mautrix_twitter_container_labels_additional_labels: |
+          molecule.twitter.coverage=enabled
+
+        # verify.yml is a separate play, where role defaults are out of scope.
+        matrix_bridge_mautrix_twitter_base_path: /matrix/mautrix-twitter
+        matrix_bridge_mautrix_twitter_config_path: /matrix/mautrix-twitter/config
+        matrix_bridge_mautrix_twitter_data_path: /matrix/mautrix-twitter/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

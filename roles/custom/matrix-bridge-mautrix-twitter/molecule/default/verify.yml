@@ -1,0 +1,393 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the logged-out bridge starts, accepts the role-rendered configuration and
+# registration, migrates real Postgres, and opens its appservice and provisioning
+# APIs. Twitter credentials are deliberately outside the scenario boundary.
+- name: Verify mautrix-twitter
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    mautrix_twitter_config: "{{ mautrix_twitter_config_file.content | b64decode | from_yaml }}"
+    mautrix_twitter_registration: "{{ mautrix_twitter_registration_file.content | b64decode | from_yaml }}"
+    mautrix_twitter_labels_rendered: "{{ mautrix_twitter_labels_file.content | b64decode }}"
+    mautrix_twitter_expected_public_address: http://twitter-api.molecule.local/bridges/twitter-api
+  gather_facts: false
+
+  tasks:
+    # A Renovate bump changes this source of truth and therefore the image expectation.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_twitter_role_defaults
+
+    - name: Wait for the mautrix-twitter service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-twitter.service
+      register: mautrix_twitter_service
+      until: mautrix_twitter_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes ActiveState insufficient for detecting a crash loop.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_service.status.ActiveState == 'active'
+          - mautrix_twitter_service.status.NRestarts is defined
+          - mautrix_twitter_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-twitter.service is
+          {{ mautrix_twitter_service.status.ActiveState | default('unknown') }} after
+          {{ mautrix_twitter_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-mautrix-twitter.service is active and has not restarted"
+
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_twitter_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-twitter:29327/_matrix/mau/live
+      register: mautrix_twitter_live
+      changed_when: false
+      until: mautrix_twitter_live.rc == 0 and mautrix_twitter_live.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_twitter_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-twitter:29327/_matrix/mau/ready
+      register: mautrix_twitter_ready
+      changed_when: false
+      until: mautrix_twitter_ready.rc == 0 and mautrix_twitter_ready.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on the configured appservice port
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_live.rc == 0
+          - mautrix_twitter_live.stdout == 'HTTP_STATUS=200'
+          - mautrix_twitter_ready.rc == 0
+          - mautrix_twitter_ready.stdout == 'HTTP_STATUS=200'
+        fail_msg: >-
+          Health probes returned live={{ mautrix_twitter_live.stdout | default('none') }}
+          (rc={{ mautrix_twitter_live.rc | default('?') }}) and
+          ready={{ mautrix_twitter_ready.stdout | default('none') }}
+          (rc={{ mautrix_twitter_ready.rc | default('?') }})
+        success_msg: "The bridge is live and ready on the configured appservice port"
+
+    # This exercises the provisioning middleware and Twitter connector without logging in.
+    - name: Query the authenticated provisioning login flows
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_twitter_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail-with-body
+          - --header
+          - "Authorization: Bearer {{ matrix_bridge_mautrix_twitter_provisioning_shared_secret }}"
+          - "http://matrix-mautrix-twitter:29327/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: mautrix_twitter_login_flows
+      changed_when: false
+
+    - name: Query the provisioning API with an invalid secret
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_twitter_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - --header
+          - "Authorization: Bearer definitely-wrong-molecule-secret"
+          - "http://matrix-mautrix-twitter:29327/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: mautrix_twitter_login_flows_unauthorized
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live provisioning API enforces auth and advertises login flows
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_login_flows.rc == 0
+          - (mautrix_twitter_login_flows.stdout | from_json).flows is sequence
+          - (mautrix_twitter_login_flows.stdout | from_json).flows | length > 0
+          - mautrix_twitter_login_flows_unauthorized.rc == 0
+          - mautrix_twitter_login_flows_unauthorized.stdout == 'HTTP_STATUS=401'
+        fail_msg: "The provisioning API did not enforce its secret or return Twitter login flows"
+        success_msg: "The provisioning API enforces its secret and returns Twitter login flows"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_twitter_config_path }}/config.yaml"
+      register: mautrix_twitter_config_file
+
+    - name: Assert the rendered configuration carries the appservice identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_config.homeserver.address == matrix_bridge_mautrix_twitter_homeserver_address
+          - mautrix_twitter_config.homeserver.domain == matrix_bridge_mautrix_twitter_homeserver_domain
+          - mautrix_twitter_config.homeserver.async_media
+          - mautrix_twitter_config.appservice.id == 'twitter'
+          - mautrix_twitter_config.appservice.address == 'http://matrix-mautrix-twitter:29327'
+          - mautrix_twitter_config.appservice.public_address == mautrix_twitter_expected_public_address
+          - mautrix_twitter_config.appservice.bot.username == matrix_bridge_mautrix_twitter_appservice_bot_username
+          - mautrix_twitter_config.appservice.bot.displayname == matrix_bridge_mautrix_twitter_appservice_bot_displayname
+          - mautrix_twitter_config.appservice.bot.avatar == matrix_bridge_mautrix_twitter_appservice_bot_avatar
+          - mautrix_twitter_config.appservice.as_token == matrix_bridge_mautrix_twitter_appservice_token
+          - mautrix_twitter_config.appservice.hs_token == matrix_bridge_mautrix_twitter_homeserver_token
+        fail_msg: "The rendered configuration does not carry the scenario's appservice identity"
+        success_msg: "The rendered configuration carries the scenario's appservice identity"
+
+    - name: Assert the rendered configuration carries non-default Twitter behavior
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_config.network.displayname_template == matrix_bridge_mautrix_twitter_network_displayname_template
+          - mautrix_twitter_config.bridge.command_prefix == matrix_bridge_mautrix_twitter_bridge_command_prefix
+          - mautrix_twitter_config.bridge.permissions['*'] == 'commands'
+          - mautrix_twitter_config.bridge.permissions[matrix_bridge_mautrix_twitter_homeserver_domain] == 'admin'
+          - not mautrix_twitter_config.matrix.federate_rooms
+          - mautrix_twitter_config.logging.min_level == matrix_bridge_mautrix_twitter_logging_level
+        fail_msg: "The rendered configuration does not carry the scenario's Twitter behavior"
+        success_msg: "The rendered configuration carries the scenario's Twitter behavior"
+
+    - name: Assert the rendered configuration carries integration secrets
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_config.provisioning.shared_secret == matrix_bridge_mautrix_twitter_provisioning_shared_secret
+          - mautrix_twitter_config.double_puppet.secrets['molecule.remote'] == 'molecule_double_puppet_secret_e5c0a1'
+        fail_msg: "The rendered configuration does not carry the scenario's integration secrets"
+        success_msg: "The rendered configuration carries the scenario's integration secrets"
+
+    - name: Assert the rendered configuration carries the non-default backfill policy
+      ansible.builtin.assert:
+        that:
+          - not mautrix_twitter_config.backfill.enabled
+          - mautrix_twitter_config.backfill.max_initial_messages == 23
+          - mautrix_twitter_config.backfill.max_catchup_messages == 37
+        fail_msg: "The rendered configuration does not carry the scenario's backfill policy"
+        success_msg: "The rendered configuration carries the scenario's backfill policy"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_config.database.type == matrix_bridge_mautrix_twitter_database_engine
+          - matrix_bridge_mautrix_twitter_database_username in mautrix_twitter_config.database.uri
+          - matrix_bridge_mautrix_twitter_database_hostname in mautrix_twitter_config.database.uri
+          - matrix_bridge_mautrix_twitter_database_name in mautrix_twitter_config.database.uri
+        fail_msg: >-
+          database.uri is {{ mautrix_twitter_config.database.uri | default('unset') }}, which
+          was not composed from the scenario's connection settings
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_twitter_config_path }}/registration.yaml"
+      register: mautrix_twitter_registration_file
+
+    - name: Assert the registration carries the configured handshake values
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_registration.id == 'twitter'
+          - mautrix_twitter_registration.as_token == matrix_bridge_mautrix_twitter_appservice_token
+          - mautrix_twitter_registration.hs_token == matrix_bridge_mautrix_twitter_homeserver_token
+          - mautrix_twitter_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_twitter_appservice_bot_username
+          - mautrix_twitter_registration.url == 'http://matrix-mautrix-twitter:29327'
+          - mautrix_twitter_registration['io.element.msc4190'] == false
+        fail_msg: "The registration does not carry the configured handshake values"
+        success_msg: "The registration carries the configured handshake values"
+
+    - name: Assert the registration namespaces cover only Twitter ghosts and the bridge bot
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_ghost_regex | length > 0
+          - mautrix_twitter_bot_regex | length > 0
+          - mautrix_twitter_ghost_mxid is match(mautrix_twitter_ghost_regex)
+          - mautrix_twitter_wrong_ghost_mxid is not match(mautrix_twitter_ghost_regex)
+          - mautrix_twitter_bot_mxid is match(mautrix_twitter_bot_regex)
+        fail_msg: "The registration namespaces do not cover only Twitter ghosts and the bot"
+        success_msg: "The registration namespaces cover only Twitter ghosts and the bot"
+      vars:
+        mautrix_twitter_user_regexes: "{{ mautrix_twitter_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_twitter_ghost_regex: "{{ mautrix_twitter_user_regexes | select('search', 'twitter_') | first | default('') }}"
+        mautrix_twitter_bot_regex: "{{ mautrix_twitter_user_regexes | reject('search', 'twitter_') | first | default('') }}"
+        mautrix_twitter_ghost_mxid: "@twitter_123456:{{ matrix_bridge_mautrix_twitter_homeserver_domain }}"
+        mautrix_twitter_wrong_ghost_mxid: "@linkedin_123456:{{ matrix_bridge_mautrix_twitter_homeserver_domain }}"
+        mautrix_twitter_bot_mxid: "@{{ matrix_bridge_mautrix_twitter_appservice_bot_username }}:{{ matrix_bridge_mautrix_twitter_homeserver_domain }}"
+
+    # Tables can appear only after hostname resolution, authentication, and real migrations.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_twitter_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_twitter_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: mautrix_twitter_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_tables.rc == 0
+          - "'version' in mautrix_twitter_table_names"
+          - "'portal' in mautrix_twitter_table_names"
+          - "'user_login' in mautrix_twitter_table_names"
+          - "'message' in mautrix_twitter_table_names"
+          - mautrix_twitter_table_names | length > 10
+        fail_msg: >-
+          The bridge did not migrate its schema into {{ matrix_bridge_mautrix_twitter_database_name }}
+          (found {{ mautrix_twitter_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        mautrix_twitter_table_names: "{{ mautrix_twitter_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_twitter_base_path }}/labels"
+      register: mautrix_twitter_labels_file
+
+    - name: Assert the labels route the public endpoint to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_twitter_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_twitter_container_network in mautrix_twitter_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-twitter-exposure.loadbalancer.server.port=29327' in mautrix_twitter_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-twitter-exposure.rule=Host(`twitter-api.molecule.local`) && PathPrefix(`/bridges/twitter-api`)' in mautrix_twitter_labels_rendered"
+          - "'traefik.http.middlewares.matrix-mautrix-twitter-exposure-strip-prefix.stripprefix.prefixes=/bridges/twitter-api' in mautrix_twitter_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-twitter-exposure.entrypoints=web' in mautrix_twitter_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-twitter-exposure.tls=false' in mautrix_twitter_labels_rendered"
+          - "'molecule.twitter.coverage=enabled' in mautrix_twitter_labels_rendered"
+        fail_msg: "The rendered labels do not carry the scenario's exposure configuration"
+        success_msg: "The rendered labels carry the scenario's exposure configuration"
+
+    - name: Inspect the running bridge container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-twitter
+      register: mautrix_twitter_container_inspect
+      changed_when: false
+
+    - name: Parse the running bridge container inspection
+      ansible.builtin.set_fact:
+        mautrix_twitter_container: "{{ (mautrix_twitter_container_inspect.stdout | from_json) | first }}"
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_container.Config.Image == mautrix_twitter_expected_image
+        fail_msg: >-
+          The running container uses {{ mautrix_twitter_container.Config.Image }}, expected
+          {{ mautrix_twitter_expected_image }}
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        mautrix_twitter_expected_image: >-
+          {{ mautrix_twitter_role_defaults.matrix_bridge_mautrix_twitter_container_image_registry_prefix_upstream_default }}mautrix/twitter:{{ mautrix_twitter_role_defaults.matrix_bridge_mautrix_twitter_version }}
+
+    - name: Assert the running container uses the playbook-supplied runtime
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+          - mautrix_twitter_container.Config.Cmd == ['/usr/bin/mautrix-twitter', '-c', '/config/config.yaml', '-r', '/config/registration.yaml', '--no-update']
+          - mautrix_twitter_container.HostConfig.RestartPolicy.Name == 'no'
+          - mautrix_twitter_container.HostConfig.AutoRemove
+          - mautrix_twitter_container.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container does not use the role's exact identity and command"
+        success_msg: "The running container uses the role's exact identity and command"
+
+    - name: Assert the running container has the intended privilege isolation
+      ansible.builtin.assert:
+        that:
+          - "'ALL' in mautrix_twitter_container.HostConfig.CapDrop"
+          - not mautrix_twitter_container.HostConfig.Privileged
+        fail_msg: "The running container does not have the intended privilege isolation"
+        success_msg: "The running container drops all capabilities and is unprivileged"
+
+    - name: Assert the running container carries the role's exact bind mounts
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_config_mount | length > 0
+          - mautrix_twitter_config_mount.Source == matrix_bridge_mautrix_twitter_config_path
+          - not mautrix_twitter_config_mount.RW
+          - mautrix_twitter_data_mount | length > 0
+          - mautrix_twitter_data_mount.Source == matrix_bridge_mautrix_twitter_data_path
+          - mautrix_twitter_data_mount.RW
+          - mautrix_twitter_container.Mounts | length == 2
+        fail_msg: "The running container does not carry the role's exact config and data mounts"
+        success_msg: "The running container carries read-only config and writable data mounts"
+      vars:
+        mautrix_twitter_config_mount: >-
+          {{ mautrix_twitter_container.Mounts
+             | selectattr('Destination', 'equalto', '/config')
+             | first | default({}) }}
+        mautrix_twitter_data_mount: >-
+          {{ mautrix_twitter_container.Mounts
+             | selectattr('Destination', 'equalto', '/data')
+             | first | default({}) }}
+
+    - name: Assert the rendered labels are attached to the running container
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_container.Config.Labels['traefik.enable'] == 'true'
+          - mautrix_twitter_container.Config.Labels['traefik.docker.network'] == matrix_bridge_mautrix_twitter_container_network
+          - mautrix_twitter_container.Config.Labels['traefik.http.services.matrix-mautrix-twitter-exposure.loadbalancer.server.port'] == '29327'
+          - mautrix_twitter_container.Config.Labels['molecule.twitter.coverage'] == 'enabled'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The running container carries the labels the role rendered"
+
+    - name: Assert the running container has the exact network and port exposure
+      ansible.builtin.assert:
+        that:
+          - mautrix_twitter_container.HostConfig.NetworkMode == matrix_bridge_mautrix_twitter_container_network
+          - matrix_bridge_mautrix_twitter_container_network in mautrix_twitter_container.NetworkSettings.Networks
+          - mautrix_twitter_container.NetworkSettings.Networks | length == 1
+          - mautrix_twitter_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: >-
+          The container has unexpected networks or host ports:
+          networks={{ mautrix_twitter_container.NetworkSettings.Networks.keys() | list }},
+          ports={{ mautrix_twitter_container.HostConfig.PortBindings | default({}) }}
+        success_msg: "The container uses only its dedicated network and publishes no host ports"
