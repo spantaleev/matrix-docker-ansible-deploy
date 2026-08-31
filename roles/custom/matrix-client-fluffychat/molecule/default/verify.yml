@@ -60,7 +60,7 @@
           - --show-error
           - --write-out
           - "\nHTTP_STATUS=%{http_code}"
-          - http://matrix-client-fluffychat:8080/
+          - "http://matrix-client-fluffychat:{{ matrix_client_fluffychat_container_http_port }}/"
       register: matrix_client_fluffychat_root_http
       changed_when: false
       until: "'HTTP_STATUS=200' in matrix_client_fluffychat_root_http.stdout"
@@ -91,7 +91,7 @@
           - --show-error
           - --write-out
           - "\nHTTP_STATUS=%{http_code}\nCONTENT_TYPE=%{content_type}"
-          - http://matrix-client-fluffychat:8080/config.json
+          - "http://matrix-client-fluffychat:{{ matrix_client_fluffychat_container_http_port }}/config.json"
       register: matrix_client_fluffychat_config_http
       changed_when: false
       failed_when: false
@@ -140,7 +140,7 @@
           - /dev/null
           - --write-out
           - "HTTP_STATUS=%{http_code}\nCONTENT_TYPE=%{content_type}\nSIZE=%{size_download}"
-          - "http://matrix-client-fluffychat:8080/{{ matrix_client_fluffychat_application_asset_path }}"
+          - "http://matrix-client-fluffychat:{{ matrix_client_fluffychat_container_http_port }}/{{ matrix_client_fluffychat_application_asset_path }}"
       register: matrix_client_fluffychat_asset_http
       changed_when: false
       failed_when: false
@@ -192,7 +192,7 @@
         that:
           - matrix_client_fluffychat_labels_parsed['traefik.enable'] == 'true'
           - matrix_client_fluffychat_labels_parsed['traefik.docker.network'] == matrix_client_fluffychat_container_network
-          - matrix_client_fluffychat_labels_parsed['traefik.http.services.matrix-client-fluffychat.loadbalancer.server.port'] == '8080'
+          - matrix_client_fluffychat_labels_parsed['traefik.http.services.matrix-client-fluffychat.loadbalancer.server.port'] == (matrix_client_fluffychat_container_http_port | string)
           - matrix_client_fluffychat_labels_parsed['traefik.http.routers.matrix-client-fluffychat.rule'] == 'Host(`chat.fluffy.molecule.local`) && PathPrefix(`/fluffy`)'
           - matrix_client_fluffychat_labels_parsed['traefik.http.routers.matrix-client-fluffychat.priority'] == '731'
           - matrix_client_fluffychat_labels_parsed['traefik.http.routers.matrix-client-fluffychat.entrypoints'] == 'web'
@@ -228,11 +228,19 @@
         that:
           - matrix_client_fluffychat_runtime.Config.Labels['traefik.enable'] == 'true'
           - matrix_client_fluffychat_runtime.Config.Labels['traefik.docker.network'] == matrix_client_fluffychat_container_network
+          - matrix_client_fluffychat_runtime.Config.Labels['traefik.http.services.matrix-client-fluffychat.loadbalancer.server.port'] == (matrix_client_fluffychat_container_http_port | string)
           - matrix_client_fluffychat_runtime.Config.Labels['traefik.http.routers.matrix-client-fluffychat.priority'] == '731'
           - matrix_client_fluffychat_runtime.Config.Labels['molecule.fluffychat.coverage'] == 'enabled'
           - matrix_client_fluffychat_runtime.Config.Labels['molecule.fluffychat.extra-argument'] == 'reached'
         fail_msg: "The running container does not carry the labels the role rendered and passed"
         success_msg: "The configured labels reached the running container"
+
+    - name: Assert the configured internal port reached the running container
+      ansible.builtin.assert:
+        that:
+          - "('SERVER_PORT=' ~ (matrix_client_fluffychat_container_http_port | string)) in matrix_client_fluffychat_runtime.Config.Env"
+        fail_msg: "The running container did not receive its configured internal HTTP port"
+        success_msg: "The configured internal HTTP port reached the running container"
 
     - name: Assert the running container uses the exact image and version the role pins
       ansible.builtin.assert:
@@ -319,6 +327,37 @@
           - matrix_client_fluffychat_runtime.Config.Hostname == 'fluffychat-molecule-runtime'
         fail_msg: "The configured container hostname extra argument did not reach Docker"
         success_msg: "The configured container extra argument reached Docker"
+
+    - name: Probe the image's default HTTP port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_client_fluffychat_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --connect-timeout
+          - "2"
+          - --max-time
+          - "3"
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-client-fluffychat:8080/
+      register: matrix_client_fluffychat_default_port_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the image's default HTTP port is closed
+      ansible.builtin.assert:
+        that:
+          - matrix_client_fluffychat_default_port_http.rc != 0
+          - matrix_client_fluffychat_default_port_http.stdout != 'HTTP_STATUS=200'
+        fail_msg: "FluffyChat still listens on the image's default port instead of only the configured port"
+        success_msg: "FluffyChat no longer listens on the image's default HTTP port"
 
     - name: Ask Docker for FluffyChat's published ports
       ansible.builtin.command:
