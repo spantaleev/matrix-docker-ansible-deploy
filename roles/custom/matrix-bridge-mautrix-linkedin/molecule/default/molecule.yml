@@ -1,0 +1,102 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: mautrix-linkedin-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_mautrix_linkedin_container_network: mautrix-linkedin-molecule
+
+        # The stub prepare.yml starts is not a real homeserver, and the scenario carries
+        # no LinkedIn credentials. Logged out is the intended test boundary.
+        matrix_bridge_mautrix_linkedin_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bridge_mautrix_linkedin_homeserver_domain: molecule.local
+        matrix_bridge_mautrix_linkedin_homeserver_async_media: true
+
+        # Postgres is the normal deployment path. Non-default names make the resulting
+        # schema evidence that the role composed and supplied this connection.
+        matrix_bridge_mautrix_linkedin_database_engine: postgres
+        matrix_bridge_mautrix_linkedin_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_linkedin_database_name: molecule_linkedin
+        matrix_bridge_mautrix_linkedin_database_username: molecule_linkedin
+        matrix_bridge_mautrix_linkedin_database_password: molecule_pg_password_c1482d
+
+        # Test-only fixtures which must reach both config.yaml and registration.yaml.
+        matrix_bridge_mautrix_linkedin_appservice_token: molecule_linkedin_as_token_b738e1
+        matrix_bridge_mautrix_linkedin_homeserver_token: molecule_linkedin_hs_token_13df62
+
+        # All differ from role defaults, allowing parsed checks to prove role rendering.
+        matrix_bridge_mautrix_linkedin_appservice_bot_username: molecule-linkedinbot
+        matrix_bridge_mautrix_linkedin_network_displayname_template: "{% raw %}{{ .FirstName }} / {{ .LastName }} (Molecule){% endraw %}"
+        matrix_bridge_mautrix_linkedin_appservice_username_template: "{% raw %}molecule_linkedin_{{.}}{% endraw %}"
+        matrix_bridge_mautrix_linkedin_command_prefix: "!molecule-linkedin"
+        matrix_bridge_mautrix_linkedin_bridge_permissions:
+          "*": commands
+          molecule.local: admin
+        matrix_bridge_mautrix_linkedin_bridge_personal_filtering_spaces: false
+        matrix_bridge_mautrix_linkedin_federate_rooms: false
+        matrix_bridge_mautrix_linkedin_backfill_enabled: false
+        matrix_bridge_mautrix_linkedin_backfill_max_initial_messages: 17
+        matrix_bridge_mautrix_linkedin_backfill_max_catchup_messages: 29
+        matrix_bridge_mautrix_linkedin_backfill_unread_hours_threshold: 61
+        matrix_bridge_mautrix_linkedin_backfill_threads_max_initial_messages: 7
+        matrix_bridge_mautrix_linkedin_provisioning_shared_secret: molecule_provisioning_secret_03d1f8
+        matrix_bridge_mautrix_linkedin_public_media_signing_key: molecule_public_media_key_76e2c4
+        matrix_bridge_mautrix_linkedin_double_puppet_secrets_custom:
+          molecule.remote: molecule_double_puppet_secret_8bac31
+        matrix_bridge_mautrix_linkedin_logging_level: info
+
+        # Traefik is not started. These values exercise both the public address the bridge
+        # consumes and the exposure labels Docker consumes.
+        matrix_bridge_mautrix_linkedin_exposure_enabled: true
+        matrix_bridge_mautrix_linkedin_exposure_hostname: linkedin-api.molecule.local
+        matrix_bridge_mautrix_linkedin_exposure_path_prefix: /bridges/linkedin-api
+        matrix_bridge_mautrix_linkedin_scheme: http
+        matrix_bridge_mautrix_linkedin_container_labels_traefik_entrypoints: web
+        matrix_bridge_mautrix_linkedin_container_labels_additional_labels: |
+          molecule.linkedin.coverage=enabled
+
+        # verify.yml is a separate play, where role defaults are out of scope.
+        matrix_bridge_mautrix_linkedin_base_path: /matrix/mautrix-linkedin
+        matrix_bridge_mautrix_linkedin_config_path: /matrix/mautrix-linkedin/config
+        matrix_bridge_mautrix_linkedin_data_path: /matrix/mautrix-linkedin/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
