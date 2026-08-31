@@ -1,0 +1,318 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Element Call is a static browser application. Its live JSON configuration and
+# a browser bundle are the weight-bearing probes; no Matrix or LiveKit account is needed.
+- name: Verify matrix-element-call
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_element_call_root_body: "{{ matrix_element_call_root_http.stdout_lines[:-1] | join('\n') }}"
+    matrix_element_call_runtime: "{{ (matrix_element_call_container_inspect.stdout | from_json) | first }}"
+  gather_facts: false
+
+  tasks:
+    # A Renovate bump changes this source of truth and therefore the image expectation.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_element_call_role_defaults
+
+    - name: Wait for the matrix-element-call service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-element-call.service
+      register: matrix_element_call_service
+      until: matrix_element_call_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes ActiveState insufficient for detecting a crash loop.
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_service.status.ActiveState == 'active'
+          - matrix_element_call_service.status.NRestarts is defined
+          - matrix_element_call_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-element-call.service is
+          {{ matrix_element_call_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_element_call_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-element-call.service is active and has not restarted"
+
+    # Probe through the private container network, matching the deployment path from Traefik.
+    - name: Wait for Element Call to serve its application root
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_element_call_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-element-call:8080/
+      register: matrix_element_call_root_http
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_element_call_root_http.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the application root is real Element Call HTML
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_root_http.rc == 0
+          - matrix_element_call_root_http.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_element_call_root_body | trim | length > 500
+          - "'<!doctype html' in matrix_element_call_root_body | lower"
+          - "'element call' in matrix_element_call_root_body | lower"
+        fail_msg: "Element Call did not return its real application HTML over the container network"
+        success_msg: "Element Call serves its real application root over HTTP"
+
+    - name: Fetch Element Call's live browser configuration
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_element_call_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}\nCONTENT_TYPE=%{content_type}"
+          - http://matrix-element-call:8080/config.json
+      register: matrix_element_call_config_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live browser configuration is served as JSON
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_config_http.rc == 0
+          - "'HTTP_STATUS=200' in matrix_element_call_config_http.stdout_lines"
+          - matrix_element_call_config_http.stdout | regex_search('(?m)^CONTENT_TYPE=application/json(?:;|$)') is not none
+        fail_msg: "Element Call did not serve its live browser configuration as JSON"
+        success_msg: "Element Call serves its live browser configuration as JSON"
+
+    - name: Parse the live browser configuration
+      ansible.builtin.set_fact:
+        matrix_element_call_live_config: >-
+          {{ matrix_element_call_config_http.stdout | regex_replace('\nHTTP_STATUS=[0-9]+\nCONTENT_TYPE=.*$', '') | from_json }}
+
+    - name: Assert the live configuration carries the configured homeserver and LiveKit service
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_live_config is mapping
+          - matrix_element_call_live_config.default_server_config['m.homeserver'].base_url == matrix_element_call_config_default_server_config_m_homeserver_base_url
+          - matrix_element_call_live_config.default_server_config['m.homeserver'].server_name == matrix_element_call_config_default_server_config_m_homeserver_server_name
+          - matrix_element_call_live_config.livekit.livekit_service_url == matrix_element_call_config_livekit_livekit_service_url
+        fail_msg: "The live config.json does not carry the non-default values rendered by the role"
+        success_msg: "The live config.json carries the configured homeserver and LiveKit service"
+
+    - name: Read the configuration file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_element_call_base_path }}/config.json"
+      register: matrix_element_call_rendered_config_file
+
+    - name: Assert the served and rendered structured configurations are identical
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_rendered_config == matrix_element_call_live_config
+        fail_msg: "The live configuration differs from the parsed file the role rendered"
+        success_msg: "The running service exposes the exact structured configuration the role rendered"
+      vars:
+        matrix_element_call_rendered_config: >-
+          {{ matrix_element_call_rendered_config_file.content | b64decode | from_json }}
+
+    # Fetch a browser bundle named by the live HTML, proving the image contains the application.
+    - name: Extract a live Element Call JavaScript asset path
+      ansible.builtin.set_fact:
+        matrix_element_call_application_asset_path: >-
+          {{ matrix_element_call_root_body | regex_search('(?<=src=")[^"]+[.]js(?=")') }}
+
+    - name: Fetch the live Element Call application asset
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_element_call_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}\nCONTENT_TYPE=%{content_type}\nSIZE=%{size_download}"
+          - "http://matrix-element-call:8080/{{ matrix_element_call_application_asset_path | regex_replace('^/', '') }}"
+      register: matrix_element_call_asset_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert a real Element Call application asset is served
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_application_asset_path | length > 0
+          - matrix_element_call_asset_http.rc == 0
+          - "'HTTP_STATUS=200' in matrix_element_call_asset_http.stdout_lines"
+          - matrix_element_call_asset_http.stdout | regex_search('(?m)^CONTENT_TYPE=(?:application|text)/javascript(?:;|$)') is not none
+          - matrix_element_call_asset_http.stdout | regex_search('(?m)^SIZE=([1-9][0-9]{4,})$') is not none
+        fail_msg: "Element Call did not serve the substantial JavaScript asset referenced by its live HTML"
+        success_msg: "Element Call serves a substantial live application asset"
+
+    - name: Read the labels file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_element_call_base_path }}/labels"
+      register: matrix_element_call_labels_file
+
+    - name: Initialize the parsed labels
+      ansible.builtin.set_fact:
+        matrix_element_call_labels_parsed: {}
+
+    - name: Parse the rendered labels
+      ansible.builtin.set_fact:
+        matrix_element_call_labels_parsed: >-
+          {{ matrix_element_call_labels_parsed | combine({item.split('=', 1)[0]: item.split('=', 1)[1]}) }}
+      loop: "{{ (matrix_element_call_labels_file.content | b64decode).splitlines() | reject('equalto', '') }}"
+      when: "'=' in item"
+      no_log: true
+
+    - name: Assert the rendered labels carry the public routing contract
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_labels_parsed['traefik.enable'] == 'true'
+          - matrix_element_call_labels_parsed['traefik.docker.network'] == matrix_element_call_container_network
+          - matrix_element_call_labels_parsed['traefik.http.services.matrix-element-call.loadbalancer.server.port'] == '8080'
+          - matrix_element_call_labels_parsed['traefik.http.routers.matrix-element-call.rule'] == 'Host(`call.molecule.local`)'
+          - matrix_element_call_labels_parsed['traefik.http.routers.matrix-element-call.priority'] == '827'
+          - matrix_element_call_labels_parsed['traefik.http.routers.matrix-element-call.entrypoints'] == 'web'
+          - matrix_element_call_labels_parsed['traefik.http.routers.matrix-element-call.tls'] == 'false'
+          - matrix_element_call_labels_parsed['traefik.http.routers.matrix-element-call.middlewares'] == 'matrix-element-call-add-headers'
+          - matrix_element_call_labels_parsed['molecule.element-call.coverage'] == 'enabled'
+        fail_msg: "The parsed labels do not carry the scenario's routing contract"
+        success_msg: "The parsed labels carry the scenario's routing contract"
+
+    - name: Assert the rendered labels carry the configured response headers
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_labels_parsed['traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.X-XSS-Protection'] == '0'
+          - matrix_element_call_labels_parsed['traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.X-Content-Type-Options'] == 'molecule-nosniff'
+          - matrix_element_call_labels_parsed['traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.Content-Security-Policy'] == 'frame-ancestors https://embed.call.molecule.local'
+          - matrix_element_call_labels_parsed['traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.Permission-Policy'] == 'camera=(self), microphone=(self)'
+          - "'traefik.http.middlewares.matrix-element-call-add-headers.headers.customresponseheaders.Strict-Transport-Security' not in matrix_element_call_labels_parsed"
+        fail_msg: "The parsed labels lost response headers or incorrectly enable HSTS without TLS"
+        success_msg: "The parsed labels carry the configured response-header contract"
+
+    - name: Inspect the running Element Call container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-element-call
+      register: matrix_element_call_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_runtime.Config.Image == matrix_element_call_expected_image
+        fail_msg: >-
+          The running container uses {{ matrix_element_call_runtime.Config.Image }}, expected
+          {{ matrix_element_call_expected_image }}
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        matrix_element_call_expected_image: >-
+          {{ matrix_element_call_role_defaults.matrix_element_call_container_image_registry_prefix_upstream_default }}element-hq/element-call:{{ matrix_element_call_role_defaults.matrix_element_call_version }}
+
+    - name: Assert the running container uses the playbook-supplied runtime
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_runtime.Config.User == (matrix_user_uid | string) ~ ':' ~ (matrix_user_gid | string)
+          - matrix_element_call_runtime.HostConfig.RestartPolicy.Name == 'no'
+          - matrix_element_call_runtime.HostConfig.AutoRemove is sameas true
+          - matrix_element_call_runtime.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container does not use the role's identity and Docker lifecycle contract"
+        success_msg: "The running container uses the role's identity and Docker lifecycle contract"
+
+    - name: Assert the running container has the intended privilege isolation
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_runtime.HostConfig.Privileged is sameas false
+          - matrix_element_call_runtime.HostConfig.CapAdd | default([], true) | length == 0
+          - matrix_element_call_runtime.HostConfig.CapDrop == ['ALL']
+        fail_msg: "The running container does not have the intended privilege isolation"
+        success_msg: "The running container drops all capabilities and is unprivileged"
+
+    - name: Assert the role's configuration is the sole read-only bind mount
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_runtime.Mounts | length == 1
+          - matrix_element_call_runtime.Mounts[0].Type == 'bind'
+          - matrix_element_call_runtime.Mounts[0].Source == matrix_element_call_base_path ~ '/config.json'
+          - matrix_element_call_runtime.Mounts[0].Destination == '/app/config.json'
+          - matrix_element_call_runtime.Mounts[0].RW is sameas false
+        fail_msg: "The role-rendered config.json is not the container's sole read-only bind mount"
+        success_msg: "The role-rendered config.json is mounted read-only at the image's live path"
+
+    - name: Assert the rendered and extra labels reached the running container
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_runtime.Config.Labels['traefik.enable'] == 'true'
+          - matrix_element_call_runtime.Config.Labels['traefik.docker.network'] == matrix_element_call_container_network
+          - matrix_element_call_runtime.Config.Labels['traefik.http.services.matrix-element-call.loadbalancer.server.port'] == '8080'
+          - matrix_element_call_runtime.Config.Labels['traefik.http.routers.matrix-element-call.priority'] == '827'
+          - matrix_element_call_runtime.Config.Labels['molecule.element-call.coverage'] == 'enabled'
+          - matrix_element_call_runtime.Config.Labels['molecule.element-call.extra-argument'] == 'reached'
+        fail_msg: "The running container does not carry the labels the role rendered and passed"
+        success_msg: "The configured labels reached the running container"
+
+    - name: Assert the running container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_runtime.HostConfig.NetworkMode == matrix_element_call_container_network
+          - matrix_element_call_runtime.NetworkSettings.Networks is mapping
+          - matrix_element_call_runtime.NetworkSettings.Networks | length == 1
+          - matrix_element_call_container_network in matrix_element_call_runtime.NetworkSettings.Networks
+        fail_msg: >-
+          Element Call has unexpected network attachments:
+          {{ matrix_element_call_runtime.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The running container is attached only to its dedicated network"
+
+    - name: Assert the observable extra runtime argument reached Docker
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_runtime.Config.Hostname == 'element-call-molecule-runtime'
+        fail_msg: "The configured container hostname extra argument did not reach Docker"
+        success_msg: "The configured container extra argument reached Docker"
+
+    - name: Ask Docker for Element Call's published ports
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - port
+          - matrix-element-call
+      register: matrix_element_call_published_ports
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the role publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - matrix_element_call_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_element_call_published_ports.rc == 0
+          - matrix_element_call_published_ports.stdout | trim | length == 0
+        fail_msg: >-
+          Element Call unexpectedly publishes a host port:
+          {{ matrix_element_call_published_ports.stdout | default('unknown') }}
+        success_msg: "The role leaves Element Call's HTTP port unpublished"

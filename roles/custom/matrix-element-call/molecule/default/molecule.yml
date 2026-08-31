@@ -1,0 +1,79 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-element-call-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_element_call_enabled: true
+        matrix_element_call_architecture: amd64
+
+        # Keep the role's files away from its matrix_base_data_path-derived default,
+        # proving that both the renderer and the systemd unit honor this contract.
+        matrix_element_call_base_path: /matrix/molecule-element-call
+
+        matrix_element_call_container_network: matrix-element-call-molecule
+
+        # Both values differ from the role and application defaults. The live
+        # /config.json response proves they reached the browser application.
+        matrix_element_call_config_default_server_config_m_homeserver_base_url: https://homeserver.call.molecule.local
+        matrix_element_call_config_default_server_config_m_homeserver_server_name: call-molecule.local
+        matrix_element_call_config_livekit_livekit_service_url: https://livekit-jwt.call.molecule.local
+
+        # Exercise the generated public routing and response-header labels.
+        matrix_element_call_hostname: call.molecule.local
+        matrix_element_call_container_labels_traefik_enabled: true
+        matrix_element_call_container_labels_traefik_priority: 827
+        matrix_element_call_container_labels_traefik_entrypoints: web
+        matrix_element_call_container_labels_traefik_tls: false
+        matrix_element_call_http_header_xss_protection: "0"
+        matrix_element_call_http_header_content_type_options: molecule-nosniff
+        matrix_element_call_http_header_content_security_policy: "frame-ancestors https://embed.call.molecule.local"
+        matrix_element_call_http_header_content_permission_policy: "camera=(self), microphone=(self)"
+        matrix_element_call_container_labels_additional_labels: |
+          molecule.element-call.coverage=enabled
+
+        # Make the generic Docker-argument escape hatch observable.
+        matrix_element_call_container_extra_arguments:
+          - --hostname=element-call-molecule-runtime
+          - --label=molecule.element-call.extra-argument=reached
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
