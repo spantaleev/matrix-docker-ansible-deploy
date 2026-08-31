@@ -1,0 +1,495 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the logged-out bridge starts, accepts the role-rendered configuration and
+# registration, migrates real Postgres and opens its appservice listener. Steam
+# credentials are deliberately outside the scenario boundary.
+- name: Verify matrix-bridge-steam
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_bridge_steam_config: "{{ matrix_bridge_steam_config_file.content | b64decode | from_yaml }}"
+    matrix_bridge_steam_registration: "{{ matrix_bridge_steam_registration_file.content | b64decode | from_yaml }}"
+    matrix_bridge_steam_labels_rendered: "{{ matrix_bridge_steam_labels_file.content | b64decode }}"
+    matrix_bridge_steam_runtime: "{{ (matrix_bridge_steam_container_inspect.stdout | from_json) | first }}"
+  gather_facts: false
+
+  tasks:
+    # A Renovate bump changes this source of truth and therefore the image expectation.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_bridge_steam_role_defaults
+
+    - name: Wait for the Steam bridge service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-steam-bridge.service
+      register: matrix_bridge_steam_service
+      until: matrix_bridge_steam_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_service.status.ActiveState == 'active'
+          - matrix_bridge_steam_service.status.NRestarts is defined
+          - matrix_bridge_steam_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-steam-bridge.service is
+          {{ matrix_bridge_steam_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_bridge_steam_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-steam-bridge.service is active and has not restarted"
+
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_steam_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - "http://matrix-steam-bridge:{{ matrix_bridge_steam_appservice_port }}/_matrix/mau/live"
+      register: matrix_bridge_steam_live
+      changed_when: false
+      until: matrix_bridge_steam_live.rc == 0 and matrix_bridge_steam_live.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_steam_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - "http://matrix-steam-bridge:{{ matrix_bridge_steam_appservice_port }}/_matrix/mau/ready"
+      register: matrix_bridge_steam_ready
+      changed_when: false
+      until: matrix_bridge_steam_ready.rc == 0 and matrix_bridge_steam_ready.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on the configured appservice port
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_live.rc == 0
+          - matrix_bridge_steam_live.stdout == 'HTTP_STATUS=200'
+          - matrix_bridge_steam_ready.rc == 0
+          - matrix_bridge_steam_ready.stdout == 'HTTP_STATUS=200'
+        fail_msg: >-
+          Health probes returned live={{ matrix_bridge_steam_live.stdout | default('none') }} and
+          ready={{ matrix_bridge_steam_ready.stdout | default('none') }}
+        success_msg: "The bridge is live and ready on the configured appservice port"
+
+    # This is the live homeserver-to-appservice half of the registration handshake.
+    # It detects the old image-entrypoint mismatch, which generated unrelated tokens
+    # under /app/data while the role's registration remained unused under /app/config.
+    - name: Submit an empty appservice transaction with the configured token
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_steam_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail-with-body
+          - --request
+          - PUT
+          - --header
+          - "Content-Type: application/json"
+          - --header
+          - "Authorization: Bearer {{ matrix_bridge_steam_homeserver_token }}"
+          - --data-binary
+          - '{"events": [], "ephemeral": []}'
+          - "http://matrix-steam-bridge:{{ matrix_bridge_steam_appservice_port }}/_matrix/app/v1/transactions/molecule-coverage"
+      register: matrix_bridge_steam_transaction
+      changed_when: false
+
+    - name: Submit an appservice transaction with an invalid token
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_steam_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - --request
+          - PUT
+          - --header
+          - "Content-Type: application/json"
+          - --header
+          - "Authorization: Bearer definitely-wrong-molecule-token"
+          - --data-binary
+          - '{"events": [], "ephemeral": []}'
+          - "http://matrix-steam-bridge:{{ matrix_bridge_steam_appservice_port }}/_matrix/app/v1/transactions/molecule-unauthorized"
+      register: matrix_bridge_steam_transaction_unauthorized
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live appservice accepts only the configured handshake token
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_transaction.rc == 0
+          - matrix_bridge_steam_transaction.stdout | from_json == {}
+          - matrix_bridge_steam_transaction_unauthorized.rc == 0
+          - matrix_bridge_steam_transaction_unauthorized.stdout == 'HTTP_STATUS=401'
+        fail_msg: "The live appservice did not enforce the role-rendered hs_token"
+        success_msg: "The live appservice accepts the role-rendered hs_token and rejects another"
+
+    - name: Query the authenticated Steam provisioning login flows
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_steam_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail-with-body
+          - --header
+          - "Authorization: Bearer {{ matrix_bridge_steam_provisioning_shared_secret }}"
+          - "http://matrix-steam-bridge:{{ matrix_bridge_steam_appservice_port }}/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: matrix_bridge_steam_login_flows
+      changed_when: false
+
+    - name: Query the provisioning API with an invalid secret
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_steam_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - --header
+          - "Authorization: Bearer definitely-wrong-molecule-secret"
+          - "http://matrix-steam-bridge:{{ matrix_bridge_steam_appservice_port }}/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: matrix_bridge_steam_login_flows_unauthorized
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live provisioning API enforces auth and advertises Steam login
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_login_flows.rc == 0
+          - (matrix_bridge_steam_login_flows.stdout | from_json).flows is sequence
+          - (matrix_bridge_steam_login_flows.stdout | from_json).flows | length > 0
+          - matrix_bridge_steam_login_flows_unauthorized.rc == 0
+          - matrix_bridge_steam_login_flows_unauthorized.stdout == 'HTTP_STATUS=401'
+        fail_msg: "The provisioning API did not enforce its secret or return Steam login flows"
+        success_msg: "The provisioning API enforces its secret and returns Steam login flows"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_steam_config_path }}/config.yaml"
+      register: matrix_bridge_steam_config_file
+
+    - name: Assert the rendered configuration carries the appservice identity
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_config.homeserver.address == matrix_bridge_steam_homeserver_address
+          - matrix_bridge_steam_config.homeserver.domain == matrix_bridge_steam_homeserver_domain
+          - matrix_bridge_steam_config.homeserver.async_media
+          - matrix_bridge_steam_config.appservice.id == 'steam'
+          - matrix_bridge_steam_config.appservice.address == 'http://matrix-steam-bridge:8766'
+          - matrix_bridge_steam_config.appservice.public_address == matrix_bridge_steam_appservice_public_address
+          - matrix_bridge_steam_config.appservice.port == 8766
+          - matrix_bridge_steam_config.appservice.bot.username == matrix_bridge_steam_appservice_bot_username
+          - matrix_bridge_steam_config.appservice.bot.displayname == matrix_bridge_steam_appservice_bot_displayname
+          - matrix_bridge_steam_config.appservice.bot.avatar == matrix_bridge_steam_appservice_bot_avatar
+          - matrix_bridge_steam_config.appservice.as_token == matrix_bridge_steam_appservice_token
+          - matrix_bridge_steam_config.appservice.hs_token == matrix_bridge_steam_homeserver_token
+        fail_msg: "The rendered configuration does not carry the scenario's appservice identity"
+        success_msg: "The rendered configuration carries the scenario's appservice identity"
+
+    - name: Assert the rendered configuration carries non-default Steam behavior
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_config.network.displayname_template == matrix_bridge_steam_network_displayname_template
+          - not matrix_bridge_steam_config.network.presence.enabled
+          - matrix_bridge_steam_config.network.presence.inactivity_status == 'snooze'
+          - matrix_bridge_steam_config.network.presence_topic.enabled
+          - matrix_bridge_steam_config.network.presence_topic.rich_presence_enabled
+          - matrix_bridge_steam_config.network.presence_topic.show_raw_tokens
+          - matrix_bridge_steam_config.bridge.command_prefix == matrix_bridge_steam_command_prefix
+          - matrix_bridge_steam_config.bridge.split_portals
+          - matrix_bridge_steam_config.bridge.permissions['*'] == 'commands'
+          - matrix_bridge_steam_config.bridge.permissions[matrix_bridge_steam_homeserver_domain] == 'admin'
+          - matrix_bridge_steam_config.matrix.federate_rooms
+          - matrix_bridge_steam_config.logging.min_level == matrix_bridge_steam_logging_level
+        fail_msg: "The rendered configuration does not carry the scenario's Steam behavior"
+        success_msg: "The rendered configuration carries the scenario's Steam behavior"
+
+    - name: Assert the rendered configuration carries the cleanup policy
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.enabled
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.manual.private == 'kick'
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.manual.relayed == 'unbridge'
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.manual.shared_no_users == 'delete'
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.manual.shared_has_users == 'kick'
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.bad_credentials.private == 'delete'
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.bad_credentials.relayed == 'kick'
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.bad_credentials.shared_no_users == 'unbridge'
+          - matrix_bridge_steam_config.bridge.cleanup_on_logout.bad_credentials.shared_has_users == 'delete'
+        fail_msg: "The rendered configuration does not carry the scenario's cleanup policy"
+        success_msg: "The rendered configuration carries the scenario's cleanup policy"
+
+    - name: Assert the rendered configuration carries integration and backfill settings
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_config.provisioning.shared_secret == matrix_bridge_steam_provisioning_shared_secret
+          - matrix_bridge_steam_config.double_puppet.secrets['molecule.remote'] == 'molecule_steam_double_puppet_51d28a'
+          - not matrix_bridge_steam_config.public_media.enabled
+          - not matrix_bridge_steam_config.backfill.enabled
+          - matrix_bridge_steam_config.backfill.max_initial_messages == 17
+          - matrix_bridge_steam_config.backfill.max_catchup_messages == 29
+        fail_msg: "The rendered configuration lost the scenario's integration or backfill settings"
+        success_msg: "The rendered configuration carries the integration and backfill settings"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_config.database.type == matrix_bridge_steam_database_engine
+          - matrix_bridge_steam_database_username in matrix_bridge_steam_config.database.uri
+          - matrix_bridge_steam_database_hostname in matrix_bridge_steam_config.database.uri
+          - matrix_bridge_steam_database_name in matrix_bridge_steam_config.database.uri
+        fail_msg: "The rendered database URI was not composed from the scenario's settings"
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_steam_config_path }}/registration.yaml"
+      register: matrix_bridge_steam_registration_file
+
+    - name: Assert the registration carries the configured handshake values
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_registration.id == 'steam'
+          - matrix_bridge_steam_registration.as_token == matrix_bridge_steam_appservice_token
+          - matrix_bridge_steam_registration.hs_token == matrix_bridge_steam_homeserver_token
+          - matrix_bridge_steam_registration.sender_localpart == '_bot_' + matrix_bridge_steam_appservice_bot_username
+          - matrix_bridge_steam_registration.url == 'http://matrix-steam-bridge:8766'
+        fail_msg: "The registration does not carry the configured handshake values"
+        success_msg: "The registration carries the configured handshake values"
+
+    - name: Check for an entrypoint-generated registration in the writable data path
+      ansible.builtin.stat:
+        path: "{{ matrix_bridge_steam_data_path }}/registration.yaml"
+      register: matrix_bridge_steam_generated_registration
+
+    - name: Assert the image entrypoint did not generate a second registration
+      ansible.builtin.assert:
+        that:
+          - not matrix_bridge_steam_generated_registration.stat.exists
+        fail_msg: >-
+          The image generated a second registration under the writable data path instead
+          of consuming the role-rendered registration mounted under /app/config
+        success_msg: "The image consumes the role-rendered registration without generating another"
+
+    - name: Assert the registration namespaces cover only Steam ghosts and the bridge bot
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_ghost_regex | length > 0
+          - matrix_bridge_steam_bot_regex | length > 0
+          - matrix_bridge_steam_ghost_mxid is match(matrix_bridge_steam_ghost_regex)
+          - matrix_bridge_steam_wrong_ghost_mxid is not match(matrix_bridge_steam_ghost_regex)
+          - matrix_bridge_steam_bot_mxid is match(matrix_bridge_steam_bot_regex)
+        fail_msg: "The registration namespaces do not cover only Steam ghosts and the bot"
+        success_msg: "The registration namespaces cover only Steam ghosts and the bot"
+      vars:
+        matrix_bridge_steam_user_regexes: "{{ matrix_bridge_steam_registration.namespaces.users | map(attribute='regex') | list }}"
+        matrix_bridge_steam_ghost_regex: "{{ matrix_bridge_steam_user_regexes | select('search', 'steam_') | first | default('') }}"
+        matrix_bridge_steam_bot_regex: "{{ matrix_bridge_steam_user_regexes | reject('search', 'steam_') | first | default('') }}"
+        matrix_bridge_steam_ghost_mxid: "@steam_76561198000000000:{{ matrix_bridge_steam_homeserver_domain }}"
+        matrix_bridge_steam_wrong_ghost_mxid: "@discord_76561198000000000:{{ matrix_bridge_steam_homeserver_domain }}"
+        matrix_bridge_steam_bot_mxid: "@{{ matrix_bridge_steam_appservice_bot_username }}:{{ matrix_bridge_steam_homeserver_domain }}"
+
+    # Tables can appear only after DNS resolution, authentication and real migrations.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_steam_database_username }}
+          - --dbname={{ matrix_bridge_steam_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: matrix_bridge_steam_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_tables.rc == 0
+          - "'version' in matrix_bridge_steam_table_names"
+          - "'portal' in matrix_bridge_steam_table_names"
+          - "'message' in matrix_bridge_steam_table_names"
+          - matrix_bridge_steam_table_names | length > 8
+        fail_msg: >-
+          The bridge did not migrate its schema into {{ matrix_bridge_steam_database_name }}
+          (found {{ matrix_bridge_steam_table_names | length }} table(s): {{ matrix_bridge_steam_table_names | join(', ') }})
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        matrix_bridge_steam_table_names: "{{ matrix_bridge_steam_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_steam_base_path }}/labels"
+      register: matrix_bridge_steam_labels_file
+
+    - name: Assert the labels route the exposed API to the configured appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in matrix_bridge_steam_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_steam_container_network in matrix_bridge_steam_labels_rendered"
+          - "'traefik.http.services.matrix-steam-bridge.loadbalancer.server.port=8766' in matrix_bridge_steam_labels_rendered"
+          - "'traefik.http.routers.matrix-steam-bridge-exposure.rule=Host(`steam-api.molecule.local`) && PathPrefix(`/bridges/steam-api`)' in matrix_bridge_steam_labels_rendered"
+          - "'traefik.http.middlewares.matrix-steam-bridge-exposure-strip-prefix.stripprefix.prefixes=/bridges/steam-api' in matrix_bridge_steam_labels_rendered"
+          - "'traefik.http.routers.matrix-steam-bridge-exposure.entrypoints=web' in matrix_bridge_steam_labels_rendered"
+          - "'traefik.http.routers.matrix-steam-bridge-exposure.tls=false' in matrix_bridge_steam_labels_rendered"
+          - "'matrix-steam-bridge-public-media' not in matrix_bridge_steam_labels_rendered"
+          - "'molecule.steam.coverage=enabled' in matrix_bridge_steam_labels_rendered"
+        fail_msg: "The rendered labels do not carry the scenario's exposure contract"
+        success_msg: "The rendered labels carry the scenario's exposure contract"
+
+    - name: Inspect the running Steam bridge container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-steam-bridge
+      register: matrix_bridge_steam_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_runtime.Config.Image == matrix_bridge_steam_expected_image
+        fail_msg: >-
+          The running container uses {{ matrix_bridge_steam_runtime.Config.Image }}, expected
+          {{ matrix_bridge_steam_expected_image }}
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        matrix_bridge_steam_expected_image: >-
+          {{ matrix_bridge_steam_role_defaults.matrix_bridge_steam_container_image_registry_prefix_upstream_default }}jasonlaguidice/matrix-steam-bridge:{{ matrix_bridge_steam_role_defaults.matrix_bridge_steam_version }}
+
+    - name: Assert the running container uses the playbook-supplied runtime
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_runtime.Config.User == (matrix_user_uid | string) ~ ':' ~ (matrix_user_gid | string)
+          - matrix_bridge_steam_runtime.Config.Entrypoint == ['/app/entrypoint.sh']
+          - matrix_bridge_steam_runtime.Config.Cmd == ['-r', '/app/config/registration.yaml', '--no-update']
+          - matrix_bridge_steam_runtime.Config.WorkingDir == '/app'
+          - "'CONFIG_FILE=/app/config/config.yaml' in matrix_bridge_steam_runtime.Config.Env"
+          - "'REGISTRATION_FILE=/app/config/registration.yaml' in matrix_bridge_steam_runtime.Config.Env"
+          - matrix_bridge_steam_runtime.HostConfig.RestartPolicy.Name == 'no'
+          - matrix_bridge_steam_runtime.HostConfig.AutoRemove is sameas true
+          - matrix_bridge_steam_runtime.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container does not use the image entrypoint with the role's exact registration and lifecycle contract"
+        success_msg: "The running container uses the image entrypoint with the role's exact registration and lifecycle contract"
+
+    - name: Assert the running container has the intended privilege isolation
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_runtime.HostConfig.Privileged is sameas false
+          - matrix_bridge_steam_runtime.HostConfig.CapAdd | default([], true) | length == 0
+          - matrix_bridge_steam_runtime.HostConfig.CapDrop == ['ALL']
+        fail_msg: "The running container does not have the intended privilege isolation"
+        success_msg: "The running container drops all capabilities and is unprivileged"
+
+    - name: Assert the running container carries the exact config and data mounts
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_config_mount | length > 0
+          - matrix_bridge_steam_config_mount.Source == matrix_bridge_steam_config_path
+          - not matrix_bridge_steam_config_mount.RW
+          - matrix_bridge_steam_data_mount | length > 0
+          - matrix_bridge_steam_data_mount.Source == matrix_bridge_steam_data_path
+          - matrix_bridge_steam_data_mount.RW
+          - matrix_bridge_steam_logs_mount | length > 0
+          - matrix_bridge_steam_logs_mount.Type == 'volume'
+          - matrix_bridge_steam_logs_mount.RW
+          - matrix_bridge_steam_runtime.Mounts | length == 3
+        fail_msg: "The running container does not carry the expected role and upstream image mounts"
+        success_msg: "The running container carries read-only config, writable data, and the upstream logs volume"
+      vars:
+        matrix_bridge_steam_config_mount: >-
+          {{ matrix_bridge_steam_runtime.Mounts
+             | selectattr('Destination', 'equalto', '/app/config')
+             | first | default({}) }}
+        matrix_bridge_steam_data_mount: >-
+          {{ matrix_bridge_steam_runtime.Mounts
+             | selectattr('Destination', 'equalto', '/app/data')
+             | first | default({}) }}
+        matrix_bridge_steam_logs_mount: >-
+          {{ matrix_bridge_steam_runtime.Mounts
+             | selectattr('Destination', 'equalto', '/app/logs')
+             | first | default({}) }}
+
+    - name: Assert the rendered and extra labels reached the running container
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_runtime.Config.Labels['traefik.enable'] == 'true'
+          - matrix_bridge_steam_runtime.Config.Labels['traefik.docker.network'] == matrix_bridge_steam_container_network
+          - matrix_bridge_steam_runtime.Config.Labels['traefik.http.services.matrix-steam-bridge.loadbalancer.server.port'] == '8766'
+          - matrix_bridge_steam_runtime.Config.Labels['molecule.steam.coverage'] == 'enabled'
+          - matrix_bridge_steam_runtime.Config.Labels['molecule.steam.extra-argument'] == 'reached'
+        fail_msg: "The running container does not carry the labels the role rendered and passed"
+        success_msg: "The configured labels reached the running container"
+
+    - name: Assert the running container has the exact network and port exposure
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_runtime.HostConfig.NetworkMode == matrix_bridge_steam_container_network
+          - matrix_bridge_steam_container_network in matrix_bridge_steam_runtime.NetworkSettings.Networks
+          - matrix_bridge_steam_runtime.NetworkSettings.Networks | length == 1
+          - matrix_bridge_steam_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: >-
+          The container has unexpected networks or host ports:
+          networks={{ matrix_bridge_steam_runtime.NetworkSettings.Networks.keys() | list }},
+          ports={{ matrix_bridge_steam_runtime.HostConfig.PortBindings | default({}) }}
+        success_msg: "The container uses only its dedicated network and publishes no host ports"
+
+    - name: Assert the observable extra runtime argument reached Docker
+      ansible.builtin.assert:
+        that:
+          - matrix_bridge_steam_runtime.Config.Hostname == 'steam-bridge-molecule-runtime'
+        fail_msg: "The configured container hostname extra argument did not reach Docker"
+        success_msg: "The configured container extra argument reached Docker"

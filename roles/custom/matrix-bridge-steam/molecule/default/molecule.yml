@@ -1,0 +1,126 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-bridge-steam-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_steam_enabled: true
+        matrix_bridge_steam_container_network: matrix-bridge-steam-molecule
+
+        # The stub is not a real homeserver and the scenario carries no Steam
+        # credentials. Logged out is the intended component boundary.
+        matrix_bridge_steam_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bridge_steam_homeserver_domain: molecule.local
+        matrix_bridge_steam_homeserver_async_media: true
+
+        # Use a non-default listener to prove configuration, service command and
+        # routing labels agree on the appservice endpoint.
+        matrix_bridge_steam_appservice_port: 8766
+
+        # Postgres is the normal deployment path. Distinct names make the migrated
+        # schema evidence that the role composed this connection successfully.
+        matrix_bridge_steam_database_engine: postgres
+        matrix_bridge_steam_database_hostname: matrix-postgres-molecule
+        matrix_bridge_steam_database_name: molecule_steam
+        matrix_bridge_steam_database_username: molecule_steam
+        matrix_bridge_steam_database_password: molecule_pg_password_8f527c
+
+        matrix_bridge_steam_appservice_token: molecule_steam_as_token_d74a61
+        matrix_bridge_steam_homeserver_token: molecule_steam_hs_token_7b39e2
+        matrix_bridge_steam_appservice_bot_username: molecule-steambot
+        matrix_bridge_steam_appservice_bot_displayname: Molecule Steam bridge
+        matrix_bridge_steam_appservice_bot_avatar: mxc://molecule.local/steamMoleculeAvatar
+
+        # Exercise role-rendered Steam and generic bridge behavior with values that
+        # differ from the role and component defaults.
+        matrix_bridge_steam_network_displayname_template: "{% raw %}{{ .PersonaName }} via Molecule{% endraw %}"
+        matrix_bridge_steam_network_presence_enabled: false
+        matrix_bridge_steam_network_presence_inactivity_status: snooze
+        matrix_bridge_steam_network_presence_topic_enabled: true
+        matrix_bridge_steam_network_presence_topic_rich_presence_enabled: true
+        matrix_bridge_steam_network_presence_topic_show_raw_tokens: true
+        matrix_bridge_steam_command_prefix: "!molecule-steam"
+        matrix_bridge_steam_bridge_permissions:
+          "*": commands
+          molecule.local: admin
+        matrix_bridge_steam_bridge_split_portals: true
+        matrix_bridge_steam_bridge_cleanup_on_logout_enabled: true
+        matrix_bridge_steam_bridge_cleanup_on_logout_manual_private: kick
+        matrix_bridge_steam_bridge_cleanup_on_logout_manual_relayed: unbridge
+        matrix_bridge_steam_bridge_cleanup_on_logout_manual_shared_no_users: delete
+        matrix_bridge_steam_bridge_cleanup_on_logout_manual_shared_has_users: kick
+        matrix_bridge_steam_bridge_cleanup_on_logout_bad_credentials_private: delete
+        matrix_bridge_steam_bridge_cleanup_on_logout_bad_credentials_relayed: kick
+        matrix_bridge_steam_bridge_cleanup_on_logout_bad_credentials_shared_no_users: unbridge
+        matrix_bridge_steam_bridge_cleanup_on_logout_bad_credentials_shared_has_users: delete
+        matrix_bridge_steam_matrix_federate_rooms: true
+        matrix_bridge_steam_backfill_enabled: false
+        matrix_bridge_steam_backfill_max_initial_messages: 17
+        matrix_bridge_steam_backfill_max_catchup_messages: 29
+        matrix_bridge_steam_provisioning_shared_secret: molecule_steam_provisioning_secret_43c1ea
+        matrix_bridge_steam_double_puppet_secrets_custom:
+          molecule.remote: molecule_steam_double_puppet_51d28a
+        matrix_bridge_steam_logging_level: info
+
+        # Public media needs no external test fixture and is disabled here; bridge API
+        # exposure remains enabled to exercise its generated Traefik contract.
+        matrix_bridge_steam_public_media_enabled: false
+        matrix_bridge_steam_appservice_public_address: http://steam-public.molecule.local
+        matrix_bridge_steam_exposure_enabled: true
+        matrix_bridge_steam_exposure_hostname: steam-api.molecule.local
+        matrix_bridge_steam_exposure_path_prefix: /bridges/steam-api
+        matrix_bridge_steam_container_labels_traefik_enabled: true
+        matrix_bridge_steam_container_labels_traefik_entrypoints: web
+        matrix_bridge_steam_container_labels_traefik_tls: false
+        matrix_bridge_steam_container_labels_additional_labels: |
+          molecule.steam.coverage=enabled
+
+        matrix_bridge_steam_container_extra_arguments:
+          - --hostname=steam-bridge-molecule-runtime
+          - --label=molecule.steam.extra-argument=reached
+
+        # verify.yml is a separate play, where role defaults are out of scope.
+        matrix_bridge_steam_base_path: /matrix/matrix-steam-bridge
+        matrix_bridge_steam_config_path: /matrix/matrix-steam-bridge/config
+        matrix_bridge_steam_data_path: /matrix/matrix-steam-bridge/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
