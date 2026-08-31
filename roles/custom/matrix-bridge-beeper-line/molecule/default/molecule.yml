@@ -1,0 +1,101 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: beeper-line-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_beeper_line_container_network: beeper-line-molecule
+
+        # The scenario deliberately stops at the third-party boundary: an idle, logged-out
+        # bridge proves the playbook contract without needing a LINE account or credentials.
+        matrix_bridge_beeper_line_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bridge_beeper_line_homeserver_domain: molecule.local
+
+        # The playbook selects Postgres in normal deployments. Non-default credentials make
+        # schema creation evidence that the role composed and delivered this connection URI.
+        matrix_bridge_beeper_line_database_engine: postgres
+        matrix_bridge_beeper_line_database_hostname: matrix-postgres-molecule
+        matrix_bridge_beeper_line_database_name: molecule_beeper_line
+        matrix_bridge_beeper_line_database_username: molecule_beeper_line
+        matrix_bridge_beeper_line_database_password: molecule_pg_password_8f72d1
+
+        matrix_bridge_beeper_line_appservice_token: molecule_line_as_token_4e81a9
+        matrix_bridge_beeper_line_homeserver_token: molecule_line_hs_token_7c25f0
+        matrix_bridge_beeper_line_appservice_bot_username: molecule-linebot
+        matrix_bridge_beeper_line_appservice_bot_displayname: Molecule LINE Bot
+        matrix_bridge_beeper_line_appservice_bot_avatar: mxc://molecule.local/lineAvatarFixture
+        # Each value differs from the role default so parsed checks distinguish role output
+        # from component defaults.
+        matrix_bridge_beeper_line_command_prefix: "!molecule-line"
+        matrix_bridge_beeper_line_bridge_personal_filtering_spaces: false
+        matrix_bridge_beeper_line_federate_rooms: false
+        matrix_bridge_beeper_line_backfill_enabled: true
+        matrix_bridge_beeper_line_backfill_max_initial_messages: 27
+        matrix_bridge_beeper_line_backfill_max_catchup_messages: 43
+        matrix_bridge_beeper_line_backfill_unread_hours_threshold: 168
+        matrix_bridge_beeper_line_provisioning_shared_secret: molecule_line_provisioning_68c93d
+        matrix_bridge_beeper_line_logging_level: info
+        matrix_bridge_beeper_line_bridge_permissions:
+          "*": relay
+          molecule.local: admin
+
+        # Traefik itself is not needed. These values exercise both the public address consumed
+        # by the bridge and the labels consumed by Docker.
+        matrix_bridge_beeper_line_exposure_enabled: true
+        matrix_bridge_beeper_line_exposure_hostname: line-api.molecule.local
+        matrix_bridge_beeper_line_exposure_path_prefix: /bridges/line-api
+        matrix_bridge_beeper_line_scheme: http
+        matrix_bridge_beeper_line_container_labels_exposure_traefik_priority: 1722
+        matrix_bridge_beeper_line_container_labels_exposure_traefik_entrypoints: web
+        matrix_bridge_beeper_line_container_labels_additional_labels: |
+          molecule.beeper-line.coverage=enabled
+
+        # Exercise the systemd template's extensible Docker argument list.
+        matrix_bridge_beeper_line_container_extra_arguments:
+          - --env=MOLECULE_BEEPER_LINE_COVERAGE=enabled
+
+        # verify.yml is a separate play, where role defaults are not in scope.
+        matrix_bridge_beeper_line_base_path: /matrix/beeper-line
+        matrix_bridge_beeper_line_config_path: /matrix/beeper-line/config
+        matrix_bridge_beeper_line_data_path: /matrix/beeper-line/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

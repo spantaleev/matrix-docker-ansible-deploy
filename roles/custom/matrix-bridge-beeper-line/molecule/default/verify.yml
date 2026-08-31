@@ -1,0 +1,396 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the logged-out bridge accepts the role-rendered configuration and registration,
+# migrates real Postgres, opens its appservice listener, and authenticates transactions.
+# A LINE login is deliberately outside this scenario's third-party boundary.
+- name: Verify beeper-line
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    beeper_line_config: "{{ beeper_line_config_file.content | b64decode | from_yaml }}"
+    beeper_line_registration: "{{ beeper_line_registration_file.content | b64decode | from_yaml }}"
+    beeper_line_labels_rendered: "{{ beeper_line_labels_file.content | b64decode }}"
+    beeper_line_expected_public_address: http://line-api.molecule.local/bridges/line-api
+  gather_facts: false
+
+  tasks:
+    # A Renovate digest bump changes this source of truth and therefore the image expectation.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: beeper_line_role_defaults
+
+    - name: Wait for the beeper-line service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-beeper-line.service
+      register: beeper_line_service
+      until: beeper_line_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes ActiveState insufficient for detecting a crash loop.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - beeper_line_service.status.ActiveState == 'active'
+          - beeper_line_service.status.NRestarts is defined
+          - beeper_line_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-beeper-line.service is {{ beeper_line_service.status.ActiveState | default('unknown') }}
+          after {{ beeper_line_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-beeper-line.service is active and has not restarted"
+
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_beeper_line_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-beeper-line:29322/_matrix/mau/live
+      register: beeper_line_live
+      changed_when: false
+      until: beeper_line_live.rc == 0 and beeper_line_live.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_beeper_line_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-beeper-line:29322/_matrix/mau/ready
+      register: beeper_line_ready
+      changed_when: false
+      until: beeper_line_ready.rc == 0 and beeper_line_ready.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on the configured appservice port
+      ansible.builtin.assert:
+        that:
+          - beeper_line_live.rc == 0
+          - beeper_line_live.stdout == 'HTTP_STATUS=200'
+          - beeper_line_ready.rc == 0
+          - beeper_line_ready.stdout == 'HTTP_STATUS=200'
+        fail_msg: >-
+          Health probes returned live={{ beeper_line_live.stdout | default('none') }} and
+          ready={{ beeper_line_ready.stdout | default('none') }}
+        success_msg: "The bridge is live and ready on its appservice port"
+
+    # This is a real inbound appservice handshake using the role-rendered hs_token.
+    - name: Submit an empty appservice transaction with the configured token
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_beeper_line_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail-with-body
+          - --request
+          - PUT
+          - --header
+          - "Content-Type: application/json"
+          - --header
+          - "Authorization: Bearer {{ matrix_bridge_beeper_line_homeserver_token }}"
+          - --data-binary
+          - '{"events": [], "ephemeral": []}'
+          - http://matrix-beeper-line:29322/_matrix/app/v1/transactions/molecule-coverage
+      register: beeper_line_transaction
+      changed_when: false
+
+    - name: Submit an appservice transaction with an invalid token
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_beeper_line_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - --request
+          - PUT
+          - --header
+          - "Content-Type: application/json"
+          - --header
+          - "Authorization: Bearer definitely-wrong-token"
+          - --data-binary
+          - '{"events": [], "ephemeral": []}'
+          - http://matrix-beeper-line:29322/_matrix/app/v1/transactions/molecule-unauthorized
+      register: beeper_line_transaction_unauthorized
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live appservice accepts only the configured handshake token
+      ansible.builtin.assert:
+        that:
+          - beeper_line_transaction.rc == 0
+          - beeper_line_transaction.stdout | from_json == {}
+          - beeper_line_transaction_unauthorized.rc == 0
+          - beeper_line_transaction_unauthorized.stdout == 'HTTP_STATUS=401'
+        fail_msg: "The appservice transaction endpoint did not enforce the rendered hs_token"
+        success_msg: "The live appservice accepts the configured hs_token and rejects another"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_beeper_line_config_path }}/config.yaml"
+      register: beeper_line_config_file
+
+    - name: Assert the rendered configuration carries the appservice identity
+      ansible.builtin.assert:
+        that:
+          - beeper_line_config.homeserver.address == matrix_bridge_beeper_line_homeserver_address
+          - beeper_line_config.homeserver.domain == matrix_bridge_beeper_line_homeserver_domain
+          - beeper_line_config.appservice.id == 'line'
+          - beeper_line_config.appservice.address == 'http://matrix-beeper-line:29322'
+          - beeper_line_config.appservice.public_address == beeper_line_expected_public_address
+          - beeper_line_config.appservice.bot.username == matrix_bridge_beeper_line_appservice_bot_username
+          - beeper_line_config.appservice.bot.displayname == matrix_bridge_beeper_line_appservice_bot_displayname
+          - beeper_line_config.appservice.bot.avatar == matrix_bridge_beeper_line_appservice_bot_avatar
+          - beeper_line_config.appservice.as_token == matrix_bridge_beeper_line_appservice_token
+          - beeper_line_config.appservice.hs_token == matrix_bridge_beeper_line_homeserver_token
+        fail_msg: "The rendered configuration does not carry the scenario's appservice identity"
+        success_msg: "The rendered configuration carries the scenario's appservice identity"
+
+    - name: Assert the rendered configuration carries non-default bridge behavior
+      ansible.builtin.assert:
+        that:
+          - beeper_line_config.bridge.command_prefix == matrix_bridge_beeper_line_command_prefix
+          - not beeper_line_config.bridge.personal_filtering_spaces
+          - beeper_line_config.bridge.permissions['*'] == 'relay'
+          - beeper_line_config.bridge.permissions[matrix_bridge_beeper_line_homeserver_domain] == 'admin'
+          - not beeper_line_config.matrix.federate_rooms
+          - beeper_line_config.provisioning.shared_secret == matrix_bridge_beeper_line_provisioning_shared_secret
+          - beeper_line_config.logging.min_level == matrix_bridge_beeper_line_logging_level
+        fail_msg: "The rendered configuration does not carry the scenario's bridge behavior"
+        success_msg: "The rendered configuration carries the scenario's bridge behavior"
+
+    - name: Assert the rendered configuration carries the non-default backfill policy
+      ansible.builtin.assert:
+        that:
+          - beeper_line_config.backfill.enabled
+          - beeper_line_config.backfill.max_initial_messages == 27
+          - beeper_line_config.backfill.max_catchup_messages == 43
+          - beeper_line_config.backfill.unread_hours_threshold == 168
+        fail_msg: "The rendered configuration does not carry the scenario's backfill policy"
+        success_msg: "The rendered configuration carries the scenario's backfill policy"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - beeper_line_config.database.type == 'postgres'
+          - matrix_bridge_beeper_line_database_username in beeper_line_config.database.uri
+          - matrix_bridge_beeper_line_database_hostname in beeper_line_config.database.uri
+          - matrix_bridge_beeper_line_database_name in beeper_line_config.database.uri
+        fail_msg: >-
+          database.uri is {{ beeper_line_config.database.uri | default('unset') }}, which was not
+          composed from the scenario's connection settings
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_beeper_line_config_path }}/registration.yaml"
+      register: beeper_line_registration_file
+
+    - name: Assert the registration carries the configured handshake values
+      ansible.builtin.assert:
+        that:
+          - beeper_line_registration.id == 'line'
+          - beeper_line_registration.as_token == matrix_bridge_beeper_line_appservice_token
+          - beeper_line_registration.hs_token == matrix_bridge_beeper_line_homeserver_token
+          - beeper_line_registration.sender_localpart == '_bot_' + matrix_bridge_beeper_line_appservice_bot_username
+          - beeper_line_registration.url == 'http://matrix-beeper-line:29322'
+        fail_msg: "The registration does not carry the configured handshake values"
+        success_msg: "The registration carries the configured handshake values"
+
+    - name: Assert the registration namespaces cover only LINE ghosts and the bridge bot
+      ansible.builtin.assert:
+        that:
+          - beeper_line_ghost_regex | length > 0
+          - beeper_line_bot_regex | length > 0
+          - beeper_line_ghost_mxid is match(beeper_line_ghost_regex)
+          - beeper_line_wrong_ghost_mxid is not match(beeper_line_ghost_regex)
+          - beeper_line_bot_mxid is match(beeper_line_bot_regex)
+        fail_msg: "The registration namespaces do not cover only LINE ghosts and the bot"
+        success_msg: "The registration namespaces cover only LINE ghosts and the bot"
+      vars:
+        beeper_line_user_regexes: "{{ beeper_line_registration.namespaces.users | map(attribute='regex') | list }}"
+        beeper_line_ghost_regex: "{{ beeper_line_user_regexes | select('search', 'line_') | first | default('') }}"
+        beeper_line_bot_regex: "{{ beeper_line_user_regexes | reject('search', 'line_') | first | default('') }}"
+        beeper_line_ghost_mxid: "@line_moleculefixture:{{ matrix_bridge_beeper_line_homeserver_domain }}"
+        beeper_line_wrong_ghost_mxid: "@twitter_moleculefixture:{{ matrix_bridge_beeper_line_homeserver_domain }}"
+        beeper_line_bot_mxid: "@{{ matrix_bridge_beeper_line_appservice_bot_username }}:{{ matrix_bridge_beeper_line_homeserver_domain }}"
+
+    # Tables can appear only after hostname resolution, authentication, and real migrations.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_beeper_line_database_username }}
+          - --dbname={{ matrix_bridge_beeper_line_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: beeper_line_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - beeper_line_tables.rc == 0
+          - "'version' in beeper_line_table_names"
+          - "'portal' in beeper_line_table_names"
+          - "'user_login' in beeper_line_table_names"
+          - "'message' in beeper_line_table_names"
+          - beeper_line_table_names | length > 10
+        fail_msg: >-
+          The bridge did not migrate its schema into {{ matrix_bridge_beeper_line_database_name }}
+          (found {{ beeper_line_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        beeper_line_table_names: "{{ beeper_line_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_beeper_line_base_path }}/labels"
+      register: beeper_line_labels_file
+
+    - name: Assert the labels route the public endpoint to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in beeper_line_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_beeper_line_container_network in beeper_line_labels_rendered"
+          - "'traefik.http.services.matrix-beeper-line-exposure.loadbalancer.server.port=29322' in beeper_line_labels_rendered"
+          - "'traefik.http.routers.matrix-beeper-line-exposure.rule=Host(`line-api.molecule.local`) && PathPrefix(`/bridges/line-api`)' in beeper_line_labels_rendered"
+          - "'traefik.http.middlewares.matrix-beeper-line-exposure-strip-prefix.stripprefix.prefixes=/bridges/line-api' in beeper_line_labels_rendered"
+          - "'traefik.http.routers.matrix-beeper-line-exposure.priority=1722' in beeper_line_labels_rendered"
+          - "'traefik.http.routers.matrix-beeper-line-exposure.entrypoints=web' in beeper_line_labels_rendered"
+          - "'traefik.http.routers.matrix-beeper-line-exposure.tls=false' in beeper_line_labels_rendered"
+          - "'molecule.beeper-line.coverage=enabled' in beeper_line_labels_rendered"
+        fail_msg: "The rendered labels do not carry the scenario's exposure configuration"
+        success_msg: "The rendered labels carry the scenario's exposure configuration"
+
+    - name: Inspect the running bridge container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-beeper-line
+      register: beeper_line_container_inspect
+      changed_when: false
+
+    - name: Parse the running bridge container inspection
+      ansible.builtin.set_fact:
+        beeper_line_container: "{{ (beeper_line_container_inspect.stdout | from_json) | first }}"
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - beeper_line_container.Config.Image == beeper_line_expected_image
+        fail_msg: >-
+          The running container uses {{ beeper_line_container.Config.Image }}, expected
+          {{ beeper_line_expected_image }}
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        beeper_line_expected_image: >-
+          {{ beeper_line_role_defaults.matrix_bridge_beeper_line_container_image_registry_prefix_upstream_default }}crispyduck/beeper-line:{{ beeper_line_role_defaults.matrix_bridge_beeper_line_version }}
+
+    - name: Assert the running container uses the playbook-supplied runtime
+      ansible.builtin.assert:
+        that:
+          - beeper_line_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+          - beeper_line_container.Config.WorkingDir == '/data'
+          - beeper_line_container.Config.Cmd == ['/usr/bin/matrix-line', '-c', '/config/config.yaml', '-r', '/config/registration.yaml', '--no-update']
+          - beeper_line_container.Config.Env is contains('MOLECULE_BEEPER_LINE_COVERAGE=enabled')
+          - beeper_line_container.HostConfig.RestartPolicy.Name == 'no'
+          - beeper_line_container.HostConfig.AutoRemove
+          - beeper_line_container.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container does not use the role's exact identity and command"
+        success_msg: "The running container uses the role's exact identity, command, and extra argument"
+
+    - name: Assert the running container has the intended privilege isolation
+      ansible.builtin.assert:
+        that:
+          - "'ALL' in beeper_line_container.HostConfig.CapDrop"
+          - not beeper_line_container.HostConfig.Privileged
+        fail_msg: "The running container does not have the intended privilege isolation"
+        success_msg: "The running container drops all capabilities and is unprivileged"
+
+    - name: Assert the running container carries the role's exact bind mounts
+      ansible.builtin.assert:
+        that:
+          - beeper_line_config_mount | length > 0
+          - beeper_line_config_mount.Source == matrix_bridge_beeper_line_config_path
+          - not beeper_line_config_mount.RW
+          - beeper_line_data_mount | length > 0
+          - beeper_line_data_mount.Source == matrix_bridge_beeper_line_data_path
+          - beeper_line_data_mount.RW
+          - beeper_line_container.Mounts | length == 2
+        fail_msg: "The running container does not carry the role's exact config and data mounts"
+        success_msg: "The running container carries read-only config and writable data mounts"
+      vars:
+        beeper_line_config_mount: >-
+          {{ beeper_line_container.Mounts
+             | selectattr('Destination', 'equalto', '/config')
+             | first | default({}) }}
+        beeper_line_data_mount: >-
+          {{ beeper_line_container.Mounts
+             | selectattr('Destination', 'equalto', '/data')
+             | first | default({}) }}
+
+    - name: Assert the rendered labels are attached to the running container
+      ansible.builtin.assert:
+        that:
+          - beeper_line_container.Config.Labels['traefik.enable'] == 'true'
+          - beeper_line_container.Config.Labels['traefik.docker.network'] == matrix_bridge_beeper_line_container_network
+          - beeper_line_container.Config.Labels['traefik.http.services.matrix-beeper-line-exposure.loadbalancer.server.port'] == '29322'
+          - beeper_line_container.Config.Labels['molecule.beeper-line.coverage'] == 'enabled'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The running container carries the labels the role rendered"
+
+    - name: Assert the running container has the exact network and port exposure
+      ansible.builtin.assert:
+        that:
+          - beeper_line_container.HostConfig.NetworkMode == matrix_bridge_beeper_line_container_network
+          - matrix_bridge_beeper_line_container_network in beeper_line_container.NetworkSettings.Networks
+          - beeper_line_container.NetworkSettings.Networks | length == 1
+          - beeper_line_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: >-
+          The container has unexpected networks or host ports:
+          networks={{ beeper_line_container.NetworkSettings.Networks.keys() | list }},
+          ports={{ beeper_line_container.HostConfig.PortBindings | default({}) }}
+        success_msg: "The container uses only its dedicated network and publishes no host ports"
