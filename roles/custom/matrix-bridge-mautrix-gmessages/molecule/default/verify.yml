@@ -1,0 +1,387 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the bridge starts without a Google account or paired device, accepts the role-rendered
+# configuration and registration, initializes real Postgres, and exposes its live appservice.
+- name: Verify mautrix-gmessages
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    mautrix_gmessages_config: "{{ mautrix_gmessages_config_file.content | b64decode | from_yaml }}"
+    mautrix_gmessages_registration: "{{ mautrix_gmessages_registration_file.content | b64decode | from_yaml }}"
+    mautrix_gmessages_labels_rendered: "{{ mautrix_gmessages_labels_file.content | b64decode }}"
+    mautrix_gmessages_expected_public_address: http://gmessages-api.molecule.local/bridges/gmessages-api
+  gather_facts: false
+
+  tasks:
+    # The version remains sourced from the role so a Renovate bump changes the expectation.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_gmessages_role_defaults
+
+    - name: Wait for the mautrix-gmessages service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-gmessages.service
+      register: mautrix_gmessages_service
+      until: mautrix_gmessages_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always means ActiveState alone cannot distinguish a healthy service from a loop.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_service.status.ActiveState == 'active'
+          - mautrix_gmessages_service.status.NRestarts is defined
+          - mautrix_gmessages_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-gmessages.service is
+          {{ mautrix_gmessages_service.status.ActiveState | default('unknown') }} after
+          {{ mautrix_gmessages_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-mautrix-gmessages.service is active and has not restarted"
+
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_gmessages_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-gmessages:8080/_matrix/mau/live
+      register: mautrix_gmessages_live
+      changed_when: false
+      until: mautrix_gmessages_live.rc == 0 and mautrix_gmessages_live.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_gmessages_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-gmessages:8080/_matrix/mau/ready
+      register: mautrix_gmessages_ready
+      changed_when: false
+      until: mautrix_gmessages_ready.rc == 0 and mautrix_gmessages_ready.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on the configured appservice port
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_live.rc == 0
+          - mautrix_gmessages_live.stdout == 'HTTP_STATUS=200'
+          - mautrix_gmessages_ready.rc == 0
+          - mautrix_gmessages_ready.stdout == 'HTTP_STATUS=200'
+        fail_msg: >-
+          Health probes returned live={{ mautrix_gmessages_live.stdout | default('none') }}
+          (rc={{ mautrix_gmessages_live.rc | default('?') }}) and
+          ready={{ mautrix_gmessages_ready.stdout | default('none') }}
+          (rc={{ mautrix_gmessages_ready.rc | default('?') }})
+        success_msg: "The bridge is live and ready on the configured appservice port"
+
+    # This authenticated endpoint exercises the provisioning middleware and the network
+    # connector's login-flow API without starting a Google login or carrying credentials.
+    - name: Query the authenticated provisioning login flows
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_gmessages_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail-with-body
+          - --header
+          - "Authorization: Bearer {{ matrix_bridge_mautrix_gmessages_provisioning_shared_secret }}"
+          - "http://matrix-mautrix-gmessages:8080/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: mautrix_gmessages_login_flows
+      changed_when: false
+
+    - name: Query the provisioning API with an invalid secret
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_gmessages_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - --header
+          - "Authorization: Bearer definitely-wrong-molecule-secret"
+          - "http://matrix-mautrix-gmessages:8080/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: mautrix_gmessages_login_flows_unauthorized
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live provisioning API enforces auth and advertises login flows
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_login_flows.rc == 0
+          - (mautrix_gmessages_login_flows.stdout | from_json).flows is sequence
+          - (mautrix_gmessages_login_flows.stdout | from_json).flows | length > 0
+          - mautrix_gmessages_login_flows_unauthorized.rc == 0
+          - mautrix_gmessages_login_flows_unauthorized.stdout == 'HTTP_STATUS=401'
+        fail_msg: "The provisioning API did not enforce its secret or return Google login flows"
+        success_msg: "The provisioning API enforces its secret and returns Google login flows"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_gmessages_config_path }}/config.yaml"
+      register: mautrix_gmessages_config_file
+
+    - name: Assert the rendered configuration carries the appservice identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_config.homeserver.address == matrix_bridge_mautrix_gmessages_homeserver_address
+          - mautrix_gmessages_config.homeserver.domain == matrix_bridge_mautrix_gmessages_homeserver_domain
+          - mautrix_gmessages_config.appservice.id == 'gmessages'
+          - mautrix_gmessages_config.appservice.address == 'http://matrix-mautrix-gmessages:8080'
+          - mautrix_gmessages_config.appservice.public_address == mautrix_gmessages_expected_public_address
+          - mautrix_gmessages_config.appservice.bot.username == matrix_bridge_mautrix_gmessages_appservice_bot_username
+          - mautrix_gmessages_config.appservice.as_token == matrix_bridge_mautrix_gmessages_appservice_token
+          - mautrix_gmessages_config.appservice.hs_token == matrix_bridge_mautrix_gmessages_homeserver_token
+          - mautrix_gmessages_config.appservice.username_template == matrix_bridge_mautrix_gmessages_appservice_username_template
+        fail_msg: "The rendered configuration does not carry the scenario's appservice identity"
+        success_msg: "The rendered configuration carries the scenario's appservice identity"
+
+    - name: Assert the rendered configuration carries non-default bridge behavior
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_config.bridge.command_prefix == matrix_bridge_mautrix_gmessages_command_prefix
+          - not mautrix_gmessages_config.bridge.personal_filtering_spaces
+          - not mautrix_gmessages_config.matrix.federate_rooms
+          - mautrix_gmessages_config.network.displayname_template == matrix_bridge_mautrix_gmessages_network_displayname_template
+          - mautrix_gmessages_config.provisioning.shared_secret == matrix_bridge_mautrix_gmessages_provisioning_shared_secret
+          - mautrix_gmessages_config.logging.min_level == matrix_bridge_mautrix_gmessages_logging_level
+        fail_msg: "The rendered configuration does not carry the scenario's bridge behavior"
+        success_msg: "The rendered configuration carries the scenario's bridge behavior"
+
+    - name: Assert the rendered configuration carries the non-default backfill policy
+      ansible.builtin.assert:
+        that:
+          - not mautrix_gmessages_config.backfill.enabled
+          - mautrix_gmessages_config.backfill.max_initial_messages == 17
+          - mautrix_gmessages_config.backfill.max_catchup_messages == 29
+          - mautrix_gmessages_config.backfill.unread_hours_threshold == 61
+          - mautrix_gmessages_config.backfill.threads.max_initial_messages == 7
+        fail_msg: "The rendered configuration does not carry the scenario's backfill policy"
+        success_msg: "The rendered configuration carries the scenario's backfill policy"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_config.database.type == matrix_bridge_mautrix_gmessages_database_engine
+          - matrix_bridge_mautrix_gmessages_database_username in mautrix_gmessages_config.database.uri
+          - matrix_bridge_mautrix_gmessages_database_hostname in mautrix_gmessages_config.database.uri
+          - matrix_bridge_mautrix_gmessages_database_name in mautrix_gmessages_config.database.uri
+        fail_msg: >-
+          database.uri is {{ mautrix_gmessages_config.database.uri | default('unset') }}, which
+          was not composed from the scenario's connection settings
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_gmessages_config_path }}/registration.yaml"
+      register: mautrix_gmessages_registration_file
+
+    - name: Assert the registration carries the configured handshake values
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_registration.id == 'gmessages'
+          - mautrix_gmessages_registration.as_token == matrix_bridge_mautrix_gmessages_appservice_token
+          - mautrix_gmessages_registration.hs_token == matrix_bridge_mautrix_gmessages_homeserver_token
+          - mautrix_gmessages_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_gmessages_appservice_bot_username
+          - mautrix_gmessages_registration.url == 'http://matrix-mautrix-gmessages:8080'
+        fail_msg: "The registration does not carry the configured handshake values"
+        success_msg: "The registration carries the configured handshake values"
+
+    - name: Assert the registration namespaces cover only GMessages ghosts and the bridge bot
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_ghost_regex | length > 0
+          - mautrix_gmessages_bot_regex | length > 0
+          - mautrix_gmessages_ghost_mxid is match(mautrix_gmessages_ghost_regex)
+          - mautrix_gmessages_wrong_ghost_mxid is not match(mautrix_gmessages_ghost_regex)
+          - mautrix_gmessages_bot_mxid is match(mautrix_gmessages_bot_regex)
+        fail_msg: "The registration namespaces do not cover only GMessages ghosts and the bot"
+        success_msg: "The registration namespaces cover only GMessages ghosts and the bot"
+      vars:
+        mautrix_gmessages_user_regexes: "{{ mautrix_gmessages_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_gmessages_ghost_regex: "{{ mautrix_gmessages_user_regexes | select('search', 'gmessages_') | first | default('') }}"
+        mautrix_gmessages_bot_regex: "{{ mautrix_gmessages_user_regexes | reject('search', 'gmessages_') | first | default('') }}"
+        mautrix_gmessages_ghost_mxid: "@gmessages_15551234567:{{ matrix_bridge_mautrix_gmessages_homeserver_domain }}"
+        mautrix_gmessages_wrong_ghost_mxid: "@signal_15551234567:{{ matrix_bridge_mautrix_gmessages_homeserver_domain }}"
+        mautrix_gmessages_bot_mxid: "@{{ matrix_bridge_mautrix_gmessages_appservice_bot_username }}:{{ matrix_bridge_mautrix_gmessages_homeserver_domain }}"
+
+    # Tables can only appear after DNS resolution, authentication and genuine migrations.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_gmessages_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_gmessages_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: mautrix_gmessages_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_tables.rc == 0
+          - "'version' in mautrix_gmessages_table_names"
+          - "'portal' in mautrix_gmessages_table_names"
+          - "'user_login' in mautrix_gmessages_table_names"
+          - "'message' in mautrix_gmessages_table_names"
+          - "'gmessages_version' in mautrix_gmessages_table_names"
+          - "'gmessages_login_prefix' in mautrix_gmessages_table_names"
+          - mautrix_gmessages_table_names | length > 12
+        fail_msg: >-
+          The bridge did not migrate its schema into {{ matrix_bridge_mautrix_gmessages_database_name }}
+          (found {{ mautrix_gmessages_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        mautrix_gmessages_table_names: "{{ mautrix_gmessages_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_gmessages_base_path }}/labels"
+      register: mautrix_gmessages_labels_file
+
+    - name: Assert the labels route the public endpoint to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_gmessages_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_gmessages_container_network in mautrix_gmessages_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-gmessages-exposure.loadbalancer.server.port=8080' in mautrix_gmessages_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-gmessages-exposure.rule=Host(`gmessages-api.molecule.local`) && PathPrefix(`/bridges/gmessages-api`)' in mautrix_gmessages_labels_rendered"
+          - "'traefik.http.middlewares.matrix-mautrix-gmessages-exposure-strip-prefix.stripprefix.prefixes=/bridges/gmessages-api' in mautrix_gmessages_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-gmessages-exposure.entrypoints=web' in mautrix_gmessages_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-gmessages-exposure.tls=false' in mautrix_gmessages_labels_rendered"
+          - "'molecule.gmessages.coverage=enabled' in mautrix_gmessages_labels_rendered"
+        fail_msg: "The rendered labels do not carry the scenario's exposure configuration"
+        success_msg: "The rendered labels carry the scenario's exposure configuration"
+
+    - name: Inspect the running bridge container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-gmessages
+      register: mautrix_gmessages_container_inspect
+      changed_when: false
+
+    - name: Parse the running bridge container inspection
+      ansible.builtin.set_fact:
+        mautrix_gmessages_container: "{{ (mautrix_gmessages_container_inspect.stdout | from_json) | first }}"
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_container.Config.Image == mautrix_gmessages_expected_image
+        fail_msg: >-
+          The running container uses {{ mautrix_gmessages_container.Config.Image }}, expected
+          {{ mautrix_gmessages_expected_image }}
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        mautrix_gmessages_expected_image: >-
+          {{ mautrix_gmessages_role_defaults.matrix_bridge_mautrix_gmessages_container_image_registry_prefix_upstream_default }}mautrix/gmessages:{{ mautrix_gmessages_role_defaults.matrix_bridge_mautrix_gmessages_version }}
+
+    - name: Assert the running container uses the playbook-supplied runtime
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+          - mautrix_gmessages_container.Config.WorkingDir == '/data'
+          - mautrix_gmessages_container.Config.Cmd == ['/usr/bin/mautrix-gmessages', '-c', '/config/config.yaml', '-r', '/config/registration.yaml', '--no-update']
+          - mautrix_gmessages_container.HostConfig.RestartPolicy.Name == 'no'
+          - mautrix_gmessages_container.HostConfig.AutoRemove
+          - mautrix_gmessages_container.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container does not use the role's exact identity, command and workdir"
+        success_msg: "The running container uses the role's exact identity, command and workdir"
+
+    - name: Assert the running container has the intended privilege isolation
+      ansible.builtin.assert:
+        that:
+          - "'ALL' in mautrix_gmessages_container.HostConfig.CapDrop"
+          - not mautrix_gmessages_container.HostConfig.Privileged
+        fail_msg: "The running container does not have the intended privilege isolation"
+        success_msg: "The running container drops all capabilities and is unprivileged"
+
+    - name: Assert the running container carries the role's exact bind mounts
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_config_mount | length > 0
+          - mautrix_gmessages_config_mount.Source == matrix_bridge_mautrix_gmessages_config_path
+          - mautrix_gmessages_config_mount.RW
+          - mautrix_gmessages_data_mount | length > 0
+          - mautrix_gmessages_data_mount.Source == matrix_bridge_mautrix_gmessages_data_path
+          - mautrix_gmessages_data_mount.RW
+          - mautrix_gmessages_container.Mounts | length == 2
+        fail_msg: "The running container does not carry the role's exact config and data mounts"
+        success_msg: "The running container carries the role's exact config and data mounts"
+      vars:
+        mautrix_gmessages_config_mount: >-
+          {{ mautrix_gmessages_container.Mounts
+             | selectattr('Destination', 'equalto', '/config')
+             | first | default({}) }}
+        mautrix_gmessages_data_mount: >-
+          {{ mautrix_gmessages_container.Mounts
+             | selectattr('Destination', 'equalto', '/data')
+             | first | default({}) }}
+
+    - name: Assert the rendered labels are attached to the running container
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_container.Config.Labels['traefik.enable'] == 'true'
+          - mautrix_gmessages_container.Config.Labels['traefik.docker.network'] == matrix_bridge_mautrix_gmessages_container_network
+          - mautrix_gmessages_container.Config.Labels['traefik.http.services.matrix-mautrix-gmessages-exposure.loadbalancer.server.port'] == '8080'
+          - mautrix_gmessages_container.Config.Labels['molecule.gmessages.coverage'] == 'enabled'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The running container carries the labels the role rendered"
+
+    - name: Assert the running container has the exact network and port exposure
+      ansible.builtin.assert:
+        that:
+          - mautrix_gmessages_container.HostConfig.NetworkMode == matrix_bridge_mautrix_gmessages_container_network
+          - matrix_bridge_mautrix_gmessages_container_network in mautrix_gmessages_container.NetworkSettings.Networks
+          - mautrix_gmessages_container.NetworkSettings.Networks | length == 1
+          - mautrix_gmessages_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: >-
+          The container has unexpected networks or host ports:
+          networks={{ mautrix_gmessages_container.NetworkSettings.Networks.keys() | list }},
+          ports={{ mautrix_gmessages_container.HostConfig.PortBindings | default({}) }}
+        success_msg: "The container uses only its dedicated network and publishes no host ports"
