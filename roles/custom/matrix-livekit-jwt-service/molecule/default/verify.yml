@@ -1,0 +1,509 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify matrix-livekit-jwt-service
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_livekit_jwt_service_runtime: "{{ (matrix_livekit_jwt_service_container_inspect.stdout | from_json) | first }}"
+    matrix_livekit_jwt_service_valid_request:
+      room_id: "!call-room:molecule.local"
+      slot_id: molecule-slot
+      openid_token:
+        access_token: known-openid-token
+        token_type: Bearer
+        matrix_server_name: "matrix-openid-fixture:8443"
+        expires_in: 3600
+      member:
+        id: member-molecule-01
+        claimed_user_id: "@alice:matrix-openid-fixture:8443"
+        claimed_device_id: DEVICE_MOLECULE
+  gather_facts: false
+
+  tasks:
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_livekit_jwt_service_role_defaults
+
+    - name: Wait for the LiveKit JWT service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-livekit-jwt-service.service
+      register: matrix_livekit_jwt_service_service
+      until: matrix_livekit_jwt_service_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always keeps a crash-looping service nominally active.
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_service.status.ActiveState == 'active'
+          - matrix_livekit_jwt_service_service.status.NRestarts is defined
+          - matrix_livekit_jwt_service_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-livekit-jwt-service.service is
+          {{ matrix_livekit_jwt_service_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_livekit_jwt_service_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-livekit-jwt-service.service is active and has not restarted"
+
+    - name: Wait for the live health endpoint on the configured non-default port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-livekit-jwt-service:8097/healthz
+      register: matrix_livekit_jwt_service_health
+      changed_when: false
+      until: matrix_livekit_jwt_service_health.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the live service is healthy on the configured port
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_health.rc == 0
+          - matrix_livekit_jwt_service_health.stdout == 'HTTP_STATUS=200'
+        fail_msg: "The LiveKit JWT service did not answer /healthz on port 8097"
+        success_msg: "The LiveKit JWT service is healthy on its non-default port"
+
+    - name: Exercise the get_token CORS preflight
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --include
+          - --request
+          - OPTIONS
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-livekit-jwt-service:8097/get_token
+      register: matrix_livekit_jwt_service_cors
+      changed_when: false
+      failed_when: false
+
+    - name: Assert get_token exposes its CORS contract
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_cors.rc == 0
+          - "'HTTP_STATUS=200' in matrix_livekit_jwt_service_cors.stdout_lines"
+          - "'access-control-allow-origin: *' in matrix_livekit_jwt_service_cors.stdout | lower"
+          - "'access-control-allow-methods: post' in matrix_livekit_jwt_service_cors.stdout | lower"
+          - "'access-control-allow-headers: accept, content-type, content-length, accept-encoding, x-csrf-token' in matrix_livekit_jwt_service_cors.stdout | lower"
+        fail_msg: "OPTIONS /get_token did not return the service's expected CORS headers"
+        success_msg: "OPTIONS /get_token exposes the expected CORS contract"
+
+    - name: Submit malformed JSON to get_token
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - "Content-Type: application/json"
+          - --data-binary
+          - "{not-json"
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-livekit-jwt-service:8097/get_token
+      register: matrix_livekit_jwt_service_malformed
+      changed_when: false
+      failed_when: false
+
+    - name: Assert malformed JSON is rejected structurally
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_malformed.rc == 0
+          - matrix_livekit_jwt_service_malformed.stdout_lines[-1] == 'HTTP_STATUS=400'
+          - matrix_livekit_jwt_service_malformed_document.errcode == 'M_NOT_JSON'
+          - matrix_livekit_jwt_service_malformed_document.error == 'Error reading request'
+        fail_msg: "Malformed JSON did not produce the expected Matrix error response"
+        success_msg: "Malformed JSON is rejected with M_NOT_JSON"
+      vars:
+        matrix_livekit_jwt_service_malformed_document: >-
+          {{ matrix_livekit_jwt_service_malformed.stdout | regex_replace('(?s)\s*HTTP_STATUS=[0-9]+\s*$', '') | from_json }}
+
+    - name: Ask get_token to validate an unknown OpenID token
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - "Content-Type: application/json"
+          - --data-binary
+          - "{{ matrix_livekit_jwt_service_unknown_token_request | to_json }}"
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-livekit-jwt-service:8097/get_token
+      register: matrix_livekit_jwt_service_unknown_token
+      changed_when: false
+      failed_when: false
+      vars:
+        matrix_livekit_jwt_service_unknown_token_request: >-
+          {{ matrix_livekit_jwt_service_valid_request | combine({'openid_token': matrix_livekit_jwt_service_valid_request.openid_token | combine({'access_token': 'unknown-openid-token'})}, recursive=True) }}
+
+    - name: Assert an unknown OpenID token is unauthorized
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_unknown_token.rc == 0
+          - matrix_livekit_jwt_service_unknown_token.stdout_lines[-1] == 'HTTP_STATUS=401'
+          - matrix_livekit_jwt_service_unknown_token_document.errcode == 'M_UNAUTHORIZED'
+          - matrix_livekit_jwt_service_unknown_token_document.error == 'The request could not be authorised.'
+        fail_msg: "An unknown OpenID token was not rejected as unauthorized"
+        success_msg: "The live service rejects an unknown OpenID token"
+      vars:
+        matrix_livekit_jwt_service_unknown_token_document: >-
+          {{ matrix_livekit_jwt_service_unknown_token.stdout | regex_replace('(?s)\s*HTTP_STATUS=[0-9]+\s*$', '') | from_json }}
+
+    - name: Ask get_token to validate a mismatched claimed user
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - "Content-Type: application/json"
+          - --data-binary
+          - "{{ matrix_livekit_jwt_service_mismatched_user_request | to_json }}"
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-livekit-jwt-service:8097/get_token
+      register: matrix_livekit_jwt_service_mismatched_user
+      changed_when: false
+      failed_when: false
+      vars:
+        matrix_livekit_jwt_service_mismatched_user_request: >-
+          {{ matrix_livekit_jwt_service_valid_request | combine({'member': matrix_livekit_jwt_service_valid_request.member | combine({'claimed_user_id': '@mallory:matrix-openid-fixture:8443'})}, recursive=True) }}
+
+    - name: Assert a valid token cannot impersonate another Matrix user
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_mismatched_user.rc == 0
+          - matrix_livekit_jwt_service_mismatched_user.stdout_lines[-1] == 'HTTP_STATUS=401'
+          - matrix_livekit_jwt_service_mismatched_user_document.errcode == 'M_UNAUTHORIZED'
+        fail_msg: "The OpenID subject and claimed Matrix user mismatch was not rejected"
+        success_msg: "The live service rejects a claimed-user mismatch"
+      vars:
+        matrix_livekit_jwt_service_mismatched_user_document: >-
+          {{ matrix_livekit_jwt_service_mismatched_user.stdout | regex_replace('(?s)\s*HTTP_STATUS=[0-9]+\s*$', '') | from_json }}
+
+    # The request's server is not in FULL_ACCESS, so this validates OpenID and
+    # signs a join token without trying to create a room on the absent SFU.
+    - name: Request a real restricted-user LiveKit JWT
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - "Content-Type: application/json"
+          - --data-binary
+          - "{{ matrix_livekit_jwt_service_valid_request | to_json }}"
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-livekit-jwt-service:8097/get_token
+      register: matrix_livekit_jwt_service_token_response
+      changed_when: false
+      failed_when: false
+
+    - name: Parse the successful token response
+      ansible.builtin.set_fact:
+        matrix_livekit_jwt_service_token_document: >-
+          {{ matrix_livekit_jwt_service_token_response.stdout | regex_replace('(?s)\s*HTTP_STATUS=[0-9]+\s*$', '') | from_json }}
+
+    - name: Assert the live service returns a JWT for the configured SFU URL
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_token_response.rc == 0
+          - matrix_livekit_jwt_service_token_response.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_livekit_jwt_service_token_document.keys() | sort == ['jwt', 'url']
+          - matrix_livekit_jwt_service_token_document.url == matrix_livekit_jwt_service_environment_variable_livekit_url
+          - matrix_livekit_jwt_service_token_document.jwt.split('.') | length == 3
+        fail_msg: "The restricted-user exchange did not return a JWT and configured SFU URL"
+        success_msg: "The restricted-user exchange returns a real JWT for the configured SFU"
+
+    - name: Decode and authenticate the returned LiveKit JWT
+      ansible.builtin.command:
+        argv:
+          - python3
+          - -c
+          - >-
+            import base64, hashlib, hmac, json, sys;
+            parts = sys.argv[1].split('.');
+            decode = lambda value: json.loads(base64.urlsafe_b64decode(value + '=' * (-len(value) % 4)));
+            signature = base64.urlsafe_b64decode(parts[2] + '=' * (-len(parts[2]) % 4));
+            expected = hmac.new(sys.argv[2].encode(), (parts[0] + '.' + parts[1]).encode(), hashlib.sha256).digest();
+            print(json.dumps({'header': decode(parts[0]), 'claims': decode(parts[1]), 'signature_valid': hmac.compare_digest(signature, expected)}))
+          - "{{ matrix_livekit_jwt_service_token_document.jwt }}"
+          - "{{ matrix_livekit_jwt_service_environment_variable_livekit_secret }}"
+      register: matrix_livekit_jwt_service_jwt_decode
+      changed_when: false
+      no_log: true
+
+    - name: Assert the JWT signature, identity, room and restricted grant
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_jwt.signature_valid is sameas true
+          - matrix_livekit_jwt_service_jwt.header.alg == 'HS256'
+          - matrix_livekit_jwt_service_jwt.claims.iss == matrix_livekit_jwt_service_environment_variable_livekit_key
+          - matrix_livekit_jwt_service_jwt.claims.sub == 'BE7ZK/J/c3LsogjI1JLni7qtWV/DP6c+ev68BvHem0Y'
+          - matrix_livekit_jwt_service_jwt.claims.video.room == 'diNaPECp1jHt2l0dLdiDxi+dgNzgucxPYMD0lCs1tEQ'
+          - matrix_livekit_jwt_service_jwt.claims.video.roomJoin is sameas true
+          - "'roomCreate' not in matrix_livekit_jwt_service_jwt.claims.video"
+          - matrix_livekit_jwt_service_jwt.claims.video.canPublish is sameas true
+          - matrix_livekit_jwt_service_jwt.claims.video.canSubscribe is sameas true
+          - matrix_livekit_jwt_service_jwt.claims.video.canUpdateOwnMetadata is sameas true
+          - matrix_livekit_jwt_service_jwt.claims.exp | int - matrix_livekit_jwt_service_jwt.claims.nbf | int == 3600
+        fail_msg: "The returned JWT lost its authenticated MSC4195 identity, room or restricted join grant"
+        success_msg: "The returned JWT has a valid signature and restricted MSC4195 grant"
+      vars:
+        matrix_livekit_jwt_service_jwt: "{{ matrix_livekit_jwt_service_jwt_decode.stdout | from_json }}"
+
+    - name: Read the OpenID fixture's observed requests
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --insecure
+          - https://matrix-livekit-jwt-openid-fixture:8443/_molecule/requests
+      register: matrix_livekit_jwt_service_openid_requests_command
+      changed_when: false
+
+    - name: Assert the live service exercised both OpenID fixture outcomes
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_openid_requests.requests | length >= 3
+          - matrix_livekit_jwt_service_openid_requests.requests | map(attribute='path') | unique | list == ['/_matrix/federation/v1/openid/userinfo']
+          - matrix_livekit_jwt_service_openid_requests.requests[-3:] | map(attribute='access_token') | list == ['unknown-openid-token', 'known-openid-token', 'known-openid-token']
+        fail_msg: "The OpenID fixture did not observe the expected unknown and known token exchanges"
+        success_msg: "The service exercised both HTTPS OpenID fixture outcomes"
+      vars:
+        matrix_livekit_jwt_service_openid_requests: "{{ matrix_livekit_jwt_service_openid_requests_command.stdout | from_json }}"
+
+    - name: Read the environment file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_livekit_jwt_service_base_path }}/env"
+      register: matrix_livekit_jwt_service_env_file
+
+    - name: Initialize the parsed environment
+      ansible.builtin.set_fact:
+        matrix_livekit_jwt_service_env_parsed: {}
+
+    - name: Parse the rendered environment
+      ansible.builtin.set_fact:
+        matrix_livekit_jwt_service_env_parsed: >-
+          {{ matrix_livekit_jwt_service_env_parsed | combine({item.split('=', 1)[0]: item.split('=', 1)[1]}) }}
+      loop: "{{ (matrix_livekit_jwt_service_env_file.content | b64decode).splitlines() | reject('equalto', '') }}"
+      when: "'=' in item"
+      no_log: true
+
+    - name: Assert the rendered environment carries every scenario setting
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_JWT_BIND == ':8097'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_KEY == 'molecule-livekit-api-key'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_SECRET == 'molecule-livekit-signing-secret-32-bytes-long'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_URL == 'wss://sfu.livekit.molecule.invalid:7881/rtc'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_FULL_ACCESS_HOMESERVERS == 'full-access.molecule.local,second-full-access.molecule.local'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_CS_API_URL_OVERRIDES == 'matrix-openid-fixture:8443=https://client-api.override.molecule.invalid'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_INSECURE_SKIP_VERIFY_TLS == 'YES_I_KNOW_WHAT_I_AM_DOING'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_LOG_LEVEL == 'debug'
+          - matrix_livekit_jwt_service_env_parsed.MOLECULE_LIVEKIT_MARKER == 'environment-reached'
+        fail_msg: "The parsed environment file does not carry the scenario's complete contract"
+        success_msg: "The parsed environment file carries every scenario setting"
+      no_log: true
+
+    - name: Read the labels file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_livekit_jwt_service_base_path }}/labels"
+      register: matrix_livekit_jwt_service_labels_file
+
+    - name: Initialize the parsed labels
+      ansible.builtin.set_fact:
+        matrix_livekit_jwt_service_labels_parsed: {}
+
+    - name: Parse the rendered labels
+      ansible.builtin.set_fact:
+        matrix_livekit_jwt_service_labels_parsed: >-
+          {{ matrix_livekit_jwt_service_labels_parsed | combine({item.split('=', 1)[0]: item.split('=', 1)[1]}) }}
+      loop: "{{ (matrix_livekit_jwt_service_labels_file.content | b64decode).splitlines() | reject('equalto', '') }}"
+      when: "'=' in item"
+      no_log: true
+
+    - name: Assert the rendered labels carry the public routing contract
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_labels_parsed['traefik.enable'] == 'true'
+          - matrix_livekit_jwt_service_labels_parsed['traefik.docker.network'] == matrix_livekit_jwt_service_container_network
+          - matrix_livekit_jwt_service_labels_parsed['traefik.http.services.matrix-livekit-jwt-service.loadbalancer.server.port'] == '8097'
+          - matrix_livekit_jwt_service_labels_parsed['traefik.http.routers.matrix-livekit-jwt-service.rule'] == 'Host(`jwt.livekit.molecule.local`) && PathPrefix(`/matrix-rtc/jwt`)'
+          - matrix_livekit_jwt_service_labels_parsed['traefik.http.routers.matrix-livekit-jwt-service.priority'] == '847'
+          - matrix_livekit_jwt_service_labels_parsed['traefik.http.routers.matrix-livekit-jwt-service.entrypoints'] == 'web'
+          - matrix_livekit_jwt_service_labels_parsed['traefik.http.routers.matrix-livekit-jwt-service.tls'] == 'false'
+          - matrix_livekit_jwt_service_labels_parsed['traefik.http.routers.matrix-livekit-jwt-service.middlewares'] == 'matrix-livekit-jwt-service-slashless-redirect,matrix-livekit-jwt-service-strip-prefix,matrix-livekit-jwt-service-add-headers'
+          - matrix_livekit_jwt_service_labels_parsed['traefik.http.middlewares.matrix-livekit-jwt-service-add-headers.headers.customresponseheaders.X-Molecule-LiveKit'] == 'jwt-service'
+          - matrix_livekit_jwt_service_labels_parsed['molecule.livekit-jwt.coverage'] == 'enabled'
+        fail_msg: "The parsed labels do not carry the scenario's routing contract"
+        success_msg: "The parsed labels carry the scenario's complete routing contract"
+
+    - name: Inspect the running LiveKit JWT service container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-livekit-jwt-service
+      register: matrix_livekit_jwt_service_container_inspect
+      changed_when: false
+
+    - name: Assert the configured environment reached the running container
+      ansible.builtin.assert:
+        that:
+          - "'LIVEKIT_JWT_BIND=:8097' in matrix_livekit_jwt_service_runtime.Config.Env"
+          - "'LIVEKIT_FULL_ACCESS_HOMESERVERS=full-access.molecule.local,second-full-access.molecule.local' in matrix_livekit_jwt_service_runtime.Config.Env"
+          - "'LIVEKIT_CS_API_URL_OVERRIDES=matrix-openid-fixture:8443=https://client-api.override.molecule.invalid' in matrix_livekit_jwt_service_runtime.Config.Env"
+          - "'LIVEKIT_INSECURE_SKIP_VERIFY_TLS=YES_I_KNOW_WHAT_I_AM_DOING' in matrix_livekit_jwt_service_runtime.Config.Env"
+          - "'MOLECULE_LIVEKIT_MARKER=environment-reached' in matrix_livekit_jwt_service_runtime.Config.Env"
+        fail_msg: "The running container environment lost role-rendered settings"
+        success_msg: "The role-rendered environment reached the running container"
+
+    - name: Assert the configured labels reached the running container
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_runtime.Config.Labels['traefik.enable'] == 'true'
+          - matrix_livekit_jwt_service_runtime.Config.Labels['traefik.docker.network'] == matrix_livekit_jwt_service_container_network
+          - matrix_livekit_jwt_service_runtime.Config.Labels['traefik.http.routers.matrix-livekit-jwt-service.priority'] == '847'
+          - matrix_livekit_jwt_service_runtime.Config.Labels['molecule.livekit-jwt.coverage'] == 'enabled'
+          - matrix_livekit_jwt_service_runtime.Config.Labels['molecule.livekit-jwt.extra-argument'] == 'reached'
+        fail_msg: "The running container lost role-rendered or extra-argument labels"
+        success_msg: "The configured labels reached the running container"
+
+    - name: Assert the running container uses the exact image and version the role pins
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_runtime.Config.Image == matrix_livekit_jwt_service_expected_image
+        fail_msg: >-
+          The running container uses {{ matrix_livekit_jwt_service_runtime.Config.Image }},
+          expected {{ matrix_livekit_jwt_service_expected_image }}
+        success_msg: "The running container uses the exact image and version defaults/main.yml pins"
+      vars:
+        matrix_livekit_jwt_service_expected_image: >-
+          {{ matrix_livekit_jwt_service_role_defaults.matrix_livekit_jwt_service_container_image_registry_prefix_upstream_default }}element-hq/lk-jwt-service:{{ matrix_livekit_jwt_service_role_defaults.matrix_livekit_jwt_service_version }}
+
+    - name: Assert the running container identity and image command
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_runtime.Config.User == (matrix_user_uid | string) ~ ':' ~ (matrix_user_gid | string)
+          - matrix_livekit_jwt_service_runtime.Config.Entrypoint | default([], true) | length == 0
+          - matrix_livekit_jwt_service_runtime.Config.Cmd == ['/lk-jwt-service']
+          - matrix_livekit_jwt_service_runtime.HostConfig.RestartPolicy.Name == 'no'
+          - matrix_livekit_jwt_service_runtime.HostConfig.AutoRemove is sameas true
+          - matrix_livekit_jwt_service_runtime.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container has an unexpected identity, command or Docker lifecycle"
+        success_msg: "The running container uses the configured identity, command and Docker lifecycle"
+
+    - name: Assert the running container security and filesystem contract
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_runtime.HostConfig.Privileged is sameas false
+          - matrix_livekit_jwt_service_runtime.HostConfig.CapAdd | default([], true) | length == 0
+          - matrix_livekit_jwt_service_runtime.HostConfig.CapDrop == ['ALL']
+          - matrix_livekit_jwt_service_runtime.HostConfig.ReadonlyRootfs is sameas false
+          - matrix_livekit_jwt_service_runtime.Mounts | length == 0
+          - matrix_livekit_jwt_service_runtime.HostConfig.Binds | default([], true) | length == 0
+        fail_msg: "The running container differs from the role's capability and mount contract"
+        success_msg: "The running container has all capabilities dropped and no mounts"
+
+    - name: Assert the broken upstream healthcheck is disabled
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_runtime.Config.Healthcheck is mapping
+          - matrix_livekit_jwt_service_runtime.Config.Healthcheck.Test == ['NONE']
+          - matrix_livekit_jwt_service_runtime.State.Health.Status is not defined
+        fail_msg: "The v0.6.0 image healthcheck was not disabled by the role"
+        success_msg: "The broken v0.6.0 image healthcheck is disabled"
+
+    - name: Assert the running container is attached only to its dedicated network
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_runtime.HostConfig.NetworkMode == matrix_livekit_jwt_service_container_network
+          - matrix_livekit_jwt_service_runtime.NetworkSettings.Networks is mapping
+          - matrix_livekit_jwt_service_runtime.NetworkSettings.Networks | length == 1
+          - matrix_livekit_jwt_service_container_network in matrix_livekit_jwt_service_runtime.NetworkSettings.Networks
+        fail_msg: >-
+          LiveKit JWT service has unexpected network attachments:
+          {{ matrix_livekit_jwt_service_runtime.NetworkSettings.Networks.keys() | list }}
+        success_msg: "The running container is attached only to its dedicated network"
+
+    - name: Assert the observable extra runtime argument reached Docker
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_runtime.Config.Hostname == 'livekit-jwt-molecule-runtime'
+        fail_msg: "The configured hostname extra argument did not reach Docker"
+        success_msg: "The approved container extra-argument setting reached Docker"
+
+    - name: Ask Docker for the service's published ports
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - port
+          - matrix-livekit-jwt-service
+      register: matrix_livekit_jwt_service_published_ports
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the role publishes no host ports
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_runtime.Config.ExposedPorts.keys() | list == ['8080/tcp']
+          - matrix_livekit_jwt_service_runtime.HostConfig.PortBindings | default({}, true) | length == 0
+          - matrix_livekit_jwt_service_published_ports.rc == 0
+          - matrix_livekit_jwt_service_published_ports.stdout | trim | length == 0
+        fail_msg: >-
+          LiveKit JWT service unexpectedly publishes a host port:
+          {{ matrix_livekit_jwt_service_published_ports.stdout | default('unknown') }}
+        success_msg: "The role leaves the image's declared port unpublished"

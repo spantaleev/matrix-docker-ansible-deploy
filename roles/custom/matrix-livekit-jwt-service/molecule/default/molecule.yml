@@ -1,0 +1,95 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-livekit-jwt-service-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_livekit_jwt_service_enabled: true
+
+        # Exercise role-controlled paths and networking with values which differ
+        # from both the role and image defaults.
+        matrix_livekit_jwt_service_base_path: /matrix/molecule-livekit-jwt-service
+        matrix_livekit_jwt_service_container_network: matrix-livekit-jwt-service-molecule
+        matrix_livekit_jwt_service_container_port: 8097
+        matrix_livekit_jwt_service_environment_variable_livekit_jwt_bind: ":8097"
+
+        matrix_livekit_jwt_service_environment_variable_livekit_key: molecule-livekit-api-key
+        matrix_livekit_jwt_service_environment_variable_livekit_secret: molecule-livekit-signing-secret-32-bytes-long
+        matrix_livekit_jwt_service_environment_variable_livekit_url: wss://sfu.livekit.molecule.invalid:7881/rtc
+
+        # The OpenID fixture's origin is deliberately absent. This makes the
+        # successful request a restricted-user flow, so no SFU is contacted.
+        matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_default:
+          - full-access.molecule.local
+        matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom:
+          - second-full-access.molecule.local
+
+        matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map_custom:
+          "matrix-openid-fixture:8443": https://client-api.override.molecule.invalid
+
+        # The scenario-local OpenID endpoint uses a self-signed certificate.
+        matrix_livekit_jwt_service_environment_variables_extension: |
+          LIVEKIT_INSECURE_SKIP_VERIFY_TLS=YES_I_KNOW_WHAT_I_AM_DOING
+          LIVEKIT_LOG_LEVEL=debug
+          MOLECULE_LIVEKIT_MARKER=environment-reached
+
+        # v0.6.0 ships a malformed image healthcheck. The role intentionally
+        # disables it until upstream fixes its LIVEKIT_JWT_BIND interpolation.
+        matrix_livekit_jwt_service_container_healthcheck_enabled: false
+
+        matrix_livekit_jwt_service_hostname: jwt.livekit.molecule.local
+        matrix_livekit_jwt_service_path_prefix: /matrix-rtc/jwt
+        matrix_livekit_jwt_service_container_labels_traefik_enabled: true
+        matrix_livekit_jwt_service_container_labels_traefik_priority: 847
+        matrix_livekit_jwt_service_container_labels_traefik_entrypoints: web
+        matrix_livekit_jwt_service_container_labels_traefik_tls: false
+        matrix_livekit_jwt_service_container_labels_traefik_additional_response_headers_custom:
+          X-Molecule-LiveKit: jwt-service
+        matrix_livekit_jwt_service_container_labels_additional_labels: |
+          molecule.livekit-jwt.coverage=enabled
+
+        # Prove the approved generic Docker-argument escape hatch reaches runtime.
+        matrix_livekit_jwt_service_container_extra_arguments:
+          - --hostname=livekit-jwt-molecule-runtime
+          - --label=molecule.livekit-jwt.extra-argument=reached
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
