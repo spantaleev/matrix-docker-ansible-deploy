@@ -1,0 +1,441 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify matrix-bot-honoroit
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    matrix_bot_honoroit_health_body: "{{ matrix_bot_honoroit_health.stdout_lines[:-1] | join('\n') }}"
+    matrix_bot_honoroit_metrics_body: "{{ matrix_bot_honoroit_metrics.stdout_lines[:-1] | join('\n') }}"
+    matrix_bot_honoroit_metrics_lines: "{{ matrix_bot_honoroit_metrics_body.splitlines() | select | list }}"
+    matrix_bot_honoroit_rendered_env_lines: >-
+      {{ (matrix_bot_honoroit_env_file.content | b64decode).splitlines()
+         | select('match', '^[A-Z0-9_]+=') | list }}
+    matrix_bot_honoroit_rendered_env: >-
+      {{ dict(matrix_bot_honoroit_rendered_env_lines | map('split', '=', 1)) }}
+    matrix_bot_honoroit_rendered_labels_lines: >-
+      {{ (matrix_bot_honoroit_labels_file.content | b64decode).splitlines()
+         | select('match', '^[A-Za-z0-9_.-]+=') | list }}
+    matrix_bot_honoroit_rendered_labels: >-
+      {{ dict(matrix_bot_honoroit_rendered_labels_lines | map('split', '=', 1)) }}
+    matrix_bot_honoroit_runtime: "{{ (matrix_bot_honoroit_container_inspect.stdout | from_json) | first }}"
+    matrix_bot_honoroit_runtime_env: "{{ dict(matrix_bot_honoroit_runtime.Config.Env | map('split', '=', 1)) }}"
+    matrix_bot_honoroit_data_mounts: >-
+      {{ matrix_bot_honoroit_runtime.Mounts | selectattr('Destination', 'equalto', '/data') | list }}
+  gather_facts: false
+  tasks:
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_bot_honoroit_role_defaults
+
+    - name: Wait for the matrix-bot-honoroit service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-bot-honoroit.service
+      register: matrix_bot_honoroit_service
+      until: matrix_bot_honoroit_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    - name: Assert the service is active and has not restarted
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_service.status.ActiveState == 'active'
+          - matrix_bot_honoroit_service.status.NRestarts is defined
+          - matrix_bot_honoroit_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-bot-honoroit.service is
+          {{ matrix_bot_honoroit_service.status.ActiveState | default('unknown') }} after
+          {{ matrix_bot_honoroit_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-bot-honoroit.service is active and has not restarted"
+
+    - name: Wait for Honoroit's health API
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_honoroit_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - "http://matrix-bot-honoroit:{{ matrix_bot_honoroit_container_port }}/_health"
+      register: matrix_bot_honoroit_health
+      changed_when: false
+      until: "'HTTP_STATUS=200' in matrix_bot_honoroit_health.stdout"
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the configured health API is live and structurally valid
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_health.rc == 0
+          - matrix_bot_honoroit_health.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - "matrix_bot_honoroit_health_body | from_json == {'status': 'ok'}"
+        fail_msg: >-
+          Honoroit's health API did not answer with its expected JSON
+          ({{ matrix_bot_honoroit_health.stdout | default('no output') }})
+        success_msg: "Honoroit's live health API answers with its structured status"
+
+    - name: Ask the metrics endpoint without credentials
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_honoroit_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - "http://matrix-bot-honoroit:{{ matrix_bot_honoroit_container_port }}/metrics"
+      register: matrix_bot_honoroit_unauthenticated_metrics
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the metrics endpoint requires authentication
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_unauthenticated_metrics.rc == 0
+          - matrix_bot_honoroit_unauthenticated_metrics.stdout == 'HTTP_STATUS=401'
+        fail_msg: "Honoroit's metrics endpoint did not reject an unauthenticated request"
+        success_msg: "Honoroit's metrics endpoint rejects unauthenticated requests"
+
+    - name: Ask the metrics endpoint with incorrect credentials
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_honoroit_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --user
+          - molecule-metrics-user:incorrect-molecule-password
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - "http://matrix-bot-honoroit:{{ matrix_bot_honoroit_container_port }}/metrics"
+      register: matrix_bot_honoroit_wrong_metrics_credentials
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the metrics endpoint rejects incorrect credentials
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_wrong_metrics_credentials.rc == 0
+          - matrix_bot_honoroit_wrong_metrics_credentials.stdout == 'HTTP_STATUS=401'
+        fail_msg: "Honoroit's metrics endpoint accepted incorrect credentials"
+        success_msg: "Honoroit's metrics endpoint rejects incorrect credentials"
+
+    - name: Ask the metrics endpoint with the configured credentials
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_honoroit_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --user
+          - molecule-metrics-user:molecule_metrics_password_c9ed32
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - "http://matrix-bot-honoroit:{{ matrix_bot_honoroit_container_port }}/metrics"
+      register: matrix_bot_honoroit_metrics
+      changed_when: false
+      failed_when: false
+
+    - name: Assert configured credentials unlock genuine Prometheus metrics
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_metrics.rc == 0
+          - matrix_bot_honoroit_metrics.stdout_lines[-1] == 'HTTP_STATUS=200'
+          - matrix_bot_honoroit_metrics_lines | select('match', '^honoroit_messages_operator [0-9]+$') | list | length == 1
+          - matrix_bot_honoroit_metrics_lines | select('match', '^honoroit_messages_total [0-9]+$') | list | length == 1
+          - matrix_bot_honoroit_metrics_lines | select('match', '^honoroit_request_done [0-9]+$') | list | length == 1
+          - matrix_bot_honoroit_metrics_lines | select('match', '^honoroit_request_new [0-9]+$') | list | length == 1
+        fail_msg: >-
+          Configured credentials did not unlock Honoroit's Prometheus metrics
+          ({{ matrix_bot_honoroit_metrics.stdout | default('no output') }})
+        success_msg: "Configured credentials unlock Honoroit's Prometheus metrics"
+
+    - name: Read the environment file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_honoroit_config_path }}/env"
+      register: matrix_bot_honoroit_env_file
+
+    - name: Assert the parsed environment contains the Matrix and Postgres wiring
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_rendered_env.HONOROIT_LOGIN == matrix_bot_honoroit_login
+          - matrix_bot_honoroit_rendered_env.HONOROIT_PASSWORD == matrix_bot_honoroit_password
+          - matrix_bot_honoroit_rendered_env.HONOROIT_HOMESERVER == matrix_bot_honoroit_homeserver
+          - matrix_bot_honoroit_rendered_env.HONOROIT_ROOMID == matrix_bot_honoroit_roomid
+          - matrix_bot_honoroit_rendered_env.HONOROIT_DB_DIALECT == 'postgres'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_DB_DSN == 'postgres://molecule_honoroit_user:molecule_honoroit_password_8c45d1@matrix-postgres-molecule:5432/molecule_honoroit_database?sslmode=disable'
+        fail_msg: "The parsed environment lost the scenario's Matrix or Postgres wiring"
+        success_msg: "The parsed environment carries the scenario's Matrix and Postgres wiring"
+
+    - name: Assert the parsed environment contains non-default bot behavior
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_rendered_env.HONOROIT_PREFIX == '!molecule-help'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_NOENCRYPTIONWARNING | lower == 'true'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_LOGLEVEL == 'DEBUG'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_CACHESIZE == '317'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_IGNORENOTHREAD | lower == 'true'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_IGNOREDROOMS == '!molecule-ignored-one:molecule.local !molecule-ignored-two:molecule.local'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_ALLOWEDUSERS == '@support-*:molecule.local @operator:molecule.local'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_TEXT_PREFIX_OPEN == '[MOLECULE OPEN]'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_TEXT_PREFIX_DONE == '[MOLECULE DONE]'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_TEXT_GREETINGS == 'Molecule helpdesk greeting'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_TEXT_DONE == 'Molecule helpdesk completion'
+        fail_msg: "The parsed environment lost non-default Honoroit behavior"
+        success_msg: "The parsed environment carries non-default Honoroit behavior"
+
+    - name: Assert the parsed environment contains metrics auth and extension values
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_rendered_env.HONOROIT_AUTH_METRICS_LOGIN == 'molecule-metrics-user'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_AUTH_METRICS_PASSWORD == 'molecule_metrics_password_c9ed32'
+          - matrix_bot_honoroit_rendered_env.HONOROIT_PORT == ':' ~ (matrix_bot_honoroit_container_port | string)
+          - matrix_bot_honoroit_rendered_env.MOLECULE_HONOROIT_MARKER == 'role-rendered-environment'
+        fail_msg: "The parsed environment lost the metrics auth or extension values"
+        success_msg: "The parsed environment carries metrics auth and extension values"
+
+    - name: List the tables Honoroit created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bot_honoroit_database_username }}
+          - --dbname={{ matrix_bot_honoroit_database_name }}
+          - --tuples-only
+          - --no-align
+          - --command=SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename
+      register: matrix_bot_honoroit_tables
+      changed_when: false
+
+    - name: Assert Honoroit migrated a substantial schema into the configured Postgres database
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_tables.rc == 0
+          - "'crypto_account' in matrix_bot_honoroit_table_names"
+          - "'crypto_device' in matrix_bot_honoroit_table_names"
+          - "'crypto_megolm_inbound_session' in matrix_bot_honoroit_table_names"
+          - "'crypto_olm_session' in matrix_bot_honoroit_table_names"
+          - "'crypto_secrets' in matrix_bot_honoroit_table_names"
+          - "'crypto_version' in matrix_bot_honoroit_table_names"
+          - "'mx_registrations' in matrix_bot_honoroit_table_names"
+          - "'mx_room_state' in matrix_bot_honoroit_table_names"
+          - "'mx_user_profile' in matrix_bot_honoroit_table_names"
+          - "'mx_version' in matrix_bot_honoroit_table_names"
+          - matrix_bot_honoroit_table_names | length == 17
+        fail_msg: >-
+          Honoroit did not create its crypto schema in {{ matrix_bot_honoroit_database_name }}
+          (found {{ matrix_bot_honoroit_table_names | length }} table(s):
+          {{ matrix_bot_honoroit_table_names | join(', ') }})
+        success_msg: "Honoroit migrated its crypto schema into the configured Postgres database"
+      vars:
+        matrix_bot_honoroit_table_names: "{{ matrix_bot_honoroit_tables.stdout_lines | select | list }}"
+
+    - name: Read Honoroit's database migration markers
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bot_honoroit_database_username }}
+          - --dbname={{ matrix_bot_honoroit_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT 'crypto:' || version || ':' || compat FROM crypto_version UNION ALL SELECT 'state:' || version || ':' || compat FROM mx_version ORDER BY 1"
+      register: matrix_bot_honoroit_migration_versions
+      changed_when: false
+
+    - name: Assert Honoroit's Postgres migrations reached the pinned schema versions
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_migration_versions.rc == 0
+          - matrix_bot_honoroit_migration_versions.stdout_lines == ['crypto:19:15', 'state:10:3']
+        fail_msg: >-
+          Honoroit's database migration markers are missing or unexpected
+          ({{ matrix_bot_honoroit_migration_versions.stdout | default('no output') | trim }})
+        success_msg: "Honoroit's Postgres migrations reached the pinned schema versions"
+
+    - name: Read Honoroit's full systemd journal
+      ansible.builtin.command:
+        argv:
+          - journalctl
+          - --unit=matrix-bot-honoroit.service
+          - --no-pager
+      register: matrix_bot_honoroit_journal
+      changed_when: false
+
+    - name: Assert the journal records successful initialization and configured debug logging
+      ansible.builtin.assert:
+        that:
+          - "'Honoroit' in matrix_bot_honoroit_journal_plain"
+          - "'starting bot...' in matrix_bot_honoroit_journal_plain"
+          - "'client has been started' in matrix_bot_honoroit_journal_plain"
+          - "'cannot initialize the bot' not in matrix_bot_honoroit_journal_plain"
+          - "'matrix bot crashed' not in matrix_bot_honoroit_journal_plain"
+        fail_msg: "Honoroit's journal does not show a clean debug-level startup"
+        success_msg: "Honoroit's journal records a clean debug-level startup"
+      vars:
+        matrix_bot_honoroit_journal_plain: >-
+          {{ matrix_bot_honoroit_journal.stdout
+             | regex_replace('\x1B\[[0-?]*[ -/]*[@-~]', '') }}
+
+    - name: Inspect the running Honoroit container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-bot-honoroit
+      register: matrix_bot_honoroit_container_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_runtime.Config.Image == matrix_bot_honoroit_expected_image
+        fail_msg: >-
+          The running image is {{ matrix_bot_honoroit_runtime.Config.Image }}, expected
+          {{ matrix_bot_honoroit_expected_image }} from defaults/main.yml
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        matrix_bot_honoroit_expected_image: >-
+          {{ matrix_bot_honoroit_role_defaults.matrix_bot_honoroit_container_image_registry_prefix_upstream_default }}etkecc/honoroit:{{ matrix_bot_honoroit_role_defaults.matrix_bot_honoroit_version }}
+
+    - name: Assert the running container preserves the image and systemd lifecycle contract
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_runtime.Config.Entrypoint == ['/bin/honoroit']
+          - matrix_bot_honoroit_runtime.Config.Cmd is none
+          - matrix_bot_honoroit_runtime.Config.WorkingDir == '/'
+          - matrix_bot_honoroit_runtime.HostConfig.RestartPolicy.Name == 'no'
+          - matrix_bot_honoroit_runtime.HostConfig.AutoRemove is sameas true
+          - matrix_bot_honoroit_runtime.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container has an unexpected command or Docker lifecycle contract"
+        success_msg: "The running container preserves the image command and systemd lifecycle contract"
+
+    - name: Assert the running container uses the configured identity and hardening
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_runtime.Config.User == '1234:1234'
+          - matrix_bot_honoroit_runtime.HostConfig.ReadonlyRootfs is sameas true
+          - matrix_bot_honoroit_runtime.HostConfig.CapDrop == ['ALL']
+          - matrix_bot_honoroit_runtime.HostConfig.PidsLimit == 73
+          - matrix_bot_honoroit_runtime.HostConfig.Tmpfs['/tmp'] == 'rw,noexec,nosuid,size=16m'
+        fail_msg: "The running container lost its configured identity or hardening"
+        success_msg: "The running container uses the configured identity and hardening"
+
+    - name: Assert the running container has only private network attachments
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_runtime.HostConfig.NetworkMode == matrix_bot_honoroit_container_network
+          - matrix_bot_honoroit_runtime.NetworkSettings.Networks.keys() | sort == ([matrix_bot_honoroit_container_network] + matrix_bot_honoroit_container_additional_networks) | sort
+          - matrix_bot_honoroit_runtime.HostConfig.PortBindings | length == 0
+        fail_msg: "The running container lost a private network or published a host port"
+        success_msg: "The running container has both private networks and no published host ports"
+
+    - name: Assert the writable data mount is scoped to Honoroit's data directory
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_runtime.Mounts | length == 1
+          - matrix_bot_honoroit_data_mounts | length == 1
+          - matrix_bot_honoroit_data_mounts[0].Source == matrix_bot_honoroit_data_path
+          - matrix_bot_honoroit_data_mounts[0].RW is sameas true
+        fail_msg: "The running container's /data mount does not match the role-managed data path"
+        success_msg: "The running container has the role-managed writable /data mount"
+
+    - name: Assert the running process received the role-rendered environment
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_runtime_env.HONOROIT_DB_DSN == matrix_bot_honoroit_rendered_env.HONOROIT_DB_DSN
+          - matrix_bot_honoroit_runtime_env.HONOROIT_HOMESERVER == matrix_bot_honoroit_rendered_env.HONOROIT_HOMESERVER
+          - matrix_bot_honoroit_runtime_env.HONOROIT_AUTH_METRICS_LOGIN == matrix_bot_honoroit_rendered_env.HONOROIT_AUTH_METRICS_LOGIN
+          - matrix_bot_honoroit_runtime_env.HONOROIT_PORT == ':' ~ (matrix_bot_honoroit_container_port | string)
+          - matrix_bot_honoroit_runtime_env.MOLECULE_HONOROIT_MARKER == 'role-rendered-environment'
+        fail_msg: "The live container environment differs from the file the role rendered"
+        success_msg: "The live container received the role-rendered environment"
+
+    - name: Read the labels file the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bot_honoroit_config_path }}/labels"
+      register: matrix_bot_honoroit_labels_file
+
+    - name: Assert the parsed labels contain the configured metrics router
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_rendered_labels['traefik.enable'] == 'true'
+          - matrix_bot_honoroit_rendered_labels['traefik.docker.network'] == matrix_bot_honoroit_container_network
+          - matrix_bot_honoroit_rendered_labels['traefik.http.services.matrix-bot-honoroit-metrics.loadbalancer.server.port'] == (matrix_bot_honoroit_container_port | string)
+          - matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.rule'] == 'Host(`honoroit.molecule.local`) && Path(`/molecule-honoroit/molecule-metrics`)'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.priority'] == '710'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.service'] == 'matrix-bot-honoroit-metrics'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.entrypoints'] == 'molecule-web'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.tls'] == 'false'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.tls.certResolver'] is not defined
+        fail_msg: "The parsed labels lost the scenario's metrics router contract"
+        success_msg: "The parsed labels contain the configured metrics router"
+
+    - name: Assert the parsed labels contain the configured middleware chain
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_rendered_labels['traefik.http.middlewares.matrix-bot-honoroit-slashless-redirect.redirectregex.regex'] == '(/molecule-honoroit)$'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.middlewares.matrix-bot-honoroit-slashless-redirect.redirectregex.replacement'] == '${1}/'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.middlewares.matrix-bot-honoroit-strip-prefix.stripprefix.prefixes'] == '/molecule-honoroit'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.middlewares.matrix-bot-honoroit-add-headers.headers.customresponseheaders.X-Molecule-Honoroit'] == 'scenario'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.middlewares.matrix-bot-honoroit-add-headers.headers.customresponseheaders.X-Robots-Tag'] == 'noindex'
+          - matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.middlewares'] == 'matrix-bot-honoroit-slashless-redirect,matrix-bot-honoroit-strip-prefix,matrix-bot-honoroit-add-headers'
+        fail_msg: "The parsed labels lost the scenario's path and response-header middlewares"
+        success_msg: "The parsed labels contain the configured middleware chain"
+
+    - name: Assert the live container received the rendered router and middleware labels
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_runtime.Config.Labels['traefik.http.services.matrix-bot-honoroit-metrics.loadbalancer.server.port'] == (matrix_bot_honoroit_container_port | string)
+          - matrix_bot_honoroit_runtime.Config.Labels['traefik.http.routers.matrix-bot-honoroit-metrics.rule'] == matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.rule']
+          - matrix_bot_honoroit_runtime.Config.Labels['traefik.http.routers.matrix-bot-honoroit-metrics.priority'] == matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.priority']
+          - matrix_bot_honoroit_runtime.Config.Labels['traefik.http.routers.matrix-bot-honoroit-metrics.middlewares'] == matrix_bot_honoroit_rendered_labels['traefik.http.routers.matrix-bot-honoroit-metrics.middlewares']
+          - matrix_bot_honoroit_runtime.Config.Labels['traefik.http.middlewares.matrix-bot-honoroit-add-headers.headers.customresponseheaders.X-Molecule-Honoroit'] == 'scenario'
+          - matrix_bot_honoroit_runtime.Config.Labels['molecule.honoroit.scenario'] == 'live-postgres-and-metrics'
+        fail_msg: "The live container labels differ from the rendered routing contract"
+        success_msg: "The live container received the rendered router and middleware labels"
+
+    - name: Inspect role-rendered support file ownership and permissions
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop:
+        - "{{ matrix_bot_honoroit_config_path }}/env"
+        - "{{ matrix_bot_honoroit_config_path }}/labels"
+      register: matrix_bot_honoroit_support_files
+
+    - name: Assert support files are owned by Matrix and not world-readable
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_honoroit_support_files.results | map(attribute='stat.uid') | unique | list == [1234]
+          - matrix_bot_honoroit_support_files.results | map(attribute='stat.gid') | unique | list == [1234]
+          - matrix_bot_honoroit_support_files.results | map(attribute='stat.mode') | unique | list == ['0640']
+        fail_msg: "Honoroit's support files have unexpected ownership or permissions"
+        success_msg: "Honoroit's support files are Matrix-owned and mode 0640"

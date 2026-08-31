@@ -1,0 +1,122 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: matrix-bot-honoroit-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        # setup.yml normally carries this play-wide switch.
+        run_setup: true
+
+        matrix_bot_honoroit_hostname: honoroit.molecule.local
+        matrix_bot_honoroit_path_prefix: /molecule-honoroit
+        matrix_bot_honoroit_metrics_path: /molecule-metrics
+        matrix_bot_honoroit_container_port: 18080
+        matrix_bot_honoroit_container_network: matrix-bot-honoroit-molecule
+        matrix_bot_honoroit_container_additional_networks:
+          - matrix-bot-honoroit-molecule-additional
+
+        # verify.yml is a separate play, where the role's defaults are out of scope.
+        matrix_bot_honoroit_base_path: /matrix/honoroit
+        matrix_bot_honoroit_config_path: /matrix/honoroit/config
+        matrix_bot_honoroit_data_path: /matrix/honoroit/data
+
+        # Traefik itself is not deployed, but the full metrics routing contract is rendered
+        # with non-default values and compared with the live container labels.
+        matrix_bot_honoroit_container_labels_traefik_enabled: true
+        matrix_bot_honoroit_container_labels_traefik_docker_network: "{{ matrix_bot_honoroit_container_network }}"
+        matrix_bot_honoroit_container_labels_traefik_priority: 710
+        matrix_bot_honoroit_container_labels_traefik_entrypoints: molecule-web
+        matrix_bot_honoroit_container_labels_traefik_tls: false
+        matrix_bot_honoroit_container_labels_traefik_additional_response_headers_custom:
+          X-Molecule-Honoroit: scenario
+          X-Robots-Tag: noindex
+        matrix_bot_honoroit_container_labels_additional_labels: |
+          molecule.honoroit.scenario=live-postgres-and-metrics
+
+        # Real deployments use Postgres whenever the playbook's Postgres is enabled. All
+        # identifiers differ from the role defaults, so a migrated schema proves the role
+        # constructed and passed the configured DSN.
+        matrix_bot_honoroit_database_engine: postgres
+        matrix_bot_honoroit_database_hostname: matrix-postgres-molecule
+        matrix_bot_honoroit_database_username: molecule_honoroit_user
+        matrix_bot_honoroit_database_password: molecule_honoroit_password_8c45d1
+        matrix_bot_honoroit_database_name: molecule_honoroit_database
+        matrix_bot_honoroit_database_sslmode: disable
+
+        # These differ from both role and upstream defaults. The shared homeserver stub is
+        # sufficient for password login, crypto initialization and an idle sync loop.
+        matrix_bot_honoroit_login: molecule-honoroit
+        matrix_bot_honoroit_password: molecule_matrix_password_74aa5e
+        matrix_bot_honoroit_homeserver: http://matrix.molecule.local:8008
+        matrix_bot_honoroit_roomid: "!molecule-operators:molecule.local"
+        matrix_bot_honoroit_prefix: "!molecule-help"
+        matrix_bot_honoroit_loglevel: DEBUG
+        matrix_bot_honoroit_cachesize: 317
+        matrix_bot_honoroit_no_encryption_warning: true
+        matrix_bot_honoroit_ignorenothread: true
+        matrix_bot_honoroit_ignoredrooms:
+          - "!molecule-ignored-one:molecule.local"
+          - "!molecule-ignored-two:molecule.local"
+        matrix_bot_honoroit_allowedusers:
+          - "@support-*:molecule.local"
+          - "@operator:molecule.local"
+        matrix_bot_honoroit_text_prefix_open: "[MOLECULE OPEN]"
+        matrix_bot_honoroit_text_prefix_done: "[MOLECULE DONE]"
+        matrix_bot_honoroit_text_greetings: Molecule helpdesk greeting
+        matrix_bot_honoroit_text_done: Molecule helpdesk completion
+
+        # Live metrics authentication forms the primary compatibility gate: correct
+        # credentials must work and both absent and wrong credentials must not.
+        matrix_bot_honoroit_auth_metrics_login: molecule-metrics-user
+        matrix_bot_honoroit_auth_metrics_password: molecule_metrics_password_c9ed32
+        # Keep the generic environment extension observable independently of the role's
+        # first-class port wiring.
+        matrix_bot_honoroit_environment_variables_extension: |
+          MOLECULE_HONOROIT_MARKER=role-rendered-environment
+
+        # Exercise arbitrary runtime arguments and a second private network without making
+        # anything reachable from the Molecule host.
+        matrix_bot_honoroit_container_extra_arguments:
+          - --pids-limit=73
+          - --tmpfs=/tmp:rw,noexec,nosuid,size=16m
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible
