@@ -1,0 +1,103 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: mautrix-slack-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_bridge_mautrix_slack_container_network: mautrix-slack-molecule
+
+        # The stub prepare.yml starts is not a real homeserver, and the scenario carries
+        # no Slack token, credentials, or workspace. Logged out is the intended boundary.
+        matrix_bridge_mautrix_slack_homeserver_address: http://matrix.molecule.local:8008
+        matrix_bridge_mautrix_slack_homeserver_domain: molecule.local
+        matrix_bridge_mautrix_slack_homeserver_async_media: true
+
+        # Postgres is the normal deployment path. Non-default database and user names make
+        # the resulting schema evidence that the role composed and supplied this connection.
+        matrix_bridge_mautrix_slack_database_engine: postgres
+        matrix_bridge_mautrix_slack_database_hostname: matrix-postgres-molecule
+        matrix_bridge_mautrix_slack_database_name: molecule_slack
+        matrix_bridge_mautrix_slack_database_username: molecule_slack
+        matrix_bridge_mautrix_slack_database_password: molecule_pg_password_6e95b1
+
+        # Test-only fixtures which must reach both config.yaml and registration.yaml.
+        matrix_bridge_mautrix_slack_appservice_token: molecule_slack_as_token_d1504c
+        matrix_bridge_mautrix_slack_homeserver_token: molecule_slack_hs_token_b873a0
+
+        # All differ from role defaults, allowing parsed checks to prove role rendering.
+        matrix_bridge_mautrix_slack_appservice_bot_username: molecule-slackbot
+        matrix_bridge_mautrix_slack_network_displayname_template: "{% raw %}{{ .Name }} @ {{ .Team.Domain }} (Molecule){% endraw %}"
+        matrix_bridge_mautrix_slack_command_prefix: "!molecule-slack"
+        matrix_bridge_mautrix_slack_bridge_permissions:
+          "*": commands
+          molecule.local: admin
+        matrix_bridge_mautrix_slack_bridge_relay_enabled: true
+        matrix_bridge_mautrix_slack_bridge_relay_admin_only: false
+        matrix_bridge_mautrix_slack_bridge_relay_default_relays:
+          - molecule-workspace/molecule-relay
+        matrix_bridge_mautrix_slack_backfill_enabled: false
+        matrix_bridge_mautrix_slack_backfill_max_initial_messages: 19
+        matrix_bridge_mautrix_slack_backfill_max_catchup_messages: 31
+        matrix_bridge_mautrix_slack_backfill_unread_hours_threshold: 73
+        matrix_bridge_mautrix_slack_backfill_threads_max_initial_messages: 11
+        matrix_bridge_mautrix_slack_provisioning_shared_secret: molecule_provisioning_secret_204c17
+        matrix_bridge_mautrix_slack_public_media_signing_key: molecule_public_media_key_2a593d
+        matrix_bridge_mautrix_slack_double_puppet_secrets_custom:
+          molecule.remote: molecule_double_puppet_secret_a7d210
+        matrix_bridge_mautrix_slack_logging_level: info
+
+        # Traefik is not started. These values exercise both the public address the bridge
+        # consumes and the exposure labels Docker consumes.
+        matrix_bridge_mautrix_slack_exposure_enabled: true
+        matrix_bridge_mautrix_slack_exposure_hostname: slack-api.molecule.local
+        matrix_bridge_mautrix_slack_exposure_path_prefix: /bridges/slack-api
+        matrix_bridge_mautrix_slack_scheme: http
+        matrix_bridge_mautrix_slack_container_labels_traefik_entrypoints: web
+        matrix_bridge_mautrix_slack_container_labels_additional_labels: |
+          molecule.slack.coverage=enabled
+
+        # verify.yml is a separate play, where role defaults are out of scope.
+        matrix_bridge_mautrix_slack_base_path: /matrix/mautrix-slack
+        matrix_bridge_mautrix_slack_config_path: /matrix/mautrix-slack/config
+        matrix_bridge_mautrix_slack_data_path: /matrix/mautrix-slack/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

@@ -1,0 +1,399 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Proves the logged-out bridge starts, accepts the role-rendered configuration and
+# registration, migrates real Postgres, and opens its appservice listener. Slack
+# credentials and workspace access are deliberately outside the scenario boundary.
+- name: Verify mautrix-slack
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  vars:
+    mautrix_slack_config: "{{ mautrix_slack_config_file.content | b64decode | from_yaml }}"
+    mautrix_slack_registration: "{{ mautrix_slack_registration_file.content | b64decode | from_yaml }}"
+    mautrix_slack_labels_rendered: "{{ mautrix_slack_labels_file.content | b64decode }}"
+    mautrix_slack_expected_public_address: http://slack-api.molecule.local/bridges/slack-api
+  gather_facts: false
+
+  tasks:
+    # A Renovate bump changes this source of truth and therefore the image expectation.
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: mautrix_slack_role_defaults
+
+    - name: Wait for the mautrix-slack service to become active
+      ansible.builtin.systemd_service:
+        name: matrix-mautrix-slack.service
+      register: mautrix_slack_service
+      until: mautrix_slack_service.status.ActiveState == 'active'
+      retries: 30
+      delay: 5
+      failed_when: false
+
+    # Restart=always makes ActiveState insufficient for detecting a crash loop.
+    - name: Assert the service is active and has not been restarting
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_service.status.ActiveState == 'active'
+          - mautrix_slack_service.status.NRestarts is defined
+          - mautrix_slack_service.status.NRestarts | int == 0
+        fail_msg: >-
+          matrix-mautrix-slack.service is
+          {{ mautrix_slack_service.status.ActiveState | default('unknown') }} after
+          {{ mautrix_slack_service.status.NRestarts | default('?') }} restart(s)
+        success_msg: "matrix-mautrix-slack.service is active and has not restarted"
+
+    - name: Wait for the bridge liveness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_slack_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-slack:8080/_matrix/mau/live
+      register: mautrix_slack_live
+      changed_when: false
+      until: mautrix_slack_live.rc == 0 and mautrix_slack_live.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Wait for the bridge readiness endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_slack_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - http://matrix-mautrix-slack:8080/_matrix/mau/ready
+      register: mautrix_slack_ready
+      changed_when: false
+      until: mautrix_slack_ready.rc == 0 and mautrix_slack_ready.stdout == 'HTTP_STATUS=200'
+      retries: 24
+      delay: 5
+      failed_when: false
+
+    - name: Assert the bridge is live and ready on the configured appservice port
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_live.rc == 0
+          - mautrix_slack_live.stdout == 'HTTP_STATUS=200'
+          - mautrix_slack_ready.rc == 0
+          - mautrix_slack_ready.stdout == 'HTTP_STATUS=200'
+        fail_msg: >-
+          Health probes returned live={{ mautrix_slack_live.stdout | default('none') }}
+          (rc={{ mautrix_slack_live.rc | default('?') }}) and
+          ready={{ mautrix_slack_ready.stdout | default('none') }}
+          (rc={{ mautrix_slack_ready.rc | default('?') }})
+        success_msg: "The bridge is live and ready on the configured appservice port"
+
+    # This authenticated endpoint exercises the provisioning middleware and the network
+    # connector's login-flow API without starting a Slack login or carrying credentials.
+    - name: Query the authenticated provisioning login flows
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_slack_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail-with-body
+          - --header
+          - "Authorization: Bearer {{ matrix_bridge_mautrix_slack_provisioning_shared_secret }}"
+          - "http://matrix-mautrix-slack:8080/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: mautrix_slack_login_flows
+      changed_when: false
+
+    - name: Query the provisioning API with an invalid secret
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bridge_mautrix_slack_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --write-out
+          - "HTTP_STATUS=%{http_code}"
+          - --header
+          - "Authorization: Bearer definitely-wrong-molecule-secret"
+          - "http://matrix-mautrix-slack:8080/_matrix/provision/v3/login/flows?user_id=%40alice%3Amolecule.local"
+      register: mautrix_slack_login_flows_unauthorized
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the live provisioning API enforces auth and advertises login flows
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_login_flows.rc == 0
+          - (mautrix_slack_login_flows.stdout | from_json).flows is sequence
+          - (mautrix_slack_login_flows.stdout | from_json).flows | length > 0
+          - mautrix_slack_login_flows_unauthorized.rc == 0
+          - mautrix_slack_login_flows_unauthorized.stdout == 'HTTP_STATUS=401'
+        fail_msg: "The provisioning API did not enforce its secret or return Slack login flows"
+        success_msg: "The provisioning API enforces its secret and returns Slack login flows"
+
+    - name: Read the configuration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_slack_config_path }}/config.yaml"
+      register: mautrix_slack_config_file
+
+    - name: Assert the rendered configuration carries the appservice identity
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_config.homeserver.address == matrix_bridge_mautrix_slack_homeserver_address
+          - mautrix_slack_config.homeserver.domain == matrix_bridge_mautrix_slack_homeserver_domain
+          - mautrix_slack_config.homeserver.async_media
+          - mautrix_slack_config.appservice.id == 'slack'
+          - mautrix_slack_config.appservice.address == 'http://matrix-mautrix-slack:8080'
+          - mautrix_slack_config.appservice.public_address == mautrix_slack_expected_public_address
+          - mautrix_slack_config.appservice.bot.username == matrix_bridge_mautrix_slack_appservice_bot_username
+          - mautrix_slack_config.appservice.as_token == matrix_bridge_mautrix_slack_appservice_token
+          - mautrix_slack_config.appservice.hs_token == matrix_bridge_mautrix_slack_homeserver_token
+        fail_msg: "The rendered configuration does not carry the scenario's appservice identity"
+        success_msg: "The rendered configuration carries the scenario's appservice identity"
+
+    - name: Assert the rendered configuration carries non-default Slack behavior
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_config.network.displayname_template == matrix_bridge_mautrix_slack_network_displayname_template
+          - mautrix_slack_config.bridge.command_prefix == matrix_bridge_mautrix_slack_command_prefix
+          - mautrix_slack_config.bridge.permissions['*'] == 'commands'
+          - mautrix_slack_config.bridge.permissions[matrix_bridge_mautrix_slack_homeserver_domain] == 'admin'
+          - mautrix_slack_config.bridge.relay.enabled
+          - not mautrix_slack_config.bridge.relay.admin_only
+          - mautrix_slack_config.bridge.relay.default_relays == ['molecule-workspace/molecule-relay']
+          - mautrix_slack_config.logging.min_level == matrix_bridge_mautrix_slack_logging_level
+        fail_msg: "The rendered configuration does not carry the scenario's Slack behavior"
+        success_msg: "The rendered configuration carries the scenario's Slack behavior"
+
+    - name: Assert the rendered configuration carries integration secrets
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_config.provisioning.shared_secret == matrix_bridge_mautrix_slack_provisioning_shared_secret
+          - mautrix_slack_config.public_media.signing_key == matrix_bridge_mautrix_slack_public_media_signing_key
+          - mautrix_slack_config.double_puppet.secrets['molecule.remote'] == 'molecule_double_puppet_secret_a7d210'
+        fail_msg: "The rendered configuration does not carry the scenario's integration secrets"
+        success_msg: "The rendered configuration carries the scenario's integration secrets"
+
+    - name: Assert the rendered configuration carries the non-default backfill policy
+      ansible.builtin.assert:
+        that:
+          - not mautrix_slack_config.backfill.enabled
+          - mautrix_slack_config.backfill.max_initial_messages == 19
+          - mautrix_slack_config.backfill.max_catchup_messages == 31
+          - mautrix_slack_config.backfill.unread_hours_threshold == 73
+          - mautrix_slack_config.backfill.threads.max_initial_messages == 11
+        fail_msg: "The rendered configuration does not carry the scenario's backfill policy"
+        success_msg: "The rendered configuration carries the scenario's backfill policy"
+
+    - name: Assert the configuration points at the scenario's Postgres database
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_config.database.type == matrix_bridge_mautrix_slack_database_engine
+          - matrix_bridge_mautrix_slack_database_username in mautrix_slack_config.database.uri
+          - matrix_bridge_mautrix_slack_database_hostname in mautrix_slack_config.database.uri
+          - matrix_bridge_mautrix_slack_database_name in mautrix_slack_config.database.uri
+        fail_msg: >-
+          database.uri is {{ mautrix_slack_config.database.uri | default('unset') }}, which
+          was not composed from the scenario's connection settings
+        success_msg: "The configuration points at the scenario's Postgres database"
+
+    - name: Read the appservice registration the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_slack_config_path }}/registration.yaml"
+      register: mautrix_slack_registration_file
+
+    - name: Assert the registration carries the configured handshake values
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_registration.id == 'slack'
+          - mautrix_slack_registration.as_token == matrix_bridge_mautrix_slack_appservice_token
+          - mautrix_slack_registration.hs_token == matrix_bridge_mautrix_slack_homeserver_token
+          - mautrix_slack_registration.sender_localpart == '_bot_' + matrix_bridge_mautrix_slack_appservice_bot_username
+          - mautrix_slack_registration.url == 'http://matrix-mautrix-slack:8080'
+        fail_msg: "The registration does not carry the configured handshake values"
+        success_msg: "The registration carries the configured handshake values"
+
+    - name: Assert the registration namespaces cover only Slack ghosts and the bridge bot
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_ghost_regex | length > 0
+          - mautrix_slack_bot_regex | length > 0
+          - mautrix_slack_ghost_mxid is match(mautrix_slack_ghost_regex)
+          - mautrix_slack_wrong_ghost_mxid is not match(mautrix_slack_ghost_regex)
+          - mautrix_slack_bot_mxid is match(mautrix_slack_bot_regex)
+        fail_msg: "The registration namespaces do not cover only Slack ghosts and the bot"
+        success_msg: "The registration namespaces cover only Slack ghosts and the bot"
+      vars:
+        mautrix_slack_user_regexes: "{{ mautrix_slack_registration.namespaces.users | map(attribute='regex') | list }}"
+        mautrix_slack_ghost_regex: "{{ mautrix_slack_user_regexes | select('search', 'slack_') | first | default('') }}"
+        mautrix_slack_bot_regex: "{{ mautrix_slack_user_regexes | reject('search', 'slack_') | first | default('') }}"
+        mautrix_slack_ghost_mxid: "@slack_T12345-U67890:{{ matrix_bridge_mautrix_slack_homeserver_domain }}"
+        mautrix_slack_wrong_ghost_mxid: "@discord_T12345-U67890:{{ matrix_bridge_mautrix_slack_homeserver_domain }}"
+        mautrix_slack_bot_mxid: "@{{ matrix_bridge_mautrix_slack_appservice_bot_username }}:{{ matrix_bridge_mautrix_slack_homeserver_domain }}"
+
+    # Tables can appear only after hostname resolution, authentication, and real migrations.
+    - name: List the tables the bridge created in Postgres
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - matrix-postgres-molecule
+          - psql
+          - --username={{ matrix_bridge_mautrix_slack_database_username }}
+          - --dbname={{ matrix_bridge_mautrix_slack_database_name }}
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+      register: mautrix_slack_tables
+      changed_when: false
+
+    - name: Assert the bridge migrated its schema into the configured database
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_tables.rc == 0
+          - "'version' in mautrix_slack_table_names"
+          - "'portal' in mautrix_slack_table_names"
+          - "'user_login' in mautrix_slack_table_names"
+          - "'message' in mautrix_slack_table_names"
+          - "'slack_version' in mautrix_slack_table_names"
+          - "'emoji' in mautrix_slack_table_names"
+          - mautrix_slack_table_names | length > 12
+        fail_msg: >-
+          The bridge did not migrate its schema into {{ matrix_bridge_mautrix_slack_database_name }}
+          (found {{ mautrix_slack_table_names | length }} table(s))
+        success_msg: "The bridge migrated its schema into the configured database"
+      vars:
+        mautrix_slack_table_names: "{{ mautrix_slack_tables.stdout_lines | select | list }}"
+
+    - name: Read the labels the role rendered
+      ansible.builtin.slurp:
+        src: "{{ matrix_bridge_mautrix_slack_base_path }}/labels"
+      register: mautrix_slack_labels_file
+
+    - name: Assert the labels route the public endpoint to the appservice port
+      ansible.builtin.assert:
+        that:
+          - "'traefik.enable=true' in mautrix_slack_labels_rendered"
+          - "'traefik.docker.network=' + matrix_bridge_mautrix_slack_container_network in mautrix_slack_labels_rendered"
+          - "'traefik.http.services.matrix-mautrix-slack-exposure.loadbalancer.server.port=8080' in mautrix_slack_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-slack-exposure.rule=Host(`slack-api.molecule.local`) && PathPrefix(`/bridges/slack-api`)' in mautrix_slack_labels_rendered"
+          - "'traefik.http.middlewares.matrix-mautrix-slack-exposure-strip-prefix.stripprefix.prefixes=/bridges/slack-api' in mautrix_slack_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-slack-exposure.entrypoints=web' in mautrix_slack_labels_rendered"
+          - "'traefik.http.routers.matrix-mautrix-slack-exposure.tls=false' in mautrix_slack_labels_rendered"
+          - "'molecule.slack.coverage=enabled' in mautrix_slack_labels_rendered"
+        fail_msg: "The rendered labels do not carry the scenario's exposure configuration"
+        success_msg: "The rendered labels carry the scenario's exposure configuration"
+
+    - name: Inspect the running bridge container
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-mautrix-slack
+      register: mautrix_slack_container_inspect
+      changed_when: false
+
+    - name: Parse the running bridge container inspection
+      ansible.builtin.set_fact:
+        mautrix_slack_container: "{{ (mautrix_slack_container_inspect.stdout | from_json) | first }}"
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_container.Config.Image == mautrix_slack_expected_image
+        fail_msg: >-
+          The running container uses {{ mautrix_slack_container.Config.Image }}, expected
+          {{ mautrix_slack_expected_image }}
+        success_msg: "The running container uses the exact image pinned by the role"
+      vars:
+        mautrix_slack_expected_image: >-
+          {{ mautrix_slack_role_defaults.matrix_bridge_mautrix_slack_container_image_registry_prefix_upstream_default }}mautrix/slack:{{ mautrix_slack_role_defaults.matrix_bridge_mautrix_slack_version }}
+
+    - name: Assert the running container uses the playbook-supplied runtime
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+          - mautrix_slack_container.Config.WorkingDir == '/data'
+          - mautrix_slack_container.Config.Cmd == ['/usr/bin/mautrix-slack', '-c', '/config/config.yaml', '-r', '/config/registration.yaml', '--no-update']
+          - mautrix_slack_container.HostConfig.RestartPolicy.Name == 'no'
+          - mautrix_slack_container.HostConfig.AutoRemove
+          - mautrix_slack_container.HostConfig.LogConfig.Type == 'none'
+        fail_msg: "The running container does not use the role's exact identity and command"
+        success_msg: "The running container uses the role's exact identity and command"
+
+    - name: Assert the running container has the intended privilege isolation
+      ansible.builtin.assert:
+        that:
+          - "'ALL' in mautrix_slack_container.HostConfig.CapDrop"
+          - not mautrix_slack_container.HostConfig.Privileged
+        fail_msg: "The running container does not have the intended privilege isolation"
+        success_msg: "The running container drops all capabilities and is unprivileged"
+
+    - name: Assert the running container carries the role's exact bind mounts
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_config_mount | length > 0
+          - mautrix_slack_config_mount.Source == matrix_bridge_mautrix_slack_config_path
+          - not mautrix_slack_config_mount.RW
+          - mautrix_slack_data_mount | length > 0
+          - mautrix_slack_data_mount.Source == matrix_bridge_mautrix_slack_data_path
+          - mautrix_slack_data_mount.RW
+          - mautrix_slack_container.Mounts | length == 2
+        fail_msg: "The running container does not carry the role's exact config and data mounts"
+        success_msg: "The running container carries read-only config and writable data mounts"
+      vars:
+        mautrix_slack_config_mount: >-
+          {{ mautrix_slack_container.Mounts
+             | selectattr('Destination', 'equalto', '/config')
+             | first | default({}) }}
+        mautrix_slack_data_mount: >-
+          {{ mautrix_slack_container.Mounts
+             | selectattr('Destination', 'equalto', '/data')
+             | first | default({}) }}
+
+    - name: Assert the rendered labels are attached to the running container
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_container.Config.Labels['traefik.enable'] == 'true'
+          - mautrix_slack_container.Config.Labels['traefik.docker.network'] == matrix_bridge_mautrix_slack_container_network
+          - mautrix_slack_container.Config.Labels['traefik.http.services.matrix-mautrix-slack-exposure.loadbalancer.server.port'] == '8080'
+          - mautrix_slack_container.Config.Labels['molecule.slack.coverage'] == 'enabled'
+        fail_msg: "The running container does not carry the labels the role rendered"
+        success_msg: "The running container carries the labels the role rendered"
+
+    - name: Assert the running container has the exact network and port exposure
+      ansible.builtin.assert:
+        that:
+          - mautrix_slack_container.HostConfig.NetworkMode == matrix_bridge_mautrix_slack_container_network
+          - matrix_bridge_mautrix_slack_container_network in mautrix_slack_container.NetworkSettings.Networks
+          - mautrix_slack_container.NetworkSettings.Networks | length == 1
+          - mautrix_slack_container.HostConfig.PortBindings | default({}, true) | length == 0
+        fail_msg: >-
+          The container has unexpected networks or host ports:
+          networks={{ mautrix_slack_container.NetworkSettings.Networks.keys() | list }},
+          ports={{ mautrix_slack_container.HostConfig.PortBindings | default({}) }}
+        success_msg: "The container uses only its dedicated network and publishes no host ports"
