@@ -25,12 +25,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--network={{ matrix_bridge_steam_container_network }} \
 			--mount type=bind,src={{ matrix_bridge_steam_config_path }},dst=/app/config,ro \
 			--mount type=bind,src={{ matrix_bridge_steam_data_path }},dst=/app/data \
+			--env=REGISTRATION_FILE=/app/config/registration.yaml \
 			--label-file={{ matrix_bridge_steam_base_path }}/labels \
 			{% for arg in matrix_bridge_steam_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
 			{{ matrix_bridge_steam_container_image }} \
-			/usr/bin/steam -c /app/config/config.yaml -r /app/config/registration.yaml --no-update
+			-r /app/config/registration.yaml --no-update
 
 {% if matrix_bridge_steam_container_network != 'host' %}
 {% for network in matrix_bridge_steam_container_additional_networks %}
