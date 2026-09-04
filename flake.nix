@@ -20,7 +20,7 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-        agru = pkgs.buildGo125Module {
+        agru = pkgs.buildGo126Module {
           pname = "agru";
           version = "0.2.1";
           src = agru-src;
