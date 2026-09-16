@@ -28,7 +28,7 @@ Molecule is deliberately **not** part of the `prek` hooks. A run is far too slow
 
 `.github/workflows/molecule.yml` does not run every scenario on every push — with one repository holding every role, that would be unaffordable. Its first job works out which roles the push actually touched, keeps the ones that have a scenario, and builds the job matrix from those. A documentation change runs nothing.
 
-When the diff base cannot be determined (a new branch, a force push), it falls back to running every scenario, which errs toward testing too much rather than too little. `workflow_dispatch` accepts an optional role name.
+For pushes, CI compares against the previous commit. On a new branch, or when the previous commit is unavailable after a force push, it instead compares against the branch's common ancestor with the default branch. This keeps a new Renovate branch limited to the roles it changes. If no usable comparison exists, it falls back to running every scenario. Changes to `molecule-shared/` or the Molecule workflow also run every scenario. `workflow_dispatch` accepts an optional role name; leaving it empty runs every scenario.
 
 ## Automerge
 

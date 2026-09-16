@@ -58,6 +58,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           BEFORE_SHA: ${{ github.event.before }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           INPUT_ROLE: ${{ inputs.role }}
         run: |
           set -euo pipefail
@@ -77,10 +78,12 @@ jobs:
             exit 0
           fi
 
-          # A hand-triggered run with no role named, and any run where the diff
-          # base is unusable (a new branch, a force push, the very first commit),
-          # falls back to every role that has a scenario. That is the safe
-          # direction to fail in: too much testing rather than too little.
+          # New branches have an all-zero before SHA. Compare them with their
+          # common ancestor with the default branch, so the first Renovate push
+          # tests only the roles it changes. The same fallback handles a force
+          # push whose previous commit is no longer available locally.
+          # Manual runs without a role, and pushes with no usable comparison,
+          # still consider every scenario.
           base=""
           case "${EVENT_NAME}" in
             pull_request) base="${BASE_SHA}" ;;
@@ -88,6 +91,8 @@ jobs:
               if [ -n "${BEFORE_SHA}" ] && [ "${BEFORE_SHA}" != "0000000000000000000000000000000000000000" ] \
                  && git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
                 base="${BEFORE_SHA}"
+              elif [ -n "${DEFAULT_BRANCH}" ] && [ "${GITHUB_REF}" != "refs/heads/${DEFAULT_BRANCH}" ]; then
+                base="$(git merge-base HEAD "refs/remotes/origin/${DEFAULT_BRANCH}" || true)"
               fi
               ;;
           esac
