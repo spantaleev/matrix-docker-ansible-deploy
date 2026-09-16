@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2018 - 2021 Slavi Pantaleev
+SPDX-FileCopyrightText: 2018 - 2021, 2026 Slavi Pantaleev
 SPDX-FileCopyrightText: 2018 Aaron Raimist
 SPDX-FileCopyrightText: 2019 Lyubomir Popov
 SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
@@ -79,6 +79,8 @@ If your server and services experience issues, feel free to come to [our support
 - [Configuring Synology DSM](configuring-playbook-synology.md)
 
 - [Container images used by the playbook](container-images.md)
+
+- [Maintaining the Renovate runner](renovate.md)
 
 - [Obtaining an Access Token](obtaining-access-tokens.md)
 

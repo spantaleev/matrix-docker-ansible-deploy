@@ -43,7 +43,7 @@ env:
   MATRIX_RENOVATE_AUTOMATION_ENABLED: 'true'
 
   # renovate: datasource=docker depName=matrix-renovate-runner packageName=ghcr.io/renovatebot/renovate
-  MATRIX_RENOVATE_VERSION: '44.64.0'
+  MATRIX_RENOVATE_VERSION: '44.61.6'
 
 jobs:
   preflight:
@@ -146,6 +146,8 @@ jobs:
           renovate-version: ${{ env.MATRIX_RENOVATE_VERSION }}
         env:
           LOG_LEVEL: ${{ inputs.log_level || 'info' }}
+          # Renovate's rejection handler can log a startup crash and still exit 0.
+          NODE_OPTIONS: --unhandled-rejections=strict
           RENOVATE_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'full' || '' }}
           # Permit the self-hosted App to adopt branches created by the Mend-hosted App.
           RENOVATE_GIT_IGNORED_AUTHORS: '["29139614+renovate[bot]@users.noreply.github.com"]'
