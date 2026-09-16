@@ -337,7 +337,8 @@
           - "'mx_version' in matrix_bot_meowlnir_table_names"
           - "'mx_room_state' in matrix_bot_meowlnir_table_names"
           - "'policy_server_signature' in matrix_bot_meowlnir_table_names"
-          - matrix_bot_meowlnir_table_names | length == 10
+          - "'otks_need_reset' in matrix_bot_meowlnir_table_names"
+          - matrix_bot_meowlnir_table_names | length == 11
         fail_msg: >-
           Meowlnir did not create a substantial schema in {{ matrix_bot_meowlnir_database_name }}
           (found {{ matrix_bot_meowlnir_table_names | length }} table(s))
@@ -364,9 +365,9 @@
       ansible.builtin.assert:
         that:
           - matrix_bot_meowlnir_migration_versions.rc == 0
-          - matrix_bot_meowlnir_migration_versions.stdout_lines | select | list == ['main:3:1', 'matrix_state:11:3']
+          - matrix_bot_meowlnir_migration_versions.stdout_lines | select | list == ['main:4:1', 'matrix_state:11:3']
         fail_msg: >-
-          Meowlnir's main and Matrix-state migrations did not reach versions 3 and 11
+          Meowlnir's main and Matrix-state migrations did not reach versions 4 and 11
           ({{ matrix_bot_meowlnir_migration_versions.stdout_lines | select | list }})
         success_msg: "Both Meowlnir database schema sections reached their expected versions"
 
