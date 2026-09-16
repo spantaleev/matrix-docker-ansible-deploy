@@ -160,7 +160,7 @@ a fresh install.
 
 ## Databases
 
-Scenarios for roles that have a database run against **Postgres**, not sqlite.
+Scenarios for roles that support an external SQL database run against **Postgres**, not sqlite.
 
 That is what `group_vars/matrix_servers` selects whenever postgres is enabled, which is the
 default, so it is what essentially every deployment runs. sqlite is a path almost nobody is on:
@@ -179,6 +179,8 @@ cope with it.
 
 Prefer asserting on the schema the component created over a file on disk: tables can only appear
 once it has resolved the hostname, authenticated, and run its migrations.
+
+Tuwunel uses embedded RocksDB instead. Its scenario exercises token-protected registration and authenticated Matrix APIs against that database, and checks that the configured listener, server name, display-name suffix, upload limit, and client discovery URL reach the running homeserver.
 
 ## Reclaiming the disk space
 

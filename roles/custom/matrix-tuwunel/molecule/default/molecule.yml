@@ -1,0 +1,78 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: tuwunel-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        matrix_tuwunel_hostname: matrix.example.com
+        matrix_tuwunel_container_network: tuwunel-molecule
+        matrix_tuwunel_config_server_name: example.com
+        matrix_tuwunel_config_port_number: 16167
+        matrix_tuwunel_systemd_service_post_start_delay_seconds: 0
+
+        # Exercise real local registration against the embedded RocksDB database.
+        # These credentials never authenticate to an external service.
+        matrix_tuwunel_config_allow_registration: true
+        matrix_tuwunel_config_registration_token: molecule-registration-7e290fc5
+        matrix_tuwunel_config_new_user_displayname_suffix: '[Molecule]'
+        matrix_tuwunel_config_grant_admin_to_first_user: false
+        matrix_tuwunel_config_allow_federation: false
+        matrix_tuwunel_config_trusted_servers: []
+        matrix_tuwunel_config_max_request_size: 17000000
+        matrix_tuwunel_config_well_known_client: https://matrix.example.com
+
+        # Keep resource use modest on the CI runner. RocksDB is Tuwunel's native
+        # database; no external database or homeserver fixture is needed.
+        matrix_tuwunel_config_rocksdb_parallelism_threads: 2
+        matrix_tuwunel_config_db_cache_capacity_mb: 32
+        matrix_tuwunel_config_db_write_buffer_capacity_mb: 16
+
+        # Labels are inspected on the running container; probes reach it directly
+        # over its own network without publishing a host port or running Traefik.
+        matrix_tuwunel_container_labels_traefik_entrypoints: web
+
+        # Pin paths needed by verify.yml, but load the image version from the role.
+        matrix_tuwunel_base_path: /matrix/tuwunel-molecule
+        matrix_tuwunel_config_path: /matrix/tuwunel-molecule/config
+        matrix_tuwunel_data_path: /matrix/tuwunel-molecule/data
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:${ANSIBLE_HOME:-~/.ansible}/roles
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

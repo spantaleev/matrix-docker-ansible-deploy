@@ -1,0 +1,219 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify Tuwunel
+  hosts: all
+  become: true
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/vars.yml"
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../../molecule-shared/playbook-context.yml"
+  gather_facts: false
+  vars:
+    matrix_tuwunel_molecule_config: "{{ (matrix_tuwunel_molecule_config_result.stdout | from_json).global }}"
+    matrix_tuwunel_molecule_probe: "{{ matrix_tuwunel_molecule_probe_result.stdout | from_json }}"
+    matrix_tuwunel_molecule_container: "{{ (matrix_tuwunel_molecule_inspect.stdout | from_json) | first }}"
+
+  tasks:
+    - name: Load the role's defaults under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: matrix_tuwunel_role_defaults
+
+    # No host ports: a helper reaches the service over its own container network.
+    - name: Wait for the Matrix versions endpoint on the configured listener
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_tuwunel_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --fail
+          - --silent
+          - --show-error
+          - --max-time
+          - '10'
+          - http://matrix-tuwunel:{{ matrix_tuwunel_config_port_number }}/_matrix/client/versions
+      register: matrix_tuwunel_molecule_versions
+      changed_when: false
+      until: matrix_tuwunel_molecule_versions.rc == 0
+      retries: 24
+      delay: 5
+
+    - name: Assert the non-default listener serves the Matrix API
+      ansible.builtin.assert:
+        that:
+          - "'v1.1' in (matrix_tuwunel_molecule_versions.stdout | from_json).versions"
+
+    - name: Request the default listener which the scenario moved away from
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_tuwunel_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --output
+          - /dev/null
+          - --connect-timeout
+          - '2'
+          - --max-time
+          - '3'
+          - http://matrix-tuwunel:6167/_matrix/client/versions
+      register: matrix_tuwunel_molecule_default_listener
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the default listener refuses connections
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_default_listener.rc == 7
+
+    # This uses the real homeserver and its embedded RocksDB database. The helper
+    # only makes requests and records responses; the assertions remain below.
+    - name: Exercise token-protected registration and authenticated Matrix APIs
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --interactive
+          - --network={{ matrix_tuwunel_container_network }}
+          - "{{ molecule_shared_image_python }}"
+          - python
+          - '-'
+          - http://matrix-tuwunel:{{ matrix_tuwunel_config_port_number }}
+          - "{{ matrix_tuwunel_config_registration_token }}"
+        stdin: "{{ lookup('file', 'probe.py') }}"
+      register: matrix_tuwunel_molecule_probe_result
+      changed_when: false
+
+    - name: Assert registration requires the configured token
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_probe.challenge.status == 401
+          - "matrix_tuwunel_molecule_probe.challenge.body.flows == [{'stages': ['m.login.registration_token']}]"
+          - matrix_tuwunel_molecule_probe.bad_token.status == 401
+          - matrix_tuwunel_molecule_probe.bad_token.body.errcode == 'M_FORBIDDEN'
+
+    - name: Assert the configured token registers a user on the configured server
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_probe.registration.status == 200
+          - matrix_tuwunel_molecule_probe.registration.body.user_id == '@' + matrix_tuwunel_molecule_probe.username + ':' + matrix_tuwunel_config_server_name
+          - matrix_tuwunel_molecule_probe.whoami.status == 200
+          - matrix_tuwunel_molecule_probe.whoami.body.user_id == matrix_tuwunel_molecule_probe.registration.body.user_id
+
+    - name: Assert the configured display-name suffix reaches new users
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_probe.profile.status == 200
+          - matrix_tuwunel_molecule_probe.profile.body.displayname == matrix_tuwunel_molecule_probe.username + ' ' + matrix_tuwunel_config_new_user_displayname_suffix
+
+    - name: Assert the authenticated media API advertises the configured upload limit
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_probe.media.status == 200
+          - matrix_tuwunel_molecule_probe.media.body['m.upload.size'] == matrix_tuwunel_config_max_request_size
+
+    - name: Assert client discovery serves the configured URL
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_probe.well_known.status == 200
+          # Tuwunel normalizes the configured origin to a URL with a trailing slash.
+          - matrix_tuwunel_molecule_probe.well_known.body['m.homeserver'].base_url == matrix_tuwunel_config_well_known_client.rstrip('/') + '/'
+
+    - name: Parse the rendered TOML configuration
+      ansible.builtin.command:
+        argv:
+          - python3
+          - '-c'
+          - "import json, sys, tomllib; print(json.dumps(tomllib.load(open(sys.argv[1], 'rb'))))"
+          - "{{ matrix_tuwunel_config_path }}/tuwunel.toml"
+      register: matrix_tuwunel_molecule_config_result
+      changed_when: false
+
+    - name: Assert the parsed TOML carries the scenario's settings
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_config.server_name == matrix_tuwunel_config_server_name
+          - matrix_tuwunel_molecule_config.port == matrix_tuwunel_config_port_number
+          - matrix_tuwunel_molecule_config.allow_registration
+          - matrix_tuwunel_molecule_config.registration_token == matrix_tuwunel_config_registration_token
+          - matrix_tuwunel_molecule_config.new_user_displayname_suffix == matrix_tuwunel_config_new_user_displayname_suffix
+          - matrix_tuwunel_molecule_config.max_request_size == matrix_tuwunel_config_max_request_size
+          - matrix_tuwunel_molecule_config.well_known.client == matrix_tuwunel_config_well_known_client
+          - not matrix_tuwunel_molecule_config.allow_federation
+          - matrix_tuwunel_molecule_config.trusted_servers == []
+          - not matrix_tuwunel_molecule_config.grant_admin_to_first_user
+
+    - name: Inspect the running Tuwunel container
+      ansible.builtin.command:
+        argv: [docker, container, inspect, matrix-tuwunel]
+      register: matrix_tuwunel_molecule_inspect
+      changed_when: false
+
+    - name: Assert the running container uses the exact image pinned by the role
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_container.Config.Image == 'ghcr.io/matrix-construct/tuwunel:' + matrix_tuwunel_role_defaults.matrix_tuwunel_version
+
+    - name: Assert the running container uses the playbook identity and isolation
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_container.Config.User == (matrix_user_uid | string) + ':' + (matrix_user_gid | string)
+          - matrix_tuwunel_molecule_container.HostConfig.ReadonlyRootfs
+          - "'ALL' in matrix_tuwunel_molecule_container.HostConfig.CapDrop"
+
+    - name: Assert the role's configuration is mounted read-only and selected at runtime
+      ansible.builtin.assert:
+        that:
+          - "'TUWUNEL_CONFIG=/etc/tuwunel/tuwunel.toml' in matrix_tuwunel_molecule_container.Config.Env"
+          - matrix_tuwunel_molecule_mount.Source == matrix_tuwunel_config_path
+          - not matrix_tuwunel_molecule_mount.RW
+      vars:
+        matrix_tuwunel_molecule_mount: >-
+          {{ matrix_tuwunel_molecule_container.Mounts
+             | selectattr('Destination', 'equalto', '/etc/tuwunel') | first }}
+
+    - name: Assert the embedded database has the configured writable data mount
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_mount.Source == matrix_tuwunel_data_path
+          - matrix_tuwunel_molecule_mount.RW
+      vars:
+        matrix_tuwunel_molecule_mount: >-
+          {{ matrix_tuwunel_molecule_container.Mounts
+             | selectattr('Destination', 'equalto', '/var/lib/tuwunel') | first }}
+
+    - name: Assert the container uses only the scenario network and publishes no ports
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_container.NetworkSettings.Networks.keys() | list == [matrix_tuwunel_container_network]
+          - matrix_tuwunel_molecule_container.HostConfig.PortBindings | default({}, true) == {}
+
+    - name: Assert Traefik targets the configured listener and public hostname
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_labels['traefik.http.services.matrix-tuwunel.loadbalancer.server.port'] == matrix_tuwunel_config_port_number | string
+          - matrix_tuwunel_molecule_labels['traefik.http.routers.matrix-tuwunel-public-client-api.rule'] == 'Host(`' + matrix_tuwunel_hostname + '`) && PathPrefix(`/_matrix`)'
+          - matrix_tuwunel_molecule_labels['traefik.http.routers.matrix-tuwunel-public-tuwunel-api.rule'] == 'Host(`' + matrix_tuwunel_hostname + '`) && PathPrefix(`/_tuwunel`)'
+          - matrix_tuwunel_molecule_labels['traefik.http.routers.matrix-tuwunel-public-client-api.entrypoints'] == matrix_tuwunel_container_labels_traefik_entrypoints
+      vars:
+        matrix_tuwunel_molecule_labels: "{{ matrix_tuwunel_molecule_container.Config.Labels }}"
+
+    # Check after the API probes: Restart=always alone can hide a crash loop.
+    - name: Read the Tuwunel service state after the probes
+      ansible.builtin.systemd_service:
+        name: matrix-tuwunel.service
+      register: matrix_tuwunel_molecule_service
+
+    - name: Assert the service is active without automatic restarts
+      ansible.builtin.assert:
+        that:
+          - matrix_tuwunel_molecule_service.status.ActiveState == 'active'
+          - matrix_tuwunel_molecule_service.status.NRestarts is defined
+          - matrix_tuwunel_molecule_service.status.NRestarts | int == 0
