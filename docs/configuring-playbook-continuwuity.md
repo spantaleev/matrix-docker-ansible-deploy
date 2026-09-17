@@ -39,6 +39,8 @@ matrix_continuwuity_config_registration_token: ''
 
 There are some additional things you may wish to configure about the server.
 
+Continuwuity disables legacy unauthenticated media endpoints by default. Older clients and direct media links using these endpoints will stop working; use clients that support authenticated media.
+
 Take a look at:
 
 - `roles/custom/matrix-continuwuity/defaults/main.yml` for some variables that you can customize via your `vars.yml` file

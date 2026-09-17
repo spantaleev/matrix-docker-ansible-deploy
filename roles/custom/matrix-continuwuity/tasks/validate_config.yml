@@ -38,6 +38,16 @@
     - {'old': 'matrix_continuwuity_docker_image_registry_prefix_upstream_default', 'new': 'matrix_continuwuity_container_image_registry_prefix_upstream_default'}
     - {'old': 'matrix_continuwuity_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
 
+- name: (Deprecation) Catch and report removed Continuwuity settings
+  ansible.builtin.fail:
+    msg: >-
+      Your configuration contains a removed variable (`{{ item }}`). Please remove it from your configuration file (vars.yml).
+      Official Continuwuity images no longer support registration without a challenge.
+      If registration is enabled, configure a registration token, ReCAPTCHA, or required email verification.
+  when: "lookup('ansible.builtin.varnames', ('^' + item + '$'), wantlist=True) | length > 0"
+  with_items:
+    - matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse
+
 - name: Fail if Continuwuity ReCAPTCHA is only partially configured
   ansible.builtin.fail:
     msg: >-
