@@ -25,7 +25,7 @@ matrix_livekit_jwt_service_container_additional_networks_auto: []
 matrix_livekit_jwt_service_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/lk-jwt-service
-matrix_livekit_jwt_service_version: 0.6.0
+matrix_livekit_jwt_service_version: 0.7.0
 
 matrix_livekit_jwt_service_container_image_self_build: false
 matrix_livekit_jwt_service_container_repo: "https://github.com/element-hq/lk-jwt-service.git"
@@ -69,19 +69,10 @@ matrix_livekit_jwt_service_container_extra_arguments: []
 
 # Controls whether the container's built-in healthcheck is left enabled.
 #
-# lk-jwt-service v0.6.0 added a healthcheck which builds its URL as
-# `http://localhost:$LIVEKIT_JWT_BIND/healthz`, interpolating the bind address
-# into the port slot. Because LIVEKIT_JWT_BIND is a bind address (`:8080`), the
-# resulting URL is invalid and the check can never pass, leaving the container
-# permanently unhealthy. Traefik skips unhealthy containers, so the service
-# stops being routed and Element Call cannot obtain an SFU token.
-#
-# There is no way to correct the check from here: the image is built `FROM
-# scratch`, so it has no shell for a `--health-cmd` override to use.
-#
-# Re-enable this once upstream fixes the check.
-# See: https://github.com/element-hq/lk-jwt-service/pull/186
-matrix_livekit_jwt_service_container_healthcheck_enabled: false
+# The bind-address handling was fixed in v0.7.0. If you pin v0.6.0, disable
+# its broken healthcheck so Traefik does not exclude the container.
+# See: https://github.com/element-hq/lk-jwt-service/pull/215
+matrix_livekit_jwt_service_container_healthcheck_enabled: true
 
 # Controls the port that the service listens on internally in the container.
 # This is still used for Traefik configuration and container port binding.
@@ -103,8 +94,9 @@ matrix_livekit_jwt_service_environment_variable_livekit_url: ""
 matrix_livekit_jwt_service_environment_variable_livekit_secret: ""
 
 # Controls the LIVEKIT_FULL_ACCESS_HOMESERVERS environment variable.
-# Comma-separated list of Matrix homeservers whose users are authorized with full access to LiveKit SFU features
-# (like creating rooms on the SFU).
+# Comma-separated list of Matrix homeservers whose users may publish media and
+# trigger room creation on this SFU. Other homeservers' users can only subscribe
+# to media here; they publish on their own SFU using a client with multi-SFU support.
 #
 # This is a required setting and the service refuses to start without it.
 # Setting it to `*` grants full access to any federated Matrix user, but listing only the homeserver(s)

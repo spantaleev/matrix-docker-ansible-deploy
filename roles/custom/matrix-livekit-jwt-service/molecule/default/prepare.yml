@@ -119,9 +119,69 @@
           - --name=matrix-livekit-jwt-openid-fixture
           - --network={{ matrix_livekit_jwt_service_container_network }}
           - --network-alias=matrix-openid-fixture
+          - --network-alias=full-access.molecule.local
           - --mount=type=bind,src=/matrix/molecule-livekit-openid-fixture,dst=/fixture,readonly
           - "{{ molecule_shared_image_python }}"
           - python3
           - /fixture/openid-fixture.py
       register: matrix_livekit_jwt_service_openid_fixture_start
       changed_when: matrix_livekit_jwt_service_openid_fixture_start.rc == 0
+
+    - name: Configure the SFU fixture with room auto-creation disabled
+      ansible.builtin.copy:
+        dest: /matrix/molecule-livekit-openid-fixture/livekit.yml
+        mode: "0644"
+        content: |
+          port: 7880
+          bind_addresses: ["0.0.0.0"]
+          rtc:
+            tcp_port: 7881
+            udp_port: 7882
+            use_external_ip: false
+          keys:
+            {{ matrix_livekit_jwt_service_environment_variable_livekit_key }}: {{ matrix_livekit_jwt_service_environment_variable_livekit_secret }}
+          room:
+            auto_create: false
+
+    - name: Ensure a previous SFU fixture is gone
+      ansible.builtin.command:
+        argv:
+          - docker
+          - rm
+          - --force
+          - matrix-livekit-sfu-fixture
+      register: matrix_livekit_jwt_service_sfu_fixture_removal
+      changed_when: matrix_livekit_jwt_service_sfu_fixture_removal.rc == 0
+      failed_when: false
+
+    - name: Ensure the real SFU fixture is running
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --detach
+          - --name=matrix-livekit-sfu-fixture
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - --mount=type=bind,src=/matrix/molecule-livekit-openid-fixture/livekit.yml,dst=/livekit.yml,readonly
+          - "{{ molecule_shared_image_livekit_server }}"
+          - --config=/livekit.yml
+      register: matrix_livekit_jwt_service_sfu_fixture_start
+      changed_when: matrix_livekit_jwt_service_sfu_fixture_start.rc == 0
+
+    - name: Wait for the SFU fixture to accept requests
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --fail
+          - http://matrix-livekit-sfu-fixture:7880/
+      register: matrix_livekit_jwt_service_sfu_fixture_ready
+      changed_when: false
+      until: matrix_livekit_jwt_service_sfu_fixture_ready.rc == 0
+      retries: 15
+      delay: 2

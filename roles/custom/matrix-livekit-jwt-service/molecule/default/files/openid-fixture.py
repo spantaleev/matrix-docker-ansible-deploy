@@ -10,8 +10,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
 
-KNOWN_TOKEN = "known-openid-token"
-KNOWN_SUBJECT = "@alice:matrix-openid-fixture:8443"
+KNOWN_TOKENS = {
+    "known-openid-token": "@alice:matrix-openid-fixture:8443",
+    "full-access-openid-token": "@bob:full-access.molecule.local:8443",
+}
 REQUESTS = []
 
 
@@ -36,8 +38,8 @@ class OpenIDHandler(BaseHTTPRequestHandler):
 
         token = parse_qs(parsed.query).get("access_token", [""])[0]
         REQUESTS.append({"path": parsed.path, "access_token": token})
-        if token == KNOWN_TOKEN:
-            self.send_json(200, {"sub": KNOWN_SUBJECT})
+        if token in KNOWN_TOKENS:
+            self.send_json(200, {"sub": KNOWN_TOKENS[token]})
             return
 
         self.send_json(401, {"errcode": "M_UNAUTHORIZED", "error": "unknown token"})

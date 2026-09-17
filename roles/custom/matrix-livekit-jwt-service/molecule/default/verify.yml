@@ -221,81 +221,47 @@
         matrix_livekit_jwt_service_mismatched_user_document: >-
           {{ matrix_livekit_jwt_service_mismatched_user.stdout | regex_replace('(?s)\s*HTTP_STATUS=[0-9]+\s*$', '') | from_json }}
 
-    # The request's server is not in FULL_ACCESS, so this validates OpenID and
-    # signs a join token without trying to create a room on the absent SFU.
-    - name: Request a real restricted-user LiveKit JWT
-      ansible.builtin.command:
-        argv:
-          - docker
-          - run
-          - --rm
-          - --network={{ matrix_livekit_jwt_service_container_network }}
-          - "{{ molecule_shared_image_curl }}"
-          - --silent
-          - --show-error
-          - --header
-          - "Content-Type: application/json"
-          - --data-binary
-          - "{{ matrix_livekit_jwt_service_valid_request | to_json }}"
-          - --write-out
-          - "\nHTTP_STATUS=%{http_code}"
-          - http://matrix-livekit-jwt-service:8097/get_token
-      register: matrix_livekit_jwt_service_token_response
-      changed_when: false
-      failed_when: false
-
-    - name: Parse the successful token response
-      ansible.builtin.set_fact:
-        matrix_livekit_jwt_service_token_document: >-
-          {{ matrix_livekit_jwt_service_token_response.stdout | regex_replace('(?s)\s*HTTP_STATUS=[0-9]+\s*$', '') | from_json }}
-
-    - name: Assert the live service returns a JWT for the configured SFU URL
-      ansible.builtin.assert:
-        that:
-          - matrix_livekit_jwt_service_token_response.rc == 0
-          - matrix_livekit_jwt_service_token_response.stdout_lines[-1] == 'HTTP_STATUS=200'
-          - matrix_livekit_jwt_service_token_document.keys() | sort == ['jwt', 'url']
-          - matrix_livekit_jwt_service_token_document.url == matrix_livekit_jwt_service_environment_variable_livekit_url
-          - matrix_livekit_jwt_service_token_document.jwt.split('.') | length == 3
-        fail_msg: "The restricted-user exchange did not return a JWT and configured SFU URL"
-        success_msg: "The restricted-user exchange returns a real JWT for the configured SFU"
-
-    - name: Decode and authenticate the returned LiveKit JWT
+    - name: Sign a room-list token for inspecting the SFU fixture
       ansible.builtin.command:
         argv:
           - python3
           - -c
           - >-
-            import base64, hashlib, hmac, json, sys;
-            parts = sys.argv[1].split('.');
-            decode = lambda value: json.loads(base64.urlsafe_b64decode(value + '=' * (-len(value) % 4)));
-            signature = base64.urlsafe_b64decode(parts[2] + '=' * (-len(parts[2]) % 4));
-            expected = hmac.new(sys.argv[2].encode(), (parts[0] + '.' + parts[1]).encode(), hashlib.sha256).digest();
-            print(json.dumps({'header': decode(parts[0]), 'claims': decode(parts[1]), 'signature_valid': hmac.compare_digest(signature, expected)}))
-          - "{{ matrix_livekit_jwt_service_token_document.jwt }}"
+            import base64, hashlib, hmac, json, sys, time;
+            encode = lambda value: base64.urlsafe_b64encode(value).decode().rstrip('=');
+            header = encode(json.dumps({'alg': 'HS256', 'typ': 'JWT'}).encode());
+            claims = encode(json.dumps({'iss': sys.argv[1], 'exp': int(time.time()) + 600, 'video': {'roomList': True}}).encode());
+            payload = header + '.' + claims;
+            signature = encode(hmac.new(sys.argv[2].encode(), payload.encode(), hashlib.sha256).digest());
+            print(payload + '.' + signature)
+          - "{{ matrix_livekit_jwt_service_environment_variable_livekit_key }}"
           - "{{ matrix_livekit_jwt_service_environment_variable_livekit_secret }}"
-      register: matrix_livekit_jwt_service_jwt_decode
+      register: matrix_livekit_jwt_service_room_list_token
       changed_when: false
       no_log: true
 
-    - name: Assert the JWT signature, identity, room and restricted grant
-      ansible.builtin.assert:
-        that:
-          - matrix_livekit_jwt_service_jwt.signature_valid is sameas true
-          - matrix_livekit_jwt_service_jwt.header.alg == 'HS256'
-          - matrix_livekit_jwt_service_jwt.claims.iss == matrix_livekit_jwt_service_environment_variable_livekit_key
-          - matrix_livekit_jwt_service_jwt.claims.sub == 'BE7ZK/J/c3LsogjI1JLni7qtWV/DP6c+ev68BvHem0Y'
-          - matrix_livekit_jwt_service_jwt.claims.video.room == 'diNaPECp1jHt2l0dLdiDxi+dgNzgucxPYMD0lCs1tEQ'
-          - matrix_livekit_jwt_service_jwt.claims.video.roomJoin is sameas true
-          - "'roomCreate' not in matrix_livekit_jwt_service_jwt.claims.video"
-          - matrix_livekit_jwt_service_jwt.claims.video.canPublish is sameas true
-          - matrix_livekit_jwt_service_jwt.claims.video.canSubscribe is sameas true
-          - matrix_livekit_jwt_service_jwt.claims.video.canUpdateOwnMetadata is sameas true
-          - matrix_livekit_jwt_service_jwt.claims.exp | int - matrix_livekit_jwt_service_jwt.claims.nbf | int == 3600
-        fail_msg: "The returned JWT lost its authenticated MSC4195 identity, room or restricted join grant"
-        success_msg: "The returned JWT has a valid signature and restricted MSC4195 grant"
-      vars:
-        matrix_livekit_jwt_service_jwt: "{{ matrix_livekit_jwt_service_jwt_decode.stdout | from_json }}"
+    - name: Verify remote and trusted users' LiveKit grants
+      ansible.builtin.include_tasks: tasks/verify-token.yml
+      loop:
+        - name: remote
+          token: known-openid-token
+          server: matrix-openid-fixture:8443
+          user: "@alice:matrix-openid-fixture:8443"
+          identity: BE7ZK/J/c3LsogjI1JLni7qtWV/DP6c+ev68BvHem0Y
+          slot: molecule-slot
+          room: diNaPECp1jHt2l0dLdiDxi+dgNzgucxPYMD0lCs1tEQ
+          can_publish: false
+        - name: trusted
+          token: full-access-openid-token
+          server: full-access.molecule.local:8443
+          user: "@bob:full-access.molecule.local:8443"
+          identity: JJk3FtOMEllqGG0AYcNXVZGRegQfZ49zfi7H3prd3u4
+          slot: molecule-trusted-slot
+          room: pUry0+0Or4OrwbcbzZqjBjMp41AwAprwKvNJZUgHWxE
+          can_publish: true
+      loop_control:
+        loop_var: matrix_livekit_jwt_service_token_case
+        label: "{{ matrix_livekit_jwt_service_token_case.name }}"
 
     - name: Read the OpenID fixture's observed requests
       ansible.builtin.command:
@@ -315,9 +281,9 @@
     - name: Assert the live service exercised both OpenID fixture outcomes
       ansible.builtin.assert:
         that:
-          - matrix_livekit_jwt_service_openid_requests.requests | length >= 3
+          - matrix_livekit_jwt_service_openid_requests.requests | length >= 4
           - matrix_livekit_jwt_service_openid_requests.requests | map(attribute='path') | unique | list == ['/_matrix/federation/v1/openid/userinfo']
-          - matrix_livekit_jwt_service_openid_requests.requests[-3:] | map(attribute='access_token') | list == ['unknown-openid-token', 'known-openid-token', 'known-openid-token']
+          - matrix_livekit_jwt_service_openid_requests.requests[-4:] | map(attribute='access_token') | list == ['unknown-openid-token', 'known-openid-token', 'known-openid-token', 'full-access-openid-token']
         fail_msg: "The OpenID fixture did not observe the expected unknown and known token exchanges"
         success_msg: "The service exercised both HTTPS OpenID fixture outcomes"
       vars:
@@ -346,8 +312,8 @@
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_JWT_BIND == ':8097'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_KEY == 'molecule-livekit-api-key'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_SECRET == 'molecule-livekit-signing-secret-32-bytes-long'
-          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_URL == 'wss://sfu.livekit.molecule.invalid:7881/rtc'
-          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_FULL_ACCESS_HOMESERVERS == 'full-access.molecule.local,second-full-access.molecule.local'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_URL == 'ws://matrix-livekit-sfu-fixture:7880'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_FULL_ACCESS_HOMESERVERS == 'full-access.molecule.local:8443,second-full-access.molecule.local'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_CS_API_URL_OVERRIDES == 'matrix-openid-fixture:8443=https://client-api.override.molecule.invalid'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_INSECURE_SKIP_VERIFY_TLS == 'YES_I_KNOW_WHAT_I_AM_DOING'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_LOG_LEVEL == 'debug'
@@ -403,7 +369,7 @@
       ansible.builtin.assert:
         that:
           - "'LIVEKIT_JWT_BIND=:8097' in matrix_livekit_jwt_service_runtime.Config.Env"
-          - "'LIVEKIT_FULL_ACCESS_HOMESERVERS=full-access.molecule.local,second-full-access.molecule.local' in matrix_livekit_jwt_service_runtime.Config.Env"
+          - "'LIVEKIT_FULL_ACCESS_HOMESERVERS=full-access.molecule.local:8443,second-full-access.molecule.local' in matrix_livekit_jwt_service_runtime.Config.Env"
           - "'LIVEKIT_CS_API_URL_OVERRIDES=matrix-openid-fixture:8443=https://client-api.override.molecule.invalid' in matrix_livekit_jwt_service_runtime.Config.Env"
           - "'LIVEKIT_INSECURE_SKIP_VERIFY_TLS=YES_I_KNOW_WHAT_I_AM_DOING' in matrix_livekit_jwt_service_runtime.Config.Env"
           - "'MOLECULE_LIVEKIT_MARKER=environment-reached' in matrix_livekit_jwt_service_runtime.Config.Env"
@@ -457,14 +423,31 @@
         fail_msg: "The running container differs from the role's capability and mount contract"
         success_msg: "The running container has all capabilities dropped and no mounts"
 
-    - name: Assert the broken upstream healthcheck is disabled
+    - name: Wait for Docker's image healthcheck to pass on the configured port
+      ansible.builtin.command:
+        argv:
+          - docker
+          - container
+          - inspect
+          - matrix-livekit-jwt-service
+      register: matrix_livekit_jwt_service_healthcheck_inspect
+      changed_when: false
+      until: >-
+        ((matrix_livekit_jwt_service_healthcheck_inspect.stdout | from_json) | first).State.Health.Status | default('missing') == 'healthy'
+      retries: 15
+      delay: 5
+
+    - name: Assert the repaired image healthcheck is enabled and healthy
       ansible.builtin.assert:
         that:
           - matrix_livekit_jwt_service_runtime.Config.Healthcheck is mapping
-          - matrix_livekit_jwt_service_runtime.Config.Healthcheck.Test == ['NONE']
-          - matrix_livekit_jwt_service_runtime.State.Health.Status is not defined
-        fail_msg: "The v0.6.0 image healthcheck was not disabled by the role"
-        success_msg: "The broken v0.6.0 image healthcheck is disabled"
+          - matrix_livekit_jwt_service_runtime.Config.Healthcheck.Test == ['CMD', '/lk-jwt-service-healthcheck']
+          - matrix_livekit_jwt_service_healthcheck.State.Health.Status == 'healthy'
+          - matrix_livekit_jwt_service_healthcheck.State.Health.FailingStreak == 0
+        fail_msg: "The v0.7.0 image healthcheck did not pass with the role's bind address"
+        success_msg: "Docker reports a healthy container using the repaired image healthcheck"
+      vars:
+        matrix_livekit_jwt_service_healthcheck: "{{ (matrix_livekit_jwt_service_healthcheck_inspect.stdout | from_json) | first }}"
 
     - name: Assert the running container is attached only to its dedicated network
       ansible.builtin.assert:

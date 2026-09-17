@@ -1,3 +1,14 @@
+# 2026-09-18
+
+## LiveKit JWT Service 0.7.0 and federated calls
+
+LiveKit JWT Service, part of the [Matrix RTC stack](docs/configuring-playbook-matrix-rtc.md), has been upgraded to **0.7.0**. This release fixes the image healthcheck, which the playbook enables again.
+
+The service now restricts media publishing to users from trusted homeservers (your `matrix_domain` by default). Other federated users can receive media from your SFU but publish on their own homeserver's SFU. This is an [intentional upstream change for multi-SFU calls](https://github.com/element-hq/lk-jwt-service/issues/238#issuecomment-5709655222), already supported by current Element Call in its `compatibility` mode.
+
+Older clients or callers relying on your SFU for publishing may join but be unable to unmute, enable video, or share their screen. See [Federated calls and trusted homeservers](docs/configuring-playbook-livekit-jwt-service.md#federated-calls-and-trusted-homeservers) for client requirements, granting access to trusted homeservers, and a temporary 0.6.0 pin.
+
+
 # 2026-08-20
 
 ## MatrixRTC transports are advertised in the client well-known again

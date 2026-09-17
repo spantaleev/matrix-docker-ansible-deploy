@@ -1,0 +1,117 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Request a real LiveKit JWT
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --rm
+      - --network={{ matrix_livekit_jwt_service_container_network }}
+      - "{{ molecule_shared_image_curl }}"
+      - --silent
+      - --show-error
+      - --header
+      - "Content-Type: application/json"
+      - --data-binary
+      - "{{ matrix_livekit_jwt_service_case_request | to_json }}"
+      - --write-out
+      - "\nHTTP_STATUS=%{http_code}"
+      - http://matrix-livekit-jwt-service:8097/get_token
+  register: matrix_livekit_jwt_service_token_response
+  changed_when: false
+  failed_when: false
+  vars:
+    matrix_livekit_jwt_service_case_request: >-
+      {{ matrix_livekit_jwt_service_valid_request | combine({
+        'slot_id': matrix_livekit_jwt_service_token_case.slot,
+        'openid_token': {'access_token': matrix_livekit_jwt_service_token_case.token, 'matrix_server_name': matrix_livekit_jwt_service_token_case.server},
+        'member': {'claimed_user_id': matrix_livekit_jwt_service_token_case.user}
+      }, recursive=True) }}
+
+- name: Parse the successful token response
+  ansible.builtin.set_fact:
+    matrix_livekit_jwt_service_token_document: >-
+      {{ matrix_livekit_jwt_service_token_response.stdout | regex_replace('(?s)\s*HTTP_STATUS=[0-9]+\s*$', '') | from_json }}
+
+- name: Assert the live service returns a JWT for the configured SFU URL
+  ansible.builtin.assert:
+    that:
+      - matrix_livekit_jwt_service_token_response.rc == 0
+      - matrix_livekit_jwt_service_token_response.stdout_lines[-1] == 'HTTP_STATUS=200'
+      - matrix_livekit_jwt_service_token_document.keys() | sort == ['jwt', 'url']
+      - matrix_livekit_jwt_service_token_document.url == matrix_livekit_jwt_service_environment_variable_livekit_url
+      - matrix_livekit_jwt_service_token_document.jwt.split('.') | length == 3
+    fail_msg: "The {{ matrix_livekit_jwt_service_token_case.name }} exchange did not return a JWT and configured SFU URL"
+    success_msg: "The {{ matrix_livekit_jwt_service_token_case.name }} exchange returns a real JWT for the configured SFU"
+
+- name: Decode and authenticate the returned LiveKit JWT
+  ansible.builtin.command:
+    argv:
+      - python3
+      - -c
+      - >-
+        import base64, hashlib, hmac, json, sys;
+        parts = sys.argv[1].split('.');
+        decode = lambda value: json.loads(base64.urlsafe_b64decode(value + '=' * (-len(value) % 4)));
+        signature = base64.urlsafe_b64decode(parts[2] + '=' * (-len(parts[2]) % 4));
+        expected = hmac.new(sys.argv[2].encode(), (parts[0] + '.' + parts[1]).encode(), hashlib.sha256).digest();
+        print(json.dumps({'header': decode(parts[0]), 'claims': decode(parts[1]), 'signature_valid': hmac.compare_digest(signature, expected)}))
+      - "{{ matrix_livekit_jwt_service_token_document.jwt }}"
+      - "{{ matrix_livekit_jwt_service_environment_variable_livekit_secret }}"
+  register: matrix_livekit_jwt_service_jwt_decode
+  changed_when: false
+  no_log: true
+
+- name: Assert the JWT signature, identity, room and grants
+  ansible.builtin.assert:
+    that:
+      - matrix_livekit_jwt_service_jwt.signature_valid is sameas true
+      - matrix_livekit_jwt_service_jwt.header.alg == 'HS256'
+      - matrix_livekit_jwt_service_jwt.claims.iss == matrix_livekit_jwt_service_environment_variable_livekit_key
+      - matrix_livekit_jwt_service_jwt.claims.sub == matrix_livekit_jwt_service_token_case.identity
+      - matrix_livekit_jwt_service_jwt.claims.video.room == matrix_livekit_jwt_service_token_case.room
+      - matrix_livekit_jwt_service_jwt.claims.video.roomJoin is sameas true
+      - matrix_livekit_jwt_service_jwt.claims.video.roomCreate | default(false) is sameas false
+      - matrix_livekit_jwt_service_jwt.claims.video.canPublish is sameas matrix_livekit_jwt_service_token_case.can_publish
+      - matrix_livekit_jwt_service_jwt.claims.video.canSubscribe is sameas true
+      - matrix_livekit_jwt_service_jwt.claims.video.canUpdateOwnMetadata is sameas true
+      - matrix_livekit_jwt_service_jwt.claims.exp | int - matrix_livekit_jwt_service_jwt.claims.nbf | int == 3600
+    fail_msg: "The returned JWT lost its authenticated MSC4195 identity, room or {{ matrix_livekit_jwt_service_token_case.name }} join grant"
+    success_msg: "The returned JWT has a valid signature and {{ matrix_livekit_jwt_service_token_case.name }} MSC4195 grant"
+  vars:
+    matrix_livekit_jwt_service_jwt: "{{ matrix_livekit_jwt_service_jwt_decode.stdout | from_json }}"
+
+- name: Inspect the requested room on the real SFU
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --rm
+      - --network={{ matrix_livekit_jwt_service_container_network }}
+      - "{{ molecule_shared_image_curl }}"
+      - --silent
+      - --show-error
+      - --fail
+      - --header
+      - "Authorization: Bearer {{ matrix_livekit_jwt_service_room_list_token.stdout }}"
+      - --header
+      - "Content-Type: application/json"
+      - --data-binary
+      - "{{ {'names': [matrix_livekit_jwt_service_token_case.room]} | to_json }}"
+      - http://matrix-livekit-sfu-fixture:7880/twirp/livekit.RoomService/ListRooms
+  register: matrix_livekit_jwt_service_sfu_rooms
+  changed_when: false
+  no_log: true
+
+- name: Assert only a trusted user triggers SFU room creation
+  ansible.builtin.assert:
+    that:
+      - matrix_livekit_jwt_service_rooms | map(attribute='name') | list == matrix_livekit_jwt_service_expected_rooms
+    fail_msg: "The {{ matrix_livekit_jwt_service_token_case.name }} user triggered an unexpected SFU room-creation result"
+    success_msg: "The real SFU enforces the expected room-creation behavior for the {{ matrix_livekit_jwt_service_token_case.name }} user"
+  vars:
+    matrix_livekit_jwt_service_rooms: "{{ (matrix_livekit_jwt_service_sfu_rooms.stdout | from_json).rooms | default([]) }}"
+    matrix_livekit_jwt_service_expected_rooms: "{{ [matrix_livekit_jwt_service_token_case.room] if matrix_livekit_jwt_service_token_case.can_publish else [] }}"
