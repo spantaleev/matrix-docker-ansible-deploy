@@ -1,3 +1,13 @@
+# 2026-09-17
+
+## (Backward Compatibility Break) Continuwuity requires registration challenges and disables legacy media by default
+
+[Continuwuity v26.9.0](https://forgejo.ellis.link/continuwuation/continuwuity/src/tag/v26.9.0/CHANGELOG.md) removes challengeless registration from official images. Remove `matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse` from your configuration; validation will report it even if set to `false`. To continue accepting registrations, configure a registration token, ReCAPTCHA, or required email verification as described in [Configuring Continuwuity](docs/configuring-playbook-continuwuity.md#protecting-registration). Existing accounts and admin-managed registration tokens are unaffected. Remove the corresponding upstream option from any custom template or environment override too.
+
+Legacy, unauthenticated media endpoints are now disabled by default. Update clients and integrations that still use them to support authenticated media. Authenticated media endpoints remain enabled. Review any explicit `allow_legacy_media` override, which keeps unauthenticated access enabled despite the new default.
+
+After reviewing these changes, set `matrix_playbook_migration_validated_version: v2026.09.17.0` in your `vars.yml`. If you use another homeserver implementation, these Continuwuity changes do not affect it.
+
 # 2026-08-20
 
 ## MatrixRTC transports are advertised in the client well-known again

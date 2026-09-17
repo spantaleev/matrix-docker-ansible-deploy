@@ -458,9 +458,8 @@ max_request_size = {{ matrix_continuwuity_config_max_request_size }}
 # Enables registration. If set to false, no users can register on this
 # server.
 #
-# If set to true without a token configured, users can register with no
-# form of 2nd-step only if you set the following option to true:
-# `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`
+# Registration requires a token, ReCAPTCHA, or email verification.
+# Official images do not support challengeless registration.
 #
 # If you would like registration only via token reg, please configure
 # `registration_token`.
@@ -482,11 +481,6 @@ allow_registration = {{ matrix_continuwuity_config_allow_registration | to_json 
 # anyone, or send a message, and may be confused).
 #
 suspend_on_register = {{ matrix_continuwuity_config_suspend_on_register | to_json }}
-
-# Enabling this setting opens registration to anyone without restrictions.
-# This makes your server vulnerable to abuse
-#
-yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse = {{ matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse | to_json }}
 
 # A static registration token that new users will have to provide when
 # creating an account. This token does not supersede tokens from other
@@ -1327,10 +1321,9 @@ allow_outgoing_presence = {{ matrix_continuwuity_config_allow_outgoing_presence 
 #
 # The authenticated equivalent endpoints are always enabled.
 #
-# Defaults to true for now, but this is highly subject to change, likely
-# in the next release.
+# Defaults to false, as unauthenticated media has been sunsetted.
 #
-#allow_legacy_media = true
+#allow_legacy_media = false
 
 # This item is undocumented. Please contribute documentation for it.
 #

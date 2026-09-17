@@ -38,6 +38,16 @@
     - {'old': 'matrix_continuwuity_docker_image_registry_prefix_upstream_default', 'new': 'matrix_continuwuity_container_image_registry_prefix_upstream_default'}
     - {'old': 'matrix_continuwuity_container_image_force_pull', 'new': '<removed> (the new community.docker.docker_image_pull module handles this natively)'}
 
+- name: (Deprecation) Catch and report removed Continuwuity challengeless registration setting
+  ansible.builtin.fail:
+    msg: >-
+      Remove `matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`
+      from your configuration (vars.yml). Continuwuity's official images no longer support challengeless registration.
+      To keep registration enabled, configure `matrix_continuwuity_config_registration_token`, both ReCAPTCHA keys,
+      or SMTP with `matrix_continuwuity_config_smtp_require_email_for_registration: true`.
+      See docs/configuring-playbook-continuwuity.md for details.
+  when: matrix_continuwuity_config_yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse is defined
+
 - name: Fail if Continuwuity ReCAPTCHA is only partially configured
   ansible.builtin.fail:
     msg: >-

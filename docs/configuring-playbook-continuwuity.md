@@ -35,6 +35,19 @@ matrix_continuwuity_config_allow_registration: true
 matrix_continuwuity_config_registration_token: ''
 ```
 
+### Protecting registration
+
+Official Continuwuity images require a registration challenge. Set `matrix_continuwuity_config_registration_token` to a strong token, or configure one of these alternatives:
+
+- ReCAPTCHA: set both `matrix_continuwuity_config_recaptcha_site_key` and `matrix_continuwuity_config_recaptcha_private_site_key`.
+- Email verification: configure working SMTP and set `matrix_continuwuity_config_smtp_require_email_for_registration: true`. The playbook enables SMTP through the local Exim relay by default; merely enabling SMTP does not require email verification.
+
+Keep `matrix_continuwuity_config_allow_registration: true` to allow registration. Tokens managed through the admin room remain supported. See the upstream [configuration reference](https://continuwuity.org/configuration) for details.
+
+### Media access
+
+Continuwuity disables legacy, unauthenticated media endpoints by default. Clients and integrations must use authenticated media endpoints. If you previously enabled `CONTINUWUITY_ALLOW_LEGACY_MEDIA` through `matrix_continuwuity_environment_variables_extension`, or set `allow_legacy_media` in a custom template, review that override: it allows anyone who knows a media URL to access the file.
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the server.
