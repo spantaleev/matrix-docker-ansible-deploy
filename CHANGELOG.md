@@ -1,3 +1,17 @@
+# 2026-09-19
+
+## Maubot's plugin webhooks and management interface work again
+
+Maubot v0.6.0 removed the ability to customize the paths maubot serves internally, so the playbook now strips the public path prefix (`matrix_bot_maubot_path_prefix`, `/_matrix/maubot` by default) before proxying requests to maubot, and tells it about the prefix through its `public_url` instead.
+
+Two leftovers from that rework broke things. Plugin endpoints were still configured with a fully-prefixed path, even though maubot receives paths relative to the prefix, so every plugin webhook (`https://matrix.example.com/_matrix/maubot/plugin/...`) answered `404` and maubot handed out webhook URLs with a duplicated prefix (`/_matrix/maubot/_matrix/maubot/plugin/...`). The management interface also lacked a trailing-slash redirect, and because it loads its assets relative to the URL you visit, `https://matrix.example.com/_matrix/maubot` made browsers request `/_matrix/static/...` (which Synapse serves) instead of the interface itself.
+
+Maubot is now configured with a relative plugin base path (`/plugin/`), and the management endpoint redirects the slashless prefix to its trailing-slash form. Re-running the playbook (`just install-all`) regenerates the configuration and restarts maubot.
+
+A `matrix_bot_maubot_path_prefix` ending with a slash was never supported (the role's own documentation says the prefix must be `/` or not end with a slash), and the playbook now refuses such a value with an explicit error instead of deploying a half-working setup.
+
+If you expose maubot at the root (`matrix_bot_maubot_path_prefix: /`), your plugin webhook URLs move back to `/plugin/...`, where they were before the v0.6.0 upgrade.
+
 # 2026-09-18
 
 ## LiveKit JWT Service 0.7.0 and federated calls

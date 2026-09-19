@@ -50,3 +50,10 @@
     - {'name': 'matrix_bot_maubot_homeserver_name', when: true}
     - {'name': 'matrix_bot_maubot_homeserver_url', when: true}
     - {'name': 'matrix_bot_maubot_initial_password', when: true}
+
+# The prefix is used verbatim in the redirect regex, the strip prefix and the public URL.
+- name: Fail if matrix_bot_maubot_path_prefix ends with a slash
+  ansible.builtin.fail:
+    msg: >-
+      matrix_bot_maubot_path_prefix (`{{ matrix_bot_maubot_path_prefix }}`) must either be `/` or not end with a slash (e.g. `/_matrix/maubot`).
+  when: "matrix_bot_maubot_path_prefix != '/' and matrix_bot_maubot_path_prefix[-1] == '/'"

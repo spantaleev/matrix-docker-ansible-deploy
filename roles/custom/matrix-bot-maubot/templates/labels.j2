@@ -20,6 +20,20 @@ traefik.http.services.matrix-bot-maubot.loadbalancer.server.port={{ matrix_bot_m
 #                                                          #
 ############################################################
 
+{% set middlewares = [] %}
+
+{% if matrix_bot_maubot_container_labels_management_prefix != '/' %}
+# The management UI loads its assets relative to the document URL, so the prefix needs a trailing slash.
+traefik.http.middlewares.matrix-bot-maubot-management-slashless-redirect.redirectregex.regex=({{ matrix_bot_maubot_container_labels_management_prefix | quote }})$
+traefik.http.middlewares.matrix-bot-maubot-management-slashless-redirect.redirectregex.replacement=${1}/
+{% set middlewares = middlewares + ['matrix-bot-maubot-management-slashless-redirect'] %}
+{% endif %}
+
+{% if matrix_bot_maubot_container_labels_management_prefix != '/' %}
+traefik.http.middlewares.matrix-bot-maubot-management-strip-prefix.stripprefix.prefixes={{ matrix_bot_maubot_container_labels_management_prefix }}
+{% set middlewares = middlewares + ['matrix-bot-maubot-management-strip-prefix'] %}
+{% endif %}
+
 traefik.http.routers.matrix-bot-maubot-management.rule={{ matrix_bot_maubot_container_labels_management_traefik_rule }}
 
 {% if matrix_bot_maubot_container_labels_management_traefik_priority | int > 0 %}
@@ -27,9 +41,8 @@ traefik.http.routers.matrix-bot-maubot-management.priority={{ matrix_bot_maubot_
 {% endif %}
 
 traefik.http.routers.matrix-bot-maubot-management.service=matrix-bot-maubot
-{% if matrix_bot_maubot_container_labels_management_prefix != '/' %}
-traefik.http.middlewares.matrix-bot-maubot-management-strip-prefix.stripprefix.prefixes={{ matrix_bot_maubot_container_labels_management_prefix }}
-traefik.http.routers.matrix-bot-maubot-management.middlewares=matrix-bot-maubot-management-strip-prefix
+{% if middlewares | length > 0 %}
+traefik.http.routers.matrix-bot-maubot-management.middlewares={{ middlewares | join(',') }}
 {% endif %}
 traefik.http.routers.matrix-bot-maubot-management.entrypoints={{ matrix_bot_maubot_container_labels_management_traefik_entrypoints }}
 
