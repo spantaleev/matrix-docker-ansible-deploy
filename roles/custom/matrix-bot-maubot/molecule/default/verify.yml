@@ -66,7 +66,7 @@
           - matrix_bot_maubot_config.server.port == matrix_bot_maubot_server_port
           - matrix_bot_maubot_config.server.public_url == 'https://maubot.molecule.local/molecule-maubot'
           - matrix_bot_maubot_config.server.ui_base_path == '/'
-          - matrix_bot_maubot_config.server.plugin_base_path == '/_matrix/maubot/plugin/'
+          - matrix_bot_maubot_config.server.plugin_base_path == '/plugin/'
           - "'base_path' not in matrix_bot_maubot_config.server"
           - "'appservice_base_path' not in matrix_bot_maubot_config.server"
           - matrix_bot_maubot_config.server.unshared_secret == matrix_bot_maubot_unshared_secret
@@ -213,6 +213,37 @@
           Maubot's live management API rejected the admin the role configured
           ({{ matrix_bot_maubot_login_http.stdout | default('no output') }})
         success_msg: "Maubot's live management API authenticated the configured admin"
+
+    # Traefik strips the public prefix, so plugin webhooks reach Maubot at the relative
+    # plugin_base_path. Maubot's plugin router answers unknown instances with an empty 404,
+    # while aiohttp's default 404 carries a body, so the empty body proves the router is mounted.
+    - name: Probe Maubot's plugin endpoint router
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_bot_maubot_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - "http://matrix-bot-maubot:{{ matrix_bot_maubot_server_port }}/plugin/molecule-probe"
+      register: matrix_bot_maubot_plugin_http
+      changed_when: false
+      failed_when: false
+
+    - name: Assert Maubot's plugin router handles the configured plugin base path
+      ansible.builtin.assert:
+        that:
+          - matrix_bot_maubot_plugin_http.rc == 0
+          - matrix_bot_maubot_plugin_http.stdout_lines[-1] == 'HTTP_STATUS=404'
+          - matrix_bot_maubot_plugin_http.stdout_lines[:-1] | join('\n') | trim | length == 0
+        fail_msg: >-
+          Maubot's plugin router did not answer on the configured plugin base path
+          ({{ matrix_bot_maubot_plugin_http.stdout | default('no output') }})
+        success_msg: "Maubot's plugin router answers on the configured plugin base path"
 
     # The role's default port must not answer. Otherwise reaching the custom port would not
     # prove that the configured value made it into the running process.

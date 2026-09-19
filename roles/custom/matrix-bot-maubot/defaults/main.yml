@@ -60,9 +60,10 @@ matrix_bot_maubot_config_path: "{{ matrix_bot_maubot_base_path }}/config"
 matrix_bot_maubot_container_src_files_path: "{{ matrix_bot_maubot_base_path }}/docker-src"
 matrix_bot_maubot_customized_container_src_files_path: "{{ matrix_bot_maubot_base_path }}/customized-docker-src"
 
+# Traefik strips the path prefix before proxying, so maubot sees relative paths internally.
 matrix_bot_maubot_bot_server_public_url: "{{ matrix_bot_maubot_scheme }}://{{ matrix_bot_maubot_hostname }}{{ '' if matrix_bot_maubot_path_prefix == '/' else matrix_bot_maubot_path_prefix }}"
 matrix_bot_maubot_bot_server_ui_base_path: /
-matrix_bot_maubot_bot_server_plugin_base_path: /_matrix/maubot/plugin/
+matrix_bot_maubot_bot_server_plugin_base_path: /plugin/
 
 matrix_bot_maubot_proxy_management_interface: true
 
