@@ -28,7 +28,17 @@ Molecule is deliberately **not** part of the `prek` hooks. A run is far too slow
 
 `.github/workflows/molecule.yml` does not run every scenario on every push — with one repository holding every role, that would be unaffordable. Its first job works out which roles the push actually touched, keeps the ones that have a scenario, and builds the job matrix from those. A documentation change runs nothing.
 
-For pushes, CI compares against the previous commit. On a new branch, or when the previous commit is unavailable after a force push, it instead compares against the branch's common ancestor with the default branch. This keeps a new Renovate branch limited to the roles it changes. If no usable comparison exists, it falls back to running every scenario. Changes to `molecule-shared/` or the Molecule workflow also run every scenario. `workflow_dispatch` accepts an optional role name; leaving it empty runs every scenario.
+For pushes, CI compares against the previous branch tip. On a new branch, or when the previous commit is unavailable after a force push, it instead compares against the branch's common ancestor with the default branch. This keeps a new Renovate branch limited to the roles it changes. If no usable comparison exists, it falls back to running every scenario. `workflow_dispatch` accepts an optional role name; leaving it empty runs every scenario.
+
+`bin/molecule-select-roles.py` selects directly changed roles and the consumers of changed shared dependencies:
+
+- A value change in `molecule-shared/vars.yml` selects scenarios using that image variable. Loading `vars.yml` alone does not count as using every image. Comment and formatting changes that preserve the supported pin format run nothing.
+- Shared tasks and fixtures select their consumers, following references transitively. For example, a Postgres image bump selects scenarios including `molecule-shared/tasks/postgres.yml`, while a LiveKit server image bump selects only the LiveKit JWT service scenario.
+- Changes to shared Python or Ansible requirements, `playbook-context.yml`, the workflow, or the selector and its tests run every scenario.
+
+The selector reads both Git revisions, so removed references and renamed helpers still select their previous consumers. It discovers dependencies from literal `molecule-shared/...` paths, symlinks, and `molecule_shared_image_*` variable names in scenario files and the shared files they reference. Use these literal references when adding helpers. It does not interpret Ansible or Jinja: unresolved paths, unrecognized pin formats, added or removed image variables, and shared changes with no known consumers fall back to every scenario.
+
+Run the selector's regression tests with `python3 bin/test-molecule-select-roles.py`; these also run in CI and the relevant prek hook. To inspect a committed change locally, use `python3 bin/molecule-select-roles.py --base <base-commit> --head <head-commit>`. The script prints the selected roles as JSON and explains shared-dependency selections or full-suite fallbacks on stderr.
 
 ## Automerge
 
@@ -172,10 +182,7 @@ it from `prepare.yml` and point the role at it with its own `_database_engine`, 
 and credentials. Give the database and user names that differ from the role's defaults - then the
 component reaching the database at all proves the role built its connection string out of them.
 
-The image is pinned in `molecule-shared/vars.yml` at the major the postgres role deploys to new
-installations, and Renovate carries it forward. When a new major lands, the PR bumping that pin
-runs every scenario against it, which is the earliest warning we get that a component does not
-cope with it.
+The image is pinned in `molecule-shared/vars.yml` at the major the postgres role deploys to new installations, and Renovate carries it forward. When a new major lands, the PR bumping that pin runs every scenario that uses Postgres against it, which is the earliest warning we get that a component does not cope with it.
 
 Prefer asserting on the schema the component created over a file on disk: tables can only appear
 once it has resolved the hostname, authenticated, and run its migrations.

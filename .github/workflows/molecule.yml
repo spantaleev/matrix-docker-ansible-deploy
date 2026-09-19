@@ -16,11 +16,15 @@ on:  # yamllint disable-line rule:truthy
       - "roles/custom/**"
       - "molecule-shared/**"
       - ".github/workflows/molecule.yml"
+      - "bin/molecule-select-roles.py"
+      - "bin/test-molecule-select-roles.py"
   pull_request:
     paths:
       - "roles/custom/**"
       - "molecule-shared/**"
       - ".github/workflows/molecule.yml"
+      - "bin/molecule-select-roles.py"
+      - "bin/test-molecule-select-roles.py"
   workflow_dispatch:
     inputs:
       role:
@@ -52,6 +56,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Test scenario selection
+        run: python3 bin/test-molecule-select-roles.py
+
       - name: Detect roles with a Molecule scenario that this change touches
         id: detect
         env:
@@ -60,77 +67,7 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           INPUT_ROLE: ${{ inputs.role }}
-        run: |
-          set -euo pipefail
-
-          have_scenario() {
-            [ -f "roles/custom/$1/molecule/default/molecule.yml" ]
-          }
-
-          # An explicit request through workflow_dispatch wins over detection.
-          if [ -n "${INPUT_ROLE}" ]; then
-            if have_scenario "${INPUT_ROLE}"; then
-              printf 'roles=["%s"]\n' "${INPUT_ROLE}" >> "$GITHUB_OUTPUT"
-            else
-              echo "No scenario at roles/custom/${INPUT_ROLE}/molecule/default" >&2
-              exit 1
-            fi
-            exit 0
-          fi
-
-          # New branches have an all-zero before SHA. Compare them with their
-          # common ancestor with the default branch, so the first Renovate push
-          # tests only the roles it changes. The same fallback handles a force
-          # push whose previous commit is no longer available locally.
-          # Manual runs without a role, and pushes with no usable comparison,
-          # still consider every scenario.
-          base=""
-          case "${EVENT_NAME}" in
-            pull_request) base="${BASE_SHA}" ;;
-            push)
-              if [ -n "${BEFORE_SHA}" ] && [ "${BEFORE_SHA}" != "0000000000000000000000000000000000000000" ] \
-                 && git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
-                base="${BEFORE_SHA}"
-              elif [ -n "${DEFAULT_BRANCH}" ] && [ "${GITHUB_REF}" != "refs/heads/${DEFAULT_BRANCH}" ]; then
-                base="$(git merge-base HEAD "refs/remotes/origin/${DEFAULT_BRANCH}" || true)"
-              fi
-              ;;
-          esac
-
-          # molecule-shared/ is used by every scenario, so a change there means
-          # every role has to run, not just the ones whose own files moved.
-          shared_changed=""
-          if [ -n "${base}" ]; then
-            shared_changed="$(git diff --name-only "${base}" HEAD -- 'molecule-shared/*' '.github/workflows/molecule.yml' || true)"
-          fi
-
-          if [ -n "${base}" ] && [ -z "${shared_changed}" ]; then
-            changed="$(git diff --name-only "${base}" HEAD -- 'roles/custom/*' || true)"
-            candidates="$(printf '%s\n' "${changed}" | awk -F/ 'NF>2 {print $3}' | sort -u)"
-            echo "Changed roles: ${candidates:-none}"
-          else
-            if [ -n "${shared_changed}" ]; then
-              echo "Shared Molecule files changed; considering every role"
-            fi
-            candidates="$(find roles/custom -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)"
-          fi
-
-          selected=""
-          for role in ${candidates}; do
-            if have_scenario "${role}"; then
-              selected="${selected} ${role}"
-            fi
-          done
-
-          if [ -z "${selected}" ]; then
-            echo "Nothing to test"
-            echo 'roles=[]' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "Testing:${selected}"
-          json="$(printf '%s\n' ${selected} | jq -R . | jq -c -s .)"
-          echo "roles=${json}" >> "$GITHUB_OUTPUT"
+        run: python3 bin/molecule-select-roles.py
 
   molecule:
     name: "Molecule: ${{ matrix.role }}"
