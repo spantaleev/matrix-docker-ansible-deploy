@@ -30,6 +30,13 @@
 
 # ldap-auth has no uninstall tasks
 
+# synapse_restrict_room_creation
+- tags:
+    - setup-all
+    - setup-synapse
+  block:
+    - when: not matrix_synapse_ext_synapse_restrict_room_creation_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/ext/synapse-restrict-room-creation/setup_uninstall.yml"
 
 # synapse-simple-antispam
 - tags:
