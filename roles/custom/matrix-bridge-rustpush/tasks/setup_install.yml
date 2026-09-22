@@ -37,6 +37,11 @@
     force: "yes"
   become: true
   become_user: "{{ matrix_user_name }}"
+  # Keep this even though the task above normalizes ownership. Git may still see an ownership mismatch when Ansible becomes an unprivileged user (see #5065).
+  environment:
+    GIT_CONFIG_COUNT: "1"
+    GIT_CONFIG_KEY_0: safe.directory
+    GIT_CONFIG_VALUE_0: "{{ matrix_bridge_rustpush_container_src_files_path }}"
   register: matrix_bridge_rustpush_git_pull_results
   when: "matrix_bridge_rustpush_enabled | bool and matrix_bridge_rustpush_container_image_self_build"
 
