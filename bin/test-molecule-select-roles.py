@@ -33,6 +33,7 @@ class SelectionTests(unittest.TestCase):
         self.git.run("config", "user.name", "Molecule selector test")
         self.git.run("config", "user.email", "test@example.com")
         self.git.run("config", "commit.gpgsign", "false")
+        self.git.run("config", "maintenance.autoDetach", "false")
         self.roles = ["matrix-database", "matrix-livekit", "matrix-web"]
         self.write(selector.IMAGE_VARS, '\n'.join([
             '---',
