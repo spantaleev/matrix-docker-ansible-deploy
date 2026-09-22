@@ -457,6 +457,11 @@ matrix_playbook_livekit_turn_traefik_entrypoint_definition:
   host_bind_port: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_host_bind_port }}"
   config: "{{ matrix_playbook_livekit_turn_traefik_entrypoint_config }}"
 
+# Controls the name of the Traefik TLS option attached to the LiveKit TURN/TLS router (see `tls.options`).
+matrix_playbook_livekit_turn_traefik_tls_options_name: livekit-turn
+# Traefik's default ALPN protocols reject TURN clients that advertise stun.turn (RFC 7443).
+matrix_playbook_livekit_turn_traefik_tls_options_alpn_protocols: ["stun.turn", "stun.nat-discovery", "h2", "http/1.1", "acme-tls/1"]
+
 # Variables to Control which parts of our roles run.
 run_postgres_import: true
 run_postgres_upgrade: true

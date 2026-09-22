@@ -61,6 +61,14 @@ livekit_server_container_labels_turn_traefik_entrypoints: "<your-livekit-turn-tr
 
 and configuring their own Traefik TCP entrypoint dedicated to LiveKit TURN traffic.
 
+### TURN/TLS clients advertising an ALPN protocol
+
+Traefik's default TLS options allow only `h2`, `http/1.1` and `acme-tls/1` as ALPN protocols, and Traefik aborts the TLS handshake when the client's advertised protocols don't intersect with that list. TURN clients advertising `stun.turn` (see [RFC 7443](https://datatracker.ietf.org/doc/html/rfc7443)) therefore could not use TURN over TLS at all.
+
+The playbook defines a `livekit-turn` Traefik TLS option (see `traefik_config_tls_options_auto` in `group_vars/matrix_servers`) that also allows `stun.turn` and `stun.nat-discovery`, and attaches it to the TURN router. This applies whenever TURN TLS handling is active (see above).
+
+If you use `other-traefik-container` or [another reverse-proxy](./configuring-playbook-own-webserver.md), define an equivalent TLS option in the Traefik instance that terminates TURN TLS and point `livekit_server_container_labels_turn_traefik_tls_options` at it (for example, `livekit-turn@file`). TLS options cannot be defined through container labels, so the role can only reference an option that your Traefik configuration defines itself.
+
 ## TURN access controls
 
 LiveKit's embedded TURN server enforces a credential TTL and restricts which peer CIDRs it will relay to. The playbook leaves these at the role's secure defaults, which are appropriate for typical deployments where TURN peers live on the public Internet.

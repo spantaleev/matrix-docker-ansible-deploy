@@ -1,3 +1,17 @@
+# 2026-09-22
+
+## LiveKit's TURN over TLS works for clients that advertise an ALPN protocol
+
+This only affects you if you have [LiveKit Server](./docs/configuring-playbook-livekit-server.md) with TURN enabled.
+
+LiveKit Server's embedded TURN server speaks TURN over TLS, and the playbook lets Traefik terminate that TLS. Traefik's default TLS options allow only `h2`, `http/1.1` and `acme-tls/1` as ALPN protocols, and Traefik aborts the handshake when the client's advertised protocols don't intersect with them. TURN clients advertising `stun.turn` (see [RFC 7443](https://datatracker.ietf.org/doc/html/rfc7443)) got a TLS alert instead of a relay.
+
+The playbook now defines a `livekit-turn` Traefik TLS option that also allows `stun.turn` and `stun.nat-discovery`, and attaches it to the LiveKit TURN/TLS router. Chrome does not advertise an ALPN protocol for TURN, so nothing changes for it.
+
+Deployments using `other-traefik-container` need to define an equivalent TLS option in their own Traefik instance and point `livekit_server_container_labels_turn_traefik_tls_options` at it. See [TURN/TLS clients advertising an ALPN protocol](./docs/configuring-playbook-livekit-server.md#turntls-clients-advertising-an-alpn-protocol) for details.
+
+Re-running the playbook (`just install-all`) regenerates the configuration and applies it.
+
 # 2026-09-19
 
 ## Maubot's plugin webhooks and management interface work again
