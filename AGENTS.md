@@ -17,11 +17,18 @@ An Ansible playbook that installs and manages a Matrix homeserver and dozens of 
 - `setup.yml`: the main playbook, listing all roles.
 - `roles/custom/`: roles maintained in this repository.
 - `roles/galaxy/`: external roles, downloaded according to `requirements.yml` via [agru](https://github.com/etkecc/agru) (preferred) or `ansible-galaxy`. Run `just roles` to install them (or `just update` to also pull the playbook itself). Editing these roles locally is fine while preparing or testing a fix, but the changes get wiped on the next roles update, so they must be synced back to the role's upstream repository, followed by a version pin update in `requirements.yml`.
-- `group_vars/matrix_servers`: wires roles together (feeding one role's variables into another). Values a role can construct by itself belong in the role's `defaults/main.yml`, not here.
-- `docs/`: user-facing documentation, one page per component.
+- `group_vars/matrix_servers`: the main playbook wiring between roles.
+  Check affected mappings on role bumps.
+  Values a role can construct by itself belong in the role's `defaults/main.yml`, not here.
+- `docs/`: current configuration and lasting procedures, one page per component.
+  Do not use component pages as another changelog for role releases; correct stale examples instead.
 - `molecule-shared/`: files shared by the roles' Molecule scenarios (Python and Ansible dependencies, pinned helper container images).
 - `i18n/`: translation infrastructure. Do not edit locale files by hand; they are managed by automation.
 - `CHANGELOG.md`: user-facing announcements, newest first.
+  Announce new or removed components, shared behavior changes, and migrations beyond role validation.
+  The affected role's `tasks/validate_config.yml` should report routine variable renames or removals.
+  Skip the changelog entry if that validation gives an actionable error.
+  Correct any stale docs or examples instead.
 
 ## Conventions
 
