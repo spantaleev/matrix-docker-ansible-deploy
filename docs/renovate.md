@@ -4,6 +4,13 @@ SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
+# Reviewing role dependency updates
+
+Renovate opens pull requests for Ansible role version updates instead of merging their branches
+directly. Review the released role changes and the playbook wiring before merging; a role update may
+need a playbook adaptation even when its role tests pass. Other dependency classes retain their
+separate Renovate policies.
+
 # Maintaining the Renovate runner
 
 The self-hosted runner version is pinned in [`.github/workflows/renovate.yml`](../.github/workflows/renovate.yml). Renovate updates this pin and automerges passing updates according to [`.github/renovate.json`](../.github/renovate.json).
