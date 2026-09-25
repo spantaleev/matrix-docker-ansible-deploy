@@ -29,6 +29,9 @@ An Ansible playbook that installs and manages a Matrix homeserver and dozens of 
   The affected role's `tasks/validate_config.yml` should report routine variable renames or removals.
   Skip the changelog entry if that validation gives an actionable error.
   Correct any stale docs or examples instead.
+  When adding an entry, explain in the pull request why it is needed and what affected users must do.
+  For a Backward Compatibility entry, explain why validation alone cannot cover the change
+  and how the migration gate handles it.
 
 ## Conventions
 
