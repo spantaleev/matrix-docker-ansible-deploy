@@ -59,6 +59,50 @@
   with_items: "{{ matrix_synapse_workers_current_label_files.files }}"
   when: "not ansible_check_mode and (item.path | basename | replace ('worker.', '') | replace('.labels', '')) not in matrix_synapse_enabled_worker_names"
 
+# Ansible re-evaluates every variable a template references (and all variables those depend on) each time the template is rendered.
+# The worker systemd service template is rendered once per worker and mostly references values that are the same for all workers,
+# so we resolve those once here instead of re-deriving them for every worker.
+- name: Resolve worker-independent values for the worker systemd service template
+  ansible.builtin.set_fact:
+    matrix_synapse_worker_systemd_shared:
+      config_dir_path: "{{ matrix_synapse_config_dir_path }}"
+      base_path: "{{ matrix_synapse_base_path }}"
+      storage_path: "{{ matrix_synapse_storage_path }}"
+      uid: "{{ matrix_synapse_uid }}"
+      gid: "{{ matrix_synapse_gid }}"
+      tmp_directory_size_mb: "{{ matrix_synapse_tmp_directory_size_mb }}"
+      container_image_final: "{{ matrix_synapse_container_image_final }}"
+      container_network: "{{ matrix_synapse_container_network }}"
+      container_additional_networks: "{{ matrix_synapse_container_additional_networks }}"
+      container_additional_volumes: "{{ matrix_synapse_container_additional_volumes }}"
+      container_arguments: "{{ matrix_synapse_container_arguments }}"
+      container_worker_arguments_by_type:
+        room_worker: "{{ matrix_synapse_workers_room_workers_container_arguments }}"
+        sync_worker: "{{ matrix_synapse_workers_sync_workers_container_arguments }}"
+        client_reader: "{{ matrix_synapse_workers_client_reader_workers_container_arguments }}"
+        federation_reader: "{{ matrix_synapse_workers_federation_reader_workers_container_arguments }}"
+        generic_worker: "{{ matrix_synapse_workers_generic_workers_container_arguments }}"
+        stream_writer: "{{ matrix_synapse_workers_stream_writers_container_arguments }}"
+        federation_sender: "{{ matrix_synapse_workers_federation_sender_workers_container_arguments }}"
+        pusher: "{{ matrix_synapse_workers_pusher_workers_container_arguments }}"
+        appservice: "{{ matrix_synapse_workers_appservice_workers_container_arguments }}"
+        user_dir: "{{ matrix_synapse_workers_user_dir_workers_container_arguments }}"
+        background: "{{ matrix_synapse_workers_background_workers_container_arguments }}"
+        media_repository: "{{ matrix_synapse_workers_media_repository_workers_container_arguments }}"
+      workers_enabled: "{{ matrix_synapse_workers_enabled }}"
+      workers_container_host_bind_address: "{{ matrix_synapse_workers_container_host_bind_address }}"
+      redis_path_enabled: "{{ matrix_synapse_redis_path_enabled }}"
+      redis_path: "{{ matrix_synapse_redis_path }}"
+      redis_path_host: "{{ matrix_synapse_redis_path_host }}"
+      database_socket_enabled: "{{ matrix_synapse_database_socket_enabled }}"
+      database_socket_path: "{{ matrix_synapse_database_socket_path }}"
+      database_socket_path_host: "{{ matrix_synapse_database_socket_path_host }}"
+      systemd_path: "{{ devture_systemd_docker_base_systemd_path }}"
+      systemd_unit_home_path: "{{ devture_systemd_docker_base_systemd_unit_home_path }}"
+      host_command_sh: "{{ devture_systemd_docker_base_host_command_sh }}"
+      host_command_docker: "{{ devture_systemd_docker_base_host_command_docker }}"
+      container_stop_grace_time_seconds: "{{ devture_systemd_docker_base_container_stop_grace_time_seconds }}"
+
 - name: Ensure creation of worker systemd service files and configuration files
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/setup_files_for_worker.yml"
   with_items: "{{ matrix_synapse_workers_enabled_list }}"
