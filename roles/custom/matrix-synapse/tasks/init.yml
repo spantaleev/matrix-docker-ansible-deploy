@@ -26,7 +26,4 @@
 
 - name: Ensure workers are injected into various places
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/synapse/workers/util/inject_worker.yml"
-  with_items: "{{ matrix_synapse_workers_enabled_list }}"
-  loop_control:
-    loop_var: matrix_synapse_worker_details
   when: matrix_synapse_workers_enabled | bool
