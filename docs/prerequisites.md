@@ -57,7 +57,7 @@ We will be using `example.com` as the domain in the following instruction. Pleas
 
   - `80/tcp`: HTTP webserver
   - `443/tcp` and `443/udp`: HTTPS webserver
-  - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. Some components like [Matrix User Verification Service](configuring-playbook-user-verification-service.md#open-matrix-federation-port) require this port to be opened **even with federation disabled**.
+  - `8448/tcp` and `8448/udp`: Matrix Federation API HTTPS webserver. Some components like [Matrix User Verification Service](configuring-playbook-user-verification-service.md#open-matrix-federation-port) and the [Matrix RTC stack](configuring-playbook-matrix-rtc.md) require this port to be opened **even with federation disabled**.
   - potentially some other ports, depending on the additional (non-default) services that you enable in the **configuring the playbook** step (later on). Consult each service's documentation page in `docs/` for that.
 
 ---------------------------------------------

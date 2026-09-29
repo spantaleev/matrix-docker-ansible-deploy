@@ -36,7 +36,7 @@ matrix_rtc_enabled: true
 
 ## Adjusting firewall rules
 
-In addition to the HTTP/HTTPS ports (which you've already exposed as per the [prerequisites](prerequisites.md) document), you'll also need to open ports required by [LiveKit Server](configuring-playbook-livekit-server.md) as described in its own [Adjusting firewall rules](configuring-playbook-livekit-server.md#adjusting-firewall-rules) section.
+In addition to the HTTP/HTTPS ports and the Matrix Federation port (`8448`, required **even with federation disabled**), which you've already exposed as per the [prerequisites](prerequisites.md) document, you'll also need to open ports required by [LiveKit Server](configuring-playbook-livekit-server.md) as described in its own [Adjusting firewall rules](configuring-playbook-livekit-server.md#adjusting-firewall-rules) section.
 
 ## Fronting the integrated reverse-proxy with another reverse-proxy
 
