@@ -32,6 +32,8 @@ Domain Names: matrix.example.com
 Scheme: http
 Forward Hostname/IP: IP-ADDRESS-OF-YOUR-MATRIX
 Forward Port: 81
+# Required for Matrix RTC (LiveKit Server)
+Websockets Support: true
 
 # SSL
 # Either 'Request a new certificate' or select an existing one

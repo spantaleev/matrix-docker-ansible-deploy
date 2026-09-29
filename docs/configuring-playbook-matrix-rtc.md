@@ -44,6 +44,8 @@ If you're [fronting the integrated reverse-proxy webserver with another reverse-
 
 See [`examples/reverse-proxies/nginx/matrix.conf`](../examples/reverse-proxies/nginx/matrix.conf) for an nginx example.
 
+[LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) also reaches LiveKit Server via its public URL (`https://matrix.example.com/livekit-server/`), so the Matrix server itself must be able to reach it through your other reverse-proxy. Otherwise, calls fail with `Unable to create room on SFU`.
+
 ## Installing
 
 After configuring the playbook and potentially [adjusting your DNS records](#adjusting-dns-records) and [adjusting firewall rules](#adjusting-firewall-rules), run the playbook with [playbook tags](playbook-tags.md) as below:
