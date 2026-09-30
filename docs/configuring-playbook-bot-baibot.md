@@ -292,7 +292,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: "YOUR_
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 
 # If you'd like to use another text-generation agent, uncomment and adjust:
-# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-4.1
+# matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-6.1-sol
 
 # Uncomment below to enable OpenAI's built-in tools.
 # These tools are disabled by default. Enabling them may incur additional costs.
