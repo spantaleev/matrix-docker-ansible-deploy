@@ -25,7 +25,12 @@ An Ansible playbook that installs and manages a Matrix homeserver and dozens of 
 - `molecule-shared/`: files shared by the roles' Molecule scenarios (Python and Ansible dependencies, pinned helper container images).
 - `i18n/`: translation infrastructure. Do not edit locale files by hand; they are managed by automation.
 - `CHANGELOG.md`: user-facing announcements, newest first.
-  Announce new or removed components, shared behavior changes, and migrations beyond role validation.
+  Announce new or removed components, shared playbook behavior changes, and upgrades requiring
+  concrete action by the system administrator running this playbook. Examples include a manual
+  backup, data migration or inventory change that the role does not handle.
+  Upstream application behavior alone does not warrant a playbook entry, even when disruptive
+  or absent from role validation. Missing validation alone is not a reason for an entry.
+  Explain narrower upstream risks and link release notes in the pull request instead.
   The affected role's `tasks/validate_config.yml` should report routine variable renames or removals.
   Skip the changelog entry if that validation gives an actionable error.
   Correct any stale docs or examples instead.
