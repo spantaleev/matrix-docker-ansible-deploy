@@ -50,6 +50,18 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) packageName=(?<packageName>\\S+)\\s+MATRIX_RENOVATE_VERSION: '(?<currentValue>[^']+)'"
       ]
+    },
+    {
+      "customType": "regex",
+      "description": "Update the ghcr.io/devture/ansible image referenced in the documentation. The devcontainer's Dockerfile is handled by the built-in dockerfile manager.",
+      "managerFilePatterns": [
+        "/^docs\\/ansible\\.md$/"
+      ],
+      "matchStrings": [
+        "ghcr\\.io\\/devture\\/ansible:(?<currentValue>[^\\s`]+)"
+      ],
+      "depNameTemplate": "ghcr.io/devture/ansible",
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -65,6 +77,13 @@
         "dock.mau.dev/mautrix/**"
       ],
       "allowedVersions": "/^v0\\./"
+    },
+    {
+      "description": "ghcr.io/devture/ansible is tagged `<Alpine ansible package version>-<release>` (e.g. `14.0.0-r0-3`). Docker versioning would consider `-r0-3` a compatibility suffix and never offer `-r0-4`",
+      "matchDepNames": [
+        "ghcr.io/devture/ansible"
+      ],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-r(?<build>\\d+)-(?<revision>\\d+)$"
     },
     {
       "description": "Housekeeping updates merge via branch push (no PR, no email); a failure on the branch still surfaces as a PR. i18n/requirements.txt bumps are exercised by the Matrix i18n workflow before merging.",
