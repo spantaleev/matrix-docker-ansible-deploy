@@ -32,7 +32,7 @@ roles:
 update *flags: update-playbook-only
     #!/usr/bin/env sh
     if [ -x "$(command -v agru)" ]; then
-        echo {{ if flags == "" { "Installing roles pinned in requirements.yml…" } else { if flags == "-u" { "Updating roles and pinning new versions in requirements.yml…" } else { "Unknown flags passed" } } }}
+        echo {{ if flags == "" { "Installing roles pinned in requirements.yml…" } else if flags == "-u" { "Updating roles and pinning new versions in requirements.yml…" } else { "Unknown flags passed" } }}
         agru -p roles/galaxy/ -no-tui {{ flags }}
     else
         echo "[NOTE] You are using the standard ansible-galaxy tool to install roles, which is slow and lacks other features. We recommend installing the 'agru' tool to speed up the process: https://github.com/etkecc/agru#where-to-get"
