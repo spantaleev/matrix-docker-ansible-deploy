@@ -4,6 +4,9 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
+# Set inventory from $ANSIBLE_INVENTORY if set, otherwise set the default
+inventory := env_var_or_default("ANSIBLE_INVENTORY", "inventory/hosts")
+
 # mise (dev tool version manager)
 mise_data_dir := env("MISE_DATA_DIR", justfile_directory() / "var/mise")
 mise_trusted_config_paths := justfile_directory() / "mise.toml"
@@ -111,7 +114,7 @@ setup-all *extra_args: (run-tags "setup-all,ensure-matrix-users-created,start" e
 
 # Runs the playbook with the given list of arguments
 run +extra_args:
-    ansible-playbook -i inventory/hosts setup.yml {{ extra_args }}
+    ansible-playbook -i {{ inventory }} setup.yml {{ extra_args }}
 
 # Runs the playbook with the given list of comma-separated tags and optional arguments
 run-tags tags *extra_args:
@@ -119,7 +122,7 @@ run-tags tags *extra_args:
 
 # Runs the playbook in user-registration mode
 register-user username password admin_yes_or_no *extra_args:
-    ansible-playbook -i inventory/hosts setup.yml --tags=register-user --extra-vars="username={{ username }} password={{ password }} admin={{ admin_yes_or_no }}" {{ extra_args }}
+    ansible-playbook -i {{ inventory }} setup.yml --tags=register-user --extra-vars="username={{ username }} password={{ password }} admin={{ admin_yes_or_no }}" {{ extra_args }}
 
 # Starts all services
 start-all *extra_args: (run-tags "start-all" extra_args)
