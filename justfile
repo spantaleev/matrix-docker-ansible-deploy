@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Set inventory from $ANSIBLE_INVENTORY if set, otherwise set the default
-inventory := env_var_or_default("ANSIBLE_INVENTORY", "inventory/hosts")
+inventory := env("ANSIBLE_INVENTORY", "inventory/hosts")
 
 # mise (dev tool version manager)
 mise_data_dir := env("MISE_DATA_DIR", justfile_directory() / "var/mise")
