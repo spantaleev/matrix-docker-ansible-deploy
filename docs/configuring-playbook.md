@@ -224,6 +224,8 @@ Services that help you in administrating and monitoring your Matrix installation
 
 - [Enabling synapse-usage-exporter for Synapse usage statistics](configuring-playbook-synapse-usage-exporter.md)
 
+- [Setting up system cleanup](configuring-playbook-system-cleanup.md) — removing superseded Docker images, old logs, etc.
+
 - Backups:
   - [Setting up BorgBackup](configuring-playbook-backup-borg.md) — a full Matrix server backup solution, including the Postgres database
 

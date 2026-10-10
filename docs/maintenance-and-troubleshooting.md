@@ -38,6 +38,8 @@ ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune
 
 The shortcut command with `just` program is also available: `just run-tags run-docker-prune`
 
+Note that this also removes the images of services you have stopped, which then need to be pulled again. To have the playbook remove only the Docker images which newer ones have superseded, on every run, see [Setting up system cleanup](configuring-playbook-system-cleanup.md).
+
 ### Postgres
 
 See the dedicated [PostgreSQL maintenance](maintenance-postgres.md) documentation page.

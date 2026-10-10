@@ -151,6 +151,11 @@
     - when: devture_systemd_service_manager_enabled | bool
       role: galaxy/systemd_service_manager
 
+    # This role needs to run after the services have been (re)started.
+    # By then, every image the services need has been pulled and is in use by a running container,
+    # so the Docker cleanup can tell which images are still needed and which have been superseded.
+    - role: galaxy/cleanup
+
     # This is pretty much last, because we want it to better serve as a "last known good configuration".
     # See: https://github.com/spantaleev/matrix-docker-ansible-deploy/pull/2217#issuecomment-1301487601
     - when: devture_playbook_state_preserver_enabled | bool

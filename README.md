@@ -165,6 +165,7 @@ Services that help you in administrating and monitoring your Matrix installation
 | [Ketesa](https://github.com/etkecc/ketesa) | ❌ | Fully-featured web UI for administrating your Matrix homeserver — users, rooms, media, sessions, and more | [Link](docs/configuring-playbook-ketesa.md) |
 | Metrics and Graphs | ❌ | Consists of the [Prometheus](https://prometheus.io) time-series database server, the Prometheus [node-exporter](https://prometheus.io/docs/guides/node-exporter/) host metrics exporter, and the [Grafana](https://grafana.com/) web UI, with [prometheus-nginxlog-exporter](https://github.com/martin-helmich/prometheus-nginxlog-exporter/) being available too | [Link](docs/configuring-playbook-prometheus-grafana.md) (for [prometheus-nginxlog-exporter](docs/configuring-playbook-prometheus-grafana.md#enable-metrics-and-graphs-for-nginx-logs-optional)) |
 | [Borg](https://borgbackup.org) | ❌ | Backups | [Link](docs/configuring-playbook-backup-borg.md) |
+| [System cleanup](https://github.com/mother-of-all-self-hosting/ansible-role-cleanup) | ❌ | Removes superseded Docker images, old logs, etc. | [Link](docs/configuring-playbook-system-cleanup.md) |
 | [rageshake](https://github.com/matrix-org/rageshake) | ❌ | Bug report server | [Link](docs/configuring-playbook-rageshake.md) |
 | [synapse-usage-exporter](https://github.com/loelkes/synapse-usage-exporter) | ❌ | Export the usage statistics of a Synapse homeserver to be scraped by Prometheus. | [Link](docs/configuring-playbook-synapse-usage-exporter.md) |
 
