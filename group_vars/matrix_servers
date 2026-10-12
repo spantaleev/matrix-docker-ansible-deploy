@@ -4065,8 +4065,9 @@ jitsi_web_stun_servers: |
     else [ 'stun:meet-jit-si-turnrelay.jitsi.net:443']
   }}
 
-# The Jitsi instance installed by this playbook is meant for embedding into Matrix clients, so framing is allowed.
-jitsi_web_framing_enabled: true
+# The Jitsi instance installed by this playbook is meant for embedding into Matrix clients, so framing is allowed from anywhere.
+# To restrict it, set this to `["'self'"]` and list any additional origins in `jitsi_web_framing_ancestors_custom`.
+jitsi_web_framing_ancestors_default: ['*']
 
 # Jitsi (Prosody) only seems to support authenticating with coturn using `auth-secret`, not `lt-cred-mech`.
 # See: https://prosody.im/doc/coturn
