@@ -66,6 +66,11 @@ if ! jq --slurp --exit-status '
         and any(.packageFiles.regex[]?.deps[]?;
             .depName == "matrix-renovate-runner" and .datasource == "docker")
     )
+    and any(.[];
+        .msg == "Extracted dependencies"
+        and any(.packageFiles.regex[]?.deps[]?;
+            .depName == "ghcr.io/devture/ansible" and .datasource == "docker")
+    )
 ' "$log_file"; then
     echo 'Renovate did not complete dependency extraction successfully' >&2
     exit 1

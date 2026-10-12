@@ -1,3 +1,11 @@
+# 2026-10-10
+
+## Optional system cleanup, including safe removal of superseded Docker images
+
+The playbook now includes the [system cleanup](./docs/configuring-playbook-system-cleanup.md) role from [the MASH project](https://github.com/mother-of-all-self-hosting/ansible-role-cleanup). It can remove superseded Docker images and stopped containers on every playbook run, keeping the images that services you have stopped still need (unlike `docker image prune -a`, which `just run-tags run-docker-prune` uses). It can also vacuum old logs, remove arbitrary paths and, on Debian-based distributions, upgrade packages and purge old kernels.
+
+Everything is off by default. To enable the Docker cleanup, add `system_cleanup_docker: true` to your `vars.yml` file and re-run the playbook (`just setup-all`). See the [documentation](./docs/configuring-playbook-system-cleanup.md) for the other options.
+
 # 2026-09-22
 
 ## LiveKit's TURN over TLS works for clients that advertise an ALPN protocol
