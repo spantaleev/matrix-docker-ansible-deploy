@@ -7,11 +7,11 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Setting up the Sygnal push gateway (optional)
 
-The playbook can install and configure the [Sygnal](https://github.com/matrix-org/sygnal) push gateway for you.
+The playbook can install and configure the [Sygnal](https://github.com/element-hq/sygnal) push gateway for you.
 
-See the project's [documentation](https://github.com/matrix-org/sygnal/blob/master/README.md) to learn what it does and why it might be useful to you.
+See the project's [documentation](https://github.com/element-hq/sygnal/blob/main/README.md) to learn what it does and why it might be useful to you.
 
-**Note**: most people don't need to install their own gateway. As Sygnal's [Notes for application developers](https://github.com/matrix-org/sygnal/blob/master/docs/applications.md) documentation says:
+**Note**: most people don't need to install their own gateway. As Sygnal's [Notes for application developers](https://github.com/element-hq/sygnal/blob/main/docs/applications.md) documentation says:
 
 > It is not feasible to allow end-users to configure their own Sygnal instance, because the Sygnal instance needs the appropriate FCM or APNs secrets that belong to the application.
 
@@ -106,7 +106,7 @@ The shortcut commands with the [`just` program](just.md) are also available: `ju
 
 To make use of your Sygnal installation, you'd need to build your own Matrix client application, which uses the same API keys (for [GCM/FCM](https://firebase.google.com/docs/cloud-messaging/)) and certificates (for [APNS](https://developer.apple.com/notifications/)) and is to your Sygnal URL endpoint (e.g. `https://sygnal.example.com`).
 
-Refer to Sygnal's [Notes for application developers](https://github.com/matrix-org/sygnal/blob/master/docs/applications.md) document.
+Refer to Sygnal's [Notes for application developers](https://github.com/element-hq/sygnal/blob/main/docs/applications.md) document.
 
 ## Troubleshooting
 
