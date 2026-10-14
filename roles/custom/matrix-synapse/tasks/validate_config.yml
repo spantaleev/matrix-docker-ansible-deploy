@@ -167,6 +167,16 @@
       {{ matrix_synapse_reverse_proxy_companion_access_log_format_presets.keys() | sort | join(', ') }}
   when: "matrix_synapse_reverse_proxy_companion_access_log_format not in matrix_synapse_reverse_proxy_companion_access_log_format_presets"
 
+- name: Fail if shared-room profile restrictions are enabled without profile authentication
+  ansible.builtin.fail:
+    msg: >-
+      `matrix_synapse_limit_profile_requests_to_users_who_share_rooms: true` requires
+      `matrix_synapse_require_auth_for_profile_requests: true`. Synapse 1.163 and newer refuse
+      to start with this combination. Enable profile authentication to enforce the shared-room
+      restriction, or disable the shared-room restriction to preserve the previous unrestricted
+      profile lookup behavior.
+  when: matrix_synapse_limit_profile_requests_to_users_who_share_rooms | bool and not matrix_synapse_require_auth_for_profile_requests | bool
+
 - name: Fail when mixing generic workers with new specialized workers
   ansible.builtin.fail:
     msg: >-
