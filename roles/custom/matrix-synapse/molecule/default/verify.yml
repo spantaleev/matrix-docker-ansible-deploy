@@ -27,6 +27,21 @@
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
         name: matrix_synapse_role_defaults
 
+    - name: Load the role's vars under a separate name
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/vars/main.yml"
+        name: matrix_synapse_role_vars
+
+    - name: Assert the federation self-check uses the federation hostname
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_role_vars.matrix_synapse_federation_api_url_endpoint_public == 'https://federation.example.com:8448/_matrix/federation/v1/version'
+      vars:
+        matrix_playbook_ssl_enabled: true
+        matrix_server_fqn_matrix: matrix.example.com
+        matrix_server_fqn_matrix_federation: federation.example.com
+        matrix_federation_public_port: 8448
+
     - name: Wait for the Synapse service to become active
       ansible.builtin.systemd_service:
         name: matrix-synapse.service
