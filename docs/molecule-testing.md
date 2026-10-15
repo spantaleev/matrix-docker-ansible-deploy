@@ -199,3 +199,9 @@ is the bulk of it, over 500 MB, and is recreated on the next run at the cost of 
 
 `--idle-days N` restricts it to what has not been touched in N days, which is what makes it safe to
 run unattended. `--yes` skips the confirmation.
+
+## Checking playbook privilege escalation
+
+From the repository root, run `python3 bin/test-privilege-escalation.py` with Ansible and PyYAML installed. To select another Ansible installation, pass its `bin` directory as the first argument. The [Privilege escalation checks workflow](../.github/workflows/privilege-escalation.yml) uses ansible-core 2.15.13 and 2.21.3 as regression samples and supports manual dispatch. These versions do not establish the minimum supported version; [the Ansible guide](ansible.md#supported-ansible-versions) describes 2.15.1 as an existing suspected minimum.
+
+The script runs 156 entry-point cases in CI and for developers, not during deployments. On a normal playbook run, validation adds one controller-side assertion per host. It checks the production playbook text using empty role bodies and debug messages that mark execution order. It leaves the automatic fact-gathering task in place but disables its fact modules, so no target commands run. It checks that all twelve guarded variables produce a message naming only the defined overrides before fact gathering or roles, including selected tag, limit and check-mode cases. It checks opt-out values supplied through host, group and extra variables, checks that the main play retains `become_user: root`, and verifies that a valid host continues when another host fails validation. It also checks that the documented non-root example and sample login, method and password variables are accepted. Password acceptance does not test authentication. `--skip-tags always` and `--start-at-task` are tested as ways to bypass validation. These checks do not test SSH, sudo authentication or actual account switching.

@@ -6,9 +6,47 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
+- name: Validate privilege escalation configuration
+  hosts: "jitsi_jvb_servers"
+  gather_facts: false
+
+  tasks:
+    - name: Reject privilege escalation overrides
+      ansible.builtin.assert:
+        that:
+          - ansible_become is not defined
+          - ansible_become_user is not defined
+          - ansible_sudo_user is not defined
+          - ansible_su_user is not defined
+          - ansible_doas_user is not defined
+          - ansible_dzdo_user is not defined
+          - ansible_ksu_user is not defined
+          - ansible_machinectl_user is not defined
+          - ansible_pbrun_user is not defined
+          - ansible_pfexec_user is not defined
+          - ansible_run0_user is not defined
+          - ansible_sesu_user is not defined
+        quiet: true
+        fail_msg: >-
+          Privilege escalation overrides are defined for this host.
+          Remove {{ ['ansible_become', 'ansible_become_user', 'ansible_sudo_user', 'ansible_su_user',
+          'ansible_doas_user', 'ansible_dzdo_user', 'ansible_ksu_user', 'ansible_machinectl_user',
+          'ansible_pbrun_user', 'ansible_pfexec_user', 'ansible_run0_user', 'ansible_sesu_user']
+          | select('in', query('ansible.builtin.varnames', '^ansible_'))
+          | join(', ') }} wherever you define them,
+          including inventory, host/group variables and extra variables.
+          They override which account each task uses and whether it escalates.
+          Select the SSH login account with ansible_user or ansible_ssh_user;
+          ansible_become_method and ansible_become_password can stay.
+          To keep the overrides deliberately, set matrix_playbook_privilege_escalation_validation_enabled to false.
+          See "Privilege escalation settings" in docs/installing.md.
+      when: matrix_playbook_privilege_escalation_validation_enabled | default(true) | bool
+      tags: [always]
+
 - name: "Set up additional Jitsi Videobridge (JVB) servers"
   hosts: "jitsi_jvb_servers"
   become: true
+  become_user: root
 
   roles:
     - role: galaxy/playbook_help

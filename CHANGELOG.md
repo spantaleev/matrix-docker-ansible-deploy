@@ -1,3 +1,15 @@
+# 2026-10-15
+
+## Remove inventory overrides of task-level privilege escalation
+
+This affects inventories that define `ansible_become`, `ansible_become_user` or the [plugin-specific user aliases now checked by the playbook](docs/installing.md#privilege-escalation-settings), including copies of the earlier non-root example in `examples/hosts`. The example's `ansible_become=true ansible_become_user=root` settings force escalation and select root even for tasks that request a service account or disable escalation, wherever those variables apply.
+
+Remove these variables wherever you define them for playbook hosts, including inventory, host/group variables and extra variables. If other playbooks need them, use a separate inventory for this playbook. For a non-root SSH login, set `ansible_ssh_user` to an account that can use `sudo`. If sudo requires a password, use `-K` (`--ask-become-pass`) or supply `ansible_become_password` securely.
+
+The new validation play rejects all twelve listed variables by default and reports only those defined for the affected host, before fact gathering. Other valid hosts continue, but the run reports failure. The check prevents future tasks from using conflicting settings; it does not repair ownership created by earlier runs. Methods, passwords, flags and executable wrappers remain allowed and are not validated; aliases added by custom plugins are not covered.
+
+For deliberately managed exceptions, set `matrix_playbook_privilege_escalation_validation_enabled: false` (default: true). This skips only override rejection: the main play keeps `become: true` and `become_user: root`, and Ansible's variable precedence remains in effect. You are responsible for reconciling your overrides with each task's requested account. See [privilege escalation settings](docs/installing.md#privilege-escalation-settings) for the full restriction and opt-out instructions.
+
 # 2026-10-10
 
 ## Optional system cleanup, including safe removal of superseded Docker images

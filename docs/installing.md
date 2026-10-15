@@ -37,11 +37,25 @@ The Ansible playbook's tasks are tagged, so that certain parts of the Ansible pl
 
 The general command syntax for installation (and also maintenance) is: `ansible-playbook -i inventory/hosts setup.yml --tags=COMMA_SEPARATED_TAGS_GO_HERE`. It is recommended to get yourself familiar with the [playbook tags](playbook-tags.md) before proceeding.
 
-If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the all Ansible commands.
+If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to `ansible-playbook` invocations (or `just` recipes that run the playbook).
 
-If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to all Ansible commands.
+For passphrase-protected SSH keys and SSH-agent access from Docker, see [SSH host key and passphrase prompts](ansible.md#ssh-host-key-and-passphrase-prompts).
 
-Instead of typing the sudo password on each run (`-K`) or storing it in plain text in the inventory hosts file, you can also pull it from the [pass](https://www.passwordstore.org/) password manager by adding `ansible_become_password='{{ lookup("community.general.passwordstore", "path/to/password") }}'` to your host line. See the [passwordstore lookup documentation](https://docs.ansible.com/ansible/latest/collections/community/general/passwordstore_lookup.html) for more details.
+If privilege escalation requires a password, add `-K` (`--ask-become-pass`) to the `ansible-playbook` invocation (or `just` recipe that runs the playbook) unless you supply the password securely through `ansible_become_password`. This is independent of whether SSH authentication uses a key or a password.
+
+To supply a stored password, encrypt `ansible_become_password` with [Ansible Vault](https://docs.ansible.com/projects/ansible/latest/vault_guide/vault_using_encrypted_content.html#passing-a-single-password), or pull it from the [pass](https://www.passwordstore.org/) password manager by adding `ansible_become_password='{{ lookup("community.general.passwordstore", "path/to/password") }}'` to your host line. See the [passwordstore lookup documentation](https://docs.ansible.com/projects/ansible/latest/collections/community/general/passwordstore_lookup.html) for more details.
+
+If you store `ansible_become_password` encrypted with Ansible Vault, add `--ask-vault-pass` (or configure another Vault password source) so that Ansible can decrypt it. When the decrypted variable supplies the escalation password, you do not need `-K`.
+
+### Privilege escalation settings
+
+To log in as a non-root SSH user, set `ansible_ssh_user` to an account that can run `sudo`. The playbook enables privilege escalation and lets individual tasks select root, a service account or no escalation. [Ansible connection variables override task keywords](https://docs.ansible.com/projects/ansible/latest/reference_appendices/general_precedence.html#variables), so by default this playbook rejects definitions of `ansible_become`, `ansible_become_user`, `ansible_sudo_user`, `ansible_su_user`, `ansible_doas_user`, `ansible_dzdo_user`, `ansible_ksu_user`, `ansible_machinectl_user`, `ansible_pbrun_user`, `ansible_pfexec_user`, `ansible_run0_user` or `ansible_sesu_user`.
+
+Remove these variables wherever you define them for this playbook's hosts, including inventory, host/group variables and extra variables. If other playbooks need them, use a separate inventory for this playbook that omits them. The check runs before fact gathering and stops the affected host; other valid hosts continue, but the run reports failure. It prevents future tasks from using conflicting settings; it does not repair ownership created by earlier runs.
+
+Escalation methods, passwords, flags and executable wrappers remain allowed and are not validated by this check. For example, you can keep `ansible_become_method`, `ansible_become_password` and `ansible_become_pass`. Choose a method and configuration that honor each task's requested account; flags and wrappers can affect that behavior. See [Ansible's become connection variables](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_privilege_escalation.html#become-connection-variables) for these settings. Aliases added by custom plugins are not covered by the check. Tasks delegated to the controller take these variables from the delegate host, which the check does not inspect, so keep them off any explicit `localhost` or `127.0.0.1` inventory entry too.
+
+If you deliberately need the rejected variables, set `matrix_playbook_privilege_escalation_validation_enabled: false` for the relevant host or group, or append `-e matrix_playbook_privilege_escalation_validation_enabled=false` to the `ansible-playbook` invocation. The default is true. Setting it to false skips only override rejection. The main play still declares `become: true` and `become_user: root`; Ansible's variable precedence remains in effect, and you are responsible for reconciling your overrides with every affected task.
 
 There 2 ways to start the installation process — depending on whether you're [Installing a brand new server (without importing data)](#installing-a-brand-new-server-without-importing-data) or [Installing a server into which you'll import old data](#installing-a-server-into-which-youll-import-old-data).
 

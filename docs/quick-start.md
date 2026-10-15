@@ -147,7 +147,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=install-all,ensure-matrix-u
 
 If you **don't** use SSH keys for authentication, but rather a regular password, you may need to add `--ask-pass` to the command.
 
-If you **do** use SSH keys for authentication, **and** use a non-root user to *become* root (sudo), you may need to add `-K` (`--ask-become-pass`) to the command.
+If privilege escalation requires a password, add `-K` (`--ask-become-pass`) to the command unless you supply the password securely through `ansible_become_password`. This is independent of whether SSH authentication uses a key or a password. See [Install Matrix server and services](installing.md#install-matrix-server-and-services) for secure stored-password options.
 
 Wait until the command completes. If it's all green, everything should be running properly.
 
