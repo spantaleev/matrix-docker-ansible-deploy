@@ -3073,6 +3073,10 @@ matrix_bridge_steam_database_password: "{{ (matrix_homeserver_generic_secret_key
 # We don't enable bridges by default.
 matrix_nether_voicebridge_enabled: false
 
+# The bridge talks to LiveKit directly, enabling it requires the
+# MatrixRTC stack (livekit-server + lk-jwt-service).
+matrix_rtc_enabled: "{{ matrix_element_call_enabled or matrix_nether_voicebridge_enabled }}"
+
 matrix_nether_voicebridge_systemd_required_services_list_auto: |
   {{
     matrix_addons_homeserver_systemd_services_list

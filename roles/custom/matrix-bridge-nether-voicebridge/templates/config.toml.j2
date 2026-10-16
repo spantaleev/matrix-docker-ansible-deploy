@@ -35,9 +35,9 @@ bot_display_name = "{{ matrix_nether_voicebridge_bot_display_name }}"
 {% endif %}
 
 [bridge.livekit]
-# lk_jwt_url and url are auto-derived from .well-known/matrix/client (rtc_foci).
-# media_e2ee is auto-detected from the room's encryption state.
-# Use matrix_nether_voicebridge_configuration_extension_toml to override these.
+{% for key, value in (bridge.livekit | default({})).items() %}
+{{ key }} = {{ value | to_json }}
+{% endfor %}
 
 {% endfor %}
 {% if matrix_nether_voicebridge_configuration_extension_toml | length > 0 %}

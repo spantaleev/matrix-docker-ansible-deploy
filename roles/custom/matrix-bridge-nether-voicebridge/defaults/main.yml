@@ -4,17 +4,17 @@
 
 ---
 # matrix-nether-voicebridge bridges Discord voice channels to Matrix Element Call rooms.
-# See: https://nether.codes/dark/nether-voicebridge
+# See: https://nether.codes/nether/nether-voicebridge
 
 matrix_nether_voicebridge_enabled: false
 
 matrix_nether_voicebridge_container_image_self_build: false
-matrix_nether_voicebridge_container_image_self_build_repo: "https://nether.codes/dark/nether-voicebridge.git"
+matrix_nether_voicebridge_container_image_self_build_repo: "https://nether.codes/nether/nether-voicebridge.git"
 matrix_nether_voicebridge_container_image_self_build_repo_version: "{{ 'master' if matrix_nether_voicebridge_version == 'latest' else matrix_nether_voicebridge_version }}"
 
-# renovate: datasource=docker depName=nether.codes/dark/nether-voicebridge
+# renovate: datasource=docker depName=nether.codes/nether/nether-voicebridge
 matrix_nether_voicebridge_version: v0.4.10
-matrix_nether_voicebridge_container_image: "{{ matrix_nether_voicebridge_container_image_registry_prefix }}dark/nether-voicebridge:{{ matrix_nether_voicebridge_version }}"
+matrix_nether_voicebridge_container_image: "{{ matrix_nether_voicebridge_container_image_registry_prefix }}nether/nether-voicebridge:{{ matrix_nether_voicebridge_version }}"
 matrix_nether_voicebridge_container_image_registry_prefix: "{{ 'localhost/' if matrix_nether_voicebridge_container_image_self_build else matrix_nether_voicebridge_container_image_registry_prefix_upstream }}"
 matrix_nether_voicebridge_container_image_registry_prefix_upstream: "{{ matrix_nether_voicebridge_container_image_registry_prefix_upstream_default }}"
 matrix_nether_voicebridge_container_image_registry_prefix_upstream_default: "nether.codes/"
@@ -56,8 +56,8 @@ matrix_nether_voicebridge_sender_localpart: "nether-voicebridge"
 #     - "YOUR_BOT_TOKEN_2"
 matrix_nether_voicebridge_puppet_tokens: []
 
-# Prefix prepended to ghost bot nicknames in Discord so users can identify bridged
-# Matrix participants. Set to "" to disable. Prefix + name is truncated to 32 chars.
+# Prefix prepended to puppet bot nicknames in Discord so users can identify bridged
+# Matrix participants (puppets are the bots on Discord; ghosts are Discord users shown on Matrix). Set to "" to disable. Prefix + name is truncated to 32 chars.
 matrix_nether_voicebridge_puppet_nickname_prefix: "[Matrix] "
 
 # List of bridge definitions. Each entry bridges one Discord voice channel to one
@@ -68,6 +68,11 @@ matrix_nether_voicebridge_puppet_nickname_prefix: "[Matrix] "
 #   discord_guild_id  — right-click server icon → "Copy Server ID" (Developer Mode)
 #   discord_channel_id — right-click voice channel → "Copy Channel ID" (Developer Mode)
 #   matrix_room_id   — internal room ID, e.g. !abc:example.com (NOT the #alias form)
+#
+# Optional field per entry:
+#   livekit          — dictionary of key/value pairs rendered into this bridge's
+#                      [bridge.livekit] table (e.g. lk_jwt_url, url, media_e2ee).
+#                      By default these are auto-derived from .well-known/matrix/client.
 #
 # Example:
 #   matrix_nether_voicebridge_bridges:
@@ -123,7 +128,9 @@ matrix_nether_voicebridge_registration_yaml: |
 matrix_nether_voicebridge_registration: "{{ matrix_nether_voicebridge_registration_yaml | from_yaml }}"
 
 # Optional raw TOML appended verbatim to the generated config.toml (advanced use).
-# Use this to set lk_jwt_url, url, or media_e2ee overrides per bridge.
+# It lands after the last bridge's [bridge.livekit] table, so use it only for additional
+# tables. Do not repeat [bridge.livekit] here (duplicate-table error); per-bridge LiveKit
+# overrides belong in the `livekit` field of `matrix_nether_voicebridge_bridges` entries.
 matrix_nether_voicebridge_configuration_extension_toml: ""
 
 # Whether a restart is needed — computed automatically during installation.

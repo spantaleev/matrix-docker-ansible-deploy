@@ -132,7 +132,7 @@ Bridges can be used to connect your Matrix installation with third-party communi
 | [matrix-hookshot](https://github.com/matrix-org/matrix-hookshot) | ❌ | Bridge for generic webhooks and multiple project management services, such as GitHub, GitLab, Figma, and Jira in particular | [Link](docs/configuring-playbook-bridge-hookshot.md) |
 | [matrix-sms-bridge](https://github.com/benkuly/matrix-sms-bridge) | ❌ | Bridge to SMS | [Link](docs/configuring-playbook-bridge-matrix-bridge-sms.md) |
 | [matrix-steam-bridge](https://github.com/jasonlaguidice/matrix-steam-bridge) | ❌ | Bridge to [Steam](https://steampowered.com/) | [Link](docs/configuring-playbook-bridge-steam.md) |
-| [nether-voicebridge](https://nether.codes/dark/nether-voicebridge) | ❌ | Bridge Discord voice channels to Matrix [Element Call](https://element.io/element-call) rooms | [Link](docs/configuring-playbook-bridge-nether-voicebridge.md) |
+| [nether-voicebridge](https://nether.codes/nether/nether-voicebridge) | ❌ | Bridge Discord voice channels to Matrix call rooms | [Link](docs/configuring-playbook-bridge-nether-voicebridge.md) |
 | [matrix-wechat](https://github.com/duo/matrix-wechat) | ❌ | Bridge to [WeChat](https://www.wechat.com/) | [Link](docs/configuring-playbook-bridge-wechat.md) |
 | [Heisenbridge](https://github.com/hifi/heisenbridge) | ❌ | Bouncer-style bridge to [IRC](https://wikipedia.org/wiki/Internet_Relay_Chat) | [Link](docs/configuring-playbook-bridge-heisenbridge.md) |
 | [meshtastic-matrix-relay](https://github.com/jeremiah-k/meshtastic-matrix-relay) | ❌ | Bridge to [Meshtastic](https://meshtastic.org/) mesh networks | [Link](docs/configuring-playbook-bridge-meshtastic-relay.md) |
