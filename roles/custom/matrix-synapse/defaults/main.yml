@@ -356,6 +356,34 @@ matrix_synapse_container_extra_arguments_auto: []
 # If you'd like to inject your own arguments, see `matrix_synapse_container_extra_arguments`.
 matrix_synapse_container_arguments: "{{ matrix_synapse_container_extra_arguments + matrix_synapse_container_extra_arguments_auto }}"
 
+# Controls how long the pre-start cleanup should wait for stale container-name release
+# before failing startup explicitly.
+matrix_synapse_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_container_cleanup_timeout_seconds }}"
+
+# Controls the delay between pre-start cleanup retries.
+matrix_synapse_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
+
+# Shell command used in the systemd pre-start phase to deterministically remove a stale
+# container and wait until Docker releases its name.
+matrix_synapse_container_cleanup_command: |
+  i=0;
+  while [ "$i" -lt {{ matrix_synapse_container_cleanup_timeout_seconds }} ]; do
+  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-synapse >/dev/null 2>&1 || true;
+  {{ devture_systemd_docker_base_host_command_docker }} rm -f matrix-synapse >/dev/null 2>&1 || true;
+  if {{ devture_systemd_docker_base_host_command_docker }} container inspect matrix-synapse >/dev/null 2>&1; then
+  i=$((i + 1));
+  sleep {{ matrix_synapse_container_cleanup_retry_delay_seconds }};
+  continue;
+  fi;
+  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  exit 0;
+  fi;
+  echo "Failed to query Docker daemon while cleaning up matrix-synapse" >&2;
+  exit 1;
+  done;
+  echo "Failed to remove stale container matrix-synapse after {{ matrix_synapse_container_cleanup_timeout_seconds }} attempts" >&2;
+  exit 1
+
 # matrix_synapse_container_master_extra_arguments contains arguments specific to the master process whereas
 # matrix_synapse_container_arguments contains arguments the apply to all Synapse containers (master and worker).
 matrix_synapse_container_master_extra_arguments: []
@@ -371,6 +399,34 @@ matrix_synapse_systemd_wanted_services_list: "{{ matrix_synapse_systemd_wanted_s
 matrix_synapse_systemd_wanted_services_list_default: []
 matrix_synapse_systemd_wanted_services_list_auto: []
 matrix_synapse_systemd_wanted_services_list_custom: []
+
+# Controls how long the pre-start cleanup should wait for stale container-name release
+# before failing startup explicitly.
+matrix_synapse_goofys_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_container_cleanup_timeout_seconds }}"
+
+# Controls the delay between pre-start cleanup retries.
+matrix_synapse_goofys_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
+
+# Shell command used in the systemd pre-start phase to deterministically remove a stale
+# container and wait until Docker releases its name.
+matrix_synapse_goofys_container_cleanup_command: |
+  i=0;
+  while [ "$i" -lt {{ matrix_synapse_goofys_container_cleanup_timeout_seconds }} ]; do
+  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} %n >/dev/null 2>&1 || true;
+  {{ devture_systemd_docker_base_host_command_docker }} rm -f %n >/dev/null 2>&1 || true;
+  if {{ devture_systemd_docker_base_host_command_docker }} container inspect %n >/dev/null 2>&1; then
+  i=$((i + 1));
+  sleep {{ matrix_synapse_goofys_container_cleanup_retry_delay_seconds }};
+  continue;
+  fi;
+  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  exit 0;
+  fi;
+  echo "Failed to query Docker daemon while cleaning up %n" >&2;
+  exit 1;
+  done;
+  echo "Failed to remove stale container %n after {{ matrix_synapse_goofys_container_cleanup_timeout_seconds }} attempts" >&2;
+  exit 1
 
 # List of systemd services that matrix-goofys.service depends on
 matrix_synapse_goofys_systemd_required_services_list: "{{ matrix_synapse_goofys_systemd_required_services_list_default + matrix_synapse_goofys_systemd_required_services_list_auto + matrix_synapse_goofys_systemd_required_services_list_custom }}"
@@ -1009,6 +1065,35 @@ matrix_synapse_workers_presets:
 # Takes an "<ip>" value (e.g. "127.0.0.1", "0.0.0.0", etc), or empty string to not expose.
 # It takes "*" to signify "bind on all interfaces" ("0.0.0.0" is IPv4-only).
 matrix_synapse_workers_container_host_bind_address: ''
+
+# Controls how long the pre-start cleanup should wait for stale container-name release
+# before failing startup explicitly.
+matrix_synapse_worker_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_container_cleanup_timeout_seconds }}"
+
+# Controls the delay between pre-start cleanup retries.
+matrix_synapse_worker_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
+
+# Shell command used in the systemd pre-start phase to deterministically remove a stale
+# container and wait until Docker releases its name.
+# It is rendered once per worker, with `matrix_synapse_worker_container_name` set to that worker's container name.
+matrix_synapse_worker_container_cleanup_command: |
+  i=0;
+  while [ "$i" -lt {{ matrix_synapse_worker_container_cleanup_timeout_seconds }} ]; do
+  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ matrix_synapse_worker_container_name }} >/dev/null 2>&1 || true;
+  {{ devture_systemd_docker_base_host_command_docker }} rm -f {{ matrix_synapse_worker_container_name }} >/dev/null 2>&1 || true;
+  if {{ devture_systemd_docker_base_host_command_docker }} container inspect {{ matrix_synapse_worker_container_name }} >/dev/null 2>&1; then
+  i=$((i + 1));
+  sleep {{ matrix_synapse_worker_container_cleanup_retry_delay_seconds }};
+  continue;
+  fi;
+  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  exit 0;
+  fi;
+  echo "Failed to query Docker daemon while cleaning up {{ matrix_synapse_worker_container_name }}" >&2;
+  exit 1;
+  done;
+  echo "Failed to remove stale container {{ matrix_synapse_worker_container_name }} after {{ matrix_synapse_worker_container_cleanup_timeout_seconds }} attempts" >&2;
+  exit 1
 
 # matrix_synapse_worker_container_labels_traefik_enabled controls whether labels to assist a Traefik reverse-proxy will be attached to Synapse worker containers.
 # See `../templates/worker-labels.j2` for details.
@@ -2068,6 +2153,34 @@ matrix_synapse_reverse_proxy_companion_container_extra_arguments_auto: []
 # You're not meant to override this variable.
 # If you'd like to inject your own arguments, see `matrix_synapse_reverse_proxy_companion_container_extra_arguments`.
 matrix_synapse_reverse_proxy_companion_container_arguments: "{{ matrix_synapse_reverse_proxy_companion_container_extra_arguments + matrix_synapse_reverse_proxy_companion_container_extra_arguments_auto }}"
+
+# Controls how long the pre-start cleanup should wait for stale container-name release
+# before failing startup explicitly.
+matrix_synapse_reverse_proxy_companion_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_container_cleanup_timeout_seconds }}"
+
+# Controls the delay between pre-start cleanup retries.
+matrix_synapse_reverse_proxy_companion_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
+
+# Shell command used in the systemd pre-start phase to deterministically remove a stale
+# container and wait until Docker releases its name.
+matrix_synapse_reverse_proxy_companion_container_cleanup_command: |
+  i=0;
+  while [ "$i" -lt {{ matrix_synapse_reverse_proxy_companion_container_cleanup_timeout_seconds }} ]; do
+  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-synapse-reverse-proxy-companion >/dev/null 2>&1 || true;
+  {{ devture_systemd_docker_base_host_command_docker }} rm -f matrix-synapse-reverse-proxy-companion >/dev/null 2>&1 || true;
+  if {{ devture_systemd_docker_base_host_command_docker }} container inspect matrix-synapse-reverse-proxy-companion >/dev/null 2>&1; then
+  i=$((i + 1));
+  sleep {{ matrix_synapse_reverse_proxy_companion_container_cleanup_retry_delay_seconds }};
+  continue;
+  fi;
+  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  exit 0;
+  fi;
+  echo "Failed to query Docker daemon while cleaning up matrix-synapse-reverse-proxy-companion" >&2;
+  exit 1;
+  done;
+  echo "Failed to remove stale container matrix-synapse-reverse-proxy-companion after {{ matrix_synapse_reverse_proxy_companion_container_cleanup_timeout_seconds }} attempts" >&2;
+  exit 1
 
 # The amount of worker processes and connections
 # Consider increasing these when you are expecting high amounts of traffic

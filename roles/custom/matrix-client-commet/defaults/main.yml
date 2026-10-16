@@ -87,6 +87,34 @@ matrix_client_commet_container_labels_additional_labels: ""
 # Extra arguments to pass to docker create
 matrix_client_commet_container_extra_arguments: []
 
+# Controls how long the pre-start cleanup should wait for stale container-name release
+# before failing startup explicitly.
+matrix_client_commet_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_container_cleanup_timeout_seconds }}"
+
+# Controls the delay between pre-start cleanup retries.
+matrix_client_commet_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
+
+# Shell command used in the systemd pre-start phase to deterministically remove a stale
+# container and wait until Docker releases its name.
+matrix_client_commet_container_cleanup_command: |
+  i=0;
+  while [ "$i" -lt {{ matrix_client_commet_container_cleanup_timeout_seconds }} ]; do
+  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-client-commet >/dev/null 2>&1 || true;
+  {{ devture_systemd_docker_base_host_command_docker }} rm -f matrix-client-commet >/dev/null 2>&1 || true;
+  if {{ devture_systemd_docker_base_host_command_docker }} container inspect matrix-client-commet >/dev/null 2>&1; then
+  i=$((i + 1));
+  sleep {{ matrix_client_commet_container_cleanup_retry_delay_seconds }};
+  continue;
+  fi;
+  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  exit 0;
+  fi;
+  echo "Failed to query Docker daemon while cleaning up matrix-client-commet" >&2;
+  exit 1;
+  done;
+  echo "Failed to remove stale container matrix-client-commet after {{ matrix_client_commet_container_cleanup_timeout_seconds }} attempts" >&2;
+  exit 1
+
 # ---------------------------------------------------------------------------
 # HTTP security headers
 # ---------------------------------------------------------------------------

@@ -67,6 +67,34 @@ matrix_livekit_jwt_service_container_labels_additional_labels: ''
 # A list of extra arguments to pass to the container
 matrix_livekit_jwt_service_container_extra_arguments: []
 
+# Controls how long the pre-start cleanup should wait for stale container-name release
+# before failing startup explicitly.
+matrix_livekit_jwt_service_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_container_cleanup_timeout_seconds }}"
+
+# Controls the delay between pre-start cleanup retries.
+matrix_livekit_jwt_service_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
+
+# Shell command used in the systemd pre-start phase to deterministically remove a stale
+# container and wait until Docker releases its name.
+matrix_livekit_jwt_service_container_cleanup_command: |
+  i=0;
+  while [ "$i" -lt {{ matrix_livekit_jwt_service_container_cleanup_timeout_seconds }} ]; do
+  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-livekit-jwt-service >/dev/null 2>&1 || true;
+  {{ devture_systemd_docker_base_host_command_docker }} rm -f matrix-livekit-jwt-service >/dev/null 2>&1 || true;
+  if {{ devture_systemd_docker_base_host_command_docker }} container inspect matrix-livekit-jwt-service >/dev/null 2>&1; then
+  i=$((i + 1));
+  sleep {{ matrix_livekit_jwt_service_container_cleanup_retry_delay_seconds }};
+  continue;
+  fi;
+  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  exit 0;
+  fi;
+  echo "Failed to query Docker daemon while cleaning up matrix-livekit-jwt-service" >&2;
+  exit 1;
+  done;
+  echo "Failed to remove stale container matrix-livekit-jwt-service after {{ matrix_livekit_jwt_service_container_cleanup_timeout_seconds }} attempts" >&2;
+  exit 1
+
 # Controls whether the container's built-in healthcheck is left enabled.
 #
 # The bind-address handling was fixed in v0.7.0. If you pin v0.6.0, disable

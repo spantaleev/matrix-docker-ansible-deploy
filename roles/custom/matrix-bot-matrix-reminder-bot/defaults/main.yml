@@ -36,6 +36,34 @@ matrix_bot_matrix_reminder_bot_command_prefix: "!"
 # A list of extra arguments to pass to the container
 matrix_bot_matrix_reminder_bot_container_extra_arguments: []
 
+# Controls how long the pre-start cleanup should wait for stale container-name release
+# before failing startup explicitly.
+matrix_bot_matrix_reminder_bot_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_container_cleanup_timeout_seconds }}"
+
+# Controls the delay between pre-start cleanup retries.
+matrix_bot_matrix_reminder_bot_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
+
+# Shell command used in the systemd pre-start phase to deterministically remove a stale
+# container and wait until Docker releases its name.
+matrix_bot_matrix_reminder_bot_container_cleanup_command: |
+  i=0;
+  while [ "$i" -lt {{ matrix_bot_matrix_reminder_bot_container_cleanup_timeout_seconds }} ]; do
+  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-bot-matrix-reminder-bot >/dev/null 2>&1 || true;
+  {{ devture_systemd_docker_base_host_command_docker }} rm -f matrix-bot-matrix-reminder-bot >/dev/null 2>&1 || true;
+  if {{ devture_systemd_docker_base_host_command_docker }} container inspect matrix-bot-matrix-reminder-bot >/dev/null 2>&1; then
+  i=$((i + 1));
+  sleep {{ matrix_bot_matrix_reminder_bot_container_cleanup_retry_delay_seconds }};
+  continue;
+  fi;
+  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  exit 0;
+  fi;
+  echo "Failed to query Docker daemon while cleaning up matrix-bot-matrix-reminder-bot" >&2;
+  exit 1;
+  done;
+  echo "Failed to remove stale container matrix-bot-matrix-reminder-bot after {{ matrix_bot_matrix_reminder_bot_container_cleanup_timeout_seconds }} attempts" >&2;
+  exit 1
+
 matrix_bot_matrix_reminder_bot_container_network: ""
 
 matrix_bot_matrix_reminder_bot_container_additional_networks: "{{ matrix_bot_matrix_reminder_bot_container_additional_networks_auto + matrix_bot_matrix_reminder_bot_container_additional_networks_custom }}"
