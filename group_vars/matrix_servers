@@ -179,6 +179,8 @@ matrix_homeserver_container_extra_arguments_auto: |
     +
     (['--mount type=bind,src=' + matrix_bridge_steam_config_path + '/registration.yaml,dst=/matrix-steam-bridge-registration.yaml,ro'] if matrix_bridge_steam_enabled else [])
     +
+    (['--mount type=bind,src=' + matrix_nether_voicebridge_config_path + '/registration.yaml,dst=/matrix-nether-voicebridge-registration.yaml,ro'] if matrix_nether_voicebridge_enabled else [])
+    +
     (['--mount type=bind,src=' + matrix_cactus_comments_app_service_config_file + ',dst=/matrix-cactus-comments.yaml,ro'] if matrix_cactus_comments_enabled else [])
   }}
 
@@ -245,6 +247,8 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-cactus-comments.yaml'] if matrix_cactus_comments_enabled else [])
     +
     (['/matrix-steam-bridge-registration.yaml'] if matrix_bridge_steam_enabled else [])
+    +
+    (['/matrix-nether-voicebridge-registration.yaml'] if matrix_nether_voicebridge_enabled else [])
   }}
 
 matrix_addons_homeserver_container_network: "{{ matrix_playbook_reverse_proxy_container_network if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_container_network }}"
@@ -609,6 +613,13 @@ devture_systemd_service_manager_services_list_auto: |
       'restart_necessary': (matrix_bridge_steam_restart_necessary | bool),
       'groups': ['matrix', 'bridges', 'matrix-steam-bridge'],
     }] if matrix_bridge_steam_enabled else [])
+    +
+    ([{
+      'name': 'matrix-nether-voicebridge.service',
+      'priority': 2000,
+      'restart_necessary': (matrix_nether_voicebridge_restart_necessary | bool),
+      'groups': ['matrix', 'bridges', 'matrix-nether-voicebridge'],
+    }] if matrix_nether_voicebridge_enabled else [])
     +
     ([{
       'name': 'matrix-cactus-comments.service',
@@ -3050,6 +3061,44 @@ matrix_bridge_steam_database_password: "{{ (matrix_homeserver_generic_secret_key
 ######################################################################
 #
 # /matrix-bridge-steam
+#
+######################################################################
+
+######################################################################
+#
+# matrix-bridge-nether-voicebridge
+#
+######################################################################
+
+# We don't enable bridges by default.
+matrix_nether_voicebridge_enabled: false
+
+# The bridge talks to LiveKit directly, enabling it requires the
+# MatrixRTC stack (livekit-server + lk-jwt-service).
+matrix_rtc_enabled: "{{ matrix_element_call_enabled or matrix_nether_voicebridge_enabled }}"
+
+matrix_nether_voicebridge_systemd_required_services_list_auto: |
+  {{
+    matrix_addons_homeserver_systemd_services_list
+  }}
+
+matrix_nether_voicebridge_container_network: "{{ matrix_addons_container_network }}"
+
+matrix_nether_voicebridge_container_additional_networks_auto: |-
+  {{
+    (
+      ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
+    ) | unique
+  }}
+
+matrix_nether_voicebridge_appservice_token: "{{ (matrix_homeserver_generic_secret_key + ':nvb.as.token') | hash('sha512') | to_uuid }}"
+
+matrix_nether_voicebridge_homeserver_address: "{{ matrix_addons_homeserver_client_api_url }}"
+matrix_nether_voicebridge_homeserver_token: "{{ (matrix_homeserver_generic_secret_key + ':nvb.hs.token') | hash('sha512') | to_uuid }}"
+
+######################################################################
+#
+# /matrix-bridge-nether-voicebridge
 #
 ######################################################################
 
@@ -5501,6 +5550,11 @@ matrix_ketesa_config_asManagedUsers_auto: |
       '^@'+(matrix_bridge_steam_appservice_bot_username | default('') | regex_escape)+':'+(matrix_domain | regex_escape)+'$',
       '^@steam_[a-zA-Z0-9]+:'+(matrix_domain | regex_escape)+'$',
     ] if matrix_bridge_steam_enabled else [])
+    +
+    ([
+      '^@'+(matrix_nether_voicebridge_sender_localpart | default('') | regex_escape)+'_bot:'+(matrix_domain | regex_escape)+'$',
+      '^@'+(matrix_nether_voicebridge_sender_localpart | default('') | regex_escape)+'_[0-9]+:'+(matrix_domain | regex_escape)+'$',
+    ] if matrix_nether_voicebridge_enabled else [])
   }}
 
 ######################################################################

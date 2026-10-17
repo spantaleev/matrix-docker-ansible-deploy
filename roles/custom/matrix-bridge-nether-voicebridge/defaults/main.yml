@@ -1,0 +1,138 @@
+# SPDX-FileCopyrightText: 2026 Jason LaGuidice
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# matrix-nether-voicebridge bridges Discord voice channels to Matrix Element Call rooms.
+# See: https://nether.codes/nether/nether-voicebridge
+
+matrix_nether_voicebridge_enabled: false
+
+matrix_nether_voicebridge_container_image_self_build: false
+matrix_nether_voicebridge_container_image_self_build_repo: "https://nether.codes/nether/nether-voicebridge.git"
+matrix_nether_voicebridge_container_image_self_build_repo_version: "{{ 'master' if matrix_nether_voicebridge_version == 'latest' else matrix_nether_voicebridge_version }}"
+
+# renovate: datasource=docker depName=nether.codes/nether/nether-voicebridge
+matrix_nether_voicebridge_version: v0.4.10
+matrix_nether_voicebridge_container_image: "{{ matrix_nether_voicebridge_container_image_registry_prefix }}nether/nether-voicebridge:{{ matrix_nether_voicebridge_version }}"
+matrix_nether_voicebridge_container_image_registry_prefix: "{{ 'localhost/' if matrix_nether_voicebridge_container_image_self_build else matrix_nether_voicebridge_container_image_registry_prefix_upstream }}"
+matrix_nether_voicebridge_container_image_registry_prefix_upstream: "{{ matrix_nether_voicebridge_container_image_registry_prefix_upstream_default }}"
+matrix_nether_voicebridge_container_image_registry_prefix_upstream_default: "nether.codes/"
+
+matrix_nether_voicebridge_base_path: "{{ matrix_base_data_path }}/matrix-nether-voicebridge"
+matrix_nether_voicebridge_config_path: "{{ matrix_nether_voicebridge_base_path }}/config"
+matrix_nether_voicebridge_data_path: "{{ matrix_nether_voicebridge_base_path }}/data"
+matrix_nether_voicebridge_container_src_files_path: "{{ matrix_nether_voicebridge_base_path }}/docker-src"
+
+# URL of the Matrix homeserver the bridge connects to (required)
+matrix_nether_voicebridge_homeserver_address: ""
+matrix_nether_voicebridge_homeserver_domain: "{{ matrix_domain }}"
+
+# Appservice authentication tokens — auto-generated in group_vars from matrix_homeserver_generic_secret_key
+matrix_nether_voicebridge_appservice_token: ''
+matrix_nether_voicebridge_homeserver_token: ''
+
+# Informational appservice ID used in the registration file and bridge config
+matrix_nether_voicebridge_appservice_id: "nether-voicebridge"
+
+# The sender_localpart for the appservice's own bookkeeping user in the registration.
+# This is INDEPENDENT of the bridge bot/ghost stem below.
+matrix_nether_voicebridge_appservice_sender_localpart: "nether-voicebridge_as"
+
+# Stem for bot and ghost Matrix user IDs:
+#   bot MXID:   @{sender_localpart}_bot:{domain}
+#   ghost MXID: @{sender_localpart}_{discord_user_id}:{domain}
+# Must match the namespaces.users regex stem in the registration YAML.
+matrix_nether_voicebridge_sender_localpart: "nether-voicebridge"
+
+# List of Discord bot tokens (the shared puppet pool across all bridges).
+# At least one token is required. Each entry is a SEPARATE Discord application
+# created at discord.com/developers/applications. All bots must be invited to
+# every guild they will bridge with Connect, Speak, Use Voice Activity, and
+# Change Nickname permissions.
+# Example:
+#   matrix_nether_voicebridge_puppet_tokens:
+#     - "YOUR_BOT_TOKEN_1"
+#     - "YOUR_BOT_TOKEN_2"
+matrix_nether_voicebridge_puppet_tokens: []
+
+# Prefix prepended to puppet bot nicknames in Discord so users can identify bridged
+# Matrix participants (puppets are the bots on Discord; ghosts are Discord users shown on Matrix). Set to "" to disable. Prefix + name is truncated to 32 chars.
+matrix_nether_voicebridge_puppet_nickname_prefix: "[Matrix] "
+
+# List of bridge definitions. Each entry bridges one Discord voice channel to one
+# Matrix Element Call room. At least one bridge is required.
+#
+# Required fields per entry:
+#   name             — label used in logs and to derive the SQLite store path
+#   discord_guild_id  — right-click server icon → "Copy Server ID" (Developer Mode)
+#   discord_channel_id — right-click voice channel → "Copy Channel ID" (Developer Mode)
+#   matrix_room_id   — internal room ID, e.g. !abc:example.com (NOT the #alias form)
+#
+# Optional field per entry:
+#   livekit          — dictionary of key/value pairs rendered into this bridge's
+#                      [bridge.livekit] table (e.g. lk_jwt_url, url, media_e2ee).
+#                      By default these are auto-derived from .well-known/matrix/client.
+#
+# Example:
+#   matrix_nether_voicebridge_bridges:
+#     - name: "lobby"
+#       discord_guild_id: "1234567890123456789"
+#       discord_channel_id: "9876543210987654321"
+#       matrix_room_id: "!yourroomid:example.com"
+#     - name: "gaming"
+#       discord_guild_id: "1234567890123456789"
+#       discord_channel_id: "1111111111111111111"
+#       matrix_room_id: "!anotherroomid:example.com"
+matrix_nether_voicebridge_bridges: []
+
+# Display name for the bridge bot shown in the Element Call roster
+matrix_nether_voicebridge_bot_display_name: "Nether Voice Bridge bot"
+
+# Optional RUST_LOG value for verbose logging. Leave empty for default log output.
+matrix_nether_voicebridge_rust_log: ""
+
+matrix_nether_voicebridge_container_network: ""
+
+matrix_nether_voicebridge_container_additional_networks: "{{ matrix_nether_voicebridge_container_additional_networks_auto + matrix_nether_voicebridge_container_additional_networks_custom }}"
+matrix_nether_voicebridge_container_additional_networks_auto: []
+matrix_nether_voicebridge_container_additional_networks_custom: []
+
+# Extra arguments passed to the container at creation time
+matrix_nether_voicebridge_container_extra_arguments: []
+
+# List of systemd services that matrix-nether-voicebridge.service depends on
+matrix_nether_voicebridge_systemd_required_services_list: "{{ matrix_nether_voicebridge_systemd_required_services_list_default + matrix_nether_voicebridge_systemd_required_services_list_auto + matrix_nether_voicebridge_systemd_required_services_list_custom }}"
+matrix_nether_voicebridge_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
+matrix_nether_voicebridge_systemd_required_services_list_auto: []
+matrix_nether_voicebridge_systemd_required_services_list_custom: []
+
+matrix_nether_voicebridge_systemd_wanted_services_list: []
+
+# Appservice registration YAML installed on the homeserver.
+# url is null because the bridge is push-only — it has no inbound HTTP endpoint.
+matrix_nether_voicebridge_registration_yaml: |
+  id: {{ matrix_nether_voicebridge_appservice_id }}
+  url: null
+  as_token: "{{ matrix_nether_voicebridge_appservice_token }}"
+  hs_token: "{{ matrix_nether_voicebridge_homeserver_token }}"
+  sender_localpart: {{ matrix_nether_voicebridge_appservice_sender_localpart }}
+  namespaces:
+    users:
+      - exclusive: true
+        regex: '^@{{ matrix_nether_voicebridge_sender_localpart | regex_escape }}_.*:{{ matrix_nether_voicebridge_homeserver_domain | regex_escape }}$'
+    aliases: []
+    rooms: []
+  rate_limited: false
+
+matrix_nether_voicebridge_registration: "{{ matrix_nether_voicebridge_registration_yaml | from_yaml }}"
+
+# Optional raw TOML appended verbatim to the generated config.toml (advanced use).
+# It lands after the last bridge's [bridge.livekit] table, so use it only for additional
+# tables. Do not repeat [bridge.livekit] here (duplicate-table error); per-bridge LiveKit
+# overrides belong in the `livekit` field of `matrix_nether_voicebridge_bridges` entries.
+matrix_nether_voicebridge_configuration_extension_toml: ""
+
+# Whether a restart is needed — computed automatically during installation.
+# The default of false means "no restart needed" when the install tasks haven't run.
+matrix_nether_voicebridge_restart_necessary: false
