@@ -46,10 +46,16 @@ Such kind of difference sometimes matters. For example, when you install a Matri
 
 ## Conditional service restart
 
-When running `install-all` or `install-service` (whether via `just` or raw `ansible-playbook`), only services whose configuration or container image actually changed during the playbook run will be restarted. Unchanged services are left running (or get started if they were stopped). This reduces unnecessary downtime.
+With conditional restart, a service whose role tracks its changes is restarted only when its configuration or container image changed during the run. An unchanged service is left running, or started if it was stopped. Whether conditional restart applies depends on the playbook tags. The standard `just` recipes add these tags:
 
-When running with `setup-*` tags (e.g. `setup-all`, `setup-synapse`), all services are unconditionally restarted regardless of whether changes were detected. This is appropriate for setup's thorough "full setup" semantics.
+| Command                        | Tags added by the recipe                        | Restart behavior                             |
+|--------------------------------|-------------------------------------------------|----------------------------------------------|
+| `just install-all`             | `install-all,ensure-matrix-users-created,start` | Conditional                                  |
+| `just install-service SERVICE` | `install-SERVICE,start-group`                   | Conditional, within the service's group      |
+| `just setup-all`               | `setup-all,ensure-matrix-users-created,start`   | Unconditional: all targeted services restart |
+| `just start-all`               | `start-all`                                     | Unconditional: all services restart          |
+| `just start-group GROUP`       | `start-group`                                   | Unconditional, within the group              |
 
-`start-all` and `start-group` always restart all targeted services, since no installation tasks run during these commands.
+For raw `ansible-playbook` or `just run-tags` runs, conditional restart applies only when the selected tags include an `install-*` tag and no `setup-*` tag. Any other run with a start or restart tag restarts its targeted services unconditionally.
 
-This behavior is automatically determined based on the playbook tags in use. It can be overridden with the `devture_systemd_service_manager_conditional_restart_enabled` variable. For example, to force unconditional restarts during installation: `just install-all --extra-vars='devture_systemd_service_manager_conditional_restart_enabled=false'`
+This behavior can be overridden with the `devture_systemd_service_manager_conditional_restart_enabled` variable. For example, to force unconditional restarts during installation: `just install-all --extra-vars='devture_systemd_service_manager_conditional_restart_enabled=false'`
