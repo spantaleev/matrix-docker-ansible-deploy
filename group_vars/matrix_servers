@@ -247,6 +247,78 @@ matrix_homeserver_app_service_config_files_auto: |
     (['/matrix-steam-bridge-registration.yaml'] if matrix_bridge_steam_enabled else [])
   }}
 
+# Tells whether any appservice registration file mounted into the homeserver (see `matrix_homeserver_container_extra_arguments_auto`)
+# changed during this run, so that the homeserver is restarted to pick it up.
+# Each entry is the registered result of the task which installs that file.
+# Synapse workers read the same configuration and registration files as the main Synapse process,
+# so their entries in `devture_systemd_service_manager_services_list_auto` follow the same restart decision.
+matrix_homeserver_app_service_registration_changed: |
+  {{
+    (
+      ([matrix_bridge_appservice_discord_registration_result | default({})] if matrix_bridge_appservice_discord_enabled else [])
+      +
+      ([matrix_appservice_draupnir_for_all_registration_config_result | default({})] if matrix_appservice_draupnir_for_all_enabled else [])
+      +
+      ([matrix_bot_meowlnir_registration_result | default({})] if matrix_bot_meowlnir_enabled else [])
+      +
+      ([matrix_appservice_double_puppet_registration_result | default({})] if matrix_appservice_double_puppet_enabled else [])
+      +
+      ([matrix_bridge_appservice_irc_registration_result | default({})] if matrix_bridge_appservice_irc_enabled else [])
+      +
+      ([matrix_bridge_beeper_linkedin_registration_result | default({})] if matrix_bridge_beeper_linkedin_enabled else [])
+      +
+      ([matrix_bridge_beeper_line_registration_result | default({})] if matrix_bridge_beeper_line_enabled else [])
+      +
+      ([matrix_bridge_wechat_registration_result | default({})] if matrix_bridge_wechat_enabled else [])
+      +
+      ([matrix_bridge_heisenbridge_registration_result | default({})] if matrix_bridge_heisenbridge_enabled else [])
+      +
+      ([matrix_bridge_hookshot_registration_result | default({})] if matrix_bridge_hookshot_enabled else [])
+      +
+      ([matrix_bridge_mautrix_bluesky_registration_result | default({})] if matrix_bridge_mautrix_bluesky_enabled else [])
+      +
+      ([matrix_bridge_rustpush_registration_result | default({})] if matrix_bridge_rustpush_enabled else [])
+      +
+      ([matrix_bridge_mautrix_discord_registration_result | default({})] if matrix_bridge_mautrix_discord_enabled else [])
+      +
+      ([matrix_bridge_mautrix_slack_registration_result | default({})] if matrix_bridge_mautrix_slack_enabled else [])
+      +
+      ([matrix_bridge_mautrix_googlechat_registration_result | default({})] if matrix_bridge_mautrix_googlechat_enabled else [])
+      +
+      ([matrix_bridge_mautrix_signal_registration_result | default({})] if matrix_bridge_mautrix_signal_enabled else [])
+      +
+      ([matrix_bridge_mautrix_meta_messenger_registration_result | default({})] if matrix_bridge_mautrix_meta_messenger_enabled else [])
+      +
+      ([matrix_bridge_mautrix_meta_instagram_registration_result | default({})] if matrix_bridge_mautrix_meta_instagram_enabled else [])
+      +
+      ([matrix_bridge_mautrix_telegram_registration_result | default({})] if matrix_bridge_mautrix_telegram_enabled else [])
+      +
+      ([matrix_bridge_mautrix_twitter_registration_result | default({})] if matrix_bridge_mautrix_twitter_enabled else [])
+      +
+      ([matrix_bridge_mautrix_gmessages_registration_result | default({})] if matrix_bridge_mautrix_gmessages_enabled else [])
+      +
+      ([matrix_bridge_mautrix_gvoice_registration_result | default({})] if matrix_bridge_mautrix_gvoice_enabled else [])
+      +
+      ([matrix_bridge_mautrix_linkedin_registration_result | default({})] if matrix_bridge_mautrix_linkedin_enabled else [])
+      +
+      ([matrix_bridge_mautrix_whatsapp_registration_result | default({})] if matrix_bridge_mautrix_whatsapp_enabled else [])
+      +
+      ([matrix_bridge_mautrix_wsproxy_registration_androidsms_result | default({})] if matrix_bridge_mautrix_wsproxy_enabled else [])
+      +
+      ([matrix_bridge_mautrix_wsproxy_registration_imessage_result | default({})] if matrix_bridge_mautrix_wsproxy_enabled else [])
+      +
+      ([matrix_bridge_mx_puppet_groupme_registration_result | default({})] if matrix_bridge_mx_puppet_groupme_enabled else [])
+      +
+      ([matrix_bridge_mx_puppet_steam_registration_result | default({})] if matrix_bridge_mx_puppet_steam_enabled else [])
+      +
+      ([matrix_bridge_sms_registration_result | default({})] if matrix_bridge_sms_enabled else [])
+      +
+      ([matrix_bridge_steam_registration_result | default({})] if matrix_bridge_steam_enabled else [])
+      +
+      ([matrix_cactus_comments_config_appservice_result | default({})] if matrix_cactus_comments_enabled else [])
+    ) | selectattr('changed', 'defined') | selectattr('changed') | list | length > 0
+  }}
+
 matrix_addons_homeserver_container_network: "{{ matrix_playbook_reverse_proxy_container_network if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_container_network }}"
 matrix_addons_homeserver_client_api_url: "{{ ('http://' + matrix_playbook_reverse_proxy_hostname + ':' + matrix_playbook_internal_matrix_client_api_traefik_entrypoint_port | string) if matrix_playbook_internal_matrix_client_api_traefik_entrypoint_enabled else matrix_homeserver_container_url }}"
 matrix_addons_homeserver_systemd_services_list: |
@@ -681,6 +753,7 @@ devture_systemd_service_manager_services_list_auto: |
         else (matrix_continuwuity_restart_necessary | bool) if matrix_homeserver_implementation == 'continuwuity'
         else (matrix_tuwunel_restart_necessary | bool) if matrix_homeserver_implementation == 'tuwunel'
         else (matrix_dendrite_restart_necessary | bool) if matrix_homeserver_implementation == 'dendrite'
+        else ((matrix_synapse_restart_necessary | bool) or (matrix_homeserver_app_service_registration_changed | bool)) if matrix_homeserver_implementation == 'synapse'
         else true
       ),
       'groups': ['matrix', 'homeservers', matrix_homeserver_implementation],
@@ -959,7 +1032,7 @@ devture_systemd_service_manager_services_list_auto: |
       'groups': ['matrix', 'traefik-certs-dumper'],
     }] if traefik_certs_dumper_enabled else [])
     +
-    (matrix_synapse_worker_systemd_services_list if matrix_synapse_enabled else [])
+    (matrix_synapse_worker_systemd_services_list | map('combine', {'restart_necessary': ((matrix_synapse_restart_necessary | bool) or (matrix_homeserver_app_service_registration_changed | bool))}) | list if matrix_synapse_enabled else [])
   }}
 
 ########################################################################

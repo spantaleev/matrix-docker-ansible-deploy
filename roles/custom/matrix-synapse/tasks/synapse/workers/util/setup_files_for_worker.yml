@@ -20,6 +20,7 @@
     mode: '0644'
     owner: "{{ matrix_synapse_uid }}"
     group: "{{ matrix_synapse_gid }}"
+  register: matrix_synapse_worker_config_result
 
 - name: Ensure labels exists for {{ matrix_synapse_worker_systemd_service_name }}
   ansible.builtin.template:
@@ -28,9 +29,22 @@
     mode: '0644'
     owner: "{{ matrix_synapse_uid }}"
     group: "{{ matrix_synapse_gid }}"
+  register: matrix_synapse_worker_labels_result
 
 - name: Ensure systemd service exists for {{ matrix_synapse_worker_systemd_service_name }}
   ansible.builtin.template:
     src: "{{ role_path }}/templates/synapse/systemd/matrix-synapse-worker.service.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ matrix_synapse_worker_systemd_service_name }}.service"
     mode: '0644'
+  register: matrix_synapse_worker_systemd_service_result
+
+# Workers share Synapse's restart decision (see `matrix_synapse_restart_necessary`),
+# so a change to any one worker's files marks it as needed.
+- ansible.builtin.set_fact:
+    matrix_synapse_workers_files_changed: >-
+      {{
+        matrix_synapse_workers_files_changed | default(false) | bool
+        or matrix_synapse_worker_config_result.changed | default(false)
+        or matrix_synapse_worker_labels_result.changed | default(false)
+        or matrix_synapse_worker_systemd_service_result.changed | default(false)
+      }}

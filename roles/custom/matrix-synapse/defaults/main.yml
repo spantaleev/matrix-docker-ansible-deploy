@@ -135,6 +135,18 @@ matrix_synapse_ext_s3_storage_provider_container_arguments: []
 # installation tasks haven't run (e.g., due to --tags skipping them).
 matrix_synapse_s3_storage_provider_restart_necessary: false
 
+# matrix_synapse_restart_necessary controls whether Synapse and its workers
+# will be restarted (when true) or merely started (when false) by the
+# systemd service manager role (when conditional restart is enabled).
+#
+# This value is automatically computed during installation based on whether
+# the Synapse or worker configuration, support files, systemd service files,
+# container image or extension modules changed.
+# The playbook also restarts Synapse when an appservice registration file it mounts changes.
+# The default of `false` means "no restart needed" — appropriate when the role's
+# installation tasks haven't run (e.g., due to --tags skipping them).
+matrix_synapse_restart_necessary: false
+
 matrix_synapse_container_client_api_port: 8008
 
 # Controls the `x_forwarded` setting for the "Insecure HTTP listener (Client API)".
