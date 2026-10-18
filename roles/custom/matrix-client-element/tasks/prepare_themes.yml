@@ -39,7 +39,7 @@
         path: "{{ item.path }}"
       register: "matrix_client_element_theme_file_contents"
       # `find` lists files in filesystem order, which can differ between checkouts. Sorting keeps the generated `config.json` the same, so the service is not restarted needlessly.
-      with_items: "{{ matrix_client_element_theme_file_list.files | sort(attribute='path') }}"
+      with_items: "{{ matrix_client_element_theme_file_list.files | sort(attribute='path', case_sensitive=true) }}"
 
     - name: Load Element Web theme
       ansible.builtin.set_fact:
