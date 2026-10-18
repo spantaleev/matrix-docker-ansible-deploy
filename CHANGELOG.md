@@ -1,3 +1,11 @@
+# 2026-10-18
+
+## `just start-all` and `just start-group` restart all targeted services again
+
+Since [conditional service restart](#conditional-service-restart-for-install--commands) was introduced, it also applied to runs with only start or restart tags. As more roles began tracking their own changes, these commands stopped restarting most services and only started those that were stopped, contrary to the [documentation](./docs/just.md#conditional-service-restart).
+
+Conditional restart now applies only when an `install-*` tag is selected and no `setup-*` tag. `just install-all` and `just install-service` are unchanged. `just start-all`, `just start-group` and other runs with only start or restart tags restart all their targeted services again, so they briefly interrupt running services. To keep the previous behavior for such a run, add `--extra-vars='devture_systemd_service_manager_conditional_restart_enabled=true'`.
+
 # 2026-10-10
 
 ## Optional system cleanup, including safe removal of superseded Docker images
