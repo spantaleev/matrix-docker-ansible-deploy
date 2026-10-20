@@ -49,6 +49,8 @@ We will be using `example.com` as the domain in the following instruction. Pleas
 
 - [sudo](https://www.sudo.ws/), even when you've configured Ansible to log in as `root`, because this Ansible playbook sometimes uses the Ansible [become](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html) module to perform tasks as another user (e.g. `matrix`) and the `become` module's default implementation uses `sudo`. Some distributions, like a minimal Debian net install, do not include the `sudo` package by default.
 
+  - Caution: Some distributions (e.g. Ubuntu 26.04) ship [sudo-rs](https://github.com/trifectatechfoundation/sudo-rs) instead of [sudo-ws](https://www.sudo.ws/). This is incompatible with Ansible version 2.21 and below due to [a change in the prompt output format](https://github.com/ansible/ansible/issues/85837). You can either [upgrade Ansible](ansible.md#upgrading-ansible) or switch back to sudo-ws (e.g. `sudo update-alternatives --set sudo /usr/bin/sudo.ws`).
+
 - An HTTPS-capable web server at the base domain name (`example.com`) which is capable of serving static files. Unless you decide to [Serve the base domain from the Matrix server](configuring-playbook-base-domain-serving.md) or alternatively, to use DNS SRV records for [Server Delegation](howto-server-delegation.md).
 
 - Properly configured DNS records for `example.com` (details in [Configuring DNS](configuring-dns.md)).
