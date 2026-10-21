@@ -26,6 +26,10 @@ Molecule is deliberately **not** part of the `prek` hooks. A run is far too slow
 
 ## What CI runs
 
+CI uses Python 3.14, which is supported by the pinned Ansible dependencies. Keep the
+workflow's Python minor version within Ansible's supported controller versions;
+an unrestricted `3.x` can select a newer Python before Ansible supports it.
+
 `.github/workflows/molecule.yml` does not run every scenario on every push — with one repository holding every role, that would be unaffordable. Its first job works out which roles the push actually touched, keeps the ones that have a scenario, and builds the job matrix from those. A documentation change runs nothing.
 
 For pushes, CI compares against the previous branch tip. On a new branch, or when the previous commit is unavailable after a force push, it instead compares against the branch's common ancestor with the default branch. This keeps a new Renovate branch limited to the roles it changes. If no usable comparison exists, it falls back to running every scenario. `workflow_dispatch` accepts an optional role name; leaving it empty runs every scenario.
