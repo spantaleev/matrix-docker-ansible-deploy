@@ -29,6 +29,9 @@ Molecule is deliberately **not** part of the `prek` hooks. A run is far too slow
 CI uses Python 3.14, which is supported by the pinned Ansible dependencies. Keep the
 workflow's Python minor version within Ansible's supported controller versions;
 an unrestricted `3.x` can select a newer Python before Ansible supports it.
+Renovate limits this workflow's Python dependency to `<3.15` while the pinned
+Ansible supports Python only through 3.14. Raise the workflow pin and this Renovate
+limit together after upgrading Ansible and verifying the scenarios on the newer Python.
 
 `.github/workflows/molecule.yml` does not run every scenario on every push — with one repository holding every role, that would be unaffordable. Its first job works out which roles the push actually touched, keeps the ones that have a scenario, and builds the job matrix from those. A documentation change runs nothing.
 
