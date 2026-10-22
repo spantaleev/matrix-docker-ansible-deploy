@@ -1,0 +1,59 @@
+{#
+SPDX-FileCopyrightText: 2026 Jason LaGuidice
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+#jinja2: lstrip_blocks: True
+[Unit]
+Description=Matrix Nether Voice Bridge
+{% for service in matrix_nether_voicebridge_systemd_required_services_list %}
+Requires={{ service }}
+After={{ service }}
+{% endfor %}
+{% for service in matrix_nether_voicebridge_systemd_wanted_services_list %}
+Wants={{ service }}
+{% endfor %}
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-nether-voicebridge 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-nether-voicebridge 2>/dev/null || true'
+
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+			--rm \
+			--name=matrix-nether-voicebridge \
+			--log-driver=none \
+			--user={{ matrix_user_uid }}:{{ matrix_user_gid }} \
+			--cap-drop=ALL \
+			--network={{ matrix_nether_voicebridge_container_network }} \
+			--env CONFIG_PATH=/app/config/config.toml \
+			--env NVB_DATA_DIR=/app/data \
+{% if matrix_nether_voicebridge_rust_log | length > 0 %}
+			--env RUST_LOG={{ matrix_nether_voicebridge_rust_log }} \
+{% endif %}
+			--mount type=bind,src={{ matrix_nether_voicebridge_config_path }},dst=/app/config,ro \
+			--mount type=bind,src={{ matrix_nether_voicebridge_data_path }},dst=/app/data \
+			{% for arg in matrix_nether_voicebridge_container_extra_arguments %}
+			{{ arg }} \
+			{% endfor %}
+			{{ matrix_nether_voicebridge_container_image }}
+
+{% if matrix_nether_voicebridge_container_network != 'host' %}
+{% for network in matrix_nether_voicebridge_container_additional_networks %}
+ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} matrix-nether-voicebridge
+{% endfor %}
+{% endif %}
+
+ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach matrix-nether-voicebridge
+
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} matrix-nether-voicebridge 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm matrix-nether-voicebridge 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-nether-voicebridge
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

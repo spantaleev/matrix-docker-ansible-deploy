@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Jason LaGuidice
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+
+- name: Fail if matrix_livekit_jwt_service is not enabled
+  ansible.builtin.fail:
+    msg: >-
+      matrix_nether_voicebridge requires `matrix_livekit_jwt_service_enabled: true`.
+      The bridge auto-discovers the lk-jwt-service endpoint from the homeserver's
+      .well-known/matrix/client (rtc_foci). Enable matrix_livekit_jwt_service and
+      re-run the playbook.
+  when: not (matrix_livekit_jwt_service_enabled | default(false) | bool)
+
+- name: Fail if required matrix_nether_voicebridge settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item.name }}`).
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
+  with_items:
+    - {name: 'matrix_nether_voicebridge_appservice_token', when: true}
+    - {name: 'matrix_nether_voicebridge_homeserver_address', when: true}
+    - {name: 'matrix_nether_voicebridge_homeserver_token', when: true}
+    - {name: 'matrix_nether_voicebridge_container_network', when: true}
+
+- name: Fail if no puppet tokens are configured
+  ansible.builtin.fail:
+    msg: >-
+      You must define at least one Discord bot token in `matrix_nether_voicebridge_puppet_tokens`.
+      Each token is a separate Discord application (puppet bot) created at
+      discord.com/developers/applications. All bots must be invited to every guild
+      they will bridge. See the documentation for full setup instructions.
+  when: matrix_nether_voicebridge_puppet_tokens | length == 0
+
+- name: Fail if no bridges are configured
+  ansible.builtin.fail:
+    msg: >-
+      You must define at least one bridge in `matrix_nether_voicebridge_bridges`.
+      Each bridge maps one Discord voice channel to one Matrix Element Call room.
+      Required fields: name, discord_guild_id, discord_channel_id, matrix_room_id.
+  when: matrix_nether_voicebridge_bridges | length == 0
+
+- name: Fail if any bridge is missing required fields
+  ansible.builtin.fail:
+    msg: >-
+      Bridge #{{ bridge_idx + 1 }} ('{{ item.name | default("unnamed") }}') is missing one or more
+      required fields. Each bridge must define: name, discord_guild_id, discord_channel_id,
+      matrix_room_id.
+  when: >-
+    (item.name | default('') | length == 0)
+    or (item.discord_guild_id | default('') | length == 0)
+    or (item.discord_channel_id | default('') | length == 0)
+    or (item.matrix_room_id | default('') | length == 0)
+  loop: "{{ matrix_nether_voicebridge_bridges }}"
+  loop_control:
+    index_var: bridge_idx

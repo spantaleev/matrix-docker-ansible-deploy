@@ -178,6 +178,8 @@ Bridges can be used to connect your Matrix installation with third-party communi
 
 - [Setting up Steam bridging](configuring-playbook-bridge-steam.md)
 
+- [Setting up Nether Voice Bridge (Discord voice ↔ Matrix Element Call)](configuring-playbook-bridge-nether-voicebridge.md)
+
 - [Setting up MX Puppet Steam bridging](configuring-playbook-bridge-mx-puppet-steam.md)
 
 - [Setting up Postmoogle email bridging](configuring-playbook-bridge-postmoogle.md)
