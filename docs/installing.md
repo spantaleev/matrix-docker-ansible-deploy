@@ -150,6 +150,7 @@ After completing the installation, you can:
   * via the *Explore rooms* feature in Element Web or some other clients, or by discovering them using this [matrix-static list](https://view.matrix.org). **Note**: joining large rooms may overload small servers.
     For tuning guidance on constrained hosts, see [Limit joining heavy rooms on constrained hosts](configuring-playbook-synapse.md#limit-joining-heavy-rooms-on-constrained-hosts).
   * or come say Hi in our support room — [#matrix-docker-ansible-deploy:devture.com](https://matrix.to/#/#matrix-docker-ansible-deploy:devture.com). You might learn something or get to help someone else new to Matrix hosting.
+- or discover another playbook ([Mother-of-All-Self-Hosting Ansible playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/setting-up-services-on-mdad-server.md)) by the same team behind the MDAD playbook that helps you self-host [a lot of services](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/supported-services.md) on the same server
 - or help make this playbook better by contributing (code, documentation, or [coffee/beer](https://liberapay.com/s.pantaleev/donate))
 
 ### Installing native Matrix clients on your computer
