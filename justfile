@@ -119,7 +119,7 @@ install-service service *extra_args:
 setup-all *extra_args: (run-tags "setup-all,ensure-matrix-users-created,start" extra_args)
 
 # Runs the playbook with the given list of arguments
-run +extra_args:
+run +extra_args: (_install-roles "--quiet")
     ansible-playbook -i {{ inventory }} setup.yml {{ extra_args }}
 
 # Runs the playbook with the given list of comma-separated tags and optional arguments
@@ -127,7 +127,7 @@ run-tags tags *extra_args:
     {{ just_executable() }} --justfile "{{ justfile() }}" run --tags={{ tags }} {{ extra_args }}
 
 # Runs the playbook in user-registration mode
-register-user username password admin_yes_or_no *extra_args:
+register-user username password admin_yes_or_no *extra_args: (_install-roles "--quiet")
     ansible-playbook -i {{ inventory }} setup.yml --tags=register-user --extra-vars="username={{ username }} password={{ password }} admin={{ admin_yes_or_no }}" {{ extra_args }}
 
 # Starts all services
