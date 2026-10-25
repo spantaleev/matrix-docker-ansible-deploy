@@ -22,14 +22,8 @@ add-inventory-host domain server_address:
 
 # Pulls external Ansible roles
 roles:
-    #!/usr/bin/env sh
-    echo "[NOTE] This command just updates the roles, but if you want to update everything at once (playbook, roles, etc.) - use 'just update'"
-    if [ -x "$(command -v agru)" ]; then
-        agru -p roles/galaxy/ -no-tui
-    else
-        rm -rf roles/galaxy
-        ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
-    fi
+    @echo "[NOTE] This command just updates the roles, but if you want to update everything at once (playbook, roles, etc.) - use 'just update'"
+    @{{ just_executable() }} --justfile "{{ justfile() }}" _install-roles
 
 # Updates the playbook and installs the necessary Ansible roles pinned in requirements.yml. If a -u flag is passed, also updates the requirements.yml file with new role versions (if available)
 update *flags: update-playbook-only
@@ -145,6 +139,20 @@ molecule *args:
 # Removes the Molecule virtualenv and per-role Ansible homes from var/
 molecule-clean *args:
     @{{ justfile_directory() }}/bin/molecule-clean.sh {{ args }}
+
+# Internal - installs the Ansible roles pinned in requirements.yml
+_install-roles:
+    #!/usr/bin/env sh
+    set -eu
+    if [ -x "$(command -v agru)" ]; then
+        echo "Installing roles pinned in requirements.yml…"
+        agru -p roles/galaxy/ -no-tui
+    else
+        echo "[NOTE] You are using the standard ansible-galaxy tool to install roles, which is slow and lacks other features. We recommend installing the 'agru' tool to speed up the process: https://github.com/etkecc/agru#where-to-get"
+        echo "Installing roles…"
+        rm -rf roles/galaxy
+        ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
+    fi
 
 # Internal - ensures var/mise and var/prek directories exist
 _ensure_mise_data_directory:
