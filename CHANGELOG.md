@@ -2082,7 +2082,7 @@ The `matrix-jitsi` role has been relocated in its own repository, part of the [M
 As part of the extraction process of this role out of the Matrix playbook, a few other things improved:
 
 - **native Traefik support** has been added
-- **support for hosting under a subpath** has been added, although it suffers from a few minor issues listed [here](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/jitsi.md#url)
+- **support for hosting under a subpath** has been added, although it suffers from a few minor issues listed [here](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/components/jitsi/README.md#usage)
 
 You need to **update your roles** (`just roles` or `make roles`) regardless of whether you're using Jitsi or not.
 

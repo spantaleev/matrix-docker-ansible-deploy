@@ -55,7 +55,7 @@ coturn_turn_external_ip_addresses: ["YOUR_PUBLIC_IP"]
 If you'd like to rely on external IP address auto-detection (not recommended unless you need it), avoid configuring this variable. The playbook will automatically contact an [echoip](https://github.com/mpolden/echoip)-compatible service (`https://ifconfig.co/json` by default) to determine your server's IP address. This API endpoint is configurable via the `coturn_turn_external_ip_address_auto_detection_echoip_service_url` variable.
 
 >[!NOTE]
-> You can self-host the echoip service by using the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting/mash-playbook) Ansible playbook. See [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/echoip.md) for the instruction to install it with the playbook. If you are wondering how to use it for your Matrix server, refer to [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/setting-up-services-on-mdad-server.md) for the overview.
+> You can self-host the echoip service by using the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting/mash-playbook) Ansible playbook. See [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/components/echoip/README.md) for the instruction to install it with the playbook. If you are wondering how to use it for your Matrix server, refer to [this page](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/setting-up-services-on-mdad-server.md) for the overview.
 
 ### Change the authentication mechanism (optional)
 
