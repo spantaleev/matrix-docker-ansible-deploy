@@ -28,15 +28,17 @@ roles:
 # Updates the playbook and installs the necessary Ansible roles pinned in requirements.yml. If a -u flag is passed, also updates the requirements.yml file with new role versions (if available)
 update *flags: update-playbook-only
     #!/usr/bin/env sh
-    if [ -x "$(command -v agru)" ]; then
-        echo {{ if flags == "" { "Installing roles pinned in requirements.yml…" } else if flags == "-u" { "Updating roles and pinning new versions in requirements.yml…" } else { "Unknown flags passed" } }}
-        agru -p roles/galaxy/ -no-tui {{ flags }}
-    else
-        echo "[NOTE] You are using the standard ansible-galaxy tool to install roles, which is slow and lacks other features. We recommend installing the 'agru' tool to speed up the process: https://github.com/etkecc/agru#where-to-get"
-        echo "Installing roles…"
-        rm -rf roles/galaxy
-        ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force
+    set -eu
+    if [ "{{ flags }}" = "-u" ] && [ -x "$(command -v agru)" ]; then
+        # This updates the versions pinned in requirements.yml and installs the roles
+        echo "Updating roles and pinning new versions in requirements.yml…"
+        agru -p roles/galaxy/ -no-tui -u
+        exit 0
     fi
+    if [ -n "{{ flags }}" ]; then
+        echo "Ignoring unsupported flags: {{ flags }}"
+    fi
+    {{ just_executable() }} --justfile "{{ justfile() }}" _install-roles
 
 # Updates the playbook without installing/updating Ansible roles
 update-playbook-only:
