@@ -3,7 +3,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     agru-src = {
-      url = "github:etkecc/agru";
+      url = "github:etkecc/agru/v0.3.0";
       flake = false;
     };
   };
@@ -22,7 +22,7 @@
         };
         agru = pkgs.buildGo126Module {
           pname = "agru";
-          version = "0.2.1";
+          version = "0.3.0";
           src = agru-src;
           vendorHash = null;
         };
