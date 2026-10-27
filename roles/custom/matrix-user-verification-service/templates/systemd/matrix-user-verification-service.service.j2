@@ -28,7 +28,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			{% if matrix_user_verification_service_container_http_host_bind_port %}
 			-p {{ matrix_user_verification_service_container_http_host_bind_port }}:3000 \
 			{% endif %}
-			--mount type=bind,src={{ matrix_user_verification_service_config_env_file }},dst=/app/.env,ro \
+			--env-file={{ matrix_user_verification_service_config_env_file }} \
 			{% for arg in matrix_user_verification_service_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}
