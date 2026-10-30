@@ -1,3 +1,13 @@
+# 2026-10-30
+
+## The base directory (`/matrix`) is now owned by root
+
+The playbook now makes the base directory (`matrix_base_data_path`, `/matrix` by default) and its `bin` directory owned by `root`, with the `matrix` group and the same mode (`0750`). Previously they were owned by the `matrix` user.
+
+Whoever owns this directory can rename any service's directory in it, even one owned by root, and put another in its place. A service that runs something as root from its directory relies on this not being possible.
+
+Nothing changes for you: the services' own directories keep their owners, and the `matrix` user can still reach them through the group. Re-running the playbook (`just install-all`) changes the owner. To keep the old owner, set `matrix_base_data_path_owner: "{{ matrix_user_name }}"` in your `vars.yml` file (not recommended).
+
 # 2026-10-19
 
 ## `just start-all` and `just start-group` restart all targeted services again

@@ -227,6 +227,11 @@ matrix_base_synology_volume_path: "/volume1"
 matrix_base_data_path: "/matrix"
 matrix_base_data_path_mode: "750"
 
+# Owned by root: whoever owns it could rename any service's directory (even a root-owned one) and put another in its place.
+# The group lets the matrix user reach the services' directories.
+matrix_base_data_path_owner: root
+matrix_base_data_path_group: "{{ matrix_group_name }}"
+
 matrix_bin_path: "{{ matrix_base_data_path }}/bin"
 
 matrix_host_command_sleep: "/usr/bin/env sleep"
