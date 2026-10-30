@@ -4,6 +4,19 @@
 
 ---
 
+# Owned by root: root runs the scripts in the bin path (e.g. `register-user` and `mas-cli`).
+# Whoever owns the base path could rename the bin path (even a root-owned one) and put another in its place.
+- name: Ensure Matrix Authentication Service root-owned paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0750'
+    owner: root
+    group: "{{ matrix_group_name }}"
+  with_items:
+    - "{{ matrix_authentication_service_base_path }}"
+    - "{{ matrix_authentication_service_bin_path }}"
+
 - name: Ensure Matrix Authentication Service paths exist
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -12,8 +25,6 @@
     owner: "{{ matrix_user_name }}"
     group: "{{ matrix_group_name }}"
   with_items:
-    - {path: "{{ matrix_authentication_service_base_path }}", when: true}
-    - {path: "{{ matrix_authentication_service_bin_path }}", when: true}
     - {path: "{{ matrix_authentication_service_config_path }}", when: true}
     - {path: "{{ matrix_authentication_service_data_path }}", when: true}
     - {path: "{{ matrix_authentication_service_data_keys_path }}", when: true}
@@ -75,13 +86,18 @@
     - src: "{{ role_path }}/templates/labels.j2"
       dest: "{{ matrix_authentication_service_config_path }}/labels"
       mode: '0644'
-    - src: "{{ role_path }}/templates/bin/register-user.j2"
-      dest: "{{ matrix_authentication_service_bin_path }}/register-user"
-      mode: '0755'
-    - src: "{{ role_path }}/templates/bin/mas-cli.j2"
-      dest: "{{ matrix_authentication_service_bin_path }}/mas-cli"
-      mode: '0755'
   register: matrix_authentication_service_support_files_result
+
+- name: Ensure Matrix Authentication Service scripts created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/bin/{{ item }}.j2"
+    dest: "{{ matrix_authentication_service_bin_path }}/{{ item }}"
+    mode: '0755'
+    owner: root
+    group: root
+  with_items:
+    - register-user
+    - mas-cli
 
 - name: Ensure Matrix Authentication Service container image is pulled
   community.docker.docker_image_pull:
