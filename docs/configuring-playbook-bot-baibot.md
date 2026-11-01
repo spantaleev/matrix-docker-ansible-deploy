@@ -228,7 +228,7 @@ matrix_bot_baibot_config_agents_static_definitions_groq_enabled: true
 matrix_bot_baibot_config_agents_static_definitions_groq_config_api_key: "YOUR_API_KEY_HERE"
 
 # Specify the text-generation agent you'd like to use
-matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_model_id: "llama3-70b-8192"
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_model_id: "openai/gpt-oss-120b"
 
 # The playbook defines a default prompt for all statically-defined agents.
 # You can adjust it in the `matrix_bot_baibot_config_agents_static_definitions_prompt` variable,
