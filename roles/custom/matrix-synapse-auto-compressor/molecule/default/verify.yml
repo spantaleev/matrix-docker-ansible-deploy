@@ -413,7 +413,9 @@
         no_block: true
       changed_when: true
 
-    - name: Wait for the transient compressor container to become inspectable
+    # The unit creates the container first and attaches additional networks in later ExecStartPre steps.
+    # Waiting for both networks avoids inspecting the container in between.
+    - name: Wait for the transient compressor container to become inspectable with both networks attached
       ansible.builtin.command:
         argv:
           - docker
@@ -422,7 +424,9 @@
           - matrix-synapse-auto-compressor
       register: matrix_synapse_auto_compressor_container_inspect
       changed_when: false
-      until: matrix_synapse_auto_compressor_container_inspect.rc == 0
+      until: >-
+        matrix_synapse_auto_compressor_container_inspect.rc == 0
+        and ((matrix_synapse_auto_compressor_container_inspect.stdout | from_json | first).NetworkSettings.Networks | length) == 2
       retries: 30
       delay: 1
       failed_when: false
