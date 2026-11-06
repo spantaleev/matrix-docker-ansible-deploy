@@ -300,8 +300,8 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: "YOUR_
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_web_search: true
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_code_interpreter: true
 
-# Image generation and editing use GPT Image 2.5 Sunburst by default.
-# matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_model_id: gpt-image-2.5-sunburst
+# Image generation and editing use GPT Image 2.6 Sunburst by default.
+# matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_model_id: gpt-image-2.6-sunburst
 # Quality options: low, medium, high, xhigh, max, auto. null uses the model default.
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_image_generation_quality: null
 ```
