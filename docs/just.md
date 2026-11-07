@@ -26,9 +26,12 @@ Here are some examples of shortcuts:
 | `just install-all --ask-vault-pass`            | Run commands with additional arguments (`--ask-vault-pass` will be appended to the above installation command) |
 | `just run-tags install-mautrix-slack,start`    | Run specific playbook tags (here `install-mautrix-slack` and `start`)                                          |
 | `just install-service mautrix-slack`           | Run `just run --tags=install-mautrix-slack,start-group --extra-vars=group=mautrix-slack` with even less typing |
+| `just list-tags`                               | List all [playbook tags](playbook-tags.md), one per line                                                       |
 | `just start-all`                               | (Re-)starts all services                                                                                       |
 | `just stop-group postgres`                     | Stop only the Postgres service                                                                                 |
 | `just register-user alice secret-password yes` | Registers an `alice` user with the `secret-password` password and admin access (admin = `yes`)                 |
+
+`just list-tags` prints the tags of all components, whether your inventory uses them or not. Each `install-SERVICE` tag it prints gives a name for `just install-service` (e.g. `install-mautrix-slack` gives `just install-service mautrix-slack`). You can search the tags with `grep` (e.g. `just list-tags | grep -i mautrix`).
 
 While [our documentation on prerequisites](prerequisites.md) lists `just` as one of the requirements for installation, using `just` is optional. If you find it difficult to install it, do not find it useful, or want to prefer raw `ansible-playbook` commands for some reason, feel free to run all commands manually. For example, you can run `ansible-galaxy` directly to install the Ansible roles: `rm -rf roles/galaxy; ansible-galaxy install -r requirements.yml -p roles/galaxy/ --force`.
 

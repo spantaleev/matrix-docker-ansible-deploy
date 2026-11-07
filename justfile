@@ -126,6 +126,13 @@ run +extra_args: (_install-roles "--quiet")
 run-tags tags *extra_args:
     {{ just_executable() }} --justfile "{{ justfile() }}" run --tags={{ tags }} {{ extra_args }}
 
+# Lists all playbook tags, one per line
+list-tags: (_install-roles "--quiet")
+    #!/usr/bin/env sh
+    set -eu
+    output=$(ansible-playbook -i {{ quote(inventory) }} setup.yml --list-tags)
+    printf '%s\n' "$output" | sed -n 's/.*TASK TAGS: \[\(.*\)\]/\1/p' | tr ',' '\n' | sed 's/^ *//' | sort -u
+
 # Runs the playbook in user-registration mode
 register-user username password admin_yes_or_no *extra_args: (_install-roles "--quiet")
     ansible-playbook -i {{ inventory }} setup.yml --tags=register-user --extra-vars="username={{ username }} password={{ password }} admin={{ admin_yes_or_no }}" {{ extra_args }}
