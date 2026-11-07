@@ -90,7 +90,7 @@ Besides the role itself and its documentation page, a new component touches a fe
 
 1. The role, in `roles/custom/matrix-<component>/` (or an external role wired via `requirements.yml`, as described above).
 2. Role registration in `setup.yml`.
-3. Wiring in `group_vars/matrix_servers`. Wire the component to the rest of the playbook there (referencing variables of other roles), but keep values that the role can construct by itself in the role's own `defaults/main.yml`.
+3. Wiring in `group_vars/matrix_servers`. Wire the component to the rest of the playbook there (referencing variables of other roles), but keep values that the role can construct by itself in the role's own `defaults/main.yml`. Each of the role's services in `devture_systemd_service_manager_services_list_auto` needs a group named after the role's `install-*` tag (e.g. `mautrix-slack` for `install-mautrix-slack`), so that `just install-service` starts all of them.
 4. The documentation page, `docs/configuring-playbook-<component>.md`, linked from the table of contents in `docs/README.md`.
 5. An entry in the supported services list in `README.md`.
 6. A row in `docs/container-images.md`, if the component runs a container.

@@ -40,6 +40,13 @@ repos:
         files: '^(group_vars/(matrix_servers|jitsi_jvb_servers)|bin/check-group-vars-jinja\.py|\.pre-commit-config\.yaml)$'
         args: ['group_vars/matrix_servers', 'group_vars/jitsi_jvb_servers']
         pass_filenames: false
+      - id: check-install-service-names
+        name: Check that custom roles' install tags have a matching service group
+        entry: bin/check-install-service-names.py
+        language: python
+        additional_dependencies: ['pyyaml==6.0.3']
+        files: '^(group_vars/matrix_servers|roles/custom/[^/]+/tasks/.+\.yml|bin/check-install-service-names\.py|\.pre-commit-config\.yaml)$'
+        pass_filenames: false
       - id: check-examples-vars-migration-version
         name: Check examples/vars.yml migration version matches expected
         entry: bin/check-examples-vars-migration-version.sh
