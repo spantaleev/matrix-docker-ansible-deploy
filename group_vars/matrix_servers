@@ -398,7 +398,7 @@ devture_systemd_service_manager_services_list_auto: |
       'name': (backup_borg_identifier + '.timer'),
       'priority': 5000,
       'restart_necessary': (backup_borg_restart_necessary | bool),
-      'groups': ['matrix', 'backup', 'borg'],
+      'groups': ['matrix', 'backup', 'borg', 'backup-borg'],
     }] if backup_borg_enabled else [])
     +
     ([{
@@ -552,7 +552,7 @@ devture_systemd_service_manager_services_list_auto: |
       'name': 'matrix-rustpush-bridge.service',
       'priority': 2000,
       'restart_necessary': (matrix_bridge_rustpush_restart_necessary | bool),
-      'groups': ['matrix', 'bridges', 'matrix-rustpush-bridge'],
+      'groups': ['matrix', 'bridges', 'matrix-rustpush-bridge', 'rustpush-bridge'],
     }] if matrix_bridge_rustpush_enabled else [])
     +
     ([{
@@ -678,7 +678,7 @@ devture_systemd_service_manager_services_list_auto: |
       'name': 'matrix-sms-bridge.service',
       'priority': 2000,
       'restart_necessary': (matrix_bridge_sms_restart_necessary | bool),
-      'groups': ['matrix', 'bridges', 'sms'],
+      'groups': ['matrix', 'bridges', 'sms', 'matrix-sms-bridge'],
     }] if matrix_bridge_sms_enabled else [])
     +
     ([{
@@ -1007,7 +1007,7 @@ devture_systemd_service_manager_services_list_auto: |
       'name': 'matrix-user-verification-service.service',
       'priority': 800,
       'restart_necessary': (matrix_user_verification_service_restart_necessary | bool),
-      'groups': ['matrix', 'matrix-user-verification-service'],
+      'groups': ['matrix', 'matrix-user-verification-service', 'user-verification-service'],
     }] if matrix_user_verification_service_enabled else [])
     +
     ([{
