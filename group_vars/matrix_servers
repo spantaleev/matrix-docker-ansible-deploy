@@ -650,7 +650,7 @@ devture_systemd_service_manager_services_list_auto: |
       'name': 'matrix-mautrix-wsproxy-syncproxy.service',
       'priority': 2000,
       'restart_necessary': (matrix_bridge_mautrix_wsproxy_syncproxy_restart_necessary | bool),
-      'groups': ['matrix', 'bridges', 'mautrix-wsproxy-syncproxy'],
+      'groups': ['matrix', 'bridges', 'mautrix-wsproxy', 'mautrix-wsproxy-syncproxy'],
     }] if matrix_bridge_mautrix_wsproxy_enabled else [])
     +
     ([{
@@ -965,14 +965,14 @@ devture_systemd_service_manager_services_list_auto: |
       'name': 'matrix-goofys.service',
       'priority': 800,
       'restart_necessary': (matrix_goofys_restart_necessary | bool),
-      'groups': ['matrix', 'goofys'],
+      'groups': ['matrix', 'synapse', 'goofys'],
     }] if (matrix_synapse_enabled and matrix_s3_media_store_enabled) else [])
     +
     ([{
       'name': 'matrix-synapse-s3-storage-provider-migrate.timer',
       'priority': 5000,
       'restart_necessary': (matrix_synapse_s3_storage_provider_restart_necessary | bool),
-      'groups': ['matrix'],
+      'groups': ['matrix', 'synapse'],
     }] if (matrix_synapse_enabled and matrix_synapse_ext_synapse_s3_storage_provider_enabled) else [])
     +
     ([{
