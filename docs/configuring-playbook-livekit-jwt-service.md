@@ -17,6 +17,22 @@ Take a look at:
 - `roles/custom/matrix-livekit-jwt-service/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 - `roles/custom/matrix-livekit-jwt-service/templates/env.j2` for the component's default configuration.
 
+## Stable MatrixRTC transport (Synapse only)
+
+When [Synapse](configuring-playbook-synapse.md) is your homeserver, the playbook also registers LiveKit JWT Service as a Synapse application service. This enables the stable MatrixRTC LiveKit transport (`m.livekit`): clients request call tokens through your homeserver, which forwards these requests to LiveKit JWT Service.
+
+Synapse advertises both the stable transport and the deprecated `livekit` one, so older clients can keep talking to LiveKit JWT Service directly.
+
+The application service covers all local users (non-exclusively). LiveKit JWT Service uses it to check that callers are joined to the room, and to manage delayed leave events on their behalf. Running as an application service also changes the existing endpoints: users who aren't joined to the room no longer get tokens, as long as `matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list` only contains your own homeserver.
+
+If you install services selectively (e.g. `just install-service synapse`), run a full installation (`just install-all` or `just setup-all`) the first time, so that both Synapse and LiveKit JWT Service pick up the registration.
+
+To keep using only the deprecated transport, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_livekit_jwt_service_appservice_enabled: false
+```
+
 ## Federated calls and trusted homeservers
 
 Since LiveKit JWT Service 0.7.0, only users from homeservers listed in `matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list` may publish audio, video, or screen shares on your SFU. The list defaults to your `matrix_domain`. Other federated users receive media here and publish on their own homeserver's SFU, using clients with multi-SFU support. See [upstream's explanation](https://github.com/element-hq/lk-jwt-service/issues/238#issuecomment-5709655222).
@@ -32,11 +48,14 @@ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_
 
 This lets all users of that homeserver publish and trigger room creation on your SFU, including outside your calls. Using `'*'` grants these permissions to every homeserver.
 
+This list only applies to clients talking to LiveKit JWT Service directly (the deprecated `livekit` transport). With the [stable transport](#stable-matrixrtc-transport-synapse-only), requests arrive through your homeserver: your own users get full access, while users of other homeservers only receive media here.
+
 To temporarily retain the previous behavior while updating clients or arranging SFU access:
 
 ```yaml
 matrix_livekit_jwt_service_version: 0.6.0
 matrix_livekit_jwt_service_container_healthcheck_enabled: false
+matrix_livekit_jwt_service_appservice_enabled: false
 ```
 
-Remove both overrides when ready to upgrade. The healthcheck must remain disabled on 0.6.0 because it is broken in that image.
+Remove these overrides when ready to upgrade. Version 0.6.0 cannot run as an application service, which disables the [stable transport](#stable-matrixrtc-transport-synapse-only). The healthcheck must remain disabled on 0.6.0 because it is broken in that image.
