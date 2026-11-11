@@ -25,7 +25,7 @@ matrix_livekit_jwt_service_container_additional_networks_auto: []
 matrix_livekit_jwt_service_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/lk-jwt-service
-matrix_livekit_jwt_service_version: 0.9.0
+matrix_livekit_jwt_service_version: 0.10.0
 
 matrix_livekit_jwt_service_container_image_self_build: false
 matrix_livekit_jwt_service_container_repo: "https://github.com/element-hq/lk-jwt-service.git"
@@ -136,6 +136,15 @@ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_default: ["{{ matrix_domain }}"]
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_auto: []
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom: []
+
+# Controls LIVEKIT_REMOTE_CAN_PUBLISH_HOMESERVERS for application-service federation requests.
+# Keep remote users receive-only by default, as before 0.10.0. Upstream defaults to `*`.
+# Membership is checked for every relayed request; subscribers can also trigger room creation.
+# To allow remote publishing, add homeservers (or `*`) to the custom list.
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers: "{{ matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list | join(',') }}"
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list: "{{ matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_auto + matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_custom }}"
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_auto: []
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_custom: []
 
 # Controls the LIVEKIT_CS_API_URL_OVERRIDES environment variable.
 #

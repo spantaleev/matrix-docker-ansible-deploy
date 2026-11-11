@@ -76,8 +76,9 @@
       - matrix_livekit_jwt_service_jwt.claims.video.roomJoin is sameas true
       - matrix_livekit_jwt_service_jwt.claims.video.roomCreate | default(false) is sameas false
       - matrix_livekit_jwt_service_jwt.claims.video.canPublish is sameas matrix_livekit_jwt_service_token_case.can_publish
+      - matrix_livekit_jwt_service_jwt.claims.video.canPublishData is sameas matrix_livekit_jwt_service_token_case.can_publish
       - matrix_livekit_jwt_service_jwt.claims.video.canSubscribe is sameas true
-      - matrix_livekit_jwt_service_jwt.claims.video.canUpdateOwnMetadata is sameas true
+      - matrix_livekit_jwt_service_jwt.claims.video.canUpdateOwnMetadata is sameas false
       - matrix_livekit_jwt_service_jwt.claims.exp | int - matrix_livekit_jwt_service_jwt.claims.nbf | int == 3600
     fail_msg: "The returned JWT lost its authenticated MSC4195 identity, room or {{ matrix_livekit_jwt_service_token_case.name }} join grant"
     success_msg: "The returned JWT has a valid signature and {{ matrix_livekit_jwt_service_token_case.name }} MSC4195 grant"
