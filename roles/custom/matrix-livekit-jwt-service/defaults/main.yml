@@ -130,7 +130,8 @@ matrix_livekit_jwt_service_environment_variable_livekit_secret: ""
 # Setting it to `*` grants full access to any federated Matrix user, but listing only the homeserver(s)
 # you intend to serve is strongly recommended.
 #
-# To add additional homeservers, use `matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom`.
+# Multiple homeservers (including `*`) are deprecated upstream. Keep this list local-only.
+# For remote publishing through the stable transport, use the remote-can-publish list below.
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers: "{{ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list | join(',') }}"
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list: "{{ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_default + matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_auto + matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom }}"
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_default: ["{{ matrix_domain }}"]

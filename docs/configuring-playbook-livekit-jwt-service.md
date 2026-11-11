@@ -27,11 +27,7 @@ The application service covers all local users (non-exclusively). LiveKit JWT Se
 
 If you install services selectively (e.g. `just install-service synapse`), run a full installation (`just install-all` or `just setup-all`) the first time, so that both Synapse and LiveKit JWT Service pick up the registration.
 
-To keep using only the deprecated transport, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
-
-```yaml
-matrix_livekit_jwt_service_appservice_enabled: false
-```
+Standalone mode is deprecated upstream and will be removed in a future release; no removal version or date has been announced. Keep the application service enabled on Synapse. Other supported homeservers currently use standalone mode because they do not support the required application-service integration; migrating to Synapse enables the supported transport. Older clients can continue using the legacy endpoints while the application service is enabled.
 
 ## Federated calls and trusted homeservers
 
@@ -39,23 +35,24 @@ Since LiveKit JWT Service 0.7.0, only users from homeservers listed in `matrix_l
 
 Current Element Call supports this in its `compatibility` mode using the existing JWT endpoint. Older clients, clients configured to use a single SFU, and callers without their own SFU may join but be unable to publish media.
 
-If you intentionally provide SFU access to another trusted homeserver, add its Matrix server name to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+With the [stable transport](#stable-matrixrtc-transport-synapse-only), your own users get full access. Remote users remain receive-only by default in this playbook. To let users of a trusted homeserver publish through federated token requests, add its Matrix server name to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom:
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_custom:
   - example.org
 ```
 
-This lets all users of that homeserver publish and trigger room creation on your SFU, including outside your calls. Using `'*'` grants these permissions to every homeserver.
+Use `'*'` in this list to allow publishing from all remote homeservers, as recommended by MatrixRTC and enabled by default upstream since 0.10.0. The playbook keeps the previous receive-only default to avoid silently expanding publishing permissions. Room membership is verified for every relayed request. Even receive-only users can trigger SFU room creation through this transport, provided the membership checks pass.
 
-This list only applies to clients talking to LiveKit JWT Service directly (the deprecated `livekit` transport). With the [stable transport](#stable-matrixrtc-transport-synapse-only), requests arrive through your homeserver: your own users get full access, while users of other homeservers only receive media here.
+The `matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom` setting only affects the legacy endpoints. Allowing multiple homeservers or `'*'` there is deprecated upstream, with no removal version or date announced. Remove those entries and use the stable transport with the remote publishing list above instead. Unlike the stable transport, legacy full access for multiple homeservers permits publishing and room creation without a room-membership check.
 
-To temporarily retain the previous behavior while updating clients or arranging SFU access:
+## Participant metadata and data publishing
+
+LiveKit JWT Service disables participants' ability to update their own name, metadata and attributes by default. If your clients require that permission, enable it explicitly:
 
 ```yaml
-matrix_livekit_jwt_service_version: 0.6.0
-matrix_livekit_jwt_service_container_healthcheck_enabled: false
-matrix_livekit_jwt_service_appservice_enabled: false
+matrix_livekit_jwt_service_environment_variables_extension: |
+  LIVEKIT_CAN_UPDATE_OWN_METADATA=true
 ```
 
-Remove these overrides when ready to upgrade. Version 0.6.0 cannot run as an application service, which disables the [stable transport](#stable-matrixrtc-transport-synapse-only). The healthcheck must remain disabled on 0.6.0 because it is broken in that image.
+Data publishing follows the media publishing permission: receive-only participants cannot publish data either.
