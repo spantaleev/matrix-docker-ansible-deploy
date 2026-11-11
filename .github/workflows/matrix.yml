@@ -22,8 +22,11 @@ jobs:
     steps:
       # git must be installed before checkout so it does a proper clone
       # (with .git directory) instead of a tarball download.
-      - name: Install git
-        run: pacman -Sy --noconfirm git
+      # Always upgrade (-Syu): Arch does not support partial upgrades, and
+      # installing packages from a refreshed database onto the image's older
+      # packages fails whenever the repositories have moved on.
+      - name: Install dependencies
+        run: pacman -Syu --noconfirm --needed git just mise python
 
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -33,9 +36,6 @@ jobs:
         with:
           path: var/prek
           key: arch-prek-v1-${{ hashFiles('.pre-commit-config.yaml') }}
-
-      - name: Install dependencies
-        run: pacman -S --noconfirm --needed just mise python
 
       - name: Run prek hooks
         run: |
