@@ -2,12 +2,17 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Small HTTPS Matrix federation OpenID userinfo fixture for Molecule."""
+"""Small HTTPS Matrix fixture for Molecule.
+
+It serves the federation OpenID userinfo endpoint and, playing the homeserver of the
+application service mode, the MSC4502 room membership endpoint.
+"""
 
 import json
+import os
 import ssl
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 
 KNOWN_TOKENS = {
@@ -15,6 +20,13 @@ KNOWN_TOKENS = {
     "full-access-openid-token": "@bob:full-access.molecule.local:8443",
 }
 REQUESTS = []
+IS_JOINED_REQUESTS = []
+
+AS_TOKEN = os.environ["MOLECULE_AS_TOKEN"]
+IS_JOINED_PREFIX = "/_matrix/client/unstable/io.element.msc4502/rooms/"
+JOINED_MEMBERS = {
+    "!call-room:molecule.local": {"@carol:homeserver.molecule.local"},
+}
 
 
 class OpenIDHandler(BaseHTTPRequestHandler):
@@ -29,7 +41,18 @@ class OpenIDHandler(BaseHTTPRequestHandler):
     def do_GET(self):  # noqa: N802 - BaseHTTPRequestHandler API
         parsed = urlparse(self.path)
         if parsed.path == "/_molecule/requests":
-            self.send_json(200, {"requests": REQUESTS})
+            self.send_json(200, {"requests": REQUESTS, "is_joined_requests": IS_JOINED_REQUESTS})
+            return
+
+        if parsed.path.startswith(IS_JOINED_PREFIX) and parsed.path.endswith("/is_joined"):
+            room_id = unquote(parsed.path[len(IS_JOINED_PREFIX):-len("/is_joined")])
+            mxid = parse_qs(parsed.query).get("mxid", [""])[0]
+            authorized = self.headers.get("Authorization", "") == "Bearer " + AS_TOKEN
+            IS_JOINED_REQUESTS.append({"room_id": room_id, "mxid": mxid, "authorized": authorized})
+            if not authorized:
+                self.send_json(401, {"errcode": "M_UNKNOWN_TOKEN"})
+                return
+            self.send_json(200, {"joined": mxid in JOINED_MEMBERS.get(room_id, set())})
             return
 
         if parsed.path != "/_matrix/federation/v1/openid/userinfo":

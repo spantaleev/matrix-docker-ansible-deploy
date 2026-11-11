@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2022 MDAD project contributors
 # SPDX-FileCopyrightText: 2024 wjbeckett
-# SPDX-FileCopyrightText: 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2024 - 2026 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -27,6 +27,22 @@
     - env
     - labels
   register: matrix_livekit_jwt_service_support_files_result
+
+- name: Ensure LiveKit JWT Service application service registration is installed
+  ansible.builtin.copy:
+    content: "{{ matrix_livekit_jwt_service_appservice_registration_configuration | to_nice_yaml(indent=2, width=999999) }}"
+    dest: "{{ matrix_livekit_jwt_service_appservice_registration_path }}"
+    mode: '0640'
+    owner: "{{ matrix_user_name }}"
+    group: "{{ matrix_group_name }}"
+  when: matrix_livekit_jwt_service_appservice_enabled | bool
+  register: matrix_livekit_jwt_service_appservice_registration_result
+
+- name: Ensure LiveKit JWT Service application service registration is absent when disabled
+  ansible.builtin.file:
+    path: "{{ matrix_livekit_jwt_service_appservice_registration_path }}"
+    state: absent
+  when: not matrix_livekit_jwt_service_appservice_enabled | bool
 
 - name: Ensure LiveKit JWT Service container image is pulled
   community.docker.docker_image_pull:
@@ -93,6 +109,7 @@
     matrix_livekit_jwt_service_restart_necessary: >-
       {{
         matrix_livekit_jwt_service_support_files_result.changed | default(false)
+        or matrix_livekit_jwt_service_appservice_registration_result.changed | default(false)
         or matrix_livekit_jwt_service_systemd_service_result.changed | default(false)
         or matrix_livekit_jwt_service_container_image_pull_result.changed | default(false)
         or matrix_livekit_jwt_service_container_image_build_result.changed | default(false)

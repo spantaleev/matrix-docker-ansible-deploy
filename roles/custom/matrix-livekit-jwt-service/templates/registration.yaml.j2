@@ -1,0 +1,22 @@
+{#
+SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+#}
+
+id: {{ matrix_livekit_jwt_service_appservice_registration_id | to_json }}
+# No event traffic is needed, so the homeserver doesn't push transactions anywhere.
+url: ~
+as_token: {{ matrix_livekit_jwt_service_appservice_registration_as_token | to_json }}
+hs_token: {{ matrix_livekit_jwt_service_appservice_registration_hs_token | to_json }}
+sender_localpart: {{ matrix_livekit_jwt_service_appservice_registration_sender_localpart | to_json }}
+namespaces:
+  users:
+    - regex: {{ matrix_livekit_jwt_service_appservice_registration_namespace_user_regex | to_json }}
+      exclusive: false
+# Allows looking up room membership (MSC4502).
+io.element.msc4502.scopes:
+  - urn:matrix:client:io.element.msc4502:rooms:is_joined
+# Makes the homeserver proxy matching Client-Server and Server-Server API requests to this service (MSC4512).
+io.element.msc4512.proxy_prefix: {{ matrix_livekit_jwt_service_appservice_registration_proxy_prefix | to_json }}
+io.element.msc4512.proxy_url: {{ matrix_livekit_jwt_service_appservice_registration_proxy_url | to_json }}
