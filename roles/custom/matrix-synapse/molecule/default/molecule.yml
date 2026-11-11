@@ -88,6 +88,18 @@ provisioner:
         matrix_s3_media_store_enabled: false
         matrix_playbook_ssl_enabled: false
 
+        # Stable MatrixRTC (`m.livekit`) next to the deprecated transport, plus what the LiveKit
+        # authorization service needs as an application service. prepare.yml writes a registration
+        # shaped like the one the matrix-livekit-jwt-service role renders, so that Synapse must accept it.
+        matrix_synapse_matrix_rtc_transports_livekit_url: https://matrix.molecule.local/livekit-jwt-service
+        matrix_synapse_matrix_rtc_transports_livekit_sfu_url: wss://matrix.molecule.local/livekit-server
+        matrix_synapse_experimental_features_msc4502_enabled: true
+        matrix_synapse_experimental_features_msc4512_enabled: true
+        matrix_synapse_container_extra_arguments:
+          - --mount type=bind,src=/matrix/molecule-livekit-registration.yaml,dst=/livekit-registration.yaml,ro
+        matrix_synapse_app_service_config_files:
+          - /livekit-registration.yaml
+
         # verify.yml is a separate play, so pin paths that otherwise come from role defaults.
         # The component version is deliberately loaded from defaults/main.yml instead.
         matrix_synapse_base_path: /matrix/synapse

@@ -142,6 +142,92 @@
         fail_msg: "The versions endpoint did not return a Matrix versions document"
         success_msg: "The versions endpoint returns a Matrix versions document"
 
+    - name: Request MatrixRTC endpoints as the LiveKit authorization service
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - "Authorization: Bearer molecule-synapse-livekit-as-token-3f9a"
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}{{ item.path }}
+      register: matrix_synapse_rtc_responses
+      changed_when: false
+      failed_when: false
+      loop:
+        - name: stable transports
+          path: /_matrix/client/v1/rtc/transports
+        - name: unstable transports
+          path: /_matrix/client/unstable/org.matrix.msc4143/rtc/transports
+        - name: room membership
+          path: /_matrix/client/unstable/io.element.msc4502/rooms/%21unknown%3Amolecule.local/is_joined?mxid=%40alice%3Amolecule.local
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Assert Synapse serves MatrixRTC discovery and membership lookups to the application service
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_rtc_responses.results | map(attribute='rc') | unique | list == [0]
+          - matrix_synapse_rtc_responses.results | map(attribute='stdout_lines') | map('last') | unique | list == ['HTTP_STATUS=200']
+          - matrix_synapse_rtc_stable.transports == matrix_synapse_rtc_expected_transports
+          - matrix_synapse_rtc_unstable.rtc_transports == matrix_synapse_rtc_expected_transports
+          - matrix_synapse_rtc_is_joined.joined is sameas false
+        fail_msg: "Synapse did not serve the expected MatrixRTC transports or membership lookup"
+        success_msg: "Synapse advertises stable and legacy LiveKit transports and serves MSC4502 lookups"
+      vars:
+        matrix_synapse_rtc_documents: >-
+          {{ matrix_synapse_rtc_responses.results | map(attribute='stdout')
+             | map('regex_replace', '(?s)\s*HTTP_STATUS=[0-9]+\s*$', '') | map('from_json') | list }}
+        matrix_synapse_rtc_stable: "{{ matrix_synapse_rtc_documents[0] }}"
+        matrix_synapse_rtc_unstable: "{{ matrix_synapse_rtc_documents[1] }}"
+        matrix_synapse_rtc_is_joined: "{{ matrix_synapse_rtc_documents[2] }}"
+        matrix_synapse_rtc_expected_transports:
+          - type: m.livekit
+            url: wss://matrix.molecule.local/livekit-server
+          - type: livekit
+            livekit_service_url: https://matrix.molecule.local/livekit-jwt-service
+            url: wss://matrix.molecule.local/livekit-server
+
+    # The registration points the proxy at a container which doesn't exist here, so the proxied
+    # request fails upstream. Without MSC4512, Synapse would not know the route at all (404).
+    - name: Request a proxied LiveKit authorization service endpoint
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_synapse_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --request
+          - POST
+          - --header
+          - "Authorization: Bearer molecule-synapse-livekit-as-token-3f9a"
+          - --data-binary
+          - "{}"
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-synapse:{{ matrix_synapse_container_client_api_port }}/_matrix/client/unstable/io.element.msc4195/rtc/livekit/get_token
+      register: matrix_synapse_rtc_proxy_response
+      changed_when: false
+      failed_when: false
+
+    - name: Assert Synapse proxies the LiveKit authorization service route (MSC4512)
+      ansible.builtin.assert:
+        that:
+          - matrix_synapse_rtc_proxy_response.rc == 0
+          - matrix_synapse_rtc_proxy_response.stdout_lines[-1] is match('HTTP_STATUS=5[0-9][0-9]$')
+          - "'M_UNRECOGNIZED' not in matrix_synapse_rtc_proxy_response.stdout"
+        fail_msg: "Synapse does not route the proxy prefix to the application service: {{ matrix_synapse_rtc_proxy_response.stdout }}"
+        success_msg: "Synapse routes the proxy prefix to the application service"
+
     # The role moved the listener away from 8008. Refusing the upstream default port proves
     # the successful requests above did not accidentally hit an unchanged default listener.
     - name: Request the upstream-default Synapse port

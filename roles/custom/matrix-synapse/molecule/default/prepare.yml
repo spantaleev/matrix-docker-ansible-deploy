@@ -64,6 +64,25 @@
         group: "{{ matrix_group_name }}"
         mode: '0750'
 
+    - name: Ensure the LiveKit authorization service registration exists
+      ansible.builtin.copy:
+        dest: /matrix/molecule-livekit-registration.yaml
+        mode: '0644'
+        content: |
+          id: livekit-jwt-service
+          url: ~
+          as_token: molecule-synapse-livekit-as-token-3f9a
+          hs_token: molecule-synapse-livekit-hs-token-71c2
+          sender_localpart: _lk_jwt_service
+          namespaces:
+            users:
+              - regex: '@.*:molecule\.local'
+                exclusive: false
+          io.element.msc4502.scopes:
+            - urn:matrix:client:io.element.msc4502:rooms:is_joined
+          io.element.msc4512.proxy_prefix: rtc/livekit
+          io.element.msc4512.proxy_url: http://matrix-livekit-jwt-service:8080
+
     # Postgres must attach before the role creates this network during converge.
     - name: Ensure the Synapse container network exists
       ansible.builtin.command:
