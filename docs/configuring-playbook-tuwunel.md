@@ -60,7 +60,7 @@ Keys nested under a TOML section use `__` (double underscore) to descend, e.g. `
 
 If you need wholesale control of the configuration file, copy [`roles/custom/matrix-tuwunel/templates/tuwunel.toml.j2`](../roles/custom/matrix-tuwunel/templates/tuwunel.toml.j2) into your inventory and point `matrix_tuwunel_template_tuwunel_config` at your copy.
 
-The container image published as `:latest` is built with `io_uring`, `jemalloc`, LDAP, blurhashing, URL preview, sentry telemetry, and zstd compression all enabled, so most opt-in features are simply a configuration toggle away.
+The container image published as `:latest` is built with `io_uring`, `jemalloc`, LDAP, URL preview, sentry telemetry, and zstd compression all enabled, so most opt-in features are simply a configuration toggle away.
 
 ### Identity providers (OAuth2 / OIDC)
 

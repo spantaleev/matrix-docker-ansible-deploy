@@ -13,6 +13,10 @@
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - {'old': 'matrix_tuwunel_config_ldap_name_attribute', 'new': '<removed> (tuwunel v1.9.0 dropped the option; the localpart must appear in the attribute named by `matrix_tuwunel_config_ldap_uid_attribute`)'}
+    - {'old': 'matrix_tuwunel_config_blurhashing_enabled', 'new': '<removed> (tuwunel has no blurhashing configuration section; the option was never recognized)'}
+    - {'old': 'matrix_tuwunel_config_blurhashing_components_x', 'new': '<removed> (tuwunel has no blurhashing configuration section; the option was never recognized)'}
+    - {'old': 'matrix_tuwunel_config_blurhashing_components_y', 'new': '<removed> (tuwunel has no blurhashing configuration section; the option was never recognized)'}
+    - {'old': 'matrix_tuwunel_config_blurhashing_max_raw_size', 'new': '<removed> (tuwunel has no blurhashing configuration section; the option was never recognized)'}
 
 - name: Fail if required tuwunel settings not defined
   ansible.builtin.fail:
