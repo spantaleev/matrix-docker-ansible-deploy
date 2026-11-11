@@ -119,7 +119,8 @@
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
       --mount type=bind,src={{ matrix_bridge_hookshot_base_path }}/config.yml,dst=/config.yml,ro
-      {{ matrix_bridge_hookshot_container_image }} node config/Config.js /config.yml
+      --entrypoint=node
+      {{ matrix_bridge_hookshot_container_image }} config/Config.js /config.yml
   register: hookshot_config_validation_result
   changed_when: false
 
