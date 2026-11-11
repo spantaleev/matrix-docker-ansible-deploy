@@ -58,8 +58,9 @@ matrix_synapse_workers_client_reader_client_server_endpoints:
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/(createRoom|publicRooms|versions|voip/turnServer|joined_rooms|search|directory/room/.*|capabilities)
   - ^/_matrix/client/(api/v1|r0|v3|unstable)/user/.*/filter(/|$)
 
-  # MatrixRTC transport discovery:
-  # Ref: https://github.com/element-hq/synapse/blob/b99a58719b274fcbb327fd8d7649185792bfd12c/synapse/rest/client/matrixrtc.py#L30-L52
+  # MatrixRTC transport discovery (stable and unstable):
+  # Ref: https://github.com/element-hq/synapse/blob/v1.165.0/synapse/rest/client/matrixrtc.py
+  - ^/_matrix/client/v1/rtc/transports$
   - ^/_matrix/client/unstable/org.matrix.msc4143/rtc/transports$
 
 # Federation reader workers handle generic federation endpoints that don't contain a roomid
@@ -250,6 +251,7 @@ matrix_synapse_workers_generic_worker_endpoints:
   - ^/_matrix/client/v1/rooms/.*/threads$
   - ^/_matrix/client/unstable/im.nheko.summary/rooms/.*/summary$
   - ^/_matrix/client/unstable/im.nheko.summary/summary/.*$
+  - ^/_matrix/client/v1/rtc/transports$
   - ^/_matrix/client/unstable/org.matrix.msc4143/rtc/transports$
   - ^/_matrix/client/(r0|v3|unstable)/account/3pid$
   - ^/_matrix/client/(r0|v3|unstable)/account/whoami$
