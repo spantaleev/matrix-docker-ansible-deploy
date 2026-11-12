@@ -41,20 +41,20 @@ provisioner:
         matrix_livekit_jwt_service_environment_variable_livekit_url: ws://matrix-livekit-sfu-fixture:7880
 
         # The OpenID fixture serves two origins: one restricted remote user and
-        # one trusted user who can publish and trigger room creation on the SFU.
+        # one local user who can publish and trigger room creation on the SFU.
+        # Keep only the configured homeserver in the full-access list, so even
+        # legacy clients use membership checks; multi-homeserver fronting is deprecated.
         matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_default:
           - full-access.molecule.local:8443
-        matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom:
-          - second-full-access.molecule.local
 
         matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map_custom:
           "matrix-openid-fixture:8443": https://client-api.override.molecule.invalid
-          "homeserver.molecule.local": https://matrix-openid-fixture:8443
+          "full-access.molecule.local:8443": https://matrix-openid-fixture:8443
 
         # Run as an application service. The OpenID fixture also plays the homeserver,
         # answering room membership lookups (MSC4502) for the server name above.
         matrix_livekit_jwt_service_appservice_enabled: true
-        matrix_livekit_jwt_service_appservice_homeserver_server_name: homeserver.molecule.local
+        matrix_livekit_jwt_service_appservice_homeserver_server_name: full-access.molecule.local:8443
         matrix_livekit_jwt_service_appservice_registration_as_token: molecule-livekit-as-token-5d1e
         matrix_livekit_jwt_service_appservice_registration_hs_token: molecule-livekit-hs-token-8c7a
 

@@ -25,7 +25,12 @@ IS_JOINED_REQUESTS = []
 AS_TOKEN = os.environ["MOLECULE_AS_TOKEN"]
 IS_JOINED_PREFIX = "/_matrix/client/unstable/io.element.msc4502/rooms/"
 JOINED_MEMBERS = {
-    "!call-room:molecule.local": {"@carol:homeserver.molecule.local", "@alice:example.org"},
+    "!call-room:molecule.local": {
+        "@carol:full-access.molecule.local:8443",
+        "@alice:example.org",
+        "@alice:matrix-openid-fixture:8443",
+        "@bob:full-access.molecule.local:8443",
+    },
 }
 
 
@@ -46,13 +51,20 @@ class OpenIDHandler(BaseHTTPRequestHandler):
 
         if parsed.path.startswith(IS_JOINED_PREFIX) and parsed.path.endswith("/is_joined"):
             room_id = unquote(parsed.path[len(IS_JOINED_PREFIX):-len("/is_joined")])
-            mxid = parse_qs(parsed.query).get("mxid", [""])[0]
+            query = parse_qs(parsed.query)
+            mxid = query.get("mxid", [""])[0]
+            server_name = query.get("server_name", [""])[0]
             authorized = self.headers.get("Authorization", "") == "Bearer " + AS_TOKEN
             IS_JOINED_REQUESTS.append({"room_id": room_id, "mxid": mxid, "authorized": authorized})
             if not authorized:
                 self.send_json(401, {"errcode": "M_UNKNOWN_TOKEN"})
                 return
-            self.send_json(200, {"joined": mxid in JOINED_MEMBERS.get(room_id, set())})
+            members = JOINED_MEMBERS.get(room_id, set())
+            joined = (
+                any(user.split(":", 1)[1] == server_name for user in members)
+                if server_name else mxid in members
+            )
+            self.send_json(200, {"joined": joined})
             return
 
         if parsed.path != "/_matrix/federation/v1/openid/userinfo":
