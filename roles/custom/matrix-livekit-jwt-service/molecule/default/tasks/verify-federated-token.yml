@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Request a token through the stable Server-Server endpoint
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - --rm
+      - --network={{ matrix_livekit_jwt_service_container_network }}
+      - "{{ molecule_shared_image_curl }}"
+      - --silent
+      - --show-error
+      - --fail-with-body
+      - --header
+      - "Content-Type: application/json"
+      - --header
+      - "Authorization: Bearer molecule-livekit-hs-token-8c7a"
+      - --header
+      - "X-Matrix-Origin: remote.molecule.local"
+      - --data-binary
+      - "{{ {'user_id': '@erin:remote.molecule.local', 'url': matrix_livekit_jwt_service_environment_variable_livekit_url, 'room_id': '!call-room:molecule.local', 'slot_id': 'm.call#room', 'member_id': 'member-molecule-ss'} | to_json }}"
+      - http://matrix-livekit-jwt-service:8097/_matrix/federation/v1/rtc/livekit/get_token
+  register: matrix_livekit_jwt_service_ss_token
+  changed_when: false
+  no_log: true
+
+- name: Decode and authenticate the federated LiveKit JWT
+  ansible.builtin.command:
+    argv:
+      - python3
+      - -c
+      - >-
+        import base64, hashlib, hmac, json, sys;
+        parts = sys.argv[1].split('.');
+        decode = lambda value: json.loads(base64.urlsafe_b64decode(value + '=' * (-len(value) % 4)));
+        signature = base64.urlsafe_b64decode(parts[2] + '=' * (-len(parts[2]) % 4));
+        expected = hmac.new(sys.argv[2].encode(), (parts[0] + '.' + parts[1]).encode(), hashlib.sha256).digest();
+        print(json.dumps({'claims': decode(parts[1]), 'signature_valid': hmac.compare_digest(signature, expected)}))
+      - "{{ (matrix_livekit_jwt_service_ss_token.stdout | from_json).jwt }}"
+      - "{{ matrix_livekit_jwt_service_environment_variable_livekit_secret }}"
+  register: matrix_livekit_jwt_service_ss_jwt_decode
+  changed_when: false
+  no_log: true
+
+- name: Assert federated callers can subscribe but cannot publish by default
+  ansible.builtin.assert:
+    that:
+      - matrix_livekit_jwt_service_ss_jwt.signature_valid is sameas true
+      - matrix_livekit_jwt_service_ss_jwt.claims.iss == matrix_livekit_jwt_service_environment_variable_livekit_key
+      - matrix_livekit_jwt_service_ss_jwt.claims.video.roomJoin is sameas true
+      - matrix_livekit_jwt_service_ss_jwt.claims.video.canSubscribe is sameas true
+      - matrix_livekit_jwt_service_ss_jwt.claims.video.canPublish is sameas false
+      - matrix_livekit_jwt_service_ss_jwt.claims.video.canPublishData is sameas false
+      - matrix_livekit_jwt_service_ss_jwt.claims.video.canUpdateOwnMetadata is sameas false
+    fail_msg: "The federated JWT did not preserve receive-only access"
+  vars:
+    matrix_livekit_jwt_service_ss_jwt: "{{ matrix_livekit_jwt_service_ss_jwt_decode.stdout | from_json }}"

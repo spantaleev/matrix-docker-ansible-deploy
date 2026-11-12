@@ -25,7 +25,7 @@ IS_JOINED_REQUESTS = []
 AS_TOKEN = os.environ["MOLECULE_AS_TOKEN"]
 IS_JOINED_PREFIX = "/_matrix/client/unstable/io.element.msc4502/rooms/"
 JOINED_MEMBERS = {
-    "!call-room:molecule.local": {"@carol:homeserver.molecule.local"},
+    "!call-room:molecule.local": {"@carol:homeserver.molecule.local", "@erin:remote.molecule.local", "homeserver.molecule.local"},
 }
 
 
@@ -46,7 +46,8 @@ class OpenIDHandler(BaseHTTPRequestHandler):
 
         if parsed.path.startswith(IS_JOINED_PREFIX) and parsed.path.endswith("/is_joined"):
             room_id = unquote(parsed.path[len(IS_JOINED_PREFIX):-len("/is_joined")])
-            mxid = parse_qs(parsed.query).get("mxid", [""])[0]
+            query = parse_qs(parsed.query)
+            mxid = query.get("mxid", query.get("server_name", [""]))[0]
             authorized = self.headers.get("Authorization", "") == "Bearer " + AS_TOKEN
             IS_JOINED_REQUESTS.append({"room_id": room_id, "mxid": mxid, "authorized": authorized})
             if not authorized:

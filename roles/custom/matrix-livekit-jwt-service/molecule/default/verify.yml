@@ -365,7 +365,7 @@
           - "{{ {'url': matrix_livekit_jwt_service_environment_variable_livekit_url, 'room_id': '!call-room:molecule.local', 'slot_id': 'molecule-cs-slot', 'member_id': 'member-molecule-cs'} | to_json }}"
           - --write-out
           - "\nHTTP_STATUS=%{http_code}"
-          - http://matrix-livekit-jwt-service:8097/_matrix/client/unstable/io.element.msc4195/rtc/livekit/get_token
+          - http://matrix-livekit-jwt-service:8097/_matrix/client/v1/rtc/livekit/get_token
       register: matrix_livekit_jwt_service_cs_tokens
       changed_when: false
       failed_when: false
@@ -411,6 +411,7 @@
           - matrix_livekit_jwt_service_cs_jwt.claims.iss == matrix_livekit_jwt_service_environment_variable_livekit_key
           - matrix_livekit_jwt_service_cs_jwt.claims.video.roomJoin is sameas true
           - matrix_livekit_jwt_service_cs_jwt.claims.video.canPublish is sameas true
+          - matrix_livekit_jwt_service_cs_jwt.claims.video.canUpdateOwnMetadata is sameas false
         fail_msg: "The proxied JWT is not a valid full-access token for the local user"
         success_msg: "The proxied JWT is a valid full-access token for the local user"
       vars:
@@ -443,6 +444,9 @@
       vars:
         matrix_livekit_jwt_service_is_joined_requests: "{{ (matrix_livekit_jwt_service_is_joined_requests_command.stdout | from_json).is_joined_requests }}"
 
+    - name: Verify federated publishing stays opt-in
+      ansible.builtin.include_tasks: tasks/verify-federated-token.yml
+
     - name: Read the environment file the role rendered
       ansible.builtin.slurp:
         src: "{{ matrix_livekit_jwt_service_base_path }}/env"
@@ -469,6 +473,7 @@
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_URL == 'ws://matrix-livekit-sfu-fixture:7880'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_FULL_ACCESS_HOMESERVERS == 'full-access.molecule.local:8443,second-full-access.molecule.local'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_CS_API_URL_OVERRIDES.split(',') | sort == ['homeserver.molecule.local=https://matrix-openid-fixture:8443', 'matrix-openid-fixture:8443=https://client-api.override.molecule.invalid']
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_REMOTE_CAN_PUBLISH_HOMESERVERS == ''
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_AS_REGISTRATION_FILE == '/registration.yaml'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_HS_SERVER_NAME == 'homeserver.molecule.local'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_INSECURE_SKIP_VERIFY_TLS == 'YES_I_KNOW_WHAT_I_AM_DOING'

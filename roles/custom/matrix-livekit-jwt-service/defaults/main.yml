@@ -122,6 +122,9 @@ matrix_livekit_jwt_service_environment_variable_livekit_url: ""
 matrix_livekit_jwt_service_environment_variable_livekit_secret: ""
 
 # Controls the LIVEKIT_FULL_ACCESS_HOMESERVERS environment variable.
+# Applies only to deprecated standalone endpoints. Fronting multiple homeservers
+# or using `*` is deprecated upstream; use the application service and
+# LIVEKIT_REMOTE_CAN_PUBLISH_HOMESERVERS for federated publishing instead.
 # Comma-separated list of Matrix homeservers whose users may publish media and
 # trigger room creation on this SFU. Other homeservers' users can only subscribe
 # to media here; they publish on their own SFU using a client with multi-SFU support.
@@ -136,6 +139,15 @@ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_default: ["{{ matrix_domain }}"]
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_auto: []
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom: []
+
+# Controls federated publishing through the application service's Server-Server API.
+# Preserve receive-only access for remote users by default (upstream defaults to `*`).
+# Listed homeservers may publish after room membership checks; `*` permits all origins.
+# This does not control room creation: joined remote subscribers can also create rooms.
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers: "{{ matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list | join(',') }}"
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list: "{{ matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_auto + matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_custom }}"
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_auto: []
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_custom: []
 
 # Controls the LIVEKIT_CS_API_URL_OVERRIDES environment variable.
 #
@@ -162,6 +174,7 @@ matrix_livekit_jwt_service_environment_variable_livekit_cs_api_url_overrides_map
 # Enabling this only prepares this service and renders its registration file (`matrix_livekit_jwt_service_appservice_registration_path`).
 # The homeserver must also load that registration file and enable the MSC4502 and MSC4512 experimental features.
 # A playbook may wire this up automatically.
+# Standalone operation is deprecated upstream; removal is planned without a date.
 #
 # Note: `LIVEKIT_FULL_ACCESS_HOMESERVERS` does not apply to requests proxied by the homeserver.
 # When it only names the configured homeserver, the standalone endpoints also start checking that the requesting user is joined to the room.
