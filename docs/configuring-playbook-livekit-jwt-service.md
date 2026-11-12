@@ -48,7 +48,7 @@ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_
 
 This lets all users of that homeserver publish and trigger room creation on your SFU, including outside your calls. Using `'*'` grants these permissions to every homeserver.
 
-This list only applies to clients talking to LiveKit JWT Service directly (the deprecated `livekit` transport). With the [stable transport](#stable-matrixrtc-transport-synapse-only), requests arrive through your homeserver: your own users get full access, while users of other homeservers only receive media here.
+This list only applies to clients talking to LiveKit JWT Service directly (the deprecated `livekit` transport). With the [stable transport](#stable-matrixrtc-transport-synapse-only), requests arrive through your homeserver: your own users get full access, while users of other homeservers only receive media here by default. The playbook sets `LIVEKIT_REMOTE_CAN_PUBLISH_HOMESERVERS` to an empty list to preserve this policy; upstream 0.10.0 otherwise allows remote publishing by default.
 
 To temporarily retain the previous behavior while updating clients or arranging SFU access:
 
@@ -59,3 +59,13 @@ matrix_livekit_jwt_service_appservice_enabled: false
 ```
 
 Remove these overrides when ready to upgrade. Version 0.6.0 cannot run as an application service, which disables the [stable transport](#stable-matrixrtc-transport-synapse-only). The healthcheck must remain disabled on 0.6.0 because it is broken in that image.
+
+## Participant metadata permissions
+
+Issued tokens deny participants permission to update their own name, metadata and attributes, following the upstream default since 0.10.0. If your clients need that permission, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+
+```yaml
+matrix_livekit_jwt_service_environment_variable_livekit_can_update_own_metadata: true
+```
+
+Data publishing follows media publishing permissions.

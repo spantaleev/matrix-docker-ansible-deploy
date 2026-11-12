@@ -25,7 +25,7 @@ IS_JOINED_REQUESTS = []
 AS_TOKEN = os.environ["MOLECULE_AS_TOKEN"]
 IS_JOINED_PREFIX = "/_matrix/client/unstable/io.element.msc4502/rooms/"
 JOINED_MEMBERS = {
-    "!call-room:molecule.local": {"@carol:homeserver.molecule.local"},
+    "!call-room:molecule.local": {"@carol:homeserver.molecule.local", "@alice:example.org"},
 }
 
 
