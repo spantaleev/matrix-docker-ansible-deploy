@@ -39,16 +39,18 @@ Since LiveKit JWT Service 0.7.0, only users from homeservers listed in `matrix_l
 
 Current Element Call supports this in its `compatibility` mode using the existing JWT endpoint. Older clients, clients configured to use a single SFU, and callers without their own SFU may join but be unable to publish media.
 
-If you intentionally provide SFU access to another trusted homeserver, add its Matrix server name to your `inventory/host_vars/matrix.example.com/vars.yml` file:
+With the [stable transport](#stable-matrixrtc-transport-synapse-only), requests arrive through your homeserver: your own users get full access. Remote users receive media here by default. To allow joined users from another trusted homeserver to publish on your SFU, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom:
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_custom:
   - example.org
 ```
 
-This lets all users of that homeserver publish and trigger room creation on your SFU, including outside your calls. Using `'*'` grants these permissions to every homeserver.
+Use `'*'` to allow all joined remote users to publish. Room membership is checked for every relayed request, including subscribers. Any joined user can cause an SFU room to be created. The playbook keeps remote publishing opt-in; upstream otherwise enables it for everyone by default.
 
-This list only applies to clients talking to LiveKit JWT Service directly (the deprecated `livekit` transport). With the [stable transport](#stable-matrixrtc-transport-synapse-only), requests arrive through your homeserver: your own users get full access, while users of other homeservers only receive media here by default. The playbook sets `LIVEKIT_REMOTE_CAN_PUBLISH_HOMESERVERS` to an empty list to preserve this policy; upstream 0.10.0 otherwise allows remote publishing by default.
+Keep `matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list` limited to your own homeserver. Fronting multiple homeservers through this legacy setting (including `'*'`) is deprecated upstream. If you previously added other homeservers there, migrate clients to the stable transport and move the trusted server names to the remote-can-publish list above, then remove the old list overrides. This enables room membership checks for legacy requests too. Remote homeservers need their own MatrixRTC integration to relay requests; changing the list alone does not migrate older clients.
+
+Standalone operation is also deprecated. Synapse installations use application-service mode by default. If you disabled it, remove that override when your clients are ready. Other homeserver implementations still need standalone mode until they support the application-service integration. Upstream has announced removal in a future version without a date or version number; plan that migration before upgrading to a release that removes it. See the [upstream deprecation notices](https://github.com/element-hq/lk-jwt-service/tree/v0.10.0#readme).
 
 To temporarily retain the previous behavior while updating clients or arranging SFU access:
 

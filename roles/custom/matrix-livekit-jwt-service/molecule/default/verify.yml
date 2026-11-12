@@ -303,7 +303,7 @@
           - matrix_livekit_jwt_service_registration.hs_token == 'molecule-livekit-hs-token-8c7a'
           - matrix_livekit_jwt_service_registration.sender_localpart == '_lk_jwt_service'
           - matrix_livekit_jwt_service_registration.namespaces.users | length == 1
-          - matrix_livekit_jwt_service_registration.namespaces.users[0].regex == '@.*:homeserver\\.molecule\\.local$'
+          - matrix_livekit_jwt_service_registration.namespaces.users[0].regex == '@.*:full-access\\.molecule\\.local:8443$'
           - matrix_livekit_jwt_service_registration.namespaces.users[0].exclusive is sameas false
           - matrix_livekit_jwt_service_registration['io.element.msc4502.scopes'] == ['urn:matrix:client:io.element.msc4502:rooms:is_joined']
           - matrix_livekit_jwt_service_registration['io.element.msc4512.proxy_prefix'] == 'rtc/livekit'
@@ -365,13 +365,13 @@
           - "{{ {'url': matrix_livekit_jwt_service_environment_variable_livekit_url, 'room_id': '!call-room:molecule.local', 'slot_id': 'molecule-cs-slot', 'member_id': 'member-molecule-cs'} | to_json }}"
           - --write-out
           - "\nHTTP_STATUS=%{http_code}"
-          - http://matrix-livekit-jwt-service:8097/_matrix/client/unstable/io.element.msc4195/rtc/livekit/get_token
+          - http://matrix-livekit-jwt-service:8097/_matrix/client/v1/rtc/livekit/get_token
       register: matrix_livekit_jwt_service_cs_tokens
       changed_when: false
       failed_when: false
       loop:
-        - {name: joined, user: '@carol:homeserver.molecule.local', status: '200'}
-        - {name: unjoined, user: '@dave:homeserver.molecule.local', status: '403'}
+        - {name: joined, user: '@carol:full-access.molecule.local:8443', status: '200'}
+        - {name: unjoined, user: '@dave:full-access.molecule.local:8443', status: '403'}
       loop_control:
         label: "{{ item.name }}"
 
@@ -436,10 +436,10 @@
     - name: Assert membership was looked up with the application service token
       ansible.builtin.assert:
         that:
-          - matrix_livekit_jwt_service_is_joined_requests | length == 2
+          - matrix_livekit_jwt_service_is_joined_requests | length == 4
           - matrix_livekit_jwt_service_is_joined_requests | map(attribute='authorized') | unique | list == [true]
           - matrix_livekit_jwt_service_is_joined_requests | map(attribute='room_id') | unique | list == ['!call-room:molecule.local']
-          - matrix_livekit_jwt_service_is_joined_requests | map(attribute='mxid') | list == ['@carol:homeserver.molecule.local', '@dave:homeserver.molecule.local']
+          - matrix_livekit_jwt_service_is_joined_requests | map(attribute='mxid') | list == ['@alice:matrix-openid-fixture:8443', '@bob:full-access.molecule.local:8443', '@carol:full-access.molecule.local:8443', '@dave:full-access.molecule.local:8443']
         fail_msg: "The service did not look up membership at the configured homeserver with its application service token"
         success_msg: "The service looks up membership at the configured homeserver with its application service token"
       vars:
@@ -465,7 +465,7 @@
           - "{{ {'url': matrix_livekit_jwt_service_environment_variable_livekit_url, 'room_id': '!call-room:molecule.local', 'slot_id': 'molecule-ss-slot', 'member_id': 'member-molecule-ss', 'user_id': item.user} | to_json }}"
           - --write-out
           - "\nHTTP_STATUS=%{http_code}"
-          - http://matrix-livekit-jwt-service:8097/_matrix/federation/unstable/io.element.msc4195/rtc/livekit/get_token
+          - http://matrix-livekit-jwt-service:8097/_matrix/federation/v1/rtc/livekit/get_token
       register: matrix_livekit_jwt_service_ss_tokens
       changed_when: false
       failed_when: false
@@ -543,12 +543,12 @@
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_KEY == 'molecule-livekit-api-key'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_SECRET == 'molecule-livekit-signing-secret-32-bytes-long'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_URL == 'ws://matrix-livekit-sfu-fixture:7880'
-          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_FULL_ACCESS_HOMESERVERS == 'full-access.molecule.local:8443,second-full-access.molecule.local'
-          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_CS_API_URL_OVERRIDES.split(',') | sort == ['homeserver.molecule.local=https://matrix-openid-fixture:8443', 'matrix-openid-fixture:8443=https://client-api.override.molecule.invalid']
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_FULL_ACCESS_HOMESERVERS == 'full-access.molecule.local:8443'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_CS_API_URL_OVERRIDES.split(',') | sort == ['full-access.molecule.local:8443=https://matrix-openid-fixture:8443', 'matrix-openid-fixture:8443=https://client-api.override.molecule.invalid']
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_AS_REGISTRATION_FILE == '/registration.yaml'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_REMOTE_CAN_PUBLISH_HOMESERVERS == ''
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_CAN_UPDATE_OWN_METADATA == 'false'
-          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_HS_SERVER_NAME == 'homeserver.molecule.local'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_HS_SERVER_NAME == 'full-access.molecule.local:8443'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_INSECURE_SKIP_VERIFY_TLS == 'YES_I_KNOW_WHAT_I_AM_DOING'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_LOG_LEVEL == 'debug'
           - matrix_livekit_jwt_service_env_parsed.MOLECULE_LIVEKIT_MARKER == 'environment-reached'
@@ -603,10 +603,10 @@
       ansible.builtin.assert:
         that:
           - "'LIVEKIT_JWT_BIND=:8097' in matrix_livekit_jwt_service_runtime.Config.Env"
-          - "'LIVEKIT_FULL_ACCESS_HOMESERVERS=full-access.molecule.local:8443,second-full-access.molecule.local' in matrix_livekit_jwt_service_runtime.Config.Env"
-          - (matrix_livekit_jwt_service_runtime.Config.Env | select('match', '^LIVEKIT_CS_API_URL_OVERRIDES=') | first).split('=', 1)[1].split(',') | sort == ['homeserver.molecule.local=https://matrix-openid-fixture:8443', 'matrix-openid-fixture:8443=https://client-api.override.molecule.invalid']
+          - "'LIVEKIT_FULL_ACCESS_HOMESERVERS=full-access.molecule.local:8443' in matrix_livekit_jwt_service_runtime.Config.Env"
+          - (matrix_livekit_jwt_service_runtime.Config.Env | select('match', '^LIVEKIT_CS_API_URL_OVERRIDES=') | first).split('=', 1)[1].split(',') | sort == ['full-access.molecule.local:8443=https://matrix-openid-fixture:8443', 'matrix-openid-fixture:8443=https://client-api.override.molecule.invalid']
           - "'LIVEKIT_AS_REGISTRATION_FILE=/registration.yaml' in matrix_livekit_jwt_service_runtime.Config.Env"
-          - "'LIVEKIT_HS_SERVER_NAME=homeserver.molecule.local' in matrix_livekit_jwt_service_runtime.Config.Env"
+          - "'LIVEKIT_HS_SERVER_NAME=full-access.molecule.local:8443' in matrix_livekit_jwt_service_runtime.Config.Env"
           - "'LIVEKIT_INSECURE_SKIP_VERIFY_TLS=YES_I_KNOW_WHAT_I_AM_DOING' in matrix_livekit_jwt_service_runtime.Config.Env"
           - "'MOLECULE_LIVEKIT_MARKER=environment-reached' in matrix_livekit_jwt_service_runtime.Config.Env"
         fail_msg: "The running container environment lost role-rendered settings"
