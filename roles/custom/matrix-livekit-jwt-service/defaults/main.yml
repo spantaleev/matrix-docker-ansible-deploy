@@ -25,7 +25,7 @@ matrix_livekit_jwt_service_container_additional_networks_auto: []
 matrix_livekit_jwt_service_container_additional_networks_custom: []
 
 # renovate: datasource=docker depName=ghcr.io/element-hq/lk-jwt-service
-matrix_livekit_jwt_service_version: 0.9.0
+matrix_livekit_jwt_service_version: 0.10.0
 
 matrix_livekit_jwt_service_container_image_self_build: false
 matrix_livekit_jwt_service_container_repo: "https://github.com/element-hq/lk-jwt-service.git"
@@ -136,6 +136,19 @@ matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_default: ["{{ matrix_domain }}"]
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_auto: []
 matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list_custom: []
+
+# Controls LIVEKIT_REMOTE_CAN_PUBLISH_HOMESERVERS for federated application-service requests.
+# Keep remote publishing opt-in, preserving the policy from before v0.10.0.
+# An empty list allows remote users to subscribe only; ['*'] allows all joined remote users to publish.
+# Room membership is checked regardless of this list.
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers: "{{ matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list | join(',') }}"
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list: "{{ matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_auto + matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_custom }}"
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_auto: []
+matrix_livekit_jwt_service_environment_variable_livekit_remote_can_publish_homeservers_list_custom: []
+
+# Controls LIVEKIT_CAN_UPDATE_OWN_METADATA. Follow the upstream default of denying
+# participants permission to change their own name, metadata and attributes.
+matrix_livekit_jwt_service_environment_variable_livekit_can_update_own_metadata: false
 
 # Controls the LIVEKIT_CS_API_URL_OVERRIDES environment variable.
 #

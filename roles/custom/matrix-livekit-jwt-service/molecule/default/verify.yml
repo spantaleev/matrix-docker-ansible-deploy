@@ -411,6 +411,8 @@
           - matrix_livekit_jwt_service_cs_jwt.claims.iss == matrix_livekit_jwt_service_environment_variable_livekit_key
           - matrix_livekit_jwt_service_cs_jwt.claims.video.roomJoin is sameas true
           - matrix_livekit_jwt_service_cs_jwt.claims.video.canPublish is sameas true
+          - matrix_livekit_jwt_service_cs_jwt.claims.video.canPublishData is sameas true
+          - matrix_livekit_jwt_service_cs_jwt.claims.video.canUpdateOwnMetadata is sameas false
         fail_msg: "The proxied JWT is not a valid full-access token for the local user"
         success_msg: "The proxied JWT is a valid full-access token for the local user"
       vars:
@@ -443,6 +445,80 @@
       vars:
         matrix_livekit_jwt_service_is_joined_requests: "{{ (matrix_livekit_jwt_service_is_joined_requests_command.stdout | from_json).is_joined_requests }}"
 
+    - name: Request tokens relayed by the homeserver over federation
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - --rm
+          - --network={{ matrix_livekit_jwt_service_container_network }}
+          - "{{ molecule_shared_image_curl }}"
+          - --silent
+          - --show-error
+          - --header
+          - "Content-Type: application/json"
+          - --header
+          - "Authorization: Bearer molecule-livekit-hs-token-8c7a"
+          - --header
+          - "X-Matrix-Origin: example.org"
+          - --data-binary
+          - "{{ {'url': matrix_livekit_jwt_service_environment_variable_livekit_url, 'room_id': '!call-room:molecule.local', 'slot_id': 'molecule-ss-slot', 'member_id': 'member-molecule-ss', 'user_id': item.user} | to_json }}"
+          - --write-out
+          - "\nHTTP_STATUS=%{http_code}"
+          - http://matrix-livekit-jwt-service:8097/_matrix/federation/unstable/io.element.msc4195/rtc/livekit/get_token
+      register: matrix_livekit_jwt_service_ss_tokens
+      changed_when: false
+      failed_when: false
+      loop:
+        - {name: joined, user: '@alice:example.org', status: '200'}
+        - {name: unjoined, user: '@dave:example.org', status: '403'}
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Assert federated token requests are gated on room membership
+      ansible.builtin.assert:
+        that:
+          - item.rc == 0
+          - item.stdout_lines[-1] == 'HTTP_STATUS=' ~ item.item.status
+        fail_msg: "The {{ item.item.name }} user's federated token request did not yield HTTP {{ item.item.status }}"
+        success_msg: "The {{ item.item.name }} user's federated token request yields HTTP {{ item.item.status }}"
+      loop: "{{ matrix_livekit_jwt_service_ss_tokens.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: Decode and authenticate the federated LiveKit JWT
+      ansible.builtin.command:
+        argv:
+          - python3
+          - -c
+          - >-
+            import base64, hashlib, hmac, json, sys;
+            parts = sys.argv[1].split('.');
+            decode = lambda value: json.loads(base64.urlsafe_b64decode(value + '=' * (-len(value) % 4)));
+            signature = base64.urlsafe_b64decode(parts[2] + '=' * (-len(parts[2]) % 4));
+            expected = hmac.new(sys.argv[2].encode(), (parts[0] + '.' + parts[1]).encode(), hashlib.sha256).digest();
+            print(json.dumps({'claims': decode(parts[1]), 'signature_valid': hmac.compare_digest(signature, expected)}))
+          - "{{ (matrix_livekit_jwt_service_ss_tokens.results[0].stdout | regex_replace('(?s)\\s*HTTP_STATUS=[0-9]+\\s*$', '') | from_json).jwt }}"
+          - "{{ matrix_livekit_jwt_service_environment_variable_livekit_secret }}"
+      register: matrix_livekit_jwt_service_ss_jwt_decode
+      changed_when: false
+      no_log: true
+
+    - name: Assert the federated JWT preserves the subscribe-only policy
+      ansible.builtin.assert:
+        that:
+          - matrix_livekit_jwt_service_ss_jwt.signature_valid is sameas true
+          - matrix_livekit_jwt_service_ss_jwt.claims.iss == matrix_livekit_jwt_service_environment_variable_livekit_key
+          - matrix_livekit_jwt_service_ss_jwt.claims.video.roomJoin is sameas true
+          - matrix_livekit_jwt_service_ss_jwt.claims.video.canSubscribe is sameas true
+          - matrix_livekit_jwt_service_ss_jwt.claims.video.canPublish is sameas false
+          - matrix_livekit_jwt_service_ss_jwt.claims.video.canPublishData is sameas false
+          - matrix_livekit_jwt_service_ss_jwt.claims.video.canUpdateOwnMetadata is sameas false
+        fail_msg: "The federated JWT did not preserve the subscribe-only policy"
+        success_msg: "The federated JWT preserves the subscribe-only policy"
+      vars:
+        matrix_livekit_jwt_service_ss_jwt: "{{ matrix_livekit_jwt_service_ss_jwt_decode.stdout | from_json }}"
+
     - name: Read the environment file the role rendered
       ansible.builtin.slurp:
         src: "{{ matrix_livekit_jwt_service_base_path }}/env"
@@ -470,6 +546,8 @@
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_FULL_ACCESS_HOMESERVERS == 'full-access.molecule.local:8443,second-full-access.molecule.local'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_CS_API_URL_OVERRIDES.split(',') | sort == ['homeserver.molecule.local=https://matrix-openid-fixture:8443', 'matrix-openid-fixture:8443=https://client-api.override.molecule.invalid']
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_AS_REGISTRATION_FILE == '/registration.yaml'
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_REMOTE_CAN_PUBLISH_HOMESERVERS == ''
+          - matrix_livekit_jwt_service_env_parsed.LIVEKIT_CAN_UPDATE_OWN_METADATA == 'false'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_HS_SERVER_NAME == 'homeserver.molecule.local'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_INSECURE_SKIP_VERIFY_TLS == 'YES_I_KNOW_WHAT_I_AM_DOING'
           - matrix_livekit_jwt_service_env_parsed.LIVEKIT_LOG_LEVEL == 'debug'
