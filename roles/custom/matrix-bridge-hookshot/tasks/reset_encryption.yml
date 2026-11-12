@@ -20,9 +20,10 @@
       --name={{ matrix_bridge_hookshot_identifier }}-reset-crypto
       --user={{ matrix_user_uid }}:{{ matrix_user_gid }}
       --cap-drop=ALL
+      --entrypoint=node
       --mount type=bind,src={{ matrix_bridge_hookshot_base_path }},dst=/data
       {{ matrix_bridge_hookshot_container_image }}
-      node --require source-map-support/register /usr/bin/matrix-hookshot/App/ResetCryptoStore.js
+      --require source-map-support/register /usr/bin/matrix-hookshot/App/ResetCryptoStore.js
   changed_when: true
 
 - name: Ensure matrix-hookshot is started, if it previously was
