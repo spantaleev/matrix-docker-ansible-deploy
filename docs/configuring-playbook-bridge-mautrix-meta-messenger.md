@@ -60,6 +60,16 @@ You may switch the mode via the `matrix_bridge_mautrix_meta_messenger_meta_mode`
 
 Note that switching the mode (especially between `facebook*` and `messenger`) will intentionally make the bridge use another database (`matrix_mautrix_meta_facebook` or `matrix_mautrix_meta_messenger`) to isolate the 2 instances. Switching between Tor and non-Tor may be possible without dataloss, but your mileage may vary. Before switching to a new mode, you may wish to de-configure the old one (send `help` to the bridge bot and unbridge your portals, etc.).
 
+### Encrypted Messenger history
+
+Encrypted Messenger history access is disabled by default. To prompt for the encrypted backup PIN on login, backfill encrypted history, and upload sent messages to Messenger's encrypted history, add:
+
+```yaml
+matrix_bridge_mautrix_meta_messenger_e2ee_backfill: true
+```
+
+This opt-in is required even for existing logins that already provided their PIN. Leave it disabled to stop both encrypted-history backfill and uploads. The general `matrix_bridge_mautrix_meta_messenger_backfill_enabled` option also needs to be enabled for backfilling messages.
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the bridge.

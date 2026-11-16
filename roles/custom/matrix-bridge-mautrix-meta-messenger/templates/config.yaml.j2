@@ -40,6 +40,10 @@ network:
     # Log raw Bloks payloads and login responses even at debug level, with any user identifiers or credentials redacted.
     log_redacted_login_responses: false
 
+    # Prompt for the encrypted backup PIN, backfill history, and upload sent messages to it.
+    # Disabling this also stops backfill and uploads for logins that already entered their PIN.
+    e2ee_backfill: {{ matrix_bridge_mautrix_meta_messenger_e2ee_backfill | to_json }}
+
     # Thread backfill settings for syncing older conversations
     thread_backfill:
         # Number of batches (pages) to backfill (-1 for unlimited, 0 to disable)
