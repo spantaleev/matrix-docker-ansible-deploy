@@ -55,6 +55,24 @@
     label: "{{ matrix_synapse_worker_details.name }}"
   when: "matrix_synapse_worker_details.app not in matrix_synapse_workers_avail_list"
 
+- name: Fail if worker name is too long
+  ansible.builtin.fail:
+    msg: >-
+      Synapse worker name `{{ matrix_synapse_worker_details.name }}` is {{ matrix_synapse_worker_details.name | length }} characters long.
+      Workers are reached by their container name, which is resolved via DNS and limited to 63 characters.
+  loop: "{{ matrix_synapse_workers_enabled_list }}"
+  loop_control:
+    loop_var: matrix_synapse_worker_details
+    label: "{{ matrix_synapse_worker_details.name }}"
+  # Only workers which something connects to are affected (web requests, replication, metrics scraping).
+  when: >-
+    matrix_synapse_worker_details.name | length > 63
+    and (
+      matrix_synapse_worker_details.webserving | bool
+      or matrix_synapse_worker_details.type in matrix_synapse_known_instance_map_eligible_worker_types
+      or (matrix_synapse_metrics_enabled and matrix_synapse_worker_details.metrics_port | int != 0)
+    )
+
 - name: Fail if stream_writer_stream not defined for stream_writer worker
   ansible.builtin.fail:
     msg: >-

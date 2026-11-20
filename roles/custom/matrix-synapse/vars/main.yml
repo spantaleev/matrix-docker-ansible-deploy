@@ -161,6 +161,12 @@ matrix_synapse_workers_user_dir_worker_client_server_endpoints:
 # don't forget to actually configure it where appropriate (see worker.yaml.j2`, the nginx proxy configuration, etc).
 matrix_synapse_workers_known_stream_writer_stream_types: ['events', 'typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions', 'quarantined_media_changes']
 
+# matrix_synapse_workers_stream_writer_stream_name_aliases maps stream writer stream types to shorter names used in worker names.
+# Worker names are used as container hostnames, which are DNS labels limited to 63 characters.
+# Example: `matrix-synapse-worker-stream-writer-13-quarantined-media-changes` is 64 characters.
+matrix_synapse_workers_stream_writer_stream_name_aliases:
+  quarantined_media_changes: quarantined-media
+
 # matrix_synapse_workers_webserving_stream_writer_types contains a list of stream writer types that serve web (client) requests.
 # Not all stream writers serve web requests. Some just perform background tasks.
 matrix_synapse_workers_webserving_stream_writer_types: ['typing', 'to_device', 'account_data', 'receipts', 'presence', 'push_rules', 'device_lists', 'thread_subscriptions', 'quarantined_media_changes']

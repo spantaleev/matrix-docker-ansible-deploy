@@ -81,7 +81,8 @@
     worker:
       id: "stream-writer-{{ idx }}-{{ item.stream }}"
       # Names must not include underscores. Certain stream writer streams (to_device, account_data, ..) do, so we fix them up.
-      name: "matrix-synapse-worker-stream-writer-{{ idx }}-{{ item.stream | replace('_', '-') }}"
+      # Names are also used as DNS labels (limited to 63 characters), so some long stream names are shortened.
+      name: "matrix-synapse-worker-stream-writer-{{ idx }}-{{ matrix_synapse_workers_stream_writer_stream_name_aliases[item.stream] | default(item.stream | replace('_', '-')) }}"
       type: 'stream_writer'
       app: "generic_worker"
       webserving: "{{ item.stream in matrix_synapse_workers_webserving_stream_writer_types }}"
