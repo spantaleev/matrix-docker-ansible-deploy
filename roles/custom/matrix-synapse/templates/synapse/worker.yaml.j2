@@ -5,6 +5,23 @@ worker_name: {{ matrix_synapse_worker_details.name }}
 worker_daemonize: false
 worker_log_config: /data/{{ matrix_server_fqn_matrix }}.log.config
 
+{#
+  Synapse requires `quarantined_media_changes` stream writers to be media-capable,
+  because the quarantine admin APIs are only registered on workers that can load the media repository.
+  `enable_media_repo` may be disabled in `homeserver.yaml` (when there are media repository workers), so we enable it here.
+  This is skipped when an external media repository is used, as Synapse's own media repository is not in use then
+  and quarantining via Synapse's admin APIs would falsely report success.
+  See: https://element-hq.github.io/synapse/latest/workers.html#the-quarantined_media_changes-stream
+#}
+{% set is_media_capable_quarantined_media_changes_stream_writer = (
+  matrix_synapse_worker_details.type == 'stream_writer'
+  and matrix_synapse_worker_details.stream_writer_stream == 'quarantined_media_changes'
+  and not matrix_synapse_ext_media_repo_enabled
+) %}
+{% if is_media_capable_quarantined_media_changes_stream_writer %}
+enable_media_repo: true
+{% endif %}
+
 {% set http_resources = [] %}
 
 {% if matrix_synapse_worker_details.type == 'room_worker' %}
@@ -26,6 +43,9 @@ worker_log_config: /data/{{ matrix_server_fqn_matrix }}.log.config
 #}
 {% if matrix_synapse_worker_details.type == 'stream_writer' and matrix_synapse_worker_details.webserving %}
   {% set http_resources = http_resources + ['client'] %}
+{% endif %}
+{% if is_media_capable_quarantined_media_changes_stream_writer %}
+  {% set http_resources = http_resources + ['media'] %}
 {% endif %}
 {% if matrix_synapse_worker_details.type == 'media_repository' %}
   {#

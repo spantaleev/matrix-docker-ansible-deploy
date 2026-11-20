@@ -145,11 +145,16 @@ matrix_synapse_workers_stream_writer_thread_subscriptions_stream_worker_client_s
   - ^/_matrix/client/unstable/io.element.msc4308/thread_subscriptions$
 
 # matrix_synapse_workers_stream_writer_quarantined_media_changes_stream_worker_client_server_endpoints contains the endpoints serviced by the `quarantined_media_changes` stream writer.
-# Since Synapse v1.152, deployments which route `/_synapse/admin/v1/quarantine_media/` to a worker (rather than the main process) must declare those workers as
-# `quarantined_media_changes` stream writers, otherwise quarantining media will not work.
-# See: https://github.com/element-hq/synapse/blob/develop/docs/upgrade.md#upgrading-to-v11520
+# Since Synapse v1.152, these must be routed to a `quarantined_media_changes` stream writer which is also media-capable, otherwise quarantining media will not work.
+# Some of them also match the more general `matrix_synapse_workers_media_repository_endpoints` patterns,
+# but the reverse-proxy companion renders these stream writer routes first, so they take precedence.
+# See: https://element-hq.github.io/synapse/latest/workers.html#the-quarantined_media_changes-stream
 matrix_synapse_workers_stream_writer_quarantined_media_changes_stream_worker_client_server_endpoints:
   - ^/_synapse/admin/v1/quarantine_media/.*$
+  - ^/_synapse/admin/v1/room/.*/media/quarantine$
+  - ^/_synapse/admin/v1/user/.*/media/quarantine$
+  - ^/_synapse/admin/v1/media/quarantine/.*$
+  - ^/_synapse/admin/v1/media/unquarantine/.*$
 
 # matrix_synapse_workers_user_dir_worker_client_server_endpoints contains the endpoints serviced by the `type = user_dir` (`app = generic_worker`) worker.
 # See: https://matrix-org.github.io/synapse/latest/workers.html#updating-the-user-directory
@@ -361,9 +366,9 @@ matrix_synapse_workers_media_repository_endpoints:
   - ^/_synapse/admin/v1/user/.*/media.*$
   - ^/_synapse/admin/v1/media/.*$
   - ^/_synapse/admin/v1/users/.*/media$
-  # `^/_synapse/admin/v1/quarantine_media/.*$` is intentionally not listed here:
-  # Synapse v1.152+ requires its worker to also be a `quarantined_media_changes` stream writer,
-  # so it's now handled by `matrix_synapse_workers_stream_writer_quarantined_media_changes_stream_worker_client_server_endpoints` instead.
+  # Quarantine endpoints (`^/_synapse/admin/v1/quarantine_media/.*$` and some matched by the patterns above) are handled by
+  # `matrix_synapse_workers_stream_writer_quarantined_media_changes_stream_worker_client_server_endpoints` instead,
+  # because Synapse v1.152+ requires them to be served by a `quarantined_media_changes` stream writer.
 
 matrix_synapse_workers_user_dir_endpoints:
   # Handles searches in the user directory. It can handle REST endpoints matching
