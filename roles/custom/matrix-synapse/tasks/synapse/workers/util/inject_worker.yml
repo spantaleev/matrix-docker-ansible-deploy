@@ -103,6 +103,15 @@
     label: "{{ matrix_synapse_worker_details.name }}"
   when: matrix_synapse_worker_details.type in matrix_synapse_known_instance_map_eligible_worker_types
 
+# Inject stream writers into the `stream_writers` configuration.
+# This is done here (and not in `init.yml`) so that it also applies to an explicitly-defined `matrix_synapse_workers_enabled_list`.
+- ansible.builtin.set_fact:
+    matrix_synapse_stream_writers: "{{ matrix_synapse_stream_writers | combine({matrix_synapse_worker_details.stream_writer_stream: [matrix_synapse_worker_details.name]}, list_merge='append') }}"
+  loop: "{{ matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'stream_writer') }}"
+  loop_control:
+    loop_var: matrix_synapse_worker_details
+    label: "{{ matrix_synapse_worker_details.name }}"
+
 # Inject pusher instances.
 - ansible.builtin.set_fact:
     matrix_synapse_federation_pusher_instances: "{{ matrix_synapse_federation_pusher_instances + [matrix_synapse_worker_details.name] }}"
