@@ -20,6 +20,13 @@ worker_log_config: /data/{{ matrix_server_fqn_matrix }}.log.config
 ) %}
 {% if is_media_capable_quarantined_media_changes_stream_writer %}
 enable_media_repo: true
+{% elif matrix_synapse_worker_details.type != 'media_repository' and matrix_synapse_enable_media_repo | bool and matrix_synapse_workers_enabled_list | selectattr('type', 'equalto', 'media_repository') | list | length > 0 %}
+{#
+  `enable_media_repo` is only enabled in `homeserver.yaml` despite there being media repository workers
+  so that the main process can serve the quarantine admin APIs (see `matrix_synapse_enable_media_repo`).
+  Other workers (besides media repository workers) should not load the media repository (and run its background tasks), so we disable it for them.
+#}
+enable_media_repo: false
 {% endif %}
 
 {% set http_resources = [] %}
