@@ -3941,6 +3941,11 @@ coturn_container_image_registry_prefix_upstream: "{{ matrix_container_global_reg
 
 coturn_container_image_self_build: "{{ matrix_architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
+# Coturn publishes Docker source tags with a packaging revision. Keep the Git
+# ref separate from the image tag, which cannot contain a slash.
+coturn_container_image_self_build_repo_version: "docker/{{ coturn_version }}-r0"
+coturn_container_image_self_build_name: "localhost/coturn/coturn:{{ coturn_version }}-alpine"
+
 # By default, we use the official public instance.
 coturn_turn_external_ip_address_auto_detection_echoip_service_url: https://ifconfig.co/json
 
