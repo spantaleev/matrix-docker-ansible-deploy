@@ -120,24 +120,36 @@ If `matrix_admin` is already configured in your `vars.yml` configuration, you ca
 
 ### 👥 Initial users configuration
 
-By default, **all users on your homeserver can use the bot**. If that's OK, you can skip this section.
+By default, **all users on your homeserver can use the bot** and invite it into rooms, and can manage the configuration of rooms where their power level is at least 50. If that's OK, you can skip this section.
 
 This is an addition to the [base configuration](#base-configuration).
 
-On its first run, the bot turns `matrix_bot_baibot_config_initial_global_config_user_patterns` into [🌱 initial access rules](https://github.com/etkecc/baibot/blob/main/docs/access.md#-initial-rules). Users matching these patterns can use the bot and invite it into rooms, and can manage the configuration of rooms where their power level is at least 50.
+On its first run, the bot creates [🌱 initial access rules](https://github.com/etkecc/baibot/blob/main/docs/access.md#-initial-rules) from `matrix_bot_baibot_config_initial_global_config_access_rules`, which combines:
+
+- `matrix_bot_baibot_config_initial_global_config_access_rules_default`: the default rules described above
+- `matrix_bot_baibot_config_initial_global_config_access_rules_custom`: your own additional rules (empty by default)
+
+Each rule has an `effect` (`allow` or `deny`), a list of [🔑 permissions](https://github.com/etkecc/baibot/blob/main/docs/access.md#-permissions), a list of `users` (MXID patterns) and an optional `min_power_level`.
 
 **Note**: This only seeds the rules on the first run. Afterwards, access **cannot be managed via Ansible anymore**. It is managed with [📜 access rules](https://github.com/etkecc/baibot/blob/main/docs/access.md#-rules) via bot commands (see `!bai access help`).
 
-**If necessary**, add the following configuration to your `vars.yml` file:
+**If necessary**, add configuration like this to your `vars.yml` file:
 
 ```yaml
-# Uncomment and adjust the bot users if necessary:
-#
-# Subsequent changes to `matrix_bot_baibot_config_initial_global_config_user_patterns` do not affect the bot's behavior.
+# Subsequent changes to these variables do not affect the bot's behavior.
 # After the first run, access is managed with access rules via bot commands, not via Ansible.
-#
-# matrix_bot_baibot_config_initial_global_config_user_patterns:
-#   - "@*:{{ matrix_bot_baibot_config_homeserver_server_name }}"
+
+# Example: replace the default rules, so that only some users can use the bot and invite it into rooms.
+matrix_bot_baibot_config_initial_global_config_access_rules_default:
+  - effect: allow
+    permissions: [use, invite]
+    users: ["@alice:{{ matrix_domain }}", "@bob:{{ matrix_domain }}"]
+
+# Example: in addition to the default rules, let bridged contacts have voice messages transcribed.
+matrix_bot_baibot_config_initial_global_config_access_rules_custom:
+  - effect: allow
+    permissions: [speech-to-text]
+    users: ["@*:bridge.example.com"]
 ```
 
 ### 🤖 Configuring agents via Ansible

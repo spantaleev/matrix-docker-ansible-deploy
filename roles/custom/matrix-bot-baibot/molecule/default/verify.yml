@@ -135,7 +135,10 @@
           - matrix_bot_baibot_config.command_prefix == matrix_bot_baibot_config_command_prefix
           - matrix_bot_baibot_config.room.post_join_self_introduction_enabled is false
           - matrix_bot_baibot_config.access.admin_patterns == matrix_bot_baibot_config_access_admin_patterns
-          - matrix_bot_baibot_config.initial_global_config.user_patterns == ['@*:' ~ matrix_domain]
+          - matrix_bot_baibot_config.initial_global_config.access_rules | length == 2
+          - matrix_bot_baibot_config.initial_global_config.access_rules[0].users == ['@*:' ~ matrix_domain]
+          - matrix_bot_baibot_config.initial_global_config.access_rules[1].min_power_level == 50
+          - "'user_patterns' not in matrix_bot_baibot_config.initial_global_config"
         fail_msg: "The rendered configuration does not carry the scenario's Matrix settings"
         success_msg: "The rendered configuration carries the scenario's Matrix settings"
       vars:

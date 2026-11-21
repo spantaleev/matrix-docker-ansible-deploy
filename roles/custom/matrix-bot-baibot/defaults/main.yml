@@ -17,7 +17,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v2026.11.21.1
+matrix_bot_baibot_version: v2026.11.21.2
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_registry_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else matrix_bot_baibot_container_image_registry_prefix_upstream }}"
 matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
@@ -673,17 +673,41 @@ matrix_bot_baibot_config_initial_global_config_handler_speech_to_text: null
 # It only affects the first run of the bot. Configuration is later managed at runtime.
 matrix_bot_baibot_config_initial_global_config_handler_image_generation: null
 
-# Controls the `initial_global_config.user_patterns` configuration setting.
+# Controls the `initial_global_config.access_rules` configuration setting.
 #
-# A list of MXID patterns of the initial users.
-# On the first run, they get access rules which let them use the bot, invite it into rooms,
-# and manage the configuration of rooms where their power level is at least 50.
-# By default, we let anyone on the homeserver use the bot.
+# A list of global access rules, created on the first run.
+# Each rule has an `effect` (`allow` or `deny`), a list of `permissions`,
+# a list of `users` (MXID patterns) and an optional `min_power_level`.
+# See https://github.com/etkecc/baibot/blob/main/docs/access.md
 #
 # This is an initial global configuration setting.
 # It only affects the first run of the bot. Access is later managed with access rules at runtime (see `!bai access`).
-matrix_bot_baibot_config_initial_global_config_user_patterns:
-  - "@*:{{ matrix_bot_baibot_config_homeserver_server_name }}"
+#
+# To add your own rules to the default ones, use `matrix_bot_baibot_config_initial_global_config_access_rules_custom`.
+# To replace the default rules, redefine `matrix_bot_baibot_config_initial_global_config_access_rules_default`.
+matrix_bot_baibot_config_initial_global_config_access_rules: |-
+  {{
+    matrix_bot_baibot_config_initial_global_config_access_rules_default
+    +
+    matrix_bot_baibot_config_initial_global_config_access_rules_auto
+    +
+    matrix_bot_baibot_config_initial_global_config_access_rules_custom
+  }}
+
+# By default, we let anyone on the homeserver use the bot and invite it into rooms,
+# and manage the configuration of rooms where their power level is at least 50.
+matrix_bot_baibot_config_initial_global_config_access_rules_default:
+  - effect: allow
+    permissions: [use, invite]
+    users: ["@*:{{ matrix_bot_baibot_config_homeserver_server_name }}"]
+  - effect: allow
+    permissions: [manage-config]
+    users: ["@*:{{ matrix_bot_baibot_config_homeserver_server_name }}"]
+    min_power_level: 50
+
+matrix_bot_baibot_config_initial_global_config_access_rules_auto: []
+
+matrix_bot_baibot_config_initial_global_config_access_rules_custom: []
 
 # Controls the `logging` configuration setting.
 #
