@@ -120,18 +120,13 @@ If `matrix_admin` is already configured in your `vars.yml` configuration, you ca
 
 ### 👥 Initial users configuration
 
-By default, **all users on your homeserver are considered allowed users**. If that's OK, you can skip this section.
+By default, **all users on your homeserver can use the bot**. If that's OK, you can skip this section.
 
 This is an addition to the [base configuration](#base-configuration).
 
-To specify who is considered a bot [👥 User](https://github.com/etkecc/baibot/blob/main/docs/access.md#user), you may:
+On its first run, the bot turns `matrix_bot_baibot_config_initial_global_config_user_patterns` into [🌱 initial access rules](https://github.com/etkecc/baibot/blob/main/docs/access.md#-initial-rules). Users matching these patterns can use the bot and invite it into rooms, and can manage the configuration of rooms where their power level is at least 50.
 
-- define an **initial** value for `matrix_bot_baibot_config_initial_global_config_user_patterns` Ansible variable, as shown below
-- configure the list at runtime via the bot's `!bai access set-users SPACE_SEPARATED_PATTERNS` command
-
-Configuring `matrix_bot_baibot_config_initial_global_config_user_patterns` is optional, but it can be useful to pre-configure the bot with a list of users who should have access to the bot's features.
-
-**Note**: Once initially configured, the allowed users list **cannot be managed via Ansible anymore**. It can only be managed subsequently via bot commands.
+**Note**: This only seeds the rules on the first run. Afterwards, access **cannot be managed via Ansible anymore**. It is managed with [📜 access rules](https://github.com/etkecc/baibot/blob/main/docs/access.md#-rules) via bot commands (see `!bai access help`).
 
 **If necessary**, add the following configuration to your `vars.yml` file:
 
@@ -139,7 +134,7 @@ Configuring `matrix_bot_baibot_config_initial_global_config_user_patterns` is op
 # Uncomment and adjust the bot users if necessary:
 #
 # Subsequent changes to `matrix_bot_baibot_config_initial_global_config_user_patterns` do not affect the bot's behavior.
-# Once initially configured, the allowed users list is managed via bot commands, not via Ansible.
+# After the first run, access is managed with access rules via bot commands, not via Ansible.
 #
 # matrix_bot_baibot_config_initial_global_config_user_patterns:
 #   - "@*:{{ matrix_bot_baibot_config_homeserver_server_name }}"
@@ -456,7 +451,7 @@ ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,ensure-matrix-use
 
 To use the bot, invite it to any existing Matrix room (`/invite @baibot:example.com` where `example.com` is your base domain, not the `matrix.` domain).
 
-If you're an allowed bot [👥 user](https://github.com/etkecc/baibot/blob/main/docs/access.md#user) (see [👥 Initial users configuration](#-initial-users-configuration)), the bot will accept your invitation and join the room.
+If you're allowed to [👋 invite](https://github.com/etkecc/baibot/blob/main/docs/access.md#-joining-rooms) the bot (see [👥 Initial users configuration](#-initial-users-configuration)), it will accept your invitation and join the room.
 
 After joining, the bot will introduce itself and show information about the [✨ features](https://github.com/etkecc/baibot/blob/main/docs/features.md) that are enabled for it.
 

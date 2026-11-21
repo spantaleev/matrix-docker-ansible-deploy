@@ -17,7 +17,7 @@ matrix_bot_baibot_container_repo_version: "{{ 'main' if matrix_bot_baibot_versio
 matrix_bot_baibot_container_src_files_path: "{{ matrix_base_data_path }}/baibot/container-src"
 
 # renovate: datasource=docker depName=ghcr.io/etkecc/baibot
-matrix_bot_baibot_version: v2026.11.18.0
+matrix_bot_baibot_version: v2026.11.21.1
 matrix_bot_baibot_container_image: "{{ matrix_bot_baibot_container_image_registry_prefix }}etkecc/baibot:{{ matrix_bot_baibot_version }}"
 matrix_bot_baibot_container_image_registry_prefix: "{{ 'localhost/' if matrix_bot_baibot_container_image_self_build else matrix_bot_baibot_container_image_registry_prefix_upstream }}"
 matrix_bot_baibot_container_image_registry_prefix_upstream: "{{ matrix_bot_baibot_container_image_registry_prefix_upstream_default }}"
@@ -675,11 +675,13 @@ matrix_bot_baibot_config_initial_global_config_handler_image_generation: null
 
 # Controls the `initial_global_config.user_patterns` configuration setting.
 #
-# A space-separated list of MXID patterns which specify who can use the bot.
+# A list of MXID patterns of the initial users.
+# On the first run, they get access rules which let them use the bot, invite it into rooms,
+# and manage the configuration of rooms where their power level is at least 50.
 # By default, we let anyone on the homeserver use the bot.
 #
 # This is an initial global configuration setting.
-# It only affects the first run of the bot. Configuration is later managed at runtime.
+# It only affects the first run of the bot. Access is later managed with access rules at runtime (see `!bai access`).
 matrix_bot_baibot_config_initial_global_config_user_patterns:
   - "@*:{{ matrix_bot_baibot_config_homeserver_server_name }}"
 

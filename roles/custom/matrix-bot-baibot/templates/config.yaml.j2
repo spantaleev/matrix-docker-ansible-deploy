@@ -91,7 +91,9 @@ initial_global_config:
     speech_to_text: {{ matrix_bot_baibot_config_initial_global_config_handler_speech_to_text | to_json }}
     image_generation: {{ matrix_bot_baibot_config_initial_global_config_handler_image_generation | to_json }}
 
-  # Space-separated list of MXID patterns which specify who can use the bot.
+  # MXID patterns of the initial users. On the first run, they get rules which let them use the bot,
+  # invite it into rooms, and manage the configuration of rooms where their power level is at least 50.
+  # Later, access is managed with access rules in chat (see `!bai access`).
   # By default, we let anyone on the homeserver use the bot.
   user_patterns: {{ matrix_bot_baibot_config_initial_global_config_user_patterns | to_json}}
 
