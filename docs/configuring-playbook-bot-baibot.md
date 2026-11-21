@@ -100,7 +100,7 @@ As mentioned above, **this may not be enough**. Continue with the configuration 
 
 This is an addition to the [base configuration](#base-configuration).
 
-To specify who is considered a bot [👮‍♂️ Administrator](https://github.com/etkecc/baibot/blob/main/docs/access.md#administrators), you either need to specify `matrix_bot_baibot_config_access_admin_patterns` or `matrix_admin`. The latter is a single variable which affects all bridges and bots.
+To specify who is considered a bot [👮‍♂️ Administrator](https://github.com/etkecc/baibot/blob/main/docs/access.md#️-administrators), you either need to specify `matrix_bot_baibot_config_access_admin_patterns` or `matrix_admin`. The latter is a single variable which affects all bridges and bots.
 
 If `matrix_admin` is already configured in your `vars.yml` configuration, you can skip this section.
 
@@ -373,7 +373,7 @@ Because these are [statically](https://github.com/etkecc/baibot/blob/main/docs/c
 
 💡 To figure out what to put in the `config` section, refer to the [☁️ provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md) page, which contains **sample configuration YAML for each provider**.
 
-As with any [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md), defining them means they exist. To actually make use of them, they need to be configured as handlers globally or in a specific room — see [Mixing & matching models](https://github.com/etkecc/baibot/blob/main/docs/features.md#mixing--matching-models).
+As with any [🤖 agent](https://github.com/etkecc/baibot/blob/main/docs/agents.md), defining them means they exist. To actually make use of them, they need to be configured as handlers globally or in a specific room — see [Mixing & matching models](https://github.com/etkecc/baibot/blob/main/docs/features.md#-mixing--matching-models).
 
 💡 You may also wish to use these new agents for [🤝 Configuring initial default handlers](#-configuring-initial-default-handlers).
 
@@ -391,13 +391,13 @@ baibot supports [various purposes](https://github.com/etkecc/baibot/blob/main/do
 
 - [🦻 speech-to-text](https://github.com/etkecc/baibot/blob/main/docs/features.md#-speech-to-text): turning your voice messages into text
 
-- [🗣️ text-to-speech](https://github.com/etkecc/baibot/blob/main/docs/features.md#-text-to-speech): turning bot or users text messages into voice messages
+- [🗣️ text-to-speech](https://github.com/etkecc/baibot/blob/main/docs/features.md#️-text-to-speech): turning bot or users text messages into voice messages
 
-- [🖌️ image-generation](https://github.com/etkecc/baibot/blob/main/docs/features.md#-image-generation): generating images based on instructions
+- [🖌️ image-generation](https://github.com/etkecc/baibot/blob/main/docs/features.md#image-generation): generating images based on instructions
 
 - ❓ catch-all: special purposes, indicating use as a fallback (when no specific handler is configured)
 
-[Mixing & matching models](https://github.com/etkecc/baibot/blob/main/docs/features.md#mixing--matching-models) is made possible by the bot's ability to have different [🤝 handlers](https://github.com/etkecc/baibot/blob/main/docs/configuration/handlers.md) configured for different purposes.
+[Mixing & matching models](https://github.com/etkecc/baibot/blob/main/docs/features.md#-mixing--matching-models) is made possible by the bot's ability to have different [🤝 handlers](https://github.com/etkecc/baibot/blob/main/docs/configuration/handlers.md) configured for different purposes.
 
 This configuration can be done as a global fallback, or per-room. Both of these [🛠️ configurations](https://github.com/etkecc/baibot/blob/main/docs/configuration/README.md) are managed at runtime (viat chat), but **the global configuration can have some initial defaults configured via Ansible**.
 
