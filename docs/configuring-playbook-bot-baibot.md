@@ -166,6 +166,8 @@ Agents defined statically and those created dynamically (via chat) are named dif
 
 Depending on your propensity for [GitOps](https://en.wikipedia.org/wiki/DevOps#GitOps), you may prefer to define agents statically via Ansible, or you may wish to do it dynamically via chat.
 
+The presets let models use baibot's bot tools, like reading the room's recent messages, or creating and editing images (see [🧰 Bot Tools](https://github.com/etkecc/baibot/blob/main/docs/bot-tools.md)). To turn them off for all presets (for example, for models which don't support function calling), set `matrix_bot_baibot_config_agents_static_definitions_bot_tools: false`. Each preset also has its own `..._config_text_generation_bot_tools` variable. To turn off a single tool (like reading the room's recent messages), use access rules instead (see [🧰 Bot Tools / 🔒 Tool permissions](https://github.com/etkecc/baibot/blob/main/docs/bot-tools.md#-tool-permissions)).
+
 Before proceeding, we recommend reading the upstream documentation on [How to choose a provider](https://github.com/etkecc/baibot/blob/main/docs/providers.md#how-to-choose-a-provider) for a side-by-side of what each one can do. In short: we recommend [Venice](#venice), the most capable provider baibot supports and the only one that keeps no logs and trains on nothing. If you'd rather start with the most widely-used option, [OpenAI](#openai) is a solid, well-supported choice too.
 
 #### Venice

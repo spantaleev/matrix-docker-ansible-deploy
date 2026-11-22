@@ -244,6 +244,15 @@ matrix_bot_baibot_config_agents_static_definitions_custom: []
 
 matrix_bot_baibot_config_agents_static_definitions_prompt: "{% raw %}You are a brief, but helpful bot called {{ baibot_name }} powered by the {{ baibot_model_id }} model. The date/time of this conversation's start is: {{ baibot_conversation_start_time_utc }}.{% endraw %}"
 
+# Controls whether the preset agents (below) let the model use baibot's own tools
+# (like reading the room's recent messages, or creating and editing images).
+# Each preset's `..._config_text_generation_bot_tools` variable defaults to this.
+# Custom agents (`matrix_bot_baibot_config_agents_static_definitions_custom`) set `text_generation.bot_tools` in their own config.
+# Turn it off for models which don't support function calling.
+# To turn off a single tool (like reading the room's recent messages), use access rules instead.
+# See: https://github.com/etkecc/baibot/blob/main/docs/bot-tools.md
+matrix_bot_baibot_config_agents_static_definitions_bot_tools: true
+
 ########################################################################################
 #                                                                                      #
 # Anthropic agent configuration                                                        #
@@ -286,6 +295,7 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generat
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_response_tokens: 16384
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_context_tokens: 204800
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_bot_tools: "{{ matrix_bot_baibot_config_agents_static_definitions_bot_tools }}"
 # Provider tools (run on Anthropic's side).
 # These are disabled by default following upstream defaults. Enabling them may incur additional costs.
 # See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-provider-tools
@@ -344,6 +354,7 @@ matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_p
 matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_temperature: 1.0
 matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_max_response_tokens: 4096
 matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_max_context_tokens: 131072
+matrix_bot_baibot_config_agents_static_definitions_groq_config_text_generation_bot_tools: "{{ matrix_bot_baibot_config_agents_static_definitions_bot_tools }}"
 
 matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_enabled: true
 matrix_bot_baibot_config_agents_static_definitions_groq_config_speech_to_text_model_id: whisper-large-v3
@@ -400,6 +411,7 @@ matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generatio
 matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_temperature: 1.0
 matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_max_response_tokens: 4096
 matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_max_context_tokens: 128000
+matrix_bot_baibot_config_agents_static_definitions_mistral_config_text_generation_bot_tools: "{{ matrix_bot_baibot_config_agents_static_definitions_bot_tools }}"
 
 ########################################################################################
 #                                                                                      #
@@ -457,6 +469,7 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_response_tokens: ~
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_completion_tokens: 128000
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_context_tokens: 400000
+matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_bot_tools: "{{ matrix_bot_baibot_config_agents_static_definitions_bot_tools }}"
 # Provider tools (run on OpenAI's side).
 # These are disabled by default following upstream defaults. Enabling them may incur additional costs.
 # See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-provider-tools
@@ -530,6 +543,7 @@ matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation
 matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_temperature: 1.0
 matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_max_response_tokens: 4096
 matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_max_context_tokens: 128000
+matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_bot_tools: "{{ matrix_bot_baibot_config_agents_static_definitions_bot_tools }}"
 # How long Venice keeps the prompt prefix cached: "default", "extended", or "24h".
 # "24h" makes a long, stable system prompt cheap across a day of conversations.
 matrix_bot_baibot_config_agents_static_definitions_venice_config_text_generation_prompt_cache_retention: 24h
