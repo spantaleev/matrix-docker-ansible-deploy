@@ -163,6 +163,11 @@ matrix_bot_baibot_config_command_prefix: "!bai"
 # Influences whether the bot should send an introduction message after joining a room.
 matrix_bot_baibot_config_room_post_join_self_introduction_enabled: true
 
+# Controls the `room.catch_up_tolerance_seconds` configuration setting.
+# Seconds subtracted from processed event timestamps when updating the catch-up marker for all rooms.
+# Increase for delayed federation or bridged messages; larger values permit more history and replay.
+matrix_bot_baibot_config_room_catch_up_tolerance_seconds: 300
+
 # Controls the `access.admin_patterns` configuration setting.
 # A space-separated list of MXID patterns which specify who is an admin.
 #
@@ -281,6 +286,11 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generat
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_response_tokens: 16384
 matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_max_context_tokens: 204800
+# Provider tools (run on Anthropic's side).
+# These are disabled by default following upstream defaults. Enabling them may incur additional costs.
+# See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-provider-tools
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_tools_web_search: false
+matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_tools_web_fetch: false
 
 ########################################################################################
 #                                                                                      #
@@ -447,9 +457,9 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_response_tokens: ~
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_completion_tokens: 128000
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_max_context_tokens: 400000
-# Built-in tools configuration (OpenAI only).
-# These tools extend the model's capabilities but are disabled by default following upstream defaults.
-# See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-built-in-tools-openai-only
+# Provider tools (run on OpenAI's side).
+# These are disabled by default following upstream defaults. Enabling them may incur additional costs.
+# See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-provider-tools
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_web_search: false
 matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_code_interpreter: false
 

@@ -217,6 +217,12 @@ matrix_bot_baibot_config_agents_static_definitions_anthropic_config_api_key: "YO
 # You can adjust it in the `matrix_bot_baibot_config_agents_static_definitions_prompt` variable,
 # or you can adjust it below only for the Anthropic agent.
 # matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_prompt: "{{ matrix_bot_baibot_config_agents_static_definitions_prompt }}"
+
+# Uncomment below to enable Anthropic's provider tools.
+# These tools are disabled by default. Enabling them may incur additional costs.
+# See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-provider-tools
+# matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_tools_web_search: true
+# matrix_bot_baibot_config_agents_static_definitions_anthropic_config_text_generation_tools_web_fetch: true
 ```
 
 If you'd like to use more than one model, take a look at the [Configuring additional agents (without a preset)](#configuring-additional-agents-without-a-preset) section below.
@@ -301,9 +307,9 @@ matrix_bot_baibot_config_agents_static_definitions_openai_config_api_key: "YOUR_
 # If you'd like to use another text-generation agent, uncomment and adjust:
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_model_id: gpt-6.2-sol
 
-# Uncomment below to enable OpenAI's built-in tools.
+# Uncomment below to enable OpenAI's provider tools.
 # These tools are disabled by default. Enabling them may incur additional costs.
-# See: https://github.com/etkecc/baibot/blob/61d18b2/docs/features.md#%EF%B8%8F-built-in-tools-openai-only
+# See: https://github.com/etkecc/baibot/blob/main/docs/features.md#%EF%B8%8F-provider-tools
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_web_search: true
 # matrix_bot_baibot_config_agents_static_definitions_openai_config_text_generation_tools_code_interpreter: true
 
