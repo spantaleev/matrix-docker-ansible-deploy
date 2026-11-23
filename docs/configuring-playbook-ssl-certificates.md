@@ -114,7 +114,7 @@ Here is an example for configurations on the `vars.yml` file for Cloudflare. Ple
 ```yaml
 traefik_config_certificatesResolvers_acme_dnsChallenge_enabled: true
 traefik_config_certificatesResolvers_acme_dnsChallenge_provider: "cloudflare"
-traefik_config_certificatesResolvers_acme_dnsChallenge_delayBeforeCheck: 60
+traefik_config_certificatesResolvers_acme_dnsChallenge_propagation_delayBeforeChecks: 60
 traefik_config_certificatesResolvers_acme_dnsChallenge_resolvers:
   - "1.1.1.1:53"
 traefik_environment_variables: |
