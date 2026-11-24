@@ -6821,6 +6821,13 @@ matrix_livekit_jwt_service_environment_variable_livekit_secret: "{{ (matrix_home
 # Only Synapse supports the homeserver side of this (MSC4502, MSC4512), so other homeservers keep using the legacy transport only.
 matrix_livekit_jwt_service_appservice_enabled: "{{ matrix_livekit_jwt_service_enabled and matrix_homeserver_implementation == 'synapse' }}"
 
+matrix_livekit_jwt_service_appservice_registration_requires_exact_proxy_prefix: >-
+  {{
+    matrix_homeserver_implementation == 'synapse'
+    and matrix_synapse_container_image_tag is match('^v?[0-9]+[.][0-9]+[.][0-9]+$')
+    and (matrix_synapse_container_image_tag | regex_replace('^v', '')) is version('1.166.0', '>=')
+  }}
+
 matrix_livekit_jwt_service_appservice_registration_as_token: "{{ (matrix_homeserver_generic_secret_key + ':lk.as.tok') | hash('sha512') | to_uuid }}"
 matrix_livekit_jwt_service_appservice_registration_hs_token: "{{ (matrix_homeserver_generic_secret_key + ':lk.hs.tok') | hash('sha512') | to_uuid }}"
 

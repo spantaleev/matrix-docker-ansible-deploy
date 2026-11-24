@@ -33,3 +33,15 @@
     - {'name': 'matrix_livekit_jwt_service_appservice_registration_as_token', when: "{{ matrix_livekit_jwt_service_appservice_enabled }}"}
     - {'name': 'matrix_livekit_jwt_service_appservice_registration_hs_token', when: "{{ matrix_livekit_jwt_service_appservice_enabled }}"}
     - {'name': 'matrix_livekit_jwt_service_appservice_registration_sender_localpart', when: "{{ matrix_livekit_jwt_service_appservice_enabled }}"}
+
+- name: Fail if the LiveKit application service claims a nested proxy prefix on Synapse
+  ansible.builtin.fail:
+    msg: >-
+      Synapse v1.166.0 and later reject MSC4512 proxy prefixes nested under rtc/livekit.
+      Remove the matrix_livekit_jwt_service_appservice_registration_proxy_prefix override
+      or set io.element.msc4512.proxy_prefix to rtc/livekit in your custom LiveKit application service registration.
+      Review any path restrictions in your proxy or application service before switching to the full prefix.
+  when:
+    - matrix_livekit_jwt_service_appservice_enabled | bool
+    - matrix_livekit_jwt_service_appservice_registration_requires_exact_proxy_prefix | bool
+    - (matrix_livekit_jwt_service_appservice_registration_configuration.get('io.element.msc4512.proxy_prefix', '') | regex_replace('/+$', '')) is match('^rtc/livekit/')

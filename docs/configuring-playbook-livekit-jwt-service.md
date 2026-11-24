@@ -21,6 +21,8 @@ Take a look at:
 
 When [Synapse](configuring-playbook-synapse.md) is your homeserver, the playbook also registers LiveKit JWT Service as a Synapse application service. This enables the stable MatrixRTC LiveKit transport (`m.livekit`): clients request call tokens through your homeserver, which forwards these requests to LiveKit JWT Service.
 
+Use `rtc/livekit` as the `io.element.msc4512.proxy_prefix` in custom registrations. Synapse v1.166.0 and later reject nested prefixes such as `rtc/livekit/get_token`. If you restricted which paths the service could receive using a nested prefix, enforce that restriction in the service or a proxy in front of it before switching to the full prefix. See [Synapse's MSC4512 changes](https://github.com/element-hq/synapse/pull/20299).
+
 Synapse advertises both the stable transport and the deprecated `livekit` one, so older clients can keep talking to LiveKit JWT Service directly.
 
 The application service covers all local users (non-exclusively). LiveKit JWT Service uses it to check that callers are joined to the room, and to manage delayed leave events on their behalf. Running as an application service also changes the existing endpoints: users who aren't joined to the room no longer get tokens, as long as `matrix_livekit_jwt_service_environment_variable_livekit_full_access_homeservers_list` only contains your own homeserver.
