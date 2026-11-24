@@ -21,7 +21,7 @@ default:
 
 # Adds a new host to the inventory, creating the inventory files if necessary (e.g. `just add-inventory-host example.com 1.2.3.4`)
 add-inventory-host domain server_address:
-    @{{ justfile_directory() }}/bin/add-inventory-host.sh {{ quote(domain) }} {{ quote(server_address) }}
+    @{{ quote(justfile_directory() / "bin/add-inventory-host.sh") }} {{ quote(domain) }} {{ quote(server_address) }}
 
 # Pulls external Ansible roles (--force also replaces roles with local changes)
 roles *flags:
@@ -153,17 +153,17 @@ stop-group group *extra_args:
 
 # Runs a role's Molecule scenario locally (no argument lists the roles that have one)
 molecule *args:
-    @{{ justfile_directory() }}/bin/molecule.sh {{ args }}
+    @{{ quote(justfile_directory() / "bin/molecule.sh") }} {{ args }}
 
 # Removes the Molecule virtualenv and per-role Ansible homes from var/
 molecule-clean *args:
-    @{{ justfile_directory() }}/bin/molecule-clean.sh {{ args }}
+    @{{ quote(justfile_directory() / "bin/molecule-clean.sh") }} {{ args }}
 
 # Internal - installs the roles in requirements.yml, keeping roles with local changes
 _install-roles *flags:
-    @{{ justfile_directory() }}/bin/ansible-python.sh {{ justfile_directory() }}/bin/install-roles.py \
-    --requirements-path={{ justfile_directory() }}/requirements.yml \
-    --roles-path={{ justfile_directory() }}/roles/galaxy \
+    @{{ quote(justfile_directory() / "bin/ansible-python.sh") }} {{ quote(justfile_directory() / "bin/install-roles.py") }} \
+    --requirements-path={{ quote(justfile_directory() / "requirements.yml") }} \
+    --roles-path={{ quote(justfile_directory() / "roles/galaxy") }} \
     --state-path={{ quote(installed_roles_file_path) }} \
     {{ flags }}
 
