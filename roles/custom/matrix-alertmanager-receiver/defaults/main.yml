@@ -11,7 +11,7 @@
 matrix_alertmanager_receiver_enabled: true
 
 # renovate: datasource=docker depName=docker.io/metio/matrix-alertmanager-receiver
-matrix_alertmanager_receiver_version: 2026.9.23
+matrix_alertmanager_receiver_version: 2026.11.25
 
 matrix_alertmanager_receiver_scheme: https
 
@@ -27,7 +27,8 @@ matrix_alertmanager_receiver_config_path: "{{ matrix_alertmanager_receiver_base_
 
 matrix_alertmanager_receiver_container_image_self_build: false
 matrix_alertmanager_receiver_container_image_self_build_repo: https://github.com/metio/matrix-alertmanager-receiver
-matrix_alertmanager_receiver_container_image_self_build_repo_version: "{{ 'main' if matrix_alertmanager_receiver_version == 'main' else matrix_alertmanager_receiver_version }}"
+# The 2026.11.25 image was published without its Git tag. Use the revision from the image metadata.
+matrix_alertmanager_receiver_container_image_self_build_repo_version: "{{ 'e989aa788c2150a9cc38469339318b7f2ace2cb5' if matrix_alertmanager_receiver_version == '2026.11.25' else matrix_alertmanager_receiver_version }}"
 matrix_alertmanager_receiver_container_src_path: "{{ matrix_alertmanager_receiver_base_path }}/container-src"
 
 matrix_alertmanager_receiver_container_image: "{{ matrix_alertmanager_receiver_container_image_registry_prefix }}metio/matrix-alertmanager-receiver:{{ matrix_alertmanager_receiver_container_image_tag }}"
