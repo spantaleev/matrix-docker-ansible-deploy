@@ -30,7 +30,6 @@ Possibly outdated list of roles where self-building the Docker image is currentl
 - `matrix-client-element`
 - `hydrogen`
 - `cinny`
-- `sable`
 - `coturn`
 - `matrix-corporal`
 - `exim-relay`

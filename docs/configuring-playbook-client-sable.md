@@ -8,9 +8,13 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Setting up Sable (optional)
 
-The playbook can install and configure the [Sable](https://github.com/SableClient/Sable) Matrix web client for you.
+The playbook can install and configure the [Sable](https://git.sable.moe/SableClient/sable-next) Matrix web client for you.
 
 Sable is a web client focusing primarily on simple, elegant and secure interface. It can be installed alongside or instead of [Element Web](./configuring-playbook-client-element-web.md), [Cinny](./configuring-playbook-client-cinny.md) and others.
+
+## Prerequisites
+
+Sable requires a homeserver which supports [Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186), like [Synapse](configuring-playbook-synapse.md). [Dendrite](configuring-playbook-dendrite.md) [does not support it](https://github.com/element-hq/dendrite/issues/3236), so it's not possible to use Sable with it.
 
 ## Adjusting DNS records
 
@@ -51,7 +55,7 @@ There are some additional things you may wish to configure about the component.
 Take a look at:
 
 - `roles/galaxy/sable/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
-- `roles/galaxy/sable/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `sable_configuration_extension_json` variable
+- `roles/galaxy/sable/templates/config.json.j2` for the component's default configuration. You can override settings (even those that don't have dedicated playbook variables) using the `sable_configuration_extension_json` variable. See [Sable's documentation](https://docs.sable.moe/installation/self-hosting/) for the supported settings
 
 ## Installing
 
