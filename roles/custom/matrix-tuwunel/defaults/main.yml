@@ -13,7 +13,7 @@ matrix_tuwunel_enabled: true
 matrix_tuwunel_hostname: ''
 
 # renovate: datasource=docker depName=ghcr.io/matrix-construct/tuwunel
-matrix_tuwunel_version: v2.0.0
+matrix_tuwunel_version: v2.1.0
 
 matrix_tuwunel_container_image: "{{ matrix_tuwunel_container_image_registry_prefix }}matrix-construct/tuwunel:{{ matrix_tuwunel_container_image_tag }}"
 matrix_tuwunel_container_image_tag: "{{ matrix_tuwunel_version }}"
@@ -108,7 +108,7 @@ matrix_tuwunel_container_labels_public_federation_api_traefik_tls_certResolver: 
 
 # Controls whether labels will be added that expose Tuwunel's first-party API (`/_tuwunel`) on a public Traefik entrypoint.
 # This namespace carries ad-hoc routes such as `/_tuwunel/server_version` and `/_tuwunel/local_user_count`, as well as the
-# native OpenID Connect provider endpoints (`/_tuwunel/oidc/...`) that clients use when Tuwunel performs OIDC login itself.
+# external identity provider callbacks (`/_tuwunel/sso/callback/...`) and native OpenID Connect endpoints (`/_tuwunel/oidc/...`) that clients use when Tuwunel performs OIDC login itself.
 # It is enabled by default because the reverse proxy must route it for those features to work.
 matrix_tuwunel_container_labels_public_tuwunel_api_enabled: true
 matrix_tuwunel_container_labels_public_tuwunel_api_traefik_hostname: "{{ matrix_tuwunel_hostname }}"
@@ -284,9 +284,7 @@ matrix_tuwunel_config_ip_range_denylist_custom: []
 # MSC4284 policy server enforcement.
 # When enabled, rooms with a valid `m.room.policy` state event will have
 # outgoing events signed by the configured policy server before federation.
-# Refusal aborts the local request; transient network or timeout failures
-# fail open with a warn log so a policy-server outage does not silently
-# take the room offline.
+# Refusals, timeouts and network errors abort the local request by default.
 matrix_tuwunel_config_enable_policy_servers: false
 
 # Timeout (in seconds) for outbound `/sign` calls and inbound
@@ -386,7 +384,7 @@ matrix_tuwunel_config_jwt_validate_nbf: true
 #     client_id: matrix
 #     client_secret: '...'
 #     issuer_url: https://sso.example.com/realms/matrix
-#     callback_url: https://matrix.example.com/_matrix/client/unstable/login/sso/callback/matrix
+#     callback_url: https://matrix.example.com/_tuwunel/sso/callback/matrix
 #     trusted: true
 #   - brand: github
 #     client_id: '...'
