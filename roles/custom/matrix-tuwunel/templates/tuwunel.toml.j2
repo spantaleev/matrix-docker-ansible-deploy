@@ -18,6 +18,9 @@ server_name = {{ matrix_tuwunel_config_server_name | to_json }}
 address = "0.0.0.0"
 port = {{ matrix_tuwunel_config_port_number }}
 database_path = "/var/lib/tuwunel"
+{% if matrix_tuwunel_livekit_appservice_registration_path | length > 0 %}
+appservice_dir = "/run/tuwunel-appservices"
+{% endif %}
 
 max_request_size = {{ matrix_tuwunel_config_max_request_size }}
 
@@ -151,6 +154,7 @@ request_timeout = {{ matrix_tuwunel_config_policy_server_request_timeout }}
   matrix_tuwunel_config_well_known_support_email,
   matrix_tuwunel_config_well_known_support_mxid,
   matrix_tuwunel_config_well_known_livekit_url,
+  matrix_tuwunel_config_well_known_rtc_transports,
 ] %}
 {% if well_known_keys | select | list | length > 0 %}
 
@@ -173,6 +177,11 @@ support_mxid = {{ matrix_tuwunel_config_well_known_support_mxid | to_json }}
 {% if matrix_tuwunel_config_well_known_livekit_url | length > 0 %}
 livekit_url = {{ matrix_tuwunel_config_well_known_livekit_url | to_json }}
 {% endif %}
+{% for transport in matrix_tuwunel_config_well_known_rtc_transports %}
+[[global.well_known.rtc_transports]]
+type = {{ transport.type | to_json }}
+url = {{ transport.url | to_json }}
+{% endfor %}
 {% endif %}
 
 {% if matrix_tuwunel_config_ldap_enabled | bool %}

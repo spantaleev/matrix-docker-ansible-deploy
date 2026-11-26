@@ -25,6 +25,12 @@ matrix_tuwunel_base_path: "{{ matrix_base_data_path }}/tuwunel"
 matrix_tuwunel_config_path: "{{ matrix_tuwunel_base_path }}/config"
 matrix_tuwunel_data_path: "{{ matrix_tuwunel_base_path }}/data"
 
+# Opt in to room-membership checks and stable MatrixRTC transport when the playbook manages LiveKit JWT Service.
+matrix_tuwunel_matrix_rtc_appservice_enabled: false
+
+# Host path to the LiveKit JWT Service registration file, when managed by the playbook.
+matrix_tuwunel_livekit_appservice_registration_path: ''
+
 matrix_tuwunel_config_port_number: 6167
 
 matrix_tuwunel_tmp_directory_size_mb: 500
@@ -315,6 +321,14 @@ matrix_tuwunel_config_well_known_support_mxid: ''
 
 # MatrixRTC foci served via /_matrix/client/v1/rtc/transports (MSC4143)
 matrix_tuwunel_config_well_known_livekit_url: ''
+matrix_tuwunel_config_well_known_livekit_sfu_url: ''
+matrix_tuwunel_config_well_known_rtc_transports: |
+  {{
+    [
+      {'type': 'm.livekit', 'url': matrix_tuwunel_config_well_known_livekit_sfu_url},
+      {'type': 'livekit', 'url': matrix_tuwunel_config_well_known_livekit_sfu_url},
+    ] if matrix_tuwunel_config_well_known_livekit_sfu_url else []
+  }}
 
 # RocksDB tuning. Empty values let tuwunel auto-pick.
 matrix_tuwunel_config_rocksdb_compression_algo: 'zstd'  # one of: zstd, lz4, bz2, none

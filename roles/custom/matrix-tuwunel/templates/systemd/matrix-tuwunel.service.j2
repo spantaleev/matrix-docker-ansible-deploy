@@ -28,6 +28,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--label-file={{ matrix_tuwunel_base_path }}/labels \
 			--mount type=bind,src={{ matrix_tuwunel_data_path }},dst=/var/lib/tuwunel \
 			--mount type=bind,src={{ matrix_tuwunel_config_path }},dst=/etc/tuwunel,ro \
+			{% if matrix_tuwunel_livekit_appservice_registration_path | length > 0 %}
+			--mount type=bind,src={{ matrix_tuwunel_livekit_appservice_registration_path }},dst=/run/tuwunel-appservices/livekit-jwt-service.yaml,ro \
+			{% endif %}
 			{% for arg in matrix_tuwunel_container_extra_arguments %}
 			{{ arg }} \
 			{% endfor %}

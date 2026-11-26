@@ -763,7 +763,10 @@ devture_systemd_service_manager_services_list_auto: |
       'restart_necessary': (
         (matrix_conduit_restart_necessary | bool) if matrix_homeserver_implementation == 'conduit'
         else (matrix_continuwuity_restart_necessary | bool) if matrix_homeserver_implementation == 'continuwuity'
-        else (matrix_tuwunel_restart_necessary | bool) if matrix_homeserver_implementation == 'tuwunel'
+        else (
+          (matrix_tuwunel_restart_necessary | bool)
+          or (matrix_tuwunel_livekit_appservice_registration_path != '' and matrix_livekit_jwt_service_appservice_registration_result.changed | default(false))
+        ) if matrix_homeserver_implementation == 'tuwunel'
         else (matrix_dendrite_restart_necessary | bool) if matrix_homeserver_implementation == 'dendrite'
         else ((matrix_synapse_restart_necessary | bool) or (matrix_homeserver_app_service_registration_changed | bool)) if matrix_homeserver_implementation == 'synapse'
         else true
@@ -6227,6 +6230,10 @@ matrix_tuwunel_container_labels_internal_client_api_traefik_entrypoints: "{{ mat
 matrix_tuwunel_container_labels_internal_tuwunel_api_traefik_entrypoints: "{{ matrix_playbook_internal_matrix_client_api_traefik_entrypoint_name }}"
 
 matrix_tuwunel_config_well_known_livekit_url: "{{ matrix_livekit_jwt_service_public_url if matrix_livekit_jwt_service_enabled else '' }}"
+matrix_tuwunel_livekit_appservice_registration_path: "{{ matrix_livekit_jwt_service_appservice_registration_path if matrix_livekit_jwt_service_appservice_enabled else '' }}"
+
+# New clients request tokens via the homeserver. Tuwunel appends the legacy standalone transport for older clients.
+matrix_tuwunel_config_well_known_livekit_sfu_url: "{{ matrix_livekit_jwt_service_environment_variable_livekit_url if matrix_livekit_jwt_service_appservice_enabled else '' }}"
 
 matrix_tuwunel_config_turn_uris: "{{ coturn_turn_uris if coturn_enabled else [] }}"
 matrix_tuwunel_config_turn_secret: "{{ coturn_turn_static_auth_secret if (coturn_enabled and coturn_authentication_method == 'auth-secret') else '' }}"
@@ -6402,7 +6409,8 @@ matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_enab
 matrix_static_files_file_matrix_client_property_org_matrix_msc4143_rtc_foci_auto: |-
   {{
     (
-      [{'type': 'livekit', 'livekit_service_url': matrix_livekit_jwt_service_public_url}] if matrix_livekit_jwt_service_enabled else []
+      (matrix_tuwunel_config_well_known_rtc_transports if matrix_tuwunel_enabled else [])
+      + ([{'type': 'livekit', 'livekit_service_url': matrix_livekit_jwt_service_public_url}] if matrix_livekit_jwt_service_enabled else [])
     )
   }}
 
@@ -6794,6 +6802,8 @@ matrix_livekit_jwt_service_container_additional_networks_auto: |
   {{
     ([] if matrix_addons_homeserver_container_network == '' else [matrix_addons_homeserver_container_network])
     +
+    ([matrix_tuwunel_container_network] if matrix_tuwunel_enabled and matrix_livekit_jwt_service_appservice_enabled else [])
+    +
     ([matrix_playbook_reverse_proxyable_services_additional_network] if (matrix_livekit_jwt_service_container_labels_traefik_enabled and matrix_playbook_reverse_proxyable_services_additional_network) else [])
   }}
 
@@ -6816,8 +6826,12 @@ matrix_livekit_jwt_service_environment_variable_livekit_key: "{{ (matrix_homeser
 matrix_livekit_jwt_service_environment_variable_livekit_secret: "{{ (matrix_homeserver_generic_secret_key + ':lk.secret') | hash('sha512') | to_uuid }}"
 
 # Running as an application service serves the stable MatrixRTC LiveKit transport (`m.livekit`).
-# Only Synapse supports the homeserver side of this (MSC4502, MSC4512), so other homeservers keep using the legacy transport only.
-matrix_livekit_jwt_service_appservice_enabled: "{{ matrix_livekit_jwt_service_enabled and matrix_homeserver_implementation == 'synapse' }}"
+# Tuwunel supports the homeserver integration when explicitly enabled.
+matrix_livekit_jwt_service_appservice_enabled: |
+  {{
+    matrix_livekit_jwt_service_enabled
+    and (matrix_homeserver_implementation == 'synapse' or (matrix_tuwunel_enabled and matrix_tuwunel_matrix_rtc_appservice_enabled))
+  }}
 
 matrix_livekit_jwt_service_appservice_registration_as_token: "{{ (matrix_homeserver_generic_secret_key + ':lk.as.tok') | hash('sha512') | to_uuid }}"
 matrix_livekit_jwt_service_appservice_registration_hs_token: "{{ (matrix_homeserver_generic_secret_key + ':lk.hs.tok') | hash('sha512') | to_uuid }}"
