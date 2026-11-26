@@ -44,9 +44,11 @@ where `<password-hash>` is the hash returned by the docker command above.
 
 ## Option 3:
 
-Use the Synapse User Admin API as described here: https://github.com/element-hq/synapse/blob/master/docs/admin_api/user_admin_api.rst#reset-password
+Use the [Synapse Admin API for resetting passwords](https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#reset-password).
 
-This requires an [access token](obtaining-access-tokens.md) from a server admin account. *This method will also log the user out of all of their clients while the other options do not.*
+The playbook does not expose the Admin API (`/_synapse/admin`) publicly by default. To expose it, add `matrix_synapse_container_labels_public_client_synapse_admin_api_enabled: true` to your `vars.yml` file and re-run the playbook. [Tuwunel](configuring-playbook-tuwunel.md#exposing-the-administration-api) serves a compatible endpoint, exposed with `matrix_tuwunel_container_labels_public_client_synapse_admin_api_enabled: true`.
+
+This requires an [access token](obtaining-access-tokens.md) from a server admin account. The endpoint is unavailable when [Matrix Authentication Service](configuring-playbook-matrix-authentication-service.md) is enabled. *By default, this method also logs the user out of all of their devices, while the other options do not. To keep their sessions, add `"logout_devices": false` to the request body.*
 
 If you didn't make your account a server admin when you created it, you can learn how to switch it now by reading about it in [Adding/Removing Administrator privileges to an existing user in Synapse](registering-users.md#addingremoving-administrator-privileges-to-an-existing-user-in-synapse).
 
@@ -55,7 +57,7 @@ If you didn't make your account a server admin when you created it, you can lear
 To set @alice:example.com's password to `correct_horse_battery_staple` you could use this curl command:
 
 ```sh
-curl -XPOST -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.example.com/_matrix/client/r0/admin/reset_password/@alice:example.com?access_token=ACCESS_TOKEN_HERE
+curl -X POST -H "Authorization: Bearer ACCESS_TOKEN_HERE" -H "Content-Type: application/json" -d '{ "new_password": "correct_horse_battery_staple" }' "https://matrix.example.com/_synapse/admin/v1/reset_password/@alice:example.com"
 ```
 
 Make sure to replace `ACCESS_TOKEN_HERE` with the access token of the server admin account.
