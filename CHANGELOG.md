@@ -1,3 +1,11 @@
+# 2026-11-26
+
+## Tuwunel SSO callback URLs change in 2.1
+
+If you use [an external identity provider with Tuwunel](./docs/configuring-playbook-tuwunel.md#identity-providers-oauth2--oidc) and rely on an automatically derived callback URL, register `https://matrix.example.com/_tuwunel/sso/callback/<client_id>` with the provider before upgrading. The playbook sets the base URL for derivation when SSL is enabled. If your base URL includes a path, set `callback_url` explicitly to the full URL you register. If you manage the reverse proxy yourself, make sure it forwards the new callback to Tuwunel.
+
+An explicit legacy `callback_url` keeps working through Tuwunel 2.x. To migrate it, register the new URL, update `callback_url` in your inventory, and restart Tuwunel.
+
 # 2026-10-30
 
 ## The base directory (`/matrix`) is now owned by root
