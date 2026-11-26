@@ -58,9 +58,6 @@ prevent_media_downloads_from = {{ matrix_tuwunel_config_prevent_media_downloads_
 {% endif %}
 ip_range_denylist = {{ matrix_tuwunel_config_ip_range_denylist | to_json }}
 
-enable_policy_servers = {{ matrix_tuwunel_config_enable_policy_servers | to_json }}
-policy_server_request_timeout = {{ matrix_tuwunel_config_policy_server_request_timeout }}
-
 msc3664_related_event_match = {{ matrix_tuwunel_config_msc3664_related_event_match | to_json }}
 
 allow_outgoing_presence = {{ matrix_tuwunel_config_allow_outgoing_presence | to_json }}
@@ -142,6 +139,10 @@ certs = {{ matrix_tuwunel_config_tls_certs | to_json }}
 key = {{ matrix_tuwunel_config_tls_key | to_json }}
 dual_protocol = {{ matrix_tuwunel_config_tls_dual_protocol | to_json }}
 {% endif %}
+
+[global.rooms.policy_server]
+enable = {{ matrix_tuwunel_config_enable_policy_servers | to_json }}
+request_timeout = {{ matrix_tuwunel_config_policy_server_request_timeout }}
 
 {% set well_known_keys = [
   matrix_tuwunel_config_well_known_client,

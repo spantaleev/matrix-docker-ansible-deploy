@@ -40,7 +40,7 @@ The first user account that registers becomes a server admin and is automaticall
 When `matrix_homeserver_implementation: tuwunel` is set, the playbook automatically integrates Tuwunel with the rest of your stack:
 
 - **Federation.** Toggled by `matrix_homeserver_federation_enabled`. The federation virtual host (port 8448 in the default setup) is wired up via Traefik labels.
-- **Well-known.** `matrix_tuwunel_config_well_known_client` is set to your public homeserver URL whenever SSL is enabled. Matrix clients use this for delegated-domain server discovery; identity-provider entries below can also omit their `callback_url`, since Tuwunel derives `<well-known>/_matrix/client/unstable/login/sso/callback/<client_id>` automatically.
+- **Well-known.** `matrix_tuwunel_config_well_known_client` is set to your public homeserver URL whenever SSL is enabled. Matrix clients use this for delegated-domain server discovery. Tuwunel also uses it to derive the default callback URL for external identity providers.
 - **Element Call / MatrixRTC.** When the [LiveKit JWT service](configuring-playbook-matrix-rtc.md) is enabled, Tuwunel publishes its public URL through `.well-known/matrix/client` per [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
 - **Legacy calls (TURN).** When [Coturn](configuring-playbook-turn.md) is enabled, its URIs and shared secret (or username/password, depending on `coturn_authentication_method`) are wired automatically.
 
@@ -72,12 +72,16 @@ matrix_tuwunel_config_identity_providers:
     client_id: matrix
     client_secret: '<provider secret>'
     issuer_url: https://sso.example.com/realms/matrix
-    callback_url: https://matrix.example.com/_matrix/client/unstable/login/sso/callback/matrix
+    callback_url: https://matrix.example.com/_tuwunel/sso/callback/matrix
     trusted: true
   - brand: github
     client_id: '<github oauth app id>'
     client_secret: '<github oauth app secret>'
 ```
+
+Register `https://matrix.example.com/_tuwunel/sso/callback/<client_id>` with each identity provider. If `callback_url` is omitted, Tuwunel derives this URL from `matrix_tuwunel_config_well_known_client`. If that base URL contains a path, set `callback_url` to the full registered URL explicitly. The reverse proxy must forward the callback path to Tuwunel. Apply changes to `callback_url` with a restart.
+
+Tuwunel v2.1.0 changed this derived URL from the earlier `/_matrix/client/unstable/login/sso/callback/<client_id>` path. If you relied on the derived URL before, register the new one with your identity provider before upgrading, or keep the old one by setting it as `callback_url` explicitly (supported throughout Tuwunel 2.x, with a startup warning).
 
 Self-hosted providers must supply both `client_id` and `issuer_url`. Set `trusted: true` only on providers you operate yourself; trusting a public provider (GitHub, Google, etc.) is an account-takeover risk.
 
@@ -174,7 +178,7 @@ matrix_tuwunel_config_enable_policy_servers: true
 matrix_tuwunel_config_policy_server_request_timeout: 5
 ```
 
-When enabled, rooms with a valid `m.room.policy` state event have outgoing events signed by the configured policy server before federation. Transient network or timeout failures fail open (with a warn log), so a policy-server outage will not silently take the room offline.
+When enabled, rooms with a valid `m.room.policy` state event have outgoing events signed by the configured policy server before federation. A policy-server timeout or outage blocks sends by default. To let events through when the policy server cannot give a verdict, set `TUWUNEL_ROOMS__POLICY_SERVER__FAIL_OPEN=true` in `matrix_tuwunel_environment_variables_extension`. Explicit refusals still block sends.
 
 ### Default room version
 
@@ -182,7 +186,7 @@ The role sets `default_room_version: '12'`, so newly created rooms default to Ma
 
 ### The `/_tuwunel` API path
 
-Besides `/_matrix`, Tuwunel serves its own first-party routes under `/_tuwunel`. This namespace carries ad-hoc endpoints such as `/_tuwunel/server_version` and `/_tuwunel/local_user_count`, and the [native OpenID Connect provider](https://matrix-construct.github.io/tuwunel/authentication/oidc-server.html) endpoints (`/_tuwunel/oidc/...`) that clients use when Tuwunel handles OIDC login itself, rather than delegating to an upstream provider as described above. The role routes `/_tuwunel` on the public entrypoint by default so these features work out of the box.
+Besides `/_matrix`, Tuwunel serves its own first-party routes under `/_tuwunel`. This namespace carries ad-hoc endpoints such as `/_tuwunel/server_version` and `/_tuwunel/local_user_count`, callbacks for external identity providers (`/_tuwunel/sso/callback/...`), and the [native OpenID Connect provider](https://matrix-construct.github.io/tuwunel/authentication/oidc-server.html) endpoints (`/_tuwunel/oidc/...`) that clients use when Tuwunel handles OIDC login itself. The role routes `/_tuwunel` on the public entrypoint by default so these features work out of the box.
 
 To keep this namespace off the public entrypoint and expose it only on the internal one, set:
 
