@@ -15,13 +15,10 @@ See the project's [documentation](https://github.com/element-hq/element-call) to
 
 ## Prerequisites
 
-- A [Synapse](configuring-playbook-synapse.md) homeserver (see the warning below)
+- A homeserver that meets the [Matrix RTC prerequisites](configuring-playbook-matrix-rtc.md#prerequisites)
 - The [Matrix RTC (Real-Time Communication) stack](configuring-playbook-matrix-rtc.md) (automatically done when Element Call is enabled)
 - A client compatible with Element Call. As of 2025-03-15, that's just [Element Web](configuring-playbook-client-element-web.md) and the Element X mobile clients (iOS and Android).
 - (Optional) Guest accounts being enabled for your Matrix server, if you'd like guests to be able to use Element Call. See [Allowing guests to use Element Call](#allowing-guests-to-use-element-call-optional)
-
-> [!WARNING]
->  Because Element Call [requires](https://github.com/element-hq/element-call/blob/93ae2aed9841e0b066d515c56bd4c122d2b591b2/docs/self-hosting.md#a-matrix-homeserver) a few experimental features in the Matrix protocol, it's **very likely that it only works with the Synapse homeserver**.
 
 ## Decide between Element Call vs just the Matrix RTC stack
 
