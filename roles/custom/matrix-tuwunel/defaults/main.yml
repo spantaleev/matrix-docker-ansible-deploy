@@ -25,6 +25,11 @@ matrix_tuwunel_base_path: "{{ matrix_base_data_path }}/tuwunel"
 matrix_tuwunel_config_path: "{{ matrix_tuwunel_base_path }}/config"
 matrix_tuwunel_data_path: "{{ matrix_tuwunel_base_path }}/data"
 
+# Host path to a LiveKit JWT Service application service registration file.
+# When set, the file is mounted into the directory that Tuwunel's `appservice_dir` points to.
+# A playbook may inject this when LiveKit JWT Service runs as an application service.
+matrix_tuwunel_livekit_appservice_registration_path: ''
+
 matrix_tuwunel_config_port_number: 6167
 
 matrix_tuwunel_tmp_directory_size_mb: 500
@@ -315,6 +320,14 @@ matrix_tuwunel_config_well_known_support_mxid: ''
 
 # MatrixRTC foci served via /_matrix/client/v1/rtc/transports (MSC4143)
 matrix_tuwunel_config_well_known_livekit_url: ''
+matrix_tuwunel_config_well_known_livekit_sfu_url: ''
+matrix_tuwunel_config_well_known_rtc_transports: |
+  {{
+    [
+      {'type': 'm.livekit', 'url': matrix_tuwunel_config_well_known_livekit_sfu_url},
+      {'type': 'livekit', 'url': matrix_tuwunel_config_well_known_livekit_sfu_url},
+    ] if matrix_tuwunel_config_well_known_livekit_sfu_url else []
+  }}
 
 # RocksDB tuning. Empty values let tuwunel auto-pick.
 matrix_tuwunel_config_rocksdb_compression_algo: 'zstd'  # one of: zstd, lz4, bz2, none

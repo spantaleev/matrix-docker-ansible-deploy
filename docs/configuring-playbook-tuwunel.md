@@ -41,7 +41,7 @@ When `matrix_homeserver_implementation: tuwunel` is set, the playbook automatica
 
 - **Federation.** Toggled by `matrix_homeserver_federation_enabled`. The federation virtual host (port 8448 in the default setup) is wired up via Traefik labels.
 - **Well-known.** `matrix_tuwunel_config_well_known_client` is set to your public homeserver URL whenever SSL is enabled. Matrix clients use this for delegated-domain server discovery. Tuwunel also uses it to derive the default callback URL for external identity providers.
-- **Element Call / MatrixRTC.** When the [LiveKit JWT service](configuring-playbook-matrix-rtc.md) is enabled, Tuwunel publishes its public URL through `.well-known/matrix/client` per [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
+- **Element Call / MatrixRTC.** When the [LiveKit JWT service](configuring-playbook-matrix-rtc.md) is enabled, Tuwunel advertises its public URL for older clients. Enable [application-service mode](configuring-playbook-livekit-jwt-service.md#stable-matrixrtc-transport) to serve the stable transport and check room membership before issuing tokens.
 - **Legacy calls (TURN).** When [Coturn](configuring-playbook-turn.md) is enabled, its URIs and shared secret (or username/password, depending on `coturn_authentication_method`) are wired automatically.
 
 ## Extending the configuration
@@ -224,7 +224,7 @@ Use the token to create your first account from any client that supports token-g
 
 ## Configuring bridges and appservices
 
-The playbook does not auto-register appservices for Tuwunel. After your bridge has produced its `registration.yaml` (e.g. `/matrix/mautrix-signal/bridge/registration.yaml`), register it manually by sending the contents to the admin room, prefixed with `!admin appservices register` and wrapped in a fenced code block:
+Tuwunel bridge registrations are managed manually. After your bridge has produced its `registration.yaml` (e.g. `/matrix/mautrix-signal/bridge/registration.yaml`), register it manually by sending the contents to the admin room, prefixed with `!admin appservices register` and wrapped in a fenced code block:
 
     !admin appservices register
     ```

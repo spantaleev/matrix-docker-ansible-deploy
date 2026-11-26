@@ -28,6 +28,16 @@
     - {'name': 'matrix_tuwunel_container_network', when: true}
     - {'name': 'matrix_tuwunel_container_labels_internal_client_api_traefik_entrypoints', when: "{{ matrix_tuwunel_container_labels_internal_client_api_enabled }}"}
 
+- name: Fail if an appservice directory override hides the managed LiveKit registration
+  ansible.builtin.fail:
+    msg: >-
+      The managed LiveKit JWT Service registration uses Tuwunel's appservice directory.
+      Move registrations from the directory specified by the `*_APPSERVICE_DIR` environment variable
+      to inline or admin-managed registrations, then remove the override from `matrix_tuwunel_environment_variables_extension`.
+  when:
+    - matrix_tuwunel_livekit_appservice_registration_path | length > 0
+    - matrix_tuwunel_environment_variables_extension is regex('^\s*(?:TUWUNEL|CONDUWUIT|CONDUIT)_APPSERVICE_DIR(?:=|\s*$)', ignorecase=true, multiline=true)
+
 - name: Fail if registration is enabled without a token or explicit acknowledgement
   ansible.builtin.fail:
     msg: >-

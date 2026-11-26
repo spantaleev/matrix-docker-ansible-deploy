@@ -15,14 +15,10 @@ The Matrix RTC stack is a set of supporting components ([LiveKit Server](configu
 
 ## Prerequisites
 
-- A [Synapse](configuring-playbook-synapse.md) homeserver (see the warning below)
-- Various experimental features for the Synapse homeserver which Element Call [requires](https://github.com/element-hq/element-call/blob/93ae2aed9841e0b066d515c56bd4c122d2b591b2/docs/self-hosting.md#a-matrix-homeserver) (automatically done when Element Call is enabled)
+- A homeserver with MatrixRTC support, such as [Synapse](configuring-playbook-synapse.md) or [Tuwunel](configuring-playbook-tuwunel.md). The playbook enables stable MatrixRTC transport on Synapse automatically. On Tuwunel, enable [application-service mode](configuring-playbook-livekit-jwt-service.md#stable-matrixrtc-transport) to use the stable transport.
 - A [LiveKit Server](configuring-playbook-livekit-server.md) (automatically installed when [Element Call or the Matrix RTC stack is enabled](configuring-playbook-element-call.md#decide-between-element-call-vs-just-the-matrix-rtc-stack))
 - The [LiveKit JWT Service](configuring-playbook-livekit-jwt-service.md) (automatically installed when [Element Call or the Matrix RTC stack is enabled](configuring-playbook-element-call.md#decide-between-element-call-vs-just-the-matrix-rtc-stack))
 - A client compatible with Element Call. As of 2025-03-15, that's just [Element Web](configuring-playbook-client-element-web.md) and the Element X mobile clients (iOS and Android).
-
-> [!WARNING]
->  Because Element Call [requires](https://github.com/element-hq/element-call/blob/93ae2aed9841e0b066d515c56bd4c122d2b591b2/docs/self-hosting.md#a-matrix-homeserver) a few experimental features in the Matrix protocol, it's **very likely that it only works with the Synapse homeserver**.
 
 ## Adjusting the playbook configuration
 
