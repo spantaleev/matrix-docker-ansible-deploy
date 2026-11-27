@@ -711,6 +711,19 @@
       The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | join(', ') }}
   when: "lookup('ansible.builtin.varnames', '^matrix_dynamic_dns_.+', wantlist=True) | length > 0"
 
+- name: (Deprecation) Catch and report matrix-matrixto variables
+  ansible.builtin.fail:
+    msg: |-
+      The matrix-matrixto role in the playbook now lives under the MASH organization (https://github.com/mother-of-all-self-hosting/ansible-role-matrixto).
+      The new role is pretty much the same, but uses differently named variables.
+
+      Please rename all `matrix_matrixto_`-prefixed variables (`matrix_matrixto_*` -> `matrixto_*`) on your configuration file (vars.yml).
+
+      After renaming them, please do not forget to fetch the Ansible role. See docs/maintenance-upgrading-services.md for details about how to do so.
+
+      The following variables in your configuration need to be renamed: {{ lookup('ansible.builtin.varnames', '^matrix_matrixto_.+', wantlist=True) | join(', ') }}
+  when: "lookup('ansible.builtin.varnames', '^matrix_matrixto_.+', wantlist=True) | length > 0"
+
 - name: (Deprecation) Catch and report matrix-registration-bot variables
   ansible.builtin.fail:
     msg: |-
