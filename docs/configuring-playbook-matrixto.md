@@ -22,18 +22,18 @@ When setting, replace `example.com` with your own.
 To enable Matrix.to, add the following configuration to your `inventory/host_vars/matrix.example.com/vars.yml` file:
 
 ```yaml
-matrix_matrixto_enabled: true
+matrixto_enabled: true
 ```
 
 ### Adjusting the Matrix.to URL (optional)
 
-By tweaking the `matrix_matrixto_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
+By tweaking the `matrixto_hostname` variable, you can easily make the service available at a **different hostname** than the default one.
 
 Example additional configuration for your `vars.yml` file:
 
 ```yaml
 # Change the default hostname
-matrix_matrixto_hostname: t.example.com
+matrixto_hostname: t.example.com
 ```
 
 After changing the domain, **you may need to adjust your DNS** records to point the Matrix.to domain to the Matrix server.
@@ -44,7 +44,7 @@ There are some additional things you may wish to configure about the server.
 
 Take a look at:
 
-- `roles/custom/matrix-matrixto/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/matrixto/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Installing
 

@@ -1,3 +1,17 @@
+# 2026-11-27
+
+## (BC Break) Matrix.to role has been relocated and variable names need adjustments
+
+The role for Matrix.to has been relocated to the [mother-of-all-self-hosting](https://github.com/mother-of-all-self-hosting) organization.
+
+Along with the relocation, the `matrix_matrixto` prefix was dropped from its variable names, so you need to adjust your `vars.yml` configuration.
+
+You need to do the following replacement:
+
+- `matrix_matrixto` -> `matrixto_`
+
+As always, the playbook would let you know about this and point out any variables you may have missed.
+
 # 2026-10-30
 
 ## The base directory (`/matrix`) is now owned by root
