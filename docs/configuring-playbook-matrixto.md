@@ -44,7 +44,7 @@ There are some additional things you may wish to configure about the server.
 
 Take a look at:
 
-- `roles/custom/matrix-matrixto/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
+- `roles/galaxy/matrixto/defaults/main.yml` for some variables that you can customize via your `vars.yml` file
 
 ## Installing
 
